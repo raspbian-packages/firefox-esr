@@ -78,11 +78,11 @@ void SVGStyleElement::UnbindFromTree(bool aNullParent) {
   Unused << UpdateStyleSheetInternal(oldDoc, oldShadow);
 }
 
-nsresult SVGStyleElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
-                                       const nsAttrValue* aValue,
-                                       const nsAttrValue* aOldValue,
-                                       nsIPrincipal* aMaybeScriptedPrincipal,
-                                       bool aNotify) {
+void SVGStyleElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
+                                   const nsAttrValue* aValue,
+                                   const nsAttrValue* aOldValue,
+                                   nsIPrincipal* aMaybeScriptedPrincipal,
+                                   bool aNotify) {
   if (aNameSpaceID == kNameSpaceID_None) {
     if (aName == nsGkAtoms::title || aName == nsGkAtoms::media ||
         aName == nsGkAtoms::type) {
@@ -159,6 +159,17 @@ void SVGStyleElement::GetTitle(nsAString& aTitle) {
 
 void SVGStyleElement::SetTitle(const nsAString& aTitle, ErrorResult& rv) {
   SetAttr(nsGkAtoms::title, aTitle, rv);
+}
+
+bool SVGStyleElement::Disabled() const {
+  StyleSheet* ss = GetSheet();
+  return ss && ss->Disabled();
+}
+
+void SVGStyleElement::SetDisabled(bool aDisabled) {
+  if (StyleSheet* ss = GetSheet()) {
+    ss->SetDisabled(aDisabled);
+  }
 }
 
 //----------------------------------------------------------------------

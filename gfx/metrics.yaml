@@ -28,6 +28,22 @@ paint:
     telemetry_mirror: PAINT_BUILD_DISPLAYLIST_TIME
 
 wr:
+  gpu_wait_time:
+    type: timing_distribution
+    description: >
+      The time spent waiting for the GPU to complete previously issued drawing
+      commands.
+    time_unit: microsecond
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1772216
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1772216
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - gfx-telemetry-alerts@mozilla.com
+    expires: never
+    telemetry_mirror: WR_GPU_WAIT_TIME
   rasterize_glyphs_time:
     type: timing_distribution
     description: >
@@ -43,6 +59,52 @@ wr:
       - gfx-telemetry-alerts@mozilla.com
     expires: never
     telemetry_mirror: WR_RASTERIZE_GLYPHS_TIME
+  rasterize_blobs_time:
+    type: timing_distribution
+    description: >
+      The time to rasterize blobs for consumption by WebRender.
+    time_unit: microsecond
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1770974
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1770974
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - gfx-telemetry-alerts@mozilla.com
+    expires: never
+    telemetry_mirror: WR_RASTERIZE_BLOBS_TIME
+  renderer_time:
+    type: timing_distribution
+    description: >
+      WebRender renderer time.
+    time_unit: microsecond
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1772223
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1772223
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - gfx-telemetry-alerts@mozilla.com
+    expires: never
+    telemetry_mirror: WR_RENDERER_TIME
+  renderer_time_no_sc:
+    type: timing_distribution
+    description: >
+      WebRender renderer time excluding frames in which shader compilation took
+      place.
+    time_unit: microsecond
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1784286
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1784286
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - gfx-telemetry-alerts@mozilla.com
+    expires: never
+    telemetry_mirror: WR_RENDERER_TIME_NO_SC_MS
   framebuild_time:
     type: timing_distribution
     description: >
@@ -93,3 +155,50 @@ wr:
       - jmuizelaar@mozilla.com
     expires: never
     telemetry_mirror: WR_SCENESWAP_TIME
+  texture_cache_update_time:
+    type: timing_distribution
+    description: >
+      Time taken by WebRender to update the texture cache.
+    time_unit: microsecond
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1772223
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1772223
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - gfx-telemetry-alerts@mozilla.com
+    expires: never
+    telemetry_mirror: WR_TEXTURE_CACHE_UPDATE_TIME
+  time_to_frame_build:
+    type: timing_distribution
+    description: >
+      Time elapsed between the construction of a transaction and the
+      associated frame build beginning.
+    time_unit: microsecond
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1778395
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1778395
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - gfx-telemetry-alerts@mozilla.com
+    expires: never
+    telemetry_mirror: WR_TIME_TO_FRAME_BUILD_MS
+  time_to_render_start:
+    type: timing_distribution
+    description: >
+      Time elapsed between the construction of a frame and the start of
+      rendering.
+    time_unit: microsecond
+    bugs:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1778395
+    data_reviews:
+      - https://bugzilla.mozilla.org/show_bug.cgi?id=1778395
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - gfx-telemetry-alerts@mozilla.com
+    expires: never
+    telemetry_mirror: WR_TIME_TO_RENDER_START_MS

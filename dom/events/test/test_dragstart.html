@@ -94,6 +94,26 @@ function afterDragTests()
   sendMouseEventsForDrag("undraggable_inside_draggable");
   synthesizeMouse(draggable, 12, 12, { type: "mouseup" });
 
+  sendMouseEventsForDrag("link_to_file");
+  synthesizeMouse(draggable, 12, 12, { type: "mouseup" });
+
+  sendMouseEventsForDrag("broken_file_image");
+  synthesizeMouse(draggable, 12, 12, { type: "mouseup" });
+
+  if (navigator.platform.startsWith("Win")) {
+    sendMouseEventsForDrag("link_to_windows_file");
+    synthesizeMouse(draggable, 12, 12, { type: "mouseup" });
+
+    sendMouseEventsForDrag("broken_windows_file_image");
+    synthesizeMouse(draggable, 12, 12, { type: "mouseup" });
+
+    sendMouseEventsForDrag("link_to_backslash_windows_file");
+    synthesizeMouse(draggable, 12, 12, { type: "mouseup" });
+
+    sendMouseEventsForDrag("broken_backslash_windows_file_image");
+    synthesizeMouse(draggable, 12, 12, { type: "mouseup" });
+  }
+
   if (gExtraDragTests == 7)
     SimpleTest.finish();
 }
@@ -142,13 +162,14 @@ function doDragStartSelection(event)
   is(dt.getData("text/html"), "<div id=\"draggable\" ondragstart=\"doDragStartSelection(event)\">This is a <em>draggable</em> bit of text.</div>",
      "initial selection text/html");
 
-  // text/unicode and Text are available for compatibility. They retrieve the
-  // text/plain data
-  is(dt.getData("text/unicode"), "This is a draggable bit of text.", "initial selection text/unicode");
+  // text/plain and Text are available for compatibility. They retrieve the
+  // text/plain data. text/unicode is also for compatibility and retreives the plain text.
+  is(dt.getData("text/plain"), "This is a draggable bit of text.", "initial selection text/plain");
   is(dt.getData("Text"), "This is a draggable bit of text.", "initial selection Text");
   is(dt.getData("TEXT"), "This is a draggable bit of text.", "initial selection TEXT");
-  is(dt.getData("text/UNICODE"), "This is a draggable bit of text.", "initial selection text/UNICODE"); 
-
+  is(dt.getData("text/PLAIN"), "This is a draggable bit of text.", "initial selection text/PLAIN");
+  is(dt.getData("text/unicode"), "This is a draggable bit of text.", "initial selection text/unicode");
+  
   is(SpecialPowers.wrap(dt).mozItemCount, 1, "initial selection item count");
 
   dt.clearData("text/plain");
@@ -560,7 +581,7 @@ function doDragOverSynthetic(event)
 function onDragStartDraggable(event)
 {
   var dt = event.dataTransfer;
-  ok(SpecialPowers.wrap(dt).mozItemCount == 0 && dt.types.length == 0 && event.originalTarget == gDragInfo.target, gDragInfo.testid);
+  ok(SpecialPowers.wrap(dt).mozItemCount == 0 && !dt.types.length && event.originalTarget == gDragInfo.target, gDragInfo.testid);
 
   event.preventDefault();
   gExtraDragTests++;
@@ -606,6 +627,10 @@ function checkURL(dt, url, fullurllist, index, testid)
 
 function onDragOverDraggableFalse(event) {
   ok(false, "Triggered dragstart on draggable=false node " + event.target.id);
+}
+
+function onDragStartUnlinkable(event) {
+  ok(false, "Triggered dragstart on undraggable node " + event.target.id);
 }
 
 function expectError(fn, eid, testid)
@@ -680,5 +705,12 @@ shadow_host_containing_image.attachShadow({ mode: 'open' }).innerHTML =
     This is an undraggable link inside a draggable ancestor.
   </a>
 </div>
+
+<a id="link_to_file" href="file:///" ondragstart="onDragStartUnlinkable(event)">This is an undraggable 'file' link</a>
+<a id="link_to_windows_file" href="c:/Users/" ondragstart="onDragStartUnlinkable(event)">This is an undraggable 'file' link</a>
+<a id="link_to_backslash_windows_file" href="c:\\Users\\" ondragstart="onDragStartUnlinkable(event)">This is an undraggable 'file' link</a>
+<img id="broken_file_image" src="file:///" ondragstart="onDragStartUnlinkable(event)">
+<img id="broken_windows_file_image" src="c:/Users/" ondragstart="onDragStartUnlinkable(event)">
+<img id="broken_backslash_windows_file_image" src="c:\\Users\\" ondragstart="onDragStartUnlinkable(event)">
 </body>
 </html>

@@ -21,9 +21,9 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "fdlibm.h"
-
 #include "mozilla/EndianUtils.h"
+
+#include "fdlibm.h"
 
 /*
  * Emulate FreeBSD internal double types.
@@ -36,6 +36,7 @@ typedef long double      __double_t;
 typedef double      __double_t;
 #endif
 #define double_t __double_t
+typedef float       __float_t;
 
 /*
  * The original fdlibm code used statements like:
@@ -97,11 +98,6 @@ typedef union
 } ieee_quad_shape_type;
 
 #endif
-
-/*
- * A union which permits us to convert between a double and two 32 bit
- * ints.
- */
 
 #if MOZ_BIG_ENDIAN()
 
@@ -485,7 +481,7 @@ do {								\
  * or by having |c| a few percent smaller than |a|.  Pre-normalization of
  * (a, b) may help.
  *
- * This is is a variant of an algorithm of Kahan (see Knuth (1981) 4.2.2
+ * This is a variant of an algorithm of Kahan (see Knuth (1981) 4.2.2
  * exercise 19).  We gain considerable efficiency by requiring the terms to
  * be sufficiently normalized and sufficiently increasing.
  */
@@ -639,7 +635,7 @@ rnint(__double_t x)
  * return type provided their arg is a floating point integer.  They can
  * sometimes be more efficient because no rounding is required.
  */
-#if (defined(amd64) || defined(__i386__)) && defined(__GNUCLIKE_ASM)
+#if defined(amd64) || defined(__i386__)
 #define	irint(x)						\
     (sizeof(x) == sizeof(float) &&				\
     sizeof(__float_t) == sizeof(long double) ? irintf(x) :	\
@@ -648,6 +644,39 @@ rnint(__double_t x)
     sizeof(x) == sizeof(long double) ? irintl(x) : (int)(x))
 #else
 #define	irint(x)	((int)(x))
+#endif
+
+#define	i64rint(x)	((int64_t)(x))	/* only needed for ld128 so not opt. */
+
+#if defined(__i386__)
+static __inline int
+irintf(float x)
+{
+	int n;
+
+	__asm("fistl %0" : "=m" (n) : "t" (x));
+	return (n);
+}
+
+static __inline int
+irintd(double x)
+{
+	int n;
+
+	__asm("fistl %0" : "=m" (n) : "t" (x));
+	return (n);
+}
+#endif
+
+#if defined(__amd64__) || defined(__i386__)
+static __inline int
+irintl(long double x)
+{
+	int n;
+
+	__asm("fistl %0" : "=m" (n) : "t" (x));
+	return (n);
+}
 #endif
 
 #ifdef DEBUG
@@ -846,22 +875,34 @@ rnint(__double_t x)
 #define	__ieee754_scalbf scalbf
 
 #define acos fdlibm::acos
+#define acosf fdlibm::acosf
 #define asin fdlibm::asin
+#define asinf fdlibm::asinf
 #define atan fdlibm::atan
+#define atanf fdlibm::atanf
 #define atan2 fdlibm::atan2
 #define cos fdlibm::cos
+#define cosf fdlibm::cosf
 #define sin fdlibm::sin
+#define sinf fdlibm::sinf
 #define tan fdlibm::tan
+#define tanf fdlibm::tanf
 #define cosh fdlibm::cosh
 #define sinh fdlibm::sinh
 #define tanh fdlibm::tanh
 #define exp fdlibm::exp
+#define expf fdlibm::expf
+#define exp2 fdlibm::exp2
+#define exp2f fdlibm::exp2f
 #define log fdlibm::log
+#define logf fdlibm::logf
 #define log10 fdlibm::log10
 #define pow fdlibm::pow
+#define powf fdlibm::powf
 #define ceil fdlibm::ceil
 #define ceilf fdlibm::ceilf
 #define fabs fdlibm::fabs
+#define fabsf fdlibm::fabsf
 #define floor fdlibm::floor
 #define acosh fdlibm::acosh
 #define asinh fdlibm::asinh
@@ -874,6 +915,7 @@ rnint(__double_t x)
 #define scalb fdlibm::scalb
 #define copysign fdlibm::copysign
 #define scalbn fdlibm::scalbn
+#define scalbnf fdlibm::scalbnf
 #define trunc fdlibm::trunc
 #define truncf fdlibm::truncf
 #define floorf fdlibm::floorf
@@ -881,6 +923,7 @@ rnint(__double_t x)
 #define nearbyintf fdlibm::nearbyintf
 #define rint fdlibm::rint
 #define rintf fdlibm::rintf
+#define sqrtf fdlibm::sqrtf
 
 /* fdlibm kernel function */
 int	__kernel_rem_pio2(double*,double*,int,int,int);

@@ -28,7 +28,6 @@ Perform a debug build of Gecko.
 .. code::
 
    ac_add_options --enable-debug
-   ac_add_options --with-android-ndk="<path>/.mozbuild/android-ndk-r17b"
 
 2. Ensure that the following lines are commented out in your
    ``mozconfig`` if present. ``./mach configure`` will not allow
@@ -152,14 +151,14 @@ following:
 
 .. code:: shell
 
-adb shell am set-debug-app -w --persistent org.mozilla.geckoview_example
+   adb shell am set-debug-app -w --persistent org.mozilla.geckoview_example
 
 The above command works with child processes too, e.g. to make the GPU
 process wait for a debugger, run:
 
 .. code:: shell
 
-adb shell am set-debug-app -w --persistent org.mozilla.geckoview_example:gpu
+   adb shell am set-debug-app -w --persistent org.mozilla.geckoview_example:gpu
 
 
 Attaching a Java debugger to a waiting child process
@@ -190,6 +189,44 @@ may also need to set breakpoints in the appropriate ``lldb`` console by
 hand.
 
 Managing more debug tabs may require different approaches.
+
+Debug Native Memory Allocations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Android Studio includes a `Native Memory Profiler
+<https://developer.android.com/studio/profile/memory-profiler#native-memory-profiler>`_
+which works for physical devices running Android 10 and later.  In order to
+track allocations correctly Gecko must be built with ``jemalloc`` disabled.
+Additionally, the native memory profiler appears to only work with ``aarch64``
+builds.  The following must therefore be present in your ``mozconfig`` file:
+
+.. code::
+
+   ac_add_options --target=aarch64
+   ac_add_options --disable-jemalloc
+
+The resulting profiles are symbolicated correctly in debug builds, however, you
+may prefer to use a release build when profiling. Unfortunately a method to
+symbolicate using local symbols from the development machine has not yet been
+found, therefore in order for the profile to be symbolicated you must prevent
+symbols being stripped during the build process. To do so, add the following to
+your ``mozconfig``:
+
+.. code::
+
+   ac_add_options STRIP_FLAGS=--strip-debug
+
+And the following to ``mobile/android/geckoview/build.gradle``, and additionally
+to ``mobile/android/geckoview_example/build.gradle`` if profiling GeckoView
+Example, or ``app/build.gradle`` if profiling Fenix, for example.
+
+.. code:: groovy
+
+    android {
+        packagingOptions {
+            doNotStrip "**/*.so"
+        }
+    }
 
 Using Android Studio on Windows
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -17,16 +17,18 @@ firefox-relay-must-login-to-fxa = { -relay-brand-name }’i kullanak için { -fx
 firefox-relay-get-unlimited-masks =
     .label = Maskeleri yönet
     .accesskey = M
-firefox-relay-opt-in-title = E-posta adresinizi koruyun
-firefox-relay-opt-in-subtitle = { -relay-brand-name }’i ekle
-firefox-relay-generate-mask-title = E-posta adresinizi koruyun
-firefox-relay-generate-mask-subtitle = { -relay-brand-short-name } maskesi oluştur
-firefox-relay-opt-in-confirmation-enable =
-    .label = İleri
-    .accesskey = İ
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = E-posta adresinizi koruyun:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = { -relay-brand-name } e-posta maskesi kullanın
+firefox-relay-use-mask-title = { -relay-brand-name } e-posta maskesi kullanın
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = E-posta maskesi kullan
+    .accesskey = k
 firefox-relay-opt-in-confirmation-disable =
     .label = Bunu bir daha gösterme
     .accesskey = B
 firefox-relay-opt-in-confirmation-postpone =
-    .label = Daha sonra
-    .accesskey = D
+    .label = Şimdi değil
+    .accesskey = m

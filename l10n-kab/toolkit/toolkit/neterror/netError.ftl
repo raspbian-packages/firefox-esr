@@ -24,7 +24,11 @@ neterror-pref-reset-button = Err-d iɣewwaṛen imezwar
 neterror-return-to-previous-page-button = Uɣal ɣeṛ deffir
 neterror-return-to-previous-page-recommended-button = Uɣal ɣer deffir (Yelha)
 neterror-try-again-button = Ɛreḍ i tikelt-nniḍen
+neterror-add-exception-button = Yal ass ttkemmil i usmel-a
+neterror-settings-button = Beddel iɣewwaṛen DNS
 neterror-view-certificate-link = Sken aselkin
+neterror-trr-continue-this-time = Kemmel tikkelt-a
+neterror-disable-native-feedback-warning = Ttkemmil dima
 
 ##
 
@@ -48,6 +52,31 @@ neterror-dns-not-found-hint-header = <strong>Ma yella teskecmeḍ tansa tameɣtu
 neterror-dns-not-found-hint-try-again = Ɛreḍ tikkelt-nniḍen ticki
 neterror-dns-not-found-hint-check-network = senqed azeṭṭa-k·m internet
 neterror-dns-not-found-hint-firewall = Senqqed aya { -brand-short-name } yettwasireg ad yekcem ɣer web ( yezmer ahat teqqneḍ d acu ɣer uɣrab n tmes)
+
+## TRR-only specific messages
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+neterror-dns-not-found-trr-only-reason = { -brand-short-name } ur yezmir ara ad yemmesten asuter-ik•im ɣef tansa n usmel-a s umefru-nneɣ DNS aɣellsan. Da ara tafeḍ iwacu:
+neterror-dns-not-found-trr-third-party-warning2 = Tzemreḍ ad tkemmleḍ s umefru-ik DNS amezwer. Maca, aḥric wis kraḍ yezmer ad iwali ismal iɣer trezzuḍ.
+
+neterror-dns-not-found-trr-only-could-not-connect = { -brand-short-name } ur yessaweḍ ara ad yeqqen ɣer { $trrDomain }.
+neterror-dns-not-found-trr-only-timeout = Tuqqna ɣer { $trrDomain } teṭṭef ugar n wayen yetturaǧun.
+neterror-dns-not-found-trr-offline = Ur teqqineḍ ara ɣer internet.
+neterror-dns-not-found-trr-unknown-host2 = Asmel-a web ur yettwaf ara sɣur { $trrDomain }.
+neterror-dns-not-found-trr-server-problem = Yella-d wugur akken { $trrDomain }.
+neterror-dns-not-found-trr-unknown-problem = Ugur ur netturaǧu ara.
+
+## Native fallback specific messages
+## Variables:
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+neterror-dns-not-found-native-fallback-reason = { -brand-short-name } ur yezmir ara ad yemmesten asuter-ik•im ɣef tansa n usmel-a s umefru-nneɣ DNS aɣellsan. Da ara tafeḍ iwacu:
+neterror-dns-not-found-native-fallback-heuristic = DNS s HTTPS tensa deg uẓeṭṭa-inek•inem.
+neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } ur yessaweḍ ara ad yeqqen ɣer { $trrDomain }.
+
+##
 
 neterror-file-not-found-filename = Senqed isem n ufaylu ma yura s usekkil meqqren neɣ meẓẓi neɣ tuccdiwin n tira-nniḍen.
 neterror-file-not-found-moved = Senqed ma yella afaylu ur ittusenkez ara, ur ibeddel ara isem neɣ ur ittwakkes ara.

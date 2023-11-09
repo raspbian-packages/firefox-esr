@@ -26,7 +26,7 @@ default-bookmarks-firefox-get-help = Obter ajuda
 default-bookmarks-firefox-customize = Personalizar o Firefox
 
 # link title for https://www.mozilla.org/contribute/
-default-bookmarks-firefox-community = Envolva-se
+default-bookmarks-firefox-community = Participe
 
 # link title for https://www.mozilla.org/about/
 default-bookmarks-firefox-about = Sobre nós

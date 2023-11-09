@@ -13,8 +13,8 @@ load(_HTTPD_JS_PATH.path);
 // if these tests fail, we'll want the debug output
 var linDEBUG = true;
 
-var { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
+var { XPCOMUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/XPCOMUtils.sys.mjs"
 );
 var { NetUtil } = ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
 
@@ -336,6 +336,11 @@ function runHttpTests(testArray, done) {
       //     one.
       try {
         testArray[testIndex].onStopRequest(ch, status, this._data);
+      } catch (e) {
+        do_report_unexpected_exception(
+          e,
+          "testArray[" + testIndex + "].onStartRequest"
+        );
       } finally {
         try {
           performNextTest();
@@ -387,7 +392,7 @@ function RawTest(host, port, data, responseCheck) {
   }
 
   if (
-    !data.every(function(v) {
+    !data.every(function (v) {
       // eslint-disable-next-line no-control-regex
       return /^[\x00-\xff]*$/.test(v);
     })
@@ -418,8 +423,8 @@ function runRawTests(testArray, done, beforeTestCallback) {
     Ci.nsISocketTransportService
   );
 
-  var currentThread = Cc["@mozilla.org/thread-manager;1"].getService()
-    .currentThread;
+  var currentThread =
+    Cc["@mozilla.org/thread-manager;1"].getService().currentThread;
 
   /** Kicks off running the next test in the array. */
   function performNextTest() {

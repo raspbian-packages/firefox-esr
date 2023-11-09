@@ -29,7 +29,7 @@ class UiCompositorControllerChild final
   friend class PUiCompositorControllerChild;
 
  public:
-  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(UiCompositorControllerChild)
+  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(UiCompositorControllerChild, final)
 
   static RefPtr<UiCompositorControllerChild> CreateForSameProcess(
       const LayersId& aRootLayerTreeId, nsBaseWidget* aWidget);
@@ -70,16 +70,14 @@ class UiCompositorControllerChild final
   // Note that this function does not actually use the PUiCompositorController
   // IPDL protocol, and instead uses Android's binder IPC mechanism via
   // mCompositorSurfaceManager. It can be called from any thread.
-  void OnCompositorSurfaceChanged(
-      int32_t aWidgetId, java::sdk::Surface::Param aSurface,
-      java::sdk::SurfaceControl::Param aSurfaceControl);
+  void OnCompositorSurfaceChanged(int32_t aWidgetId,
+                                  java::sdk::Surface::Param aSurface);
 #endif
 
  protected:
   void ActorDestroy(ActorDestroyReason aWhy) override;
-  void ActorDealloc() override;
   void ProcessingError(Result aCode, const char* aReason) override;
-  void HandleFatalError(const char* aMsg) const override;
+  void HandleFatalError(const char* aMsg) override;
   mozilla::ipc::IPCResult RecvToolbarAnimatorMessageFromCompositor(
       const int32_t& aMessage);
   mozilla::ipc::IPCResult RecvRootFrameMetrics(const ScreenPoint& aScrollOffset,

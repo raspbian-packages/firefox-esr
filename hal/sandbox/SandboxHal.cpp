@@ -40,8 +40,9 @@ void Vibrate(const nsTArray<uint32_t>& pattern, WindowIdentifier&& id) {
 
   WindowIdentifier newID(std::move(id));
   newID.AppendProcessID();
-  Hal()->SendVibrate(pattern, newID.AsArray(),
-                     BrowserChild::GetFrom(newID.GetWindow()));
+  if (BrowserChild* bc = BrowserChild::GetFrom(newID.GetWindow())) {
+    Hal()->SendVibrate(pattern, newID.AsArray(), WrapNotNull(bc));
+  }
 }
 
 void CancelVibrate(WindowIdentifier&& id) {
@@ -49,8 +50,9 @@ void CancelVibrate(WindowIdentifier&& id) {
 
   WindowIdentifier newID(std::move(id));
   newID.AppendProcessID();
-  Hal()->SendCancelVibrate(newID.AsArray(),
-                           BrowserChild::GetFrom(newID.GetWindow()));
+  if (BrowserChild* bc = BrowserChild::GetFrom(newID.GetWindow())) {
+    Hal()->SendCancelVibrate(newID.AsArray(), WrapNotNull(bc));
+  }
 }
 
 void EnableBatteryNotifications() { Hal()->SendEnableBatteryNotifications(); }
@@ -108,13 +110,12 @@ void DisableWakeLockNotifications() {
 void ModifyWakeLock(const nsAString& aTopic, WakeLockControl aLockAdjust,
                     WakeLockControl aHiddenAdjust, uint64_t aProcessID) {
   MOZ_ASSERT(aProcessID != CONTENT_PROCESS_ID_UNKNOWN);
-  Hal()->SendModifyWakeLock(nsString(aTopic), aLockAdjust, aHiddenAdjust,
-                            aProcessID);
+  Hal()->SendModifyWakeLock(aTopic, aLockAdjust, aHiddenAdjust, aProcessID);
 }
 
 void GetWakeLockInfo(const nsAString& aTopic,
                      WakeLockInformation* aWakeLockInfo) {
-  Hal()->SendGetWakeLockInfo(nsString(aTopic), aWakeLockInfo);
+  Hal()->SendGetWakeLockInfo(aTopic, aWakeLockInfo);
 }
 
 bool EnableAlarm() {
@@ -152,7 +153,7 @@ class HalParent : public PHalParent,
 
   virtual mozilla::ipc::IPCResult RecvVibrate(
       nsTArray<unsigned int>&& pattern, nsTArray<uint64_t>&& id,
-      PBrowserParent* browserParent) override {
+      NotNull<PBrowserParent*> browserParent) override {
     // We give all content vibration permission.
     //    BrowserParent *browserParent = BrowserParent::GetFrom(browserParent);
     /* xxxkhuey wtf
@@ -164,7 +165,8 @@ class HalParent : public PHalParent,
   }
 
   virtual mozilla::ipc::IPCResult RecvCancelVibrate(
-      nsTArray<uint64_t>&& id, PBrowserParent* browserParent) override {
+      nsTArray<uint64_t>&& id,
+      NotNull<PBrowserParent*> browserParent) override {
     // BrowserParent *browserParent = BrowserParent::GetFrom(browserParent);
     /* XXXkhuey wtf
     nsCOMPtr<nsIDOMWindow> window =
@@ -264,7 +266,7 @@ class HalParent : public PHalParent,
   }
 
   virtual mozilla::ipc::IPCResult RecvModifyWakeLock(
-      const nsString& aTopic, const WakeLockControl& aLockAdjust,
+      const nsAString& aTopic, const WakeLockControl& aLockAdjust,
       const WakeLockControl& aHiddenAdjust,
       const uint64_t& aProcessID) override {
     MOZ_ASSERT(aProcessID != CONTENT_PROCESS_ID_UNKNOWN);
@@ -286,7 +288,7 @@ class HalParent : public PHalParent,
   }
 
   virtual mozilla::ipc::IPCResult RecvGetWakeLockInfo(
-      const nsString& aTopic, WakeLockInformation* aWakeLockInfo) override {
+      const nsAString& aTopic, WakeLockInformation* aWakeLockInfo) override {
     hal::GetWakeLockInfo(aTopic, aWakeLockInfo);
     return IPC_OK();
   }

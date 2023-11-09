@@ -8,6 +8,7 @@
 #define BackstagePass_h__
 
 #include "js/loader/ModuleLoaderBase.h"
+#include "mozilla/BasePrincipal.h"
 #include "mozilla/StorageAccess.h"
 #include "nsISupports.h"
 #include "nsWeakReference.h"
@@ -35,6 +36,8 @@ class BackstagePass final : public nsIGlobalObject,
 
   nsIPrincipal* GetPrincipal() override { return mPrincipal; }
 
+  nsIPrincipal* GetEffectiveCookiePrincipal() override { return mPrincipal; }
+
   nsIPrincipal* GetEffectiveStoragePrincipal() override { return mPrincipal; }
 
   nsIPrincipal* PartitionedPrincipal() override { return mPrincipal; }
@@ -53,6 +56,9 @@ class BackstagePass final : public nsIGlobalObject,
     return mozilla::StorageAccess::eAllow;
   }
 
+  mozilla::Result<mozilla::ipc::PrincipalInfo, nsresult> GetStorageKey()
+      override;
+
   void ForgetGlobalObject() { mWrapper = nullptr; }
 
   void SetGlobalObject(JSObject* global);
@@ -60,6 +66,13 @@ class BackstagePass final : public nsIGlobalObject,
   void InitModuleLoader(ModuleLoaderBase* aModuleLoader) {
     MOZ_ASSERT(!mModuleLoader);
     mModuleLoader = aModuleLoader;
+  }
+
+  bool ShouldResistFingerprinting(
+      RFPTarget aTarget = RFPTarget::Unknown) const override {
+    // BackstagePass is always the System Principal
+    MOZ_RELEASE_ASSERT(mPrincipal->IsSystemPrincipal());
+    return false;
   }
 
  private:

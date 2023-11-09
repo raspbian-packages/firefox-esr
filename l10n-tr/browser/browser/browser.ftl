@@ -5,46 +5,15 @@
 
 ## The main browser window's title
 
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
 #
 # default - "Mozilla Firefox"
 # private - "Mozilla Firefox (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } (Gizli Gezinti)
-    .data-content-title-default = { $content-title } — { -brand-full-name }
-    .data-content-title-private = { $content-title } — { -brand-full-name } (Gizli Gezinti)
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
-#
-# "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox — (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
-#
-# Also note the other subtle difference here: we use a `-` to separate the
-# brand name from `(Private Browsing)`, which does not happen on other OSes.
-#
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window-mac =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } — (Gizli Gezinti)
-    .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } — (Gizli Gezinti)
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
-#
-# default - "Mozilla Firefox"
-# private - "Mozilla Firefox (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
 # Variables:
 #  $content-title (String): the title of the web content.
 browser-main-window-window-titles =
@@ -52,14 +21,17 @@ browser-main-window-window-titles =
     .data-title-private = { -brand-full-name } Gizli Gezinti
     .data-content-title-default = { $content-title } — { -brand-full-name }
     .data-content-title-private = { $content-title } — { -brand-full-name } Gizli Gezinti
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
 #
 # "default" - "Mozilla Firefox"
 # "private" - "Mozilla Firefox — (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -109,16 +81,12 @@ urlbar-xr-notification-anchor =
     .tooltiptext = Sanal gerçeklik izin panelini aç
 urlbar-storage-access-anchor =
     .tooltiptext = Gezinme etkinliği izin panelini aç
-urlbar-translate-notification-anchor =
-    .tooltiptext = Bu sayfayı çevir
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = Siteyle pencerelerimi veya ekranımı paylaşmayı yönet
 urlbar-indexed-db-notification-anchor =
     .tooltiptext = Çevrimdışı depolama mesajı panelini aç
 urlbar-password-notification-anchor =
     .tooltiptext = Parolayı kaydet mesajı panelini aç
-urlbar-translated-notification-anchor =
-    .tooltiptext = Sayfa çevirisini yönet
 urlbar-plugins-notification-anchor =
     .tooltiptext = Yan uygulama kullanımını yönet
 urlbar-web-rtc-share-devices-notification-anchor =
@@ -144,9 +112,17 @@ urlbar-tip-icon-description =
     .alt = İpucu:
 urlbar-result-menu-button =
     .title = Menüyü aç
+urlbar-result-menu-button-feedback = Görüş bildir
+    .title = Menüyü aç
+urlbar-result-menu-learn-more =
+    .label = Daha fazla bilgi al
+    .accesskey = D
 urlbar-result-menu-remove-from-history =
     .label = Geçmişten kaldır
     .accesskey = G
+urlbar-result-menu-tip-get-help =
+    .label = Yardım al
+    .accesskey = Y
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -205,10 +181,6 @@ urlbar-star-add-bookmark =
 
 ## Page Action Context Menu
 
-page-action-manage-extension =
-    .label = Uzantıyı yönet…
-page-action-remove-extension =
-    .label = Uzantıyı kaldır
 page-action-manage-extension2 =
     .label = Uzantıyı yönet…
     .accesskey = U
@@ -385,6 +357,7 @@ identity-weak-encryption = Bu sayfada zayıf şifreleme kullanılıyor.
 identity-insecure-login-forms = Bu sayfaya girilen hesap bilgileri ele geçirilebilir.
 identity-https-only-connection-upgraded = (HTTPS’e yükseltildi)
 identity-https-only-label = Yalnızca HTTPS modu
+identity-https-only-label2 = Bu siteyi otomatik olarak güvenli bağlantıya yükselt
 identity-https-only-dropdown-on =
     .label = Açık
 identity-https-only-dropdown-off =
@@ -393,9 +366,11 @@ identity-https-only-dropdown-off-temporarily =
     .label = Geçici olarak kapalı
 identity-https-only-info-turn-on2 = Mümkün olduğunda { -brand-short-name } tarayıcınızın güvenli bağlantıya geçmesini istiyorsanız bu site için Yalnızca HTTPS modunu açın.
 identity-https-only-info-turn-off2 = Sayfa düzgün çalışmazsa bu site için Yalnızca HTTPS modunu kapatarak siteyi güvensiz HTTP ile yüklemeyi deneyebilirsiniz.
+identity-https-only-info-turn-on3 = Mümkün olduğunda { -brand-short-name } tarayıcınızın güvenli bağlantıya geçmesini istiyorsanız bu site için HTTPS yükseltmelerini açın.
+identity-https-only-info-turn-off3 = Sayfa düzgün çalışmazsa bu site için HTTPS yükseltmelerini kapatarak siteyi güvensiz HTTP ile yüklemeyi deneyebilirsiniz.
 identity-https-only-info-no-upgrade = HTTP bağlantısı yükseltilemedi.
 identity-permissions-storage-access-header = Siteler arası çerezler
-identity-permissions-storage-access-hint = Bu siteler, siz bu sitedeyken siteler diğer sitelerdeki çerezleri ve site verilerini kullanabilir.
+identity-permissions-storage-access-hint = Aşağıdaki siteler, siz bu sitedeyken başka sitelerin çerezlerini ve site verilerini kullanabilir.
 identity-permissions-storage-access-learn-more = Daha fazla bilgi al
 identity-permissions-reload-hint = Değişikliklerin uygulanması için bu sayfayı tazelemeniz gerekebilir.
 identity-clear-site-data =
@@ -403,7 +378,7 @@ identity-clear-site-data =
 identity-connection-not-secure-security-view = Bu siteye güvenli bir şekilde bağlanmadınız.
 identity-connection-verified = Bu siteye güvenli bir şekilde bağlandınız.
 identity-ev-owner-label = Sertifika sahibi:
-identity-description-custom-root = Mozilla bu sertifika yayıncısını tanımıyor. İşletim sisteminiz üzerinden veya sistem yöneticiniz tarafından eklenmiş olabilir. <label data-l10n-name="link">Daha fazla bilgi al</label>
+identity-description-custom-root2 = Mozilla bu sertifika yayıncısını tanımıyor. İşletim sisteminiz üzerinden veya sistem yöneticiniz tarafından eklenmiş olabilir.
 identity-remove-cert-exception =
     .label = Ayrıcalığı kaldır
     .accesskey = k
@@ -411,14 +386,12 @@ identity-description-insecure = Bu siteye bağlantınız size özel değil. Gön
 identity-description-insecure-login-forms = Bu sayfaya yazdığınız hesap bilgileri güvende değildir ve saldırganlar tarafından ele geçirilebilir.
 identity-description-weak-cipher-intro = Bu siteye bağlatnınız zayıf bir şifreleme kullanıyor ve size özel değil.
 identity-description-weak-cipher-risk = Başkaları bilgilerinizi görebilir veya web sitesinin davranışını değiştirebilir.
-identity-description-active-blocked = { -brand-short-name } bu sayfanın güvenli olmayan kısımlarını engelledi. <label data-l10n-name="link">Daha fazla bilgi al</label>
+identity-description-active-blocked2 = { -brand-short-name } bu sayfanın güvenli olmayan kısımlarını engelledi.
 identity-description-passive-loaded = Bağlantınız size özel değil ve bu siteyle paylaştığınız bilgiler başkaları tarafından görülebilir.
-identity-description-passive-loaded-insecure = Bu sitede güvenli olmayan içerikler (resimler vb.) var. <label data-l10n-name="link">Daha fazla bilgi al</label>
-identity-description-passive-loaded-mixed = { -brand-short-name } bazı içerikleri engellemiş olmasına rağmen bu sayfada hâlâ güvenli olmayan içerikler (örn. resimler) var. <label data-l10n-name="link">Daha fazla bilgi al</label>
+identity-description-passive-loaded-insecure2 = Bu sitede güvenli olmayan içerikler (resimler vb.) var.
+identity-description-passive-loaded-mixed2 = { -brand-short-name } bazı içerikleri engellemiş olmasına rağmen bu sayfada hâlâ güvenli olmayan içerikler (örn. resimler) var.
 identity-description-active-loaded = Bu web sitesinde güvenli olmayan içerikler var (örn. betikler) ve siteye olan bağlantınız gizli değil.
 identity-description-active-loaded-insecure = Bu siteyle paylaştığınız bilgiler (örn. parolalar, mesajlar, kredi kartı bilgileri vb.) başkaları tarafından görülebilir.
-identity-learn-more =
-    .value = Daha fazla bilgi al
 identity-disable-mixed-content-blocking =
     .label = Korumayı şimdilik devre dışı bırak
     .accesskey = d
@@ -497,13 +470,6 @@ popup-select-window-or-screen =
     .label = Pencere veya ekran:
     .accesskey = P
 popup-all-windows-shared = Ekranınızdaki tüm görünür pencereler paylaşılacaktır.
-popup-screen-sharing-block =
-    .label = Engelle
-    .accesskey = E
-popup-screen-sharing-always-block =
-    .label = Her zaman engelle
-    .accesskey = H
-popup-mute-notifications-checkbox = Paylaşırken web sitesi bildirimlerini sessize al
 
 ## WebRTC window or screen share tab switch warning
 
@@ -516,7 +482,6 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
-enable-devtools-popup-description = F12 kısayolunu kullanmak için önce Web geliştirici menüsünden geliştirici araçlarını açın.
 enable-devtools-popup-description2 = F12 kısayolunu kullanmak için önce tarayıcı araçları menüsünden geliştirici araçlarını açın.
 
 ## URL Bar
@@ -659,6 +624,20 @@ reader-view-enter-button =
 reader-view-close-button =
     .aria-label = Okuyucu Görünümü'nü kapat
 
+## Picture-in-Picture urlbar button
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+picture-in-picture-urlbar-button-open =
+    .tooltiptext = Görüntü içinde görüntüyü aç ({ $shortcut })
+picture-in-picture-urlbar-button-close =
+    .tooltiptext = Görüntü içinde görüntüyü kapat ({ $shortcut })
+picture-in-picture-panel-header = Görüntü içinde görüntü
+picture-in-picture-panel-headline = Bu web sitesi görüntü içinde görüntüyü önermiyor
+picture-in-picture-panel-body = Görüntü içinde görüntüyü açarsanız videolar geliştiricinin amaçladığı gibi görünmeyebilir.
+picture-in-picture-enable-toggle =
+    .label = Yine de etkinleştir
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -675,19 +654,6 @@ fullscreen-exit-mac-button = Tam ekrandan çık (esc)
 pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> işaretçinizi kontrol ediyor. Kontrolü geri almak için Esc tuşuna basın.
 pointerlock-warning-no-domain = Bu belge işaretçinizi kontrol ediyor. Kontrolü geri almak için Esc tuşuna basın.
 
-## Subframe crash notification
-
-crashed-subframe-message = <strong>Bu sayfanın bir kısmı çöktü.</strong> Bize rapor göndererek sorunu bildirirseniz { -brand-product-name } tarayıcınızı daha hızlı düzeltebiliriz.
-# The string for crashed-subframe-title.title should match crashed-subframe-message,
-# but without any markup.
-crashed-subframe-title =
-    .title = Bu sayfanın bir kısmı çöktü. Bize rapor göndererek sorunu bildirirseniz { -brand-product-name } tarayıcınızı daha hızlı düzeltebiliriz.
-crashed-subframe-learnmore-link =
-    .value = Daha fazla bilgi al
-crashed-subframe-submit =
-    .label = Rapor gönder
-    .accesskey = R
-
 ## Bookmarks panels, menus and toolbar
 
 bookmarks-manage-bookmarks =
@@ -703,6 +669,11 @@ bookmarks-other-bookmarks-menu =
     .label = Diğer yer imleri
 bookmarks-mobile-bookmarks-menu =
     .label = Mobil yer imleri
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
@@ -727,12 +698,13 @@ bookmarks-tools-menu-button-visibility =
             [true] Yer imleri menüsünü araç çubuğundan çıkar
            *[other] Yer imleri menüsünü araç çubuğuna ekle
         }
+
+##
+
 bookmarks-search =
     .label = Yer imlerinde ara
 bookmarks-tools =
     .label = Yer imi araçları
-bookmarks-bookmark-edit-panel =
-    .label = Bu yer imini düzenle
 bookmarks-subview-edit-bookmark =
     .label = Bu yer imini düzenle…
 # The aria-label is a spoken label that should not include the word "toolbar" or
@@ -748,9 +720,6 @@ bookmarks-toolbar-placeholder =
     .title = Yer imleri araç çubuğu öğeleri
 bookmarks-toolbar-placeholder-button =
     .label = Yer imleri araç çubuğu öğeleri
-# "Bookmark" is a verb, as in "Add current tab to bookmarks".
-bookmarks-current-tab =
-    .label = Bu sekmeyi yer imlerine ekle
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-subview-bookmark-tab =
     .label = Bu sekmeyi yer imlerine ekle…
@@ -777,11 +746,6 @@ repair-text-encoding-button =
 ## Customize Toolbar Buttons
 
 # Variables:
-#  $shortcut (String): keyboard shortcut to open the add-ons manager
-toolbar-addons-themes-button =
-    .label = Eklentiler ve temalar
-    .tooltiptext = Eklentilerinizi ve temalarınızı yönetin ({ $shortcut })
-# Variables:
 #  $shortcut (String): keyboard shortcut to open settings (only on macOS)
 toolbar-settings-button =
     .label = Ayarlar
@@ -796,6 +760,9 @@ toolbar-overflow-customize-button =
 toolbar-button-email-link =
     .label = Bağlantıyı e-postala
     .tooltiptext = Bu sayfanın linkini e-postayla gönder
+toolbar-button-logins =
+    .label = Parolalar
+    .tooltiptext = Kayıtlı parolalarımı görüntüle ve yönet
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
@@ -827,13 +794,6 @@ eme-notifications-drm-content-playing-dismiss-accesskey = K
 
 panel-save-update-username = Kullanıcı adı
 panel-save-update-password = Parola
-
-## Add-on removal warning
-
-# Variables:
-#  $name (String): The name of the addon that will be removed.
-addon-removal-title = { $name } kaldırılsın mı?
-addon-removal-abuse-report-checkbox = Bu uzantıyı { -vendor-short-name }’ya şikâyet et
 
 ##
 
@@ -902,8 +862,6 @@ navbar-library =
     .tooltiptext = Geçmişinize, kayıtlı yer imlerinize ve daha fazlasına bakın
 navbar-search =
     .title = Ara
-navbar-accessibility-indicator =
-    .tooltiptext = Erişilebilirlik özellikleri açık
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
@@ -945,6 +903,13 @@ unified-extensions-button-permissions-needed =
         Uzantılar
         İzin gerekli
 
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = Uzantılar
+    .tooltiptext = Bazı uzantılara izin verilmiyor
+
 ## Autorefresh blocker
 
 refresh-blocked-refresh-label = { -brand-short-name } bu sayfanın kendiliğinden yenilenmesini önledi.
@@ -955,9 +920,47 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-relay = { -relay-brand-name } sizi veri ihlallerinden ve spam’den korumak için gerçek e-posta adresinizi maskeler.
-firefox-relay-offer-how-we-integrate = Devam ettiğinizde doğrudan { -brand-shorter-name } parola yöneticiniz üzerinden yeni { -relay-brand-short-name } e-posta maskeleri oluşturabileceksiniz.
+firefox-relay-offer-why-to-use-relay = Güvenli, kullanımı kolay maskelerimiz kimliğinizi korur ve e-posta adresinizi gizleyerek istenmeyen e-postaları önler.
 # Variables:
-#  $sitename (String): name of the site where user enters their Relay mask
 #  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-does = <strong>{ $sitename }</strong> adresinden gelen tüm e-postaları <strong>{ $useremail }</strong> adresine yönlendireceğiz.
+firefox-relay-offer-what-relay-provides = E-posta maskelerinize gönderilen tüm e-postalar <strong>{ $useremail }</strong> adresine yönlendirilecektir (siz engellemeye karar vermediğiniz sürece).
+firefox-relay-offer-legal-notice = “E-posta maskesi kullan”a tıkladığınızda <label data-l10n-name="tos-url">Hizmet Koşulları</label>’nı ve <label data-l10n-name="privacy-url">Gizlilik Bildirimi</label>’ni kabul etmiş sayılırsınız.
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = (Doğrulanmamış)
+popup-notification-xpinstall-prompt-learn-more = Eklentileri güvenle yükleme hakkında daha fazla bilgi alın
+
+## Pop-up warning
+
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message =
+    { $popupCount ->
+        [one] { -brand-short-name } bu sitenin açılır pencere açmasını engelledi.
+       *[other] { -brand-short-name } bu sitenin { $popupCount } açılır pencere açmasını engelledi.
+    }
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message =
+    { $popupCount ->
+        [one] { -brand-short-name } bu sitenin { $popupCount } açılır pencere açmasını engelledi.
+       *[other] { -brand-short-name } bu sitenin { $popupCount } açılır pencere açmasını engelledi.
+    }
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Seçenekler
+           *[other] Tercihler
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] S
+           *[other] T
+        }
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = “{ $popupURI }” penceresini göster

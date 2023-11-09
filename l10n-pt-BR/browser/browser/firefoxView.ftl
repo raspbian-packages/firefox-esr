@@ -21,8 +21,8 @@ firefoxview-tabpickup-description = Abra páginas de outros dispositivos.
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% concluído
 firefoxview-tabpickup-step-signin-header = Passe facilmente de um dispositivo para outro
-firefoxview-tabpickup-step-signin-description = Para abrir aqui as abas no seu celular, primeiro entre na sua conta ou crie uma.
-firefoxview-tabpickup-step-signin-primarybutton = Continuar
+firefoxview-tabpickup-step-signin-description = Para abrir aqui as abas do seu celular, primeiro entre na sua conta ou crie uma.
+firefoxview-tabpickup-step-signin-primarybutton = Avançar
 firefoxview-tabpickup-adddevice-header = Sincronize o { -brand-product-name } em seu celular ou tablet
 firefoxview-tabpickup-adddevice-description = Instale o { -brand-product-name } para dispositivos móveis e entre na sua conta.
 firefoxview-tabpickup-adddevice-learn-how = Saiba como
@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Fechado recentemente
 firefoxview-closed-tabs-description2 = Reabra páginas que você fechou neste computador.
 firefoxview-closed-tabs-placeholder-header = Nenhuma aba fechada recentemente
 firefoxview-closed-tabs-placeholder-body = Ao fechar uma aba nesta janela, você pode recuperar aqui.
+firefoxview-closed-tabs-placeholder-body2 = Ao fechar uma aba, você pode recuperar aqui.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Última ativa
 firefoxview-tabs-list-tab-button =
     .title = Abrir { $targetURI } em nova aba
 firefoxview-try-colorways-button = Experimentar esquemas de cores
-firefoxview-no-current-colorway-collection = Estão chegando novos esquemas de cores
 firefoxview-change-colorway-button = Mudar esquema de cores
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,63 @@ firefoxview-collapse-button-show =
     .title = Exibir lista
 firefoxview-collapse-button-hide =
     .title = Ocultar lista
+firefoxview-overview-nav = Navegação recente
+    .title = Navegação recente
+firefoxview-overview-header = Navegação recente
+    .title = Navegação recente
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Histórico
+    .title = Histórico
+firefoxview-history-header = Histórico
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Abas abertas
+    .title = Abas abertas
+firefoxview-opentabs-header = Abas abertas
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Abas fechadas recentemente
+    .title = Abas fechadas recentemente
+firefoxview-recently-closed-header = Abas fechadas recentemente
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Abas de outros dispositivos
+    .title = Abas de outros dispositivos
+firefoxview-synced-tabs-header = Abas de outros dispositivos
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Ver tudo
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Janela { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Janela { $winID } (atual)
+firefoxview-opentabs-focus-tab =
+    .title = Mudar para esta aba
+firefoxview-show-more = Mostrar mais
+firefoxview-show-less = Mostrar menos
+firefoxview-sort-history-by-date-label = Ordenar por data
+firefoxview-sort-history-by-site-label = Ordenar por site
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Hoje - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Ontem - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Mostrar todo o histórico
+firefoxview-view-more-browsing-history = Ver mais histórico de navegação

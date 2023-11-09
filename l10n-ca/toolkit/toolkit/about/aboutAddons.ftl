@@ -8,14 +8,16 @@ search-header =
     .placeholder = Cerca a addons.mozilla.org
     .searchbuttonlabel = Cerca
 
-search-header-shortcut =
-    .key = f
+## Variables
+##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
 
 list-empty-get-extensions-message = Obteniu més extensions i temes a <a data-l10n-name="get-extensions">{ $domain }</a>
 
 list-empty-get-dictionaries-message = Obteniu més diccionaris a <a data-l10n-name="get-extensions">{ $domain }</a>
 
 list-empty-get-language-packs-message = Obteniu més paquets d’idioma a <a data-l10n-name="get-extensions">{ $domain }</a>
+
+##
 
 list-empty-installed =
     .value = No teniu instal·lat cap complement d'aquest tipus
@@ -185,6 +187,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Permisos dels llocs
 addon-category-sitepermission-title =
     .title = Permisos dels llocs
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string) - DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Permisos del lloc per a { $host }
 
 ## These are global warnings
 
@@ -270,6 +276,8 @@ shortcuts-duplicate-warning-message = { $shortcut } ja s'utilitza com a drecera 
 #   $addon (string) - Name of the add-on
 shortcuts-exists = Ja s'utilitza en { $addon }
 
+# Variables:
+#   $numberToShow (number) - Number of other elements available to show
 shortcuts-card-expand-button =
     { $numberToShow ->
         [one] Mostra'n { $numberToShow } més
@@ -341,18 +349,7 @@ extension-enabled-heading = Activades
 extension-disabled-heading = Desactivades
 
 theme-enabled-heading = Activat
-theme-disabled-heading = Desactivats
 theme-disabled-heading2 = Temes desats
-theme-monochromatic-heading = Combinació de colors
-theme-monochromatic-subheading = Combinacions de colors vibrants del { -brand-product-name }. Disponibles durant un temps limitat.
-
-# Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
-theme-colorways-button = Proveu les combinacions de colors
-# Refers to the button label for the colorways card when a user has a colorway theme enabled.
-theme-colorways-button-colorway-enabled = Canvia la combinació de colors
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
-colorway-collection-expiry-label = Caduca: { DATETIME($expiryDate, month: "long", day: "numeric") }
 
 plugin-enabled-heading = Activats
 plugin-disabled-heading = Desactivats
@@ -422,6 +419,9 @@ addon-detail-private-browsing-help = Si ho permeteu, l'extensió tindrà accés 
 addon-detail-private-browsing-allow = Permet
 addon-detail-private-browsing-disallow = No ho permetis
 
+## "sites with restrictions" (internally called "quarantined") are special domains
+## where add-ons are normally blocked for security reasons.
+
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
 
@@ -453,6 +453,8 @@ addon-permissions-learnmore = Més informació sobre els permisos
 recommended-extensions-heading = Extensions recomanades
 recommended-themes-heading = Temes recomanats
 
+# Variables:
+#   $hostname (string) - Host where the permissions are granted
 addon-sitepermissions-required = Atorga les capacitats següents a <span data-l10n-name="hostname">{ $hostname }</span>:
 
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
@@ -482,10 +484,14 @@ addon-page-options-button =
 ## Variables:
 ##   $name (String): name of the add-on.
 
-# Variables:
-#   $version (String): application version.
-details-notification-incompatible = { $name } no és compatible amb el { -brand-short-name } { $version }.
 
+## Detail notifications
+## Variables:
+##   $name (string) - Name of the add-on.
+
+# Variables:
+#   $version (string) - Application version.
+details-notification-incompatible = { $name } no és compatible amb el { -brand-short-name } { $version }.
 details-notification-incompatible-link = Més informació
 
 details-notification-unsigned-and-disabled = «{ $name }» no s'ha pogut verificar per al seu ús al { -brand-short-name } i s'ha inhabilitat.

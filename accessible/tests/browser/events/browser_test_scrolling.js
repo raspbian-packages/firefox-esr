@@ -10,8 +10,12 @@ addAccessibleTask(
     <div style="height: 100vh" id="two">two</div>
     <div style="height: 100vh; width: 200vw; overflow: auto;" id="three">
       <div style="height: 300%;">three</div>
-    </div>`,
-  async function(browser, accDoc) {
+    </div>
+    <textarea id="textarea" rows="1">a
+b
+c</textarea>
+  `,
+  async function (browser, accDoc) {
     let onScrolling = waitForEvents([
       [EVENT_SCROLLING, accDoc],
       [EVENT_SCROLLING_END, accDoc],
@@ -92,5 +96,18 @@ addAccessibleTask(
       scrollEndEvent4.maxScrollY >= scrollEndEvent4.scrollY,
       "scrollY is within max"
     );
+
+    // textarea scrolling
+    info("Moving textarea caret to c");
+    onScrolling = waitForEvents([
+      [EVENT_SCROLLING, "textarea"],
+      [EVENT_SCROLLING_END, "textarea"],
+    ]);
+    await invokeContentTask(browser, [], () => {
+      const textareaDom = content.document.getElementById("textarea");
+      textareaDom.focus();
+      textareaDom.selectionStart = 4;
+    });
+    await onScrolling;
   }
 );

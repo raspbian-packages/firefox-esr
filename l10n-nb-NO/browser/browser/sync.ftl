@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = Slå på synkronisering
 
 fxa-menu-connect-another-device =
     .label = Koble til en annen enhet…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Send fane til enhet
+           *[other] Send { $tabCount } faner til enhet
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

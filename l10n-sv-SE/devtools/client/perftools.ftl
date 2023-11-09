@@ -83,8 +83,6 @@ perftools-thread-renderer =
     .title = När WebRender är aktiverat, anropar tråden som kör OpenGL
 perftools-thread-render-backend =
     .title = WebRender RenderBackend-tråden
-perftools-thread-paint-worker =
-    .title = När målning utanför huvudtråden är aktiverad, den tråd som målningen sker på
 perftools-thread-timer =
     .title = Trådhanteringstidur (setTimeout, setInterval, nsITimer)
 perftools-thread-style-thread =
@@ -96,7 +94,7 @@ perftools-thread-socket-thread =
 perftools-thread-img-decoder =
     .title = Bildavkodningstrådar
 perftools-thread-dns-resolver =
-    .title = DNS-upplösning sker på den här tråden
+    .title = DNS-uppslagning sker på den här tråden
 perftools-thread-task-controller =
     .title = TaskController trådpoolstrådar
 perftools-thread-jvm-gecko =
@@ -132,6 +130,11 @@ perftools-onboarding-close-button =
 
 # Presets and their l10n IDs are defined in the file
 # devtools/client/performance-new/popup/background.jsm.js
+# The same labels and descriptions are also defined in appmenu.ftl.
+
+
+# Presets and their l10n IDs are defined in the file
+# devtools/client/performance-new/shared/background.jsm.js
 # The same labels and descriptions are also defined in appmenu.ftl.
 
 perftools-presets-web-developer-label = Webbutvecklare

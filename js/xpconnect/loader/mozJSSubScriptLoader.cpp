@@ -6,7 +6,7 @@
 
 #include "mozJSSubScriptLoader.h"
 #include "js/experimental/JSStencil.h"
-#include "mozJSComponentLoader.h"
+#include "mozJSModuleLoader.h"
 #include "mozJSLoaderUtils.h"
 
 #include "nsIURI.h"
@@ -161,7 +161,7 @@ static bool EvalStencil(JSContext* cx, HandleObject targetObj,
 #ifdef MOZ_DIAGNOSTIC_ASSERT_ENABLED
       JSObject* targetGlobal = JS::GetNonCCWObjectGlobal(targetObj);
       MOZ_DIAGNOSTIC_ASSERT(
-          !mozJSComponentLoader::Get()->IsLoaderGlobal(targetGlobal),
+          !mozJSModuleLoader::Get()->IsLoaderGlobal(targetGlobal),
           "Don't load subscript into target in a shared-global JSM");
 #endif
       if (!JS_ExecuteScript(cx, envChain, script, retval)) {
@@ -320,7 +320,7 @@ nsresult mozJSSubScriptLoader::DoLoadSubScriptWithOptions(
   nsresult rv = NS_OK;
   RootedObject targetObj(cx);
   RootedObject loadScope(cx);
-  mozJSComponentLoader* loader = mozJSComponentLoader::Get();
+  mozJSModuleLoader* loader = mozJSModuleLoader::Get();
   loader->FindTargetObject(cx, &loadScope);
 
   if (options.target) {
@@ -363,12 +363,14 @@ nsresult mozJSSubScriptLoader::DoLoadSubScriptWithOptions(
   }
 
   NS_LossyConvertUTF16toASCII asciiUrl(url);
+  const nsDependentCSubstring profilerUrl =
+      Substring(asciiUrl, 0, std::min(size_t(128), asciiUrl.Length()));
   AUTO_PROFILER_LABEL_DYNAMIC_NSCSTRING_NONSENSITIVE(
-      "mozJSSubScriptLoader::DoLoadSubScriptWithOptions", OTHER, asciiUrl);
+      "mozJSSubScriptLoader::DoLoadSubScriptWithOptions", OTHER, profilerUrl);
   AUTO_PROFILER_MARKER_TEXT("SubScript", JS,
                             MarkerOptions(MarkerStack::Capture(),
                                           MarkerInnerWindowIdFromJSContext(cx)),
-                            asciiUrl);
+                            profilerUrl);
 
   // Make sure to explicitly create the URI, since we'll need the
   // canonicalized spec.

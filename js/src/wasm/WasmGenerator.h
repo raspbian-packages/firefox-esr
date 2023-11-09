@@ -60,15 +60,6 @@ struct FuncCompileInput {
 
 using FuncCompileInputVector = Vector<FuncCompileInput, 8, SystemAllocPolicy>;
 
-void CraneliftFreeReusableData(void* ptr);
-
-struct CraneliftReusableDataDtor {
-  void operator()(void* ptr) { CraneliftFreeReusableData(ptr); }
-};
-
-using CraneliftReusableData =
-    mozilla::UniquePtr<void*, CraneliftReusableDataDtor>;
-
 // CompiledCode contains the resulting code and metadata for a set of compiled
 // input functions or stubs.
 
@@ -81,12 +72,9 @@ struct CompiledCode {
   SymbolicAccessVector symbolicAccesses;
   jit::CodeLabelVector codeLabels;
   StackMaps stackMaps;
-  CraneliftReusableData craneliftReusableData;
-  WasmTryNoteVector tryNotes;
+  TryNoteVector tryNotes;
 
   [[nodiscard]] bool swap(jit::MacroAssembler& masm);
-  [[nodiscard]] bool swapCranelift(jit::MacroAssembler& masm,
-                                   CraneliftReusableData& craneliftData);
 
   void clear() {
     bytes.clear();
@@ -98,7 +86,6 @@ struct CompiledCode {
     codeLabels.clear();
     stackMaps.clear();
     tryNotes.clear();
-    // The cranelift reusable data resets itself lazily.
     MOZ_ASSERT(empty());
   }
 
@@ -195,7 +182,6 @@ class MOZ_STACK_CLASS ModuleGenerator {
   // Data scoped to the ModuleGenerator's lifetime
   CompileTaskState taskState_;
   LifoAlloc lifo_;
-  jit::JitContext jcx_;
   jit::TempAllocator masmAlloc_;
   jit::WasmMacroAssembler masm_;
   Uint32Vector funcToCodeRange_;
@@ -216,8 +202,10 @@ class MOZ_STACK_CLASS ModuleGenerator {
   // Assertions
   DebugOnly<bool> finishedFuncDefs_;
 
-  bool allocateGlobalBytes(uint32_t bytes, uint32_t align,
-                           uint32_t* globalDataOff);
+  bool allocateInstanceDataBytes(uint32_t bytes, uint32_t align,
+                                 uint32_t* instanceDataOffset);
+  bool allocateInstanceDataBytesN(uint32_t bytes, uint32_t align,
+                                  uint32_t count, uint32_t* instanceDataOffset);
 
   bool funcIsCompiled(uint32_t funcIndex) const;
   const CodeRange& funcCodeRange(uint32_t funcIndex) const;

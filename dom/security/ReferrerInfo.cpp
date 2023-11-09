@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "mozilla/RefPtr.h"
 #include "mozilla/dom/ReferrerPolicyBinding.h"
 #include "nsIClassInfoImpl.h"
 #include "nsIEffectiveTLDService.h"
@@ -11,22 +12,25 @@
 #include "nsIObjectInputStream.h"
 #include "nsIObjectOutputStream.h"
 #include "nsIOService.h"
+#include "nsIPipe.h"
 #include "nsIURL.h"
 
 #include "nsWhitespaceTokenizer.h"
 #include "nsAlgorithm.h"
 #include "nsContentUtils.h"
 #include "nsCharSeparatedTokenizer.h"
+#include "nsStreamUtils.h"
 #include "ReferrerInfo.h"
 
 #include "mozilla/BasePrincipal.h"
-#include "mozilla/ContentBlocking.h"
 #include "mozilla/ContentBlockingAllowList.h"
 #include "mozilla/net/CookieJarSettings.h"
 #include "mozilla/net/HttpBaseChannel.h"
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/Element.h"
+#include "mozilla/dom/RequestBinding.h"
 #include "mozilla/StaticPrefs_network.h"
+#include "mozilla/StorageAccess.h"
 #include "mozilla/StyleSheet.h"
 #include "mozilla/Telemetry.h"
 #include "nsIWebProgressListener.h"
@@ -40,7 +44,7 @@ using namespace mozilla::net;
 namespace mozilla::dom {
 
 // Implementation of ClassInfo is required to serialize/deserialize
-NS_IMPL_CLASSINFO(ReferrerInfo, nullptr, nsIClassInfo::MAIN_THREAD_ONLY,
+NS_IMPL_CLASSINFO(ReferrerInfo, nullptr, nsIClassInfo::THREADSAFE,
                   REFERRERINFO_CID)
 
 NS_IMPL_ISUPPORTS_CI(ReferrerInfo, nsIReferrerInfo, nsISerializable)
@@ -52,6 +56,42 @@ NS_IMPL_ISUPPORTS_CI(ReferrerInfo, nsIReferrerInfo, nsISerializable)
 #define MIN_REFERRER_SENDING_POLICY 0
 #define MIN_CROSS_ORIGIN_SENDING_POLICY 0
 #define MIN_TRIMMING_POLICY 0
+
+/*
+ * Default referrer policy to use
+ */
+enum DefaultReferrerPolicy : uint32_t {
+  eDefaultPolicyNoReferrer = 0,
+  eDefaultPolicySameOrgin = 1,
+  eDefaultPolicyStrictWhenXorigin = 2,
+  eDefaultPolicyNoReferrerWhenDownGrade = 3,
+};
+
+static uint32_t GetDefaultFirstPartyReferrerPolicyPref(bool aPrivateBrowsing) {
+  return aPrivateBrowsing
+             ? StaticPrefs::network_http_referer_defaultPolicy_pbmode()
+             : StaticPrefs::network_http_referer_defaultPolicy();
+}
+
+static uint32_t GetDefaultThirdPartyReferrerPolicyPref(bool aPrivateBrowsing) {
+  return aPrivateBrowsing
+             ? StaticPrefs::network_http_referer_defaultPolicy_trackers_pbmode()
+             : StaticPrefs::network_http_referer_defaultPolicy_trackers();
+}
+
+static ReferrerPolicy DefaultReferrerPolicyToReferrerPolicy(
+    uint32_t aDefaultToUse) {
+  switch (aDefaultToUse) {
+    case DefaultReferrerPolicy::eDefaultPolicyNoReferrer:
+      return ReferrerPolicy::No_referrer;
+    case DefaultReferrerPolicy::eDefaultPolicySameOrgin:
+      return ReferrerPolicy::Same_origin;
+    case DefaultReferrerPolicy::eDefaultPolicyStrictWhenXorigin:
+      return ReferrerPolicy::Strict_origin_when_cross_origin;
+  }
+
+  return ReferrerPolicy::No_referrer_when_downgrade;
+}
 
 struct LegacyReferrerPolicyTokenMap {
   const char* mToken;
@@ -190,16 +230,20 @@ uint32_t ReferrerInfo::GetUserXOriginTrimmingPolicy() {
 /* static */
 ReferrerPolicy ReferrerInfo::GetDefaultReferrerPolicy(nsIHttpChannel* aChannel,
                                                       nsIURI* aURI,
-                                                      bool privateBrowsing) {
+                                                      bool aPrivateBrowsing) {
   bool thirdPartyTrackerIsolated = false;
   if (aChannel && aURI) {
     nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
     nsCOMPtr<nsICookieJarSettings> cjs;
     Unused << loadInfo->GetCookieJarSettings(getter_AddRefs(cjs));
     if (!cjs) {
-      cjs = privateBrowsing
-                ? net::CookieJarSettings::Create(CookieJarSettings::ePrivate)
-                : net::CookieJarSettings::Create(CookieJarSettings::eRegular);
+      bool shouldResistFingerprinting =
+          nsContentUtils::ShouldResistFingerprinting(aChannel);
+      cjs = aPrivateBrowsing
+                ? net::CookieJarSettings::Create(CookieJarSettings::ePrivate,
+                                                 shouldResistFingerprinting)
+                : net::CookieJarSettings::Create(CookieJarSettings::eRegular,
+                                                 shouldResistFingerprinting);
     }
 
     // We only check if the channel is isolated if it's in the parent process
@@ -210,8 +254,7 @@ ReferrerPolicy ReferrerInfo::GetDefaultReferrerPolicy(nsIHttpChannel* aChannel,
     if (XRE_IsParentProcess() && cjs->GetRejectThirdPartyContexts()) {
       uint32_t rejectedReason = 0;
       thirdPartyTrackerIsolated =
-          !ContentBlocking::ShouldAllowAccessFor(aChannel, aURI,
-                                                 &rejectedReason) &&
+          !ShouldAllowAccessFor(aChannel, aURI, &rejectedReason) &&
           rejectedReason !=
               static_cast<uint32_t>(
                   nsIWebProgressListener::STATE_COOKIES_PARTITIONED_FOREIGN);
@@ -221,32 +264,13 @@ ReferrerPolicy ReferrerInfo::GetDefaultReferrerPolicy(nsIHttpChannel* aChannel,
     }
   }
 
-  uint32_t defaultToUse;
-  if (thirdPartyTrackerIsolated) {
-    if (privateBrowsing) {
-      defaultToUse =
-          StaticPrefs::network_http_referer_defaultPolicy_trackers_pbmode();
-    } else {
-      defaultToUse = StaticPrefs::network_http_referer_defaultPolicy_trackers();
-    }
-  } else {
-    if (privateBrowsing) {
-      defaultToUse = StaticPrefs::network_http_referer_defaultPolicy_pbmode();
-    } else {
-      defaultToUse = StaticPrefs::network_http_referer_defaultPolicy();
-    }
-  }
-
-  switch (defaultToUse) {
-    case DefaultReferrerPolicy::eDefaultPolicyNoReferrer:
-      return ReferrerPolicy::No_referrer;
-    case DefaultReferrerPolicy::eDefaultPolicySameOrgin:
-      return ReferrerPolicy::Same_origin;
-    case DefaultReferrerPolicy::eDefaultPolicyStrictWhenXorigin:
-      return ReferrerPolicy::Strict_origin_when_cross_origin;
-  }
-
-  return ReferrerPolicy::No_referrer_when_downgrade;
+  // Select the appropriate pref starting with
+  // "network.http.referer.defaultPolicy" to use based on private-browsing
+  // ("pbmode") AND third-party trackers ("trackers").
+  return DefaultReferrerPolicyToReferrerPolicy(
+      thirdPartyTrackerIsolated
+          ? GetDefaultThirdPartyReferrerPolicyPref(aPrivateBrowsing)
+          : GetDefaultFirstPartyReferrerPolicyPref(aPrivateBrowsing));
 }
 
 /* static */
@@ -404,25 +428,18 @@ nsresult ReferrerInfo::HandleUserXOriginSendingPolicy(nsIURI* aURI,
   return NS_OK;
 }
 
+// This roughly implements Step 3.1. of
+// https://fetch.spec.whatwg.org/#append-a-request-origin-header
 /* static */
 bool ReferrerInfo::ShouldSetNullOriginHeader(net::HttpBaseChannel* aChannel,
                                              nsIURI* aOriginURI) {
   MOZ_ASSERT(aChannel);
   MOZ_ASSERT(aOriginURI);
 
-  if (StaticPrefs::network_http_referer_hideOnionSource()) {
-    nsAutoCString host;
-    if (NS_SUCCEEDED(aOriginURI->GetAsciiHost(host)) &&
-        StringEndsWith(host, ".onion"_ns)) {
-      return ReferrerInfo::IsCrossOriginRequest(aChannel);
-    }
-  }
-
-  // When we're dealing with CORS (mode is "cors"), we shouldn't take the
-  // Referrer-Policy into account
-  uint32_t corsMode = CORS_NONE;
-  NS_ENSURE_SUCCESS(aChannel->GetCorsMode(&corsMode), false);
-  if (corsMode == CORS_USE_CREDENTIALS) {
+  // If request’s mode is not "cors", then switch on request’s referrer policy:
+  RequestMode requestMode = RequestMode::No_cors;
+  MOZ_ALWAYS_SUCCEEDS(aChannel->GetRequestMode(&requestMode));
+  if (requestMode == RequestMode::Cors) {
     return false;
   }
 
@@ -432,25 +449,40 @@ bool ReferrerInfo::ShouldSetNullOriginHeader(net::HttpBaseChannel* aChannel,
   if (!referrerInfo) {
     return false;
   }
+
+  // "no-referrer":
   enum ReferrerPolicy policy = referrerInfo->ReferrerPolicy();
   if (policy == ReferrerPolicy::No_referrer) {
+    // Set serializedOrigin to `null`.
+    // Note: Returning true is the same as setting the serializedOrigin to null
+    // in this method.
     return true;
   }
 
+  // "no-referrer-when-downgrade":
+  // "strict-origin":
+  // "strict-origin-when-cross-origin":
+  //   If request’s origin is a tuple origin, its scheme is "https", and
+  //   request’s current URL’s scheme is not "https", then set serializedOrigin
+  //   to `null`.
   bool allowed = false;
   nsCOMPtr<nsIURI> uri;
   NS_ENSURE_SUCCESS(aChannel->GetURI(getter_AddRefs(uri)), false);
-
   if (NS_SUCCEEDED(ReferrerInfo::HandleSecureToInsecureReferral(
           aOriginURI, uri, policy, allowed)) &&
       !allowed) {
     return true;
   }
 
+  // "same-origin":
   if (policy == ReferrerPolicy::Same_origin) {
+    // If request’s origin is not same origin with request’s current URL’s
+    // origin, then set serializedOrigin to `null`.
     return ReferrerInfo::IsCrossOriginRequest(aChannel);
   }
 
+  // Otherwise:
+  //  Do Nothing.
   return false;
 }
 
@@ -1120,8 +1152,10 @@ static ReferrerPolicy ReferrerPolicyFromAttribute(const Element& aElement) {
 }
 
 static bool HasRelNoReferrer(const Element& aElement) {
-  // rel=noreferrer is only support in <a> and <area>
-  if (!aElement.IsAnyOfHTMLElements(nsGkAtoms::a, nsGkAtoms::area)) {
+  // rel=noreferrer is only supported in <a>, <area>, and <form>
+  if (!aElement.IsAnyOfHTMLElements(nsGkAtoms::a, nsGkAtoms::area,
+                                    nsGkAtoms::form) &&
+      !aElement.IsSVGElement(nsGkAtoms::a)) {
     return false;
   }
 
@@ -1248,26 +1282,11 @@ already_AddRefed<nsIReferrerInfo> ReferrerInfo::CreateForExternalCSSResources(
 }
 
 /* static */
-already_AddRefed<nsIReferrerInfo> ReferrerInfo::CreateForInternalCSSResources(
-    Document* aDocument) {
+already_AddRefed<nsIReferrerInfo>
+ReferrerInfo::CreateForInternalCSSAndSVGResources(Document* aDocument) {
   MOZ_ASSERT(aDocument);
-  nsCOMPtr<nsIReferrerInfo> referrerInfo;
-
-  referrerInfo = new ReferrerInfo(aDocument->GetDocumentURI(),
-                                  aDocument->GetReferrerPolicy());
-  return referrerInfo.forget();
-}
-
-// Bug 1415044 to investigate which referrer and policy we should use
-/* static */
-already_AddRefed<nsIReferrerInfo> ReferrerInfo::CreateForSVGResources(
-    Document* aDocument) {
-  MOZ_ASSERT(aDocument);
-  nsCOMPtr<nsIReferrerInfo> referrerInfo;
-
-  referrerInfo = new ReferrerInfo(aDocument->GetDocumentURI(),
-                                  aDocument->GetReferrerPolicy());
-  return referrerInfo.forget();
+  return do_AddRef(new ReferrerInfo(aDocument->GetDocumentURI(),
+                                    aDocument->GetReferrerPolicy()));
 }
 
 nsresult ReferrerInfo::ComputeReferrer(nsIHttpChannel* aChannel) {
@@ -1433,6 +1452,98 @@ nsresult ReferrerInfo::ComputeReferrer(nsIHttpChannel* aChannel) {
 
 /* ===== nsISerializable implementation ====== */
 
+nsresult ReferrerInfo::ReadTailDataBeforeGecko100(
+    const uint32_t& aData, nsIObjectInputStream* aInputStream) {
+  MOZ_ASSERT(aInputStream);
+
+  nsCOMPtr<nsIInputStream> reader;
+  nsCOMPtr<nsIOutputStream> writer;
+
+  // We need to create a new pipe in order to read the aData and the rest of
+  // the input stream together in the old format. This would also help us with
+  // handling big endian correctly.
+  NS_NewPipe(getter_AddRefs(reader), getter_AddRefs(writer));
+
+  nsCOMPtr<nsIBinaryOutputStream> binaryPipeWriter =
+      NS_NewObjectOutputStream(writer);
+
+  // Write back the aData so that we can read bytes from it and handle big
+  // endian correctly.
+  nsresult rv = binaryPipeWriter->Write32(aData);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  nsCOMPtr<nsIBinaryInputStream> binaryPipeReader =
+      NS_NewObjectInputStream(reader);
+
+  rv = binaryPipeReader->ReadBoolean(&mSendReferrer);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  bool isComputed;
+  rv = binaryPipeReader->ReadBoolean(&isComputed);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  // We need to handle the following string if isComputed is true.
+  if (isComputed) {
+    // Comsume the following 2 bytes from the input stream. They are the half
+    // part of the length prefix of the following string.
+    uint16_t data;
+    rv = aInputStream->Read16(&data);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+
+    // Write the bytes to the pipe so that we can read the length of the string.
+    rv = binaryPipeWriter->Write16(data);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+
+    uint32_t length;
+    rv = binaryPipeReader->Read32(&length);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+
+    // Consume the string body from the input stream.
+    nsAutoCString computedReferrer;
+    rv = NS_ConsumeStream(aInputStream, length, computedReferrer);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+    mComputedReferrer.emplace(computedReferrer);
+
+    // Read the remaining two bytes and write to the pipe.
+    uint16_t remain;
+    rv = aInputStream->Read16(&remain);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+
+    rv = binaryPipeWriter->Write16(remain);
+    if (NS_WARN_IF(NS_FAILED(rv))) {
+      return rv;
+    }
+  }
+
+  rv = binaryPipeReader->ReadBoolean(&mInitialized);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  rv = binaryPipeReader->ReadBoolean(&mOverridePolicyByDefault);
+  if (NS_WARN_IF(NS_FAILED(rv))) {
+    return rv;
+  }
+
+  return NS_OK;
+}
+
 NS_IMETHODIMP
 ReferrerInfo::Read(nsIObjectInputStream* aStream) {
   bool nonNull;
@@ -1472,6 +1583,19 @@ ReferrerInfo::Read(nsIObjectInputStream* aStream) {
   if (NS_WARN_IF(NS_FAILED(rv))) {
     return rv;
   }
+
+  // See https://bugzilla.mozilla.org/show_bug.cgi?id=1784045#c6 for more
+  // details.
+  //
+  // We need to differentiate the old format and the new format here in order
+  // to be able to read both formats. The check here helps us with verifying
+  // which format it is.
+  if (MOZ_UNLIKELY(originalPolicy > 0xFF)) {
+    mOriginalPolicy = mPolicy;
+
+    return ReadTailDataBeforeGecko100(originalPolicy, aStream);
+  }
+
   mOriginalPolicy = ReferrerPolicyIDLToReferrerPolicy(
       static_cast<nsIReferrerInfo::ReferrerPolicyIDL>(originalPolicy));
 

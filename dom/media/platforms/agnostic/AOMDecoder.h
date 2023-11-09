@@ -8,6 +8,7 @@
 
 #  include <stdint.h>
 
+#  include "PerformanceRecorder.h"
 #  include "PlatformDecoderModule.h"
 #  include "aom/aom_decoder.h"
 #  include "mozilla/Span.h"
@@ -32,6 +33,7 @@ class AOMDecoder final : public MediaDataDecoder,
   nsCString GetDescriptionName() const override {
     return "av1 libaom video decoder"_ns;
   }
+  nsCString GetCodecName() const override { return "av1"_ns; }
 
   // Return true if aMimeType is a one of the strings used
   // by our demuxers to identify AV1 streams.
@@ -276,6 +278,8 @@ class AOMDecoder final : public MediaDataDecoder,
   aom_codec_ctx_t mCodec;
 
   const VideoInfo mInfo;
+  const Maybe<TrackingId> mTrackingId;
+  PerformanceRecorderMulti<DecodeStage> mPerformanceRecorder;
 };
 
 }  // namespace mozilla

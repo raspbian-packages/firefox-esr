@@ -12,7 +12,8 @@
 about-debugging-page-title-setup-page = Dadfygio - Gosod
 
 # Page title (ie tab title) for the Runtime page
-# { $selectedRuntimeId } is the id of the current runtime, such as "this-firefox", "localhost:6080", ...
+# Variables:
+#   $selectedRuntimeId - ID of the current runtime, such as "this-firefox", "localhost:6080", etc.
 about-debugging-page-title-runtime-page = Dadfygio - Amser Rhedeg/ { $selectedRuntimeId }
 
 # Sidebar strings
@@ -71,10 +72,15 @@ about-debugging-sidebar-runtime-item-waiting-for-browser = Aros am borwr...
 about-debugging-sidebar-runtime-item-unplugged = Wedi'i ddatgysylltu
 
 # Title for runtime sidebar items that are related to a specific device (USB, WiFi).
+# Variables:
+#   $displayName (string) - Displayed name
+#   $deviceName (string) - Name of the device
 about-debugging-sidebar-runtime-item-name =
     .title = { $displayName } ({ $deviceName })
 # Title for runtime sidebar items where we cannot get device information (network
 # locations).
+# Variables:
+#   $displayName (string) - Displayed name
 about-debugging-sidebar-runtime-item-name-no-device =
     .title = { $displayName }
 
@@ -192,7 +198,7 @@ about-debugging-runtime-tabs =
     .name = Tabiau
 # Title of the service workers category.
 about-debugging-runtime-service-workers =
-    .name = Service Workers
+    .name = Gweithwyr Gwasanaeth
 # Title of the shared workers category.
 about-debugging-runtime-shared-workers =
     .name = Shared Workers
@@ -210,7 +216,7 @@ about-debugging-runtime-profile-button2 = Perfformiad proffil
 # This string is displayed in the runtime page if the current configuration of the
 # target runtime is incompatible with service workers. "Learn more" points to:
 # https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/index.html#service-workers-not-compatible
-about-debugging-runtime-service-workers-not-compatible = Nid yw ffurfweddiad eich porwr yn cydweddu â Service Workers. <a>Dysgu rhagor</a>
+about-debugging-runtime-service-workers-not-compatible = Nid yw ffurfweddiad eich porwr yn cydweddu â Gweithwyr Gwasanaeth. <a>Dysgu rhagor</a>
 
 # This string is displayed in the runtime page if the remote browser version is too old.
 # "Troubleshooting" link points to https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/
@@ -354,10 +360,10 @@ about-debugging-worker-fetch-not-listening =
 
 # Displayed for service workers in runtime pages that are currently running (service
 # worker instance is active).
-about-debugging-worker-status-running = Rhedeg
+about-debugging-worker-status-running = Yn rhedeg
 
 # Displayed for service workers in runtime pages that are registered but stopped.
-about-debugging-worker-status-stopped = Wedi Atal
+about-debugging-worker-status-stopped = Ataliawyd
 
 # Displayed for service workers in runtime pages that are registering.
 about-debugging-worker-status-registering = Cofrestru
@@ -381,17 +387,10 @@ about-debugging-zombie-tab-inspect-action-disabled =
 
 # Displayed as name for the Main Process debug target in the Processes category. Only for
 # remote runtimes, if `devtools.aboutdebugging.process-debugging` is true.
-about-debugging-main-process-name = Prif Broses
+about-debugging-multiprocess-toolbox-name = Blwch Offer Amlbroses
 
 # Displayed as description for the Main Process debug target in the Processes category.
 # Only for remote browsers, if `devtools.aboutdebugging.process-debugging` is true.
-about-debugging-main-process-description2 = Prif Broses y porwr targed
-
-# Displayed instead of the Main Process debug target when the preference
-# `devtools.browsertoolbox.fission` is true.
-about-debugging-multiprocess-toolbox-name = Blwch Offer Amlbroses
-
-# Description for the Multiprocess Toolbox target.
 about-debugging-multiprocess-toolbox-description = Prif Broses a Phrosesau Cynnwys ar gyfer y porwr targed
 
 # Alt text used for the close icon of message component (warnings, errors and notifications).

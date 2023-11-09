@@ -7,34 +7,31 @@
 
 "use strict";
 
-const { BrowserSearchTelemetry } = ChromeUtils.import(
-  "resource:///modules/BrowserSearchTelemetry.jsm"
-);
-const { SearchSERPTelemetry } = ChromeUtils.import(
-  "resource:///modules/SearchSERPTelemetry.jsm"
-);
-const { UrlbarTestUtils } = ChromeUtils.import(
-  "resource://testing-common/UrlbarTestUtils.jsm"
-);
-const { SearchTestUtils } = ChromeUtils.import(
-  "resource://testing-common/SearchTestUtils.jsm"
-);
+const { SearchSERPTelemetry, SearchSERPTelemetryUtils } =
+  ChromeUtils.importESModule("resource:///modules/SearchSERPTelemetry.sys.mjs");
 
 const TEST_PROVIDER_INFO = [
   {
     telemetryId: "example",
-    searchPageRegexp: /^https:\/\/example.com\/browser\/browser\/components\/search\/test\/browser\/searchTelemetry(?:Ad)?.html/,
+    searchPageRegexp:
+      /^https:\/\/example.org\/browser\/browser\/components\/search\/test\/browser\/searchTelemetry(?:Ad)?.html/,
     queryParamName: "s",
     codeParamName: "abc",
     taggedCodes: ["ff"],
     followOnParamNames: ["a"],
     extraAdServersRegexps: [/^https:\/\/example\.com\/ad2?/],
+    components: [
+      {
+        type: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        default: true,
+      },
+    ],
   },
 ];
 
 function getPageUrl(useAdPage = false) {
   let page = useAdPage ? "searchTelemetryAd.html" : "searchTelemetry.html";
-  return `https://example.com/browser/browser/components/search/test/browser/${page}`;
+  return `https://example.org/browser/browser/components/search/test/browser/${page}`;
 }
 
 /**
@@ -65,37 +62,43 @@ async function waitForIdle() {
   }
 }
 
+function resetTelemetry() {
+  searchCounts.clear();
+  Services.telemetry.clearScalars();
+  Services.fog.testResetFOG();
+}
+
 SearchTestUtils.init(this);
-UrlbarTestUtils.init(this);
 
 let tab;
 
-add_setup(async function() {
+add_setup(async function () {
   searchCounts.clear();
   Services.telemetry.clearScalars();
 
   SearchSERPTelemetry.overrideSearchTelemetryForTests(TEST_PROVIDER_INFO);
   await waitForIdle();
   await SpecialPowers.pushPrefEnv({
-    set: [["browser.urlbar.suggest.searches", true]],
+    set: [
+      ["browser.urlbar.suggest.searches", true],
+      ["browser.search.serpEventTelemetry.enabled", true],
+    ],
   });
   // Enable local telemetry recording for the duration of the tests.
   let oldCanRecord = Services.telemetry.canRecordExtended;
   Services.telemetry.canRecordExtended = true;
   Services.prefs.setBoolPref("browser.search.log", true);
 
-  let currentEngineName = (await Services.search.getDefault()).name;
-
-  await SearchTestUtils.installSearchExtension({
-    search_url: getPageUrl(true),
-    search_url_get_params: "s={searchTerms}&abc=ff",
-    suggest_url:
-      "https://example.com/browser/browser/components/search/test/browser/searchSuggestionEngine.sjs",
-    suggest_url_get_params: "query={searchTerms}",
-  });
-  let engine1 = Services.search.getEngineByName("Example");
-
-  await Services.search.setDefault(engine1);
+  await SearchTestUtils.installSearchExtension(
+    {
+      search_url: getPageUrl(true),
+      search_url_get_params: "s={searchTerms}&abc=ff",
+      suggest_url:
+        "https://example.com/browser/browser/components/search/test/browser/searchSuggestionEngine.sjs",
+      suggest_url_get_params: "query={searchTerms}",
+    },
+    { setAsDefault: true }
+  );
 
   tab = await BrowserTestUtils.openNewForegroundTab(gBrowser);
 
@@ -105,9 +108,6 @@ add_setup(async function() {
     SearchSERPTelemetry.overrideSearchTelemetryForTests();
     Services.telemetry.canRecordExtended = oldCanRecord;
     Services.telemetry.clearScalars();
-    await Services.search.setDefault(
-      Services.search.getEngineByName(currentEngineName)
-    );
   });
 });
 
@@ -130,20 +130,32 @@ async function loadSearchPage() {
 }
 
 add_task(async function test_search() {
+  Services.fog.testResetFOG();
   // Load a page via the address bar.
   await loadSearchPage();
 
   await assertSearchSourcesTelemetry(
     {
-      "example.in-content:sap:ff": 1,
       "other-Example.urlbar": 1,
     },
     {
       "browser.search.content.urlbar": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 1 },
       "browser.search.withads.urlbar": { "example:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+    },
+  ]);
 });
 
 add_task(async function test_reload() {
@@ -154,46 +166,91 @@ add_task(async function test_reload() {
 
   await assertSearchSourcesTelemetry(
     {
-      "example.in-content:sap:ff": 2,
       "other-Example.urlbar": 1,
     },
     {
       "browser.search.content.urlbar": { "example:tagged:ff": 1 },
       "browser.search.content.reload": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 2 },
       "browser.search.withads.urlbar": { "example:tagged": 1 },
       "browser.search.withads.reload": { "example:tagged": 1 },
     }
   );
 
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+    },
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "reload",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+    },
+  ]);
+  await promiseAdImpressionReceived();
+
   let pageLoadPromise = BrowserTestUtils.waitForLocationChange(gBrowser);
-  await SpecialPowers.spawn(tab.linkedBrowser, [], () => {
-    content.document.getElementById("ad1").click();
-  });
+  await BrowserTestUtils.synthesizeMouseAtCenter("#ad1", {}, tab.linkedBrowser);
   await pageLoadPromise;
 
   await assertSearchSourcesTelemetry(
     {
-      "example.in-content:sap:ff": 2,
       "other-Example.urlbar": 1,
     },
     {
       "browser.search.content.urlbar": { "example:tagged:ff": 1 },
       "browser.search.content.reload": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 2 },
       "browser.search.withads.urlbar": { "example:tagged": 1 },
       "browser.search.withads.reload": { "example:tagged": 1 },
-      "browser.search.ad_clicks": { "example:sap": 1 },
       "browser.search.adclicks.reload": { "example:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+    },
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "reload",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+  ]);
 });
 
 let searchUrl;
 
 add_task(async function test_fresh_search() {
-  searchCounts.clear();
-  Services.telemetry.clearScalars();
+  resetTelemetry();
 
   // Load a page via the address bar.
   await loadSearchPage();
@@ -202,37 +259,63 @@ add_task(async function test_fresh_search() {
 
   await assertSearchSourcesTelemetry(
     {
-      "example.in-content:sap:ff": 1,
       "other-Example.urlbar": 1,
     },
     {
       "browser.search.content.urlbar": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 1 },
       "browser.search.withads.urlbar": { "example:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+    },
+  ]);
+  await promiseAdImpressionReceived(1);
 });
 
 add_task(async function test_click_ad() {
   let pageLoadPromise = BrowserTestUtils.waitForLocationChange(gBrowser);
-  await SpecialPowers.spawn(tab.linkedBrowser, [], () => {
-    content.document.getElementById("ad1").click();
-  });
+  await BrowserTestUtils.synthesizeMouseAtCenter("#ad1", {}, tab.linkedBrowser);
   await pageLoadPromise;
 
   await assertSearchSourcesTelemetry(
     {
-      "example.in-content:sap:ff": 1,
       "other-Example.urlbar": 1,
     },
     {
       "browser.search.content.urlbar": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 1 },
       "browser.search.withads.urlbar": { "example:tagged": 1 },
-      "browser.search.ad_clicks": { "example:sap": 1 },
       "browser.search.adclicks.urlbar": { "example:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+  ]);
 });
 
 add_task(async function test_go_back() {
@@ -243,40 +326,224 @@ add_task(async function test_go_back() {
 
   await assertSearchSourcesTelemetry(
     {
-      "example.in-content:sap:ff": 2,
       "other-Example.urlbar": 1,
     },
     {
       "browser.search.content.urlbar": { "example:tagged:ff": 1 },
       "browser.search.content.tabhistory": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 2 },
       "browser.search.withads.urlbar": { "example:tagged": 1 },
       "browser.search.withads.tabhistory": { "example:tagged": 1 },
-      "browser.search.ad_clicks": { "example:sap": 1 },
       "browser.search.adclicks.urlbar": { "example:tagged": 1 },
     }
   );
 
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "tabhistory",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+    },
+  ]);
+  await promiseAdImpressionReceived(2);
+
   let pageLoadPromise = BrowserTestUtils.waitForLocationChange(gBrowser);
-  await SpecialPowers.spawn(tab.linkedBrowser, [], () => {
-    content.document.getElementById("ad1").click();
-  });
+  await BrowserTestUtils.synthesizeMouseAtCenter("#ad1", {}, tab.linkedBrowser);
   await pageLoadPromise;
 
   await assertSearchSourcesTelemetry(
     {
-      "example.in-content:sap:ff": 2,
       "other-Example.urlbar": 1,
     },
     {
       "browser.search.content.urlbar": { "example:tagged:ff": 1 },
       "browser.search.content.tabhistory": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 2 },
       "browser.search.withads.urlbar": { "example:tagged": 1 },
       "browser.search.withads.tabhistory": { "example:tagged": 1 },
-      "browser.search.ad_clicks": { "example:sap": 2 },
       "browser.search.adclicks.urlbar": { "example:tagged": 1 },
       "browser.search.adclicks.tabhistory": { "example:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "tabhistory",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+  ]);
+});
+
+// Conduct a search from the Urlbar with showSearchTerms enabled.
+add_task(async function test_fresh_search_with_urlbar_persisted() {
+  resetTelemetry();
+
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["browser.urlbar.showSearchTerms.featureGate", true],
+      ["browser.urlbar.tipShownCount.searchTip_persist", 999],
+    ],
+  });
+
+  // Load a SERP once in order to show the search term in the Urlbar.
+  await loadSearchPage();
+  await assertSearchSourcesTelemetry(
+    {
+      "other-Example.urlbar": 1,
+    },
+    {
+      "browser.search.content.urlbar": { "example:tagged:ff": 1 },
+      "browser.search.withads.urlbar": { "example:tagged": 1 },
+    }
+  );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+    },
+  ]);
+  await promiseAdImpressionReceived(1);
+
+  // Do another search from the context of the default SERP.
+  await loadSearchPage();
+  await assertSearchSourcesTelemetry(
+    {
+      "other-Example.urlbar": 1,
+      "other-Example.urlbar-persisted": 1,
+    },
+    {
+      "browser.search.content.urlbar": { "example:tagged:ff": 1 },
+      "browser.search.withads.urlbar": { "example:tagged": 1 },
+      "browser.search.content.urlbar_persisted": { "example:tagged:ff": 1 },
+      "browser.search.withads.urlbar_persisted": { "example:tagged": 1 },
+    }
+  );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+    },
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar_persisted",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+    },
+  ]);
+  await promiseAdImpressionReceived(2);
+
+  // Click on an ad.
+  let pageLoadPromise = BrowserTestUtils.waitForLocationChange(gBrowser);
+  await BrowserTestUtils.synthesizeMouseAtCenter("#ad1", {}, tab.linkedBrowser);
+
+  await pageLoadPromise;
+  await assertSearchSourcesTelemetry(
+    {
+      "other-Example.urlbar": 1,
+      "other-Example.urlbar-persisted": 1,
+    },
+    {
+      "browser.search.content.urlbar": { "example:tagged:ff": 1 },
+      "browser.search.withads.urlbar": { "example:tagged": 1 },
+      "browser.search.content.urlbar_persisted": { "example:tagged:ff": 1 },
+      "browser.search.withads.urlbar_persisted": { "example:tagged": 1 },
+      "browser.search.adclicks.urlbar_persisted": { "example:tagged": 1 },
+    }
+  );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+    },
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "urlbar_persisted",
+        shopping_tab_displayed: "false",
+        is_shopping_page: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+  ]);
+
+  await SpecialPowers.popPrefEnv();
 });

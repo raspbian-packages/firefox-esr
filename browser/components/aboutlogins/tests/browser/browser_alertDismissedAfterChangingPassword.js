@@ -24,7 +24,7 @@ let VULNERABLE_TEST_LOGIN2 = new nsLoginInfo(
   "password"
 );
 
-add_setup(async function() {
+add_setup(async function () {
   TEST_LOGIN1 = await addLogin(TEST_LOGIN1);
   VULNERABLE_TEST_LOGIN2 = await addLogin(VULNERABLE_TEST_LOGIN2);
   TEST_LOGIN3 = await addLogin(TEST_LOGIN3);
@@ -52,9 +52,8 @@ add_task(async function test_added_login_shows_breach_warning() {
         "Waiting for login-list to get populated"
       );
       let { listItem: regularListItem } = loginList._logins[regularLoginGuid];
-      let { listItem: vulnerableListItem } = loginList._logins[
-        vulnerableLoginGuid
-      ];
+      let { listItem: vulnerableListItem } =
+        loginList._logins[vulnerableLoginGuid];
       let { listItem: breachedListItem } = loginList._logins[breachedLoginGuid];
       await ContentTaskUtils.waitForCondition(() => {
         return (
@@ -63,19 +62,19 @@ add_task(async function test_added_login_shows_breach_warning() {
           breachedListItem.matches(".breached")
         );
       }, `waiting for the list items to get their classes updated: ${regularListItem.className} / ${vulnerableListItem.className} / ${breachedListItem.className}`);
-      ok(
+      Assert.ok(
         !regularListItem.classList.contains("breached") &&
           !regularListItem.classList.contains("vulnerable"),
         "regular login should not be marked breached or vulnerable: " +
           regularLoginGuid.className
       );
-      ok(
+      Assert.ok(
         !vulnerableListItem.classList.contains("breached") &&
           vulnerableListItem.classList.contains("vulnerable"),
         "vulnerable login should be marked vulnerable: " +
           vulnerableListItem.className
       );
-      ok(
+      Assert.ok(
         breachedListItem.classList.contains("breached") &&
           !breachedListItem.classList.contains("vulnerable"),
         "breached login should be marked breached: " +
@@ -89,7 +88,7 @@ add_task(async function test_added_login_shows_breach_warning() {
       await ContentTaskUtils.waitForCondition(() => {
         return loginItem._login && loginItem._login.guid == breachedLoginGuid;
       }, "waiting for breached login to get selected");
-      ok(
+      Assert.ok(
         !ContentTaskUtils.is_hidden(
           loginItem.shadowRoot.querySelector(".breach-alert")
         ),
@@ -130,9 +129,17 @@ add_task(async function test_added_login_shows_breach_warning() {
         () => loginItem.dataset.editing == "true",
         "waiting for login-item to enter edit mode"
       );
+
+      // The password display field is in the DOM when password input is unfocused.
+      // To get the password input field, ensure it receives focus.
       let passwordInput = loginItem.shadowRoot.querySelector(
         "input[type='password']"
       );
+      passwordInput.focus();
+      passwordInput = loginItem.shadowRoot.querySelector(
+        "input[name='password']"
+      );
+
       const CHANGED_PASSWORD_VALUE = "changedPassword";
       passwordInput.value = CHANGED_PASSWORD_VALUE;
       let saveChangesButton = loginItem.shadowRoot.querySelector(
@@ -147,7 +154,7 @@ add_task(async function test_added_login_shows_breach_warning() {
         );
       }, "waiting for stored login to get updated");
 
-      ok(
+      Assert.ok(
         ContentTaskUtils.is_hidden(
           loginItem.shadowRoot.querySelector(".breach-alert")
         ),
@@ -155,15 +162,14 @@ add_task(async function test_added_login_shows_breach_warning() {
       );
 
       let { listItem: breachedListItem } = loginList._logins[breachedLoginGuid];
-      let { listItem: vulnerableListItem } = loginList._logins[
-        vulnerableLoginGuid
-      ];
-      ok(
+      let { listItem: vulnerableListItem } =
+        loginList._logins[vulnerableLoginGuid];
+      Assert.ok(
         !breachedListItem.classList.contains("breached") &&
           !breachedListItem.classList.contains("vulnerable"),
         "the originally breached login should no longer be marked as breached"
       );
-      ok(
+      Assert.ok(
         !vulnerableListItem.classList.contains("breached") &&
           vulnerableListItem.classList.contains("vulnerable"),
         "vulnerable login should still be marked vulnerable: " +
@@ -176,7 +182,7 @@ add_task(async function test_added_login_shows_breach_warning() {
       await ContentTaskUtils.waitForCondition(() => {
         return loginItem._login && loginItem._login.guid == vulnerableLoginGuid;
       }, "waiting for vulnerable login to get selected");
-      ok(
+      Assert.ok(
         !ContentTaskUtils.is_hidden(
           loginItem.shadowRoot.querySelector(".vulnerable-alert")
         ),
@@ -187,9 +193,7 @@ add_task(async function test_added_login_shows_breach_warning() {
         () => loginItem.dataset.editing == "true",
         "waiting for login-item to enter edit mode"
       );
-      passwordInput = loginItem.shadowRoot.querySelector(
-        "input[type='password']"
-      );
+
       passwordInput.value = CHANGED_PASSWORD_VALUE;
       saveChangesButton.click();
 
@@ -200,19 +204,19 @@ add_task(async function test_added_login_shows_breach_warning() {
         );
       }, "waiting for stored login to get updated");
 
-      ok(
+      Assert.ok(
         ContentTaskUtils.is_hidden(
           loginItem.shadowRoot.querySelector(".vulnerable-alert")
         ),
         "the vulnerable alert should be hidden now"
       );
-      is(
+      Assert.equal(
         vulnerableListItem.querySelector(".alert-icon").src,
         "",
         ".alert-icon for the vulnerable list item should have its source removed"
       );
       vulnerableListItem = loginList._logins[vulnerableLoginGuid].listItem;
-      ok(
+      Assert.ok(
         !vulnerableListItem.classList.contains("breached") &&
           !vulnerableListItem.classList.contains("vulnerable"),
         "vulnerable login should no longer be marked vulnerable: " +

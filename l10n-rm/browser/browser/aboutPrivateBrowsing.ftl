@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] Fixar en la taskbar
     }
 about-private-browsing-pin-promo-title = Nagins cookies memorisads e nagina cronologia, ma gist sin tes desktop. Navighescha sco sche nagin guardass.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Adia a las bandieras da cookies!
+about-private-browsing-cookie-banners-promo-button = Reducir las bandieras da cookies
+about-private-browsing-cookie-banners-promo-message = Lubescha a { -brand-short-name } da respunder automaticamain a pop-ups da cookies per tai. Uschia pos ti puspè navigar senza distracziun. { -brand-short-name } vegn a refusar sche pussaivel tut las dumondas.

@@ -25,10 +25,11 @@ jobs-from:
     - mozlint.yml
     - mozlint-android.yml
     - node.yml
+    - puppeteer.yml
     - python.yml
-    - remote.yml
     - shadow-scheduler.yml
     - taskgraph.yml
+    - vendor.yml
     - webidl.yml
     - webcompat.yml
     - wpt-manifest.yml

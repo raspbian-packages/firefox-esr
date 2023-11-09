@@ -5,14 +5,16 @@
 // - "/common/dispatcher/dispatcher.js" for cross-origin messaging.
 // - "/common/utils.js" for token().
 
-function getExecutorPath(uuid, origin, coop) {
+function getExecutorPath(uuid, origin, headers) {
   const executor_path = '/common/dispatcher/executor.html?';
-  const coop_header =
-    `|header(Cross-Origin-Opener-Policy,${encodeURIComponent(coop)})`;
+  const coop_header = headers.coop ?
+    `|header(Cross-Origin-Opener-Policy,${encodeURIComponent(headers.coop)})` : '';
+  const coep_header = headers.coep ?
+    `|header(Cross-Origin-Embedder-Policy,${encodeURIComponent(headers.coep)})` : '';
   return origin +
          executor_path +
          `uuid=${uuid}` +
-         '&pipe=' + coop_header;
+         '&pipe=' + coop_header + coep_header;
 }
 
 function getPopupHasOpener(popup_token) {
@@ -31,9 +33,9 @@ function canAccessProperty(object, property) {
   }
 }
 
-// Verifies that a popup with origin `origin` and coop header `coop_header` has
+// Verifies that a popup with origin `origin` and headers `headers` has
 // the expected `opener_state` after being opened.
-async function popup_test(description, origin, coop_header, expected_opener_state) {
+async function popup_test(description, origin, headers, expected_opener_state) {
   promise_test(async t => {
     const popup_token = token();
     const reply_token = token();
@@ -41,7 +43,7 @@ async function popup_test(description, origin, coop_header, expected_opener_stat
     const popup_url = getExecutorPath(
       popup_token,
       origin.origin,
-      coop_header);
+      headers);
 
     // We open popup and then ping it, it will respond after loading.
     const popup = window.open(popup_url);
@@ -71,12 +73,26 @@ async function popup_test(description, origin, coop_header, expected_opener_stat
                     'Main page has cross origin access to the popup?');
         break;
       }
+      case 'restricted': {
+        assert_false(popup.closed, 'Popup is closed from opener?');
+        assert_true(await getPopupHasOpener(popup_token) === "true",
+                    'Popup has nulled opener?');
+        assert_false(canAccessProperty(popup, "document"),
+                     'Main page has dom access to the popup?');
+        assert_false(canAccessProperty(popup, "frames"),
+                    'Main page has cross origin access to the popup?');
+        assert_true(canAccessProperty(popup, "closed"),
+                    'Main page has limited cross origin access to the popup?');
+        break;
+      }
       case 'severed': {
         assert_true(popup.closed, 'Popup is closed from opener?');
         assert_false(await getPopupHasOpener(popup_token) === "true",
                      'Popup has nulled opener?');
         break;
       }
+      default:
+        assert_unreached(true, "Unrecognized opener relationship: " + expected_opener_state);
     }
   }, description);
 }

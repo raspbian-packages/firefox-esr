@@ -58,7 +58,15 @@ function testTabindex(type) {
   is(document.activeElement, input1,
      "input element with tabindex=0 is focusable");
 
-  let fieldCount = type == "datetime-local" ? 6 : 3;
+  // Time input does not include a Calendar button
+  let fieldCount;
+  if (type == "datetime-local") {
+    fieldCount = 7;
+  } else if (type == "date") {
+    fieldCount = 4;
+  } else {
+    fieldCount = 3;
+  };
 
   // Advance through inner fields.
   for (let i = 0; i < fieldCount - 1; ++i) {
@@ -79,7 +87,6 @@ function testTabindex(type) {
   checkInnerTextboxTabindex(input1, 0);
   checkInnerTextboxTabindex(input2, -1);
   checkInnerTextboxTabindex(input3, 0);
-  checkInnerTextboxTabindex(input4, -1);
 
   // Changing the tabindex attribute dynamically.
   input3.setAttribute("tabindex", "-1");
@@ -92,7 +99,6 @@ function testTabindex(type) {
         "disabled element should not be tabbable");
 
   checkInnerTextboxTabindex(input3, -1);
-  checkInnerTextboxTabindex(input4, -1);
 }
 
 function test() {

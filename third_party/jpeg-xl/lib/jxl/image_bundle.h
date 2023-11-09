@@ -8,13 +8,12 @@
 
 // The main image or frame consists of a bundle of associated images.
 
+#include <jxl/cms_interface.h>
 #include <stddef.h>
 #include <stdint.h>
 
 #include <vector>
 
-#include "jxl/cms_interface.h"
-#include "lib/jxl/aux_out_fwd.h"
 #include "lib/jxl/base/compiler_specific.h"
 #include "lib/jxl/base/data_parallel.h"
 #include "lib/jxl/base/status.h"
@@ -22,7 +21,6 @@
 #include "lib/jxl/common.h"
 #include "lib/jxl/dec_bit_reader.h"
 #include "lib/jxl/dec_xyb.h"
-#include "lib/jxl/enc_bit_writer.h"
 #include "lib/jxl/field_encodings.h"
 #include "lib/jxl/frame_header.h"
 #include "lib/jxl/headers.h"
@@ -162,7 +160,7 @@ class ImageBundle {
 
   // -- ALPHA
 
-  void SetAlpha(ImageF&& alpha, bool alpha_is_premultiplied);
+  void SetAlpha(ImageF&& alpha);
   bool HasAlpha() const {
     return metadata_->Find(ExtraChannel::kAlpha) != nullptr;
   }
@@ -170,10 +168,6 @@ class ImageBundle {
     const ExtraChannelInfo* eci = metadata_->Find(ExtraChannel::kAlpha);
     return (eci == nullptr) ? false : eci->alpha_associated;
   }
-  // Premultiply alpha (if it isn't already premultiplied)
-  void PremultiplyAlpha();
-  // Unpremultiply alpha (if it isn't already non-premultiplied)
-  void UnpremultiplyAlpha();
   const ImageF& alpha() const;
   ImageF* alpha();
 

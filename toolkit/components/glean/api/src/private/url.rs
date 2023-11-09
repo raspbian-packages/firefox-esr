@@ -40,13 +40,11 @@ impl UrlMetric {
     }
 }
 
-#[inherent(pub)]
+#[inherent]
 impl glean::traits::Url for UrlMetric {
-    fn set<S: Into<std::string::String>>(&self, value: S) {
+    pub fn set<S: Into<std::string::String>>(&self, value: S) {
         match self {
-            UrlMetric::Parent(p) => {
-                glean::traits::Url::set(&*p, value);
-            }
+            UrlMetric::Parent(p) => p.set(value),
             UrlMetric::Child(_) => {
                 log::error!("Unable to set Url metric in non-main process. Ignoring.");
                 // TODO: Record an error.
@@ -54,10 +52,11 @@ impl glean::traits::Url for UrlMetric {
         };
     }
 
-    fn test_get_value<'a, S: Into<Option<&'a str>>>(
+    pub fn test_get_value<'a, S: Into<Option<&'a str>>>(
         &self,
         ping_name: S,
     ) -> Option<std::string::String> {
+        let ping_name = ping_name.into().map(|s| s.to_string());
         match self {
             UrlMetric::Parent(p) => p.test_get_value(ping_name),
             UrlMetric::Child(_) => {
@@ -66,13 +65,9 @@ impl glean::traits::Url for UrlMetric {
         }
     }
 
-    fn test_get_num_recorded_errors<'a, S: Into<Option<&'a str>>>(
-        &self,
-        error: glean::ErrorType,
-        ping_name: S,
-    ) -> i32 {
+    pub fn test_get_num_recorded_errors(&self, error: glean::ErrorType) -> i32 {
         match self {
-            UrlMetric::Parent(p) => p.test_get_num_recorded_errors(error, ping_name),
+            UrlMetric::Parent(p) => p.test_get_num_recorded_errors(error),
             UrlMetric::Child(_) => panic!(
                 "Cannot get the number of recorded errors for Url metric in non-parent process!"
             ),

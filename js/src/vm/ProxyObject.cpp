@@ -8,12 +8,13 @@
 
 #include "gc/Allocator.h"
 #include "gc/GCProbes.h"
+#include "gc/Marking.h"
+#include "gc/Zone.h"
 #include "proxy/DeadObjectProxy.h"
+#include "vm/Compartment.h"
 #include "vm/Realm.h"
 
 #include "gc/ObjectKind-inl.h"
-#include "gc/WeakMap-inl.h"
-#include "vm/JSObject-inl.h"
 
 using namespace js;
 
@@ -92,10 +93,9 @@ ProxyObject* ProxyObject::New(JSContext* cx, const BaseProxyHandler* handler,
 
   AutoSetNewObjectMetadata metadata(cx);
   // Try to look up the shape in the NewProxyCache.
-  RootedShape shape(cx);
+  Rooted<Shape*> shape(cx);
   if (!realm->newProxyCache.lookup(clasp, proto, shape.address())) {
-    shape = SharedShape::getInitialShape(cx, clasp, realm, proto,
-                                         /* nfixed = */ 0);
+    shape = ProxyShape::getShape(cx, clasp, realm, proto, ObjectFlags());
     if (!shape) {
       return nullptr;
     }
@@ -108,27 +108,25 @@ ProxyObject* ProxyObject::New(JSContext* cx, const BaseProxyHandler* handler,
 
   // Ensure that the wrapper has the same lifetime assumptions as the
   // wrappee. Prefer to allocate in the nursery, when possible.
-  gc::InitialHeap heap;
+  gc::Heap heap;
   if ((priv.isGCThing() && priv.toGCThing()->isTenured()) ||
       !handler->canNurseryAllocate()) {
-    heap = gc::TenuredHeap;
+    heap = gc::Heap::Tenured;
   } else {
-    heap = gc::DefaultHeap;
+    heap = gc::Heap::Default;
   }
 
   debugCheckNewObject(shape, allocKind, heap);
 
-  JSObject* obj =
-      AllocateObject(cx, allocKind, /* nDynamicSlots = */ 0, heap, clasp);
-  if (!obj) {
+  ProxyObject* proxy = cx->newCell<ProxyObject>(allocKind, heap, clasp);
+  if (!proxy) {
     return nullptr;
   }
 
-  ProxyObject* proxy = static_cast<ProxyObject*>(obj);
   proxy->initShape(shape);
 
   MOZ_ASSERT(clasp->shouldDelayMetadataBuilder());
-  realm->setObjectPendingMetadata(cx, proxy);
+  realm->setObjectPendingMetadata(proxy);
 
   gc::gcprobes::CreateObject(proxy);
 
@@ -153,20 +151,22 @@ void ProxyObject::setSameCompartmentPrivate(const Value& priv) {
 }
 
 inline void ProxyObject::setPrivate(const Value& priv) {
-  MOZ_ASSERT_IF(IsMarkedBlack(this) && priv.isGCThing(),
-                !JS::GCThingIsMarkedGray(priv.toGCCellPtr()));
+#ifdef DEBUG
+  JS::AssertValueIsNotGray(priv);
+#endif
   *slotOfPrivate() = priv;
 }
 
 void ProxyObject::setExpando(JSObject* expando) {
-  // Ensure that we don't accidentally end up pointing to a
-  // grey object, which would violate GC invariants.
-  MOZ_ASSERT_IF(IsMarkedBlack(this) && expando,
-                !JS::GCThingIsMarkedGray(JS::GCCellPtr(expando)));
-
   // Ensure we're in the same compartment as the proxy object: Don't want the
   // expando to end up as a CCW.
   MOZ_ASSERT_IF(expando, expando->compartment() == compartment());
+
+  // Ensure that we don't accidentally end up pointing to a
+  // grey object, which would violate GC invariants.
+  MOZ_ASSERT_IF(!zone()->isGCPreparing() && isMarkedBlack() && expando,
+                !JS::GCThingIsMarkedGray(JS::GCCellPtr(expando)));
+
   *slotOfExpando() = ObjectOrNullValue(expando);
 }
 
@@ -200,7 +200,7 @@ void ProxyObject::nuke() {
 
 JS_PUBLIC_API void js::detail::SetValueInProxy(Value* slot,
                                                const Value& value) {
-  // Slots in proxies are not GCPtrValues, so do a cast whenever assigning
+  // Slots in proxies are not GCPtr<Value>s, so do a cast whenever assigning
   // values to them which might trigger a barrier.
-  *reinterpret_cast<GCPtrValue*>(slot) = value;
+  *reinterpret_cast<GCPtr<Value>*>(slot) = value;
 }

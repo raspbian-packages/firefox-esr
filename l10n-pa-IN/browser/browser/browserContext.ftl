@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = ਇਹ ਸਫ਼ੇ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ
-    .accesskey = m
-    .tooltiptext = ਇਹ ਸਫ਼ੇ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = ਸਫ਼ਾ ਬੁੱਕਮਾਰਕ ਕਰੋ
-    .accesskey = m
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = ਬੁੱਕਮਾਰਕ ਨੂੰ ਸੋਧੋ
-    .accesskey = m
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = ਇਹ ਸਫ਼ੇ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ
-    .accesskey = m
-    .tooltiptext = ਇਹ ਸਫ਼ੇ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = ਇਹ ਬੁੱਕਮਾਰਕ ਨੂੰ ਸੋਧੋ
-    .accesskey = m
-    .tooltiptext = ਇਹ ਬੁੱਕਮਾਰਕ ਨੂੰ ਸੋਧੋ
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = ਇਹ ਬੁੱਕਮਾਰਕ ਨੂੰ ਸੋਧੋ
-    .accesskey = m
-    .tooltiptext = ਇਹ ਬੁੱਕਮਾਰਕ ਨੂੰ ਸੋਧੋ ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = …ਸਫ਼ਾ ਬੁੱਕਮਾਰਕ ਕਰੋ
     .accesskey = m
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = ਲਿੰਕ ਨੂੰ ਨਵੀਂ ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋ ‘ਚ ਖੋਲ੍ਹੋ
     .accesskey = P
-
-main-context-menu-bookmark-link =
-    .label = ਲਿੰਕ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ
-    .accesskey = B
 
 main-context-menu-bookmark-link-2 =
     .label = …ਲਿੰਕ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = …ਆਡੀਓ ਨੂੰ ਈਮੇਲ ਕਰੋ
     .accesskey = a
 
-main-context-menu-plugin-play =
-    .label = ਇਹ ਪਲੱਗਇਨ ਨੂੰ ਸਰਗਰਮ ਕਰੋ
-    .accesskey = c
-
-main-context-menu-plugin-hide =
-    .label = ਇਹ ਪਲੱਗਇਨ ਨੂੰ ਓਹਲੇ
-    .accesskey = H
-
 main-context-menu-save-to-pocket =
     .label = ਸਫ਼ੇ ਨੂੰ { -pocket-brand-name } ‘ਚ ਸੰਭਾਲੋ
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = o
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = { -relay-brand-short-name } ਈਮੇਲ ਮਾਸਕ ਵਰਤੋਂ
+    .accesskey = E
 
 main-context-menu-suggest-strong-password =
     .label = ਮਜਬੂਤ ਪਾਸਵਰਡ ਲਈ ਸੁਝਾਅ…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = ਫਰੇਮ ਨੂੰ ਮੁੜ ਲੋਡ ਕਰੋ
     .accesskey = R
 
-main-context-menu-frame-bookmark =
-    .label = ਇਹ ਫਰੇਮ ਨੂੰ ਬੁੱਕਮਾਰਕ ਕਰੋ
-    .accesskey = m
-
 main-context-menu-frame-add-bookmark =
     .label = …ਫਰੇਮ ਬੁੱਕਮਾਰਕ ਕਰੋ
     .accesskey = m
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = ਫਰੇਮ ਦੀ ਜਾਣਕਾਰੀ ਨੂੰ ਵੇਖੋ
     .accesskey = i
-
-main-context-menu-print-selection =
-    .label = ਚੋਣ ਨੂੰ ਪਰਿੰਟ ਕਰੋ
-    .accesskey = r
 
 main-context-menu-print-selection-2 =
     .label = …ਚੋਣ ਨੂੰ ਪਰਿੰਟ ਕਰੋ

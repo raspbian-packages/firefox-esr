@@ -92,6 +92,12 @@ void APZCTreeManagerChild::SetAllowedTouchBehavior(
   SendSetAllowedTouchBehavior(aInputBlockId, aValues);
 }
 
+void APZCTreeManagerChild::SetBrowserGestureResponse(
+    uint64_t aInputBlockId, BrowserGestureResponse aResponse) {
+  MOZ_ASSERT(NS_IsMainThread());
+  SendSetBrowserGestureResponse(aInputBlockId, aResponse);
+}
+
 void APZCTreeManagerChild::StartScrollbarDrag(
     const ScrollableLayerGuid& aGuid, const AsyncDragMetrics& aDragMetrics) {
   MOZ_ASSERT(NS_IsMainThread());
@@ -198,6 +204,20 @@ mozilla::ipc::IPCResult APZCTreeManagerChild::RecvCancelAutoscroll(
   MOZ_ASSERT(NS_IsMainThread());
 
   APZCCallbackHelper::CancelAutoscroll(aScrollId);
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult APZCTreeManagerChild::RecvNotifyScaleGestureComplete(
+    const ScrollableLayerGuid::ViewID& aScrollId, float aScale) {
+  // This will only get sent from the GPU process to the parent process, so
+  // this function should never get called in the content process.
+  MOZ_ASSERT(XRE_IsParentProcess());
+  MOZ_ASSERT(NS_IsMainThread());
+
+  if (mCompositorSession && mCompositorSession->GetWidget()) {
+    APZCCallbackHelper::NotifyScaleGestureComplete(
+        mCompositorSession->GetWidget(), aScale);
+  }
   return IPC_OK();
 }
 

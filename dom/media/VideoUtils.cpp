@@ -42,6 +42,12 @@ using gfx::CICP::TransferCharacteristics;
 using layers::PlanarYCbCrImage;
 using media::TimeUnit;
 
+double ToMicrosecondResolution(double aSeconds) {
+  double integer;
+  modf(aSeconds * USECS_PER_S, &integer);
+  return integer / USECS_PER_S;
+}
+
 CheckedInt64 SaferMultDiv(int64_t aValue, uint64_t aMul, uint64_t aDiv) {
   if (aMul > INT64_MAX || aDiv > INT64_MAX) {
     return CheckedInt64(INT64_MAX) + 1;  // Return an invalid checked int.
@@ -57,16 +63,6 @@ CheckedInt64 SaferMultDiv(int64_t aValue, uint64_t aMul, uint64_t aDiv) {
 // audio rate.
 CheckedInt64 FramesToUsecs(int64_t aFrames, uint32_t aRate) {
   return SaferMultDiv(aFrames, USECS_PER_S, aRate);
-}
-
-TimeUnit FramesToTimeUnit(int64_t aFrames, uint32_t aRate) {
-  if (MOZ_UNLIKELY(!aRate)) {
-    return TimeUnit::Invalid();
-  }
-  int64_t major = aFrames / aRate;
-  int64_t remainder = aFrames % aRate;
-  return TimeUnit::FromMicroseconds(major) * USECS_PER_S +
-         (TimeUnit::FromMicroseconds(remainder) * USECS_PER_S) / aRate;
 }
 
 // Converts from microseconds to number of audio frames, given the specified
@@ -185,7 +181,8 @@ uint32_t DecideAudioPlaybackChannels(const AudioInfo& info) {
   return info.mChannels;
 }
 
-uint32_t DecideAudioPlaybackSampleRate(const AudioInfo& aInfo) {
+uint32_t DecideAudioPlaybackSampleRate(const AudioInfo& aInfo,
+                                       bool aShouldResistFingerprinting) {
   bool resampling = StaticPrefs::media_resampling_enabled();
 
   uint32_t rate = 0;
@@ -198,7 +195,11 @@ uint32_t DecideAudioPlaybackSampleRate(const AudioInfo& aInfo) {
     rate = aInfo.mRate;
   } else {
     // We will resample all data to match cubeb's preferred sampling rate.
-    rate = AudioStream::GetPreferredRate();
+    rate = CubebUtils::PreferredSampleRate(aShouldResistFingerprinting);
+    if (rate > 384000) {
+      // bogus rate, fall back to something else;
+      rate = 48000;
+    }
   }
   MOZ_DIAGNOSTIC_ASSERT(rate, "output rate can't be 0.");
 
@@ -823,7 +824,7 @@ nsresult SimpleTimer::Init(nsIRunnable* aTask, uint32_t aTimeoutMs,
   if (aTarget) {
     target = aTarget;
   } else {
-    target = GetMainThreadEventTarget();
+    target = GetMainThreadSerialEventTarget();
     if (!target) {
       return NS_ERROR_NOT_AVAILABLE;
     }

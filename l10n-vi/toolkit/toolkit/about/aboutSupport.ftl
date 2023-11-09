@@ -172,6 +172,15 @@ media-codec-support-info = Thông tin hỗ trợ Codec
 # List all the entries of the database.
 media-capabilities-enumerate = Liệt kê cơ sở dữ liệu
 
+## Codec support table
+
+media-codec-support-sw-decoding = Giải mã phần mềm
+media-codec-support-hw-decoding = Giải mã phần cứng
+media-codec-support-codec-name = Tên codec
+media-codec-support-supported = Được hỗ trợ
+media-codec-support-unsupported = Không hỗ trợ
+media-codec-support-error = Không có thông tin Codec được hỗ trợ. Hãy thử lại sau khi phát tập tin phương tiện.
+
 ##
 
 intl-title = Quốc tế hóa & bản địa hóa
@@ -265,6 +274,8 @@ webgl2-renderer = Trình kết xuất trình điều khiển WebGL 2
 webgl2-version = Phiên bản trình điều khiển WebGL 2
 webgl2-driver-extensions = Tiện ích mở rộng trình điều khiển WebGL 2
 webgl2-extensions = Tiện ích mở rộng WebGL 2
+webgpu-default-adapter = Adapter WebGPU mặc định
+webgpu-fallback-adapter = Adapter WebGPU dự phòng
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Bị chặn trong danh sách do các sự cố đã biết: <a data-l10n-name="bug-link">mã lỗi { $bugNumber }</a>
@@ -329,12 +340,12 @@ fission-status-disabled-by-e10s-other = E10s bị vô hiệu hóa
 fission-status-enabled-by-rollout = Được kích hoạt bằng cách phát hành theo từng giai đoạn
 async-pan-zoom = Pan/Zoom không đồng bộ
 apz-none = không có
-wheel-enabled = con lăn đã bật
-touch-enabled = cảm ứng đã bật
-drag-enabled = thanh cuộn kéo đã bật
-keyboard-enabled = bàn phím đã bật
-autoscroll-enabled = tự động cuộn đã bật
-zooming-enabled = pinch-zoom mượt được kích hoạt
+wheel-enabled = con lăn được bật
+touch-enabled = cảm ứng được bật
+drag-enabled = thanh cuộn kéo được bật
+keyboard-enabled = bàn phím được bật
+autoscroll-enabled = tự động cuộn được bật
+zooming-enabled = pinch-zoom mượt được bật
 
 ## Variables
 ## $preferenceKey (string) - String ID of preference

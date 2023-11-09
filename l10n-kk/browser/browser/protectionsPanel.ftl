@@ -77,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Формалар
 protections-panel-site-not-working-view-issue-list-payments = Төлемдер
 protections-panel-site-not-working-view-issue-list-comments = Түсіндірмелер
 protections-panel-site-not-working-view-issue-list-videos = Видеолар
+protections-panel-site-not-working-view-issue-list-fonts = Қаріптер
 
 protections-panel-site-not-working-view-send-report = Есептемені жіберу
 
@@ -100,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Сынған сайт туралы хабарлау
 protections-panel-content-blocking-breakage-report-view-description = Кейбір трекерлерді бұғаттау кейбір веб-сайттармен мәселелерді туғызуы мүмкін. Осындай мәселелерді хабарлау арқылы { -brand-short-name } өнімін әркім үшін жақсырақ қылуға көмектеседі. Бұл есепті жіберу URL және браузеріңіз ақпаратын Mozilla-ға жібереді. <label data-l10n-name="learn-more">Көбірек білу</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Кейбір трекерлерді бұғаттау кейбір веб-сайттармен мәселелерді туғызуы мүмкін. Осындай мәселелерді хабарлау арқылы { -brand-short-name } өнімін әркім үшін жақсырақ қылуға көмектеседі. Бұл есепті жіберу URL және браузеріңіз ақпаратын { -vendor-short-name }-ға жібереді.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -110,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Бас тарту
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Есептемені жіберу
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Cookie баннерлерін азайту
+protections-panel-cookie-banner-handling-enabled = Бұл сайт үшін іске қосылған
+protections-panel-cookie-banner-handling-disabled = Бұл сайт үшін сөндірілген
+protections-panel-cookie-banner-handling-undetected = Сайтқа ағымдағы уақытта қолдау жоқ
+
+protections-panel-cookie-banner-view-title =
+    .title = Cookie баннерлерін азайту
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = { $host } үшін cookie баннерлерін азайту мүмкіндігін сөндіру керек пе?
+protections-panel-cookie-banner-view-turn-on-for-site = Бұл сайт үшін cookie баннерлерін азайту мүмкіндігін іске қосу керек пе?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } осы сайттың cookie файлдарын тазартып, бетті жаңартады. Барлық cookie файлдарын тазарту салдарынан сіз сайттан шығуыңыз мүмкін немесе дүкен себеттері тазартылуы мүмкін.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } қолдау көрсетілетін сайттардағы барлық cookie сұрауларын автоматты түрде қабылдамау әрекетін жасайды.
+protections-panel-cookie-banner-view-cancel = Бас тарту
+protections-panel-cookie-banner-view-turn-off = Сөндіру
+protections-panel-cookie-banner-view-turn-on = Іске қосу

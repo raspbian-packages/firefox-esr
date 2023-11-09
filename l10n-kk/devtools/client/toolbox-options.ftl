@@ -38,6 +38,11 @@ options-collapse-attrs-tooltip =
 options-inspector-draggable-properties-label = Өлшем мәндерін түзету үшін басыңыз және сүйреңіз
 options-inspector-draggable-properties-tooltip =
     .title = Бақылаушы ережелері көрінісінде өлшем мәндерін өзгерту үшін, шертіп, тартыңыз.
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = prefers-reduced-motion опциясымен қарапайымдау маркерлерді қолдану
+options-inspector-simplified-highlighters-tooltip =
+    .title = prefers-reduced-motion опциясы іске қосулы кезінде қарапайымдау маркерлерді іске қосады. Жыпылықтау әсерлерін болдырмау үшін түспен ерекшеленген элементтердің айналасында толтырылған тіктөртбұрыштардың орнына сызықтар салады.
 
 ## "Default Color Unit" options for the Inspector
 
@@ -108,6 +113,10 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Қашықтан жөндеуді іске қосу
 options-enable-remote-tooltip2 =
     .title = Бұл параметрді іске қосу осы браузер экземплярын қашықтан жөндеуге мүмкіндік береді
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = DevTools ашу немесе жабу үшін F12 пернесін пайдаланыңыз
+options-enable-f12-tooltip =
+    .title = Бұл опцияны іске қосу DevTools құралдар жинағын ашу немесе жабу үшін F12 пернесін байланыстырады
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Арнаулы пішімдеушілерді іске қосу
 options-enable-custom-formatters-tooltip =

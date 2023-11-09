@@ -33,8 +33,6 @@ if CONFIG["MOZ_CRASHREPORTER"]:
             "mozwer-rust",
         ]
 
-        TEST_DIRS += ["breakpad-client/windows/unittests/"]
-
         if CONFIG["MOZ_CRASHREPORTER_INJECTOR"]:
             DIRS += ["breakpad-windows-standalone"]
 
@@ -86,8 +84,8 @@ if CONFIG["MOZ_CRASHREPORTER"]:
         ]
 
     EXTRA_JS_MODULES += [
-        "CrashReports.jsm",
-        "CrashSubmit.jsm",
+        "CrashReports.sys.mjs",
+        "CrashSubmit.sys.mjs",
     ]
 
     include("/ipc/chromium/chromium-config.mozbuild")
@@ -139,5 +137,3 @@ GeneratedFile(
 
 with Files("**"):
     BUG_COMPONENT = ("Toolkit", "Crash Reporting")
-
-REQUIRES_UNIFIED_BUILD = True

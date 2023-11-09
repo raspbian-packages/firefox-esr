@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-permissions-window =
-    .title = Excepcións
-    .style = width: 45em
-
 permissions-window2 =
     .title = Excepcións
     .style = min-width: 45em
@@ -19,6 +15,10 @@ permissions-address = Enderezo do sitio web
 permissions-block =
     .label = Bloquear
     .accesskey = B
+
+permissions-disable-etp =
+    .label = Engadir unha excepción
+    .accesskey = E
 
 permissions-session =
     .label = Permitir nesta sesión
@@ -92,20 +92,12 @@ permissions-invalid-uri-label = Introduza un nome de servidor válido
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-etp-window =
-    .title = Excepcións para a protección avanzada de rastrexo
-    .style = { permissions-window.style }
-
 permissions-exceptions-etp-window2 =
-    .title = Excepcións para a protección avanzada de rastrexo
+    .title = Excepcións da protección mellorada contra o rastrexo
     .style = { permissions-window2.style }
-permissions-exceptions-etp-desc = Desactivou as proteccións nestes sitios web.
+permissions-exceptions-manage-etp-desc = Pode indicar que sitios web teñen desactivada a protección mellorada contra o rastrexo. Escriba o enderezo exacto do sitio que queira xestionar e prema «Engadir unha excepción».
 
 ## Exceptions - Cookies
-
-permissions-exceptions-cookie-window =
-    .title = Excepcións - Cookies e datos do sitio
-    .style = { permissions-window.style }
 
 permissions-exceptions-cookie-window2 =
     .title = Excepcións - Cookies e datos do sitio
@@ -114,20 +106,12 @@ permissions-exceptions-cookie-desc = Pode especificar que sitios web teñen perm
 
 ## Exceptions - HTTPS-Only Mode
 
-permissions-exceptions-https-only-window =
-    .title = Excepcións: modo só HTTPS
-    .style = { permissions-window.style }
-
 permissions-exceptions-https-only-window2 =
     .title = Excepcións: modo só HTTPS
     .style = { permissions-window2.style }
 permissions-exceptions-https-only-desc = Pode desactivar o modo só HTTPS para sitios web específicos. { -brand-short-name } non intentará anovar a conexión a HTTPS seguros para eses sitios. As excepcións non se aplican ás xanelas privadas.
 
 ## Exceptions - Pop-ups
-
-permissions-exceptions-popup-window =
-    .title = Sitios web permitidos - Xanelas emerxentes
-    .style = { permissions-window.style }
 
 permissions-exceptions-popup-window2 =
     .title = Sitios web permitidos - Xanelas emerxentes
@@ -136,20 +120,12 @@ permissions-exceptions-popup-desc = Pode especificar que sitios web teñen permi
 
 ## Exceptions - Saved Logins
 
-permissions-exceptions-saved-logins-window =
-    .title = Excepcións - Identificacións gardadas
-    .style = { permissions-window.style }
-
 permissions-exceptions-saved-logins-window2 =
     .title = Excepcións - Identificacións gardadas
     .style = { permissions-window2.style }
 permissions-exceptions-saved-logins-desc = Non se gardarán as identificacións dos seguintes sitios web
 
 ## Exceptions - Add-ons
-
-permissions-exceptions-addons-window =
-    .title = Sitios web permitidos - Instalación de complementos
-    .style = { permissions-window.style }
 
 permissions-exceptions-addons-window2 =
     .title = Sitios web permitidos - Instalación de complementos
@@ -158,20 +134,12 @@ permissions-exceptions-addons-desc = Pode especificar que sitios web teñen perm
 
 ## Site Permissions - Autoplay
 
-permissions-site-autoplay-window =
-    .title = Configuración: Reprodución automática
-    .style = { permissions-window.style }
-
 permissions-site-autoplay-window2 =
     .title = Configuración: Reprodución automática
     .style = { permissions-window2.style }
 permissions-site-autoplay-desc = Aquí pode xestionar os sitios que non seguen a súa configuración de reprodución automática predeterminada.
 
 ## Site Permissions - Notifications
-
-permissions-site-notification-window =
-    .title = Configuración - Permisos de notificacións
-    .style = { permissions-window.style }
 
 permissions-site-notification-window2 =
     .title = Configuración - Permisos de notificacións
@@ -183,10 +151,6 @@ permissions-site-notification-disable-desc = Isto evitará que os sitios web non
 
 ## Site Permissions - Location
 
-permissions-site-location-window =
-    .title = Configuración - Permisos de localización
-    .style = { permissions-window.style }
-
 permissions-site-location-window2 =
     .title = Configuración - Permisos de localización
     .style = { permissions-window2.style }
@@ -196,10 +160,6 @@ permissions-site-location-disable-label =
 permissions-site-location-disable-desc = Isto evitará que os sitios web non listados arriba soliciten permiso de acceso á localización. Bloquear o acceso á localización pode impedir o funcionamento dalgunhas características dos sitios web.
 
 ## Site Permissions - Virtual Reality
-
-permissions-site-xr-window =
-    .title = Configuración: Permisos de realidade virtual
-    .style = { permissions-window.style }
 
 permissions-site-xr-window2 =
     .title = Configuración: Permisos de realidade virtual
@@ -211,10 +171,6 @@ permissions-site-xr-disable-desc = Isto evitará que os sitios web non listados 
 
 ## Site Permissions - Camera
 
-permissions-site-camera-window =
-    .title = Configuración - Permisos da cámara
-    .style = { permissions-window.style }
-
 permissions-site-camera-window2 =
     .title = Configuración - Permisos da cámara
     .style = { permissions-window2.style }
@@ -225,10 +181,6 @@ permissions-site-camera-disable-desc = Isto evitará que os sitios web non lista
 
 ## Site Permissions - Microphone
 
-permissions-site-microphone-window =
-    .title = Configuración - Permisos do micrófono
-    .style = { permissions-window.style }
-
 permissions-site-microphone-window2 =
     .title = Configuración - Permisos do micrófono
     .style = { permissions-window2.style }
@@ -236,3 +188,35 @@ permissions-site-microphone-desc = Os seguintes sitios web solicitaron acceder a
 permissions-site-microphone-disable-label =
     .label = Bloquear novas solicitudes de acceso ao micrófono
 permissions-site-microphone-disable-desc = Isto evitará que os sitios web non listados arriba soliciten permiso de acceso ao micrófono. Bloquear o acceso ao micrófono pode impedir o funcionamento dalgunhas características dos sitios web.
+
+## Site Permissions - Speaker
+##
+## "Speaker" refers to an audio output device.
+
+permissions-site-speaker-window =
+    .title = Configuración - Permisos de altofalantes
+    .style = { permissions-window2.style }
+permissions-site-speaker-desc = Os seguintes sitios web solicitaron seleccionar un dispositivo de saída de son. Podes indicar que sitios web teñen permiso para seleccionar un dispositivo de saída de son.
+
+permissions-exceptions-doh-window =
+    .title = Excepcións de sitios web para DNS sobre HTTPS
+    .style = { permissions-window2.style }
+permissions-exceptions-manage-doh-desc = { -brand-short-name } non usará DNS seguro nestes sitios e nos seus subdominios.
+
+permissions-doh-entry-field = Introduza o nome de dominio do sitio web
+    .accesskey = I
+
+permissions-doh-add-exception =
+    .label = Engadir
+    .accesskey = E
+
+permissions-doh-col =
+    .label = Dominio
+
+permissions-doh-remove =
+    .label = Retirar
+    .accesskey = R
+
+permissions-doh-remove-all =
+    .label = Retirar todos
+    .accesskey = t

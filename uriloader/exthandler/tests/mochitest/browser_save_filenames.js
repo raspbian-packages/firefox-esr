@@ -23,7 +23,7 @@ let types = {
   // so it is used here for this test.
   js: "application/x-javascript",
   binary: "application/octet-stream",
-  gook: "application/x-gook",
+  nonsense: "application/x-nonsense",
   zip: "application/zip",
   json: "application/json",
   tar: "application/x-tar",
@@ -49,8 +49,8 @@ const WEBP_DATA = atob(
   "UklGRiIAAABXRUJQVlA4TBUAAAAvY8AYAAfQ/4j+B4CE8H+/ENH/VCIA"
 );
 
-const DEFAULT_INDEX_FILENAME =
-  AppConstants.platform == "win" ? "index.htm" : "index.html";
+const DEFAULT_FILENAME =
+  AppConstants.platform == "win" ? "Untitled.htm" : "Untitled.html";
 
 const PROMISE_FILENAME_TYPE = "application/x-moz-file-promise-dest-filename";
 
@@ -149,7 +149,7 @@ function checkShortenedFilename(actual, expected) {
   return false;
 }
 
-add_task(async function init() {
+add_setup(async function () {
   const { HttpServer } = ChromeUtils.import(
     "resource://testing-common/httpd.js"
   );
@@ -251,7 +251,7 @@ add_task(async function save_document() {
   tmpDir.append(baseFilename + "_document_files");
 
   MockFilePicker.displayDirectory = tmpDir;
-  MockFilePicker.showCallback = function(fp) {
+  MockFilePicker.showCallback = function (fp) {
     MockFilePicker.setFiles([tmpFile]);
     MockFilePicker.filterIndex = 0; // kSaveAsType_Complete
   };
@@ -279,7 +279,7 @@ add_task(async function save_document() {
       // This is special-cased on Windows. The default filename will be used, since
       // the filename is invalid, but since the previous test file has the same issue,
       // this second file will be saved with a number suffix added to it.
-      filename = "index_002";
+      filename = "Untitled_002";
     }
 
     let file = tmpDir.clone();
@@ -462,23 +462,38 @@ add_task(async function saveas_files() {
           let list = await Downloads.getList(Downloads.PUBLIC);
           let downloadFinishedPromise = promiseDownloadFinished(list);
 
-          await BrowserTestUtils.openNewForegroundTab(
+          await BrowserTestUtils.openNewForegroundTab({
             gBrowser,
-            expectedItems[idx].url
-          );
+            opening: expectedItems[idx].url,
+            waitForLoad: false,
+            waitForStateStop: true,
+          });
 
           let download = await downloadFinishedPromise;
 
           let filename = PathUtils.filename(download.target.path);
-          is(
-            filename,
-            expectedItems[idx].filename,
-            "open link" +
-              idx +
-              " " +
-              expectedItems[idx].filename +
-              " was downloaded with the correct name when opened as a url"
-          );
+
+          let expectedFilename = expectedItems[idx].filename;
+          if (expectedFilename.length > 240) {
+            ok(
+              checkShortenedFilename(filename, expectedFilename),
+              "open link" +
+                idx +
+                " " +
+                expectedFilename +
+                " was downloaded with the correct name when opened as a url (with long name)"
+            );
+          } else {
+            is(
+              filename,
+              expectedFilename,
+              "open link" +
+                idx +
+                " " +
+                expectedFilename +
+                " was downloaded with the correct name when opened as a url"
+            );
+          }
 
           try {
             await IOUtils.remove(download.target.path);
@@ -488,14 +503,16 @@ add_task(async function saveas_files() {
           continue;
         }
 
-        await BrowserTestUtils.openNewForegroundTab(
+        await BrowserTestUtils.openNewForegroundTab({
           gBrowser,
-          expectedItems[idx].url
-        );
+          opening: expectedItems[idx].url,
+          waitForLoad: false,
+          waitForStateStop: true,
+        });
       }
 
       let filename = await new Promise(resolve => {
-        MockFilePicker.showCallback = function(fp) {
+        MockFilePicker.showCallback = function (fp) {
           setTimeout(() => {
             resolve(fp.defaultString);
           }, 0);
@@ -512,9 +529,9 @@ add_task(async function saveas_files() {
 
       // Trying to open an unknown or binary type will just open a blank
       // page, so trying to save will just save the blank page with the
-      // filename index.html.
+      // filename Untitled.html.
       let expectedFilename = expectedItems[idx].unknown
-        ? DEFAULT_INDEX_FILENAME
+        ? DEFAULT_FILENAME
         : expectedItems[idx].savepagename || expectedItems[idx].filename;
 
       // When saving via contentAreaUtils.js, the content disposition name
@@ -641,7 +658,7 @@ add_task(async function saveas_image_links() {
       await popupShown;
 
       let promptPromise = new Promise(resolve => {
-        MockFilePicker.showCallback = function(fp) {
+        MockFilePicker.showCallback = function (fp) {
           setTimeout(() => {
             resolve(fp.defaultString);
           }, 0);
@@ -722,11 +739,11 @@ add_task(async function save_download_links() {
           " was saved with the correct name when link has download attribute"
       );
     } else {
-      if (idx == 66 && filename == "index(1)") {
+      if (idx == 66 && filename == "Untitled(1)") {
         // Sometimes, the previous test's file still exists or wasn't created in time
         // and a non-duplicated name is created. Allow this rather than figuring out
         // how to avoid it since it doesn't affect what is being tested here.
-        filename = "index";
+        filename = "Untitled";
       }
 
       is(
@@ -746,6 +763,33 @@ add_task(async function save_download_links() {
   }
 });
 
+// This test verifies that invalid extensions are not removed when they
+// have been entered in the file picker.
+add_task(async function save_page_with_invalid_after_filepicker() {
+  await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "http://localhost:8000/save_filename.sjs?type=html&filename=invfile.lnk"
+  );
+
+  let filename = await new Promise(resolve => {
+    MockFilePicker.showCallback = function (fp) {
+      let expectedFilename =
+        AppConstants.platform == "win" ? "invfile.lnk.htm" : "invfile.lnk.html";
+      is(fp.defaultString, expectedFilename, "supplied filename is correct");
+      setTimeout(() => {
+        resolve("otherfile.local");
+      }, 0);
+      return Ci.nsIFilePicker.returnCancel;
+    };
+
+    document.getElementById("Browser:SavePage").doCommand();
+  });
+
+  is(filename, "otherfile.local", "lnk extension has been preserved");
+
+  await BrowserTestUtils.removeTab(gBrowser.selectedTab);
+});
+
 add_task(async function save_page_with_invalid_extension() {
   await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
@@ -753,7 +797,7 @@ add_task(async function save_page_with_invalid_extension() {
   );
 
   let filename = await new Promise(resolve => {
-    MockFilePicker.showCallback = function(fp) {
+    MockFilePicker.showCallback = function (fp) {
       setTimeout(() => {
         resolve(fp.defaultString);
       }, 0);

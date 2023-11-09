@@ -26,10 +26,6 @@ certmgr-people = Ti has certificats memorisads che identifitgeschan questas pers
 certmgr-server = Questas endataziuns identifitgeschan las excepziuns da las errurs da certificats da servers
 certmgr-ca = Ti has certificats memorisads che identifitgeschan quests posts da certificaziun
 
-certmgr-edit-ca-cert =
-    .title = Modifitgar ils parameters da fidanza en certificats CA
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Modifitgar ils parameters da fidanza en certificats CA
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Quest certificat po identifitgar utilisaders dad e-mail.
-
-certmgr-delete-cert =
-    .title = Stizzar il certificat
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Stizzar il certificat
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Server
-
-certmgr-override-lifetime =
-    .label = Durada da vita
 
 certmgr-token-name =
     .label = Modul da criptografia
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Numer da seria
+
+certmgr-fingerprint-sha-256 =
+    .label = Impronta SHA-256
 
 certmgr-view =
     .label = Vesair…

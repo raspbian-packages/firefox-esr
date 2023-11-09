@@ -12,7 +12,6 @@ pub(super) const fn map_binary_operator(word: spirv::Op) -> Result<crate::Binary
         Op::ISub | Op::FSub => Ok(BinaryOperator::Subtract),
         Op::IMul | Op::FMul => Ok(BinaryOperator::Multiply),
         Op::UDiv | Op::SDiv | Op::FDiv => Ok(BinaryOperator::Divide),
-        Op::UMod | Op::SMod | Op::FMod => Ok(BinaryOperator::Modulo),
         Op::SRem => Ok(BinaryOperator::Modulo),
         // Relational and Logical Instructions
         Op::IEqual | Op::FOrdEqual | Op::FUnordEqual | Op::LogicalEqual => {
@@ -85,6 +84,8 @@ pub(super) fn map_image_format(word: spirv::Word) -> Result<crate::StorageFormat
         Some(spirv::ImageFormat::R8Snorm) => Ok(crate::StorageFormat::R8Snorm),
         Some(spirv::ImageFormat::R8ui) => Ok(crate::StorageFormat::R8Uint),
         Some(spirv::ImageFormat::R8i) => Ok(crate::StorageFormat::R8Sint),
+        Some(spirv::ImageFormat::R16) => Ok(crate::StorageFormat::R16Unorm),
+        Some(spirv::ImageFormat::R16Snorm) => Ok(crate::StorageFormat::R16Snorm),
         Some(spirv::ImageFormat::R16ui) => Ok(crate::StorageFormat::R16Uint),
         Some(spirv::ImageFormat::R16i) => Ok(crate::StorageFormat::R16Sint),
         Some(spirv::ImageFormat::R16f) => Ok(crate::StorageFormat::R16Float),
@@ -95,6 +96,8 @@ pub(super) fn map_image_format(word: spirv::Word) -> Result<crate::StorageFormat
         Some(spirv::ImageFormat::R32ui) => Ok(crate::StorageFormat::R32Uint),
         Some(spirv::ImageFormat::R32i) => Ok(crate::StorageFormat::R32Sint),
         Some(spirv::ImageFormat::R32f) => Ok(crate::StorageFormat::R32Float),
+        Some(spirv::ImageFormat::Rg16) => Ok(crate::StorageFormat::Rg16Unorm),
+        Some(spirv::ImageFormat::Rg16Snorm) => Ok(crate::StorageFormat::Rg16Snorm),
         Some(spirv::ImageFormat::Rg16ui) => Ok(crate::StorageFormat::Rg16Uint),
         Some(spirv::ImageFormat::Rg16i) => Ok(crate::StorageFormat::Rg16Sint),
         Some(spirv::ImageFormat::Rg16f) => Ok(crate::StorageFormat::Rg16Float),
@@ -107,6 +110,8 @@ pub(super) fn map_image_format(word: spirv::Word) -> Result<crate::StorageFormat
         Some(spirv::ImageFormat::Rg32ui) => Ok(crate::StorageFormat::Rg32Uint),
         Some(spirv::ImageFormat::Rg32i) => Ok(crate::StorageFormat::Rg32Sint),
         Some(spirv::ImageFormat::Rg32f) => Ok(crate::StorageFormat::Rg32Float),
+        Some(spirv::ImageFormat::Rgba16) => Ok(crate::StorageFormat::Rgba16Unorm),
+        Some(spirv::ImageFormat::Rgba16Snorm) => Ok(crate::StorageFormat::Rgba16Snorm),
         Some(spirv::ImageFormat::Rgba16ui) => Ok(crate::StorageFormat::Rgba16Uint),
         Some(spirv::ImageFormat::Rgba16i) => Ok(crate::StorageFormat::Rgba16Sint),
         Some(spirv::ImageFormat::Rgba16f) => Ok(crate::StorageFormat::Rgba16Float),
@@ -138,6 +143,7 @@ pub(super) fn map_builtin(word: spirv::Word, invariant: bool) -> Result<crate::B
         Some(Bi::VertexIndex) => crate::BuiltIn::VertexIndex,
         // fragment
         Some(Bi::FragDepth) => crate::BuiltIn::FragDepth,
+        Some(Bi::PointCoord) => crate::BuiltIn::PointCoord,
         Some(Bi::FrontFacing) => crate::BuiltIn::FrontFacing,
         Some(Bi::PrimitiveId) => crate::BuiltIn::PrimitiveIndex,
         Some(Bi::SampleId) => crate::BuiltIn::SampleIndex,

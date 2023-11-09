@@ -124,6 +124,11 @@ options-enable-remote-label = Cho phép gỡ lỗi từ xa
 options-enable-remote-tooltip2 =
     .title = Bật tùy chọn này sẽ cho phép gỡ lỗi phiên bản trình duyệt này từ xa
 
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = Sử dụng phím F12 để mở hoặc đóng DevTools
+options-enable-f12-tooltip =
+    .title = Bật tùy chọn này sẽ liên kết phím F12 để mở hoặc đóng hộp công cụ DevTools
+
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Bật bộ định dạng tùy chỉnh
 options-enable-custom-formatters-tooltip =
@@ -141,4 +146,3 @@ options-source-maps-tooltip =
 
 # The message shown for settings that trigger page reload
 options-context-triggers-page-refresh = * Chỉ phiên hiện tại, tải lại trang
-

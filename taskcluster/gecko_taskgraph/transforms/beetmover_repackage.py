@@ -7,12 +7,14 @@ Transform the beetmover task into an actual task description.
 
 import logging
 
+from taskgraph.transforms.base import TransformSequence
 from taskgraph.util.taskcluster import get_artifact_prefix
-from voluptuous import Required, Optional
+from taskgraph.util.treeherder import inherit_treeherder_from_dep, replace_group
+from voluptuous import Optional, Required
 
 from gecko_taskgraph.loader.multi_dep import schema
-from gecko_taskgraph.transforms.base import TransformSequence
 from gecko_taskgraph.transforms.beetmover import craft_release_properties
+from gecko_taskgraph.transforms.task import task_description_schema
 from gecko_taskgraph.util.attributes import copy_attributes_from_dependent_job
 from gecko_taskgraph.util.partials import (
     get_balrog_platform_name,
@@ -21,13 +23,11 @@ from gecko_taskgraph.util.partials import (
 )
 from gecko_taskgraph.util.scriptworker import (
     generate_beetmover_artifact_map,
-    generate_beetmover_upstream_artifacts,
     generate_beetmover_partials_artifact_map,
-    get_beetmover_bucket_scope,
+    generate_beetmover_upstream_artifacts,
     get_beetmover_action_scope,
+    get_beetmover_bucket_scope,
 )
-from gecko_taskgraph.util.treeherder import replace_group, inherit_treeherder_from_dep
-from gecko_taskgraph.transforms.task import task_description_schema
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +51,29 @@ beetmover_description_schema = schema.extend(
 
 transforms = TransformSequence()
 transforms.add_validate(beetmover_description_schema)
+
+
+def get_task_by_suffix(tasks, suffix):
+    """
+    Given tasks<dict>, returns the key to the task with provided suffix<str>
+    Raises exception if more than one task is found
+
+    Args:
+        tasks (Dict): Map of labels to tasks
+        suffix (str): Suffix for the desired task
+
+    Returns
+        str: The key to the desired task
+    """
+    labels = []
+    for label in tasks.keys():
+        if label.endswith(suffix):
+            labels.append(label)
+    if len(labels) > 1:
+        raise Exception(
+            f"There should only be a single task with suffix: {suffix} - found {len(labels)}"
+        )
+    return labels[0]
 
 
 @transforms.add
@@ -85,12 +108,27 @@ def make_task_description(config, jobs):
         msi_signing_name = "repackage-signing-msi"
         msix_signing_name = "repackage-signing-shippable-l10n-msix"
         mar_signing_name = "mar-signing"
+        attribution_name = "attribution"
+        repackage_deb_name = "repackage-deb"
         if job.get("locale"):
             signing_name = "shippable-l10n-signing"
             build_name = "shippable-l10n"
             repackage_name = "repackage-l10n"
             repackage_signing_name = "repackage-signing-l10n"
             mar_signing_name = "mar-signing-l10n"
+            attribution_name = "attribution-l10n"
+            repackage_deb_name = "repackage-deb-l10n"
+
+        # The upstream "signing" task for macosx is either *-mac-signing or *-mac-notarization
+        if attributes.get("build_platform", "").startswith("macosx"):
+            # We use the signing task on level 1 and notarization on level 3
+            if int(config.params.get("level", 0)) < 3:
+                signing_name = get_task_by_suffix(upstream_deps, "-mac-signing")
+            else:
+                signing_name = get_task_by_suffix(upstream_deps, "-mac-notarization")
+            if not signing_name:
+                raise Exception("Could not find upstream kind for mac signing.")
+
         dependencies = {
             "build": upstream_deps[build_name],
             "repackage": upstream_deps[repackage_name],
@@ -105,6 +143,10 @@ def make_task_description(config, jobs):
             dependencies[msix_signing_name] = upstream_deps[msix_signing_name]
         if repackage_signing_name in upstream_deps:
             dependencies["repackage-signing"] = upstream_deps[repackage_signing_name]
+        if attribution_name in upstream_deps:
+            dependencies[attribution_name] = upstream_deps[attribution_name]
+        if repackage_deb_name in upstream_deps:
+            dependencies[repackage_deb_name] = upstream_deps[repackage_deb_name]
 
         attributes = copy_attributes_from_dependent_job(dep_job)
         attributes.update(job.get("attributes", {}))

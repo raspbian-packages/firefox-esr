@@ -94,9 +94,8 @@ const verifyRegistrationWithNewProcess = async extension => {
       `${BASE_URL}/dummy_page.html`
     );
 
-    const {
-      childID,
-    } = secondContentPage.browsingContext.currentWindowGlobal.domProcess;
+    const { childID } =
+      secondContentPage.browsingContext.currentWindowGlobal.domProcess;
 
     Services.obs.removeObserver(obs, topic);
 
@@ -154,41 +153,53 @@ add_task(
   }
 );
 
-add_task(async function test_contentScripts_register() {
-  let extension = makeExtension({
-    manifest: {
-      manifest_version: 2,
-    },
-    async background() {
-      await browser.contentScripts.register({
-        js: [{ file: "script.js" }],
-        matches: ["http://*/*/*.html"],
-      });
-
-      browser.test.sendMessage("background-done");
-    },
-  });
-
-  await verifyRegistrationWithNewProcess(extension);
-});
-
-add_task(async function test_userScripts_register() {
-  let extension = makeExtension({
-    manifest: {
-      manifest_version: 2,
-      user_scripts: {
-        api_script: "inject_browser.js",
+add_task(
+  {
+    // We don't have WebIDL bindings for `browser.contentScripts`.
+    skip_if: () => ExtensionTestUtils.isInBackgroundServiceWorkerTests(),
+  },
+  async function test_contentScripts_register() {
+    let extension = makeExtension({
+      manifest: {
+        manifest_version: 2,
       },
-    },
-    async background() {
-      await browser.userScripts.register({
-        js: [{ file: "script.js" }],
-        matches: ["http://*/*/*.html"],
-      });
+      async background() {
+        await browser.contentScripts.register({
+          js: [{ file: "script.js" }],
+          matches: ["http://*/*/*.html"],
+        });
 
-      browser.test.sendMessage("background-done");
-    },
-  });
+        browser.test.sendMessage("background-done");
+      },
+    });
 
-  await verifyRegistrationWithNewProcess(extension);
-});
+    await verifyRegistrationWithNewProcess(extension);
+  }
+);
+
+add_task(
+  {
+    // We don't have WebIDL bindings for `browser.userScripts`.
+    skip_if: () => ExtensionTestUtils.isInBackgroundServiceWorkerTests(),
+  },
+  async function test_userScripts_register() {
+    let extension = makeExtension({
+      manifest: {
+        manifest_version: 2,
+        user_scripts: {
+          api_script: "inject_browser.js",
+        },
+      },
+      async background() {
+        await browser.userScripts.register({
+          js: [{ file: "script.js" }],
+          matches: ["http://*/*/*.html"],
+        });
+
+        browser.test.sendMessage("background-done");
+      },
+    });
+
+    await verifyRegistrationWithNewProcess(extension);
+  }
+);

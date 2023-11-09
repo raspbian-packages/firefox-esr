@@ -6,7 +6,6 @@
 
 #include "Link.h"
 
-#include "mozilla/EventStates.h"
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/SVGAElement.h"
@@ -75,22 +74,20 @@ void Link::VisitedQueryFinished(bool aVisited) {
   // Set our current state as appropriate.
   mState = newState;
 
-  MOZ_ASSERT(LinkState() == NS_EVENT_STATE_VISITED ||
-                 LinkState() == NS_EVENT_STATE_UNVISITED,
+  MOZ_ASSERT(LinkState() == ElementState::VISITED ||
+                 LinkState() == ElementState::UNVISITED,
              "Unexpected state obtained from LinkState()!");
 
   // Tell the element to update its visited state.
   mElement->UpdateState(true);
 
-  if (StaticPrefs::layout_css_always_repaint_on_unvisited()) {
-    // Even if the state didn't actually change, we need to repaint in order for
-    // the visited state not to be observable.
-    nsLayoutUtils::PostRestyleEvent(GetElement(), RestyleHint::RestyleSubtree(),
-                                    nsChangeHint_RepaintFrame);
-  }
+  // Even if the state didn't actually change, we need to repaint in order for
+  // the visited state not to be observable.
+  nsLayoutUtils::PostRestyleEvent(GetElement(), RestyleHint::RestyleSubtree(),
+                                  nsChangeHint_RepaintFrame);
 }
 
-EventStates Link::LinkState() const {
+ElementState Link::LinkState() const {
   // We are a constant method, but we are just lazily doing things and have to
   // track that state.  Cast away that constness!
   //
@@ -125,14 +122,14 @@ EventStates Link::LinkState() const {
 
   // Otherwise, return our known state.
   if (mState == State::Visited) {
-    return NS_EVENT_STATE_VISITED;
+    return ElementState::VISITED;
   }
 
   if (mState == State::Unvisited) {
-    return NS_EVENT_STATE_UNVISITED;
+    return ElementState::UNVISITED;
   }
 
-  return EventStates();
+  return ElementState();
 }
 
 nsIURI* Link::GetURI() const {
@@ -233,8 +230,7 @@ void Link::SetHostname(const nsAString& aHostname) {
 
 void Link::SetPathname(const nsAString& aPathname) {
   nsCOMPtr<nsIURI> uri(GetURI());
-  nsCOMPtr<nsIURL> url(do_QueryInterface(uri));
-  if (!url) {
+  if (!uri) {
     // Ignore failures to be compatible with NS4.
     return;
   }
@@ -250,8 +246,7 @@ void Link::SetPathname(const nsAString& aPathname) {
 
 void Link::SetSearch(const nsAString& aSearch) {
   nsCOMPtr<nsIURI> uri(GetURI());
-  nsCOMPtr<nsIURL> url(do_QueryInterface(uri));
-  if (!url) {
+  if (!uri) {
     // Ignore failures to be compatible with NS4.
     return;
   }
@@ -390,15 +385,13 @@ void Link::GetPathname(nsAString& _pathname) {
   _pathname.Truncate();
 
   nsCOMPtr<nsIURI> uri(GetURI());
-  nsCOMPtr<nsIURL> url(do_QueryInterface(uri));
-  if (!url) {
-    // Do not throw!  Not having a valid URI or URL should result in an empty
-    // string.
+  if (!uri) {
+    // Do not throw!  Not having a valid URI should result in an empty string.
     return;
   }
 
   nsAutoCString file;
-  nsresult rv = url->GetFilePath(file);
+  nsresult rv = uri->GetFilePath(file);
   if (NS_SUCCEEDED(rv)) {
     CopyUTF8toUTF16(file, _pathname);
   }
@@ -408,15 +401,14 @@ void Link::GetSearch(nsAString& _search) {
   _search.Truncate();
 
   nsCOMPtr<nsIURI> uri(GetURI());
-  nsCOMPtr<nsIURL> url(do_QueryInterface(uri));
-  if (!url) {
+  if (!uri) {
     // Do not throw!  Not having a valid URI or URL should result in an empty
     // string.
     return;
   }
 
   nsAutoCString search;
-  nsresult rv = url->GetQuery(search);
+  nsresult rv = uri->GetQuery(search);
   if (NS_SUCCEEDED(rv) && !search.IsEmpty()) {
     _search.Assign(u'?');
     AppendUTF8toUTF16(search, _search);
@@ -500,9 +492,9 @@ void Link::ResetLinkState(bool aNotify, bool aHasHref) {
     mElement->UpdateState(aNotify);
   } else {
     if (mState == State::Unvisited) {
-      mElement->UpdateLinkState(NS_EVENT_STATE_UNVISITED);
+      mElement->UpdateLinkState(ElementState::UNVISITED);
     } else {
-      mElement->UpdateLinkState(EventStates());
+      mElement->UpdateLinkState(ElementState());
     }
   }
 }

@@ -25,12 +25,6 @@ about-processes-column-cpu-total = CPU
 ## Process names
 ## Variables:
 ##    $pid (String) The process id of this process, assigned by the OS.
-##    $origin (String) The domain name for this process.
-##    $type (String) The raw type for this process. Used for unknown processes.
-
-## Process names
-## Variables:
-##    $pid (String) The process id of this process, assigned by the OS.
 
 about-processes-browser-process = { -brand-short-name } ({ $pid })
 about-processes-web-process = Komonin Rutajinik Ajk'amaya'l ({ $pid })
@@ -47,6 +41,7 @@ about-processes-socket-process = K'amab'ey ({ $pid })
 about-processes-remote-sandbox-broker-process = Näj Sandbox Broker ({ $pid })
 about-processes-fork-server-process = Rukojol Ruk'u'x K'amab'ey ({ $pid })
 about-processes-preallocated-process = Ya'on ({ $pid })
+about-processes-utility-process = Rokisaxik ({ $pid })
 
 # Unknown process names
 # Variables:
@@ -119,6 +114,7 @@ about-processes-frame-name-one = Achruchi': { $url }
 about-processes-frame-name-many = Achruchi' ({ $number }): { $shortUrl }
 
 ## Utility process actor names
+
 
 ## Displaying CPU (percentage and total)
 ## Variables:

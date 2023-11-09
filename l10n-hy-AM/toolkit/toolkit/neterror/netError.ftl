@@ -41,6 +41,23 @@ neterror-load-error-firewall = Եթե ձեր համակարգիչը կամ ցա�
 
 neterror-captive-portal = Դուք պետք է մուտք գործեք այս ցանց, որ կարողանաք մուտք գործել համացանց։
 
+neterror-dns-not-found-hint-try-again = Փորձեք ավելի ուշ
+neterror-dns-not-found-hint-check-network = Ստուգեք կապակցումը համացանցին
+neterror-dns-not-found-hint-firewall = Ստուգեք, որ { -brand-short-name }-ն ունի համացանց մուտք գործելու թույլտվություն (դուք կարող եք կապված լինել, բայց firewall-ի հետևում)
+
+## TRR-only specific messages
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+
+## Native fallback specific messages
+## Variables:
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+
+##
+
 neterror-file-not-found-filename = Ստուգեք ֆայլի անունը մեծատառերի կամ այլ տպագրական սխալների համար:
 neterror-file-not-found-moved = Ստուգեք, թե արդյոք ֆայլը չի տեղափոխվել, անվանափոխվել կամ ջնջվել:
 

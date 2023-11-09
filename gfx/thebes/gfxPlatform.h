@@ -232,8 +232,6 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
 
   static bool IsHeadless();
 
-  static bool UseWebRender();
-
   static bool UseRemoteCanvas();
 
   static bool IsBackendAccelerated(
@@ -321,6 +319,7 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
   void GetCMSSupportInfo(mozilla::widget::InfoObject& aObj);
   void GetDisplayInfo(mozilla::widget::InfoObject& aObj);
   void GetOverlayInfo(mozilla::widget::InfoObject& aObj);
+  void GetSwapChainInfo(mozilla::widget::InfoObject& aObj);
 
   // Get the default content backend that will be used with the default
   // compositor. If the compositor is known when calling this function,
@@ -397,16 +396,6 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
    */
   nsAutoCString GetDefaultFontName(const nsACString& aLangGroup,
                                    const nsACString& aGenericFamily);
-
-  /**
-   * Create a gfxFontGroup based on the given family list and style.
-   */
-  gfxFontGroup* CreateFontGroup(
-      nsPresContext* aPresContext,
-      const mozilla::StyleFontFamilyList& aFontFamilyList,
-      const gfxFontStyle* aStyle, nsAtom* aLanguage, bool aExplicitLanguage,
-      gfxTextPerfMetrics* aTextPerf, gfxUserFontSet* aUserFontSet,
-      gfxFloat aDevToCssSize) const;
 
   /**
    * Look up a local platform font using the full font face name.
@@ -497,7 +486,11 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
   // Check whether format is supported on a platform (if unclear, returns true).
   // Default implementation checks for "common" formats that we support across
   // all platforms, but individual platform implementations may override.
-  virtual bool IsFontFormatSupported(uint32_t aFormatFlags);
+  virtual bool IsFontFormatSupported(
+      mozilla::StyleFontFaceSourceFormatKeyword aFormatHint,
+      mozilla::StyleFontFaceSourceTechFlags aTechFlags);
+
+  bool IsKnownIconFontFamily(const nsAtom* aFamilyName) const;
 
   virtual bool DidRenderingDeviceReset(
       DeviceResetReason* aResetReason = nullptr) {
@@ -610,7 +603,7 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
 
   virtual void FontsPrefsChanged(const char* aPref);
 
-  int32_t GetBidiNumeralOption();
+  uint32_t GetBidiNumeralOption();
 
   /**
    * Force all presContexts to reflow (and reframe if needed).
@@ -635,6 +628,9 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
    * non-null and valid DrawTarget.
    */
   RefPtr<mozilla::gfx::DrawTarget> ScreenReferenceDrawTarget();
+
+  static RefPtr<mozilla::gfx::DrawTarget>
+  ThreadLocalScreenReferenceDrawTarget();
 
   virtual mozilla::gfx::SurfaceFormat Optimal2DFormatForContent(
       gfxContentType aContent);
@@ -757,7 +753,9 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
    * Returns a buffer containing the CMS output profile data. The way this
    * is obtained is platform-specific.
    */
-  virtual nsTArray<uint8_t> GetPlatformCMSOutputProfileData();
+  virtual nsTArray<uint8_t> GetPlatformCMSOutputProfileData() {
+    return GetPrefCMSOutputProfileData();
+  }
 
   /**
    * Return information on how child processes should initialize graphics
@@ -775,9 +773,11 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
     mOverlayInfo = mozilla::Some(aInfo);
   }
 
-  bool HasVariationFontSupport() const { return mHasVariationFontSupport; }
+  void SetSwapChainInfo(const mozilla::layers::SwapChainInfo& aInfo) {
+    mSwapChainInfo = mozilla::Some(aInfo);
+  }
 
-  bool HasNativeColrFontSupport() const { return mHasNativeColrFontSupport; }
+  static bool HasVariationFontSupport();
 
   // you probably want to use gfxVars::UseWebRender() instead of this
   static bool WebRenderPrefEnabled();
@@ -809,6 +809,8 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
 
   static bool UseDesktopZoomingScrollbars();
 
+  virtual bool SupportsHDR() { return false; }
+
  protected:
   gfxPlatform();
   virtual ~gfxPlatform();
@@ -819,6 +821,8 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
   virtual void InitWebGLConfig();
   virtual void InitWebGPUConfig();
   virtual void InitWindowOcclusionConfig();
+  void InitBackdropFilterConfig();
+  void InitAcceleratedCanvas2DConfig();
 
   virtual void GetPlatformDisplayInfo(mozilla::widget::InfoObject& aObj) {}
 
@@ -863,13 +867,15 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
   virtual void ImportContentDeviceData(
       const mozilla::gfx::ContentDeviceData& aData);
 
+ public:
   /**
    * Returns the contents of the file pointed to by the
    * gfx.color_management.display_profile pref, if set.
    * Returns an empty array if not set, or if an error occurs
    */
-  nsTArray<uint8_t> GetPrefCMSOutputProfileData();
+  static nsTArray<uint8_t> GetPrefCMSOutputProfileData();
 
+ protected:
   /**
    * If inside a child process and currently being initialized by the
    * SetXPCOMProcessAttributes message, this can be used by subclasses to
@@ -914,30 +920,10 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
 
   virtual bool CanUseHardwareVideoDecoding();
 
-  virtual bool CheckVariationFontSupport() = 0;
-
   int8_t mAllowDownloadableFonts;
-  int8_t mGraphiteShapingEnabled;
-  int8_t mOpenTypeSVGEnabled;
-
-  int8_t mBidiNumeralOption;
-
-  // whether to always search font cmaps globally
-  // when doing system font fallback
-  int8_t mFallbackUsesCmaps;
 
   // Whether the platform supports rendering OpenType font variations
-  bool mHasVariationFontSupport;
-
-  // Whether the platform font APIs have native support for COLR fonts.
-  // Set to true during initialization on platforms that implement this.
-  bool mHasNativeColrFontSupport = false;
-
-  // max character limit for words in word cache
-  int32_t mWordCacheCharLimit;
-
-  // max number of entries in word cache
-  int32_t mWordCacheMaxEntries;
+  static std::atomic<int8_t> sHasVariationFontSupport;
 
   // The global vsync dispatcher. Only non-null in the parent process.
   // Its underlying VsyncSource is either mGlobalHardwareVsyncSource
@@ -1024,6 +1010,7 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
   mozilla::widget::GfxInfoCollector<gfxPlatform> mCMSInfoCollector;
   mozilla::widget::GfxInfoCollector<gfxPlatform> mDisplayInfoCollector;
   mozilla::widget::GfxInfoCollector<gfxPlatform> mOverlayInfoCollector;
+  mozilla::widget::GfxInfoCollector<gfxPlatform> mSwapChainInfoCollector;
 
   nsTArray<mozilla::layers::FrameStats> mFrameStats;
 
@@ -1035,10 +1022,13 @@ class gfxPlatform : public mozilla::layers::MemoryPressureListener {
   mozilla::gfx::IntSize mScreenSize;
 
   mozilla::Maybe<mozilla::layers::OverlayInfo> mOverlayInfo;
+  mozilla::Maybe<mozilla::layers::SwapChainInfo> mSwapChainInfo;
 
   // An instance of gfxSkipChars which is empty. It is used as the
   // basis for error-case iterators.
   const gfxSkipChars kEmptySkipChars;
 };
+
+CMSMode GfxColorManagementMode();
 
 #endif /* GFX_PLATFORM_H */

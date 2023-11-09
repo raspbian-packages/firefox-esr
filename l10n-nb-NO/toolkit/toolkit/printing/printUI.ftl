@@ -35,7 +35,7 @@ printui-portrait = Stående
 
 # Section title for the printer or destination device to target
 printui-destination-label = Mål
-printui-destination-pdf-label = Lagre til PDF
+printui-destination-pdf-label = Lagre som PDF
 
 printui-more-settings = Flere innstillinger
 printui-less-settings = Færre innstillinger

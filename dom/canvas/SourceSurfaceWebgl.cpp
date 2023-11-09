@@ -9,23 +9,27 @@
 
 namespace mozilla::gfx {
 
-SourceSurfaceWebgl::SourceSurfaceWebgl() = default;
+SourceSurfaceWebgl::SourceSurfaceWebgl(DrawTargetWebgl* aDT)
+    : mFormat(aDT->GetFormat()),
+      mSize(aDT->GetSize()),
+      mDT(aDT),
+      mSharedContext(aDT->mSharedContext) {}
+
+SourceSurfaceWebgl::SourceSurfaceWebgl(
+    const RefPtr<TextureHandle>& aHandle,
+    const RefPtr<DrawTargetWebgl::SharedContext>& aSharedContext)
+    : mFormat(aHandle->GetFormat()),
+      mSize(aHandle->GetSize()),
+      mSharedContext(aSharedContext),
+      mHandle(aHandle) {
+  mHandle->SetSurface(this);
+}
 
 SourceSurfaceWebgl::~SourceSurfaceWebgl() {
   if (mHandle) {
     // Signal that the texture handle is not being used now.
     mHandle->SetSurface(nullptr);
   }
-}
-
-bool SourceSurfaceWebgl::Init(DrawTargetWebgl* aDT) {
-  MOZ_ASSERT(!mDT);
-  MOZ_ASSERT(aDT);
-  mDT = aDT;
-  mSharedContext = aDT->mSharedContext;
-  mSize = aDT->GetSize();
-  mFormat = aDT->GetFormat();
-  return true;
 }
 
 // Read back the contents of the target or texture handle for data use.
@@ -78,9 +82,14 @@ void SourceSurfaceWebgl::Unmap() {
 // framebuffer, and so this snapshot must be copied into a new texture, if
 // possible, or read back into data, if necessary, to preserve this particular
 // version of the framebuffer.
-void SourceSurfaceWebgl::DrawTargetWillChange() {
+void SourceSurfaceWebgl::DrawTargetWillChange(bool aNeedHandle) {
   MOZ_ASSERT(mDT);
-  if (!mData && !mHandle) {
+  // Only try to copy into a new texture handle if we don't already have data.
+  // However, we still might need to immediately draw this snapshot to a WebGL
+  // target, which would require a subsequent upload, so also copy into a new
+  // handle even if we already have data in that case since it is faster than
+  // uploading.
+  if ((!mData || aNeedHandle) && !mHandle) {
     // Prefer copying the framebuffer to a texture if possible.
     mHandle = mDT->CopySnapshot();
     if (mHandle) {
@@ -113,11 +122,51 @@ void SourceSurfaceWebgl::OnUnlinkTexture(
   // If we get here, then we must have copied a snapshot, which only happens
   // if the target changed.
   MOZ_ASSERT(!mDT);
-  MOZ_ASSERT(mHandle);
+  // If the snapshot was mapped before the target changed, we may have read
+  // data instead of holding a copied texture handle. If subsequently we then
+  // try to draw with this snapshot, we might have allocated an external texture
+  // handle in the texture cache that still links to this snapshot and can cause
+  // us to end up here inside OnUnlinkTexture.
+  MOZ_ASSERT(mHandle || mData);
   if (!mData) {
     mData = aContext->ReadSnapshot(mHandle);
   }
   mHandle = nullptr;
+}
+
+already_AddRefed<SourceSurface> SourceSurfaceWebgl::ExtractSubrect(
+    const IntRect& aRect) {
+  // Ensure we have a texture source available to extract from.
+  if (!(mDT || (mHandle && mSharedContext)) || aRect.IsEmpty() ||
+      !GetRect().Contains(aRect)) {
+    return nullptr;
+  }
+  RefPtr<TextureHandle> subHandle;
+  RefPtr<DrawTargetWebgl::SharedContext> sharedContext;
+  if (mDT) {
+    // If this is still a snapshot linked to a target, then copy from the
+    // target.
+    subHandle = mDT->CopySnapshot(aRect);
+    if (!subHandle) {
+      return nullptr;
+    }
+    sharedContext = mDT->mSharedContext;
+  } else {
+    // Otherwise, we have a handle, but we need to verify it is still linked to
+    // a valid context.
+    sharedContext = mSharedContext;
+    if (!sharedContext) {
+      return nullptr;
+    }
+    // Try to copy directly from the handle using the context.
+    subHandle = sharedContext->CopySnapshot(aRect, mHandle);
+    if (!subHandle) {
+      return nullptr;
+    }
+  }
+  RefPtr<SourceSurface> surface =
+      new SourceSurfaceWebgl(subHandle, sharedContext);
+  return surface.forget();
 }
 
 }  // namespace mozilla::gfx

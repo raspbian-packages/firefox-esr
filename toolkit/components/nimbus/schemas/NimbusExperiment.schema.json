@@ -41,6 +41,10 @@
           "type": "boolean",
           "description": "When this property is set to true, the the SDK should not enroll new users into the experiment that have not already been enrolled."
         },
+        "isRollout": {
+          "type": "boolean",
+          "description": "When this property is set to true, treat this experiment as a rollout. Rollouts are currently handled as single-branch experiments separated from the bucketing namespace for normal experiments. See also: https://mozilla-hub.atlassian.net/browse/SDK-405"
+        },
         "bucketConfig": {
           "type": "object",
           "properties": {
@@ -126,10 +130,6 @@
                         "type": "string",
                         "description": "The identifier for the feature flag"
                       },
-                      "enabled": {
-                        "type": "boolean",
-                        "description": "This can be used to turn the whole feature on/off"
-                      },
                       "value": {
                         "type": "object",
                         "additionalProperties": {},
@@ -196,10 +196,6 @@
                           "type": "string",
                           "description": "The identifier for the feature flag"
                         },
-                        "enabled": {
-                          "type": "boolean",
-                          "description": "This can be used to turn the whole feature on/off"
-                        },
                         "value": {
                           "type": "object",
                           "additionalProperties": {},
@@ -245,10 +241,6 @@
                           "type": "string",
                           "description": "The identifier for the feature flag"
                         },
-                        "enabled": {
-                          "type": "boolean",
-                          "description": "This can be used to turn the whole feature on/off"
-                        },
                         "value": {
                           "type": "object",
                           "additionalProperties": {},
@@ -288,6 +280,14 @@
           "description": "Actual publish date of the experiment Note that this value is expected to be null in Remote Settings.",
           "format": "date"
         },
+        "enrollmentEndDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Actual enrollment end date of the experiment. Note that this value is expected to be null in Remote Settings.",
+          "format": "date"
+        },
         "endDate": {
           "type": [
             "string",
@@ -311,9 +311,26 @@
           ],
           "description": "The slug of the reference branch (that is, which branch we consider \"control\")"
         },
-        "filter_expression": {
-          "type": "string",
-          "description": "This is NOT used by Nimbus, but has special functionality in Remote Settings. See https://remote-settings.readthedocs.io/en/latest/target-filters.html#how"
+        "featureValidationOptOut": {
+          "type": "boolean",
+          "description": "Opt out of feature schema validation. Only supported on desktop."
+        },
+        "localizations": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Per-locale localization substitutions.\n\nThe top level key is the locale (e.g., \"en-US\" or \"fr\"). Each entry is a mapping of string IDs to their localized equivalents.\n\nOnly supported on desktop."
         }
       },
       "required": [

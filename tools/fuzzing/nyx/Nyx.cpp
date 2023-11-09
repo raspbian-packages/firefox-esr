@@ -177,6 +177,8 @@ void Nyx::release(uint32_t iterations) {
     _exit(1);
   }
 
+  MOZ_FUZZING_NYX_DEBUG("[DEBUG] Nyx::release() called.\n");
+
   nyx_release(iterations);
 }
 
@@ -189,14 +191,14 @@ void Nyx::handle_event(const char* type, const char* file, int line,
     return;
   }
 
-  // We can have events such as MOZ_CRASH even before we snapshot.
-  // Output some useful information to make it clear where it happened.
-  MOZ_FUZZING_NYX_PRINTF(
-      "[ERROR] PRE SNAPSHOT Nyx::handle_event() called: %s at %s:%d : %s\n",
-      type, file, line, reason);
-
   if (mInited) {
     nyx_handle_event(type, file, line, reason);
+  } else {
+    // We can have events such as MOZ_CRASH even before we snapshot.
+    // Output some useful information to make it clear where it happened.
+    MOZ_FUZZING_NYX_PRINTF(
+        "[ERROR] PRE SNAPSHOT Nyx::handle_event() called: %s at %s:%d : %s\n",
+        type, file, line, reason);
   }
 }
 

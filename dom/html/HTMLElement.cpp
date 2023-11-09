@@ -8,6 +8,7 @@
 
 #include "mozilla/dom/CustomElementRegistry.h"
 #include "mozilla/dom/HTMLElementBinding.h"
+#include "mozilla/EventDispatcher.h"
 #include "nsContentUtils.h"
 
 namespace mozilla::dom {
@@ -15,7 +16,7 @@ namespace mozilla::dom {
 HTMLElement::HTMLElement(already_AddRefed<mozilla::dom::NodeInfo>&& aNodeInfo)
     : nsGenericHTMLFormElement(std::move(aNodeInfo)) {
   if (NodeInfo()->Equals(nsGkAtoms::bdi)) {
-    AddStatesSilently(NS_EVENT_STATE_DIR_ATTR_LIKE_AUTO);
+    AddStatesSilently(ElementState::HAS_DIR_ATTR_LIKE_AUTO);
   }
 }
 
@@ -36,6 +37,26 @@ NS_IMPL_ELEMENT_CLONE(HTMLElement)
 JSObject* HTMLElement::WrapNode(JSContext* aCx,
                                 JS::Handle<JSObject*> aGivenProto) {
   return dom::HTMLElement_Binding::Wrap(aCx, this, aGivenProto);
+}
+
+void HTMLElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
+  if (IsDisabledForEvents(aVisitor.mEvent)) {
+    // Do not process any DOM events if the element is disabled
+    aVisitor.mCanHandle = false;
+    return;
+  }
+
+  nsGenericHTMLFormElement::GetEventTargetParent(aVisitor);
+}
+
+nsINode* HTMLElement::GetScopeChainParent() const {
+  if (IsFormAssociatedCustomElements()) {
+    auto* form = GetFormInternal();
+    if (form) {
+      return form;
+    }
+  }
+  return nsGenericHTMLFormElement::GetScopeChainParent();
 }
 
 nsresult HTMLElement::BindToTree(BindContext& aContext, nsINode& aParent) {
@@ -179,11 +200,19 @@ void HTMLElement::UpdateFormOwner() {
   UpdateBarredFromConstraintValidation();
 }
 
-nsresult HTMLElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
-                                   const nsAttrValue* aValue,
-                                   const nsAttrValue* aOldValue,
-                                   nsIPrincipal* aMaybeScriptedPrincipal,
-                                   bool aNotify) {
+bool HTMLElement::IsDisabledForEvents(WidgetEvent* aEvent) {
+  if (IsFormAssociatedElement()) {
+    return IsElementDisabledForEvents(aEvent, GetPrimaryFrame());
+  }
+
+  return false;
+}
+
+void HTMLElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
+                               const nsAttrValue* aValue,
+                               const nsAttrValue* aOldValue,
+                               nsIPrincipal* aMaybeScriptedPrincipal,
+                               bool aNotify) {
   if (aNameSpaceID == kNameSpaceID_None &&
       (aName == nsGkAtoms::disabled || aName == nsGkAtoms::readonly)) {
     if (aName == nsGkAtoms::disabled) {
@@ -198,14 +227,14 @@ nsresult HTMLElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
       aNameSpaceID, aName, aValue, aOldValue, aMaybeScriptedPrincipal, aNotify);
 }
 
-EventStates HTMLElement::IntrinsicState() const {
-  EventStates state = nsGenericHTMLFormElement::IntrinsicState();
+ElementState HTMLElement::IntrinsicState() const {
+  ElementState state = nsGenericHTMLFormElement::IntrinsicState();
   if (ElementInternals* internals = GetElementInternals()) {
     if (internals->IsCandidateForConstraintValidation()) {
       if (internals->IsValid()) {
-        state |= NS_EVENT_STATE_VALID | NS_EVENT_STATE_MOZ_UI_VALID;
+        state |= ElementState::VALID | ElementState::USER_VALID;
       } else {
-        state |= NS_EVENT_STATE_INVALID | NS_EVENT_STATE_MOZ_UI_INVALID;
+        state |= ElementState::INVALID | ElementState::USER_INVALID;
       }
     }
   }

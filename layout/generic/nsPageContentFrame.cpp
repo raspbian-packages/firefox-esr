@@ -6,7 +6,9 @@
 #include "nsPageContentFrame.h"
 
 #include "mozilla/PresShell.h"
+#include "mozilla/PresShellInlines.h"
 #include "mozilla/StaticPrefs_layout.h"
+#include "mozilla/dom/Document.h"
 
 #include "nsContentUtils.h"
 #include "nsPageFrame.h"
@@ -18,10 +20,11 @@
 
 using namespace mozilla;
 
-nsPageContentFrame* NS_NewPageContentFrame(PresShell* aPresShell,
-                                           ComputedStyle* aStyle) {
-  return new (aPresShell)
-      nsPageContentFrame(aStyle, aPresShell->GetPresContext());
+nsPageContentFrame* NS_NewPageContentFrame(
+    PresShell* aPresShell, ComputedStyle* aStyle,
+    already_AddRefed<const nsAtom> aPageName) {
+  return new (aPresShell) nsPageContentFrame(
+      aStyle, aPresShell->GetPresContext(), std::move(aPageName));
 }
 
 NS_IMPL_FRAMEARENA_HELPERS(nsPageContentFrame)
@@ -80,7 +83,7 @@ void nsPageContentFrame::Reflow(nsPresContext* aPresContext,
 
     // XXXbz this screws up percentage padding (sets padding to zero
     // in the percentage padding case)
-    kidReflowInput.mStylePadding->GetPadding(padding);
+    frame->StylePadding()->GetPadding(padding);
 
     // This is for shrink-to-fit, and therefore we want to use the
     // scrollable overflow, since the purpose of shrink to fit is to
@@ -165,8 +168,6 @@ void nsPageContentFrame::Reflow(nsPresContext* aPresContext,
 
     mRemainingOverflow = std::max(remainingOverflow, 0);
   }
-
-  NS_FRAME_SET_TRUNCATION(aStatus, aReflowInput, aReflowOutput);
 }
 
 using PageAndOffset = std::pair<nsPageContentFrame*, nscoord>;
@@ -400,8 +401,52 @@ void nsPageContentFrame::AppendDirectlyOwnedAnonBoxes(
   aResult.AppendElement(mFrames.FirstChild());
 }
 
+void nsPageContentFrame::EnsurePageName() {
+  MOZ_ASSERT(HasAnyStateBits(NS_FRAME_FIRST_REFLOW),
+             "Should only have been called on first reflow");
+  if (mPageName) {
+    return;
+  }
+  MOZ_ASSERT(!GetPrevInFlow(),
+             "Only the first page should initially have a null page name.");
+  // This was the first page, we need to find our own page name and then set
+  // our computed style based on that.
+  mPageName = ComputePageValue();
+
+  MOZ_ASSERT(mPageName, "Page name should never be null");
+  // We don't need to resolve any further styling if the page name is empty.
+  if (mPageName == nsGkAtoms::_empty) {
+    return;
+  }
+  RefPtr<ComputedStyle> pageContentPseudoStyle =
+      PresShell()->StyleSet()->ResolvePageContentStyle(mPageName);
+  SetComputedStyleWithoutNotification(pageContentPseudoStyle);
+}
+
+nsIFrame* nsPageContentFrame::FirstContinuation() const {
+  const nsContainerFrame* const parent = GetParent();
+  MOZ_ASSERT(parent && parent->IsPageFrame(),
+             "Parent of nsPageContentFrame should be nsPageFrame");
+  // static cast so the compiler has a chance to devirtualize the call.
+  const auto* const pageFrameParent = static_cast<const nsPageFrame*>(parent);
+  nsPageContentFrame* const pageContentFrame =
+      static_cast<const nsPageFrame*>(pageFrameParent->FirstContinuation())
+          ->PageContentFrame();
+  MOZ_ASSERT(pageContentFrame && !pageContentFrame->GetPrevContinuation(),
+             "First descendent of nsPageSequenceFrame should not have a "
+             "previous continuation");
+  return pageContentFrame;
+}
+
 #ifdef DEBUG_FRAME_DUMP
 nsresult nsPageContentFrame::GetFrameName(nsAString& aResult) const {
   return MakeFrameName(u"PageContent"_ns, aResult);
+}
+void nsPageContentFrame::ExtraContainerFrameInfo(nsACString& aTo) const {
+  if (mPageName) {
+    aTo += " [page=";
+    aTo += nsAtomCString(mPageName);
+    aTo += "]";
+  }
 }
 #endif

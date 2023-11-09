@@ -112,6 +112,14 @@ class nsExternalHelperAppService : public nsIExternalHelperAppService,
   NS_IMETHOD OSProtocolHandlerExists(const char* aScheme, bool* aExists) = 0;
 
   /**
+   * Given an extension, get a MIME type string from the builtin list of
+   * mime types.
+   * @return true if we successfully found a mimetype.
+   */
+  virtual bool GetMIMETypeFromDefaultForExtension(const nsACString& aExtension,
+                                                  nsACString& aMIMEType);
+
+  /**
    * Given an extension, get a MIME type string. If not overridden by
    * the OS-specific nsOSHelperAppService, will call into GetMIMEInfoFromOS
    * with an empty mimetype.
@@ -124,6 +132,13 @@ class nsExternalHelperAppService : public nsIExternalHelperAppService,
 
   // Internal method. Only called directly from tests.
   static nsresult EscapeURI(nsIURI* aURI, nsIURI** aResult);
+
+  /**
+   * Logging Module. Usage: set MOZ_LOG=HelperAppService:level, where level
+   * should be 2 for errors, 3 for debug messages from the cross- platform
+   * nsExternalHelperAppService, and 4 for os-specific debug messages.
+   */
+  static mozilla::LazyLogModule sLog;
 
  protected:
   virtual ~nsExternalHelperAppService();
@@ -166,13 +181,6 @@ class nsExternalHelperAppService : public nsIExternalHelperAppService,
    * @return true if the extension was found, false otherwise.
    */
   bool GetTypeFromExtras(const nsACString& aExtension, nsACString& aMIMEType);
-
-  /**
-   * Logging Module. Usage: set MOZ_LOG=HelperAppService:level, where level
-   * should be 2 for errors, 3 for debug messages from the cross- platform
-   * nsExternalHelperAppService, and 4 for os-specific debug messages.
-   */
-  static mozilla::LazyLogModule mLog;
 
   // friend, so that it can access the nspr log module.
   friend class nsExternalAppHandler;
@@ -309,9 +317,6 @@ class nsExternalAppHandler final : public nsIStreamListener,
   void SetShouldCloseWindow() { mShouldCloseWindow = true; }
 
  protected:
-  // Record telemetry about a download that was attempted.
-  void RecordDownloadTelemetry(nsIChannel* aChannel, const char* aAction);
-
   bool IsDownloadSpam(nsIChannel* aChannel);
 
   ~nsExternalAppHandler();
@@ -356,6 +361,12 @@ class nsExternalAppHandler final : public nsIStreamListener,
    * unknown content type handling dialog.
    */
   bool mForceSave;
+
+  /**
+   * If set, any internally handled type that has a disposition of
+     nsIChannel::DISPOSITION_ATTACHMENT will be saved to disk.
+   */
+  bool mForceSaveInternallyHandled;
 
   /**
    * The canceled flag is set if the user canceled the launching of this

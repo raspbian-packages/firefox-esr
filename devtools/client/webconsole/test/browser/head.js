@@ -1,7 +1,6 @@
 /* Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/publicdomain/zero/1.0/ */
 /* eslint no-unused-vars: [2, {"vars": "local"}] */
-/* import-globals-from ../../../shared/test/telemetry-test-helpers.js */
 
 "use strict";
 
@@ -9,20 +8,17 @@
 
 // shared-head.js handles imports, constants, and utility functions
 // Load the shared-head file first.
-/* import-globals-from ../../../shared/test/shared-head.js */
 Services.scriptloader.loadSubScript(
   "chrome://mochitests/content/browser/devtools/client/shared/test/shared-head.js",
   this
 );
 
 // Import helpers for the new debugger
-/* import-globals-from ../../../debugger/test/mochitest/shared-head.js */
 Services.scriptloader.loadSubScript(
   "chrome://mochitests/content/browser/devtools/client/debugger/test/mochitest/shared-head.js",
   this
 );
 
-/* import-globals-from ./shared-head.js */
 Services.scriptloader.loadSubScript(
   "chrome://mochitests/content/browser/devtools/client/webconsole/test/browser/shared-head.js",
   this
@@ -30,9 +26,9 @@ Services.scriptloader.loadSubScript(
 
 var {
   BrowserConsoleManager,
-} = require("devtools/client/webconsole/browser-console-manager");
+} = require("resource://devtools/client/webconsole/browser-console-manager.js");
 
-var WCUL10n = require("devtools/client/webconsole/utils/l10n");
+var WCUL10n = require("resource://devtools/client/webconsole/utils/l10n.js");
 const DOCS_GA_PARAMS = `?${new URLSearchParams({
   utm_source: "mozilla",
   utm_medium: "firefox-console-errors",
@@ -44,9 +40,9 @@ const GA_PARAMS = `?${new URLSearchParams({
   utm_campaign: "default",
 })}`;
 
-const wcActions = require("devtools/client/webconsole/actions/index");
+const wcActions = require("resource://devtools/client/webconsole/actions/index.js");
 
-registerCleanupFunction(async function() {
+registerCleanupFunction(async function () {
   // Reset all cookies, tests loading sjs_slow-response-test-server.sjs will
   // set a foo cookie which might have side effects on other tests.
   Services.cookies.removeAll();
@@ -102,22 +98,24 @@ async function openNewTabWithIframesAndConsole(tabUrl, iframes) {
   // to handle remote frames (we don't support creating frames target when the toolbox
   // is already open).
   await addTab(tabUrl);
-  await ContentTask.spawn(gBrowser.selectedBrowser, iframes, async function(
-    urls
-  ) {
-    const iframesLoadPromises = urls.map((url, i) => {
-      const iframe = content.document.createElement("iframe");
-      iframe.classList.add(`iframe-${i + 1}`);
-      const onLoadIframe = new Promise(resolve => {
-        iframe.addEventListener("load", resolve, { once: true });
+  await ContentTask.spawn(
+    gBrowser.selectedBrowser,
+    iframes,
+    async function (urls) {
+      const iframesLoadPromises = urls.map((url, i) => {
+        const iframe = content.document.createElement("iframe");
+        iframe.classList.add(`iframe-${i + 1}`);
+        const onLoadIframe = new Promise(resolve => {
+          iframe.addEventListener("load", resolve, { once: true });
+        });
+        content.document.body.append(iframe);
+        iframe.src = url;
+        return onLoadIframe;
       });
-      content.document.body.append(iframe);
-      iframe.src = url;
-      return onLoadIframe;
-    });
 
-    await Promise.all(iframesLoadPromises);
-  });
+      await Promise.all(iframesLoadPromises);
+    }
+  );
 
   return openConsole();
 }
@@ -161,7 +159,7 @@ function logAllStoreChanges(hud) {
     );
     info(
       "messages : " +
-        JSON.stringify(debugMessages, function(key, value) {
+        JSON.stringify(debugMessages, function (key, value) {
           if (value && value.getGrip) {
             return value.getGrip();
           }
@@ -397,17 +395,18 @@ async function checkUniqueMessageExists(hud, msg, typeSelector) {
         text: msg,
         typeSelector,
       });
-      return msgs.length > 0 ? msgs : null;
+      return msgs.length ? msgs : null;
     });
   } catch (e) {
     ok(false, `Message "${msg}" wasn't logged\n`);
-    return;
+    return null;
   }
 
   is(messages.length, 1, `"${msg}" was logged once`);
   const [messageEl] = messages;
   const repeatNode = messageEl.querySelector(".message-repeats");
   is(repeatNode, null, `"${msg}" wasn't repeated`);
+  return messageEl;
 }
 
 /**
@@ -437,7 +436,7 @@ async function openContextMenu(hud, element) {
  */
 function hideContextMenu(hud) {
   const popup = _getContextMenu(hud);
-  if (!popup) {
+  if (!popup || popup.state == "hidden") {
     return Promise.resolve();
   }
 
@@ -450,6 +449,27 @@ function _getContextMenu(hud) {
   const toolbox = hud.toolbox;
   const doc = toolbox ? toolbox.topWindow.document : hud.chromeWindow.document;
   return doc.getElementById("webconsole-menu");
+}
+
+/**
+ * Toggle Enable network monitoring setting
+ *
+ *  @param object hud
+ *         The web console.
+ *  @param boolean shouldBeSwitchedOn
+ *         The expected state the setting should be in after the toggle.
+ */
+async function toggleNetworkMonitoringConsoleSetting(hud, shouldBeSwitchedOn) {
+  const selector =
+    ".webconsole-console-settings-menu-item-enableNetworkMonitoring";
+  const settingChanged = waitFor(() => {
+    const el = getConsoleSettingElement(hud, selector);
+    return shouldBeSwitchedOn
+      ? el.getAttribute("aria-checked") === "true"
+      : el.getAttribute("aria-checked") !== "true";
+  });
+  await toggleConsoleSetting(hud, selector);
+  await settingChanged;
 }
 
 async function toggleConsoleSetting(hud, selector) {
@@ -932,86 +952,6 @@ async function closeConsole(tab = gBrowser.selectedTab) {
   if (toolbox) {
     await toolbox.destroy();
   }
-}
-
-/**
- * Fake clicking a link and return the URL we would have navigated to.
- * This function should be used to check external links since we can't access
- * network in tests.
- * This can also be used to test that a click will not be fired.
- *
- * @param ElementNode element
- *        The <a> element we want to simulate click on.
- * @param Object clickEventProps
- *        The custom properties which would be used to dispatch a click event
- * @returns Promise
- *          A Promise that is resolved when the link click simulation occured or
- *          when the click is not dispatched.
- *          The promise resolves with an object that holds the following properties
- *          - link: url of the link or null(if event not fired)
- *          - where: "tab" if tab is active or "tabshifted" if tab is inactive
- *            or null(if event not fired)
- */
-function simulateLinkClick(element, clickEventProps) {
-  return overrideOpenLink(() => {
-    if (clickEventProps) {
-      // Click on the link using the event properties.
-      element.dispatchEvent(clickEventProps);
-    } else {
-      // Click on the link.
-      element.click();
-    }
-  });
-}
-
-/**
- * Override the browserWindow open*Link function, executes the passed function and either
- * wait for:
- * - the link to be "opened"
- * - 1s before timing out
- * Then it puts back the original open*Link functions in browserWindow.
- *
- * @returns {Promise<Object>}: A promise resolving with an object of the following shape:
- * - link: The link that was "opened"
- * - where: If the link was opened in the background (null) or not ("tab").
- */
-function overrideOpenLink(fn) {
-  const browserWindow = Services.wm.getMostRecentWindow(
-    gDevTools.chromeWindowType
-  );
-
-  // Override LinkIn methods to prevent navigating.
-  const oldOpenTrustedLinkIn = browserWindow.openTrustedLinkIn;
-  const oldOpenWebLinkIn = browserWindow.openWebLinkIn;
-
-  const onOpenLink = new Promise(resolve => {
-    const openLinkIn = function(link, where) {
-      browserWindow.openTrustedLinkIn = oldOpenTrustedLinkIn;
-      browserWindow.openWebLinkIn = oldOpenWebLinkIn;
-      resolve({ link: link, where });
-    };
-    browserWindow.openWebLinkIn = browserWindow.openTrustedLinkIn = openLinkIn;
-    fn();
-  });
-
-  // Declare a timeout Promise that we can use to make sure openTrustedLinkIn or
-  // openWebLinkIn was not called.
-  let timeoutId;
-  const onTimeout = new Promise(function(resolve) {
-    timeoutId = setTimeout(() => {
-      browserWindow.openTrustedLinkIn = oldOpenTrustedLinkIn;
-      browserWindow.openWebLinkIn = oldOpenWebLinkIn;
-      timeoutId = null;
-      resolve({ link: null, where: null });
-    }, 1000);
-  });
-
-  onOpenLink.then(() => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-  });
-  return Promise.race([onOpenLink, onTimeout]);
 }
 
 /**
@@ -1509,7 +1449,7 @@ async function selectFrame(dbg, frame) {
 async function pauseDebugger(dbg) {
   info("Waiting for debugger to pause");
   const onPaused = waitForPaused(dbg);
-  SpecialPowers.spawn(gBrowser.selectedBrowser, [], function() {
+  SpecialPowers.spawn(gBrowser.selectedBrowser, [], function () {
     content.wrappedJSObject.firstCall();
   }).catch(() => {});
   await onPaused;
@@ -1573,7 +1513,7 @@ async function checkConsoleOutputForWarningGroup(hud, expectedMessages) {
       ok(false, "Unexpected structure: an indented message isn't in a group");
     }
 
-    return groups[0].startsWith("▶︎⚠") || groups[0].startsWith("▼⚠");
+    return groups[0].startsWith("▼︎⚠");
   };
 
   for (let [i, expectedMessage] of expectedMessages.entries()) {
@@ -1637,9 +1577,8 @@ async function checkConsoleOutputForWarningGroup(hud, expectedMessages) {
     // In-group message
     if (expectedMessage.startsWith("|")) {
       if (isInWarningGroup(i)) {
-        is(
-          message.getAttribute("data-indent"),
-          "1",
+        ok(
+          message.querySelector(".warning-indent"),
           "The message has the expected indent"
         );
       }
@@ -1816,11 +1755,8 @@ function getContextSelectorItems(hud) {
  * state.
  *
  * @param {WebConsole} hud
- * @param {Array<Object>} expected: An array of object which can have the following shape:
- *         - {String} label: The label of the target
- *         - {String} tooltip: The tooltip of the target element in the menu
- *         - {Boolean} checked: if the target should be selected or not
- *         - {Boolean} separator: if the element is a simple separator
+ * @param {Array<Object>} expected: An array of object (see checkContextSelectorMenuItemAt
+ *                        for expected properties)
  */
 function checkContextSelectorMenu(hud, expected) {
   const items = getContextSelectorItems(hud);
@@ -1831,30 +1767,41 @@ function checkContextSelectorMenu(hud, expected) {
     "The context selector menu has the expected number of items"
   );
 
-  expected.forEach(({ label, tooltip, checked, separator }, i) => {
-    const el = items[i];
-
-    if (separator === true) {
-      is(
-        el.getAttribute("role"),
-        "menuseparator",
-        "The element is a separator"
-      );
-      return;
-    }
-
-    const elChecked = el.getAttribute("aria-checked") === "true";
-    const elTooltip = el.getAttribute("title");
-    const elLabel = el.querySelector(".label").innerText;
-
-    is(elLabel, label, `The item has the expected label`);
-    is(elTooltip, tooltip, `Item "${label}" has the expected tooltip`);
-    is(
-      elChecked,
-      checked,
-      `Item "${label}" is ${checked ? "checked" : "unchecked"}`
-    );
+  expected.forEach((expectedItem, i) => {
+    checkContextSelectorMenuItemAt(hud, i, expectedItem);
   });
+}
+
+/**
+ * Check that the evaluation context selector menu has the expected item at the specified index.
+ *
+ * @param {WebConsole} hud
+ * @param {Number} index
+ * @param {Object} expected
+ * @param {String} expected.label: The label of the target
+ * @param {String} expected.tooltip: The tooltip of the target element in the menu
+ * @param {Boolean} expected.checked: if the target should be selected or not
+ * @param {Boolean} expected.separator: if the element is a simple separator
+ */
+function checkContextSelectorMenuItemAt(hud, index, expected) {
+  const el = getContextSelectorItems(hud).at(index);
+
+  if (expected.separator === true) {
+    is(el.getAttribute("role"), "menuseparator", "The element is a separator");
+    return;
+  }
+
+  const elChecked = el.getAttribute("aria-checked") === "true";
+  const elTooltip = el.getAttribute("title");
+  const elLabel = el.querySelector(".label").innerText;
+
+  is(elLabel, expected.label, `The item has the expected label`);
+  is(elTooltip, expected.tooltip, `Item "${elLabel}" has the expected tooltip`);
+  is(
+    elChecked,
+    expected.checked,
+    `Item "${elLabel}" is ${expected.checked ? "checked" : "unchecked"}`
+  );
 }
 
 /**
@@ -1931,33 +1878,35 @@ async function getImageSizeFromClipboard() {
   // (which is value of the global `document` here). Doing so might push the
   // toolbox upwards, shrink the content page and fail the fullpage screenshot
   // test.
-  return SpecialPowers.spawn(gBrowser.selectedBrowser, [buffer], async function(
-    _buffer
-  ) {
-    const img = content.document.createElement("img");
-    const loaded = new Promise(r => {
-      img.addEventListener("load", r, { once: true });
-    });
+  return SpecialPowers.spawn(
+    gBrowser.selectedBrowser,
+    [buffer],
+    async function (_buffer) {
+      const img = content.document.createElement("img");
+      const loaded = new Promise(r => {
+        img.addEventListener("load", r, { once: true });
+      });
 
-    // Build a URL from the buffer passed to the ContentTask
-    const url = content.URL.createObjectURL(
-      new Blob([_buffer], { type: "image/png" })
-    );
+      // Build a URL from the buffer passed to the ContentTask
+      const url = content.URL.createObjectURL(
+        new Blob([_buffer], { type: "image/png" })
+      );
 
-    // Load the image
-    img.src = url;
-    content.document.documentElement.appendChild(img);
+      // Load the image
+      img.src = url;
+      content.document.documentElement.appendChild(img);
 
-    info("Waiting for the clipboard image to load in the content page");
-    await loaded;
+      info("Waiting for the clipboard image to load in the content page");
+      await loaded;
 
-    // Remove the image and revoke the URL.
-    img.remove();
-    content.URL.revokeObjectURL(url);
+      // Remove the image and revoke the URL.
+      img.remove();
+      content.URL.revokeObjectURL(url);
 
-    return {
-      width: img.width,
-      height: img.height,
-    };
-  });
+      return {
+        width: img.width,
+        height: img.height,
+      };
+    }
+  );
 }

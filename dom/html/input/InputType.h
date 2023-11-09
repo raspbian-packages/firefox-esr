@@ -64,7 +64,7 @@ class InputType {
   virtual Maybe<bool> HasPatternMismatch() const;
   virtual bool IsRangeOverflow() const;
   virtual bool IsRangeUnderflow() const;
-  virtual bool HasStepMismatch(bool aUseZeroIfValueNaN) const;
+  virtual bool HasStepMismatch() const;
   virtual bool HasBadInput() const;
 
   nsresult GetValidationMessage(
@@ -76,7 +76,7 @@ class InputType {
   virtual nsresult GetRangeUnderflowMessage(nsAString& aMessage);
   virtual nsresult GetBadInputMessage(nsAString& aMessage);
 
-  MOZ_CAN_RUN_SCRIPT virtual nsresult MinMaxStepAttrChanged();
+  MOZ_CAN_RUN_SCRIPT virtual void MinMaxStepAttrChanged() {}
 
   /**
    * Convert a string to a Decimal number in a type specific way,
@@ -139,14 +139,6 @@ class InputType {
    */
   MOZ_CAN_RUN_SCRIPT nsresult
   SetValueInternal(const nsAString& aValue, const ValueSetterOptions& aOptions);
-
-  /**
-   * Return the base used to compute if a value matches step.
-   * Basically, it's the min attribute if present and a default value otherwise.
-   *
-   * @return The step base.
-   */
-  Decimal GetStepBase() const;
 
   /**
    * Get the primary frame for the input element.

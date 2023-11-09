@@ -71,7 +71,7 @@ policy-DisablePrimaryPasswordCreation = Ma ayagi d tidet, awal uffir agejdan ur 
 
 policy-DisablePasswordReveal = Ur ttaǧǧa ara awalen uffiren ad d-banen deg yinekcam yettwaskelsen.
 
-policy-DisablePocket = Sens tamahilt n usekles n isebtar web di Pocket.
+policy-DisablePocket2 = Sens tamahilt n usekles n isebtar web di { -pocket-brand-name }.
 
 policy-DisablePrivateBrowsing = Sens tunigin tusligt.
 
@@ -116,11 +116,7 @@ policy-ExtensionSettings = Sefrek meṛṛa timeẓra n usbeddi n yisiɣzaf.
 
 policy-ExtensionUpdate = Emed neɣ sens alqem awurman n iseɣzaf.
 
-policy-FirefoxHome = Swel asebter agejdan n Firefox.
-
 policy-FirefoxHome2 = Sbadu { -firefox-home-brand-name }.
-
-policy-FlashPlugin = Sireg neɣ gdel asemres n uzegrir Flash.
 
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Ḥettem srid tunigin deg usmel intranet deg wadeg n unadi n usekcem n wawal asuf ma tettaruḍ deg ufeggag n tansiwin.
 
@@ -194,8 +190,8 @@ policy-SearchEngines = Swel iƔewwaren n umsedday n unadi. Tasertit-agi tella ka
 
 policy-SearchSuggestEnabled = Ad yermed neɣ ad yessens isumar n unadi.
 
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Sebded izegrar n PKCS #11.
+# For more information, see https://wikipedia.org/wiki/PKCS_11
+policy-SecurityDevices2 = Rnu neɣ kkes izegrar PKCS #11.
 
 policy-ShowHomeButton = Sken taqeffalt n usebtar agejdan deg ufeggag n yifecka.
 

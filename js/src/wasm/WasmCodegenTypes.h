@@ -44,13 +44,9 @@ namespace wasm {
 
 using mozilla::EnumeratedArray;
 
+struct ModuleEnvironment;
 struct TableDesc;
 struct V128;
-
-#ifdef ENABLE_WASM_SIMD_WORMHOLE
-bool IsWormholeTrigger(const V128& shuffleMask);
-jit::SimdConstant WormholeSignature();
-#endif
 
 // ArgTypeVector type.
 //
@@ -110,7 +106,7 @@ class ArgTypeVector {
     if (isSyntheticStackResultPointerArg(i)) {
       return jit::MIRType::StackResults;
     }
-    return ToMIRType(args_[naturalIndex(i)]);
+    return args_[naturalIndex(i)].toMIRType();
   }
 };
 
@@ -215,22 +211,6 @@ struct CallableOffsets : Offsets {
 
 WASM_DECLARE_CACHEABLE_POD(CallableOffsets);
 
-struct JitExitOffsets : CallableOffsets {
-  MOZ_IMPLICIT JitExitOffsets()
-      : CallableOffsets(), untrustedFPStart(0), untrustedFPEnd(0) {}
-
-  // There are a few instructions in the Jit exit where FP may be trash
-  // (because it may have been clobbered by the JS Jit), known as the
-  // untrusted FP zone.
-  uint32_t untrustedFPStart;
-  uint32_t untrustedFPEnd;
-
-  WASM_CHECK_CACHEABLE_POD_WITH_PARENT(CallableOffsets, untrustedFPStart,
-                                       untrustedFPEnd);
-};
-
-WASM_DECLARE_CACHEABLE_POD(JitExitOffsets);
-
 struct FuncOffsets : CallableOffsets {
   MOZ_IMPLICIT FuncOffsets()
       : CallableOffsets(), uncheckedCallEntry(0), tierEntry(0) {}
@@ -240,6 +220,9 @@ struct FuncOffsets : CallableOffsets {
   // falling through to the normal prologue. The checked call entry is thus at
   // the beginning of the CodeRange and the unchecked call entry is at some
   // offset after the checked call entry.
+  //
+  // Note that there won't always be a checked call entry because not all
+  // functions require them. See GenerateFunctionPrologue.
   uint32_t uncheckedCallEntry;
 
   // The tierEntry is the point within a function to which the patching code
@@ -286,13 +269,9 @@ class CodeRange {
       union {
         struct {
           uint32_t lineOrBytecode_;
-          uint8_t beginToUncheckedCallEntry_;
-          uint8_t beginToTierEntry_;
+          uint16_t beginToUncheckedCallEntry_;
+          uint16_t beginToTierEntry_;
         } func;
-        struct {
-          uint16_t beginToUntrustedFPStart_;
-          uint16_t beginToUntrustedFPEnd_;
-        } jitExit;
       };
     };
     Trap trap_;
@@ -302,9 +281,7 @@ class CodeRange {
   WASM_CHECK_CACHEABLE_POD(begin_, ret_, end_, u.funcIndex_,
                            u.func.lineOrBytecode_,
                            u.func.beginToUncheckedCallEntry_,
-                           u.func.beginToTierEntry_,
-                           u.jitExit.beginToUntrustedFPStart_,
-                           u.jitExit.beginToUntrustedFPEnd_, u.trap_, kind_);
+                           u.func.beginToTierEntry_, u.trap_, kind_);
 
  public:
   CodeRange() = default;
@@ -312,7 +289,6 @@ class CodeRange {
   CodeRange(Kind kind, uint32_t funcIndex, Offsets offsets);
   CodeRange(Kind kind, CallableOffsets offsets);
   CodeRange(Kind kind, uint32_t funcIndex, CallableOffsets);
-  CodeRange(uint32_t funcIndex, JitExitOffsets offsets);
   CodeRange(uint32_t funcIndex, uint32_t lineOrBytecode, FuncOffsets offsets);
 
   void offsetBy(uint32_t offset) {
@@ -343,12 +319,12 @@ class CodeRange {
   bool isDebugTrap() const { return kind() == DebugTrap; }
   bool isThunk() const { return kind() == FarJumpIsland; }
 
-  // Function, import exits and trap exits have standard callable prologues
-  // and epilogues. Asynchronous frame iteration needs to know the offset of
-  // the return instruction to calculate the frame pointer.
+  // Functions, import exits, trap exits and JitEntry stubs have standard
+  // callable prologues and epilogues. Asynchronous frame iteration needs to
+  // know the offset of the return instruction to calculate the frame pointer.
 
   bool hasReturn() const {
-    return isFunction() || isImportExit() || isDebugTrap();
+    return isFunction() || isImportExit() || isDebugTrap() || isJitEntry();
   }
   uint32_t ret() const {
     MOZ_ASSERT(hasReturn());
@@ -382,6 +358,9 @@ class CodeRange {
 
   uint32_t funcCheckedCallEntry() const {
     MOZ_ASSERT(isFunction());
+    // not all functions have the checked call prologue;
+    // see GenerateFunctionPrologue
+    MOZ_ASSERT(u.func.beginToUncheckedCallEntry_ != 0);
     return begin_;
   }
   uint32_t funcUncheckedCallEntry() const {
@@ -395,18 +374,6 @@ class CodeRange {
   uint32_t funcLineOrBytecode() const {
     MOZ_ASSERT(isFunction());
     return u.func.lineOrBytecode_;
-  }
-
-  // ImportJitExit have a particular range where the value of FP can't be
-  // trusted for profiling and thus must be ignored.
-
-  uint32_t jitExitUntrustedFPStart() const {
-    MOZ_ASSERT(isImportJitExit());
-    return begin_ + u.jitExit.beginToUntrustedFPStart_;
-  }
-  uint32_t jitExitUntrustedFPEnd() const {
-    MOZ_ASSERT(isImportJitExit());
-    return begin_ + u.jitExit.beginToUntrustedFPEnd_;
   }
 
   // A sorted array of CodeRanges can be looked up via BinarySearch and
@@ -435,9 +402,9 @@ extern const CodeRange* LookupInSorted(const CodeRangeVector& codeRanges,
 // adds the function index of the callee.
 
 class CallSiteDesc {
-  static constexpr size_t LINE_OR_BYTECODE_BITS_SIZE = 29;
+  static constexpr size_t LINE_OR_BYTECODE_BITS_SIZE = 28;
   uint32_t lineOrBytecode_ : LINE_OR_BYTECODE_BITS_SIZE;
-  uint32_t kind_ : 3;
+  uint32_t kind_ : 4;
 
   WASM_CHECK_CACHEABLE_POD(lineOrBytecode_, kind_);
 
@@ -450,6 +417,8 @@ class CallSiteDesc {
     Import,        // wasm import call
     Indirect,      // dynamic callee called via register, context on stack
     IndirectFast,  // dynamically determined to be same-instance
+    FuncRef,       // call using direct function reference
+    FuncRefFast,   // call using direct function reference within same-instance
     Symbolic,      // call to a single symbolic callee
     EnterFrame,    // call to a enter frame handler
     LeaveFrame,    // call to a leave frame handler
@@ -464,14 +433,23 @@ class CallSiteDesc {
     MOZ_ASSERT(kind == Kind(kind_));
     MOZ_ASSERT(lineOrBytecode == lineOrBytecode_);
   }
+  CallSiteDesc(BytecodeOffset bytecodeOffset, Kind kind)
+      : lineOrBytecode_(bytecodeOffset.offset()), kind_(kind) {
+    MOZ_ASSERT(kind == Kind(kind_));
+    MOZ_ASSERT(bytecodeOffset.offset() == lineOrBytecode_);
+  }
   uint32_t lineOrBytecode() const { return lineOrBytecode_; }
   Kind kind() const { return Kind(kind_); }
   bool isImportCall() const { return kind() == CallSiteDesc::Import; }
   bool isIndirectCall() const { return kind() == CallSiteDesc::Indirect; }
+  bool isFuncRefCall() const { return kind() == CallSiteDesc::FuncRef; }
   bool mightBeCrossInstance() const {
-    return isImportCall() || isIndirectCall();
+    return isImportCall() || isIndirectCall() || isFuncRefCall();
   }
 };
+
+static_assert(js::wasm::MaxFunctionBytes <=
+              CallSiteDesc::MAX_LINE_OR_BYTECODE_VALUE);
 
 WASM_DECLARE_CACHEABLE_POD(CallSiteDesc);
 
@@ -486,7 +464,7 @@ class CallSite : public CallSiteDesc {
   CallSite(CallSiteDesc desc, uint32_t returnAddressOffset)
       : CallSiteDesc(desc), returnAddressOffset_(returnAddressOffset) {}
 
-  void offsetBy(int32_t delta) { returnAddressOffset_ += delta; }
+  void offsetBy(uint32_t delta) { returnAddressOffset_ += delta; }
   uint32_t returnAddressOffset() const { return returnAddressOffset_; }
 };
 
@@ -551,17 +529,17 @@ WASM_DECLARE_CACHEABLE_POD(CallSiteTarget);
 
 using CallSiteTargetVector = Vector<CallSiteTarget, 0, SystemAllocPolicy>;
 
-// WasmTryNotes are stored in a vector that acts as an exception table for
+// TryNotes are stored in a vector that acts as an exception table for
 // wasm try-catch blocks. These represent the information needed to take
 // exception handling actions after a throw is executed.
-struct WasmTryNote {
+struct TryNote {
  private:
   // Sentinel value to detect a try note that has not been given a try body.
   static const uint32_t BEGIN_NONE = UINT32_MAX;
 
   // Begin code offset of the try body.
   uint32_t begin_;
-  // End code offset of the try body.
+  // Exclusive end code offset of the try body.
   uint32_t end_;
   // The code offset of the landing pad.
   uint32_t entryPoint_;
@@ -571,7 +549,7 @@ struct WasmTryNote {
   WASM_CHECK_CACHEABLE_POD(begin_, end_, entryPoint_, framePushed_);
 
  public:
-  explicit WasmTryNote()
+  explicit TryNote()
       : begin_(BEGIN_NONE), end_(0), entryPoint_(0), framePushed_(0) {}
 
   // Returns whether a try note has been assigned a range for the try body.
@@ -580,7 +558,7 @@ struct WasmTryNote {
   // The code offset of the beginning of the try body.
   uint32_t tryBodyBegin() const { return begin_; }
 
-  // The code offset of the end of the try body.
+  // The code offset of the exclusive end of the try body.
   uint32_t tryBodyEnd() const { return end_; }
 
   // Returns whether an offset is within this try note's body.
@@ -596,12 +574,14 @@ struct WasmTryNote {
 
   // Set the beginning of the try body.
   void setTryBodyBegin(uint32_t begin) {
+    // There must not be a begin to the try body yet
     MOZ_ASSERT(begin_ == BEGIN_NONE);
     begin_ = begin;
   }
 
   // Set the end of the try body.
   void setTryBodyEnd(uint32_t end) {
+    // There must be a begin to the try body
     MOZ_ASSERT(begin_ != BEGIN_NONE);
     end_ = end;
     // We do not allow empty try bodies
@@ -621,16 +601,65 @@ struct WasmTryNote {
     entryPoint_ += offset;
   }
 
-  bool operator<(const WasmTryNote& other) const {
-    if (end_ == other.end_) {
-      return begin_ > other.begin_;
+  bool operator<(const TryNote& other) const {
+    // Special case comparison with self. This avoids triggering the assertion
+    // about non-intersection below. This case can arise in std::sort.
+    if (this == &other) {
+      return false;
     }
+    // Try notes must be properly nested without touching at begin and end
+    MOZ_ASSERT(end_ <= other.begin_ || begin_ >= other.end_ ||
+               (begin_ > other.begin_ && end_ < other.end_) ||
+               (other.begin_ > begin_ && other.end_ < end_));
+    // A total order is therefore given solely by comparing end points. This
+    // order will be such that the first try note to intersect a point is the
+    // innermost try note for that point.
     return end_ < other.end_;
   }
 };
 
-WASM_DECLARE_CACHEABLE_POD(WasmTryNote);
-WASM_DECLARE_POD_VECTOR(WasmTryNote, WasmTryNoteVector)
+WASM_DECLARE_CACHEABLE_POD(TryNote);
+WASM_DECLARE_POD_VECTOR(TryNote, TryNoteVector)
+
+// CallIndirectId describes how to compile a call_indirect and matching
+// signature check in the function prologue for a given function type.
+
+enum class CallIndirectIdKind { AsmJS, Immediate, Global, None };
+
+class CallIndirectId {
+  CallIndirectIdKind kind_;
+  size_t bits_;
+
+  CallIndirectId(CallIndirectIdKind kind, size_t bits)
+      : kind_(kind), bits_(bits) {}
+
+ public:
+  CallIndirectId() : kind_(CallIndirectIdKind::None), bits_(0) {}
+
+  // Get a CallIndirectId for an asm.js function which will generate a no-op
+  // checked call prologue.
+  static CallIndirectId forAsmJSFunc();
+
+  // Get the CallIndirectId for a function in a specific module.
+  static CallIndirectId forFunc(const ModuleEnvironment& moduleEnv,
+                                uint32_t funcIndex);
+
+  // Get the CallIndirectId for a function type in a specific module.
+  static CallIndirectId forFuncType(const ModuleEnvironment& moduleEnv,
+                                    uint32_t funcTypeIndex);
+
+  CallIndirectIdKind kind() const { return kind_; }
+  bool isGlobal() const { return kind_ == CallIndirectIdKind::Global; }
+
+  uint32_t immediate() const {
+    MOZ_ASSERT(kind_ == CallIndirectIdKind::Immediate);
+    return bits_;
+  }
+  uint32_t instanceDataOffset() const {
+    MOZ_ASSERT(kind_ == CallIndirectIdKind::Global);
+    return bits_;
+  }
+};
 
 // CalleeDesc describes how to compile one of the variety of asm.js/wasm calls.
 // This is hoisted into WasmCodegenTypes.h for sharing between Ion and Baseline.
@@ -657,7 +686,10 @@ class CalleeDesc {
     Builtin,
 
     // Like Builtin, but automatically passes Instance* as first argument.
-    BuiltinInstanceMethod
+    BuiltinInstanceMethod,
+
+    // Calls a function reference.
+    FuncRef,
   };
 
  private:
@@ -667,50 +699,50 @@ class CalleeDesc {
     U() : funcIndex_(0) {}
     uint32_t funcIndex_;
     struct {
-      uint32_t globalDataOffset_;
+      uint32_t instanceDataOffset_;
     } import;
     struct {
-      uint32_t globalDataOffset_;
+      uint32_t instanceDataOffset_;
       uint32_t minLength_;
       Maybe<uint32_t> maxLength_;
-      TypeIdDesc funcTypeId_;
+      CallIndirectId callIndirectId_;
     } table;
     SymbolicAddress builtin_;
   } u;
 
-  WASM_CHECK_CACHEABLE_POD(which_, u.funcIndex_, u.import.globalDataOffset_,
-                           u.table.globalDataOffset_, u.table.minLength_,
-                           u.table.maxLength_, u.table.funcTypeId_, u.builtin_);
-
  public:
   CalleeDesc() = default;
   static CalleeDesc function(uint32_t funcIndex);
-  static CalleeDesc import(uint32_t globalDataOffset);
-  static CalleeDesc wasmTable(const TableDesc& desc, TypeIdDesc funcTypeId);
-  static CalleeDesc asmJSTable(const TableDesc& desc);
+  static CalleeDesc import(uint32_t instanceDataOffset);
+  static CalleeDesc wasmTable(const ModuleEnvironment& moduleEnv,
+                              const TableDesc& desc, uint32_t tableIndex,
+                              CallIndirectId callIndirectId);
+  static CalleeDesc asmJSTable(const ModuleEnvironment& moduleEnv,
+                               uint32_t tableIndex);
   static CalleeDesc builtin(SymbolicAddress callee);
   static CalleeDesc builtinInstanceMethod(SymbolicAddress callee);
+  static CalleeDesc wasmFuncRef();
   Which which() const { return which_; }
   uint32_t funcIndex() const {
     MOZ_ASSERT(which_ == Func);
     return u.funcIndex_;
   }
-  uint32_t importGlobalDataOffset() const {
+  uint32_t importInstanceDataOffset() const {
     MOZ_ASSERT(which_ == Import);
-    return u.import.globalDataOffset_;
+    return u.import.instanceDataOffset_;
   }
   bool isTable() const { return which_ == WasmTable || which_ == AsmJSTable; }
-  uint32_t tableLengthGlobalDataOffset() const {
+  uint32_t tableLengthInstanceDataOffset() const {
     MOZ_ASSERT(isTable());
-    return u.table.globalDataOffset_ + offsetof(TableInstanceData, length);
+    return u.table.instanceDataOffset_ + offsetof(TableInstanceData, length);
   }
-  uint32_t tableFunctionBaseGlobalDataOffset() const {
+  uint32_t tableFunctionBaseInstanceDataOffset() const {
     MOZ_ASSERT(isTable());
-    return u.table.globalDataOffset_ + offsetof(TableInstanceData, elements);
+    return u.table.instanceDataOffset_ + offsetof(TableInstanceData, elements);
   }
-  TypeIdDesc wasmTableSigId() const {
+  CallIndirectId wasmTableSigId() const {
     MOZ_ASSERT(which_ == WasmTable);
-    return u.table.funcTypeId_;
+    return u.table.callIndirectId_;
   }
   uint32_t wasmTableMinLength() const {
     MOZ_ASSERT(which_ == WasmTable);
@@ -724,9 +756,8 @@ class CalleeDesc {
     MOZ_ASSERT(which_ == Builtin || which_ == BuiltinInstanceMethod);
     return u.builtin_;
   }
+  bool isFuncRef() const { return which_ == FuncRef; }
 };
-
-WASM_DECLARE_CACHEABLE_POD(CalleeDesc);
 
 }  // namespace wasm
 }  // namespace js

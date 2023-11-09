@@ -29,10 +29,6 @@ third-party-tag-background = Bakgrunn
     .title =
         Denne modulen blokkerte ikkje programmet fordi han vart lasta inn
         i bakgrunnen.
-third-party-unsigned-icon =
-    .title = Denne modulen er ikkje signert
-third-party-warning-icon =
-    .title = { -brand-short-name } krasja i koden for denne modulen.
 third-party-icon-unsigned =
     .title = Denne modulen er ikkje signert
     .alt = Denne modulen er ikkje signert
@@ -43,6 +39,9 @@ third-party-status-loaded = Lasta
 third-party-status-blocked = Blokkert
 third-party-status-redirected = Omdirigert
 third-party-button-copy-to-clipboard = Kopier rådata til utklippstavla
+third-party-loading-data =
+    .alt = Lastar systeminformasjon…
+    .title = Lastar systeminformasjon…
 third-party-button-reload = Last på nytt med systeminfo
     .title = Last på nytt med systeminformasjon
 third-party-button-open =
@@ -50,12 +49,26 @@ third-party-button-open =
 third-party-button-to-block =
     .title = Blokker denne modulen
     .aria-label = Blokker denne modulen
+third-party-button-to-unblock =
+    .title = For augneblinken blokkert. Klikk her for å oppheve blokkeringa.
+    .aria-label = For augneblinken blokkert. Klikk her for å oppheve blokkeringa.
+third-party-button-to-unblock-disabled =
+    .title =
+        For augneblinken merkt som blokkert, sjølv om blokkeringslista er deaktivert for denne køyringa
+        av { -brand-short-name }. Klikk for å oppheve blokkeringa.
+    .aria-label =
+        For augneblinken merkt som blokkert, sjølv om blokkeringslista er deaktivert for denne køyringa
+        av { -brand-short-name }. Klikk for å oppheve blokkeringa.
+third-party-button-to-block-module = Blokker denne modulen
+    .title = Blokker denne modulen
+    .aria-label = Blokker denne modulen
 third-party-button-expand =
     .title = Vis detaljert informasjon
 third-party-button-collapse =
     .title = Skjul detaljert informasjon
+third-party-blocking-requires-restart = For å blokkere ein tredjepartsmodul må { -brand-short-name } starte på nytt.
 third-party-should-restart-title = Start { -brand-short-name } på nytt
-third-party-should-restart-ok = Start { -brand-short-name } på nytt no
+third-party-restart-now = Start på nytt no
 third-party-restart-later = Start på nytt seinare
 third-party-blocked-by-builtin =
     .title = Blokkert av { -brand-short-name }

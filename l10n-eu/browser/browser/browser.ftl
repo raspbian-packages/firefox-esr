@@ -5,46 +5,15 @@
 
 ## The main browser window's title
 
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
 #
 # default - "Mozilla Firefox"
 # private - "Mozilla Firefox (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } (Nabigatze pribatua)
-    .data-content-title-default = { $content-title } - { -brand-full-name }
-    .data-content-title-private = { $content-title } - { -brand-full-name } (Nabigatze pribatua)
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
-#
-# "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox — (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
-#
-# Also note the other subtle difference here: we use a `-` to separate the
-# brand name from `(Private Browsing)`, which does not happen on other OSes.
-#
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window-mac =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } - (Nabigatze pribatua)
-    .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } - (Nabigatze pribatua)
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
-#
-# default - "Mozilla Firefox"
-# private - "Mozilla Firefox (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
 # Variables:
 #  $content-title (String): the title of the web content.
 browser-main-window-window-titles =
@@ -52,14 +21,17 @@ browser-main-window-window-titles =
     .data-title-private = { -brand-full-name } Nabigatze pribatua
     .data-content-title-default = { $content-title } — { -brand-full-name }
     .data-content-title-private = { $content-title } — { -brand-full-name } Nabigatze pribatua
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
 #
 # "default" - "Mozilla Firefox"
 # "private" - "Mozilla Firefox — (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -109,16 +81,12 @@ urlbar-xr-notification-anchor =
     .tooltiptext = Ireki errealitate birtualaren baimenen panela
 urlbar-storage-access-anchor =
     .tooltiptext = Ireki nabigatze-jardueren baimenen panela
-urlbar-translate-notification-anchor =
-    .tooltiptext = Itzuli orri hau
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = Kudeatu zure leihoak edo pantaila gunearekin partekatzea
 urlbar-indexed-db-notification-anchor =
     .tooltiptext = Ireki lineaz kanpoko biltegiratzearen mezuen panela
 urlbar-password-notification-anchor =
     .tooltiptext = Ireki pasahitza gordetzeko mezuen panela
-urlbar-translated-notification-anchor =
-    .tooltiptext = Kudeatu orriaren itzulpena
 urlbar-plugins-notification-anchor =
     .tooltiptext = Kudeatu pluginen erabilera
 urlbar-web-rtc-share-devices-notification-anchor =
@@ -144,6 +112,9 @@ urlbar-tip-icon-description =
     .alt = Aholkua:
 urlbar-result-menu-button =
     .title = Ireki menua
+urlbar-result-menu-learn-more =
+    .label = Argibide gehiago
+    .accesskey = A
 urlbar-result-menu-remove-from-history =
     .label = Kendu historiatik
     .accesskey = K
@@ -208,10 +179,6 @@ urlbar-star-add-bookmark =
 
 ## Page Action Context Menu
 
-page-action-manage-extension =
-    .label = Kudeatu hedapena…
-page-action-remove-extension =
-    .label = Kendu hedapena
 page-action-manage-extension2 =
     .label = Kudeatu hedapena…
     .accesskey = h
@@ -406,7 +373,7 @@ identity-clear-site-data =
 identity-connection-not-secure-security-view = Ez zaude modu seguruan konektatuta gune honetara.
 identity-connection-verified = Modu seguruan zaude konektatuta gune honetara.
 identity-ev-owner-label = Ziurtagiria honi jaulkia:
-identity-description-custom-root = Mozillak ez du ziurtagiri-jaulkitzaile hau ontzat hartzen. Zure sistema eragileak edo administratzaile batek gehitu du agian. <label data-l10n-name="link">Argibide gehiago</label>
+identity-description-custom-root2 = Mozillak ez du ziurtagiri-jaulkitzaile hau ontzat hartzen. Zure sistema eragileak edo administratzaile batek gehitu du agian.
 identity-remove-cert-exception =
     .label = Kendu salbuespena
     .accesskey = K
@@ -414,14 +381,12 @@ identity-description-insecure = Gune honetarako zure konexioa ez da pribatua. Bi
 identity-description-insecure-login-forms = Orri honetan sartzen duzun saio-hasiera informazioa ez da segurua eta arriskuan egon liteke.
 identity-description-weak-cipher-intro = Gune honetarako zure konexioak zifraketa ahula erabiltzen du eta ez da pribatua.
 identity-description-weak-cipher-risk = Besteek zure informazioa ikusi edo webgunearen portaera alda lezakete.
-identity-description-active-blocked = { -brand-short-name }(e)k seguruak ez diren orri honetako atalak blokeatu ditu. <label data-l10n-name="link">Argibide gehiago</label>
+identity-description-active-blocked2 = { -brand-short-name }(e)k seguruak ez diren orri honetako atalak blokeatu ditu.
 identity-description-passive-loaded = Zure konexioa ez da pribatua eta gunearekin partekatzen duzun informazioa besteek ikus lezakete.
-identity-description-passive-loaded-insecure = Webgune honek segurua ez den edukia du (adib. irudiak). <label data-l10n-name="link">Argibide gehiago</label>
-identity-description-passive-loaded-mixed = { -brand-short-name }(e)k zenbait eduki blokeatu arren, oraindik ere segurua ez den edukia du orriak (adib. irudiak). <label data-l10n-name="link">Argibide gehiago</label>
+identity-description-passive-loaded-insecure2 = Webgune honek segurua ez den edukia du (adib. irudiak).
+identity-description-passive-loaded-mixed2 = { -brand-short-name }(e)k zenbait eduki blokeatu arren, oraindik ere segurua ez den edukia du orriak (adib. irudiak).
 identity-description-active-loaded = Wegune honek segurua ez den edukia dauka (adibidez script-ak) eta zure konexioa ez da pribatua.
 identity-description-active-loaded-insecure = Gune honekin partekatzen duzun informazioa besteek ikus lezakete (adibidez pasahitzak, mezuak, kreditu txartelak, etab.).
-identity-learn-more =
-    .value = Argibide gehiago
 identity-disable-mixed-content-blocking =
     .label = Desgaitu babesa momentuz
     .accesskey = D
@@ -498,13 +463,6 @@ popup-select-window-or-screen =
     .label = Leiho edo pantaila:
     .accesskey = L
 popup-all-windows-shared = Zure pantailan ikusgai dauden leiho guztiak partekatuko dira.
-popup-screen-sharing-block =
-    .label = Blokeatu
-    .accesskey = B
-popup-screen-sharing-always-block =
-    .label = Blokeatu beti
-    .accesskey = k
-popup-mute-notifications-checkbox = Mututu webgunearen jakinarazpenak partekatzea aktibo dagoenean
 
 ## WebRTC window or screen share tab switch warning
 
@@ -517,7 +475,6 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
-enable-devtools-popup-description = F12 lasterbidea erabiltzeko, ireki lehenik garatzaile-tresnak 'Web garapena' menutik.
 enable-devtools-popup-description2 = F12 lasterbidea erabiltzeko, ireki lehenik garatzaile-tresnak 'Nabigatzailearen tresnak' menutik.
 
 ## URL Bar
@@ -660,6 +617,20 @@ reader-view-enter-button =
 reader-view-close-button =
     .aria-label = Irten irakurtzeko ikuspegitik
 
+## Picture-in-Picture urlbar button
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+picture-in-picture-urlbar-button-open =
+    .tooltiptext = Ireki bideoa beste leiho batean ({ $shortcut })
+picture-in-picture-urlbar-button-close =
+    .tooltiptext = Itxi bideoa beste leiho batean ({ $shortcut })
+picture-in-picture-panel-header = Bideoa beste leiho batean
+picture-in-picture-panel-headline = Webgune honek ez du gomendatzen bideoa beste leiho batean ikustea
+picture-in-picture-panel-body = Bideoak agian ez dira garatzaileak nahi zuen moduan bistaratuko bideoa beste leiho batean ikusteko gaituta badago.
+picture-in-picture-enable-toggle =
+    .label = Gaitu halere
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -676,19 +647,6 @@ fullscreen-exit-mac-button = Irten pantaila osotik (esk)
 pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> (e)k zure erakuslearen kontrola dauka. Kontrola berreskuratzeko, sakatu eskape tekla.
 pointerlock-warning-no-domain = Dokumentu honek zure erakuslearen kontrola dauka. Kontrola berreskuratzeko, sakatu eskape tekla.
 
-## Subframe crash notification
-
-crashed-subframe-message = <strong>Orriaren zati batek huts egin du</strong>. Arazoaren berri eman eta ahalik eta azkarren konpontzeko, bidali mesedez txostena { -brand-product-name }(r)i.
-# The string for crashed-subframe-title.title should match crashed-subframe-message,
-# but without any markup.
-crashed-subframe-title =
-    .title = Orriaren zati batek huts egin du. Arazoaren berri eman eta ahalik eta azkarren konpontzeko, bidali mesedez txostena { -brand-product-name }(r)i.
-crashed-subframe-learnmore-link =
-    .value = Argibide gehiago
-crashed-subframe-submit =
-    .label = Bidali txostena
-    .accesskey = B
-
 ## Bookmarks panels, menus and toolbar
 
 bookmarks-manage-bookmarks =
@@ -704,6 +662,11 @@ bookmarks-other-bookmarks-menu =
     .label = Beste laster-markak
 bookmarks-mobile-bookmarks-menu =
     .label = Mugikorreko laster-markak
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
@@ -728,12 +691,13 @@ bookmarks-tools-menu-button-visibility =
             [true] Kendu laster-marken menua tresna-barratik
            *[other] Gehitu laster-marken menua tresna-barran
         }
+
+##
+
 bookmarks-search =
     .label = Bilatu laster-markak
 bookmarks-tools =
     .label = Laster-marken tresnak
-bookmarks-bookmark-edit-panel =
-    .label = Editatu laster-marka
 bookmarks-subview-edit-bookmark =
     .label = Editatu laster-marka hau…
 # The aria-label is a spoken label that should not include the word "toolbar" or
@@ -749,9 +713,6 @@ bookmarks-toolbar-placeholder =
     .title = Laster-marken tresna-barraren osagaiak
 bookmarks-toolbar-placeholder-button =
     .label = Laster-marken tresna-barraren osagaiak
-# "Bookmark" is a verb, as in "Add current tab to bookmarks".
-bookmarks-current-tab =
-    .label = Egin uneko fitxaren laster-marka
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-subview-bookmark-tab =
     .label = Egin uneko fitxaren laster-marka…
@@ -778,11 +739,6 @@ repair-text-encoding-button =
 ## Customize Toolbar Buttons
 
 # Variables:
-#  $shortcut (String): keyboard shortcut to open the add-ons manager
-toolbar-addons-themes-button =
-    .label = Gehigarriak eta itxurak
-    .tooltiptext = Kudeatu zure gehigarriak eta itxurak ({ $shortcut })
-# Variables:
 #  $shortcut (String): keyboard shortcut to open settings (only on macOS)
 toolbar-settings-button =
     .label = Ezarpenak
@@ -797,6 +753,9 @@ toolbar-overflow-customize-button =
 toolbar-button-email-link =
     .label = Bidali lotura postaz
     .tooltiptext = Bidali postaz orri honetarako lotura
+toolbar-button-logins =
+    .label = Pasahitzak
+    .tooltiptext = Ikusi eta kudeatu gordetako zure pasahitzak
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
@@ -828,13 +787,6 @@ eme-notifications-drm-content-playing-dismiss-accesskey = B
 
 panel-save-update-username = Erabiltzaile-izena
 panel-save-update-password = Pasahitza
-
-## Add-on removal warning
-
-# Variables:
-#  $name (String): The name of the addon that will be removed.
-addon-removal-title = { $name } kendu?
-addon-removal-abuse-report-checkbox = Salatu hedapen hau { -vendor-short-name }(r)i
 
 ##
 
@@ -903,8 +855,6 @@ navbar-library =
     .tooltiptext = Ikusi historia, gordetako laster-markak eta gehiago
 navbar-search =
     .title = Bilatu
-navbar-accessibility-indicator =
-    .tooltiptext = Erabilgarritasun-eginbideak gaituta
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
@@ -946,6 +896,15 @@ unified-extensions-button-permissions-needed =
         Hedapenak
         Baimenak behar dira
 
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = Hedapenak
+    .tooltiptext =
+        Hedapenak
+        Zenbait hedapen ez dira onartzen
+
 ## Autorefresh blocker
 
 refresh-blocked-refresh-label = { -brand-short-name }(e)k orri hau blokeatu du automatikoki ez berritzeko.
@@ -956,9 +915,38 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-relay = { -relay-brand-name }(e)k zure benetako helbide elektronikoa maskaratzen du, datuen inguruko urratze eta spametik babesten laguntzeko.
-firefox-relay-offer-how-we-integrate = Jarraitzearekin bat, { -relay-brand-short-name } helbide elektroniko maskara berriak sortu ahal izango dituzu zure { -brand-shorter-name } pasahitz-kudeatzailetik.
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = (Egiaztatu gabea)
+popup-notification-xpinstall-prompt-learn-more = Gehigarriak modu seguruan instalatzeko argibide gehiago
+
+## Pop-up warning
+
 # Variables:
-#  $sitename (String): name of the site where user enters their Relay mask
-#  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-does = <strong>{ $sitename }</strong> guneko mezu elektroniko guztiak birbidaliko ditugu <strong>{ $useremail }</strong> helbidera.
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message =
+    { $popupCount ->
+        [one] { -brand-short-name }(e)k galarazi egin du gune honek pop-up leiho bat irekitzea.
+       *[other] { -brand-short-name }(e)k galarazi egin du gune honek { $popupCount } pop-up leiho irekitzea.
+    }
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message = { -brand-short-name }(e)k galarazi egin du gune honek { $popupCount } pop-up leiho baino gehiago irekitzea.
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Aukerak
+           *[other] Hobespenak
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] A
+           *[other] H
+        }
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = Erakutsi '{ $popupURI }'

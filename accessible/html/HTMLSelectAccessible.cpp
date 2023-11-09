@@ -146,8 +146,8 @@ void HTMLSelectOptionAccessible::DOMAttributeChanged(
 
   if (aAttribute == nsGkAtoms::label) {
     dom::Element* elm = Elm();
-    if (!elm->HasAttr(kNameSpaceID_None, nsGkAtoms::aria_labelledby) &&
-        !elm->HasAttr(kNameSpaceID_None, nsGkAtoms::aria_label)) {
+    if (!nsAccUtils::HasARIAAttr(elm, nsGkAtoms::aria_labelledby) &&
+        !nsAccUtils::HasARIAAttr(elm, nsGkAtoms::aria_label)) {
       mDoc->FireDelayedEvent(nsIAccessibleEvent::EVENT_NAME_CHANGE, this);
     }
   }
@@ -219,23 +219,6 @@ nsRect HTMLSelectOptionAccessible::RelativeBounds(
   }
 
   return HyperTextAccessibleWrap::RelativeBounds(aBoundingFrame);
-}
-
-nsresult HTMLSelectOptionAccessible::HandleAccEvent(AccEvent* aEvent) {
-  nsresult rv = HyperTextAccessibleWrap::HandleAccEvent(aEvent);
-  NS_ENSURE_SUCCESS(rv, rv);
-
-  AccStateChangeEvent* event = downcast_accEvent(aEvent);
-  if (event && (event->GetState() == states::SELECTED)) {
-    LocalAccessible* widget = ContainerWidget();
-    if (widget && !widget->AreItemsOperable()) {
-      // Collapsed options' ACTIVE state reflects their SELECT state.
-      nsEventShell::FireEvent(this, states::ACTIVE, event->IsStateEnabled(),
-                              true);
-    }
-  }
-
-  return NS_OK;
 }
 
 void HTMLSelectOptionAccessible::ActionNameAt(uint8_t aIndex,

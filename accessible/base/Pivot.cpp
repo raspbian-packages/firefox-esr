@@ -9,14 +9,12 @@
 #include "LocalAccessible.h"
 #include "RemoteAccessible.h"
 #include "DocAccessible.h"
-#include "nsAccessibilityService.h"
 #include "nsAccUtils.h"
 
 #include "mozilla/a11y/Accessible.h"
 #include "mozilla/a11y/HyperTextAccessibleBase.h"
 #include "mozilla/dom/ChildIterator.h"
 #include "mozilla/dom/Element.h"
-#include "mozilla/StaticPrefs_accessibility.h"
 
 using namespace mozilla;
 using namespace mozilla::a11y;
@@ -65,6 +63,11 @@ Accessible* Pivot::SearchBackward(Accessible* aAnchor, PivotRule& aRule,
 
   while (acc && acc != mRoot) {
     Accessible* parent = acc->Parent();
+#if defined(ANDROID)
+    MOZ_ASSERT(
+        acc->IsLocal() || (acc->IsRemote() && parent->IsRemote()),
+        "Pivot::SearchBackward climbed out of remote subtree in Android!");
+#endif
     int32_t idxInParent = acc->IndexInParent();
     while (idxInParent > 0 && parent) {
       acc = parent->ChildAt(--idxInParent);
@@ -141,6 +144,12 @@ Accessible* Pivot::SearchForward(Accessible* aAnchor, PivotRule& aRule,
         break;
       }
       temp = temp->Parent();
+#if defined(ANDROID)
+      MOZ_ASSERT(
+          acc->IsLocal() || (acc->IsRemote() && temp->IsRemote()),
+          "Pivot::SearchForward climbed out of remote subtree in Android!");
+#endif
+
     } while (temp);
 
     if (!sibling) {
@@ -158,11 +167,6 @@ Accessible* Pivot::SearchForward(Accessible* aAnchor, PivotRule& aRule,
 }
 
 Accessible* Pivot::SearchForText(Accessible* aAnchor, bool aBackward) {
-  if (mRoot->IsRemote() &&
-      !StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-    // Not supported for RemoteAccessible when the cache is disabled.
-    return nullptr;
-  }
   Accessible* accessible = aAnchor;
   while (true) {
     Accessible* child = nullptr;
@@ -239,12 +243,6 @@ Accessible* Pivot::Last(PivotRule& aRule) {
 
 Accessible* Pivot::NextText(Accessible* aAnchor, int32_t* aStartOffset,
                             int32_t* aEndOffset, int32_t aBoundaryType) {
-  if (mRoot->IsRemote() &&
-      !StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-    // Not supported for RemoteAccessible when the cache is disabled.
-    return nullptr;
-  }
-
   int32_t tempStart = *aStartOffset, tempEnd = *aEndOffset;
   Accessible* tempPosition = aAnchor;
 
@@ -380,12 +378,6 @@ Accessible* Pivot::NextText(Accessible* aAnchor, int32_t* aStartOffset,
 
 Accessible* Pivot::PrevText(Accessible* aAnchor, int32_t* aStartOffset,
                             int32_t* aEndOffset, int32_t aBoundaryType) {
-  if (mRoot->IsRemote() &&
-      !StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-    // Not supported for RemoteAccessible when the cache is disabled.
-    return nullptr;
-  }
-
   int32_t tempStart = *aStartOffset, tempEnd = *aEndOffset;
   Accessible* tempPosition = aAnchor;
 
@@ -512,7 +504,7 @@ Accessible* Pivot::PrevText(Accessible* aAnchor, int32_t* aStartOffset,
     Accessible* childAtOffset = nullptr;
     for (int32_t i = tempEnd - 1; i >= tempStart; i--) {
       childAtOffset = text->GetChildAtOffset(i);
-      if (childAtOffset && !childAtOffset->IsText()) {
+      if (childAtOffset && childAtOffset->IsHyperText()) {
         tempStart = childAtOffset->EndOffset();
         break;
       }
@@ -520,7 +512,7 @@ Accessible* Pivot::PrevText(Accessible* aAnchor, int32_t* aStartOffset,
     // If there's an embedded character at the very end of the range, we
     // instead want to traverse into it. So restart the movement with
     // the child as the starting point.
-    if (childAtOffset && !childAtOffset->IsText() &&
+    if (childAtOffset && childAtOffset->IsHyperText() &&
         tempEnd == static_cast<int32_t>(childAtOffset->EndOffset())) {
       tempPosition = childAtOffset;
       tempStart = tempEnd = static_cast<int32_t>(
@@ -632,5 +624,46 @@ uint16_t LocalAccInSameDocRule::Match(Accessible* aAcc) {
     return nsIAccessibleTraversalRule::FILTER_MATCH |
            nsIAccessibleTraversalRule::FILTER_IGNORE_SUBTREE;
   }
+  return nsIAccessibleTraversalRule::FILTER_MATCH;
+}
+
+// Radio Button Name Rule
+
+PivotRadioNameRule::PivotRadioNameRule(const nsString& aName) : mName(aName) {}
+
+uint16_t PivotRadioNameRule::Match(Accessible* aAcc) {
+  uint16_t result = nsIAccessibleTraversalRule::FILTER_IGNORE;
+  RemoteAccessible* remote = aAcc->AsRemote();
+  if (!remote) {
+    // We need the cache to be able to fetch the name attribute below.
+    return result;
+  }
+
+  if (nsAccUtils::MustPrune(aAcc) || aAcc->IsOuterDoc()) {
+    result |= nsIAccessibleTraversalRule::FILTER_IGNORE_SUBTREE;
+  }
+
+  if (remote->IsHTMLRadioButton()) {
+    nsString currName = remote->GetCachedHTMLNameAttribute();
+    if (!currName.IsEmpty() && mName.Equals(currName)) {
+      result |= nsIAccessibleTraversalRule::FILTER_MATCH;
+    }
+  }
+
+  return result;
+}
+
+// MustPruneSameDocRule
+
+uint16_t MustPruneSameDocRule::Match(Accessible* aAcc) {
+  if (!aAcc) {
+    return nsIAccessibleTraversalRule::FILTER_IGNORE_SUBTREE;
+  }
+
+  if (nsAccUtils::MustPrune(aAcc) || aAcc->IsOuterDoc()) {
+    return nsIAccessibleTraversalRule::FILTER_MATCH |
+           nsIAccessibleTraversalRule::FILTER_IGNORE_SUBTREE;
+  }
+
   return nsIAccessibleTraversalRule::FILTER_MATCH;
 }

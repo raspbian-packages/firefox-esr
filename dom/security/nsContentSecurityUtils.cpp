@@ -149,14 +149,14 @@ nsresult RegexEval(const nsAString& aPattern, const nsAString& aString,
   // evaluation does not interact with the execution global.
   JSAutoRealm ar(cx, xpc::PrivilegedJunkScope());
 
-  JS::RootedObject regexp(
+  JS::Rooted<JSObject*> regexp(
       cx, JS::NewUCRegExpObject(cx, aPattern.BeginReading(), aPattern.Length(),
                                 JS::RegExpFlag::Unicode));
   if (!regexp) {
     return NS_ERROR_ILLEGAL_VALUE;
   }
 
-  JS::RootedValue regexResult(cx, JS::NullValue());
+  JS::Rooted<JS::Value> regexResult(cx, JS::NullValue());
 
   size_t index = 0;
   if (!JS::ExecuteRegExpNoStatics(cx, regexp, aString.BeginReading(),
@@ -182,14 +182,14 @@ nsresult RegexEval(const nsAString& aPattern, const nsAString& aString,
 
   // Now we know we have a result, and we need to extract it so we can read it.
   uint32_t length;
-  JS::RootedObject regexResultObj(cx, &regexResult.toObject());
+  JS::Rooted<JSObject*> regexResultObj(cx, &regexResult.toObject());
   if (!JS::GetArrayLength(cx, regexResultObj, &length)) {
     return NS_ERROR_NOT_AVAILABLE;
   }
   MOZ_LOG(sCSMLog, LogLevel::Verbose, ("Regex Matched %i strings", length));
 
   for (uint32_t i = 0; i < length; i++) {
-    JS::RootedValue element(cx);
+    JS::Rooted<JS::Value> element(cx);
     if (!JS_GetElement(cx, regexResultObj, i, &element)) {
       return NS_ERROR_NO_CONTENT;
     }
@@ -459,7 +459,7 @@ FilenameTypeAndDetails nsContentSecurityUtils::FilenameToFilenameType(
       sanitizedPathAndScheme.Append(u"can't get addon off main thread]"_ns);
     }
 
-    sanitizedPathAndScheme.Append(url.FilePath());
+    AppendUTF8toUTF16(url.FilePath(), sanitizedPathAndScheme);
     return FilenameTypeAndDetails(kExtensionURI, Some(sanitizedPathAndScheme));
   }
 
@@ -602,7 +602,7 @@ bool nsContentSecurityUtils::IsEvalAllowed(JSContext* cx,
       "resource://testing-common/content-task.js"_ns,
 
       // Tracked by Bug 1584605
-      "resource:///modules/translation/cld-worker.js"_ns,
+      "resource://gre/modules/translation/cld-worker.js"_ns,
 
       // require.js implements a script loader for workers. It uses eval
       // to load the script; but injection is only possible in situations
@@ -610,6 +610,11 @@ bool nsContentSecurityUtils::IsEvalAllowed(JSContext* cx,
       // it is okay to allow eval() as it adds no additional attack surface.
       // Bug 1584564 tracks requiring safe usage of require.js
       "resource://gre/modules/workers/require.js"_ns,
+
+      // The profiler's symbolication code uses a wasm module to extract symbols
+      // from the binary files result of local builds.
+      // See bug 1777479
+      "resource://devtools/client/performance-new/shared/symbolication.jsm.js"_ns,
 
       // The Browser Toolbox/Console
       "debugger"_ns,
@@ -947,8 +952,8 @@ nsresult nsContentSecurityUtils::GetHttpChannelFromPotentialMultiPart(
   return NS_OK;
 }
 
-nsresult ParseCSPAndEnforceFrameAncestorCheck(
-    nsIChannel* aChannel, nsIContentSecurityPolicy** aOutCSP) {
+nsresult CheckCSPFrameAncestorPolicy(nsIChannel* aChannel,
+                                     nsIContentSecurityPolicy** aOutCSP) {
   MOZ_ASSERT(aChannel);
 
   nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
@@ -1000,6 +1005,11 @@ nsresult ParseCSPAndEnforceFrameAncestorCheck(
   }
 
   RefPtr<nsCSPContext> csp = new nsCSPContext();
+  // This CSPContext is only used for checking frame-ancestors, we
+  // will parse the CSP again anyway. (Unless this blocks the load, but
+  // parser warnings aren't really important in that case)
+  csp->SuppressParserLogMessages();
+
   nsCOMPtr<nsIURI> selfURI;
   nsAutoString referrerSpec;
   if (httpChannel) {
@@ -1049,7 +1059,6 @@ nsresult ParseCSPAndEnforceFrameAncestorCheck(
 
   if (NS_FAILED(rv) || !safeAncestry) {
     // stop!  ERROR page!
-    aChannel->Cancel(NS_ERROR_CSP_FRAME_ANCESTOR_VIOLATION);
     return NS_ERROR_CSP_FRAME_ANCESTOR_VIOLATION;
   }
 
@@ -1059,12 +1068,40 @@ nsresult ParseCSPAndEnforceFrameAncestorCheck(
   return NS_OK;
 }
 
+void EnforceCSPFrameAncestorPolicy(nsIChannel* aChannel,
+                                   const nsresult& aError) {
+  if (aError == NS_ERROR_CSP_FRAME_ANCESTOR_VIOLATION) {
+    aChannel->Cancel(NS_ERROR_CSP_FRAME_ANCESTOR_VIOLATION);
+  }
+}
+
 void EnforceXFrameOptionsCheck(nsIChannel* aChannel,
                                nsIContentSecurityPolicy* aCsp) {
   MOZ_ASSERT(aChannel);
-  if (!FramingChecker::CheckFrameOptions(aChannel, aCsp)) {
+  bool isFrameOptionsIgnored = false;
+  // check for XFO options
+  // XFO checks can be skipped if there are frame ancestors
+  if (!FramingChecker::CheckFrameOptions(aChannel, aCsp,
+                                         isFrameOptionsIgnored)) {
     // stop!  ERROR page!
     aChannel->Cancel(NS_ERROR_XFO_VIOLATION);
+  }
+
+  if (isFrameOptionsIgnored) {
+    // log warning to console that xfo is ignored because of CSP
+    nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
+    uint64_t innerWindowID = loadInfo->GetInnerWindowID();
+    bool privateWindow = !!loadInfo->GetOriginAttributes().mPrivateBrowsingId;
+    AutoTArray<nsString, 2> params = {u"x-frame-options"_ns,
+                                      u"frame-ancestors"_ns};
+    CSP_LogLocalizedStr("IgnoringSrcBecauseOfDirective", params,
+                        u""_ns,  // no sourcefile
+                        u""_ns,  // no scriptsample
+                        0,       // no linenumber
+                        0,       // no columnnumber
+                        nsIScriptError::warningFlag,
+                        "IgnoringSrcBecauseOfDirective"_ns, innerWindowID,
+                        privateWindow);
   }
 }
 
@@ -1072,9 +1109,10 @@ void EnforceXFrameOptionsCheck(nsIChannel* aChannel,
 void nsContentSecurityUtils::PerformCSPFrameAncestorAndXFOCheck(
     nsIChannel* aChannel) {
   nsCOMPtr<nsIContentSecurityPolicy> csp;
-  nsresult rv =
-      ParseCSPAndEnforceFrameAncestorCheck(aChannel, getter_AddRefs(csp));
+  nsresult rv = CheckCSPFrameAncestorPolicy(aChannel, getter_AddRefs(csp));
+
   if (NS_FAILED(rv)) {
+    EnforceCSPFrameAncestorPolicy(aChannel, rv);
     return;
   }
 
@@ -1082,6 +1120,20 @@ void nsContentSecurityUtils::PerformCSPFrameAncestorAndXFOCheck(
   // checks because if frame-ancestors is present, then x-frame-options
   // will be discarded
   EnforceXFrameOptionsCheck(aChannel, csp);
+}
+/* static */
+bool nsContentSecurityUtils::CheckCSPFrameAncestorAndXFO(nsIChannel* aChannel) {
+  nsCOMPtr<nsIContentSecurityPolicy> csp;
+  nsresult rv = CheckCSPFrameAncestorPolicy(aChannel, getter_AddRefs(csp));
+
+  if (NS_FAILED(rv)) {
+    return false;
+  }
+
+  bool isFrameOptionsIgnored = false;
+
+  return FramingChecker::CheckFrameOptions(aChannel, csp,
+                                           isFrameOptionsIgnored);
 }
 
 #if defined(DEBUG)
@@ -1096,6 +1148,13 @@ void nsContentSecurityUtils::AssertAboutPageHasCSP(Document* aDocument) {
   // should at least be as strong as:
   // <meta http-equiv="Content-Security-Policy" content="default-src chrome:;
   // object-src 'none'"/>
+
+  // This is a data document, created using DOMParser or
+  // document.implementation.createDocument() or such, not an about: page which
+  // is loaded as a web page.
+  if (aDocument->IsLoadedAsData()) {
+    return;
+  }
 
   // Check if we should skip the assertion
   if (StaticPrefs::dom_security_skip_about_page_has_csp_assert()) {
@@ -1122,26 +1181,26 @@ void nsContentSecurityUtils::AssertAboutPageHasCSP(Document* aDocument) {
     nsAutoString parsedPolicyStr;
     for (uint32_t i = 0; i < policyCount; ++i) {
       csp->GetPolicyString(i, parsedPolicyStr);
-      if (parsedPolicyStr.Find("default-src") >= 0) {
+      if (parsedPolicyStr.Find(u"default-src") >= 0) {
         foundDefaultSrc = true;
       }
-      if (parsedPolicyStr.Find("object-src 'none'") >= 0) {
+      if (parsedPolicyStr.Find(u"object-src 'none'") >= 0) {
         foundObjectSrc = true;
       }
-      if (parsedPolicyStr.Find("'unsafe-eval'") >= 0) {
+      if (parsedPolicyStr.Find(u"'unsafe-eval'") >= 0) {
         foundUnsafeEval = true;
       }
-      if (parsedPolicyStr.Find("'unsafe-inline'") >= 0) {
+      if (parsedPolicyStr.Find(u"'unsafe-inline'") >= 0) {
         foundUnsafeInline = true;
       }
-      if (parsedPolicyStr.Find("script-src") >= 0) {
+      if (parsedPolicyStr.Find(u"script-src") >= 0) {
         foundScriptSrc = true;
       }
-      if (parsedPolicyStr.Find("worker-src") >= 0) {
+      if (parsedPolicyStr.Find(u"worker-src") >= 0) {
         foundWorkerSrc = true;
       }
-      if (parsedPolicyStr.Find("http:") >= 0 ||
-          parsedPolicyStr.Find("https:") >= 0) {
+      if (parsedPolicyStr.Find(u"http:") >= 0 ||
+          parsedPolicyStr.Find(u"https:") >= 0) {
         foundWebScheme = true;
       }
     }

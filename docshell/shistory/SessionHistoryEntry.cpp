@@ -20,7 +20,7 @@
 #include "nsXULAppAPI.h"
 #include "mozilla/PresState.h"
 #include "mozilla/StaticPrefs_fission.h"
-#include "mozilla/Tuple.h"
+
 #include "mozilla/dom/BrowserParent.h"
 #include "mozilla/dom/CanonicalBrowsingContext.h"
 #include "mozilla/dom/ContentChild.h"
@@ -45,6 +45,7 @@ SessionHistoryInfo::SessionHistoryInfo(nsDocShellLoadState* aLoadState,
     : mURI(aLoadState->URI()),
       mOriginalURI(aLoadState->OriginalURI()),
       mResultPrincipalURI(aLoadState->ResultPrincipalURI()),
+      mUnstrippedURI(aLoadState->GetUnstrippedURI()),
       mLoadType(aLoadState->LoadType()),
       mSrcdocData(aLoadState->SrcdocData().IsVoid()
                       ? Nothing()
@@ -103,6 +104,7 @@ SessionHistoryInfo::SessionHistoryInfo(
   aChannel->GetLoadInfo(getter_AddRefs(loadInfo));
 
   loadInfo->GetResultPrincipalURI(getter_AddRefs(mResultPrincipalURI));
+  loadInfo->GetUnstrippedURI(getter_AddRefs(mUnstrippedURI));
   loadInfo->GetTriggeringPrincipal(
       getter_AddRefs(mSharedState.Get()->mTriggeringPrincipal));
   loadInfo->GetPrincipalToInherit(
@@ -135,6 +137,7 @@ void SessionHistoryInfo::Reset(nsIURI* aURI, const nsID& aDocShellID,
   mURI = aURI;
   mOriginalURI = nullptr;
   mResultPrincipalURI = nullptr;
+  mUnstrippedURI = nullptr;
   mReferrerInfo = nullptr;
   // Default title is the URL.
   nsAutoCString spec;
@@ -245,6 +248,7 @@ void SessionHistoryInfo::SetSaveLayoutStateFlag(bool aSaveLayoutStateFlag) {
 void SessionHistoryInfo::FillLoadInfo(nsDocShellLoadState& aLoadState) const {
   aLoadState.SetOriginalURI(mOriginalURI);
   aLoadState.SetMaybeResultPrincipalURI(Some(mResultPrincipalURI));
+  aLoadState.SetUnstrippedURI(mUnstrippedURI);
   aLoadState.SetLoadReplace(mLoadReplace);
   nsCOMPtr<nsIInputStream> postData = GetPostData();
   aLoadState.SetPostDataStream(postData);
@@ -375,7 +379,7 @@ void SessionHistoryInfo::SharedState::Init(
 
 static uint64_t gLoadingSessionHistoryInfoLoadId = 0;
 
-nsTHashMap<nsUint64HashKey, SessionHistoryEntry*>*
+nsTHashMap<nsUint64HashKey, SessionHistoryEntry::LoadingEntry>*
     SessionHistoryEntry::sLoadIdToEntry = nullptr;
 
 LoadingSessionHistoryInfo::LoadingSessionHistoryInfo(
@@ -385,14 +389,13 @@ LoadingSessionHistoryInfo::LoadingSessionHistoryInfo(
 }
 
 LoadingSessionHistoryInfo::LoadingSessionHistoryInfo(
-    SessionHistoryEntry* aEntry, LoadingSessionHistoryInfo* aInfo)
+    SessionHistoryEntry* aEntry, const LoadingSessionHistoryInfo* aInfo)
     : mInfo(aEntry->Info()),
       mLoadId(aInfo->mLoadId),
       mLoadIsFromSessionHistory(aInfo->mLoadIsFromSessionHistory),
       mOffset(aInfo->mOffset),
       mLoadingCurrentEntry(aInfo->mLoadingCurrentEntry) {
-  MOZ_ASSERT(SessionHistoryEntry::sLoadIdToEntry &&
-             SessionHistoryEntry::sLoadIdToEntry->Get(mLoadId) == aEntry);
+  MOZ_ASSERT(SessionHistoryEntry::GetByLoadId(mLoadId)->mEntry == aEntry);
 }
 
 LoadingSessionHistoryInfo::LoadingSessionHistoryInfo(
@@ -413,25 +416,31 @@ LoadingSessionHistoryInfo::CreateLoadInfo() const {
 
 static uint32_t gEntryID;
 
-SessionHistoryEntry* SessionHistoryEntry::GetByLoadId(uint64_t aLoadId) {
+SessionHistoryEntry::LoadingEntry* SessionHistoryEntry::GetByLoadId(
+    uint64_t aLoadId) {
   MOZ_ASSERT(XRE_IsParentProcess());
   if (!sLoadIdToEntry) {
     return nullptr;
   }
 
-  return sLoadIdToEntry->Get(aLoadId);
+  return sLoadIdToEntry->Lookup(aLoadId).DataPtrOrNull();
 }
 
 void SessionHistoryEntry::SetByLoadId(uint64_t aLoadId,
                                       SessionHistoryEntry* aEntry) {
   if (!sLoadIdToEntry) {
-    sLoadIdToEntry = new nsTHashMap<nsUint64HashKey, SessionHistoryEntry*>();
+    sLoadIdToEntry = new nsTHashMap<nsUint64HashKey, LoadingEntry>();
   }
 
   MOZ_LOG(
       gSHLog, LogLevel::Verbose,
       ("SessionHistoryEntry::SetByLoadId(%" PRIu64 " - %p)", aLoadId, aEntry));
-  sLoadIdToEntry->InsertOrUpdate(aLoadId, aEntry);
+  sLoadIdToEntry->InsertOrUpdate(
+      aLoadId, LoadingEntry{
+                   .mEntry = aEntry,
+                   .mInfoSnapshotForValidation =
+                       MakeUnique<SessionHistoryInfo>(aEntry->Info()),
+               });
 }
 
 void SessionHistoryEntry::RemoveLoadId(uint64_t aLoadId) {
@@ -479,7 +488,7 @@ SessionHistoryEntry::~SessionHistoryEntry() {
 
   if (sLoadIdToEntry) {
     sLoadIdToEntry->RemoveIf(
-        [this](auto& aIter) { return aIter.Data() == this; });
+        [this](auto& aIter) { return aIter.Data().mEntry == this; });
     if (sLoadIdToEntry->IsEmpty()) {
       delete sLoadIdToEntry;
       sLoadIdToEntry = nullptr;
@@ -526,6 +535,19 @@ SessionHistoryEntry::GetResultPrincipalURI(nsIURI** aResultPrincipalURI) {
 NS_IMETHODIMP
 SessionHistoryEntry::SetResultPrincipalURI(nsIURI* aResultPrincipalURI) {
   mInfo->mResultPrincipalURI = aResultPrincipalURI;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+SessionHistoryEntry::GetUnstrippedURI(nsIURI** aUnstrippedURI) {
+  nsCOMPtr<nsIURI> unstrippedURI = mInfo->mUnstrippedURI;
+  unstrippedURI.forget(aUnstrippedURI);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+SessionHistoryEntry::SetUnstrippedURI(nsIURI* aUnstrippedURI) {
+  mInfo->mUnstrippedURI = aUnstrippedURI;
   return NS_OK;
 }
 
@@ -691,6 +713,12 @@ SessionHistoryEntry::GetPostData(nsIInputStream** aPostData) {
 NS_IMETHODIMP
 SessionHistoryEntry::SetPostData(nsIInputStream* aPostData) {
   mInfo->SetPostData(aPostData);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+SessionHistoryEntry::GetHasPostData(bool* aResult) {
+  *aResult = mInfo->HasPostData();
   return NS_OK;
 }
 
@@ -1050,9 +1078,9 @@ SessionHistoryEntry::Create(
     nsIPrincipal* aPartitionedPrincipalToInherit,
     nsIContentSecurityPolicy* aCsp, const nsID& aDocshellID,
     bool aDynamicCreation, nsIURI* aOriginalURI, nsIURI* aResultPrincipalURI,
-    bool aLoadReplace, nsIReferrerInfo* aReferrerInfo, const nsAString& aSrcdoc,
-    bool aSrcdocEntry, nsIURI* aBaseURI, bool aSaveLayoutState, bool aExpired,
-    bool aUserActivation) {
+    nsIURI* aUnstrippedURI, bool aLoadReplace, nsIReferrerInfo* aReferrerInfo,
+    const nsAString& aSrcdoc, bool aSrcdocEntry, nsIURI* aBaseURI,
+    bool aSaveLayoutState, bool aExpired, bool aUserActivation) {
   MOZ_CRASH("Might need to implement this");
   return NS_ERROR_NOT_IMPLEMENTED;
 }
@@ -1392,7 +1420,8 @@ SessionHistoryEntry::GetBfcacheID(uint64_t* aBfcacheID) {
 }
 
 NS_IMETHODIMP
-SessionHistoryEntry::GetWireframe(JSContext* aCx, JS::MutableHandleValue aOut) {
+SessionHistoryEntry::GetWireframe(JSContext* aCx,
+                                  JS::MutableHandle<JS::Value> aOut) {
   if (mWireframe.isNothing()) {
     aOut.set(JS::NullValue());
   } else if (NS_WARN_IF(!mWireframe->ToObjectInternal(aCx, aOut))) {
@@ -1402,7 +1431,7 @@ SessionHistoryEntry::GetWireframe(JSContext* aCx, JS::MutableHandleValue aOut) {
 }
 
 NS_IMETHODIMP
-SessionHistoryEntry::SetWireframe(JSContext* aCx, JS::HandleValue aArg) {
+SessionHistoryEntry::SetWireframe(JSContext* aCx, JS::Handle<JS::Value> aArg) {
   if (aArg.isNullOrUndefined()) {
     mWireframe = Nothing();
     return NS_OK;
@@ -1499,33 +1528,21 @@ void IPDLParamTraits<dom::SessionHistoryInfo>::Write(
     const dom::SessionHistoryInfo& aParam) {
   nsCOMPtr<nsIInputStream> postData = aParam.GetPostData();
 
-  Maybe<Tuple<uint32_t, dom::ClonedMessageData>> stateData;
+  Maybe<std::tuple<uint32_t, dom::ClonedMessageData>> stateData;
   if (aParam.mStateData) {
     stateData.emplace();
-    uint32_t version;
-    NS_ENSURE_SUCCESS_VOID(aParam.mStateData->GetFormatVersion(&version));
-    Get<0>(*stateData) = version;
-
-    IToplevelProtocol* topLevel = aActor->ToplevelProtocol();
-    MOZ_RELEASE_ASSERT(topLevel->GetProtocolId() == PContentMsgStart);
-    if (topLevel->GetSide() == ChildSide) {
-      auto* contentChild = static_cast<dom::ContentChild*>(topLevel);
-      if (NS_WARN_IF(!aParam.mStateData->BuildClonedMessageDataForChild(
-              contentChild, Get<1>(*stateData)))) {
-        return;
-      }
-    } else {
-      auto* contentParent = static_cast<dom::ContentParent*>(topLevel);
-      if (NS_WARN_IF(!aParam.mStateData->BuildClonedMessageDataForParent(
-              contentParent, Get<1>(*stateData)))) {
-        return;
-      }
-    }
+    // FIXME: We should fail more aggressively if this fails, as currently we'll
+    // just early return and the deserialization will break.
+    NS_ENSURE_SUCCESS_VOID(
+        aParam.mStateData->GetFormatVersion(&std::get<0>(*stateData)));
+    NS_ENSURE_TRUE_VOID(
+        aParam.mStateData->BuildClonedMessageData(std::get<1>(*stateData)));
   }
 
   WriteIPDLParam(aWriter, aActor, aParam.mURI);
   WriteIPDLParam(aWriter, aActor, aParam.mOriginalURI);
   WriteIPDLParam(aWriter, aActor, aParam.mResultPrincipalURI);
+  WriteIPDLParam(aWriter, aActor, aParam.mUnstrippedURI);
   WriteIPDLParam(aWriter, aActor, aParam.mReferrerInfo);
   WriteIPDLParam(aWriter, aActor, aParam.mTitle);
   WriteIPDLParam(aWriter, aActor, aParam.mName);
@@ -1562,11 +1579,12 @@ void IPDLParamTraits<dom::SessionHistoryInfo>::Write(
 bool IPDLParamTraits<dom::SessionHistoryInfo>::Read(
     IPC::MessageReader* aReader, IProtocol* aActor,
     dom::SessionHistoryInfo* aResult) {
-  Maybe<Tuple<uint32_t, dom::ClonedMessageData>> stateData;
+  Maybe<std::tuple<uint32_t, dom::ClonedMessageData>> stateData;
   uint64_t sharedId;
   if (!ReadIPDLParam(aReader, aActor, &aResult->mURI) ||
       !ReadIPDLParam(aReader, aActor, &aResult->mOriginalURI) ||
       !ReadIPDLParam(aReader, aActor, &aResult->mResultPrincipalURI) ||
+      !ReadIPDLParam(aReader, aActor, &aResult->mUnstrippedURI) ||
       !ReadIPDLParam(aReader, aActor, &aResult->mReferrerInfo) ||
       !ReadIPDLParam(aReader, aActor, &aResult->mTitle) ||
       !ReadIPDLParam(aReader, aActor, &aResult->mName) ||
@@ -1668,15 +1686,9 @@ bool IPDLParamTraits<dom::SessionHistoryInfo>::Read(
   }
 
   if (stateData.isSome()) {
-    uint32_t version = Get<0>(*stateData);
+    uint32_t version = std::get<0>(*stateData);
     aResult->mStateData = new nsStructuredCloneContainer(version);
-    if (aActor->GetSide() == ChildSide) {
-      aResult->mStateData->StealFromClonedMessageDataForChild(
-          Get<1>(*stateData));
-    } else {
-      aResult->mStateData->StealFromClonedMessageDataForParent(
-          Get<1>(*stateData));
-    }
+    aResult->mStateData->StealFromClonedMessageData(std::get<1>(*stateData));
   }
   MOZ_ASSERT_IF(stateData.isNothing(), !aResult->mStateData);
   return true;

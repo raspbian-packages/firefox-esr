@@ -66,7 +66,8 @@ nsresult NewObjectOutputWrappedStorageStream(
 }
 
 nsresult NewBufferFromStorageStream(nsIStorageStream* storageStream,
-                                    UniquePtr<char[]>* buffer, uint32_t* len) {
+                                    UniqueFreePtr<char[]>* buffer,
+                                    uint32_t* len) {
   nsresult rv;
   nsCOMPtr<nsIInputStream> inputStream;
   rv = storageStream->NewInputStream(0, getter_AddRefs(inputStream));
@@ -78,7 +79,8 @@ nsresult NewBufferFromStorageStream(nsIStorageStream* storageStream,
   NS_ENSURE_TRUE(avail64 <= UINT32_MAX, NS_ERROR_FILE_TOO_BIG);
 
   uint32_t avail = (uint32_t)avail64;
-  auto temp = MakeUnique<char[]>(avail);
+  auto temp = UniqueFreePtr<char[]>(
+      reinterpret_cast<char*>(malloc(sizeof(char) * avail)));
   uint32_t read;
   rv = inputStream->Read(temp.get(), avail, &read);
   if (NS_SUCCEEDED(rv) && avail != read) rv = NS_ERROR_UNEXPECTED;
@@ -102,9 +104,8 @@ static inline bool canonicalizeBase(nsAutoCString& spec, nsACString& out) {
   rv = mozilla::Omnijar::GetURIString(mozilla::Omnijar::APP, appBase);
   if (NS_FAILED(rv)) return false;
 
-  bool underGre = !greBase.Compare(spec.get(), false, greBase.Length());
-  bool underApp =
-      appBase.Length() && !appBase.Compare(spec.get(), false, appBase.Length());
+  bool underGre = StringBeginsWith(spec, greBase);
+  bool underApp = appBase.Length() && StringBeginsWith(spec, appBase);
 
   if (!underGre && !underApp) return false;
 

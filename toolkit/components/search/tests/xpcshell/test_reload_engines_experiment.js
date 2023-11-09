@@ -65,9 +65,8 @@ add_task(async function test_initial_config_correct() {
 
 add_task(async function test_config_updated_engine_changes() {
   // Update the config.
-  const reloadObserved = SearchTestUtils.promiseSearchNotification(
-    "engines-reloaded"
-  );
+  const reloadObserved =
+    SearchTestUtils.promiseSearchNotification("engines-reloaded");
   const enginesAdded = [];
   const enginesModified = [];
   const enginesRemoved = [];
@@ -125,7 +124,9 @@ add_task(async function test_config_updated_engine_changes() {
   );
 
   Assert.equal(
-    Services.search.wrappedJSObject._settings.getAttribute("useSavedOrder"),
+    Services.search.wrappedJSObject._settings.getMetaDataAttribute(
+      "useSavedOrder"
+    ),
     false,
     "Should not have set the useSavedOrder preference"
   );

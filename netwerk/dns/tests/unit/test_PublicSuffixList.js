@@ -3,14 +3,12 @@
 
 "use strict";
 
-const { PublicSuffixList } = ChromeUtils.import(
-  "resource://gre/modules/netwerk-dns/PublicSuffixList.jsm"
+const { PublicSuffixList } = ChromeUtils.importESModule(
+  "resource://gre/modules/netwerk-dns/PublicSuffixList.sys.mjs"
 );
-const { TestUtils } = ChromeUtils.import(
-  "resource://testing-common/TestUtils.jsm"
+const { TestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/TestUtils.sys.mjs"
 );
-
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const CLIENT = PublicSuffixList.CLIENT;
 const SIGNAL = "public-suffix-list-updated";

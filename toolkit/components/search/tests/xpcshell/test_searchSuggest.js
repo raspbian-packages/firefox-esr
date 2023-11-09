@@ -8,20 +8,20 @@
 
 "use strict";
 
-const { AppConstants } = ChromeUtils.import(
-  "resource://gre/modules/AppConstants.jsm"
+const { AppConstants } = ChromeUtils.importESModule(
+  "resource://gre/modules/AppConstants.sys.mjs"
 );
-const { FormHistory } = ChromeUtils.import(
-  "resource://gre/modules/FormHistory.jsm"
+const { FormHistory } = ChromeUtils.importESModule(
+  "resource://gre/modules/FormHistory.sys.mjs"
 );
-const { SearchSuggestionController } = ChromeUtils.import(
-  "resource://gre/modules/SearchSuggestionController.jsm"
+const { SearchSuggestionController } = ChromeUtils.importESModule(
+  "resource://gre/modules/SearchSuggestionController.sys.mjs"
 );
-const { PromiseUtils } = ChromeUtils.import(
-  "resource://gre/modules/PromiseUtils.jsm"
+const { PromiseUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/PromiseUtils.sys.mjs"
 );
-const { TelemetryTestUtils } = ChromeUtils.import(
-  "resource://testing-common/TelemetryTestUtils.jsm"
+const { TelemetryTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/TelemetryTestUtils.sys.mjs"
 );
 
 const ENGINE_NAME = "other";
@@ -39,6 +39,14 @@ var getEngine, postEngine, unresolvableEngine, alternateJSONEngine;
 
 add_task(async function setup() {
   Services.prefs.setBoolPref("browser.search.suggest.enabled", true);
+  // These tests intentionally test broken connections.
+  consoleAllowList = consoleAllowList.concat([
+    "Non-200 status or empty HTTP response: 404",
+    "Non-200 status or empty HTTP response: 500",
+    "Unexpected response, searchString does not match remote response",
+    "HTTP request timeout",
+    "HTTP error",
+  ]);
 
   let server = useHttpServer();
   server.registerContentType("sjs", "sjs");
@@ -78,66 +86,23 @@ add_task(async function add_test_engines() {
     alternativeJSONType: true,
   };
 
-  getEngine = await SearchTestUtils.promiseNewSearchEngine(
-    `${gDataUrl}engineMaker.sjs?${JSON.stringify(getEngineData)}`
-  );
-  postEngine = await SearchTestUtils.promiseNewSearchEngine(
-    `${gDataUrl}engineMaker.sjs?${JSON.stringify(postEngineData)}`
-  );
-  unresolvableEngine = await SearchTestUtils.promiseNewSearchEngine(
-    `${gDataUrl}engineMaker.sjs?${JSON.stringify(unresolvableEngineData)}`
-  );
-  alternateJSONEngine = await SearchTestUtils.promiseNewSearchEngine(
-    `${gDataUrl}engineMaker.sjs?${JSON.stringify(
+  getEngine = await SearchTestUtils.promiseNewSearchEngine({
+    url: `${gDataUrl}engineMaker.sjs?${JSON.stringify(getEngineData)}`,
+  });
+  postEngine = await SearchTestUtils.promiseNewSearchEngine({
+    url: `${gDataUrl}engineMaker.sjs?${JSON.stringify(postEngineData)}`,
+  });
+  unresolvableEngine = await SearchTestUtils.promiseNewSearchEngine({
+    url: `${gDataUrl}engineMaker.sjs?${JSON.stringify(unresolvableEngineData)}`,
+  });
+  alternateJSONEngine = await SearchTestUtils.promiseNewSearchEngine({
+    url: `${gDataUrl}engineMaker.sjs?${JSON.stringify(
       alternateJSONSuggestEngineData
-    )}`
-  );
+    )}`,
+  });
 });
 
 // Begin tests
-
-add_task(async function simple_no_result_callback() {
-  let histogram = TelemetryTestUtils.getAndClearKeyedHistogram(
-    SEARCH_TELEMETRY_LATENCY
-  );
-
-  await new Promise(resolve => {
-    let controller = new SearchSuggestionController(result => {
-      Assert.equal(result.term, "no remote");
-      Assert.equal(result.local.length, 0);
-      Assert.equal(result.remote.length, 0);
-      resolve();
-    });
-
-    controller.fetch("no remote", false, getEngine);
-  });
-
-  assertLatencyHistogram(histogram, true);
-});
-
-add_task(async function simple_no_result_callback_and_promise() {
-  let histogram = TelemetryTestUtils.getAndClearKeyedHistogram(
-    SEARCH_TELEMETRY_LATENCY
-  );
-
-  // Make sure both the callback and promise get results
-  let deferred = PromiseUtils.defer();
-  let controller = new SearchSuggestionController(result => {
-    Assert.equal(result.term, "no results");
-    Assert.equal(result.local.length, 0);
-    Assert.equal(result.remote.length, 0);
-    deferred.resolve();
-  });
-
-  let result = await controller.fetch("no results", false, getEngine);
-  Assert.equal(result.term, "no results");
-  Assert.equal(result.local.length, 0);
-  Assert.equal(result.remote.length, 0);
-
-  await deferred.promise;
-
-  assertLatencyHistogram(histogram, true);
-});
 
 add_task(async function simple_no_result_promise() {
   let histogram = TelemetryTestUtils.getAndClearKeyedHistogram(
@@ -414,32 +379,6 @@ add_task(async function fetch_twice_in_a_row() {
   // Only the second fetch's latency should be recorded since the first fetch
   // was aborted and latencies for aborted fetches are not recorded.
   assertLatencyHistogram(histogram, true);
-});
-
-add_task(async function fetch_twice_subset_reuse_formHistoryResult() {
-  // This tests if we mess up re-using the cached form history result.
-  // Two entries since the first will match the first fetch but not the second.
-  await updateSearchHistory("bump", "delay local");
-  await updateSearchHistory("bump", "delayed local");
-
-  let controller = new SearchSuggestionController();
-  let result = await controller.fetch("delay", false, getEngine);
-  Assert.equal(result.term, "delay");
-  Assert.equal(result.local.length, 2);
-  Assert.equal(result.local[0].value, "delay local");
-  Assert.equal(result.local[1].value, "delayed local");
-  Assert.equal(result.remote.length, 1);
-  Assert.equal(result.remote[0].value, "delay");
-
-  // Remove the entry from the DB but it should remain in the cached formHistoryResult.
-  await updateSearchHistory("remove", "delayed local");
-
-  let result2 = await controller.fetch("delayed ", false, getEngine);
-  Assert.equal(result2.term, "delayed ");
-  Assert.equal(result2.local.length, 1);
-  Assert.equal(result2.local[0].value, "delayed local");
-  Assert.equal(result2.remote.length, 1);
-  Assert.equal(result2.remote[0].value, "delayed ");
 });
 
 add_task(async function both_identical_with_more_than_max_results() {
@@ -895,7 +834,7 @@ add_task(async function minus_one_results_requested() {
 
 add_task(async function test_userContextId() {
   let controller = new SearchSuggestionController();
-  controller._fetchRemote = function(
+  controller._fetchRemote = function (
     searchTerm,
     engine,
     privateMode,
@@ -923,25 +862,10 @@ add_task(async function suggestions_contain_escaped_unicode() {
 // Helpers
 
 function updateSearchHistory(operation, value) {
-  return new Promise((resolve, reject) => {
-    FormHistory.update(
-      {
-        op: operation,
-        fieldname: "searchbar-history",
-        value,
-      },
-      {
-        handleError(error) {
-          do_throw("Error occurred updating form history: " + error);
-          reject(error);
-        },
-        handleCompletion(reason) {
-          if (!reason) {
-            resolve();
-          }
-        },
-      }
-    );
+  return FormHistory.update({
+    op: operation,
+    fieldname: "searchbar-history",
+    value,
   });
 }
 

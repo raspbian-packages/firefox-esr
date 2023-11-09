@@ -96,43 +96,10 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Отмятане на страницата
-    .accesskey = м
-    .tooltiptext = Отмятане на страницата
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Отмятане на страница
-    .accesskey = м
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Промяна на отметка
-    .accesskey = м
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Отмятане на страницата
-    .accesskey = м
-    .tooltiptext = Отмятане на страницата ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Промяна на отметка
-    .accesskey = м
-    .tooltiptext = Промяна на отметка
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Промяна на отметка
-    .accesskey = м
-    .tooltiptext = Промяна на отметка ({ $shortcut })
+main-context-menu-bookmark-page =
+    .aria-label = Отмятане на страница...
+    .accesskey = О
+    .tooltiptext = Отмятане на страница
 
 main-context-menu-open-link =
     .label = Отваряне на препратката
@@ -153,10 +120,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Отваряне в поверителен прозорец
     .accesskey = в
-
-main-context-menu-bookmark-link =
-    .label = Отмятане на препратка
-    .accesskey = о
 
 main-context-menu-save-link =
     .label = Запазване на препратката като…
@@ -324,14 +287,6 @@ main-context-menu-audio-email =
     .label = Изпращане на аудио по мейл…
     .accesskey = у
 
-main-context-menu-plugin-play =
-    .label = Включване на приставката
-    .accesskey = т
-
-main-context-menu-plugin-hide =
-    .label = Скриване на приставка
-    .accesskey = С
-
 main-context-menu-save-to-pocket =
     .label = Запазване на страница в { -pocket-brand-name }
     .accesskey = с
@@ -390,10 +345,6 @@ main-context-menu-frame-reload =
     .label = Презареждане на рамката
     .accesskey = з
 
-main-context-menu-frame-bookmark =
-    .label = Отмятане на рамката
-    .accesskey = р
-
 main-context-menu-frame-save-as =
     .label = Запазване на рамката като…
     .accesskey = р
@@ -410,8 +361,8 @@ main-context-menu-frame-view-info =
     .label = Информация за рамката
     .accesskey = р
 
-main-context-menu-print-selection =
-    .label = Отпечатване на избраното
+main-context-menu-print-selection-2 =
+    .label = Отпечатване на избраното…
     .accesskey = п
 
 main-context-menu-view-selection-source =

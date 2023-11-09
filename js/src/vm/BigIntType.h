@@ -8,30 +8,41 @@
 #define vm_BigIntType_h
 
 #include "mozilla/Assertions.h"
+#include "mozilla/OperatorNewExtensions.h"
 #include "mozilla/Range.h"
 #include "mozilla/Span.h"
 
 #include "jstypes.h"
-#include "gc/Barrier.h"
-#include "gc/GC.h"
-#include "gc/Nursery.h"
-#include "js/AllocPolicy.h"
-#include "js/GCHashTable.h"
+
+#include "gc/Allocator.h"
+#include "gc/Cell.h"
+#include "gc/StoreBuffer.h"
 #include "js/Result.h"
 #include "js/RootingAPI.h"
 #include "js/TraceKind.h"
 #include "js/TypeDecls.h"
-#include "vm/StringType.h"
+
+namespace js {
+
+namespace gc {
+class TenuringTracer;
+}  // namespace gc
+
+namespace jit {
+class MacroAssembler;
+}  // namespace jit
+
+}  // namespace js
 
 namespace JS {
 
 class JS_PUBLIC_API BigInt;
 
-}  // namespace JS
-
-namespace JS {
-
 class BigInt final : public js::gc::CellWithLengthAndFlags {
+  friend class js::gc::CellAllocator;
+
+  BigInt() = default;
+
  public:
   using Digit = uintptr_t;
 
@@ -104,9 +115,9 @@ class BigInt final : public js::gc::CellWithLengthAndFlags {
   size_t sizeOfExcludingThis(mozilla::MallocSizeOf mallocSizeOf) const;
   size_t sizeOfExcludingThisInNursery(mozilla::MallocSizeOf mallocSizeOf) const;
 
-  static BigInt* createUninitialized(
-      JSContext* cx, size_t digitLength, bool isNegative,
-      js::gc::InitialHeap heap = js::gc::DefaultHeap);
+  static BigInt* createUninitialized(JSContext* cx, size_t digitLength,
+                                     bool isNegative,
+                                     js::gc::Heap heap = js::gc::Heap::Default);
   static BigInt* createFromDouble(JSContext* cx, double d);
   static BigInt* createFromUint64(JSContext* cx, uint64_t n);
   static BigInt* createFromInt64(JSContext* cx, int64_t n);
@@ -114,13 +125,12 @@ class BigInt final : public js::gc::CellWithLengthAndFlags {
   static BigInt* createFromNonZeroRawUint64(JSContext* cx, uint64_t n,
                                             bool isNegative);
   // FIXME: Cache these values.
-  static BigInt* zero(JSContext* cx,
-                      js::gc::InitialHeap heap = js::gc::DefaultHeap);
+  static BigInt* zero(JSContext* cx, js::gc::Heap heap = js::gc::Heap::Default);
   static BigInt* one(JSContext* cx);
   static BigInt* negativeOne(JSContext* cx);
 
   static BigInt* copy(JSContext* cx, Handle<BigInt*> x,
-                      js::gc::InitialHeap heap = js::gc::DefaultHeap);
+                      js::gc::Heap heap = js::gc::Heap::Default);
   static BigInt* add(JSContext* cx, Handle<BigInt*> x, Handle<BigInt*> y);
   static BigInt* sub(JSContext* cx, Handle<BigInt*> x, Handle<BigInt*> y);
   static BigInt* mul(JSContext* cx, Handle<BigInt*> x, Handle<BigInt*> y);
@@ -202,20 +212,16 @@ class BigInt final : public js::gc::CellWithLengthAndFlags {
   static BigInt* parseLiteral(JSContext* cx,
                               const mozilla::Range<const CharT> chars,
                               bool* haveParseError,
-                              js::gc::InitialHeap heap = js::gc::DefaultHeap);
+                              js::gc::Heap heap = js::gc::Heap::Default);
   template <typename CharT>
-  static BigInt* parseLiteralDigits(
-      JSContext* cx, const mozilla::Range<const CharT> chars, unsigned radix,
-      bool isNegative, bool* haveParseError,
-      js::gc::InitialHeap heap = js::gc::DefaultHeap);
+  static BigInt* parseLiteralDigits(JSContext* cx,
+                                    const mozilla::Range<const CharT> chars,
+                                    unsigned radix, bool isNegative,
+                                    bool* haveParseError,
+                                    js::gc::Heap heap = js::gc::Heap::Default);
 
   template <typename CharT>
   static bool literalIsZero(const mozilla::Range<const CharT> chars);
-
-  // Check a literal for a non-zero character after the radix indicators
-  // have been removed
-  template <typename CharT>
-  static bool literalIsZeroNoRadix(const mozilla::Range<const CharT> chars);
 
   static int8_t compare(BigInt* lhs, BigInt* rhs);
   static bool equal(BigInt* lhs, BigInt* rhs);
@@ -409,7 +415,6 @@ class BigInt final : public js::gc::CellWithLengthAndFlags {
   friend struct ::JSStructuredCloneReader;
   friend struct ::JSStructuredCloneWriter;
 
-  BigInt() = delete;
   BigInt(const BigInt& other) = delete;
   void operator=(const BigInt& other) = delete;
 
@@ -433,7 +438,7 @@ class BigInt final : public js::gc::CellWithLengthAndFlags {
   static constexpr size_t inlineDigitsLength() { return InlineDigitsLength; }
 
  private:
-  friend class js::TenuringTracer;
+  friend class js::gc::TenuringTracer;
 };
 
 static_assert(
@@ -455,8 +460,8 @@ extern JS::BigInt* NumberToBigInt(JSContext* cx, double d);
 
 // Parse a BigInt from a string, using the method specified for StringToBigInt.
 // Used by the BigInt constructor among other places.
-extern JS::Result<JS::BigInt*, JS::OOM> StringToBigInt(
-    JSContext* cx, JS::Handle<JSString*> str);
+extern JS::Result<JS::BigInt*> StringToBigInt(JSContext* cx,
+                                              JS::Handle<JSString*> str);
 
 // Parse a BigInt from an already-validated numeric literal.  Used by the
 // parser.  Can only fail in out-of-memory situations.

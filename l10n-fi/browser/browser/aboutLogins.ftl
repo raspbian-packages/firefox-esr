@@ -5,10 +5,12 @@
 
 about-logins-page-title = Käyttäjätunnukset ja salasanat
 
-login-filter =
+about-logins-login-filter =
     .placeholder = Etsi kirjautumistietoja
+    .key = F
 
-create-login-button = Luo uusi kirjautumistieto
+create-new-login-button =
+    .title = Luo uusi kirjautumistieto
 
 fxaccounts-sign-in-text = Käytä salasanojasi kaikilla laitteillasi
 fxaccounts-sign-in-sync-button = Kirjaudu synkronoidaksesi
@@ -31,10 +33,20 @@ about-logins-menu-menuitem-help = Ohje
 
 login-list =
     .aria-label = Hakuasi vastaavat kirjautumistiedot
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } kirjautumistieto
        *[other] { $count } kirjautumistietoa
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count }/{ $total } kirjautumistieto
+       *[other] { $count }/{ $total } kirjautumistietoa
     }
 login-list-sort-label-text = Järjestys:
 login-list-name-option = Nimi (A–Ö)
@@ -95,9 +107,17 @@ login-item-copied-password-button-text = Kopioitu!
 login-item-save-changes-button = Tallenna muutokset
 login-item-save-new-button = Tallenna
 login-item-cancel-button = Peruuta
-login-item-time-changed = Viimeksi muokattu: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Luotu: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Viimeksi käytetty: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "numeric", year: "numeric") }
+login-item-timeline-action-created = Luotu
+login-item-timeline-action-updated = Päivitetty
+login-item-timeline-action-used = Käytetty
 
 ## OS Authentication dialog
 
@@ -148,6 +168,9 @@ about-logins-confirm-remove-dialog-title = Poistetaanko tämä kirjautumistieto?
 confirm-delete-dialog-message = Tätä toimintoa ei voi perua.
 about-logins-confirm-remove-dialog-confirm-button = Poista
 
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
         [1] Poista
@@ -182,6 +205,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] Tämä poistaa kaikki kirjautumistiedot, jotka olet tallentanut { -brand-short-name }iin, kaikilta laitteilta, jotka on synkronoitu { -fxaccount-brand-name(case: "allative") }. Tämä poistaa myös tässä näkyvät vuotohälytykset. Tätä toimintoa ei voi kumota.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Vie kirjautumistiedot ja salasanat
 about-logins-confirm-export-dialog-message = Salasanasi tallennetaan luettavaan muotoon (esim. hu0n0s4l4s4n4), joten kuka tahansa viedyn tiedoston avaamiseen kykenevä voi nähdä salasanat.
 about-logins-confirm-export-dialog-confirm-button = Vie…
@@ -201,7 +226,6 @@ about-logins-breach-alert-date = Tämä vuoto tapahtui { DATETIME($date, day: "n
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Siirry sivustolle { $hostname }
-about-logins-breach-alert-learn-more-link = Lue lisää
 
 ## Vulnerable Password notification
 

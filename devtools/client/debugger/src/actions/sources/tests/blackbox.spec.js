@@ -9,7 +9,7 @@ import {
   makeSource,
 } from "../../../utils/test-head";
 
-import { initialSourcesState } from "../../../reducers/sources";
+import { initialSourceBlackBoxState } from "../../../reducers/source-blackbox";
 
 describe("blackbox", () => {
   it("should blackbox and unblackbox a source based on the current state of the source ", async () => {
@@ -19,26 +19,19 @@ describe("blackbox", () => {
     });
     const { dispatch, getState, cx } = store;
 
-    await dispatch(actions.newGeneratedSource(makeSource("foo")));
-
-    let fooSource = selectors.getSource(getState(), "foo");
-
-    if (!fooSource) {
-      throw new Error("foo should exist");
-    }
-
+    const fooSource = await dispatch(
+      actions.newGeneratedSource(makeSource("foo"))
+    );
     await dispatch(actions.toggleBlackBox(cx, fooSource));
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(true);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(true);
 
     let blackboxRanges = selectors.getBlackBoxRanges(getState());
     expect(blackboxRanges[fooSource.url]).toEqual([]);
 
     await dispatch(actions.toggleBlackBox(cx, fooSource));
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(false);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(false);
 
     blackboxRanges = selectors.getBlackBoxRanges(getState());
     expect(blackboxRanges[fooSource.url]).toEqual(undefined);
@@ -51,16 +44,12 @@ describe("blackbox", () => {
     });
     const { dispatch, getState, cx } = store;
 
-    await dispatch(actions.newGeneratedSource(makeSource("foo")));
-
-    let fooSource = selectors.getSource(getState(), "foo");
-
-    if (!fooSource) {
-      throw new Error("foo should exist");
-    }
+    const fooSource = await dispatch(
+      actions.newGeneratedSource(makeSource("foo"))
+    );
 
     // check the state before trying to blackbox
-    expect(fooSource.isBlackBoxed).toEqual(false);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(false);
 
     let blackboxRanges = selectors.getBlackBoxRanges(getState());
     expect(blackboxRanges[fooSource.url]).toEqual(undefined);
@@ -68,8 +57,7 @@ describe("blackbox", () => {
     // should blackbox the whole source
     await dispatch(actions.toggleBlackBox(cx, fooSource, true, []));
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(true);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(true);
 
     blackboxRanges = selectors.getBlackBoxRanges(getState());
     expect(blackboxRanges[fooSource.url]).toEqual([]);
@@ -77,8 +65,7 @@ describe("blackbox", () => {
     // should unblackbox the whole source
     await dispatch(actions.toggleBlackBox(cx, fooSource, false, []));
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(false);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(false);
 
     blackboxRanges = selectors.getBlackBoxRanges(getState());
     expect(blackboxRanges[fooSource.url]).toEqual(undefined);
@@ -91,13 +78,9 @@ describe("blackbox", () => {
     });
     const { dispatch, getState, cx } = store;
 
-    await dispatch(actions.newGeneratedSource(makeSource("foo")));
-
-    let fooSource = selectors.getSource(getState(), "foo");
-
-    if (!fooSource) {
-      throw new Error("foo should exist");
-    }
+    const fooSource = await dispatch(
+      actions.newGeneratedSource(makeSource("foo"))
+    );
 
     const range1 = {
       start: { line: 10, column: 3 },
@@ -111,8 +94,7 @@ describe("blackbox", () => {
 
     await dispatch(actions.toggleBlackBox(cx, fooSource, true, [range1]));
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(true);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(true);
 
     let blackboxRanges = selectors.getBlackBoxRanges(getState());
     expect(blackboxRanges[fooSource.url]).toEqual([range1]);
@@ -120,8 +102,7 @@ describe("blackbox", () => {
     // add new blackbox lines in the second range
     await dispatch(actions.toggleBlackBox(cx, fooSource, true, [range2]));
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(true);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(true);
 
     blackboxRanges = selectors.getBlackBoxRanges(getState());
     // ranges are stored asc order
@@ -130,8 +111,7 @@ describe("blackbox", () => {
     // un-blackbox lines in the first range
     await dispatch(actions.toggleBlackBox(cx, fooSource, false, [range1]));
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(true);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(true);
 
     blackboxRanges = selectors.getBlackBoxRanges(getState());
     expect(blackboxRanges[fooSource.url]).toEqual([range2]);
@@ -139,8 +119,7 @@ describe("blackbox", () => {
     // un-blackbox lines in the second range
     await dispatch(actions.toggleBlackBox(cx, fooSource, false, [range2]));
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(false);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(false);
 
     blackboxRanges = selectors.getBlackBoxRanges(getState());
     expect(blackboxRanges[fooSource.url]).toEqual(undefined);
@@ -153,13 +132,9 @@ describe("blackbox", () => {
     });
     const { dispatch, getState, cx } = store;
 
-    await dispatch(actions.newGeneratedSource(makeSource("foo")));
-
-    let fooSource = selectors.getSource(getState(), "foo");
-
-    if (!fooSource) {
-      throw new Error("foo should exist");
-    }
+    const fooSource = await dispatch(
+      actions.newGeneratedSource(makeSource("foo"))
+    );
 
     const range1 = {
       start: { line: 1, column: 5 },
@@ -175,8 +150,7 @@ describe("blackbox", () => {
       actions.toggleBlackBox(cx, fooSource, true, [range1, range2])
     );
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(true);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(true);
 
     let blackboxRanges = selectors.getBlackBoxRanges(getState());
     // The ranges are ordered in based on the lines & cols in ascending
@@ -185,8 +159,7 @@ describe("blackbox", () => {
     // un-blackbox the whole source
     await dispatch(actions.toggleBlackBox(cx, fooSource));
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(false);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(false);
 
     blackboxRanges = selectors.getBlackBoxRanges(getState());
     expect(blackboxRanges[fooSource.url]).toEqual(undefined);
@@ -204,7 +177,9 @@ describe("blackbox", () => {
 
     function loadInitialState() {
       const blackboxedRanges = mockAsyncStoreBlackBoxedRanges;
-      return { sources: initialSourcesState({ blackboxedRanges }) };
+      return {
+        sourceBlackBox: initialSourceBlackBoxState({ blackboxedRanges }),
+      };
     }
     const store = createStore(
       {
@@ -215,16 +190,11 @@ describe("blackbox", () => {
     );
     const { dispatch, getState } = store;
 
-    await dispatch(actions.newGeneratedSource(makeSource("foo")));
+    const fooSource = await dispatch(
+      actions.newGeneratedSource(makeSource("foo"))
+    );
 
-    let fooSource = selectors.getSource(getState(), "foo");
-
-    if (!fooSource) {
-      throw new Error("foo should exist");
-    }
-
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(true);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(true);
 
     const blackboxRanges = selectors.getBlackBoxRanges(getState());
     const mockFooSourceRange = mockAsyncStoreBlackBoxedRanges[fooSource.url];
@@ -243,7 +213,9 @@ describe("blackbox", () => {
 
     function loadInitialState() {
       const blackboxedRanges = mockAsyncStoreBlackBoxedRanges;
-      return { sources: initialSourcesState({ blackboxedRanges }) };
+      return {
+        sourceBlackBox: initialSourceBlackBoxState({ blackboxedRanges }),
+      };
     }
     const store = createStore(
       {
@@ -254,16 +226,11 @@ describe("blackbox", () => {
     );
     const { dispatch, getState, cx } = store;
 
-    await dispatch(actions.newGeneratedSource(makeSource("foo")));
+    const fooSource = await dispatch(
+      actions.newGeneratedSource(makeSource("foo"))
+    );
 
-    let fooSource = selectors.getSource(getState(), "foo");
-
-    if (!fooSource) {
-      throw new Error("foo should exist");
-    }
-
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(true);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(true);
 
     let blackboxRanges = selectors.getBlackBoxRanges(getState());
     const mockFooSourceRange = mockAsyncStoreBlackBoxedRanges[fooSource.url];
@@ -274,8 +241,7 @@ describe("blackbox", () => {
       actions.toggleBlackBox(cx, fooSource, false, mockFooSourceRange)
     );
 
-    fooSource = selectors.getSource(getState(), "foo");
-    expect(fooSource.isBlackBoxed).toEqual(false);
+    expect(selectors.isSourceBlackBoxed(getState(), fooSource)).toEqual(false);
 
     blackboxRanges = selectors.getBlackBoxRanges(getState());
     expect(blackboxRanges[fooSource.url]).toEqual(undefined);

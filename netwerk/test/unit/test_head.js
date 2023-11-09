@@ -13,7 +13,7 @@ const ReferrerInfo = Components.Constructor(
   "init"
 );
 
-XPCOMUtils.defineLazyGetter(this, "URL", function() {
+XPCOMUtils.defineLazyGetter(this, "URL", function () {
   return "http://localhost:" + httpserver.identity.primaryPort;
 });
 
@@ -21,7 +21,6 @@ var httpserver = new HttpServer();
 var testpath = "/simple";
 var httpbody = "0123456789";
 var channel;
-var ios;
 
 var dbg = 0;
 if (dbg) {

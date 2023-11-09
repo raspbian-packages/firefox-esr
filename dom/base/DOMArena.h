@@ -34,7 +34,11 @@ namespace mozilla::dom {
 class DOMArena {
  public:
   friend class DocGroup;
-  DOMArena() { mArenaId = moz_create_arena(); }
+  DOMArena() {
+    arena_params_t params;
+    params.mMaxDirtyIncreaseOverride = 7;
+    mArenaId = moz_create_arena_with_params(&params);
+  }
 
   NS_INLINE_DECL_REFCOUNTING(DOMArena)
 

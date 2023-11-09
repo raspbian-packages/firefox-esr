@@ -2,28 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
--profiler-brand-name = Firefox Profiler
-
-##
-
 # This is the title of the page
 about-logging-title = Über Protokollierung
 about-logging-page-title = Protokollierungs-Manager
 about-logging-current-log-file = Derzeitige Protokolldatei:
-about-logging-current-log-modules = Derzeit protokollierte Module:
 about-logging-new-log-file = Neue Protokolldatei:
 about-logging-currently-enabled-log-modules = Derzeit aktivierte zu protokollierende Module:
 about-logging-log-tutorial = Weitere Informationen zur Verwendung dieses Werkzeugs stehen unter <a data-l10n-name="logging">HTTP-Protokollierung</a> zur Verfügung.
@@ -44,15 +26,25 @@ about-logging-logging-to-profiler = Protokollieren in { -profiler-brand-name }
 about-logging-no-log-modules = Keine
 about-logging-no-log-file = Keine
 about-logging-logging-preset-selector-text = Voreinstellung für die Protokollierung:
+about-logging-with-profiler-stacks-checkbox = Stack-Traces für Log-Meldungen aktivieren
 
 ## Logging presets
 
 about-logging-preset-networking-label = Netzwerkverbindungen
 about-logging-preset-networking-description = Zu protokollierende Module zur Diagnose von Netzwerkproblemen
+about-logging-preset-networking-cookie-label = Cookies
+about-logging-preset-networking-cookie-description = Zu protokollierende Module zur Diagnose von Cookieproblemen
+about-logging-preset-networking-websocket-label = WebSockets
+about-logging-preset-networking-websocket-description = Zu protokollierende Module zur Diagnose von WebSocket-Problemen
+about-logging-preset-networking-http3-label = HTTP/3
+about-logging-preset-networking-http3-description = Zu protokollierende Module zur Diagnose von HTTP/3- und QUIC-Problemen
 about-logging-preset-media-playback-label = Medienwiedergabe
 about-logging-preset-media-playback-description = Zu protokollierende Module zur Diagnose von Problemen bei der Medienwiedergabe (nicht Probleme bei Videokonferenzen)
+about-logging-preset-webrtc-label = WebRTC
+about-logging-preset-webrtc-description = Zu protokollierende Module zur Diagnose von WebRTC-Problemen
 about-logging-preset-custom-label = Benutzerdefiniert
 about-logging-preset-custom-description = Zu protokollierende Module manuell ausgewählt
+
 # Error handling
 about-logging-error = Fehler:
 
@@ -66,4 +58,5 @@ about-logging-unknown-profiler-preset = Unbekannte Profiler-Voreinstellung "{ $v
 about-logging-unknown-option = Unbekannte about:logging-Option "{ $k }"
 about-logging-configuration-url-ignored = Konfigurations-URL ignoriert
 about-logging-file-and-profiler-override = Kann nicht gleichzeitig Dateiausgabe erzwingen und Profileroptionen überschreiben
+
 about-logging-configured-via-url = Per URL konfigurierte Option

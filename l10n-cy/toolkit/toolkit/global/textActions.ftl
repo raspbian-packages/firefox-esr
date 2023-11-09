@@ -72,7 +72,7 @@ text-action-spell-add-dictionaries =
     .accesskey = Y
 
 text-action-spell-dictionaries =
-    .label = Ieithoedd
+    .label = Iaith
     .accesskey = I
 
 text-action-search-text-box-clear =

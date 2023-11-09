@@ -468,9 +468,10 @@ void AccessibleCaretManager::UpdateCaretsForAlwaysTilt(
 
 void AccessibleCaretManager::ProvideHapticFeedback() {
   if (StaticPrefs::layout_accessiblecaret_hapticfeedback()) {
-    nsCOMPtr<nsIHapticFeedback> haptic =
-        do_GetService("@mozilla.org/widget/hapticfeedback;1");
-    haptic->PerformSimpleAction(haptic->LongPress);
+    if (nsCOMPtr<nsIHapticFeedback> haptic =
+            do_GetService("@mozilla.org/widget/hapticfeedback;1")) {
+      haptic->PerformSimpleAction(haptic->LongPress);
+    }
   }
 }
 
@@ -693,6 +694,7 @@ nsresult AccessibleCaretManager::SelectWordOrShortcut(const nsPoint& aPoint) {
 void AccessibleCaretManager::OnScrollStart() {
   AC_LOG("%s", __FUNCTION__);
 
+  nsAutoScriptBlocker scriptBlocker;
   AutoRestore<bool> saveAllowFlushingLayout(mLayoutFlusher.mAllowFlushing);
   mLayoutFlusher.mAllowFlushing = false;
 
@@ -711,6 +713,7 @@ void AccessibleCaretManager::OnScrollStart() {
 }
 
 void AccessibleCaretManager::OnScrollEnd() {
+  nsAutoScriptBlocker scriptBlocker;
   AutoRestore<bool> saveAllowFlushingLayout(mLayoutFlusher.mAllowFlushing);
   mLayoutFlusher.mAllowFlushing = false;
 
@@ -742,6 +745,7 @@ void AccessibleCaretManager::OnScrollEnd() {
 }
 
 void AccessibleCaretManager::OnScrollPositionChanged() {
+  nsAutoScriptBlocker scriptBlocker;
   AutoRestore<bool> saveAllowFlushingLayout(mLayoutFlusher.mAllowFlushing);
   mLayoutFlusher.mAllowFlushing = false;
 
@@ -766,6 +770,7 @@ void AccessibleCaretManager::OnScrollPositionChanged() {
 }
 
 void AccessibleCaretManager::OnReflow() {
+  nsAutoScriptBlocker scriptBlocker;
   AutoRestore<bool> saveAllowFlushingLayout(mLayoutFlusher.mAllowFlushing);
   mLayoutFlusher.mAllowFlushing = false;
 
@@ -820,23 +825,9 @@ already_AddRefed<nsFrameSelection> AccessibleCaretManager::GetFrameSelection()
     return nullptr;
   }
 
-  nsFocusManager* fm = nsFocusManager::GetFocusManager();
-  MOZ_ASSERT(fm);
-
-  nsIContent* focusedContent = fm->GetFocusedElement();
-  if (!focusedContent) {
-    // For non-editable content
-    return mPresShell->FrameSelection();
-  }
-
-  nsIFrame* focusFrame = focusedContent->GetPrimaryFrame();
-  if (!focusFrame) {
-    return nullptr;
-  }
-
   // Prevent us from touching the nsFrameSelection associated with other
   // PresShell.
-  RefPtr<nsFrameSelection> fs = focusFrame->GetFrameSelection();
+  RefPtr<nsFrameSelection> fs = mPresShell->GetLastFocusedFrameSelection();
   if (!fs || fs->GetPresShell() != mPresShell) {
     return nullptr;
   }
@@ -1169,8 +1160,9 @@ bool AccessibleCaretManager::RestrictCaretDraggingOffsets(
 
   // Move one character (in the direction of dir) from the inactive caret's
   // position. This is the limit for the active caret's new position.
-  nsPeekOffsetStruct limit(eSelectCluster, dir, offset, nsPoint(0, 0), true,
-                           true, false, false, false);
+  PeekOffsetStruct limit(
+      eSelectCluster, dir, offset, nsPoint(0, 0),
+      {PeekOffsetOption::JumpLines, PeekOffsetOption::ScrollViewStop});
   nsresult rv = frame->PeekOffset(&limit);
   if (NS_FAILED(rv)) {
     limit.mResultContent = content;

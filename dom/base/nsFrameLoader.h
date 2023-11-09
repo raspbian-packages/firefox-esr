@@ -143,9 +143,10 @@ class nsFrameLoader final : public nsStubMutationObserver,
     return mChildMessageManager;
   }
   nsresult UpdatePositionAndSize(nsSubDocumentFrame* aIFrame);
-  void SendIsUnderHiddenEmbedderElement(bool aIsUnderHiddenEmbedderElement);
   void PropagateIsUnderHiddenEmbedderElement(
       bool aIsUnderHiddenEmbedderElement);
+
+  void UpdateRemoteStyle(mozilla::StyleImageRendering aImageRendering);
 
   // When creating a nsFrameLoaderOwner which is a static clone, a
   // `nsFrameLoader` is not immediately attached to it. Instead, it is added to
@@ -167,7 +168,7 @@ class nsFrameLoader final : public nsStubMutationObserver,
 
   already_AddRefed<nsIRemoteTab> GetRemoteTab();
 
-  already_AddRefed<nsILoadContext> LoadContext();
+  already_AddRefed<nsILoadContext> GetLoadContext();
 
   mozilla::dom::BrowsingContext* GetBrowsingContext();
   mozilla::dom::BrowsingContext* GetExtantBrowsingContext();
@@ -211,9 +212,6 @@ class nsFrameLoader final : public nsStubMutationObserver,
    */
   void Destroy(bool aForProcessSwitch = false);
 
-  void ActivateFrameEvent(const nsAString& aType, bool aCapture,
-                          mozilla::ErrorResult& aRv);
-
   void AsyncDestroy() {
     mNeedsAsyncDestroy = true;
     Destroy();
@@ -227,9 +225,9 @@ class nsFrameLoader final : public nsStubMutationObserver,
 
   void RequestSHistoryUpdate();
 
-  already_AddRefed<Promise> PrintPreview(nsIPrintSettings* aPrintSettings,
-                                         BrowsingContext* aSourceBC,
-                                         mozilla::ErrorResult& aRv);
+  MOZ_CAN_RUN_SCRIPT already_AddRefed<Promise> PrintPreview(
+      nsIPrintSettings* aPrintSettings, BrowsingContext* aSourceBC,
+      mozilla::ErrorResult& aRv);
 
   void ExitPrintPreview();
 

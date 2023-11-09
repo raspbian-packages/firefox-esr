@@ -63,7 +63,6 @@ protections-panel-not-found-label = Njenamakany
 ##
 
 protections-panel-settings-label = Šćitowe nastajenja
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Pśeglěd šćitow
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formulary
 protections-panel-site-not-working-view-issue-list-payments = Płaśenja
 protections-panel-site-not-working-view-issue-list-comments = Komentary
 protections-panel-site-not-working-view-issue-list-videos = Wideo
+protections-panel-site-not-working-view-issue-list-fonts = Pisma
 
 protections-panel-site-not-working-view-send-report = Rozpšawu pósłaś
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Wobškóźone sedło k wěsći daś
 protections-panel-content-blocking-breakage-report-view-description = Blokěrowanje wěstych pśeslědowakow móžo problemy z někotarymi websedłami zawinowaś. Gaž problemy k wěsći dajośo, pomagaśo { -brand-short-name } za kuždego pólěpšyś. Pósćelo se Mozilla URL a informacije wó wašych nastajenjach wobglědowaka. <label data-l10n-name="learn-more">Dalšne informacije</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Blokěrowanje wěstych pśeslědowakow móžo problemy z někotarymi websedłami zawinowaś. Gaž problemy k wěsći dajośo, pomagaśo { -brand-short-name } za kuždego pólěpšyś. Pósćelo se { -vendor-short-name } URL a informacije wó wašych nastajenjach wobglědowaka.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Pśetergnuś
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Rozpšawu pósłaś
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Reducěrowanje cookiejowych chórgojow
+protections-panel-cookie-banner-handling-enabled = Za toś to sedło zmóžnjony
+protections-panel-cookie-banner-handling-disabled = Za toś to sedło znjemóžnjony
+protections-panel-cookie-banner-handling-undetected = Sedło se tuchylu njepódpěra
+
+protections-panel-cookie-banner-view-title =
+    .title = Reducěrowanje cookiejowych chórgojow
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Reducěrowanje cookiejowych chórgojow za { $host } znjemóžniś?
+protections-panel-cookie-banner-view-turn-on-for-site = Reducěrowanje cookiejowych chórgojow za toś to sedło zmóžniś?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } cookieje sedła lašujo a buźo bok aktualizěrowaś. Lašowanje wšych cookiejow móžo was pśizjawiś abo nakupowańske wózyki wuprozniś.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } wopytujo wšykne cookiejowe napšašowanja na pódprětych sedłach awtomatiski wótpokazaś.
+protections-panel-cookie-banner-view-cancel = Pśetergnuś
+protections-panel-cookie-banner-view-turn-off = Znjemóžniś
+protections-panel-cookie-banner-view-turn-on = Zmóžniś

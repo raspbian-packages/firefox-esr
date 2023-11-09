@@ -22,14 +22,13 @@ pocket-panel-saved-page-removed = පිටුව ඉවත් කෙරිණ�
 pocket-panel-saved-page-saved = { -pocket-brand-name } වෙත සුරැකිණි
 pocket-panel-saved-page-saved-b = { -pocket-brand-name } වෙත සුරැකිණි!
 pocket-panel-saved-processing-remove = පිටුව ඉවත් කරමින්…
-pocket-panel-saved-removed = මාගේ ලේඛනයෙන් පිටුව ඉවතලිණි
+pocket-panel-saved-removed-updated = සුරැකුම් වෙතින් පිටුව ඉවත් කෙරිණි
 pocket-panel-saved-processing-tags = අනන්‍යන එක් කරමින්…
 pocket-panel-saved-remove-page = පිටුව ඉවත් කරන්න
 pocket-panel-saved-save-tags = සුරකින්න
 pocket-panel-saved-saving-tags = සුරැකෙමින්…
 pocket-panel-saved-suggested-tags = යෝජිත අනන්‍යන
 pocket-panel-saved-tags-saved = අනන්‍යන එක් විය
-pocket-panel-signup-view-list = ලේඛනය බලන්න
 
 # This is displayed above a field where the user can add tags
 pocket-panel-signup-add-tags = අනන්‍යන යොදන්න:
@@ -47,13 +46,10 @@ pocket-panel-signup-tagline-story-one = { -brand-product-name } වෙතින�
 pocket-panel-signup-tagline-story-two = ඕනෑම උපාංගයක, ඕනෑම වේලාවක දී { -pocket-brand-name } හි බලන්න.
 
 pocket-panel-signup-cta-a-fix = අන්තර්ජාලය සඳහා ඔබගේ සුරැකීමේ බොත්තම
-pocket-panel-signup-cta-b = ලිපි, දෘශ්‍යක, හා සබැඳි සුරැකීමට { -pocket-brand-name } බොත්තම ඔබන්න. ඕනෑම උපාංගයක, ඕනෑම වේලාවක ඔබගේ ලේඛනය බලන්න.
 pocket-panel-signup-cta-b-short = ලිපි, දෘශ්‍යක හා සබැඳි සුරැකීමට { -pocket-brand-name } බොත්තම ඔබන්න.
-pocket-panel-signup-cta-c = ඕනෑම උපාංගයක ඔබගේ ලේඛනය බලන්න.
 
 ## about:pocket-home panel
 
-pocket-panel-home-my-list = මාගේ ලේඛනය
 pocket-panel-home-welcome-back = සාදරයෙන් පිළිගනිමු
 pocket-panel-home-explore-popular-topics = ජනප්‍රිය මාතෘකා ගවේශනය
 pocket-panel-home-discover-more = තව සොයා ගන්න
@@ -66,7 +62,7 @@ pocket-panel-home-new-user-message = ඔබගේ මෑත සුරැකු�
 
 ## Pocket panel header component
 
-pocket-panel-header-my-list = මාගේ ලේඛනය බලන්න
+pocket-panel-header-my-saves = මාගේ සුරැකුම් බලන්න
 pocket-panel-header-sign-in = පිවිසෙන්න
 
 ## Pocket panel buttons

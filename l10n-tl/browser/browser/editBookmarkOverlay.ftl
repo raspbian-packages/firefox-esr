@@ -24,6 +24,12 @@ bookmark-overlay-folders-expander =
     .tooltiptextdown = { bookmark-overlay-folders-expander.tooltiptext }
     .tooltiptextup = Itago
 
+bookmark-overlay-folders-expander2 =
+    .tooltiptext = Ipakita lahat ng mga bookmark folder
+
+bookmark-overlay-folders-expander-hide =
+    .tooltiptext = Itago
+
 bookmark-overlay-new-folder-button =
     .label = Bagong Folder
     .accesskey = o
@@ -39,6 +45,12 @@ bookmark-overlay-tags-expander =
     .tooltiptext = Ipakita ang lahat ng mga tag
     .tooltiptextdown = { bookmark-overlay-tags-expander.tooltiptext }
     .tooltiptextup = Itago
+
+bookmark-overlay-tags-expander2 =
+    .tooltiptext = Ipakita ang lahat ng mga tag
+
+bookmark-overlay-tags-expander-hide =
+    .tooltiptext = Itago
 
 bookmark-overlay-keyword-2 =
     .value = Keyword

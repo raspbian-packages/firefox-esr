@@ -3,13 +3,13 @@
 
 "use strict";
 
-const { CustomizableUITestUtils } = ChromeUtils.import(
-  "resource://testing-common/CustomizableUITestUtils.jsm"
+const { CustomizableUITestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/CustomizableUITestUtils.sys.mjs"
 );
 
 let gCUITestUtils = new CustomizableUITestUtils(window);
 
-add_setup(async function() {
+add_setup(async function () {
   // gSync.init() is called in a requestIdleCallback. Force its initialization.
   gSync.init();
   // This preference gets set the very first time that the FxA menu gets opened,
@@ -48,6 +48,7 @@ add_task(async function test_navBar_button_visibility() {
     "Button should be hidden with STATUS_NOT_CONFIGURED"
   );
 
+  state.email = "foo@bar.com";
   state.status = UIState.STATUS_NOT_VERIFIED;
   gSync.updateAllUI(state);
   ok(
@@ -86,7 +87,7 @@ add_task(async function test_overflow_navBar_button_visibility() {
   let navbar = document.getElementById(CustomizableUI.AREA_NAVBAR);
   let originalWindowWidth = window.outerWidth;
 
-  registerCleanupFunction(function() {
+  registerCleanupFunction(function () {
     overflowPanel.removeAttribute("animate");
     window.resizeTo(originalWindowWidth, window.outerHeight);
     return TestUtils.waitForCondition(
@@ -503,6 +504,37 @@ add_task(async function test_app_menu_fxa_disabled() {
   await BrowserTestUtils.closeWindow(newWin);
 });
 
+add_task(
+  // Can't open the history menu in tests on Mac.
+  () => AppConstants.platform != "mac",
+  async function test_history_menu_fxa_disabled() {
+    const newWin = await BrowserTestUtils.openNewBrowserWindow();
+
+    Services.prefs.setBoolPref("identity.fxaccounts.enabled", true);
+    newWin.gSync.onFxaDisabled();
+
+    const historyMenubarItem = window.document.getElementById("history-menu");
+    const historyMenu = window.document.getElementById("historyMenuPopup");
+    const syncedTabsItem = historyMenu.querySelector("#sync-tabs-menuitem");
+    const menuShown = BrowserTestUtils.waitForEvent(historyMenu, "popupshown");
+    historyMenubarItem.openMenu(true);
+    await menuShown;
+
+    Assert.equal(
+      syncedTabsItem.hidden,
+      true,
+      "Synced Tabs item should not be displayed when FxAccounts is disabled"
+    );
+    const menuHidden = BrowserTestUtils.waitForEvent(
+      historyMenu,
+      "popuphidden"
+    );
+    historyMenu.hidePopup();
+    await menuHidden;
+    await BrowserTestUtils.closeWindow(newWin);
+  }
+);
+
 function checkPanelUIStatusBar({
   description,
   title,
@@ -618,8 +650,7 @@ async function checkFxaToolbarButtonPanel({
 
   for (const id of hiddenItems) {
     const el = document.getElementById(id);
-    let elShown = window.getComputedStyle(el).display == "none";
-    is(elShown, true, id + " is hidden");
+    is(el.getAttribute("hidden"), "true", id + " is hidden");
   }
 }
 

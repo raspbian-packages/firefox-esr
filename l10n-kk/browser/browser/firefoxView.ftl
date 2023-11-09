@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Жақында жабылған
 firefoxview-closed-tabs-description2 = Осы терезеде жабылған беттерді қайта ашыңыз.
 firefoxview-closed-tabs-placeholder-header = Жақында жабылған беттер жоқ
 firefoxview-closed-tabs-placeholder-body = Осы терезеде бетті жапқанда, оны осы жерден алуға болады.
+firefoxview-closed-tabs-placeholder-body2 = Бетті жапқанда, оны осы жерден алуға болады.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Соңғы белсенді
 firefoxview-tabs-list-tab-button =
     .title = { $targetURI } жаңа бетте ашу
 firefoxview-try-colorways-button = Түстер схемаларын қолданып көріңіз
-firefoxview-no-current-colorway-collection = Жаңа түстер схемалары жақындап қалды
 firefoxview-change-colorway-button = Түстер схемасын өзгерту
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Тізімді көрсету
 firefoxview-collapse-button-hide =
     .title = Тізімді жасыру
+firefoxview-overview-nav = Жуырдағы шолу
+    .title = Жуырдағы шолу
+firefoxview-overview-header = Жуырдағы шолу
+    .title = Жуырдағы шолу
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Тарих
+    .title = Тарих
+firefoxview-history-header = Тарих
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Ашық беттер
+    .title = Ашық беттер
+firefoxview-opentabs-header = Ашық беттер
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Жақында жабылған беттер
+    .title = Жақында жабылған беттер
+firefoxview-recently-closed-header = Жақында жабылған беттер
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Басқа құрылғылардан беттер
+    .title = Басқа құрылғылардан беттер
+firefoxview-synced-tabs-header = Басқа құрылғылардан беттер
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Барлығын қарау
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Терезе { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Терезе { $winID } (Ағымдағы)
+firefoxview-opentabs-focus-tab =
+    .title = Бұл бетке ауысу
+firefoxview-show-more = Көбірек көрсету
+firefoxview-show-less = Азырақ көрсету
+firefoxview-sort-history-by-date-label = Күні бойынша сұрыптау
+firefoxview-sort-history-by-site-label = Сайт бойынша сұрыптау
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Бүгін - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Кеше - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Бүкіл тарихты көрсету

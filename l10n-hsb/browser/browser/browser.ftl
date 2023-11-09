@@ -5,46 +5,15 @@
 
 ## The main browser window's title
 
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
 #
 # default - "Mozilla Firefox"
 # private - "Mozilla Firefox (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } (Priwatny modus)
-    .data-content-title-default = { $content-title } - { -brand-full-name }
-    .data-content-title-private = { $content-title } - { -brand-full-name } (Priwatny modus)
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
-#
-# "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox — (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
-#
-# Also note the other subtle difference here: we use a `-` to separate the
-# brand name from `(Private Browsing)`, which does not happen on other OSes.
-#
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window-mac =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } - (Priwatny modus)
-    .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } - (Priwatny modus)
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
-#
-# default - "Mozilla Firefox"
-# private - "Mozilla Firefox (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
 # Variables:
 #  $content-title (String): the title of the web content.
 browser-main-window-window-titles =
@@ -52,14 +21,17 @@ browser-main-window-window-titles =
     .data-title-private = Priwatny modus { -brand-full-name }
     .data-content-title-default = { $content-title } – { -brand-full-name }
     .data-content-title-private = Priwatny modus { $content-title } – { -brand-full-name }
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
 #
 # "default" - "Mozilla Firefox"
 # "private" - "Mozilla Firefox — (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -109,16 +81,12 @@ urlbar-xr-notification-anchor =
     .tooltiptext = Dialog za prawa wirtualneje reality wočinić
 urlbar-storage-access-anchor =
     .tooltiptext = Dialog za prawa přehladowanskeje aktiwity wočinić
-urlbar-translate-notification-anchor =
-    .tooltiptext = Tutu stronu přełožować
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = Dźělenje wašich woknow abo wašeje wobrazowki ze sydłom rjadować
 urlbar-indexed-db-notification-anchor =
     .tooltiptext = Wobłuk zdźělenki składowanja offline wočinić
 urlbar-password-notification-anchor =
     .tooltiptext = Wobłuk zdźělenki składowanja hesła wočinić
-urlbar-translated-notification-anchor =
-    .tooltiptext = Přełožowanje strony rjadować
 urlbar-plugins-notification-anchor =
     .tooltiptext = Wužiwanje tykačow rjadować
 urlbar-web-rtc-share-devices-notification-anchor =
@@ -144,6 +112,11 @@ urlbar-tip-icon-description =
     .alt = Pokiw:
 urlbar-result-menu-button =
     .title = Meni wočinić
+urlbar-result-menu-button-feedback = Komentar
+    .title = Meni wočinić
+urlbar-result-menu-learn-more =
+    .label = Dalše informacije
+    .accesskey = D
 urlbar-result-menu-remove-from-history =
     .label = Z historije wotstronić
     .accesskey = h
@@ -208,10 +181,6 @@ urlbar-star-add-bookmark =
 
 ## Page Action Context Menu
 
-page-action-manage-extension =
-    .label = Rozšěrjenje rjadować…
-page-action-remove-extension =
-    .label = Rozšěrjenje wotstronić
 page-action-manage-extension2 =
     .label = Rozšěrjenje rjadować…
     .accesskey = R
@@ -390,6 +359,7 @@ identity-weak-encryption = Tuta strona słabe zaklučowanje wužiwa.
 identity-insecure-login-forms = Přizjewjenja, kotrež so na tutej stronje zapodawaja, móhli wohrožene być.
 identity-https-only-connection-upgraded = (na HTTPS zaktualizowany)
 identity-https-only-label = Modus Jenož-HTTPS
+identity-https-only-label2 = Tute sydło awtomatisce na wěsty zwisk aktualizować
 identity-https-only-dropdown-on =
     .label = Zapinjeny
 identity-https-only-dropdown-off =
@@ -398,6 +368,8 @@ identity-https-only-dropdown-off-temporarily =
     .label = Nachwilu wupinjeny
 identity-https-only-info-turn-on2 = Zmóžńće modus Jenož-HTTPS, jeli chceće, zo { -brand-short-name } zwisk aktualizuje, jeli móžno.
 identity-https-only-info-turn-off2 = Jeli so zda, zo strona je wobškodźena, chceće snano  modus Jenož-HTTPS za tute sydło znjemóžnić. zo byšće zaso njewěsty HTTP wužiwał.
+identity-https-only-info-turn-on3 = Zmóžńće aktualizacije HTTPS za tute sydło, jeli chceće, zo { -brand-short-name } zwisk aktualizuje, jeli móžno.
+identity-https-only-info-turn-off3 = Jeli so zda, zo strona je wobškodźena, chceće snano  aktualizacije HTTPS za tute sydło znjemóžnić, zo byšće zaso njewěsty HTTP wužiwał.
 identity-https-only-info-no-upgrade = Zwisk njeda so z HTTP aktualizować.
 identity-permissions-storage-access-header = Sydła přesahowace placki
 identity-permissions-storage-access-hint = Tući wobdźěleni móža sydła přesahowace placki a sydłowe daty wužiwać, mjeztym zo sće na tutym sydle.
@@ -408,7 +380,7 @@ identity-clear-site-data =
 identity-connection-not-secure-security-view = Njejsće wěsće z tutym sydłom zwjazany.
 identity-connection-verified = Sće wěsće z tutym sydłom zwjazany.
 identity-ev-owner-label = Certifikat wupisany na:
-identity-description-custom-root = Mozilla tutoho certifikatoweho wudawarja njepřipóznawa. Je so snano přez waš dźěłowy system abo wot administratora přidał. <label data-l10n-name="link">Dalše informacije</label>
+identity-description-custom-root2 = Mozilla tutoho certifikatoweho wudawarja njepřipóznawa. Je so snano přez waš dźěłowy system abo wot administratora přidał.
 identity-remove-cert-exception =
     .label = Wuwzaće wotstronić
     .accesskey = W
@@ -416,14 +388,12 @@ identity-description-insecure = Waš zwisk z tutym sydłom priwatny njeje. Druzy
 identity-description-insecure-login-forms = Přizjewjenske informacije, kotrež na tutej stronje zapodawać, njejsu wěste a móhli so wothrozyć.
 identity-description-weak-cipher-intro = Waš zwisk z websydłom słabe zaklučowanje wužiwa a njeje priwatny.
 identity-description-weak-cipher-risk = Druzy ludźo móža sej waše informacije wobhladać abo zadźerženje websydła změnić.
-identity-description-active-blocked = { -brand-short-name } je dźěle tuteje strony zablokował, kotrež wěste njejsu. <label data-l10n-name="link">Dalše informacije</label>
+identity-description-active-blocked2 = { -brand-short-name } je dźěle tuteje strony zablokował, kotrež wěste njejsu.
 identity-description-passive-loaded = Waš zwisk priwatny njeje a druzy móhli informacije widźeć, kotrež ze sydłom dźěliće.
-identity-description-passive-loaded-insecure = Websydło wobsahuje wobsah, kotryž wěsty njeje (kaž na přikład wobrazy). <label data-l10n-name="link">Dalše informacije</label>
-identity-description-passive-loaded-mixed = Hačrunjež { -brand-short-name } je wobsah zablokował, je hišće wobsah na stronje, kotryž wěsty njeje (na přikład wobrazy). <label data-l10n-name="link">Dalše informacije</label>
+identity-description-passive-loaded-insecure2 = Websydło wobsahuje wobsah, kotryž wěsty njeje (kaž na přikład wobrazy).
+identity-description-passive-loaded-mixed2 = Hačrunjež { -brand-short-name } je wobsah zablokował, je hišće wobsah na stronje, kotryž wěsty njeje (na přikład wobrazy).
 identity-description-active-loaded = Tute websydło wobsahuje wobsah, kotryž wěsty njeje (na přikład skripty) a waš zwisk z nim priwatny njeje.
 identity-description-active-loaded-insecure = Druzy ludźo móža informacije widźeć, kotrež z tutym sydłom dźěliće (na přikład hesła, powěsće, kreditne karty atd.).
-identity-learn-more =
-    .value = Dalše informacije
 identity-disable-mixed-content-blocking =
     .label = Škit nachwilu znjemóžnić
     .accesskey = z
@@ -509,13 +479,6 @@ popup-select-window-or-screen =
     .label = Wokno abo wobrazowka:
     .accesskey = W
 popup-all-windows-shared = Wšě widźomne wokna na wašej wobrazowce budu so dźělić.
-popup-screen-sharing-block =
-    .label = Blokować
-    .accesskey = B
-popup-screen-sharing-always-block =
-    .label = Přeco blokować
-    .accesskey = P
-popup-mute-notifications-checkbox = Zdźělenki websydła při dźělenju zněmić
 
 ## WebRTC window or screen share tab switch warning
 
@@ -528,7 +491,6 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
-enable-devtools-popup-description = Zo byšće tastu F12 wužiwał, wočińće najprjedy DevTools přez meni Webwuwiwar.
 enable-devtools-popup-description2 = Zo byšće tastu F12 wužiwał, wočińće najprjedy DevTools přez meni Graty wobhladowaka.
 
 ## URL Bar
@@ -671,6 +633,20 @@ reader-view-enter-button =
 reader-view-close-button =
     .aria-label = Čitanski napohlad začinić
 
+## Picture-in-Picture urlbar button
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+picture-in-picture-urlbar-button-open =
+    .tooltiptext = Wobraz we wobrazu wočinić ({ $shortcut })
+picture-in-picture-urlbar-button-close =
+    .tooltiptext = Wobraz we wobrazu začinić ({ $shortcut })
+picture-in-picture-panel-header = Wobraz-we-wobrazu
+picture-in-picture-panel-headline = Tute websydło wobraz-we-wobrazu njeporuča.
+picture-in-picture-panel-body = Widejo so snano kaž wot wuwiwarja wotpohladane njepokazuja, mjeztym zo Wobraz-we-wobrazu je zmóžnjeny.
+picture-in-picture-enable-toggle =
+    .label = Najebać toho zmóžnić
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -687,19 +663,6 @@ fullscreen-exit-mac-button = Połnu wobrazowku (esc) skónčić
 pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> ma kontrolu nad wašim pokazowakom. Tłóčće Esc, zo byšće kontrolu wróćo dóstał.
 pointerlock-warning-no-domain = Tutón dokument ma kontrolu nad wašim pokazowakom. Tłóčće Esc, zo byšće kontrolu wróćo dóstał.
 
-## Subframe crash notification
-
-crashed-subframe-message = <strong>Dźěl tuteje strony je spadnył.</strong> Zo byšće { -brand-product-name } wo tutym problemje informował a jón spěšnišo rozrisował, pósćelće prošu spadowu rozprawu.
-# The string for crashed-subframe-title.title should match crashed-subframe-message,
-# but without any markup.
-crashed-subframe-title =
-    .title = Dźěl tuteje strony je spadnył. Zo byšće { -brand-product-name } wo tutym problemje informował a jón spěšnišo rozrisował, pósćelće prošu spadowu rozprawu.
-crashed-subframe-learnmore-link =
-    .value = Dalše informacije
-crashed-subframe-submit =
-    .label = Rozprawu wotpósłać
-    .accesskey = R
-
 ## Bookmarks panels, menus and toolbar
 
 bookmarks-manage-bookmarks =
@@ -715,6 +678,11 @@ bookmarks-other-bookmarks-menu =
     .label = Druhe zapołožki
 bookmarks-mobile-bookmarks-menu =
     .label = Mobilne zapołožki
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
@@ -739,12 +707,13 @@ bookmarks-tools-menu-button-visibility =
             [true] Meni zapołožkow ze symboloweje lajsty wotstronić
            *[other] Symbolowej lajsće meni zapołožkow přidać
         }
+
+##
+
 bookmarks-search =
     .label = Zapołožki pytać
 bookmarks-tools =
     .label = Nastroje za zapołožki
-bookmarks-bookmark-edit-panel =
-    .label = Tutu zapołožku wobdźěłać
 bookmarks-subview-edit-bookmark =
     .label = Tutu zapołožku wobdźěłać …
 # The aria-label is a spoken label that should not include the word "toolbar" or
@@ -760,9 +729,6 @@ bookmarks-toolbar-placeholder =
     .title = Zapiski lajsty zapołožkow
 bookmarks-toolbar-placeholder-button =
     .label = Zapiski lajsty zapołožkow
-# "Bookmark" is a verb, as in "Add current tab to bookmarks".
-bookmarks-current-tab =
-    .label = Aktualny rajtark jako zapołožku składować
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-subview-bookmark-tab =
     .label = Aktualny rajtark jako zapołožku składować …
@@ -789,11 +755,6 @@ repair-text-encoding-button =
 ## Customize Toolbar Buttons
 
 # Variables:
-#  $shortcut (String): keyboard shortcut to open the add-ons manager
-toolbar-addons-themes-button =
-    .label = Přidatki a drasty
-    .tooltiptext = Rjadujće swoje přidatki a drasty ({ $shortcut })
-# Variables:
 #  $shortcut (String): keyboard shortcut to open settings (only on macOS)
 toolbar-settings-button =
     .label = Nastajenja
@@ -808,6 +769,9 @@ toolbar-overflow-customize-button =
 toolbar-button-email-link =
     .label = Wotkaz e-mejlować
     .tooltiptext = Wotkaz k tutej stronje e-mejlować
+toolbar-button-logins =
+    .label = Hesła
+    .tooltiptext = Waše składowane hesła pokazać a rjadować
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
@@ -839,13 +803,6 @@ eme-notifications-drm-content-playing-dismiss-accesskey = Z
 
 panel-save-update-username = Wužiwarske mjeno
 panel-save-update-password = Hesło
-
-## Add-on removal warning
-
-# Variables:
-#  $name (String): The name of the addon that will be removed.
-addon-removal-title = { $name } wotstronić?
-addon-removal-abuse-report-checkbox = { -vendor-short-name } tute rozšěrjenje zdźělić
 
 ##
 
@@ -914,8 +871,6 @@ navbar-library =
     .tooltiptext = Historiju, składowane zapołožki a wjace pokazać
 navbar-search =
     .title = Pytać
-navbar-accessibility-indicator =
-    .tooltiptext = Funkcije bjezbarjernošće zmóžnjene
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
@@ -957,6 +912,15 @@ unified-extensions-button-permissions-needed =
         Rozšěrjenja
         Prawa trěbne
 
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = Rozšěrjenja
+    .tooltiptext =
+        Rozšěrjenja
+        Někotre rozšěrjenja dowolene njejsu
+
 ## Autorefresh blocker
 
 refresh-blocked-refresh-label = { -brand-short-name } je tutu stronu při awtomatiskim znowačitanju haćił.
@@ -967,9 +931,51 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-relay = { -relay-brand-name } wašu woprawdźitu e-mejlowu adresu maskuje, zo by was před datowymi dźěrami a spamom škitał.
-firefox-relay-offer-how-we-integrate = Hdyž pokročujeće, móžeće nowe e-mejlowe maski { -relay-brand-short-name } direktnje ze swojeho zrjadowaka hesło { -brand-shorter-name } generować.
+firefox-relay-offer-why-to-use-relay = Naše wěste, lochko wužiwajomne maski wašu identitu škitaja a chowaja wašu e-mejlowu adresu, zo bychu spamej zadźěwali.
 # Variables:
-#  $sitename (String): name of the site where user enters their Relay mask
 #  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-does = Posrědkujemy wšě mejlki wot <strong>{ $sitename }</strong> do <strong>{ $useremail }</strong> dale.
+firefox-relay-offer-what-relay-provides = Wšě mejlki, kotrež so na waše e-mejlowe maski sćelu, so do <strong>{ $useremail }</strong> dale posrědkuja (chibazo rozsudźeće je blokować).
+firefox-relay-offer-legal-notice = Hdyž na „E-mejlowu masku wužiwać“ klikaće, zwoliće do <label data-l10n-name="tos-url">>wužiwanskich wuměnjenjow</label>> a <label data-l10n-name="privacy-url">zdźělenki priwatnosće</label>.
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = (Njewobkrućeny)
+popup-notification-xpinstall-prompt-learn-more = Zhońće wjace wo wěstym instalowanju přidatkow
+
+## Pop-up warning
+
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message =
+    { $popupCount ->
+        [one] { -brand-short-name } je zadźěwał, zo tute sydło wuskakowace wokno wočinja.
+        [two] { -brand-short-name } je zadźěwał, zo tute sydło { $popupCount } wuskakowacej woknje wočinja.
+        [few] { -brand-short-name } je zadźěwał, zo tute sydło { $popupCount } wuskakowace wokna wočinja.
+       *[other] { -brand-short-name } je zadźěwał, zo tute sydło { $popupCount } wuskakowacych woknow wočinja.
+    }
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message =
+    { $popupCount ->
+        [one] { -brand-short-name } je tute sydło při wočinjenju wyše { $popupCount } wuskakowaceho wokna haćił.
+        [two] { -brand-short-name } je tute sydło při wočinjenju wyše { $popupCount } wuskakowaceju woknow haćił.
+        [few] { -brand-short-name } je tute sydło při wočinjenju wyše { $popupCount } wuskakowacych woknow haćił.
+       *[other] { -brand-short-name } je tute sydło pśi wočinjenju wyše { $popupCount } wuskakowacych woknow haćił.
+    }
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Nastajenja
+           *[other] Nastajenja
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] N
+           *[other] t
+        }
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = '{ $popupURI }' pokazać

@@ -134,12 +134,13 @@ about-processes-frame-name-many = Podwobłuki ({ $number }): { $shortUrl }
 ## Utility process actor names
 
 about-processes-utility-actor-unknown = Njeznaty akter
-about-processes-utility-actor-audio-decoder = Awdiodekoder
-
 about-processes-utility-actor-audio-decoder-generic = Generiski awdiodekoder
 about-processes-utility-actor-audio-decoder-applemedia = Medijowy awdiodekoder Apple
 about-processes-utility-actor-audio-decoder-wmf = Awdiodekoder Windows Media Framework
 about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = JavaScript Oracle
+about-processes-utility-actor-windows-utils = Windows Utils
 
 ## Displaying CPU (percentage and total)
 ## Variables:

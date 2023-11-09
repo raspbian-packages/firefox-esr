@@ -8,6 +8,33 @@
 # Key shortcut used to focus the filter box on top of the data view
 storage-filter-key = CmdOrCtrl+F
 
+# Hint shown when the selected storage host does not contain any data
+storage-table-empty-text = No data present for selected host
+
+# Hint shown when the cookies storage type is selected. Clicking the link will open
+# https://firefox-source-docs.mozilla.org/devtools-user/storage_inspector/cookies/
+storage-table-type-cookies-hint = View and edit cookies by selecting a host. <a data-l10n-name="learn-more-link">Learn more</a>
+
+# Hint shown when the local storage type is selected. Clicking the link will open
+# https://firefox-source-docs.mozilla.org/devtools-user/storage_inspector/local_storage_session_storage/
+storage-table-type-localstorage-hint = View and edit the local storage by selecting a host. <a data-l10n-name="learn-more-link">Learn more</a>
+
+# Hint shown when the session storage type is selected. Clicking the link will open
+# https://firefox-source-docs.mozilla.org/devtools-user/storage_inspector/local_storage_session_storage/
+storage-table-type-sessionstorage-hint = View and edit the session storage by selecting a host. <a data-l10n-name="learn-more-link">Learn more</a>
+
+# Hint shown when the IndexedDB storage type is selected. Clicking the link will open
+# https://firefox-source-docs.mozilla.org/devtools-user/storage_inspector/indexeddb/
+storage-table-type-indexeddb-hint = View and delete IndexedDB entries by selecting a database. <a data-l10n-name="learn-more-link">Learn more</a>
+
+# Hint shown when the cache storage type is selected. Clicking the link will open
+# https://firefox-source-docs.mozilla.org/devtools-user/storage_inspector/cache_storage/
+storage-table-type-cache-hint = View and delete the cache storage entries by selecting a storage. <a data-l10n-name="learn-more-link">Learn more</a>
+
+# Hint shown when the extension storage type is selected. Clicking the link will open
+# https://firefox-source-docs.mozilla.org/devtools-user/storage_inspector/extension_storage/
+storage-table-type-extensionstorage-hint = View and edit the extension storage by selecting a host. <a data-l10n-name="learn-more-link">Learn more</a>
+
 # Placeholder for the searchbox that allows you to filter the table items
 storage-search-box =
     .placeholder = Filter items
@@ -57,7 +84,12 @@ storage-context-menu-delete-all-from =
 
 storage-table-headers-cookies-name = Ainm
 storage-table-headers-cookies-value = Value
+storage-table-headers-cookies-expires = Expires / Max-Age
+storage-table-headers-cookies-size = Size
+storage-table-headers-cookies-last-accessed = Last Accessed
+storage-table-headers-cookies-creation-time = Created
 storage-table-headers-cache-status = Status
+storage-table-headers-extension-storage-area = Storage Area
 
 ## Labels for Storage type groups present in the Storage Tree, like cookies, local storage etc.
 
@@ -66,6 +98,7 @@ storage-tree-labels-local-storage = Local Storage
 storage-tree-labels-session-storage = Session Storage
 storage-tree-labels-indexed-db = Indexed DB
 storage-tree-labels-cache = Cache Storage
+storage-tree-labels-extension-storage = Extension Storage
 
 ##
 

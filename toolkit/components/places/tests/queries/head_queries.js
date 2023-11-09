@@ -4,8 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-
 // Import common head.
 {
   /* import-globals-from ../head_common.js */
@@ -224,7 +222,7 @@ function compareArrayToResult(aArray, aRoot) {
   }
 
   // check expected number of results against actual
-  var expectedResultCount = aArray.filter(function(aEl) {
+  var expectedResultCount = aArray.filter(function (aEl) {
     return aEl.isInQuery;
   }).length;
   if (expectedResultCount != aRoot.childCount) {

@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Nasztalowania połōnczynio
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Nasztalowania połōnczynio
     .style =
@@ -84,15 +76,13 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Ta ôpcyjo po cichu autyntyzuje cie do serwerōw proxy, jak mosz do nich spamiyntane dane. Spytajōm cie dopiyro, jak niy podarzi sie autyntyzacyjo.
 
+connection-proxy-autologin-checkbox =
+    .label = Niy pytej ô autyntyzacyjo, jak je spamiyntane hasło
+    .accesskey = i
+    .tooltiptext = Ta ôpcyjo po cichu autyntyzuje cie do serwerōw proxy, jak mosz do nich spamiyntane dane. Spytajōm cie dopiyro, jak niy podarzi sie autyntyzacyjo.
+
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS przi używaniu SOCKS v5
-    .accesskey = D
-
-connection-dns-over-https =
-    .label = Załōncz DNS over HTTPS
-    .accesskey = a
-
-connection-dns-over-https-url-resolver = Dostowca
     .accesskey = D
 
 # Variables:

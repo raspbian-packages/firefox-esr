@@ -48,7 +48,8 @@ class GeckoMediaPluginServiceParent final
   NS_DECL_NSIASYNCSHUTDOWNBLOCKER
 
   // mozIGeckoMediaPluginService
-  NS_IMETHOD HasPluginForAPI(const nsACString& aAPI, nsTArray<nsCString>* aTags,
+  NS_IMETHOD HasPluginForAPI(const nsACString& aAPI,
+                             const nsTArray<nsCString>& aTags,
                              bool* aRetVal) override;
   NS_IMETHOD GetNodeId(const nsAString& aOrigin,
                        const nsAString& aTopLevelOrigin,
@@ -96,11 +97,11 @@ class GeckoMediaPluginServiceParent final
   void ClearStorage();
 
   already_AddRefed<GMPParent> SelectPluginForAPI(
-      const nsACString& aNodeId, const nsCString& aAPI,
+      const nsACString& aNodeId, const nsACString& aAPI,
       const nsTArray<nsCString>& aTags);
 
   already_AddRefed<GMPParent> FindPluginForAPIFrom(
-      size_t aSearchStartIndex, const nsCString& aAPI,
+      size_t aSearchStartIndex, const nsACString& aAPI,
       const nsTArray<nsCString>& aTags, size_t* aOutPluginIndex);
 
   nsresult GetNodeId(const nsAString& aOrigin, const nsAString& aTopLevelOrigin,
@@ -138,7 +139,7 @@ class GeckoMediaPluginServiceParent final
 
   RefPtr<GetGMPContentParentPromise> GetContentParent(
       GMPCrashHelper* aHelper, const NodeIdVariant& aNodeIdVariant,
-      const nsCString& aAPI, const nsTArray<nsCString>& aTags) override;
+      const nsACString& aAPI, const nsTArray<nsCString>& aTags) override;
 
  private:
   // Creates a copy of aOriginal. Note that the caller is responsible for
@@ -231,8 +232,8 @@ class GeckoMediaPluginServiceParent final
   uint32_t mDirectoriesInProgress = 0;
 };
 
-nsresult WriteToFile(nsIFile* aPath, const nsCString& aFileName,
-                     const nsCString& aData);
+nsresult WriteToFile(nsIFile* aPath, const nsACString& aFileName,
+                     const nsACString& aData);
 nsresult ReadSalt(nsIFile* aPath, nsACString& aOutData);
 bool MatchOrigin(nsIFile* aPath, const nsACString& aSite,
                  const mozilla::OriginAttributesPattern& aPattern);
@@ -253,19 +254,20 @@ class GMPServiceParent final : public PGMPServiceParent {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING_WITH_DELETE_ON_MAIN_THREAD(
       GMPServiceParent, final);
 
-  ipc::IPCResult RecvGetGMPNodeId(const nsString& aOrigin,
-                                  const nsString& aTopLevelOrigin,
-                                  const nsString& aGMPName,
+  ipc::IPCResult RecvGetGMPNodeId(const nsAString& aOrigin,
+                                  const nsAString& aTopLevelOrigin,
+                                  const nsAString& aGMPName,
                                   nsCString* aID) override;
 
   static bool Create(Endpoint<PGMPServiceParent>&& aGMPService);
 
   ipc::IPCResult RecvLaunchGMP(
-      const NodeIdVariant& aNodeIdVariant, const nsCString& aAPI,
+      const NodeIdVariant& aNodeIdVariant, const nsACString& aAPI,
       nsTArray<nsCString>&& aTags, nsTArray<ProcessId>&& aAlreadyBridgedTo,
-      uint32_t* aOutPluginId, ProcessId* aOutProcessId,
-      nsCString* aOutDisplayName, Endpoint<PGMPContentParent>* aOutEndpoint,
-      nsresult* aOutRv, nsCString* aOutErrorDescription) override;
+      uint32_t* aOutPluginId, GMPPluginType* aOutPluginType,
+      ProcessId* aOutProcessId, nsCString* aOutDisplayName,
+      Endpoint<PGMPContentParent>* aOutEndpoint, nsresult* aOutRv,
+      nsCString* aOutErrorDescription) override;
 
  private:
   ~GMPServiceParent();

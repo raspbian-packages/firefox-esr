@@ -6,23 +6,19 @@
 ## Subframe crash notification
 
 crashed-subframe-message =
-    <strong>Část této stránky spadla.</strong> Pokud chcete autorům { -brand-shorter-name.gender ->
-        [masculine] { -brand-product-name(case: "gen") }
-        [feminine] { -brand-product-name(case: "gen") }
-        [neuter] { -brand-product-name(case: "gen") }
-       *[other] aplikace { -brand-product-name }
-    } tento problém nahlásit pro zrychlení opravy, odešlete prosím hlášení.
+    { -brand-shorter-name.case-status ->
+        [with-cases] <strong>Část této stránky spadla.</strong> Pokud chcete autorům { -brand-product-name(case: "gen") } tento problém nahlásit pro zrychlení opravy, odešlete prosím hlášení.
+       *[no-cases] <strong>Část této stránky spadla.</strong> Pokud chcete autorům aplikace { -brand-product-name } tento problém nahlásit pro zrychlení opravy, odešlete prosím hlášení.
+    }
 
 # The string for crashed-subframe-title.title should match crashed-subframe-message,
 # but without any markup.
 crashed-subframe-title =
     .title =
-        Část této stránky spadla. Pokud chcete autorům { -brand-product-name.gender ->
-            [masculine] { -brand-product-name(case: "gen") }
-            [feminine] { -brand-product-name(case: "gen") }
-            [neuter] { -brand-product-name(case: "gen") }
-           *[other] aplikace { -brand-product-name }
-        } tento problém nahlásit pro zrychlení opravy, odešlete prosím hlášení.
+        { -brand-product-name.case-status ->
+            [with-cases] Část této stránky spadla. Pokud chcete autorům { -brand-product-name(case: "gen") } tento problém nahlásit pro zrychlení opravy, odešlete prosím hlášení.
+           *[no-cases] Část této stránky spadla. Pokud chcete autorům aplikace { -brand-product-name } tento problém nahlásit pro zrychlení opravy, odešlete prosím hlášení.
+        }
 crashed-subframe-learnmore-link =
     .value = Zjistit více
 crashed-subframe-submit =

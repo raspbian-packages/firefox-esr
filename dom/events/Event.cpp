@@ -28,6 +28,7 @@
 #include "mozilla/dom/DocumentInlines.h"
 #include "mozilla/dom/Event.h"
 #include "mozilla/dom/ShadowRoot.h"
+#include "mozilla/dom/WorkerScope.h"
 #include "mozilla/StaticPrefs_dom.h"
 #include "mozilla/SVGUtils.h"
 #include "mozilla/SVGOuterSVGFrame.h"
@@ -94,7 +95,6 @@ void Event::ConstructorInit(EventTarget* aOwner, nsPresContext* aPresContext,
         }
      */
     mEvent = new WidgetEvent(false, eVoidEvent);
-    mEvent->mTime = PR_Now();
   }
 
   InitPresContextData(aPresContext);
@@ -420,10 +420,13 @@ void Event::PreventDefaultInternal(bool aCalledByDefaultHandler,
     nsCOMPtr<nsPIDOMWindowInner> win(do_QueryInterface(mOwner));
     if (win) {
       if (Document* doc = win->GetExtantDoc()) {
-        AutoTArray<nsString, 1> params;
-        GetType(*params.AppendElement());
-        doc->WarnOnceAbout(Document::ePreventDefaultFromPassiveListener, false,
-                           params);
+        if (!doc->HasWarnedAbout(
+                Document::ePreventDefaultFromPassiveListener)) {
+          AutoTArray<nsString, 1> params;
+          GetType(*params.AppendElement());
+          doc->WarnOnceAbout(Document::ePreventDefaultFromPassiveListener,
+                             false, params);
+        }
       }
     }
     return;
@@ -761,9 +764,7 @@ double Event::TimeStamp() {
     MOZ_ASSERT(mOwner->PrincipalOrNull());
 
     return nsRFPService::ReduceTimePrecisionAsMSecs(
-        ret, perf->GetRandomTimelineSeed(),
-        mOwner->PrincipalOrNull()->IsSystemPrincipal(),
-        mOwner->CrossOriginIsolated());
+        ret, perf->GetRandomTimelineSeed(), perf->GetRTPCallerType());
   }
 
   WorkerPrivate* workerPrivate = GetCurrentThreadWorkerPrivate();
@@ -773,8 +774,7 @@ double Event::TimeStamp() {
 
   return nsRFPService::ReduceTimePrecisionAsMSecs(
       ret, workerPrivate->GetRandomTimelineSeed(),
-      workerPrivate->UsesSystemPrincipal(),
-      workerPrivate->CrossOriginIsolated());
+      workerPrivate->GlobalScope()->GetRTPCallerType());
 }
 
 void Event::Serialize(IPC::MessageWriter* aWriter,
@@ -858,7 +858,7 @@ void Event::GetWidgetEventType(WidgetEvent* aEvent, nsAString& aType) {
   const char16_t* name = GetEventName(aEvent->mMessage);
 
   if (name) {
-    aType.Assign(name);
+    aType.AssignLiteral(name, nsString::char_traits::length(name));
     return;
   } else if (aEvent->mMessage == eUnidentifiedEvent &&
              aEvent->mSpecifiedEventType) {

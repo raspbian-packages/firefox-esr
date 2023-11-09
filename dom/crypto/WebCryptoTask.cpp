@@ -138,7 +138,8 @@ static nsresult GetAlgorithmName(JSContext* aCx, const OOS& aAlgorithm,
     aName.Assign(aAlgorithm.GetAsString());
   } else {
     // Coerce to algorithm and extract name
-    JS::RootedValue value(aCx, JS::ObjectValue(*aAlgorithm.GetAsObject()));
+    JS::Rooted<JS::Value> value(aCx,
+                                JS::ObjectValue(*aAlgorithm.GetAsObject()));
     Algorithm alg;
 
     if (!alg.Init(aCx, value)) {
@@ -163,7 +164,7 @@ static nsresult Coerce(JSContext* aCx, T& aTarget, const OOS& aAlgorithm) {
     return NS_ERROR_DOM_SYNTAX_ERR;
   }
 
-  JS::RootedValue value(aCx, JS::ObjectValue(*aAlgorithm.GetAsObject()));
+  JS::Rooted<JS::Value> value(aCx, JS::ObjectValue(*aAlgorithm.GetAsObject()));
   if (!aTarget.Init(aCx, value)) {
     return NS_ERROR_DOM_SYNTAX_ERR;
   }
@@ -505,7 +506,7 @@ class AesTask : public ReturnArrayBufferViewTask, public DeferredData {
 
       ATTEMPT_BUFFER_INIT(mIv, params.mIv)
       if (mIv.Length() != 16) {
-        mEarlyRv = NS_ERROR_DOM_DATA_ERR;
+        mEarlyRv = NS_ERROR_DOM_OPERATION_ERR;
         return;
       }
     } else if (algName.EqualsLiteral(WEBCRYPTO_ALG_AES_CTR)) {
@@ -522,7 +523,7 @@ class AesTask : public ReturnArrayBufferViewTask, public DeferredData {
 
       ATTEMPT_BUFFER_INIT(mIv, params.mCounter)
       if (mIv.Length() != 16) {
-        mEarlyRv = NS_ERROR_DOM_DATA_ERR;
+        mEarlyRv = NS_ERROR_DOM_OPERATION_ERR;
         return;
       }
 
@@ -1358,7 +1359,7 @@ class ImportKeyTask : public WebCryptoTask {
 
     // Try JWK
     ClearException ce(aCx);
-    JS::RootedValue value(aCx, JS::ObjectValue(*aKeyData));
+    JS::Rooted<JS::Value> value(aCx, JS::ObjectValue(*aKeyData));
     if (!mJwk.Init(aCx, value)) {
       mEarlyRv = NS_ERROR_DOM_DATA_ERR;
       return;
@@ -3221,6 +3222,7 @@ WebCryptoTask* WebCryptoTask::CreateUnwrapKeyTask(
   if (keyAlgName.EqualsASCII(WEBCRYPTO_ALG_AES_CBC) ||
       keyAlgName.EqualsASCII(WEBCRYPTO_ALG_AES_CTR) ||
       keyAlgName.EqualsASCII(WEBCRYPTO_ALG_AES_GCM) ||
+      keyAlgName.EqualsASCII(WEBCRYPTO_ALG_AES_KW) ||
       keyAlgName.EqualsASCII(WEBCRYPTO_ALG_HKDF) ||
       keyAlgName.EqualsASCII(WEBCRYPTO_ALG_HMAC)) {
     importTask = new ImportSymmetricKeyTask(aGlobal, aCx, aFormat,

@@ -86,6 +86,17 @@ restart-later = తరువాత పునఃప్రారంభించు
 ##   $name (String): name of the extension
 
 
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
+
 ## Preferences UI Search Results
 
 search-results-header = వెతుకుడు ఫలితాలు
@@ -146,6 +157,10 @@ browser-containers-settings =
     .accesskey = i
 
 containers-disable-alert-title = అన్ని కంటైనర్ ట్యాబులు మూసివేయాలా?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] మీరు ఇప్పుడు కంటెయినర్ ట్యాబులను అచేతనం చేస్తే, { $tabCount } కంటెయినర్ ట్యాబు మూసివేయబడుతుంది. మీరు నిజంగానే కంటెయినర్ ట్యాబులను అచేతనం చేయాలనుకుంటున్నారా?
@@ -157,6 +172,9 @@ containers-disable-alert-ok-button =
         [one] { $tabCount } కంటైనర్ ట్యాబు మూసివేయి
        *[other] { $tabCount } కంటైనర్ ట్యాబులను మూసివేయి
     }
+
+##
+
 containers-disable-alert-cancel-button = చేతనంగా ఉంచు
 
 containers-remove-alert-title = ఈ కంటెయినరును తీసీవేయాలా?
@@ -175,9 +193,6 @@ containers-remove-cancel-button = ఈ కంటెయినరును తొ�
 ## General Section - Language & Appearance
 
 language-and-appearance-header = భాష, రూపురేఖలు
-
-preferences-web-appearance-choice-browser = { -brand-short-name } అలంకారం
-preferences-web-appearance-choice-system = వ్యవస్థ అలంకారం
 
 preferences-web-appearance-choice-light = వెలుతురు
 preferences-web-appearance-choice-dark = చీకటి
@@ -477,11 +492,6 @@ home-restore-defaults =
     .label = అప్రమేయాలను పునరుద్ధరించు
     .accesskey = R
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Firefox ముంగిలి (అప్రమేయం)
-
 home-mode-choice-default-fx =
     .label = { -firefox-home-brand-name } (అప్రమేయం)
 
@@ -512,14 +522,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Firefox ముంగిలి విషయం
-home-prefs-content-description = మీ Firefox ముంగిలి తెరలో మీకు కావలసిన విషయాల్ని ఎంచుకోండి.
-
 home-prefs-search-header =
     .label = జాల వెతుకులాట
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 home-prefs-recommended-by-header =
     .label = { $provider }చే సిఫార్సు చేయబడినది
@@ -579,6 +590,7 @@ search-show-suggestions-url-bar-option =
     .label = వెతుకుడు సూచనలను చిరునామా పట్టీ ఫలితాలలో చూపించు
     .accesskey = l
 
+
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -632,6 +644,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = మీ జాలాన్ని మీతో తీసుకువెళ్ళండి
 
 # This message contains two links and two icon images.
@@ -646,14 +662,22 @@ sync-mobile-promo = మీ మొబైలు పరికరంతో సిం
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = ప్రొఫైల్ చిత్రం మార్చు
 
 sync-manage-account = ఖాతా నిర్వహణ
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } నిర్థారించబడలేదు.
 sync-signedin-login-failure = మళ్ళీ అనుసంధానించడానికి సైన్ ఇన్ అవ్వండి { $email }
+
+##
 
 sync-resend-verification =
     .label = ధృవీకరణను మళ్ళీ పంపు
@@ -677,6 +701,13 @@ prefs-sync-now =
     .labelnotsyncing = ఇప్పుడే సింక్రనించు
     .accesskeynotsyncing = N
     .labelsyncing = సింక్రనిస్తోంది…
+
+prefs-sync-now-button =
+    .label = ఇప్పుడే సింక్రనించు
+    .accesskey = N
+
+prefs-syncing-button =
+    .label = సింక్రనిస్తోంది…
 
 ## The list of things currently syncing.
 
@@ -750,6 +781,16 @@ sync-device-name-save =
     .accesskey = v
 
 sync-connect-another-device = మరొక పరికరాన్ని అనుసంధానించు
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = నిర్ధారణ పంపబడింది
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = ఒక నిర్ధారణ లింకు { $email } కు పంపబడింది.
+sync-verification-not-sent-title = నిర్ధారణను పంపలేకపోయాం
+sync-verification-not-sent-body = ఈ సమయంలో నిర్ధారణ మెయిలుని పంపించలేకపోతున్నాం, దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.
 
 ## Privacy Section
 
@@ -877,8 +918,6 @@ sitedata-option-block-cross-site-trackers =
     .label = క్రాస్-సైట్ ట్రాకర్లు
 sitedata-option-block-unvisited =
     .label = చూడని వెబ్‌సైట్ల కుకీలు
-sitedata-option-block-all-third-party =
-    .label = మూడవ-పక్ష కుకీలన్నీ (కొన్ని వెబ్‌సైట్లు పనిచేయకపోవచ్చు)
 sitedata-option-block-all =
     .label = కుకీలన్నీ (వెబ్‌సైట్లు పనిచేయకపోడానికి కారణమవుతుంది)
 
@@ -893,6 +932,9 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = మినహాయింపులను నిర్వహించండి…
     .accesskey = x
+
+## Privacy Section - Cookie Banner Handling
+
 
 ## Privacy Section - Address Bar
 
@@ -912,7 +954,6 @@ addressbar-locbar-openpage-option =
 addressbar-locbar-topsites-option =
     .label = మేటి సైట్లు
     .accesskey = T
-
 addressbar-locbar-quickactions-option =
     .label = త్వరిత చర్యలు
     .accesskey = Q
@@ -948,9 +989,10 @@ content-blocking-cross-site-tracking-cookies = క్రాస్ -సైట్ 
 content-blocking-social-media-trackers = సామాజిక మాధ్యమాల ట్రాకర్లు
 content-blocking-all-cookies = అన్ని కుకీలు
 content-blocking-unvisited-cookies = చూడని సైట్ల నుండి కుకీలు
-content-blocking-all-third-party-cookies = మూడవ-పక్ష కుకీలన్నీ
 content-blocking-cryptominers = క్రిప్టోమైనర్లు
 content-blocking-fingerprinters = ఫింగర్‌ప్రింటర్లు
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-etp-standard-tcp-rollout-learn-more = ఇంకా తెలుసుకోండి
 
@@ -1126,6 +1168,9 @@ httpsonly-learn-more = ఇంకా తెలుసుకోండి
 
 httpsonly-radio-disabled =
     .label = HTTPS-మాత్రమే రీతిని చేతనం చేయవద్దు
+
+## DoH Section
+
 
 ## The following strings are used in the Download section of settings
 

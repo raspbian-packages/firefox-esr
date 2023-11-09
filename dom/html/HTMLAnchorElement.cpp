@@ -10,7 +10,6 @@
 #include "mozilla/dom/HTMLAnchorElementBinding.h"
 #include "mozilla/dom/HTMLDNSPrefetch.h"
 #include "mozilla/EventDispatcher.h"
-#include "mozilla/EventStates.h"
 #include "mozilla/MemoryReporting.h"
 #include "nsCOMPtr.h"
 #include "nsContentUtils.h"
@@ -24,10 +23,6 @@
 NS_IMPL_NS_NEW_HTML_ELEMENT(Anchor)
 
 namespace mozilla::dom {
-
-// static
-const DOMTokenListSupportedToken HTMLAnchorElement::sSupportedRelValues[] = {
-    "noreferrer", "noopener", nullptr};
 
 HTMLAnchorElement::~HTMLAnchorElement() {
   SupportsDNSPrefetch::Destroyed(*this);
@@ -159,7 +154,7 @@ void HTMLAnchorElement::GetLinkTarget(nsAString& aTarget) {
   }
 }
 
-void HTMLAnchorElement::GetTarget(nsAString& aValue) {
+void HTMLAnchorElement::GetTarget(nsAString& aValue) const {
   if (!GetAttr(kNameSpaceID_None, nsGkAtoms::target, aValue)) {
     GetBaseTarget(aValue);
   }
@@ -172,7 +167,8 @@ nsDOMTokenList* HTMLAnchorElement::RelList() {
   return mRelList;
 }
 
-void HTMLAnchorElement::GetText(nsAString& aText, mozilla::ErrorResult& aRv) {
+void HTMLAnchorElement::GetText(nsAString& aText,
+                                mozilla::ErrorResult& aRv) const {
   if (NS_WARN_IF(
           !nsContentUtils::GetNodeTextContent(this, true, aText, fallible))) {
     aRv.Throw(NS_ERROR_OUT_OF_MEMORY);
@@ -183,10 +179,6 @@ void HTMLAnchorElement::SetText(const nsAString& aText, ErrorResult& aRv) {
   aRv = nsContentUtils::SetNodeTextContent(this, aText, false);
 }
 
-void HTMLAnchorElement::ToString(nsAString& aSource) {
-  return GetHref(aSource);
-}
-
 already_AddRefed<nsIURI> HTMLAnchorElement::GetHrefURI() const {
   if (nsCOMPtr<nsIURI> uri = GetCachedURI()) {
     return uri.forget();
@@ -194,24 +186,20 @@ already_AddRefed<nsIURI> HTMLAnchorElement::GetHrefURI() const {
   return GetHrefURIForAnchors();
 }
 
-nsresult HTMLAnchorElement::BeforeSetAttr(int32_t aNamespaceID, nsAtom* aName,
-                                          const nsAttrValueOrString* aValue,
-                                          bool aNotify) {
-  if (aNamespaceID == kNameSpaceID_None) {
-    if (aName == nsGkAtoms::href) {
-      CancelDNSPrefetch(*this);
-    }
+void HTMLAnchorElement::BeforeSetAttr(int32_t aNamespaceID, nsAtom* aName,
+                                      const nsAttrValue* aValue, bool aNotify) {
+  if (aNamespaceID == kNameSpaceID_None && aName == nsGkAtoms::href) {
+    CancelDNSPrefetch(*this);
   }
-
   return nsGenericHTMLElement::BeforeSetAttr(aNamespaceID, aName, aValue,
                                              aNotify);
 }
 
-nsresult HTMLAnchorElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
-                                         const nsAttrValue* aValue,
-                                         const nsAttrValue* aOldValue,
-                                         nsIPrincipal* aSubjectPrincipal,
-                                         bool aNotify) {
+void HTMLAnchorElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
+                                     const nsAttrValue* aValue,
+                                     const nsAttrValue* aOldValue,
+                                     nsIPrincipal* aSubjectPrincipal,
+                                     bool aNotify) {
   if (aNamespaceID == kNameSpaceID_None) {
     if (aName == nsGkAtoms::href) {
       Link::ResetLinkState(aNotify, !!aValue);
@@ -225,7 +213,7 @@ nsresult HTMLAnchorElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
       aNamespaceID, aName, aValue, aOldValue, aSubjectPrincipal, aNotify);
 }
 
-EventStates HTMLAnchorElement::IntrinsicState() const {
+ElementState HTMLAnchorElement::IntrinsicState() const {
   return Link::LinkState() | nsGenericHTMLElement::IntrinsicState();
 }
 

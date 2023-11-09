@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] Закріпити на панелі завдань
     }
 about-private-browsing-pin-promo-title = Жодних збережених кук чи історії на комп'ютері. Переглядайте без думки, що за вами хтось спостерігає.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Геть банери про куки!
+about-private-browsing-cookie-banners-promo-button = Зменшити кількість банерів кук
+about-private-browsing-cookie-banners-promo-message = Дайте можливість { -brand-short-name } автоматично відповідати на спливні вікна кук, щоб вони не заважали вам під час онлайн-перегляду. { -brand-short-name } відхилить усі запити, якщо це можливо.

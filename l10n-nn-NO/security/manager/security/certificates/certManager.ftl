@@ -26,10 +26,6 @@ certmgr-people = Du har lagra sertifikat som identifiserer desse personane
 certmgr-server = Desse oppføringane identifiserer unntak frå serversertifikat
 certmgr-ca = Du har lagra sertifikat som identifiserer desse sertifikatstyremaktene
 
-certmgr-edit-ca-cert =
-    .title = Rediger tiltru for CA-sertifikatet
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Rediger tiltru for CA-sertifikatet
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Dette sertifikatet kan identifisera e-postbrukarar.
-
-certmgr-delete-cert =
-    .title = Slett sertifikat
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Slett sertifikat
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Tenar
-
-certmgr-override-lifetime =
-    .label = Levetid
 
 certmgr-token-name =
     .label = Tryggingseining
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Serienummer
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256-fingeravtrykk
 
 certmgr-view =
     .label = Vis…

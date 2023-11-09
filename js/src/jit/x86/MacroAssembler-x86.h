@@ -52,6 +52,15 @@ class MacroAssemblerX86 : public MacroAssemblerX86Shared {
     }
     return payloadOf(address);
   }
+  Operand payloadOfAfterStackPush(const BaseIndex& address) {
+    // If we are basing off %esp, the address will be invalid after the
+    // first push.
+    if (address.base == StackPointer) {
+      return Operand(address.base, address.index, address.scale,
+                     address.offset + 4);
+    }
+    return payloadOf(address);
+  }
   Operand payloadOf(const Address& address) {
     return Operand(address.base, address.offset);
   }
@@ -275,6 +284,10 @@ class MacroAssemblerX86 : public MacroAssemblerX86Shared {
     push(reg);
   }
   void pushValue(const Address& addr) {
+    push(tagOf(addr));
+    push(payloadOfAfterStackPush(addr));
+  }
+  void pushValue(const BaseIndex& addr, Register scratch) {
     push(tagOf(addr));
     push(payloadOfAfterStackPush(addr));
   }
@@ -1105,10 +1118,6 @@ class MacroAssemblerX86 : public MacroAssemblerX86Shared {
     }
   }
 
-  void loadInstructionPointerAfterCall(Register dest) {
-    movl(Operand(StackPointer, 0x0), dest);
-  }
-
   // Note: this function clobbers the source register.
   inline void convertUInt32ToDouble(Register src, FloatRegister dest);
 
@@ -1124,7 +1133,8 @@ class MacroAssemblerX86 : public MacroAssemblerX86Shared {
 
  public:
   // Used from within an Exit frame to handle a pending exception.
-  void handleFailureWithHandlerTail(Label* profilerExitTail);
+  void handleFailureWithHandlerTail(Label* profilerExitTail,
+                                    Label* bailoutTail);
 
   // Instrumentation for entering and leaving the profiler.
   void profilerEnterFrame(Register framePtr, Register scratch);

@@ -20,11 +20,13 @@
 #include "mozilla/ResultExtensions.h"
 #include "mozilla/SchedulerGroup.h"
 #include "mozilla/URLPreloader.h"
+#include "nsIChildChannel.h"
 #include "nsIRunnable.h"
 #include "nsISupportsPriority.h"
 #include "nsITimedChannel.h"
 #include "nsICachingChannel.h"
 #include "nsSyncLoadService.h"
+#include "nsContentSecurityManager.h"
 #include "nsCOMPtr.h"
 #include "nsString.h"
 #include "nsIContent.h"
@@ -46,6 +48,7 @@
 #include "nsGkAtoms.h"
 #include "nsIThreadInternal.h"
 #include "nsINetworkPredictor.h"
+#include "nsQueryActor.h"
 #include "nsStringStream.h"
 #include "mozilla/dom/MediaList.h"
 #include "mozilla/dom/ShadowRoot.h"
@@ -106,6 +109,10 @@ extern mozilla::LazyLogModule sCssLoaderLog;
 mozilla::LazyLogModule sCssLoaderLog("nsCSSLoader");
 
 static mozilla::LazyLogModule gSriPRLog("SRI");
+
+static bool IsPrivilegedURI(nsIURI* aURI) {
+  return aURI->SchemeIs("chrome") || aURI->SchemeIs("resource");
+}
 
 #define LOG_ERROR(args) MOZ_LOG(sCssLoaderLog, mozilla::LogLevel::Error, args)
 #define LOG_WARN(args) MOZ_LOG(sCssLoaderLog, mozilla::LogLevel::Warning, args)
@@ -168,7 +175,7 @@ bool SheetLoadDataHashKey::KeyEquals(const SheetLoadDataHashKey& aKey) const {
   }
 
   // Chrome URIs ignore everything else.
-  if (dom::IsChromeURI(mURI)) {
+  if (IsPrivilegedURI(mURI)) {
     return true;
   }
 
@@ -282,6 +289,7 @@ SheetLoadData::SheetLoadData(css::Loader* aLoader, const nsAString& aTitle,
       mIsNonDocumentSheet(false),
       mIsChildSheet(aSheet->GetParentSheet()),
       mIsBeingParsed(false),
+      mIsLoading(false),
       mIsCancelled(false),
       mMustNotify(false),
       mWasAlternate(aIsAlternate == IsAlternate::Yes),
@@ -321,6 +329,7 @@ SheetLoadData::SheetLoadData(css::Loader* aLoader, nsIURI* aURI,
       mIsNonDocumentSheet(aParentData && aParentData->mIsNonDocumentSheet),
       mIsChildSheet(aSheet->GetParentSheet()),
       mIsBeingParsed(false),
+      mIsLoading(false),
       mIsCancelled(false),
       mMustNotify(false),
       mWasAlternate(false),
@@ -359,6 +368,7 @@ SheetLoadData::SheetLoadData(
       mIsNonDocumentSheet(true),
       mIsChildSheet(false),
       mIsBeingParsed(false),
+      mIsLoading(false),
       mIsCancelled(false),
       mMustNotify(false),
       mWasAlternate(false),
@@ -457,7 +467,7 @@ void SheetLoadData::FireLoadEvent(nsIThreadInternal* aThread) {
 }
 
 void SheetLoadData::StartPendingLoad() {
-  mLoader->LoadSheet(*this, Loader::SheetState::NeedsParser,
+  mLoader->LoadSheet(*this, Loader::SheetState::NeedsParser, 0,
                      Loader::PendingLoad::Yes);
 }
 
@@ -517,6 +527,7 @@ Loader::Loader(DocGroup* aDocGroup) : Loader() { mDocGroup = aDocGroup; }
 Loader::Loader(Document* aDocument) : Loader() {
   MOZ_ASSERT(aDocument, "We should get a valid document from the caller!");
   mDocument = aDocument;
+  mIsDocumentAssociated = true;
   mDocumentCompatMode = aDocument->GetCompatibilityMode();
   mSheets = SharedStyleSheetCache::Get();
   RegisterInSheetCache();
@@ -653,7 +664,7 @@ static nsresult VerifySheetIntegrity(const SRIMetadata& aMetadata,
 static bool AllLoadsCanceled(const SheetLoadData& aData) {
   const SheetLoadData* data = &aData;
   do {
-    if (!data->mIsCancelled) {
+    if (!data->IsCancelled()) {
       return false;
     }
   } while ((data = data->mNext));
@@ -1175,6 +1186,7 @@ void Loader::InsertChildSheet(StyleSheet& aSheet, StyleSheet& aParentSheet) {
  * a new load is kicked off asynchronously.
  */
 nsresult Loader::LoadSheet(SheetLoadData& aLoadData, SheetState aSheetState,
+                           uint64_t aEarlyHintPreloaderId,
                            PendingLoad aPendingLoad) {
   LOG(("css::Loader::LoadSheet"));
   MOZ_ASSERT(aLoadData.mURI, "Need a URI to load");
@@ -1230,9 +1242,14 @@ nsresult Loader::LoadSheet(SheetLoadData& aLoadData, SheetState aSheetState,
                           mDocument);
     }
 
+    // Synchronous loads should only be used internally. Therefore no CORS
+    // policy is needed.
     nsSecurityFlags securityFlags =
-        nsILoadInfo::SEC_ALLOW_CROSS_ORIGIN_INHERITS_SEC_CONTEXT |
-        nsILoadInfo::SEC_ALLOW_CHROME;
+        nsContentSecurityManager::ComputeSecurityFlags(
+            CORSMode::CORS_NONE, nsContentSecurityManager::CORSSecurityMapping::
+                                     CORS_NONE_MAPS_TO_INHERITED_CONTEXT);
+
+    securityFlags |= nsILoadInfo::SEC_ALLOW_CHROME;
 
     nsContentPolicyType contentPolicyType =
         aLoadData.mPreloadKind == StylePreloadKind::None
@@ -1376,16 +1393,12 @@ nsresult Loader::LoadSheet(SheetLoadData& aLoadData, SheetState aSheetState,
   mSyncCallback = true;
 #endif
 
-  CORSMode ourCORSMode = aLoadData.mSheet->GetCORSMode();
   nsSecurityFlags securityFlags =
-      ourCORSMode == CORS_NONE
-          ? nsILoadInfo::SEC_ALLOW_CROSS_ORIGIN_INHERITS_SEC_CONTEXT
-          : nsILoadInfo::SEC_REQUIRE_CORS_INHERITS_SEC_CONTEXT;
-  if (ourCORSMode == CORS_ANONYMOUS) {
-    securityFlags |= nsILoadInfo::SEC_COOKIES_SAME_ORIGIN;
-  } else if (ourCORSMode == CORS_USE_CREDENTIALS) {
-    securityFlags |= nsILoadInfo::SEC_COOKIES_INCLUDE;
-  }
+      nsContentSecurityManager::ComputeSecurityFlags(
+          aLoadData.mSheet->GetCORSMode(),
+          nsContentSecurityManager::CORSSecurityMapping::
+              CORS_NONE_MAPS_TO_INHERITED_CONTEXT);
+
   securityFlags |= nsILoadInfo::SEC_ALLOW_CHROME;
 
   nsContentPolicyType contentPolicyType =
@@ -1491,6 +1504,8 @@ nsresult Loader::LoadSheet(SheetLoadData& aLoadData, SheetState aSheetState,
           timedChannel->SetReportResourceTiming(false);
         }
 
+      } else if (aEarlyHintPreloaderId) {
+        timedChannel->SetInitiatorType(u"early-hints"_ns);
       } else {
         timedChannel->SetInitiatorType(u"link"_ns);
       }
@@ -1510,6 +1525,14 @@ nsresult Loader::LoadSheet(SheetLoadData& aLoadData, SheetState aSheetState,
                         nsINetworkPredictor::LEARN_LOAD_SUBRESOURCE, mDocument);
   }
 
+  if (aEarlyHintPreloaderId) {
+    nsCOMPtr<nsIHttpChannelInternal> channelInternal =
+        do_QueryInterface(channel);
+    NS_ENSURE_TRUE(channelInternal != nullptr, NS_ERROR_FAILURE);
+
+    rv = channelInternal->SetEarlyHintPreloaderId(aEarlyHintPreloaderId);
+    NS_ENSURE_SUCCESS(rv, rv);
+  }
   rv = channel->AsyncOpen(streamLoader);
   if (NS_FAILED(rv)) {
     LOG_ERROR(("  Failed to create stream loader"));
@@ -1595,6 +1618,18 @@ void Loader::NotifyObservers(SheetLoadData& aData, nsresult aStatus) {
       DecrementOngoingLoadCount();
     }
   }
+  if (!aData.mTitle.IsEmpty() && NS_SUCCEEDED(aStatus)) {
+    nsContentUtils::AddScriptRunner(NS_NewRunnableFunction(
+        "Loader::NotifyObservers - Create PageStyle actor",
+        [doc = RefPtr{mDocument}] {
+          // Force creating the page style actor, if available.
+          // This will no-op if no actor with this name is registered (outside
+          // of desktop Firefox).
+          nsCOMPtr<nsISupports> pageStyleActor =
+              do_QueryActor("PageStyle", doc);
+          Unused << pageStyleActor;
+        }));
+  }
 
   if (aData.mMustNotify) {
     if (nsCOMPtr<nsICSSLoaderObserver> observer = std::move(aData.mObserver)) {
@@ -1677,7 +1712,7 @@ void Loader::MaybeNotifyPreloadUsed(SheetLoadData& aData) {
     return;
   }
 
-  preload->NotifyUsage();
+  preload->NotifyUsage(mDocument);
 }
 
 Result<Loader::LoadSheetResult, nsresult> Loader::LoadInlineStyle(
@@ -1730,8 +1765,8 @@ Result<Loader::LoadSheetResult, nsresult> Loader::LoadInlineStyle(
     sheet = MakeRefPtr<StyleSheet>(eAuthorSheetFeatures, aInfo.mCORSMode,
                                    SRIMetadata{});
     sheet->SetURIs(sheetURI, originalURI, baseURI);
-    nsCOMPtr<nsIReferrerInfo> referrerInfo =
-        ReferrerInfo::CreateForInternalCSSResources(aInfo.mContent->OwnerDoc());
+    nsIReferrerInfo* referrerInfo =
+        aInfo.mContent->OwnerDoc()->ReferrerInfoForInternalCSSAndSVGResources();
     sheet->SetReferrerInfo(referrerInfo);
 
     nsIPrincipal* sheetPrincipal = principal;
@@ -1818,8 +1853,23 @@ Result<Loader::LoadSheetResult, nsresult> Loader::LoadStyleLink(
 
   nsINode* requestingNode =
       aInfo.mContent ? static_cast<nsINode*>(aInfo.mContent) : mDocument;
-  bool syncLoad = aInfo.mContent && aInfo.mContent->IsInUAWidget() &&
-                  IsChromeURI(aInfo.mURI);
+  const bool syncLoad = [&] {
+    if (!aInfo.mContent) {
+      return false;
+    }
+    const bool privilegedShadowTree = aInfo.mContent->IsInShadowTree() &&
+                                      (aInfo.mContent->ChromeOnlyAccess() ||
+                                       aInfo.mContent->IsInChromeDocument());
+    if (!privilegedShadowTree) {
+      return false;
+    }
+    if (!IsPrivilegedURI(aInfo.mURI)) {
+      return false;
+    }
+    // We're loading a chrome/resource URI in a chrome doc shadow tree or UA
+    // widget. Load synchronously to avoid FOUC.
+    return true;
+  }();
   LOG(("  Link sync load: '%s'", syncLoad ? "true" : "false"));
   MOZ_ASSERT_IF(syncLoad, !aObserver);
 
@@ -1898,7 +1948,7 @@ Result<Loader::LoadSheetResult, nsresult> Loader::LoadStyleLink(
              "These should better match!");
 
   // Load completion will free the data
-  rv = LoadSheet(*data, state);
+  rv = LoadSheet(*data, state, 0);
   if (NS_FAILED(rv)) {
     return Err(rv);
   }
@@ -2031,7 +2081,7 @@ nsresult Loader::LoadChildSheet(StyleSheet& aParentSheet,
   bool syncLoad = data->mSyncLoad;
 
   // Load completion will release the data
-  rv = LoadSheet(*data, state);
+  rv = LoadSheet(*data, state, 0);
   NS_ENSURE_SUCCESS(rv, rv);
 
   if (!syncLoad) {
@@ -2047,7 +2097,7 @@ Result<RefPtr<StyleSheet>, nsresult> Loader::LoadSheetSync(
   nsCOMPtr<nsIReferrerInfo> referrerInfo = new ReferrerInfo(nullptr);
   return InternalLoadNonDocumentSheet(
       aURL, StylePreloadKind::None, aParsingMode, aUseSystemPrincipal, nullptr,
-      referrerInfo, nullptr, CORS_NONE, u""_ns);
+      referrerInfo, nullptr, CORS_NONE, u""_ns, 0);
 }
 
 Result<RefPtr<StyleSheet>, nsresult> Loader::LoadSheet(
@@ -2056,25 +2106,27 @@ Result<RefPtr<StyleSheet>, nsresult> Loader::LoadSheet(
   nsCOMPtr<nsIReferrerInfo> referrerInfo = new ReferrerInfo(nullptr);
   return InternalLoadNonDocumentSheet(
       aURI, StylePreloadKind::None, aParsingMode, aUseSystemPrincipal, nullptr,
-      referrerInfo, aObserver, CORS_NONE, u""_ns);
+      referrerInfo, aObserver, CORS_NONE, u""_ns, 0);
 }
 
 Result<RefPtr<StyleSheet>, nsresult> Loader::LoadSheet(
     nsIURI* aURL, StylePreloadKind aPreloadKind,
     const Encoding* aPreloadEncoding, nsIReferrerInfo* aReferrerInfo,
-    nsICSSLoaderObserver* aObserver, CORSMode aCORSMode,
-    const nsAString& aIntegrity) {
+    nsICSSLoaderObserver* aObserver, uint64_t aEarlyHintPreloaderId,
+    CORSMode aCORSMode, const nsAString& aIntegrity) {
   LOG(("css::Loader::LoadSheet(aURL, aObserver) api call"));
-  return InternalLoadNonDocumentSheet(
-      aURL, aPreloadKind, eAuthorSheetFeatures, UseSystemPrincipal::No,
-      aPreloadEncoding, aReferrerInfo, aObserver, aCORSMode, aIntegrity);
+  return InternalLoadNonDocumentSheet(aURL, aPreloadKind, eAuthorSheetFeatures,
+                                      UseSystemPrincipal::No, aPreloadEncoding,
+                                      aReferrerInfo, aObserver, aCORSMode,
+                                      aIntegrity, aEarlyHintPreloaderId);
 }
 
 Result<RefPtr<StyleSheet>, nsresult> Loader::InternalLoadNonDocumentSheet(
     nsIURI* aURL, StylePreloadKind aPreloadKind, SheetParsingMode aParsingMode,
     UseSystemPrincipal aUseSystemPrincipal, const Encoding* aPreloadEncoding,
     nsIReferrerInfo* aReferrerInfo, nsICSSLoaderObserver* aObserver,
-    CORSMode aCORSMode, const nsAString& aIntegrity) {
+    CORSMode aCORSMode, const nsAString& aIntegrity,
+    uint64_t aEarlyHintPreloaderId) {
   MOZ_ASSERT(aURL, "Must have a URI to load");
   MOZ_ASSERT(aUseSystemPrincipal == UseSystemPrincipal::No || !aObserver,
              "Shouldn't load system-principal sheets async");
@@ -2122,7 +2174,7 @@ Result<RefPtr<StyleSheet>, nsresult> Loader::InternalLoadNonDocumentSheet(
     return sheet;
   }
 
-  rv = LoadSheet(*data, state);
+  rv = LoadSheet(*data, state, aEarlyHintPreloaderId);
   if (NS_FAILED(rv)) {
     return Err(rv);
   }
@@ -2187,7 +2239,7 @@ void Loader::Stop() {
 
   auto arr = std::move(mPostedEvents);
   for (auto& data : arr) {
-    data->mIsCancelled = true;
+    data->Cancel();
   }
 }
 
@@ -2234,9 +2286,6 @@ NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN(Loader)
   tmp->mObservers.Clear();
   NS_IMPL_CYCLE_COLLECTION_UNLINK(mDocGroup)
 NS_IMPL_CYCLE_COLLECTION_UNLINK_END
-
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(Loader, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(Loader, Release)
 
 size_t Loader::SizeOfIncludingThis(MallocSizeOf aMallocSizeOf) const {
   size_t n = aMallocSizeOf(this);

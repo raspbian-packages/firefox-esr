@@ -9,6 +9,14 @@
 #   $addon-name (string) - Name of the add-on being reported
 abuse-report-dialog-title = { $addon-name } සඳහා වාර්තාව
 
+abuse-report-title-extension = මෙම දිගුව { -vendor-short-name } වෙත වාර්තා කරන්න
+abuse-report-title-theme = මෙම තේමාව { -vendor-short-name } වෙත වාර්තා කරන්න
+
+# Variables:
+#   $author-name (string) - Name of the add-on author
+abuse-report-addon-authored-by = <a data-l10n-name="author-name">{ $author-name }</a> වෙතින්
+
+abuse-report-submit-description = ගැටලුව විස්තර කරන්න (විකල්පයකි)
 abuse-report-textarea =
     .placeholder = නිශ්චිත කරුණක් තිබේ නම් අපට ගැටළුවක් විසඳීමට පහසුය. ඔබ අත්විඳින දේ විස්තර කරන්න. වියමන හිතකර අයුරින් තබා ගැනීම සඳහා අපට උදවු කිරීමට තුති.
 
@@ -37,7 +45,7 @@ abuse-report-messagebar-action-remove-sitepermission = ඔව්, ඉවත් �
 abuse-report-messagebar-action-keep-sitepermission = නැහැ, තබා ගන්නෙමි
 abuse-report-messagebar-action-remove-theme = ඔව්, ඉවත් කරන්න
 abuse-report-messagebar-action-keep-theme = නැහැ, තබා ගන්නෙමි
-abuse-report-messagebar-action-retry = යළි උත්සාහය
+abuse-report-messagebar-action-retry = නැවත
 abuse-report-messagebar-action-cancel = අවලංගු
 
 ## Abuse report reasons (optionally paired with related examples and/or suggestions)

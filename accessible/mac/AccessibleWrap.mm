@@ -8,6 +8,7 @@
 #include "DocAccessibleWrap.h"
 #include "nsObjCExceptions.h"
 #include "nsCocoaUtils.h"
+#include "nsUnicharUtils.h"
 
 #include "LocalAccessible-inl.h"
 #include "nsAccUtils.h"
@@ -39,8 +40,8 @@ AccessibleWrap::AccessibleWrap(nsIContent* aContent, DocAccessible* aDoc)
     DocAccessibleWrap* doc = static_cast<DocAccessibleWrap*>(aDoc);
     static const dom::Element::AttrValuesArray sLiveRegionValues[] = {
         nsGkAtoms::OFF, nsGkAtoms::polite, nsGkAtoms::assertive, nullptr};
-    int32_t attrValue = aContent->AsElement()->FindAttrValueIn(
-        kNameSpaceID_None, nsGkAtoms::aria_live, sLiveRegionValues,
+    int32_t attrValue = nsAccUtils::FindARIAAttrValueIn(
+        aContent->AsElement(), nsGkAtoms::aria_live, sLiveRegionValues,
         eIgnoreCase);
     if (attrValue == 0) {
       // aria-live is "off", do nothing.
@@ -273,7 +274,6 @@ nsresult AccessibleWrap::HandleAccEvent(AccEvent* aEvent) {
     case nsIAccessibleEvent::EVENT_LIVE_REGION_REMOVED:
     case nsIAccessibleEvent::EVENT_NAME_CHANGE:
     case nsIAccessibleEvent::EVENT_OBJECT_ATTRIBUTE_CHANGED:
-    case nsIAccessibleEvent::EVENT_TABLE_STYLING_CHANGED:
       [nativeAcc handleAccessibleEvent:eventType];
       break;
 
@@ -284,16 +284,6 @@ nsresult AccessibleWrap::HandleAccEvent(AccEvent* aEvent) {
   return NS_OK;
 
   NS_OBJC_END_TRY_BLOCK_RETURN(NS_ERROR_FAILURE);
-}
-
-bool AccessibleWrap::ApplyPostFilter(const EWhichPostFilter& aSearchKey,
-                                     const nsString& aSearchText) {
-  // We currently only support the eContainsText post filter.
-  MOZ_ASSERT(aSearchKey == EWhichPostFilter::eContainsText,
-             "Only search text supported");
-  nsAutoString name;
-  Name(name);
-  return name.Find(aSearchText, true) != kNotFound;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -312,12 +302,17 @@ Class a11y::GetTypeFromRole(roles::Role aRole) {
     case roles::PAGETAB:
       return [mozTabAccessible class];
 
+    case roles::DATE_EDITOR:
+      return [mozDatePickerAccessible class];
+
     case roles::CHECKBUTTON:
     case roles::TOGGLE_BUTTON:
     case roles::SWITCH:
+    case roles::CHECK_MENU_ITEM:
       return [mozCheckboxAccessible class];
 
     case roles::RADIOBUTTON:
+    case roles::RADIO_MENU_ITEM:
       return [mozRadioButtonAccessible class];
 
     case roles::SPINBUTTON:

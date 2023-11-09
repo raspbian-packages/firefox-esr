@@ -42,6 +42,9 @@ policy-CertificatesDescription = Certifikaty pśidaś abo zatwarjone certifikaty
 
 policy-Cookies = Websedłam dowóliś abo zakazaś, cookieje składowaś.
 
+# Containers in this context is referring to container tabs in Firefox.
+policy-Containers = Pšawidła nastupajucy kontejnery póstajiś
+
 policy-DisabledCiphers = Šyfry znjemóžniś.
 
 policy-DefaultDownloadDirectory = Nastajśo standardny ześěgnjeński zarědnik.
@@ -71,7 +74,7 @@ policy-DisablePrimaryPasswordCreation = Jolic to trjefijo, njedajo se głowne gr
 
 policy-DisablePasswordReveal = Njedowóliś, až se gronidła w skłaźonych pśizjawjenjach pokazuju
 
-policy-DisablePocket = Funkciju składowanja webbokow do Pocket znjemóžniś.
+policy-DisablePocket2 = Funkciju składowanja webbokow do { -pocket-brand-name } znjemóžniś.
 
 policy-DisablePrivateBrowsing = Priwatny modus znjemóžniś.
 
@@ -88,6 +91,8 @@ policy-DisableSetAsDesktopBackground = Menijowy pśikaz Ako desktopowu slězynu 
 policy-DisableSystemAddonUpdate = Wobglědowakoju instalěrowanje a aktualizěrowanje systemowych dodankow zawoboraś.
 
 policy-DisableTelemetry = Telemetriju znjemóžniś.
+
+policy-DisableThirdPartyModuleBlocking = Zawoborajśo wužywarjeju module tśeśich póbitowarjow blokěrowaś, kótarež se do procesa { -brand-short-name } injicěruju.
 
 policy-DisplayBookmarksToolbar = Rědku cytańskich znamjenjow pó standarźe pokazaś.
 
@@ -116,11 +121,7 @@ policy-ExtensionSettings = Wšykne aspekty instalacije rozšyrjenjow zastojaś.
 
 policy-ExtensionUpdate = Awtomatiske aktualizacije rozšyrjenjow zmóžniś abo znjemóžniś.
 
-policy-FirefoxHome = Firefox Home konfigurěrowaś.
-
 policy-FirefoxHome2 = { -firefox-home-brand-name } konfigurěrowaś.
-
-policy-FlashPlugin = Wužywanje tykaca Flash dowóliś abo zakazaś.
 
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Wunuźćo direktnu nawigaciju do intranetnego sedła, město togo aby wy pytał, gaž jadnotliwe słowne zapiski do adresoweho póla zapódawaśo.
 
@@ -194,8 +195,8 @@ policy-SearchEngines = Nastajenja pytnicow konfigurěrowaś. Toś to pšawidło 
 
 policy-SearchSuggestEnabled = Pytańske naraźenja zmóžniś abo znjemóžniś.
 
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Module PKCS #11 instalěrowaś.
+# For more information, see https://wikipedia.org/wiki/PKCS_11
+policy-SecurityDevices2 = Pśidajśo abo wulašujśo module PKCS #11.
 
 policy-ShowHomeButton = Tłocašk startoweho boka na symbolowej rědce pokazaś.
 

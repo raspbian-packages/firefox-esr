@@ -3,11 +3,11 @@
 
 "use strict";
 
-const { Preferences } = ChromeUtils.import(
-  "resource://gre/modules/Preferences.jsm"
+const { Preferences } = ChromeUtils.importESModule(
+  "resource://gre/modules/Preferences.sys.mjs"
 );
-const { AddonUtils } = ChromeUtils.import(
-  "resource://services-sync/addonutils.js"
+const { AddonUtils } = ChromeUtils.importESModule(
+  "resource://services-sync/addonutils.sys.mjs"
 );
 
 const HTTP_PORT = 8888;
@@ -119,33 +119,32 @@ add_task(async function test_source_uri_rewrite() {
   // skewed.
 
   // We resort to monkeypatching because of the API design.
-  let oldFunction = AddonUtils.__proto__.installAddonFromSearchResult;
+  let oldFunction =
+    Object.getPrototypeOf(AddonUtils).installAddonFromSearchResult;
 
   let installCalled = false;
-  AddonUtils.__proto__.installAddonFromSearchResult = async function testInstallAddon(
-    addon,
-    metadata
-  ) {
-    Assert.equal(
-      SERVER_ADDRESS + "/require.xpi?src=sync",
-      addon.sourceURI.spec
-    );
+  Object.getPrototypeOf(AddonUtils).installAddonFromSearchResult =
+    async function testInstallAddon(addon, metadata) {
+      Assert.equal(
+        SERVER_ADDRESS + "/require.xpi?src=sync",
+        addon.sourceURI.spec
+      );
 
-    installCalled = true;
+      installCalled = true;
 
-    const install = await AddonUtils.getInstallFromSearchResult(addon);
-    Assert.equal(
-      SERVER_ADDRESS + "/require.xpi?src=sync",
-      install.sourceURI.spec
-    );
-    Assert.deepEqual(
-      install.installTelemetryInfo,
-      { source: "sync" },
-      "Got the expected installTelemetryInfo"
-    );
+      const install = await AddonUtils.getInstallFromSearchResult(addon);
+      Assert.equal(
+        SERVER_ADDRESS + "/require.xpi?src=sync",
+        install.sourceURI.spec
+      );
+      Assert.deepEqual(
+        install.installTelemetryInfo,
+        { source: "sync" },
+        "Got the expected installTelemetryInfo"
+      );
 
-    return { id: addon.id, addon, install };
-  };
+      return { id: addon.id, addon, install };
+    };
 
   let server = createAndStartHTTPServer();
 
@@ -156,7 +155,7 @@ add_task(async function test_source_uri_rewrite() {
   await AddonUtils.installAddons([installOptions]);
 
   Assert.ok(installCalled);
-  AddonUtils.__proto__.installAddonFromSearchResult = oldFunction;
+  Object.getPrototypeOf(AddonUtils).installAddonFromSearchResult = oldFunction;
 
   await promiseStopServer(server);
 });

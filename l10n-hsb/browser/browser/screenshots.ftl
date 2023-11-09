@@ -55,3 +55,6 @@ screenshots-private-window-error-details = Wodajće prošu njepřijomnosće. Dź
 
 screenshots-generic-error-title = Hopla! { -screenshots-brand-name } njefunguje.
 screenshots-generic-error-details = Njejsmy sej wěsći, štož je so stało. Chceće hišće raz spytać abo chceće druhu stronu fotografować?
+
+screenshots-too-large-error-title = Waše foto wobrazowki je so přitřihało, dokelž je přewulke było
+screenshots-too-large-error-details = Spytajće, region wubrać, kotryž je mjeńši hač 32.700 pikselow na jeho najdlěšim boku abo 124.900.000 pikselow na jeho cyłkownej płoninje.

@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-videocontrols-scrubber =
-    .aria-label = Posición
 # This label is used by screenreaders and other assistive technology to indicate
 # to users how much of the video has been loaded from the network. It will be
 # followed by the percentage of the video that has loaded (e.g. "Loading: 13%").
@@ -36,12 +34,12 @@ videocontrols-picture-in-picture-label = Imaxe en imaxe
 
 # This string is used as the label for a variation of the Picture-in-Picture video
 # toggle button when the mouse is hovering over the video.
-videocontrols-picture-in-picture-toggle-label = Ver imaxe en imaxe
+videocontrols-picture-in-picture-toggle-label2 = Sacar este vídeo
 
 # This string is used as part of a variation of the Picture-in-Picture video toggle
 # button. When using this variation, this string appears below the toggle when the
 # mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer = Reproduza vídeos en primeiro plano mentres fai outras cousas en { -brand-short-name }
+videocontrols-picture-in-picture-explainer3 = A máis pantallas, máis diversión. Reproduce o vídeo mentres fas outras cousas.
 
 videocontrols-error-aborted = Detívose a carga do vídeo.
 videocontrols-error-network = Interrompeuse a reprodución do vídeo debido a un erro da rede.
@@ -64,3 +62,13 @@ videocontrols-status-picture-in-picture = Este vídeo reprodúcese no modo imaxe
 # duration video, $position would be "5:00" and the string which is
 # surrounded by <span> would be deleted, result string would be "5:00".
 videocontrols-position-and-duration-labels = { $position }<span data-l10n-name="position-duration-format"> / { $duration }</span>
+
+# This is a plain text version of the videocontrols-position-and-duration-labels
+# string, used by screenreaders.
+#
+# Variables:
+#   $position (String): The current media position
+#   $duration (String): The total video duration
+videocontrols-scrubber-position-and-duration =
+    .aria-label = Posición
+    .aria-valuetext = { $position } / { $duration }

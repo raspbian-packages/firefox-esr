@@ -24,6 +24,7 @@
 #include "nsPIDOMWindow.h"
 #include "nsTHashMap.h"
 #include "nsTHashtable.h"
+#include "nsLayoutUtils.h"
 
 using namespace mozilla;
 using namespace mozilla::dom;
@@ -31,6 +32,7 @@ using namespace mozilla::dom;
 namespace {
 constexpr auto kInput = u"input"_ns;
 constexpr auto kScroll = u"mozvisualscroll"_ns;
+constexpr auto kResize = u"mozvisualresize"_ns;
 
 static constexpr char kNoAutoUpdates[] =
     "browser.sessionstore.debug.no_auto_updates";
@@ -93,8 +95,12 @@ SessionStoreChangeListener::HandleEvent(dom::Event* aEvent) {
     return NS_OK;
   }
 
-  nsCOMPtr<nsPIDOMWindowInner> inner =
-      do_QueryInterface(target->GetOwnerGlobal());
+  nsIGlobalObject* global = target->GetOwnerGlobal();
+  if (!global) {
+    return NS_OK;
+  }
+
+  nsPIDOMWindowInner* inner = global->AsInnerWindow();
   if (!inner) {
     return NS_OK;
   }
@@ -104,7 +110,7 @@ SessionStoreChangeListener::HandleEvent(dom::Event* aEvent) {
     return NS_OK;
   }
 
-  RefPtr<BrowsingContext> browsingContext = windowContext->GetBrowsingContext();
+  BrowsingContext* browsingContext = windowContext->GetBrowsingContext();
   if (!browsingContext) {
     return NS_OK;
   }
@@ -116,22 +122,20 @@ SessionStoreChangeListener::HandleEvent(dom::Event* aEvent) {
   nsAutoString eventType;
   aEvent->GetType(eventType);
 
-  Change change = Change::None;
-
   if (eventType == kInput) {
-    change = Change::Input;
+    RecordChange(windowContext, Change::Input);
   } else if (eventType == kScroll) {
-    change = Change::Scroll;
+    RecordChange(windowContext, Change::Scroll);
+  } else if (eventType == kResize && browsingContext->IsTop()) {
+    RecordChange(windowContext, Change::Resize);
   }
-
-  RecordChange(windowContext, EnumSet(change));
-
   return NS_OK;
 }
 
 /* static */ already_AddRefed<SessionStoreChangeListener>
 SessionStoreChangeListener::Create(BrowsingContext* aBrowsingContext) {
-  MOZ_RELEASE_ASSERT(SessionStoreUtils::NATIVE_LISTENER);
+  MOZ_RELEASE_ASSERT(
+      StaticPrefs::browser_sessionstore_platform_collection_AtStartup());
   if (!aBrowsingContext) {
     return nullptr;
   }
@@ -185,15 +189,53 @@ static void CollectFormData(Document* aDocument,
   }
 }
 
+static void GetZoom(BrowsingContext* aBrowsingContext,
+                    Maybe<SessionStoreZoom>& aZoom) {
+  nsIDocShell* docShell = aBrowsingContext->GetDocShell();
+  if (!docShell) {
+    return;
+  }
+
+  PresShell* presShell = docShell->GetPresShell();
+  if (!presShell) {
+    return;
+  }
+
+  LayoutDeviceIntSize displaySize;
+
+  if (!nsLayoutUtils::GetContentViewerSize(presShell->GetPresContext(),
+                                           displaySize)) {
+    return;
+  }
+
+  aZoom.emplace(presShell->GetResolution(), displaySize.width,
+                displaySize.height);
+}
+
 void SessionStoreChangeListener::FlushSessionStore() {
   if (mTimer) {
     mTimer->Cancel();
     mTimer = nullptr;
   }
 
+  bool collectSessionHistory = false;
+  bool collectWireFrame = false;
+  bool didResize = false;
+
   for (auto& iter : mSessionStoreChanges) {
     WindowContext* windowContext = iter.GetKey();
     if (!windowContext) {
+      continue;
+    }
+
+    BrowsingContext* browsingContext = windowContext->GetBrowsingContext();
+
+    // This is a bit unfortunate, but is needed when a window context with a
+    // recorded change has become non-current before its data has been
+    // collected. This can happen either due to navigation or destruction, and
+    // in the previous case we don't want to collect, but in the latter we do.
+    // This could be cleaned up if we change. See bug 1770773.
+    if (!windowContext->IsCurrent() && !browsingContext->IsDiscarded()) {
       continue;
     }
 
@@ -215,15 +257,31 @@ void SessionStoreChangeListener::FlushSessionStore() {
       maybeScroll = Some(presShell->GetVisualViewportOffset());
     }
 
-    mSessionStoreChild->SendIncrementalSessionStoreUpdate(
-        windowContext->GetBrowsingContext(), maybeFormData, maybeScroll,
-        mEpoch);
+    collectWireFrame = collectWireFrame || changes.contains(Change::WireFrame);
+
+    collectSessionHistory =
+        collectSessionHistory || changes.contains(Change::SessionHistory);
+
+    if (presShell && changes.contains(Change::Resize)) {
+      didResize = true;
+    }
+
+    mSessionStoreChild->IncrementalSessionStoreUpdate(
+        browsingContext, maybeFormData, maybeScroll, mEpoch);
+  }
+
+  if (collectWireFrame) {
+    collectSessionHistory = CollectWireframe() || collectSessionHistory;
   }
 
   mSessionStoreChanges.Clear();
 
-  mSessionStoreChild->UpdateSessionStore(mCollectSessionHistory);
-  mCollectSessionHistory = false;
+  Maybe<SessionStoreZoom> zoom;
+  if (didResize) {
+    GetZoom(mBrowsingContext->Top(), zoom);
+  }
+
+  mSessionStoreChild->UpdateSessionStore(collectSessionHistory, zoom);
 }
 
 /* static */
@@ -247,28 +305,17 @@ SessionStoreChangeListener* SessionStoreChangeListener::CollectSessionStoreData(
   return sessionStoreChangeListener;
 }
 
-/* static */
-void SessionStoreChangeListener::FlushAllSessionStoreData(
-    WindowContext* aWindowContext) {
-  EnumSet<Change> allChanges(Change::Input, Change::Scroll);
-  SessionStoreChangeListener* listener =
-      CollectSessionStoreData(aWindowContext, allChanges);
-  if (listener) {
-    listener->FlushSessionStore();
-  }
-}
-
 void SessionStoreChangeListener::SetActor(
     SessionStoreChild* aSessionStoreChild) {
   mSessionStoreChild = aSessionStoreChild;
 }
 
-void SessionStoreChangeListener::CollectWireframe() {
+bool SessionStoreChangeListener::CollectWireframe() {
   if (auto* docShell = nsDocShell::Cast(mBrowsingContext->GetDocShell())) {
-    if (docShell->CollectWireframe()) {
-      mCollectSessionHistory = true;
-    }
+    return docShell->CollectWireframe();
   }
+
+  return false;
 }
 
 void SessionStoreChangeListener::RecordChange(WindowContext* aWindowContext,
@@ -309,6 +356,9 @@ void SessionStoreChangeListener::AddEventListeners() {
   if (EventTarget* target = GetEventTarget()) {
     target->AddSystemEventListener(kInput, this, false);
     target->AddSystemEventListener(kScroll, this, false);
+    if (StaticPrefs::browser_sessionstore_collect_zoom_AtStartup()) {
+      target->AddSystemEventListener(kResize, this, false);
+    }
     mCurrentEventTarget = target;
   }
 }
@@ -317,6 +367,9 @@ void SessionStoreChangeListener::RemoveEventListeners() {
   if (mCurrentEventTarget) {
     mCurrentEventTarget->RemoveSystemEventListener(kInput, this, false);
     mCurrentEventTarget->RemoveSystemEventListener(kScroll, this, false);
+    if (StaticPrefs::browser_sessionstore_collect_zoom_AtStartup()) {
+      mCurrentEventTarget->RemoveSystemEventListener(kResize, this, false);
+    }
   }
 
   mCurrentEventTarget = nullptr;

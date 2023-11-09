@@ -8,6 +8,15 @@
 ##  $host - the hostname that is initiating the request
 ##  $scheme - the type of link that's being opened.
 ##  $appName - Name of the application that will be opened.
+##  $extension - Name of extension that initiated the request
+
+
+## Permission Dialog
+## Variables:
+##  $host (string) - The hostname that is initiating the request
+##  $scheme (string) - The type of link that's being opened.
+##  $appName (string) - Name of the application that will be opened.
+##  $extension (string) - Name of extension that initiated the request
 
 permission-dialog-description = මෙම අඩවියට { $scheme } සබැඳිය විවෘත කිරීමට ඉඩ දෙන්නද?
 
@@ -15,19 +24,33 @@ permission-dialog-description-file = මෙම ගොනුවට { $scheme } �
 
 permission-dialog-description-host = { $scheme } සබැඳිය විවෘත කිරීමට { $host } සඳහා ඉඩ දෙන්නද?
 
+permission-dialog-description-extension = { $extension } දිගුවට { $scheme } සබැඳිය විවෘත කිරීමට ඉඩ දෙන්නද?
+
 permission-dialog-description-app = { $appName } සමඟින් { $scheme } සබැඳිය විවෘත කිරීමට මෙම අඩවියට ඉඩ දෙන්නද?
 
 permission-dialog-description-host-app = { $appName } සමඟ { $scheme } සබැඳිය විවෘත කිරීමට { $host } සඳහා ඉඩ දෙන්නද?
 
 permission-dialog-description-file-app = { $appName } සමඟින් { $scheme } සබැඳිය විවෘත කිරීමට මෙම ගොනුවට ඉඩ දෙන්නද?
 
+permission-dialog-description-extension-app = { $extension } දිගුවට { $appName } සමඟ { $scheme } සබැඳිය විවෘත කිරීමට ඉඩ දෙන්නද?
+
 ## Please keep the emphasis around the hostname and scheme (ie the
 ## `<strong>` HTML tags). Please also keep the hostname as close to the start
 ## of the sentence as your language's grammar allows.
 
+
+## Please keep the emphasis around the hostname and scheme (ie the
+## `<strong>` HTML tags). Please also keep the hostname as close to the start
+## of the sentence as your language's grammar allows.
+## Variables:
+##  $host (string) - The hostname that is initiating the request
+##  $scheme (string) - The type of link that's being opened.
+
 permission-dialog-remember = <strong>{ $host }</strong> සඳහා <strong>{ $scheme }</strong> සබැඳි විවෘත කිරීමට සැමවිට ඉඩ දෙන්න
 
 permission-dialog-remember-file = මෙම ගොනුවට <strong>{ $scheme }</strong> සබැඳි විවෘත කිරීමට සෑමවිට ඉඩ දෙන්න
+
+permission-dialog-remember-extension = සැමවිට මෙම දිගුවට <strong>{ $scheme }</strong> සබැඳි විවෘත කිරීමට ඉඩ දෙන්න
 
 ##
 
@@ -46,6 +69,11 @@ permission-dialog-set-change-app-link = වෙනස් යෙදුමක් �
 ## Chooser dialog
 ## Variables:
 ##  $scheme - the type of link that's being opened.
+
+
+## Chooser dialog
+## Variables:
+##  $scheme (string) - The type of link that's being opened.
 
 chooser-window =
     .title = යෙදුමක් තෝරන්න

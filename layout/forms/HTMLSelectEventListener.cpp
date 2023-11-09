@@ -53,7 +53,7 @@ static bool IsOptionInteractivelySelectable(HTMLSelectElement& aSelect,
 namespace mozilla {
 
 static StaticAutoPtr<nsString> sIncrementalString;
-static DOMTimeStamp gLastKeyTime = 0;
+static TimeStamp gLastKeyTime;
 static uintptr_t sLastKeyListener = 0;
 static constexpr int32_t kNothingSelected = -1;
 
@@ -72,6 +72,11 @@ class MOZ_RAII AutoIncrementalSearchHandler {
     if (sLastKeyListener != uintptr_t(&aListener)) {
       sLastKeyListener = uintptr_t(&aListener);
       GetIncrementalString().Truncate();
+      // To make it easier to handle time comparisons in the other methods,
+      // initialize gLastKeyTime to a value in the past.
+      gLastKeyTime = TimeStamp::Now() -
+                     TimeDuration::FromMilliseconds(
+                         StaticPrefs::ui_menu_incremental_search_timeout() * 2);
     }
   }
   ~AutoIncrementalSearchHandler() {
@@ -305,7 +310,7 @@ int32_t HTMLSelectEventListener::ItemsPerPage() const {
 void HTMLSelectEventListener::OptionValueMightHaveChanged(
     nsIContent* aMutatingNode) {
 #ifdef ACCESSIBILITY
-  if (nsAccessibilityService* acc = PresShell::GetAccessibilityService()) {
+  if (nsAccessibilityService* acc = GetAccService()) {
     acc->ComboboxOptionMaybeChanged(mElement->OwnerDoc()->GetPresShell(),
                                     aMutatingNode);
   }
@@ -360,9 +365,10 @@ void HTMLSelectEventListener::ComboboxMightHaveChanged() {
     PresShell* ps = f->PresShell();
     // nsComoboxControlFrame::Reflow updates the selected text. AddOption /
     // RemoveOption / etc takes care of keeping the displayed index up to date.
-    ps->FrameNeedsReflow(f, IntrinsicDirty::StyleChange, NS_FRAME_IS_DIRTY);
+    ps->FrameNeedsReflow(f, IntrinsicDirty::FrameAncestorsAndDescendants,
+                         NS_FRAME_IS_DIRTY);
 #ifdef ACCESSIBILITY
-    if (nsAccessibilityService* acc = PresShell::GetAccessibilityService()) {
+    if (nsAccessibilityService* acc = GetAccService()) {
       acc->ScheduleAccessibilitySubtreeUpdate(ps, mElement);
     }
 #endif
@@ -402,8 +408,7 @@ nsresult HTMLSelectEventListener::MouseDown(dom::Event* aMouseEvent) {
   MouseEvent* mouseEvent = aMouseEvent->AsMouseEvent();
   NS_ENSURE_TRUE(mouseEvent, NS_ERROR_FAILURE);
 
-  EventStates eventStates = mElement->State();
-  if (eventStates.HasState(NS_EVENT_STATE_DISABLED)) {
+  if (mElement->State().HasState(ElementState::DISABLED)) {
     return NS_OK;
   }
 
@@ -446,8 +451,7 @@ nsresult HTMLSelectEventListener::MouseUp(dom::Event* aMouseEvent) {
 
   mButtonDown = false;
 
-  EventStates eventStates = mElement->State();
-  if (eventStates.HasState(NS_EVENT_STATE_DISABLED)) {
+  if (mElement->State().HasState(ElementState::DISABLED)) {
     return NS_OK;
   }
 
@@ -490,8 +494,7 @@ nsresult HTMLSelectEventListener::MouseMove(dom::Event* aMouseEvent) {
 nsresult HTMLSelectEventListener::KeyPress(dom::Event* aKeyEvent) {
   MOZ_ASSERT(aKeyEvent, "aKeyEvent is null.");
 
-  EventStates eventStates = mElement->State();
-  if (eventStates.HasState(NS_EVENT_STATE_DISABLED)) {
+  if (mElement->State().HasState(ElementState::DISABLED)) {
     return NS_OK;
   }
 
@@ -558,7 +561,7 @@ nsresult HTMLSelectEventListener::KeyPress(dom::Event* aKeyEvent) {
   // string we will use to find options and start searching at the current
   // keystroke.  Otherwise, Truncate the string if it's been a long time
   // since our last keypress.
-  if (keyEvent->mTime - gLastKeyTime >
+  if ((keyEvent->mTimeStamp - gLastKeyTime).ToMilliseconds() >
       StaticPrefs::ui_menu_incremental_search_timeout()) {
     // If this is ' ' and we are at the beginning of the string, treat it as
     // "select this option" (bug 191543)
@@ -574,7 +577,7 @@ nsresult HTMLSelectEventListener::KeyPress(dom::Event* aKeyEvent) {
     GetIncrementalString().Truncate();
   }
 
-  gLastKeyTime = keyEvent->mTime;
+  gLastKeyTime = keyEvent->mTimeStamp;
 
   // Append this keystroke to the search string.
   char16_t uniChar = ToLowerCase(static_cast<char16_t>(keyEvent->mCharCode));
@@ -653,8 +656,7 @@ nsresult HTMLSelectEventListener::KeyPress(dom::Event* aKeyEvent) {
 nsresult HTMLSelectEventListener::KeyDown(dom::Event* aKeyEvent) {
   MOZ_ASSERT(aKeyEvent, "aKeyEvent is null.");
 
-  EventStates eventStates = mElement->State();
-  if (eventStates.HasState(NS_EVENT_STATE_DISABLED)) {
+  if (mElement->State().HasState(ElementState::DISABLED)) {
     return NS_OK;
   }
 
@@ -680,7 +682,7 @@ nsresult HTMLSelectEventListener::KeyDown(dom::Event* aKeyEvent) {
   dropDownMenuOnSpace = mIsCombobox && !mElement->OpenInParentProcess();
 #endif
   bool withinIncrementalSearchTime =
-      keyEvent->mTime - gLastKeyTime <=
+      (keyEvent->mTimeStamp - gLastKeyTime).ToMilliseconds() <=
       StaticPrefs::ui_menu_incremental_search_timeout();
   if ((dropDownMenuOnUpDown &&
        (keyEvent->mKeyCode == NS_VK_UP || keyEvent->mKeyCode == NS_VK_DOWN)) ||

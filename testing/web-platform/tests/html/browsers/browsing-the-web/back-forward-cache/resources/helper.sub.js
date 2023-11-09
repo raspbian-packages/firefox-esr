@@ -28,7 +28,7 @@ const executorPath =
 async function assert_bfcached(target) {
   const status = await getBFCachedStatus(target);
   assert_implements_optional(status === 'BFCached',
-      "Should be BFCached but actually wasn't");
+      "Could have been BFCached but actually wasn't");
 }
 
 async function assert_not_bfcached(target) {
@@ -186,4 +186,44 @@ function runBfcacheTest(params, description) {
       await params.funcAfterAssertion(pageA, pageB, t);
     }
   }, description);
+}
+
+// Call clients.claim() on the service worker
+async function claim(t, worker) {
+  const channel = new MessageChannel();
+  const saw_message = new Promise(function(resolve) {
+    channel.port1.onmessage = t.step_func(function(e) {
+      assert_equals(e.data, 'PASS', 'Worker call to claim() should fulfill.');
+      resolve();
+    });
+  });
+  worker.postMessage({type: "claim", port: channel.port2}, [channel.port2]);
+  await saw_message;
+}
+
+// Assigns the current client to a local variable on the service worker.
+async function storeClients(t, worker) {
+  const channel = new MessageChannel();
+  const saw_message = new Promise(function(resolve) {
+    channel.port1.onmessage = t.step_func(function(e) {
+      assert_equals(e.data, 'PASS', 'storeClients');
+      resolve();
+    });
+  });
+  worker.postMessage({type: "storeClients", port: channel.port2}, [channel.port2]);
+  await saw_message;
+}
+
+// Call storedClients.postMessage("") on the service worker
+async function postMessageToStoredClients(t, worker) {
+  const channel = new MessageChannel();
+  const saw_message = new Promise(function(resolve) {
+    channel.port1.onmessage = t.step_func(function(e) {
+      assert_equals(e.data, 'PASS', 'postMessageToStoredClients');
+      resolve();
+    });
+  });
+  worker.postMessage({type: "postMessageToStoredClients",
+                      port: channel.port2}, [channel.port2]);
+  await saw_message;
 }

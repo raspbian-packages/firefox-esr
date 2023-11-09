@@ -12,6 +12,7 @@
 #include "LiveResizeListener.h"
 #include "Units.h"
 #include "js/TypeDecls.h"
+#include "mozilla/AlreadyAddRefed.h"
 #include "mozilla/ContentCache.h"
 #include "mozilla/EventForwards.h"
 #include "mozilla/RefPtr.h"
@@ -25,6 +26,7 @@
 #include "nsIAuthPromptProvider.h"
 #include "nsIBrowserDOMWindow.h"
 #include "nsIDOMEventListener.h"
+#include "nsIFilePicker.h"
 #include "nsIRemoteTab.h"
 #include "nsIWidget.h"
 #include "nsTArray.h"
@@ -265,15 +267,7 @@ class BrowserParent final : public PBrowserParent,
   mozilla::ipc::IPCResult RecvMoveFocus(const bool& aForward,
                                         const bool& aForDocumentNavigation);
 
-  mozilla::ipc::IPCResult RecvSizeShellTo(const uint32_t& aFlags,
-                                          const int32_t& aWidth,
-                                          const int32_t& aHeight,
-                                          const int32_t& aShellItemWidth,
-                                          const int32_t& aShellItemHeight);
-
   mozilla::ipc::IPCResult RecvDropLinks(nsTArray<nsString>&& aLinks);
-
-  mozilla::ipc::IPCResult RecvEvent(const RemoteDOMEvent& aEvent);
 
   // TODO: Use MOZ_CAN_RUN_SCRIPT when it gains IPDL support (bug 1539864)
   MOZ_CAN_RUN_SCRIPT_BOUNDARY mozilla::ipc::IPCResult RecvReplyKeyEvent(
@@ -311,8 +305,6 @@ class BrowserParent final : public PBrowserParent,
       const Maybe<mozilla::ContentBlockingNotifier::
                       StorageAccessPermissionGrantedReason>& aReason);
 
-  mozilla::ipc::IPCResult RecvSetAllowDeprecatedTls(bool value);
-
   mozilla::ipc::IPCResult RecvNavigationFinished();
 
   already_AddRefed<nsIBrowser> GetBrowser();
@@ -323,6 +315,8 @@ class BrowserParent final : public PBrowserParent,
   mozilla::ipc::IPCResult RecvIntrinsicSizeOrRatioChanged(
       const Maybe<IntrinsicSize>& aIntrinsicSize,
       const Maybe<AspectRatio>& aIntrinsicRatio);
+
+  mozilla::ipc::IPCResult RecvImageLoadComplete(const nsresult& aResult);
 
   mozilla::ipc::IPCResult RecvSyncMessage(
       const nsString& aMessage, const ClonedMessageData& aData,
@@ -386,7 +380,7 @@ class BrowserParent final : public PBrowserParent,
 
   mozilla::ipc::IPCResult RecvSetCursor(
       const nsCursor& aValue, const bool& aHasCustomCursor,
-      const nsCString& aCursorData, const uint32_t& aWidth,
+      Maybe<BigBuffer>&& aCursorData, const uint32_t& aWidth,
       const uint32_t& aHeight, const float& aResolutionX,
       const float& aResolutionY, const uint32_t& aStride,
       const gfx::SurfaceFormat& aFormat, const uint32_t& aHotspotX,
@@ -400,8 +394,6 @@ class BrowserParent final : public PBrowserParent,
                                           const nsString& aDirection);
 
   mozilla::ipc::IPCResult RecvHideTooltip();
-
-  mozilla::ipc::IPCResult RecvDispatchFocusToTopLevelWindow();
 
   mozilla::ipc::IPCResult RecvRespondStartSwipeEvent(
       const uint64_t& aInputBlockId, const bool& aStartSwipe);
@@ -423,25 +415,23 @@ class BrowserParent final : public PBrowserParent,
       const ScrollAxis& aHorizontal, const ScrollFlags& aScrollFlags,
       const int32_t& aAppUnitsPerDevPixel);
 
-  PColorPickerParent* AllocPColorPickerParent(const nsString& aTitle,
-                                              const nsString& aInitialColor);
-
-  bool DeallocPColorPickerParent(PColorPickerParent* aColorPicker);
+  already_AddRefed<PColorPickerParent> AllocPColorPickerParent(
+      const nsString& aTitle, const nsString& aInitialColor,
+      const nsTArray<nsString>& aDefaultColors);
 
   PVsyncParent* AllocPVsyncParent();
 
   bool DeallocPVsyncParent(PVsyncParent* aActor);
 
 #ifdef ACCESSIBILITY
-  PDocAccessibleParent* AllocPDocAccessibleParent(PDocAccessibleParent*,
-                                                  const uint64_t&,
-                                                  const uint32_t&,
-                                                  const IAccessibleHolder&);
+  PDocAccessibleParent* AllocPDocAccessibleParent(
+      PDocAccessibleParent*, const uint64_t&,
+      const MaybeDiscardedBrowsingContext&);
   bool DeallocPDocAccessibleParent(PDocAccessibleParent*);
   virtual mozilla::ipc::IPCResult RecvPDocAccessibleConstructor(
       PDocAccessibleParent* aDoc, PDocAccessibleParent* aParentDoc,
-      const uint64_t& aParentID, const uint32_t& aMsaaID,
-      const IAccessibleHolder& aDocCOMProxy) override;
+      const uint64_t& aParentID,
+      const MaybeDiscardedBrowsingContext& aBrowsingContext) override;
 #endif
 
   already_AddRefed<PSessionStoreParent> AllocPSessionStoreParent();
@@ -598,13 +588,8 @@ class BrowserParent final : public PBrowserParent,
       TapType aType, const LayoutDevicePoint& aPoint, Modifiers aModifiers,
       const ScrollableLayerGuid& aGuid, uint64_t aInputBlockId);
 
-  PFilePickerParent* AllocPFilePickerParent(const nsString& aTitle,
-                                            const int16_t& aMode);
-
-  bool DeallocPFilePickerParent(PFilePickerParent* actor);
-
-  mozilla::ipc::IPCResult RecvIndexedDBPermissionRequest(
-      nsIPrincipal* aPrincipal, IndexedDBPermissionRequestResolver&& aResolve);
+  already_AddRefed<PFilePickerParent> AllocPFilePickerParent(
+      const nsString& aTitle, const nsIFilePicker::Mode& aMode);
 
   bool GetGlobalJSObject(JSContext* cx, JSObject** globalp);
 
@@ -616,7 +601,7 @@ class BrowserParent final : public PBrowserParent,
 
   bool SendInsertText(const nsString& aStringToInsert);
 
-  bool SendPasteTransferable(const IPCDataTransfer& aDataTransfer,
+  bool SendPasteTransferable(IPCTransferableData&& aTransferableData,
                              const bool& aIsPrivateData,
                              nsIPrincipal* aRequestingPrincipal,
                              const nsContentPolicyType& aContentPolicyType);
@@ -670,21 +655,21 @@ class BrowserParent final : public PBrowserParent,
 
   bool DeallocPPaymentRequestParent(PPaymentRequestParent* aActor);
 
-  bool SendLoadRemoteScript(const nsString& aURL,
+  bool SendLoadRemoteScript(const nsAString& aURL,
                             const bool& aRunInGlobalScope);
 
   void LayerTreeUpdate(const LayersObserverEpoch& aEpoch, bool aActive);
 
   mozilla::ipc::IPCResult RecvInvokeDragSession(
-      nsTArray<IPCDataTransfer>&& aTransfers, const uint32_t& aAction,
-      Maybe<Shmem>&& aVisualDnDData, const uint32_t& aStride,
+      nsTArray<IPCTransferableData>&& aTransferables, const uint32_t& aAction,
+      Maybe<BigBuffer>&& aVisualDnDData, const uint32_t& aStride,
       const gfx::SurfaceFormat& aFormat, const LayoutDeviceIntRect& aDragRect,
       nsIPrincipal* aPrincipal, nsIContentSecurityPolicy* aCsp,
       const CookieJarSettingsArgs& aCookieJarSettingsArgs,
       const MaybeDiscarded<WindowContext>& aSourceWindowContext,
       const MaybeDiscarded<WindowContext>& aSourceTopWindowContext);
 
-  void AddInitialDnDDataTo(DataTransfer* aDataTransfer,
+  void AddInitialDnDDataTo(IPCTransferableData* aTransferableData,
                            nsIPrincipal** aPrincipal);
 
   bool TakeDragVisualization(RefPtr<mozilla::gfx::SourceSurface>& aSurface,
@@ -739,9 +724,8 @@ class BrowserParent final : public PBrowserParent,
   mozilla::ipc::IPCResult RecvPaintWhileInterruptingJSNoOp(
       const LayersObserverEpoch& aEpoch);
 
-  mozilla::ipc::IPCResult RecvSetDimensions(
-      const uint32_t& aFlags, const int32_t& aX, const int32_t& aY,
-      const int32_t& aCx, const int32_t& aCy, const double& aScale);
+  mozilla::ipc::IPCResult RecvSetDimensions(mozilla::DimensionRequest aRequest,
+                                            const double& aScale);
 
   mozilla::ipc::IPCResult RecvShowCanvasPermissionPrompt(
       const nsCString& aOrigin, const bool& aHideDoorHanger);
@@ -750,7 +734,8 @@ class BrowserParent final : public PBrowserParent,
   mozilla::ipc::IPCResult RecvGetSystemFont(nsCString* aFontName);
 
   mozilla::ipc::IPCResult RecvVisitURI(nsIURI* aURI, nsIURI* aLastVisitedURI,
-                                       const uint32_t& aFlags);
+                                       const uint32_t& aFlags,
+                                       const uint64_t& aBrowserId);
 
   mozilla::ipc::IPCResult RecvQueryVisitedState(
       nsTArray<RefPtr<nsIURI>>&& aURIs);
@@ -843,12 +828,12 @@ class BrowserParent final : public PBrowserParent,
   static void UnsetLastMouseRemoteTarget(BrowserParent* aBrowserParent);
 
   struct APZData {
-    bool operator==(const APZData& aOther) {
+    bool operator==(const APZData& aOther) const {
       return aOther.guid == guid && aOther.blockId == blockId &&
              aOther.apzResponse == apzResponse;
     }
 
-    bool operator!=(const APZData& aOther) { return !(*this == aOther); }
+    bool operator!=(const APZData& aOther) const { return !(*this == aOther); }
 
     ScrollableLayerGuid guid;
     uint64_t blockId;

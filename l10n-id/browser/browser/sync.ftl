@@ -21,6 +21,10 @@ fxa-menu-turn-on-sync-default = Aktifkan Sinkronisasi
 
 fxa-menu-connect-another-device =
     .label = Sambungkan Peranti Lain…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label = Kirim Tab ke { $tabCount } Peranti
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

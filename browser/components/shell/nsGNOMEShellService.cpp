@@ -18,15 +18,12 @@
 #include "nsIGSettingsService.h"
 #include "nsIStringBundle.h"
 #include "nsServiceManagerUtils.h"
-#include "nsComponentManagerUtils.h"
 #include "nsIImageLoadingContent.h"
 #include "imgIRequest.h"
 #include "imgIContainer.h"
 #include "mozilla/Components.h"
 #include "mozilla/GRefPtr.h"
 #include "mozilla/GUniquePtr.h"
-#include "mozilla/Sprintf.h"
-#include "mozilla/WidgetUtils.h"
 #include "mozilla/WidgetUtilsGtk.h"
 #include "mozilla/dom/Element.h"
 #include "nsImageToPixbuf.h"
@@ -34,11 +31,8 @@
 #include "gfxPlatform.h"
 
 #include <glib.h>
-#include <glib-object.h>
-#include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <limits.h>
 #include <stdlib.h>
 
 using namespace mozilla;
@@ -88,8 +82,7 @@ nsresult nsGNOMEShellService::Init() {
   if (!giovfs && !gsettings) return NS_ERROR_NOT_AVAILABLE;
 
 #ifdef MOZ_ENABLE_DBUS
-  const char* currentDesktop = getenv("XDG_CURRENT_DESKTOP");
-  if (currentDesktop && strstr(currentDesktop, "GNOME") != nullptr &&
+  if (widget::IsGnomeDesktopEnvironment() &&
       Preferences::GetBool("browser.gnome-search-provider.enabled", false)) {
     mSearchProvider.Startup();
   }
@@ -340,19 +333,12 @@ NS_IMETHODIMP
 nsGNOMEShellService::GetCanSetDesktopBackground(bool* aResult) {
   // setting desktop background is currently only supported
   // for Gnome or desktops using the same GSettings keys
-  const char* currentDesktop = getenv("XDG_CURRENT_DESKTOP");
-  if (currentDesktop && strstr(currentDesktop, "GNOME") != nullptr) {
+  if (widget::IsGnomeDesktopEnvironment()) {
     *aResult = true;
     return NS_OK;
   }
 
-  const char* gnomeSession = getenv("GNOME_DESKTOP_SESSION_ID");
-  if (gnomeSession) {
-    *aResult = true;
-  } else {
-    *aResult = false;
-  }
-
+  *aResult = !!getenv("GNOME_DESKTOP_SESSION_ID");
   return NS_OK;
 }
 

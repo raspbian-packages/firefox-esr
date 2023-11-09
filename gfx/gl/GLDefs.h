@@ -51,6 +51,7 @@ bool CheckContextLost(const GLContext* gl);
 #define LOCAL_EGL_PLATFORM_ANGLE_MAX_VERSION_MAJOR_ANGLE    0x3204
 #define LOCAL_EGL_PLATFORM_ANGLE_MAX_VERSION_MINOR_ANGLE    0x3205
 #define LOCAL_EGL_PLATFORM_ANGLE_TYPE_DEFAULT_ANGLE         0x3206
+#define LOCAL_EGL_PLATFORM_ANGLE_DEBUG_LAYERS_ENABLED_ANGLE 0x3451
 
 // EGL_ANGLE_keyed_mutex
 #define LOCAL_EGL_DXGI_KEYED_MUTEX_ANGLE                     0x33A2
@@ -103,9 +104,6 @@ bool CheckContextLost(const GLContext* gl);
 
 // EGL_ANGLE_image_d3d11_texture
 #define LOCAL_EGL_D3D11_TEXTURE_ANGLE                   0x3484
-
-// EGL_MESA_platform_surfaceless
-#define LOCAL_EGL_PLATFORM_SURFACELESS_MESA             0x31DD
 
 // clang-format on
 

@@ -219,8 +219,6 @@ menu-history-undo-menu =
     .label = 最近关闭的标签页
 menu-history-undo-window-menu =
     .label = 最近关闭的窗口
-menu-history-reopen-all-tabs = 重新打开所有标签页
-menu-history-reopen-all-windows = 重新打开所有窗口
 
 ## Bookmarks Menu
 
@@ -229,14 +227,13 @@ menu-bookmarks-menu =
     .accesskey = B
 menu-bookmarks-manage =
     .label = 管理书签
-menu-bookmark-current-tab =
-    .label = 将当前标签页加入书签
-menu-bookmark-edit =
-    .label = 编辑此书签
 menu-bookmark-tab =
     .label = 将当前标签页加入书签…
 menu-edit-bookmark =
     .label = 编辑此书签…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = 搜索书签
 menu-bookmarks-all-tabs =
     .label = 将所有标签页加入书签…
 menu-bookmarks-toolbar =
@@ -330,6 +327,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = 关闭故障排除模式
     .accesskey = M
+menu-help-switch-device =
+    .label = 转入新设备
+    .accesskey = N
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

@@ -7,13 +7,12 @@
 
 var gClient, gActorId;
 
-const { Actor } = require("devtools/shared/protocol/Actor");
+const { Actor } = require("resource://devtools/shared/protocol/Actor.js");
 
 class TestActor extends Actor {
   constructor(conn) {
-    super(conn);
+    super(conn, { typeName: "test", methods: [] });
 
-    this.typeName = "test";
     this.requestTypes = {
       hello: this.hello,
       error: this.error,
@@ -161,7 +160,7 @@ function test_close_client_while_sending_requests() {
   });
 
   const expectReply = new Promise(resolve => {
-    gClient.expectReply("root", function(response) {
+    gClient.expectReply("root", function (response) {
       Assert.equal(response.error, "connectionClosed");
       Assert.equal(
         response.message,

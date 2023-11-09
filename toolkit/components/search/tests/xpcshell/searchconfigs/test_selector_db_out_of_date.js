@@ -3,9 +3,10 @@
 
 "use strict";
 
-XPCOMUtils.defineLazyModuleGetters(this, {
-  RemoteSettingsWorker: "resource://services-settings/RemoteSettingsWorker.jsm",
-  SearchEngineSelector: "resource://gre/modules/SearchEngineSelector.jsm",
+ChromeUtils.defineESModuleGetters(this, {
+  RemoteSettingsWorker:
+    "resource://services-settings/RemoteSettingsWorker.sys.mjs",
+  SearchEngineSelector: "resource://gre/modules/SearchEngineSelector.sys.mjs",
 });
 
 do_get_profile();

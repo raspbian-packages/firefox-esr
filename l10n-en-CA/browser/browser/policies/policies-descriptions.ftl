@@ -42,6 +42,9 @@ policy-CertificatesDescription = Add certificates or use built-in certificates.
 
 policy-Cookies = Allow or deny websites to set cookies.
 
+# Containers in this context is referring to container tabs in Firefox.
+policy-Containers = Set policies related to containers.
+
 policy-DisabledCiphers = Disable ciphers.
 
 policy-DefaultDownloadDirectory = Set the default download directory.
@@ -71,7 +74,7 @@ policy-DisablePrimaryPasswordCreation = If true, a Primary Password can’t be c
 
 policy-DisablePasswordReveal = Do not allow passwords to be revealed in saved logins.
 
-policy-DisablePocket = Disable the feature to save webpages to Pocket.
+policy-DisablePocket2 = Disable the feature to save webpages to { -pocket-brand-name }.
 
 policy-DisablePrivateBrowsing = Disable Private Browsing.
 
@@ -88,6 +91,8 @@ policy-DisableSetAsDesktopBackground = Disable the menu command Set as Desktop B
 policy-DisableSystemAddonUpdate = Prevent the browser from installing and updating system add-ons.
 
 policy-DisableTelemetry = Turn off Telemetry.
+
+policy-DisableThirdPartyModuleBlocking = Prevent the user from blocking third-party modules that get injected into the { -brand-short-name } process.
 
 policy-DisplayBookmarksToolbar = Display the Bookmarks Toolbar by default.
 
@@ -116,11 +121,7 @@ policy-ExtensionSettings = Manage all aspects of extension installation.
 
 policy-ExtensionUpdate = Enable or disable automatic extension updates.
 
-policy-FirefoxHome = Configure Firefox Home.
-
 policy-FirefoxHome2 = Configure { -firefox-home-brand-name }.
-
-policy-FlashPlugin = Allow or deny usage of the Flash plugin.
 
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Force direct intranet site navigation instead of searching when typing single word entries in the address bar.
 
@@ -193,9 +194,6 @@ policy-SearchBar = Set the default location of the search bar. The user is still
 policy-SearchEngines = Configure search engine settings. This policy is only available on the Extended Support Release (ESR) version.
 
 policy-SearchSuggestEnabled = Enable or disable search suggestions.
-
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Install PKCS #11 modules.
 
 policy-ShowHomeButton = Show the home button on the toolbar.
 

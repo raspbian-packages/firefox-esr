@@ -24,13 +24,13 @@ about-unloads-learn-more =
     y nodwedd a'r dudalen hon.
 
 about-unloads-last-updated = Wedi'i ddiweddaru ddiwethaf: { DATETIME($date, year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: "false") }
-about-unloads-button-unload = Llwytho i fyny
-    .title = Llwytho tab gyda'r flaenoriaeth uchaf i fyny
+about-unloads-button-unload = Dadlwytho
+    .title = Dadlwytho'r tab gyda'r flaenoriaeth uchaf
 about-unloads-no-unloadable-tab = Nid oes tabiau nad oes modd eu dadlwytho.
 
 about-unloads-column-priority = Blaenoriaeth
 about-unloads-column-host = Gwesteiwr
-about-unloads-column-last-accessed = Cyrchwyd Diwethaf
+about-unloads-column-last-accessed = Mynediad Diwethaf
 about-unloads-column-weight = Pwysau Sylfaenol
     .title = Mae tabiau'n cael eu didoli yn ôl y gwerth yma, sy'n dod o rhai priodoleddau arbennig megis gwneud sŵn, WebRTC, ac ati.
 about-unloads-column-sortweight = Pwysau Eilaidd

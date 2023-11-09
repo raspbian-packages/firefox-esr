@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Bogmærk denne side
-    .accesskey = m
-    .tooltiptext = Bogmærk denne side
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Bogmærk side
-    .accesskey = d
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Rediger bogmærke
-    .accesskey = d
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Bogmærk denne side
-    .accesskey = m
-    .tooltiptext = Bogmærk denne side ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Rediger bogmærke
-    .accesskey = m
-    .tooltiptext = Rediger dette bogmærke
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Rediger bogmærke
-    .accesskey = m
-    .tooltiptext = Rediger dette bogmærke ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Bogmærk side…
     .accesskey = m
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Åbn link i nyt privat vindue
     .accesskey = p
-
-main-context-menu-bookmark-link =
-    .label = Gem bogmærke for linket
-    .accesskey = b
 
 main-context-menu-bookmark-link-2 =
     .label = Gem bogmærke for linket…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Send lyd…
     .accesskey = S
 
-main-context-menu-plugin-play =
-    .label = Aktiver dette plugin
-    .accesskey = A
-
-main-context-menu-plugin-hide =
-    .label = Skjul dette plugin
-    .accesskey = p
-
 main-context-menu-save-to-pocket =
     .label = Gem side til { -pocket-brand-name }
     .accesskey = o
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = B
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Brug { -relay-brand-short-name }-mail-maske
+    .accesskey = m
 
 main-context-menu-suggest-strong-password =
     .label = Foreslå sikker adgangskode…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Genindlæs ramme
     .accesskey = G
 
-main-context-menu-frame-bookmark =
-    .label = Bogmærk denne ramme
-    .accesskey = B
-
 main-context-menu-frame-add-bookmark =
     .label = Gem bogmærke til ramme…
     .accesskey = m
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Vis rammeoplysninger
     .accesskey = o
-
-main-context-menu-print-selection =
-    .label = Udskriv markering
-    .accesskey = U
 
 main-context-menu-print-selection-2 =
     .label = Udskriv markering…

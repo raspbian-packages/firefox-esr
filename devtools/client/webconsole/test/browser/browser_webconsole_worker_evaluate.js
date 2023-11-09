@@ -10,12 +10,14 @@ const TEST_URI =
   "http://example.com/browser/devtools/client/webconsole/" +
   "test/browser/test-evaluate-worker.html";
 
-add_task(async function() {
+add_task(async function () {
   const hud = await openNewTabAndConsole(TEST_URI);
 
   await openDebugger();
   const toolbox = hud.toolbox;
-  await waitFor(() => toolbox.store.getState().targets.targets.length == 2);
+  await waitFor(
+    () => toolbox.commands.targetCommand.store.getState().targets.length == 2
+  );
   const dbg = createDebuggerContext(toolbox);
 
   execute(hud, "pauseInWorker(42)");

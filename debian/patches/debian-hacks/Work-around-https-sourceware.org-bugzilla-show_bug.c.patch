@@ -7,13 +7,13 @@ Subject: Work around https://sourceware.org/bugzilla/show_bug.cgi?id=30578
  1 file changed, 4 insertions(+)
 
 diff --git a/media/ffvpx/config_unix64.h b/media/ffvpx/config_unix64.h
-index 728ede1..858f247 100644
+index c4311cf..b15c2be 100644
 --- a/media/ffvpx/config_unix64.h
 +++ b/media/ffvpx/config_unix64.h
-@@ -193,7 +193,11 @@
+@@ -204,7 +204,11 @@
  #define HAVE_SYNC_VAL_COMPARE_AND_SWAP 1
- #define HAVE_CABS 1
- #define HAVE_CEXP 1
+ #define HAVE_CABS 0
+ #define HAVE_CEXP 0
 +#ifdef FFMPEG_DISABLE_INLINE_ASM
 +#define HAVE_INLINE_ASM 0
 +#else

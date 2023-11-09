@@ -10,7 +10,7 @@ const TEST_URI =
   "data:text/html;charset=utf8,<!DOCTYPE html>Test clear cache<script>abcdef</script>";
 const EXPECTED_REPORT = "ReferenceError: abcdef is not defined";
 
-add_task(async function() {
+add_task(async function () {
   const tab = await addTab(TEST_URI);
   let hud = await openConsole(tab);
 
@@ -27,8 +27,9 @@ add_task(async function() {
   info(
     "Click the clear output button and wait until there's no messages in the output"
   );
+  let onMessagesCacheCleared = hud.ui.once("messages-cache-cleared");
   hud.ui.window.document.querySelector(".devtools-clear-icon").click();
-  await waitFor(() => findAllMessages(hud).length === 0);
+  await onMessagesCacheCleared;
 
   info("Close and re-open the console");
   await closeToolbox();
@@ -52,6 +53,7 @@ add_task(async function() {
   await logTextToConsole(hud, NEW_CACHED_MESSAGE);
 
   info("Send a console.clear() from the content page");
+  onMessagesCacheCleared = hud.ui.once("messages-cache-cleared");
   const onConsoleCleared = waitForMessageByType(
     hud,
     "Console was cleared",
@@ -60,7 +62,7 @@ add_task(async function() {
   SpecialPowers.spawn(gBrowser.selectedBrowser, [], () => {
     content.wrappedJSObject.console.clear();
   });
-  await onConsoleCleared;
+  await Promise.all([onConsoleCleared, onMessagesCacheCleared]);
 
   info("Close and re-open the console");
   await closeToolbox();
@@ -77,7 +79,7 @@ add_task(async function() {
 
 function logTextToConsole(hud, text) {
   const onMessage = waitForMessageByType(hud, text, ".console-api");
-  SpecialPowers.spawn(gBrowser.selectedBrowser, [text], function(str) {
+  SpecialPowers.spawn(gBrowser.selectedBrowser, [text], function (str) {
     content.wrappedJSObject.console.log(str);
   });
   return onMessage;

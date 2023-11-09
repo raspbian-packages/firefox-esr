@@ -74,9 +74,9 @@ ContentCompositorBridgeParent::AllocPAPZCTreeManagerParent(
     // Note: we immediately call ClearTree since otherwise the APZCTM will
     // retain a reference to itself, through the checkerboard observer.
     LayersId dummyId{0};
-    const bool useWebRender = false;
+    const bool connectedToWebRender = false;
     RefPtr<APZCTreeManager> temp = new APZCTreeManager(dummyId);
-    RefPtr<APZUpdater> tempUpdater = new APZUpdater(temp, useWebRender);
+    RefPtr<APZUpdater> tempUpdater = new APZUpdater(temp, connectedToWebRender);
     tempUpdater->ClearTree(dummyId);
     return new APZCTreeManagerParent(aLayersId, temp, tempUpdater);
   }
@@ -434,6 +434,9 @@ ContentCompositorBridgeParent::RecvReleasePCanvasParent() {
 UniquePtr<SurfaceDescriptor>
 ContentCompositorBridgeParent::LookupSurfaceDescriptorForClientTexture(
     const int64_t aTextureId) {
+  MOZ_RELEASE_ASSERT(mCanvasTranslator,
+                     "mCanvasTranslator hasn't been created.");
+
   return mCanvasTranslator->WaitForSurfaceDescriptor(aTextureId);
 }
 

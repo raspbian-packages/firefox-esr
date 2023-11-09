@@ -60,7 +60,15 @@ about-private-browsing-promo-close-button =
 about-private-browsing-pin-promo-header = Le libertate del navigation private in un clic
 about-private-browsing-pin-promo-link-text =
     { PLATFORM() ->
-        [macos] Retener in Dock
-       *[other] Appunctar al barra del activitates
+        [macos] Mantener in Dock
+       *[other] Clavar al barra de activitates
     }
-about-private-browsing-pin-promo-title = Nulle cookies o chronologia salvate, justo ad tu desktop. Naviga como si nemo te spia.
+about-private-browsing-pin-promo-title = Nulle cookies o chronologia salvate, directemente desde tu scriptorio. Naviga como si nemo te reguarda.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Bandieras pro cookies adeo!
+about-private-browsing-cookie-banners-promo-button = Reducer bandieras pro cookies
+about-private-browsing-cookie-banners-promo-message = Lassa que { -brand-short-name } responde automaticamente al quadros resaltante de cookies pro te, assi que tu pote navigar de novo libere de distractiones. { -brand-short-name } rejectara tote le requestas si possibile.

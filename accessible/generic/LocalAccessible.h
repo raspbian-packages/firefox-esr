@@ -81,6 +81,9 @@ typedef nsRefPtrHashtable<nsPtrHashKey<const void>, LocalAccessible>
     }                                                \
   }
 
+/**
+ * An accessibility tree node that originated in mDoc's content process.
+ */
 class LocalAccessible : public nsISupports, public Accessible {
  public:
   LocalAccessible(nsIContent* aContent, DocAccessible* aDoc);
@@ -132,13 +135,10 @@ class LocalAccessible : public nsISupports, public Accessible {
   void* UniqueID() { return static_cast<void*>(this); }
 
   virtual uint64_t ID() const override {
-    return reinterpret_cast<uintptr_t>(this);
+    return IsDoc() ? 0 : reinterpret_cast<uintptr_t>(this);
   }
 
-  /**
-   * Return language associated with the accessible.
-   */
-  void Language(nsAString& aLocale);
+  virtual void Language(nsAString& aLocale) override;
 
   /**
    * Get the description of this accessible.
@@ -151,15 +151,7 @@ class LocalAccessible : public nsISupports, public Accessible {
   virtual void Value(nsString& aValue) const override;
 
   /**
-   * Get help string for the accessible.
-   */
-  void Help(nsString& aHelp) const { aHelp.Truncate(); }
-
-  /**
    * Get the name of this accessible.
-   *
-   * Note: aName.IsVoid() when name was left empty by the author on purpose.
-   * aName.IsEmpty() when the author missed name, AT can try to repair a name.
    */
   virtual ENameValueFlag Name(nsString& aName) const override;
 
@@ -255,15 +247,7 @@ class LocalAccessible : public nsISupports, public Accessible {
   virtual Accessible* ChildAtPoint(int32_t aX, int32_t aY,
                                    EWhichChildAtPoint aWhichChild) override;
 
-  /**
-   * Return the focused child if any.
-   */
-  virtual LocalAccessible* FocusedChild();
-
-  /**
-   * Get the relation of the given type.
-   */
-  virtual Relation RelationByType(RelationType aType) const;
+  virtual Relation RelationByType(RelationType aType) const override;
 
   //////////////////////////////////////////////////////////////////////////////
   // Initializing methods
@@ -366,7 +350,7 @@ class LocalAccessible : public nsISupports, public Accessible {
   /**
    * Return embedded accessible child at the given index.
    */
-  virtual LocalAccessible* EmbeddedChildAt(uint32_t aIndex) override;
+  virtual Accessible* EmbeddedChildAt(uint32_t aIndex) override;
 
   virtual int32_t IndexOfEmbeddedChild(Accessible* aChild) override;
 
@@ -405,17 +389,9 @@ class LocalAccessible : public nsISupports, public Accessible {
   virtual void AppendTextTo(nsAString& aText, uint32_t aStartOffset = 0,
                             uint32_t aLength = UINT32_MAX) override;
 
-  /**
-   * Return boundaries in screen coordinates in app units.
-   */
-  virtual nsRect BoundsInAppUnits() const;
+  virtual nsRect BoundsInAppUnits() const override;
 
   virtual LayoutDeviceIntRect Bounds() const override;
-
-  /**
-   * Return boundaries in screen coordinates in CSS pixels.
-   */
-  virtual nsIntRect BoundsInCSSPixels() const;
 
   /**
    * Return boundaries rect relative the bounding frame.
@@ -459,11 +435,14 @@ class LocalAccessible : public nsISupports, public Accessible {
    */
   virtual void GetNativeInterface(void** aNativeAccessible);
 
+  virtual Maybe<int32_t> GetIntARIAAttr(nsAtom* aAttrName) const override;
+
   //////////////////////////////////////////////////////////////////////////////
   // Downcasting and types
 
   inline bool IsAbbreviation() const {
-    return mContent->IsAnyOfHTMLElements(nsGkAtoms::abbr, nsGkAtoms::acronym);
+    return mContent &&
+           mContent->IsAnyOfHTMLElements(nsGkAtoms::abbr, nsGkAtoms::acronym);
   }
 
   ApplicationAccessible* AsApplication();
@@ -481,16 +460,9 @@ class LocalAccessible : public nsISupports, public Accessible {
 
   HTMLImageMapAccessible* AsImageMap();
 
-  RemoteAccessible* Proxy() const {
-    MOZ_ASSERT(IsProxy());
-    return mBits.proxy;
-  }
-
   OuterDocAccessible* AsOuterDoc();
 
   a11y::RootAccessible* AsRoot();
-
-  bool IsSearchbox() const;
 
   virtual TableAccessible* AsTable() { return nullptr; }
 
@@ -519,10 +491,7 @@ class LocalAccessible : public nsISupports, public Accessible {
 
   virtual bool DoAction(uint8_t aIndex) const override;
 
-  /**
-   * Return access key, such as Alt+D.
-   */
-  virtual KeyBinding AccessKey() const;
+  virtual KeyBinding AccessKey() const override;
 
   /**
    * Return global keyboard shortcut for default action, such as Ctrl+O for
@@ -538,34 +507,6 @@ class LocalAccessible : public nsISupports, public Accessible {
    * Return true if the accessible is hyper link accessible.
    */
   virtual bool IsLink() const override;
-
-  /**
-   * Return true if the link is valid (e. g. points to a valid URL).
-   */
-  inline bool IsLinkValid() {
-    MOZ_ASSERT(IsLink(), "IsLinkValid is called on not hyper link!");
-
-    // XXX In order to implement this we would need to follow every link
-    // Perhaps we can get information about invalid links from the cache
-    // In the mean time authors can use role="link" aria-invalid="true"
-    // to force it for links they internally know to be invalid
-    return (0 == (State() & mozilla::a11y::states::INVALID));
-  }
-
-  /**
-   * Return the number of anchors within the link.
-   */
-  virtual uint32_t AnchorCount();
-
-  /**
-   * Returns an anchor accessible at the given index.
-   */
-  virtual LocalAccessible* AnchorAt(uint32_t aAnchorIndex);
-
-  /**
-   * Returns an anchor URI at the given index.
-   */
-  virtual already_AddRefed<nsIURI> AnchorURIAt(uint32_t aAnchorIndex) const;
 
   //////////////////////////////////////////////////////////////////////////////
   // SelectAccessible
@@ -617,7 +558,7 @@ class LocalAccessible : public nsISupports, public Accessible {
   virtual double MinValue() const override;
   virtual double CurValue() const override;
   virtual double Step() const override;
-  virtual bool SetCurValue(double aValue);
+  virtual bool SetCurValue(double aValue) override;
 
   //////////////////////////////////////////////////////////////////////////////
   // Widgets
@@ -701,7 +642,7 @@ class LocalAccessible : public nsISupports, public Accessible {
    * Return true if the accessible state change is processed by handling proper
    * DOM UI event, if otherwise then false. For example, CheckboxAccessible
    * created for HTML:input@type="checkbox" will process
-   * nsIDocumentObserver::ContentStateChanged instead of 'CheckboxStateChange'
+   * nsIDocumentObserver::ElementStateChanged instead of 'CheckboxStateChange'
    * event.
    */
   bool NeedsDOMUIEvent() const { return !(mStateFlags & eIgnoreDOMUIEvent); }
@@ -792,11 +733,19 @@ class LocalAccessible : public nsISupports, public Accessible {
 
   virtual nsAtom* TagName() const override;
 
+  virtual already_AddRefed<nsAtom> InputType() const override;
+
   virtual already_AddRefed<nsAtom> DisplayStyle() const override;
 
-  virtual Maybe<float> Opacity() const override;
+  virtual float Opacity() const override;
 
   virtual void DOMNodeID(nsString& aID) const override;
+
+  virtual void LiveRegionAttributes(nsAString* aLive, nsAString* aRelevant,
+                                    Maybe<bool>* aAtomic,
+                                    nsAString* aBusy) const override;
+
+  virtual Maybe<bool> ARIASelected() const override;
 
  protected:
   virtual ~LocalAccessible();
@@ -1050,10 +999,7 @@ class LocalAccessible : public nsISupports, public Accessible {
 
   friend class EmbeddedObjCollector;
 
-  union {
-    AccGroupInfo* groupInfo;
-    RemoteAccessible* proxy;
-  } mutable mBits;
+  mutable AccGroupInfo* mGroupInfo;
   friend class AccGroupInfo;
 
  private:
@@ -1077,60 +1023,6 @@ NS_DEFINE_STATIC_IID_ACCESSOR(LocalAccessible, NS_ACCESSIBLE_IMPL_IID)
 inline LocalAccessible* Accessible::AsLocal() {
   return IsLocal() ? static_cast<LocalAccessible*>(this) : nullptr;
 }
-
-/**
- * Represent key binding associated with accessible (such as access key and
- * global keyboard shortcuts).
- */
-class KeyBinding {
- public:
-  /**
-   * Modifier mask values.
-   */
-  static const uint32_t kShift = 1;
-  static const uint32_t kControl = 2;
-  static const uint32_t kAlt = 4;
-  static const uint32_t kMeta = 8;
-  static const uint32_t kOS = 16;
-
-  static uint32_t AccelModifier();
-
-  KeyBinding() : mKey(0), mModifierMask(0) {}
-  KeyBinding(uint32_t aKey, uint32_t aModifierMask)
-      : mKey(aKey), mModifierMask(aModifierMask) {}
-
-  inline bool IsEmpty() const { return !mKey; }
-  inline uint32_t Key() const { return mKey; }
-  inline uint32_t ModifierMask() const { return mModifierMask; }
-
-  enum Format { ePlatformFormat, eAtkFormat };
-
-  /**
-   * Return formatted string for this key binding depending on the given format.
-   */
-  inline void ToString(nsAString& aValue,
-                       Format aFormat = ePlatformFormat) const {
-    aValue.Truncate();
-    AppendToString(aValue, aFormat);
-  }
-  inline void AppendToString(nsAString& aValue,
-                             Format aFormat = ePlatformFormat) const {
-    if (mKey) {
-      if (aFormat == ePlatformFormat) {
-        ToPlatformFormat(aValue);
-      } else {
-        ToAtkFormat(aValue);
-      }
-    }
-  }
-
- private:
-  void ToPlatformFormat(nsAString& aValue) const;
-  void ToAtkFormat(nsAString& aValue) const;
-
-  uint32_t mKey;
-  uint32_t mModifierMask;
-};
 
 }  // namespace a11y
 }  // namespace mozilla

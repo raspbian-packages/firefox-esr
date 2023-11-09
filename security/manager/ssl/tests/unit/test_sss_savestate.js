@@ -7,12 +7,10 @@
 // writes its state file.
 
 const EXPECTED_ENTRIES = 5;
-const EXPECTED_HSTS_COLUMNS = 4;
+const EXPECTED_HSTS_COLUMNS = 3;
 
 var gProfileDir = null;
 var gExpectingWrites = true;
-
-const NON_ISSUED_KEY_HASH = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
 // For reference, the format of the state file is a list of:
 // <domain name> <expiration time in milliseconds>,<sts status>,<includeSubdomains>
@@ -91,7 +89,7 @@ function checkStateWritten(aSubject, aTopic, aData) {
   process_headers();
 
   // Wait a bit before finishing the test, to see if another write happens.
-  do_timeout(2000, function() {
+  do_timeout(2000, function () {
     do_test_finished();
   });
 }
@@ -115,15 +113,7 @@ function process_headers() {
     let maxAge = "max-age=" + (i + 31536000);
     // have every other URI set includeSubdomains
     let includeSubdomains = uriIndex % 2 == 1 ? "; includeSubdomains" : "";
-    let secInfo = Cc[
-      "@mozilla.org/security/transportsecurityinfo;1"
-    ].createInstance(Ci.nsITransportSecurityInfo);
-    SSService.processHeader(
-      uris[uriIndex],
-      maxAge + includeSubdomains,
-      secInfo,
-      Ci.nsISiteSecurityService.SOURCE_ORGANIC_REQUEST
-    );
+    SSService.processHeader(uris[uriIndex], maxAge + includeSubdomains);
   }
 }
 

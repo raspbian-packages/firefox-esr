@@ -254,6 +254,26 @@ class ProfileChunkedBuffer {
             mFailedPutBytes};
   }
 
+  // In in-session, return the start TimeStamp of the earliest chunk.
+  // If out-of-session, return a null TimeStamp.
+  [[nodiscard]] TimeStamp GetEarliestChunkStartTimeStamp() const {
+    baseprofiler::detail::BaseProfilerMaybeAutoLock lock(mMutex);
+    if (MOZ_UNLIKELY(!mChunkManager)) {
+      // Out-of-session.
+      return {};
+    }
+    return mChunkManager->PeekExtantReleasedChunks(
+        [&](const ProfileBufferChunk* aOldestChunk) -> TimeStamp {
+          if (aOldestChunk) {
+            return aOldestChunk->ChunkHeader().mStartTimeStamp;
+          }
+          if (mCurrentChunk) {
+            return mCurrentChunk->ChunkHeader().mStartTimeStamp;
+          }
+          return {};
+        });
+  }
+
   [[nodiscard]] bool IsEmpty() const {
     baseprofiler::detail::BaseProfilerMaybeAutoLock lock(mMutex);
     return mRangeStart == mRangeEnd;
@@ -1088,6 +1108,12 @@ class ProfileChunkedBuffer {
           MOZ_ASSERT(maybeEntryWriter->RemainingBytes() == blockBytes);
           mRangeEnd += blockBytes;
           mPushedBlockCount += aBlockCount;
+        } else if (blockBytes >= current->BufferBytes()) {
+          // Currently only two buffer chunks are held at a time and it is not
+          // possible to write an object that takes up more space than this. In
+          // this scenario, silently discard this block of data if it is unable
+          // to fit into the two reserved profiler chunks.
+          mFailedPutBytes += blockBytes;
         } else {
           // Block doesn't fit fully in current chunk, it needs to overflow into
           // the next one.

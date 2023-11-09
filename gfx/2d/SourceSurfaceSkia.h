@@ -8,7 +8,6 @@
 #define MOZILLA_GFX_SOURCESURFACESKIA_H_
 
 #include "2D.h"
-#include <vector>
 #include "mozilla/Mutex.h"
 #include "skia/include/core/SkRefCnt.h"
 
@@ -43,6 +42,8 @@ class SourceSurfaceSkia : public DataSourceSurface {
   bool InitFromImage(const sk_sp<SkImage>& aImage,
                      SurfaceFormat aFormat = SurfaceFormat::UNKNOWN,
                      DrawTargetSkia* aOwner = nullptr);
+
+  already_AddRefed<SourceSurface> ExtractSubrect(const IntRect& aRect) override;
 
   uint8_t* GetData() override;
 

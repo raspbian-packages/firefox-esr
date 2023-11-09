@@ -4,8 +4,6 @@
 /* import-globals-from states.js */
 /* import-globals-from text.js */
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-
 // //////////////////////////////////////////////////////////////////////////////
 // Constants
 
@@ -17,6 +15,7 @@ const FILTER_IGNORE_SUBTREE = nsIAccessibleTraversalRule.FILTER_IGNORE_SUBTREE;
 const NO_BOUNDARY = nsIAccessiblePivot.NO_BOUNDARY;
 const CHAR_BOUNDARY = nsIAccessiblePivot.CHAR_BOUNDARY;
 const WORD_BOUNDARY = nsIAccessiblePivot.WORD_BOUNDARY;
+const LINE_BOUNDARY = nsIAccessiblePivot.LINE_BOUNDARY;
 
 const NS_ERROR_NOT_IN_TREE = 0x80780026;
 const NS_ERROR_INVALID_ARG = 0x80070057;

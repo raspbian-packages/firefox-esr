@@ -46,21 +46,6 @@ void JSProcessActorParent::SendRawMessage(
     return;
   }
 
-  size_t length = 0;
-  if (aData) {
-    length += aData->DataLength();
-  }
-  if (aStack) {
-    length += aStack->DataLength();
-  }
-  if (NS_WARN_IF(!AllowMessage(aMeta, length))) {
-    aRv.ThrowDataError(nsPrintfCString(
-        "Actor '%s' cannot send message '%s': message too long.",
-        PromiseFlatCString(aMeta.actorName()).get(),
-        NS_ConvertUTF16toUTF8(aMeta.messageName()).get()));
-    return;
-  }
-
   // If the parent side is in the same process, we have a PInProcess manager,
   // and can dispatch the message directly to the event loop.
   ContentParent* contentParent = mManager->AsContentParent();
@@ -75,8 +60,7 @@ void JSProcessActorParent::SendRawMessage(
   Maybe<ClonedMessageData> msgData;
   if (aData) {
     msgData.emplace();
-    if (NS_WARN_IF(
-            !aData->BuildClonedMessageDataForParent(contentParent, *msgData))) {
+    if (NS_WARN_IF(!aData->BuildClonedMessageData(*msgData))) {
       aRv.ThrowDataCloneError(
           nsPrintfCString("Actor '%s' cannot send message '%s': cannot clone.",
                           PromiseFlatCString(aMeta.actorName()).get(),
@@ -88,7 +72,7 @@ void JSProcessActorParent::SendRawMessage(
   Maybe<ClonedMessageData> stackData;
   if (aStack) {
     stackData.emplace();
-    if (!aStack->BuildClonedMessageDataForParent(contentParent, *stackData)) {
+    if (!aStack->BuildClonedMessageData(*stackData)) {
       stackData.reset();
     }
   }

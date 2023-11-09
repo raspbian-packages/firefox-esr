@@ -37,7 +37,7 @@ findbar-entire-word =
     .accesskey = w
     .tooltiptext = 단어 단위로 일치하는 경우만 검색합니다
 
-findbar-not-found = 문구를 찾을 수 없음
+findbar-not-found = 찾을 수 없음
 
 findbar-wrapped-to-top = 아래에 도달해 위부터 계속됨
 findbar-wrapped-to-bottom = 위에 도달해 아래부터 계속됨

@@ -43,7 +43,7 @@ gfxFT2FontBase::gfxFT2FontBase(
 gfxFT2FontBase::~gfxFT2FontBase() { mFTFace->ForgetLockOwner(this); }
 
 FT_Face gfxFT2FontBase::LockFTFace() const
-    CAPABILITY_ACQUIRE(mFTFace) NO_THREAD_SAFETY_ANALYSIS {
+    MOZ_CAPABILITY_ACQUIRE(mFTFace) MOZ_NO_THREAD_SAFETY_ANALYSIS {
   if (!mFTFace->Lock(this)) {
     FT_Set_Transform(mFTFace->GetFace(), nullptr, nullptr);
 
@@ -54,7 +54,7 @@ FT_Face gfxFT2FontBase::LockFTFace() const
 }
 
 void gfxFT2FontBase::UnlockFTFace() const
-    CAPABILITY_RELEASE(mFTFace) NO_THREAD_SAFETY_ANALYSIS {
+    MOZ_CAPABILITY_RELEASE(mFTFace) MOZ_NO_THREAD_SAFETY_ANALYSIS {
   mFTFace->Unlock();
 }
 
@@ -761,7 +761,7 @@ const gfxFT2FontBase::GlyphMetrics& gfxFT2FontBase::GetCachedGlyphMetrics(
 }
 
 bool gfxFT2FontBase::GetGlyphBounds(uint16_t aGID, gfxRect* aBounds,
-                                    bool aTight) const {
+                                    bool aTight) {
   IntRect bounds;
   const GlyphMetrics& metrics = GetCachedGlyphMetrics(aGID, &bounds);
   if (!metrics.HasValidBounds()) {
@@ -821,16 +821,4 @@ void gfxFT2FontBase::SetupVarCoords(
     }
 #endif
   }
-}
-
-already_AddRefed<SharedFTFace> FTUserFontData::CloneFace(int aFaceIndex) {
-  RefPtr<SharedFTFace> face = Factory::NewSharedFTFaceFromData(
-      nullptr, mFontData, mLength, aFaceIndex, this);
-  if (!face ||
-      (FT_Select_Charmap(face->GetFace(), FT_ENCODING_UNICODE) != FT_Err_Ok &&
-       FT_Select_Charmap(face->GetFace(), FT_ENCODING_MS_SYMBOL) !=
-           FT_Err_Ok)) {
-    return nullptr;
-  }
-  return face.forget();
 }

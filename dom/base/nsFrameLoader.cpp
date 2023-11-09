@@ -69,8 +69,6 @@
 #include "nsIDOMChromeWindow.h"
 #include "InProcessBrowserChildMessageManager.h"
 
-#include "Layers.h"
-
 #include "ContentParent.h"
 #include "BrowserParent.h"
 #include "mozilla/AsyncEventDispatcher.h"
@@ -750,12 +748,6 @@ nsresult nsFrameLoader::ReallyStartLoadingInternal() {
     return NS_OK;
   }
 
-  if (GetDocShell()) {
-    // If we already have a docshell, ensure that the docshell's storage access
-    // flag is cleared.
-    GetDocShell()->MaybeClearStorageAccessFlag();
-  }
-
   nsresult rv = MaybeCreateDocShell();
   if (NS_FAILED(rv)) {
     return rv;
@@ -783,7 +775,8 @@ nsresult nsFrameLoader::ReallyStartLoadingInternal() {
   bool tmpState = mNeedsAsyncDestroy;
   mNeedsAsyncDestroy = true;
 
-  rv = GetDocShell()->LoadURI(loadState, false);
+  RefPtr<nsDocShell> docShell = GetDocShell();
+  rv = docShell->LoadURI(loadState, false);
   mNeedsAsyncDestroy = tmpState;
   mURIToLoad = nullptr;
   NS_ENSURE_SUCCESS(rv, rv);
@@ -999,7 +992,7 @@ bool nsFrameLoader::Show(nsSubDocumentFrame* frame) {
     // Ensure root scroll frame is reflowed in case margins have changed
     if (marginsChanged) {
       if (nsIFrame* rootScrollFrame = presShell->GetRootScrollFrame()) {
-        presShell->FrameNeedsReflow(rootScrollFrame, IntrinsicDirty::Resize,
+        presShell->FrameNeedsReflow(rootScrollFrame, IntrinsicDirty::None,
                                     NS_FRAME_IS_DIRTY);
       }
     }
@@ -1152,7 +1145,7 @@ bool nsFrameLoader::ShowRemoteFrame(const ScreenIntSize& size,
     NS_ENSURE_SUCCESS(GetWindowDimensions(dimensions), false);
 
     // Don't show remote iframe if we are waiting for the completion of reflow.
-    if (!aFrame || !(aFrame->GetStateBits() & NS_FRAME_FIRST_REFLOW)) {
+    if (!aFrame || !aFrame->HasAnyStateBits(NS_FRAME_FIRST_REFLOW)) {
       mRemoteBrowser->UpdateDimensions(dimensions, size);
     }
   }
@@ -1172,8 +1165,6 @@ void nsFrameLoader::Hide() {
   if (!GetDocShell()) {
     return;
   }
-
-  GetDocShell()->MaybeClearStorageAccessFlag();
 
   nsCOMPtr<nsIContentViewer> contentViewer;
   GetDocShell()->GetContentViewer(getter_AddRefs(contentViewer));
@@ -1197,7 +1188,7 @@ void nsFrameLoader::ForceLayoutIfNecessary() {
 
   // Only force the layout flush if the frameloader hasn't ever been
   // run through layout.
-  if (frame->GetStateBits() & NS_FRAME_FIRST_REFLOW) {
+  if (frame->HasAnyStateBits(NS_FRAME_FIRST_REFLOW)) {
     if (RefPtr<PresShell> presShell = presContext->GetPresShell()) {
       presShell->FlushPendingNotifications(FlushType::Layout);
     }
@@ -2158,7 +2149,7 @@ void nsFrameLoader::SetOwnerContent(Element* aContent) {
   AutoJSAPI jsapi;
   jsapi.Init();
 
-  JS::RootedObject wrapper(jsapi.cx(), GetWrapper());
+  JS::Rooted<JSObject*> wrapper(jsapi.cx(), GetWrapper());
   if (wrapper) {
     JSAutoRealm ar(jsapi.cx(), wrapper);
     IgnoredErrorResult rv;
@@ -2397,7 +2388,7 @@ nsresult nsFrameLoader::CheckForRecursiveLoad(nsIURI* aURI) {
   mDepthTooGreat = false;
   RefPtr<BrowsingContext> parentBC(
       mOwnerContent->OwnerDoc()->GetBrowsingContext());
-  MOZ_ASSERT(parentBC, "How can we not have a parent here?");
+  NS_ENSURE_STATE(parentBC);
 
   if (!parentBC->IsContent()) {
     return NS_OK;
@@ -2474,16 +2465,6 @@ nsresult nsFrameLoader::UpdatePositionAndSize(nsSubDocumentFrame* aIFrame) {
   return NS_OK;
 }
 
-void nsFrameLoader::SendIsUnderHiddenEmbedderElement(
-    bool aIsUnderHiddenEmbedderElement) {
-  MOZ_ASSERT(IsRemoteFrame());
-
-  if (auto* browserBridgeChild = GetBrowserBridgeChild()) {
-    browserBridgeChild->SetIsUnderHiddenEmbedderElement(
-        aIsUnderHiddenEmbedderElement);
-  }
-}
-
 void nsFrameLoader::PropagateIsUnderHiddenEmbedderElement(
     bool aIsUnderHiddenEmbedderElement) {
   bool isUnderHiddenEmbedderElement = true;
@@ -2494,12 +2475,21 @@ void nsFrameLoader::PropagateIsUnderHiddenEmbedderElement(
   }
 
   isUnderHiddenEmbedderElement |= aIsUnderHiddenEmbedderElement;
-  if (nsDocShell* docShell = GetExistingDocShell()) {
-    if (PresShell* presShell = docShell->GetPresShell()) {
-      presShell->SetIsUnderHiddenEmbedderElement(isUnderHiddenEmbedderElement);
-    }
-  } else {
-    SendIsUnderHiddenEmbedderElement(isUnderHiddenEmbedderElement);
+
+  BrowsingContext* browsingContext = GetExtantBrowsingContext();
+  if (browsingContext && browsingContext->IsUnderHiddenEmbedderElement() !=
+                             isUnderHiddenEmbedderElement) {
+    Unused << browsingContext->SetIsUnderHiddenEmbedderElement(
+        isUnderHiddenEmbedderElement);
+  }
+}
+
+void nsFrameLoader::UpdateRemoteStyle(
+    mozilla::StyleImageRendering aImageRendering) {
+  MOZ_DIAGNOSTIC_ASSERT(IsRemoteFrame());
+
+  if (auto* browserBridgeChild = GetBrowserBridgeChild()) {
+    browserBridgeChild->SendUpdateRemoteStyle(aImageRendering);
   }
 }
 
@@ -2653,6 +2643,8 @@ bool nsFrameLoader::TryRemoteBrowserInternal() {
       // - about:preferences (in Thunderbird only) so it can load remote
       //     extension options pages for FileLink providers
       // - DevTools webext panels if DevTools is loaded in a content frame
+      // - DevTools Network Monitor, which uses content frame for HTML request
+      // previews
       // - Chrome mochitests can also do this.
       //
       // Note that the new frame's message manager will not be a child of the
@@ -2679,6 +2671,8 @@ bool nsFrameLoader::TryRemoteBrowserInternal() {
             "about:preferences"_ns,
 #endif
             "chrome://browser/content/webext-panels.xhtml"_ns,
+            "chrome://devtools/content/netmonitor/index.html"_ns,
+            "chrome://devtools/content/webconsole/index.html"_ns,
         };
 
         for (const auto& allowedURI : kAllowedURIs) {
@@ -2815,6 +2809,12 @@ bool nsFrameLoader::TryRemoteBrowserInternal() {
 }
 
 bool nsFrameLoader::TryRemoteBrowser() {
+  // Creating remote browsers may result in creating new processes, but during
+  // parent shutdown that would add just noise, so better bail out.
+  if (AppShutdown::IsInOrBeyond(ShutdownPhase::AppShutdownConfirmed)) {
+    return false;
+  }
+
   // Try to create the internal remote browser.
   if (TryRemoteBrowserInternal()) {
     return true;
@@ -2875,20 +2875,6 @@ BrowserBridgeChild* nsFrameLoader::GetBrowserBridgeChild() const {
 mozilla::layers::LayersId nsFrameLoader::GetLayersId() const {
   MOZ_ASSERT(mIsRemoteFrame);
   return mRemoteBrowser->GetLayersId();
-}
-
-void nsFrameLoader::ActivateFrameEvent(const nsAString& aType, bool aCapture,
-                                       ErrorResult& aRv) {
-  auto* browserParent = GetBrowserParent();
-  if (!browserParent) {
-    aRv.Throw(NS_ERROR_FAILURE);
-    return;
-  }
-
-  bool ok = browserParent->SendActivateFrameEvent(nsString(aType), aCapture);
-  if (!ok) {
-    aRv.Throw(NS_ERROR_NOT_AVAILABLE);
-  }
 }
 
 nsresult nsFrameLoader::DoRemoteStaticClone(nsFrameLoader* aStaticCloneOf,
@@ -2972,8 +2958,7 @@ nsresult nsFrameLoader::FinishStaticClone(
 bool nsFrameLoader::DoLoadMessageManagerScript(const nsAString& aURL,
                                                bool aRunInGlobalScope) {
   if (auto* browserParent = GetBrowserParent()) {
-    return browserParent->SendLoadRemoteScript(nsString(aURL),
-                                               aRunInGlobalScope);
+    return browserParent->SendLoadRemoteScript(aURL, aRunInGlobalScope);
   }
   RefPtr<InProcessBrowserChildMessageManager> browserChild =
       GetBrowserChildMessageManager();
@@ -3013,12 +2998,11 @@ nsresult nsFrameLoader::DoSendAsyncMessage(const nsAString& aMessage,
   auto* browserParent = GetBrowserParent();
   if (browserParent) {
     ClonedMessageData data;
-    ContentParent* cp = browserParent->Manager();
-    if (!BuildClonedMessageDataForParent(cp, aData, data)) {
+    if (!BuildClonedMessageData(aData, data)) {
       MOZ_CRASH();
       return NS_ERROR_DOM_DATA_CLONE_ERR;
     }
-    if (browserParent->SendAsyncMessage(nsString(aMessage), data)) {
+    if (browserParent->SendAsyncMessage(aMessage, data)) {
       return NS_OK;
     } else {
       return NS_ERROR_UNEXPECTED;
@@ -3098,7 +3082,7 @@ nsresult nsFrameLoader::EnsureMessageManager() {
     NS_ENSURE_TRUE(mChildMessageManager, NS_ERROR_UNEXPECTED);
 
     // Set up session store
-    if constexpr (SessionStoreUtils::NATIVE_LISTENER) {
+    if (StaticPrefs::browser_sessionstore_platform_collection_AtStartup()) {
       if (XRE_IsParentProcess() && mIsTopLevelContent) {
         mSessionStoreChild = SessionStoreChild::GetOrCreate(
             GetExtantBrowsingContext(), mOwnerContent);
@@ -3360,6 +3344,13 @@ already_AddRefed<Promise> nsFrameLoader::PrintPreview(
       } else {
         MOZ_ASSERT(info.mOrientation == Orientation::Unspecified);
       }
+      if (aInfo.pageWidth()) {
+        info.mPageWidth = aInfo.pageWidth().value();
+      }
+      if (aInfo.pageHeight()) {
+        info.mPageHeight = aInfo.pageHeight().value();
+      }
+
       promise->MaybeResolve(info);
     } else {
       promise->MaybeRejectWithUnknownError("Print preview failed");
@@ -3491,7 +3482,7 @@ already_AddRefed<nsIRemoteTab> nsFrameLoader::GetRemoteTab() {
   return nullptr;
 }
 
-already_AddRefed<nsILoadContext> nsFrameLoader::LoadContext() {
+already_AddRefed<nsILoadContext> nsFrameLoader::GetLoadContext() {
   return do_AddRef(GetBrowsingContext());
 }
 
@@ -3637,27 +3628,21 @@ nsresult nsFrameLoader::GetNewTabContext(MutableTabContext* aTabContext,
 
   MOZ_ASSERT(mPendingBrowsingContext->EverAttached());
 
-  UIStateChangeType showFocusRings = UIStateChangeType_NoChange;
   uint64_t chromeOuterWindowID = 0;
 
-  Document* doc = mOwnerContent->OwnerDoc();
-  if (doc) {
-    nsCOMPtr<nsPIWindowRoot> root = nsContentUtils::GetWindowRoot(doc);
-    if (root) {
-      showFocusRings = root->ShowFocusRings() ? UIStateChangeType_Set
-                                              : UIStateChangeType_Clear;
-
-      nsPIDOMWindowOuter* outerWin = root->GetWindow();
-      if (outerWin) {
-        chromeOuterWindowID = outerWin->WindowID();
-      }
+  nsCOMPtr<nsPIWindowRoot> root =
+      nsContentUtils::GetWindowRoot(mOwnerContent->OwnerDoc());
+  if (root) {
+    nsPIDOMWindowOuter* outerWin = root->GetWindow();
+    if (outerWin) {
+      chromeOuterWindowID = outerWin->WindowID();
     }
   }
 
   uint32_t maxTouchPoints = BrowserParent::GetMaxTouchPoints(mOwnerContent);
 
-  bool tabContextUpdated = aTabContext->SetTabContext(
-      chromeOuterWindowID, showFocusRings, maxTouchPoints);
+  bool tabContextUpdated =
+      aTabContext->SetTabContext(chromeOuterWindowID, maxTouchPoints);
   NS_ENSURE_STATE(tabContextUpdated);
 
   return NS_OK;
@@ -3703,7 +3688,7 @@ ProcessMessageManager* nsFrameLoader::GetProcessMessageManager() const {
 
 JSObject* nsFrameLoader::WrapObject(JSContext* cx,
                                     JS::Handle<JSObject*> aGivenProto) {
-  JS::RootedObject result(cx);
+  JS::Rooted<JSObject*> result(cx);
   FrameLoader_Binding::Wrap(cx, this, this, aGivenProto, &result);
   return result;
 }

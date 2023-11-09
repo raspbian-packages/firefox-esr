@@ -16,7 +16,7 @@
 #include "jstypes.h"
 #include "NamespaceImports.h"
 
-#include "gc/Rooting.h"
+#include "gc/AllocKind.h"
 #include "js/ScalarType.h"
 #include "js/TypeDecls.h"
 
@@ -26,17 +26,20 @@ class JSLinearString;
 namespace js {
 
 class AbstractGeneratorObject;
+class ArrayObject;
 class GlobalObject;
 class InterpreterFrame;
 class LexicalScope;
 class ClassBodyScope;
 class MapObject;
 class NativeObject;
+class PlainObject;
 class PropertyName;
 class SetObject;
 class Shape;
 class TypedArrayObject;
 class WithScope;
+class MegamorphicCacheEntry;
 
 namespace gc {
 
@@ -136,7 +139,7 @@ enum MaybeTailCall : bool { TailCall, NonTailCall };
 
 // Data for a VM function. All VMFunctionDatas are stored in a constexpr array.
 struct VMFunctionData {
-#if defined(DEBUG) || defined(JS_JITSPEW) || defined(JS_TRACE_LOGGING)
+#if defined(DEBUG) || defined(JS_JITSPEW)
   // Informative name of the wrapped function. The name should not be present
   // in release builds in order to save memory.
   const char* name_;
@@ -231,7 +234,7 @@ struct VMFunctionData {
     return ((argumentPassedInFloatRegs >> explicitArg) & 1) == 1;
   }
 
-#if defined(DEBUG) || defined(JS_JITSPEW) || defined(JS_TRACE_LOGGING)
+#if defined(DEBUG) || defined(JS_JITSPEW)
   const char* name() const { return name_; }
 #endif
 
@@ -306,7 +309,7 @@ struct VMFunctionData {
                            uint8_t extraValuesToPop = 0,
                            MaybeTailCall expectTailCall = NonTailCall)
       :
-#if defined(DEBUG) || defined(JS_JITSPEW) || defined(JS_TRACE_LOGGING)
+#if defined(DEBUG) || defined(JS_JITSPEW)
         name_(name),
 #endif
         argumentRootTypes(argRootTypes),
@@ -359,7 +362,7 @@ void* GetContextSensitiveInterpreterStub();
 bool CheckOverRecursed(JSContext* cx);
 bool CheckOverRecursedBaseline(JSContext* cx, BaselineFrame* frame);
 
-[[nodiscard]] bool MutatePrototype(JSContext* cx, HandlePlainObject obj,
+[[nodiscard]] bool MutatePrototype(JSContext* cx, Handle<PlainObject*> obj,
                                    HandleValue value);
 
 enum class EqualityKind : bool { NotEqual, Equal };
@@ -373,8 +376,8 @@ template <ComparisonKind Kind>
 bool StringsCompare(JSContext* cx, HandleString lhs, HandleString rhs,
                     bool* res);
 
-[[nodiscard]] bool ArrayPushDense(JSContext* cx, HandleArrayObject arr,
-                                  HandleValue v, uint32_t* length);
+[[nodiscard]] bool ArrayPushDensePure(JSContext* cx, ArrayObject* arr,
+                                      Value* v);
 JSString* ArrayJoin(JSContext* cx, HandleObject array, HandleString sep);
 [[nodiscard]] bool SetArrayLength(JSContext* cx, HandleObject obj,
                                   HandleValue value, bool strict);
@@ -384,19 +387,20 @@ JSString* ArrayJoin(JSContext* cx, HandleObject array, HandleString sep);
 JSLinearString* StringFromCharCode(JSContext* cx, int32_t code);
 JSLinearString* StringFromCharCodeNoGC(JSContext* cx, int32_t code);
 JSString* StringFromCodePoint(JSContext* cx, int32_t codePoint);
+JSLinearString* LinearizeForCharAccessPure(JSString* str);
+JSLinearString* LinearizeForCharAccess(JSContext* cx, JSString* str);
 
 [[nodiscard]] bool SetProperty(JSContext* cx, HandleObject obj,
-                               HandlePropertyName name, HandleValue value,
+                               Handle<PropertyName*> name, HandleValue value,
                                bool strict, jsbytecode* pc);
 
 [[nodiscard]] bool InterruptCheck(JSContext* cx);
 
-JSObject* NewCallObject(JSContext* cx, HandleShape shape);
 JSObject* NewStringObject(JSContext* cx, HandleString str);
 
 bool OperatorIn(JSContext* cx, HandleValue key, HandleObject obj, bool* out);
 
-[[nodiscard]] bool GetIntrinsicValue(JSContext* cx, HandlePropertyName name,
+[[nodiscard]] bool GetIntrinsicValue(JSContext* cx, Handle<PropertyName*> name,
                                      MutableHandleValue rval);
 
 [[nodiscard]] bool CreateThisFromIC(JSContext* cx, HandleObject callee,
@@ -460,9 +464,6 @@ JSObject* CreateGenerator(JSContext* cx, HandleFunction, HandleScript,
 
 ArrayObject* NewArrayObjectEnsureDenseInitLength(JSContext* cx, int32_t count);
 
-JSObject* CopyLexicalEnvironmentObject(JSContext* cx, HandleObject env,
-                                       bool copySlots);
-
 JSObject* InitRestParameter(JSContext* cx, uint32_t length, Value* rest,
                             HandleObject res);
 
@@ -494,7 +495,7 @@ JSObject* InitRestParameter(JSContext* cx, uint32_t length, Value* rest,
                                         const jsbytecode* pc);
 
 [[nodiscard]] bool PushVarEnv(JSContext* cx, BaselineFrame* frame,
-                              HandleScope scope);
+                              Handle<Scope*> scope);
 
 [[nodiscard]] bool InitBaselineFrameForOsr(BaselineFrame* frame,
                                            InterpreterFrame* interpFrame,
@@ -502,10 +503,6 @@ JSObject* InitRestParameter(JSContext* cx, uint32_t length, Value* rest,
 
 JSString* StringReplace(JSContext* cx, HandleString string,
                         HandleString pattern, HandleString repl);
-
-[[nodiscard]] bool SetDenseElement(JSContext* cx, HandleNativeObject obj,
-                                   int32_t index, HandleValue value,
-                                   bool strict);
 
 void AssertValidBigIntPtr(JSContext* cx, JS::BigInt* bi);
 void AssertValidObjectPtr(JSContext* cx, JSObject* obj);
@@ -548,22 +545,35 @@ bool CallDOMSetter(JSContext* cx, const JSJitInfo* jitInfo, HandleObject obj,
 void HandleCodeCoverageAtPC(BaselineFrame* frame, jsbytecode* pc);
 void HandleCodeCoverageAtPrologue(BaselineFrame* frame);
 
-bool GetNativeDataPropertyPure(JSContext* cx, JSObject* obj, PropertyName* name,
-                               Value* vp);
+bool GetNativeDataPropertyPure(JSContext* cx, JSObject* obj, PropertyKey id,
+                               MegamorphicCacheEntry* entry, Value* vp);
 
-bool GetNativeDataPropertyByValuePure(JSContext* cx, JSObject* obj, Value* vp);
+bool GetNativeDataPropertyPureWithCacheLookup(JSContext* cx, JSObject* obj,
+                                              PropertyKey id,
+                                              MegamorphicCacheEntry* entry,
+                                              Value* vp);
+
+bool GetNativeDataPropertyByValuePure(JSContext* cx, JSObject* obj,
+                                      MegamorphicCacheEntry* cacheEntry,
+                                      Value* vp);
 
 template <bool HasOwn>
-bool HasNativeDataPropertyPure(JSContext* cx, JSObject* obj, Value* vp);
+bool HasNativeDataPropertyPure(JSContext* cx, JSObject* obj,
+                               MegamorphicCacheEntry* cacheEntry, Value* vp);
 
 bool HasNativeElementPure(JSContext* cx, NativeObject* obj, int32_t index,
                           Value* vp);
 
-bool SetNativeDataPropertyPure(JSContext* cx, JSObject* obj, PropertyName* name,
-                               Value* val);
-
 bool ObjectHasGetterSetterPure(JSContext* cx, JSObject* objArg, jsid id,
                                GetterSetter* getterSetter);
+
+template <bool Cached>
+bool SetElementMegamorphic(JSContext* cx, HandleObject obj, HandleValue index,
+                           HandleValue value, bool strict);
+
+template <bool Cached>
+bool SetPropertyMegamorphic(JSContext* cx, HandleObject obj, HandleId id,
+                            HandleValue value, bool strict);
 
 JSString* TypeOfNameObject(JSObject* obj, JSRuntime* rt);
 
@@ -575,7 +585,7 @@ bool DoConcatStringObject(JSContext* cx, HandleValue lhs, HandleValue rhs,
 
 bool IsPossiblyWrappedTypedArray(JSContext* cx, JSObject* obj, bool* result);
 
-void* AllocateString(JSContext* cx);
+void* AllocateDependentString(JSContext* cx);
 void* AllocateFatInlineString(JSContext* cx);
 void* AllocateBigIntNoGC(JSContext* cx, bool requestMinorGC);
 void AllocateAndInitTypedArrayBuffer(JSContext* cx, TypedArrayObject* obj,
@@ -676,6 +686,8 @@ void AssertSetObjectHash(JSContext* cx, SetObject* obj, const Value* value,
                          mozilla::HashNumber actualHash);
 void AssertMapObjectHash(JSContext* cx, MapObject* obj, const Value* value,
                          mozilla::HashNumber actualHash);
+
+void AssertPropertyLookup(NativeObject* obj, PropertyKey id, uint32_t slot);
 
 // Functions used when JS_MASM_VERBOSE is enabled.
 void AssumeUnreachable(const char* output);

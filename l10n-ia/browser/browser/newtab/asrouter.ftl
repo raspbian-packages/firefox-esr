@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Function recommendate
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Proque vide io isto?
+
 cfr-doorhanger-extension-cancel-button = Non ora
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Adder ora
     .accesskey = A
+
 cfr-doorhanger-extension-manage-settings-button = Gerer le configurationes de recommendation
     .accesskey = G
+
 cfr-doorhanger-extension-never-show-recommendation = Non monstrar me iste recommendation
     .accesskey = N
+
 cfr-doorhanger-extension-learn-more-link = Saper plus
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = per { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Recommendation
 cfr-doorhanger-extension-notification2 = Recommendation
     .tooltiptext = Extension recommendate
     .a11y-announcement = Un recommendation pro un extension es disponibile
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Recommendation
@@ -57,29 +65,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } usatores
     }
 
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = Bandieras pro cookies adeo!
-cfr-cookie-banner-handling-body = Permitter a { -brand-short-name } de rejectar automaticamente tote le requestas de bandieras pro cookie, quando possibile. Alteremente, tote le cookies sera acceptate pro dimitter ancora plus bandieras.
-cfr-cookie-banner-accept-button = Dimitter le requestas
-    .accesskey = D
-cfr-cookie-banner-reject-button = Non ora
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-1 = Vider minus quadros resaltante de cookies
-cfr-cookie-banner-handling-body-variant-1 = Lassa que { -brand-short-name } responde automaticamente al quadros resaltante de cookies pro te, assi que tu pote navigar de novo libere de distractiones. { -brand-short-name } rejectara tote le requestas si possibile o, si non, los acceptara tote.
-cfr-cookie-banner-accept-button-variant-1 = Dimitter le quadros resaltante
-    .accesskey = D
-cfr-cookie-banner-reject-button-variant-1 = No, gratias
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-2 = Reduction de banner pro le cookie
-cfr-cookie-banner-handling-body-variant-2 = Permitter a { -brand-short-name } de refusar le requesta de consenso al cookies de un sito, si possibile, o acceptar le accesso de cookies quando impossibile?
-cfr-cookie-banner-accept-button-variant-2 = Permitter
-    .accesskey = P
-cfr-cookie-banner-reject-button-variant-2 = Non ora
-    .accesskey = N
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Synchronisa tu marcapaginas ubique.
@@ -100,9 +85,11 @@ cfr-protections-panel-link-text = Saper plus
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nove function:
+
 cfr-whatsnew-button =
     .label = Novas
     .tooltiptext = Novas
+
 cfr-whatsnew-release-notes-link-text = Leger le notas de version
 
 ## Enhanced Tracking Protection Milestones
@@ -131,13 +118,6 @@ cfr-doorhanger-doh-secondary-button = Disactivar
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = Tu vita private es importante. { -brand-short-name } ora isola sitos le unes del alteres per medio de un mechanismo "sandbox" (cassa a sablo). Isto rende plus difficile pro le piratas informatic robar contrasignos, numeros de carta de credito e altere datos sensibile.
-cfr-doorhanger-fission-header = Isolamento de sitos
-cfr-doorhanger-fission-primary-button = De accordo
-    .accesskey = a
-cfr-doorhanger-fission-secondary-button = Saper plus
-    .accesskey = S
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Le videos sur iste sito pote non esser reproducite correctemente in iste version de { -brand-short-name }. Pro un supporto complete de video, actualisa { -brand-short-name } ora.
@@ -146,11 +126,6 @@ cfr-doorhanger-video-support-primary-button = Actualisar ora
     .accesskey = A
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Pro saper plus
-    .title = Expander pro saper plus re le function
-spotlight-learn-more-expanded = Pro saper plus
-    .title = Clauder
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -168,18 +143,6 @@ spotlight-public-wifi-vpn-link = Non ora
 
 ## Total Cookie Protection Rollout
 
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Prova primo nostre potentissime
-    experientia de confidentialitate
-spotlight-total-cookie-protection-body = Le protection total del cookies bloca le traciatores de usar le cookies pro sequer te furtivemente circum le web.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } crea un barriera circa le cookies, limitante los al sito que tu visita de maniera que le traciatores non pote usar los pro sequer te. Como usator del prime hora, tu nos adjuta a optimisar iste function de sorta que nos pote continuar a construer un web melior pro totes.
-spotlight-total-cookie-protection-primary-button = Activar Protection total del cookies
-spotlight-total-cookie-protection-secondary-button = Non ora
-
 ## Emotive Continuous Onboarding
 
 spotlight-better-internet-header = Un internet melior comencia con te
@@ -188,8 +151,8 @@ spotlight-peace-mind-header = Nos te mantene secur
 spotlight-peace-mind-body = Cata mense, { -brand-short-name } bloca un media de ultra 3000 traciatores per usator. Perque nihil deberea poner se inter te e le bon internet, specialmente enoios pro tu confidentialitate como le traciatores.
 spotlight-pin-primary-button =
     { PLATFORM() ->
-        [macos] Mantener in le Bassino
-       *[other] Appunctar al barra del activitates
+        [macos] Mantener in Dock
+       *[other] Clavar al barra del activitates
     }
 spotlight-pin-secondary-button = Non ora
 
@@ -208,11 +171,13 @@ spotlight-pin-secondary-button = Non ora
 
 mr2022-background-update-toast-title = Nove { -brand-short-name }. Plus private. Minus traciatores. Sin compromissos.
 mr2022-background-update-toast-text = Prova ora le nove { -brand-short-name }, actualisate con nostre plus forte protection anti-traciamento jammais realisate.
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
 mr2022-background-update-toast-primary-button-label = Aperir { -brand-shorter-name } ora
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -231,6 +196,7 @@ firefoxview-cfr-body-v2 = Reobtene le schedas claudite recentemente, plus salta 
 ## Firefox View Spotlight
 
 firefoxview-spotlight-promo-title = Nos te presenta { -firefoxview-brand-name }
+
 # “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
 firefoxview-spotlight-promo-subtitle = Vole tu transferer ille scheda aperte a tu telephono? Prende lo. Ha tu besonio de ille sito que tu ha justo ora visitate? Puf, es de retorno con { -firefoxview-brand-name }.
 firefoxview-spotlight-promo-primarybutton = Vider como functiona
@@ -240,6 +206,7 @@ firefoxview-spotlight-promo-secondarybutton = Saltar
 
 colorways-cfr-primarybutton = Elige combination de colores
     .accesskey = E
+
 # "shades" refers to the different color options available to users in colorways.
 colorways-cfr-body = Colora tu navigator con exclusive tonalitates de { -brand-short-name } inspirate per voces que cambiava le cultura.
 colorways-cfr-header-28days = Le combinationes de colores Independent Voices expira le 16 de januario
@@ -249,24 +216,11 @@ colorways-cfr-header-today = Le combinationes de colores Independent Voices expi
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = Bandieras pro cookies adeo!
-cfr-cookiebanner-body = Permitter a { -brand-short-name } de rejectar automaticamente, quando possibile, tote le requestas de bandieras pro cookie.
-cfr-cookiebanner-accept-button = Dimitter bandieras
-    .accesskey = D
-cfr-cookiebanner-reject-button = Non ora
-    .accesskey = N
-cfr-cookiebanner-header-variant-1 = Vider minus quadros resaltante de cookies
-cfr-cookiebanner-body-variant-1 = Lassa que { -brand-short-name } responde automaticamente al quadros resaltante de cookies pro te, assi que tu pote navigar de novo libere de distractiones. { -brand-short-name } rejectara tote le requestas si possibile.
-cfr-cookiebanner-accept-button-variant-1 = Dimitter quadros resaltante
-    .accesskey = D
-cfr-cookiebanner-reject-button-variant-1 = No, gratias
-    .accesskey = N
-cfr-cookiebanner-header-variant-2 = Reduction de bandieras pro cookie
-cfr-cookiebanner-body-variant-2 = Reduce le amonta de bandieras pro cookies que tu vide permittente a { -brand-short-name }, si possibile, de refusar un requesta de consenso al cookie de sito web.
-cfr-cookiebanner-accept-button-variant-2 = Permitter
-    .accesskey = P
-cfr-cookiebanner-reject-button-variant-2 = Non ora
+cfr-cbh-header = Permitter a { -brand-short-name } de rejectar bandieras pro cookies?
+cfr-cbh-body = { -brand-short-name } pote rejectar automaticamente multe requestas de bandieras pro cookie.
+cfr-cbh-confirm-button = Rejectar bandieras pro cookies
+    .accesskey = R
+cfr-cbh-dismiss-button = Non ora
     .accesskey = N
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
@@ -274,3 +228,31 @@ cfr-cookiebanner-reject-button-variant-2 = Non ora
 july-jam-headline = Nos te mantene secur
 july-jam-body = Cata mense, { -brand-short-name } bloca un media de plus de 3000 traciatores per usator pro dar te accesso secur e veloce al bon internet.
 july-jam-set-default-primary = Aperir mi ligamines con { -brand-short-name }
+fox-doodle-pin-headline = Benvenite de novo
+
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = Ecce un curte rememoration que tu pote mantener tu favorite navigator independente a portata de un sol clic.
+fox-doodle-pin-primary = Aperir mi ligamines con { -brand-short-name }
+fox-doodle-pin-secondary = Non ora
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>Tu files pdf ora se aperi in { -brand-short-name }.</strong> Redige o firma formularios directemente in tu navigator. Pro configurar lo, cerca “PDF” in parametros.
+set-default-pdf-handler-primary = Comprendite
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = Nove apparato in tu futuro?
+fxa-sync-cfr-body = Verifica que tu ultime marcapaginas, contrasignos, e schedas veni con te quandocunque tu aperi un nove navigator { -brand-product-name }.
+fxa-sync-cfr-primary = Pro saper plus
+    .accesskey = s
+fxa-sync-cfr-secondary = Rememora me plus tarde
+    .accesskey = R
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = Usa tu un apparato plus vetule?
+device-migration-fxa-spotlight-body = Preserva tu datos pro assecurar te que tu non perde importante info como marcapaginas e contrasignos, specialmente si tu passa a un nove apparato.
+device-migration-fxa-spotlight-primary-button = Como reservar mi datos
+device-migration-fxa-spotlight-link = Rememora me plus tarde

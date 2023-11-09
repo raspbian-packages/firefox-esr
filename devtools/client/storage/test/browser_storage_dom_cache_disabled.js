@@ -2,13 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* import-globals-from ../../shared/test/shared-head.js */
-
 "use strict";
 
 // Test the storage inspector when dom.caches.enabled=false.
 
-add_task(async function() {
+add_task(async function () {
   // Disable the DOM cache
   await pushPref(DOM_CACHE, false);
 

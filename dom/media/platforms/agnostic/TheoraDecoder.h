@@ -36,6 +36,8 @@ class TheoraDecoder final : public MediaDataDecoder,
     return "theora video decoder"_ns;
   }
 
+  nsCString GetCodecName() const override { return "theora"_ns; }
+
  private:
   ~TheoraDecoder();
   nsresult DoDecodeHeader(const unsigned char* aData, size_t aLength);
@@ -54,6 +56,7 @@ class TheoraDecoder final : public MediaDataDecoder,
   int mPacketCount;
 
   const VideoInfo mInfo;
+  const Maybe<TrackingId> mTrackingId;
 };
 
 }  // namespace mozilla

@@ -18,7 +18,7 @@ const ADDONS = [
     manifest: {
       name: "XPI Add-on 1",
       version: "1.1",
-      applications: {
+      browser_specific_settings: {
         gecko: { id: "test_AddonRepository_1@tests.mozilla.org" },
       },
     },
@@ -28,7 +28,7 @@ const ADDONS = [
       name: "XPI Add-on 2",
       version: "1.2",
       theme: {},
-      applications: {
+      browser_specific_settings: {
         gecko: { id: "test_AddonRepository_2@tests.mozilla.org" },
       },
     },
@@ -38,7 +38,7 @@ const ADDONS = [
       name: "XPI Add-on 3",
       version: "1.3",
       theme: {},
-      applications: {
+      browser_specific_settings: {
         gecko: { id: "test_AddonRepository_3@tests.mozilla.org" },
       },
     },
@@ -93,7 +93,7 @@ var GET_RESULTS = [
     description: "Test Summary 1",
     fullDescription: "Test Description 1",
     iconURL: BASE_URL + "/icon1.png",
-    icons: { "32": BASE_URL + "/icon1.png" },
+    icons: { 32: BASE_URL + "/icon1.png" },
     screenshots: [
       {
         url: BASE_URL + "/full1-1.png",
@@ -219,7 +219,7 @@ add_task(async function setup() {
 // Tests homepageURL and getSearchURL()
 add_task(async function test_1() {
   function check_urls(aPreference, aGetURL, aTests) {
-    aTests.forEach(function(aTest) {
+    aTests.forEach(function (aTest) {
       Services.prefs.setCharPref(aPreference, aTest.preferenceValue);
       Assert.equal(aGetURL(aTest), aTest.expectedURL);
     });

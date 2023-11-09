@@ -26,10 +26,6 @@ certmgr-people = Masz certyfikaty, które identyfikują następujące osoby:
 certmgr-server = Następujące wpisy identyfikują wyjątki błędów certyfikatów serwera:
 certmgr-ca = Masz certyfikaty, które identyfikują następujące organy certyfikacji:
 
-certmgr-edit-ca-cert =
-    .title = Edycja ustawień zaufania certyfikatu CA
-    .style = width: 40em;
-
 certmgr-edit-ca-cert2 =
     .title = Edycja ustawień zaufania certyfikatu CA
     .style = min-width: 40em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = certyfikat identyfikuje użytkowników poczty
-
-certmgr-delete-cert =
-    .title = Usuń certyfikat
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Usuń certyfikat
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Serwer
-
-certmgr-override-lifetime =
-    .label = Czas życia
 
 certmgr-token-name =
     .label = Urządzenie zabezpieczające
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Numer seryjny
+
+certmgr-fingerprint-sha-256 =
+    .label = Odcisk SHA-256
 
 certmgr-view =
     .label = Wyświetl…

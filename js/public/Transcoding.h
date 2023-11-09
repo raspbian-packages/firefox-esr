@@ -21,7 +21,7 @@
 
 namespace JS {
 
-class ReadOnlyCompileOptions;
+class JS_PUBLIC_API ReadOnlyCompileOptions;
 
 using TranscodeBuffer = mozilla::Vector<uint8_t>;
 using TranscodeRange = mozilla::Range<const uint8_t>;
@@ -81,18 +81,12 @@ inline bool IsTranscodingBytecodeAligned(const void* offset) {
   return IsTranscodingBytecodeOffsetAligned(size_t(offset));
 }
 
-// Finish incremental encoding started by one of:
-//   * JS::CompileAndStartIncrementalEncoding
-//   * JS::StartIncrementalEncoding
+// Finish incremental encoding started by JS::StartIncrementalEncoding.
 //
-// For |JS::CompileAndStartIncrementalEncoding| case, the |script|
-// argument of |FinishIncrementalEncoding| must be the top-level script
-// returned from it.
-//
-// For |JS::StartIncrementalEncoding| case:
 //   * Regular script case
 //     the |script| argument must be the top-level script returned from
 //     |JS::InstantiateGlobalStencil| with the same stencil
+//
 //   * Module script case
 //     the |script| argument must be the script returned by
 //     |JS::GetModuleScript| called on the module returned by
@@ -128,6 +122,10 @@ extern JS_PUBLIC_API bool FinishIncrementalEncoding(JSContext* cx,
 extern JS_PUBLIC_API bool FinishIncrementalEncoding(JSContext* cx,
                                                     Handle<JSObject*> module,
                                                     TranscodeBuffer& buffer);
+
+// Abort incremental encoding started by JS::StartIncrementalEncoding.
+extern JS_PUBLIC_API void AbortIncrementalEncoding(Handle<JSScript*> script);
+extern JS_PUBLIC_API void AbortIncrementalEncoding(Handle<JSObject*> module);
 
 // Check if the compile options and script's flag matches.
 //

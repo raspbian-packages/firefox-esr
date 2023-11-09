@@ -11,6 +11,8 @@
 #include "mozilla/ContentCache.h"
 #include "mozilla/GfxMessageUtils.h"
 #include "mozilla/dom/Touch.h"
+#include "mozilla/ipc/IPDLParamTraits.h"  // for ReadIPDLParam and WriteIPDLParam
+#include "mozilla/ipc/URIUtils.h"         // for IPDLParamTraits<nsIURI*>
 #include "mozilla/layers/LayersMessageUtils.h"
 #include "mozilla/MiscEvents.h"
 #include "mozilla/MouseEvents.h"
@@ -53,7 +55,6 @@ struct ParamTraits<mozilla::WidgetEvent> {
     WriteParam(aWriter, aParam.mMessage);
     WriteParam(aWriter, aParam.mRefPoint);
     WriteParam(aWriter, aParam.mFocusSequenceNumber);
-    WriteParam(aWriter, aParam.mTime);
     WriteParam(aWriter, aParam.mTimeStamp);
     WriteParam(aWriter, aParam.mFlags);
     WriteParam(aWriter, aParam.mLayersId);
@@ -65,7 +66,6 @@ struct ParamTraits<mozilla::WidgetEvent> {
                ReadParam(aReader, &aResult->mMessage) &&
                ReadParam(aReader, &aResult->mRefPoint) &&
                ReadParam(aReader, &aResult->mFocusSequenceNumber) &&
-               ReadParam(aReader, &aResult->mTime) &&
                ReadParam(aReader, &aResult->mTimeStamp) &&
                ReadParam(aReader, &aResult->mFlags) &&
                ReadParam(aReader, &aResult->mLayersId);
@@ -811,25 +811,26 @@ struct ParamTraits<mozilla::widget::InputContext> {
   static void Write(MessageWriter* aWriter, const paramType& aParam) {
     WriteParam(aWriter, aParam.mIMEState);
     WriteParam(aWriter, aParam.mHTMLInputType);
-    WriteParam(aWriter, aParam.mHTMLInputInputmode);
+    WriteParam(aWriter, aParam.mHTMLInputMode);
     WriteParam(aWriter, aParam.mActionHint);
     WriteParam(aWriter, aParam.mAutocapitalize);
     WriteParam(aWriter, aParam.mOrigin);
-    WriteParam(aWriter, aParam.mMayBeIMEUnaware);
     WriteParam(aWriter, aParam.mHasHandledUserInput);
     WriteParam(aWriter, aParam.mInPrivateBrowsing);
+    mozilla::ipc::WriteIPDLParam(aWriter, aWriter->GetActor(), aParam.mURI);
   }
 
   static bool Read(MessageReader* aReader, paramType* aResult) {
     return ReadParam(aReader, &aResult->mIMEState) &&
            ReadParam(aReader, &aResult->mHTMLInputType) &&
-           ReadParam(aReader, &aResult->mHTMLInputInputmode) &&
+           ReadParam(aReader, &aResult->mHTMLInputMode) &&
            ReadParam(aReader, &aResult->mActionHint) &&
            ReadParam(aReader, &aResult->mAutocapitalize) &&
            ReadParam(aReader, &aResult->mOrigin) &&
-           ReadParam(aReader, &aResult->mMayBeIMEUnaware) &&
            ReadParam(aReader, &aResult->mHasHandledUserInput) &&
-           ReadParam(aReader, &aResult->mInPrivateBrowsing);
+           ReadParam(aReader, &aResult->mInPrivateBrowsing) &&
+           mozilla::ipc::ReadIPDLParam(aReader, aReader->GetActor(),
+                                       address_of(aResult->mURI));
   }
 };
 
@@ -993,7 +994,6 @@ struct ParamTraits<mozilla::InputData> {
 
   static void Write(MessageWriter* aWriter, const paramType& aParam) {
     WriteParam(aWriter, aParam.mInputType);
-    WriteParam(aWriter, aParam.mTime);
     WriteParam(aWriter, aParam.mTimeStamp);
     WriteParam(aWriter, aParam.modifiers);
     WriteParam(aWriter, aParam.mFocusSequenceNumber);
@@ -1002,7 +1002,6 @@ struct ParamTraits<mozilla::InputData> {
 
   static bool Read(MessageReader* aReader, paramType* aResult) {
     return ReadParam(aReader, &aResult->mInputType) &&
-           ReadParam(aReader, &aResult->mTime) &&
            ReadParam(aReader, &aResult->mTimeStamp) &&
            ReadParam(aReader, &aResult->modifiers) &&
            ReadParam(aReader, &aResult->mFocusSequenceNumber) &&
@@ -1171,10 +1170,7 @@ struct ParamTraits<mozilla::PanGestureInput>
     WriteParam(aWriter, aParam.mUserDeltaMultiplierY);
     WriteParam(aWriter, aParam.mDeltaType);
     WriteParam(aWriter, aParam.mHandledByAPZ);
-    WriteParam(
-        aWriter,
-        aParam
-            .mRequiresContentResponseIfCannotScrollHorizontallyInStartDirection);
+    WriteParam(aWriter, aParam.mMayTriggerSwipe);
     WriteParam(aWriter, aParam.mOverscrollBehaviorAllowsSwipe);
     WriteParam(aWriter, aParam.mSimulateMomentum);
     WriteParam(aWriter, aParam.mIsNoLineOrPageDelta);
@@ -1193,10 +1189,8 @@ struct ParamTraits<mozilla::PanGestureInput>
            ReadParam(aReader, &aResult->mUserDeltaMultiplierY) &&
            ReadParam(aReader, &aResult->mDeltaType) &&
            ReadBoolForBitfield(aReader, aResult, &paramType::SetHandledByAPZ) &&
-           ReadBoolForBitfield(
-               aReader, aResult,
-               &paramType::
-                   SetRequiresContentResponseIfCannotScrollHorizontallyInStartDirection) &&
+           ReadBoolForBitfield(aReader, aResult,
+                               &paramType::SetMayTriggerSwipe) &&
            ReadBoolForBitfield(aReader, aResult,
                                &paramType::SetOverscrollBehaviorAllowsSwipe) &&
            ReadBoolForBitfield(aReader, aResult,

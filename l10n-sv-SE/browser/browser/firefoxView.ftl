@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Nyligen stängda
 firefoxview-closed-tabs-description2 = Öppna åter sidor du har stängt i det här fönstret.
 firefoxview-closed-tabs-placeholder-header = Inga nyligen stängda flikar
 firefoxview-closed-tabs-placeholder-body = När du stänger en flik i det här fönstret kan du hämta den härifrån.
+firefoxview-closed-tabs-placeholder-body2 = När du stänger en flik kan du hämta den härifrån.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Senast aktiv
 firefoxview-tabs-list-tab-button =
     .title = Öppna { $targetURI } i en ny flik
 firefoxview-try-colorways-button = Testa colorways
-firefoxview-no-current-colorway-collection = Nya färger är på väg
 firefoxview-change-colorway-button = Ändra colorway
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Visa lista
 firefoxview-collapse-button-hide =
     .title = Dölj lista
+firefoxview-overview-nav = Senaste surfning
+    .title = Senaste surfning
+firefoxview-overview-header = Senaste surfning
+    .title = Senaste surfning
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Historik
+    .title = Historik
+firefoxview-history-header = Historik
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Öppna flikar
+    .title = Öppna flikar
+firefoxview-opentabs-header = Öppna flikar
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Nyligen stängda flikar
+    .title = Nyligen stängda flikar
+firefoxview-recently-closed-header = Nyligen stängda flikar
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Flikar från andra enheter
+    .title = Flikar från andra enheter
+firefoxview-synced-tabs-header = Flikar från andra enheter
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Visa alla
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Fönster { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Fönster { $winID } (aktuellt)
+firefoxview-opentabs-focus-tab =
+    .title = Växla till den här fliken
+firefoxview-show-more = Visa mer
+firefoxview-show-less = Visa mindre
+firefoxview-sort-history-by-date-label = Sortera efter datum
+firefoxview-sort-history-by-site-label = Sortera efter webbplats
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Idag - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Igår - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Visa all historik

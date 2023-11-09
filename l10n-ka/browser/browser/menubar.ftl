@@ -38,9 +38,11 @@ menu-quit =
             [windows] ლ
            *[other] გ
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = დაიხუროს { -brand-shorter-name }
+
 menu-about =
     .label = { -brand-shorter-name } შესახებ
     .accesskey = შ
@@ -219,8 +221,6 @@ menu-history-undo-menu =
     .label = ბოლოს დახურული ჩანართები
 menu-history-undo-window-menu =
     .label = ბოლოს დახურული ფანჯრები
-menu-history-reopen-all-tabs = ყველა ჩანართის ხელახლა გახსნა
-menu-history-reopen-all-windows = ყველა ფანჯრის ხელახლა გახსნა
 
 ## Bookmarks Menu
 
@@ -229,10 +229,6 @@ menu-bookmarks-menu =
     .accesskey = ს
 menu-bookmarks-manage =
     .label = სანიშნების მართვა
-menu-bookmark-current-tab =
-    .label = მიმდინარე ჩანართის ჩანიშვნა
-menu-bookmark-edit =
-    .label = სანიშნის ჩასწორება
 menu-bookmark-tab =
     .label = მიმდინარე ჩანართის ჩანიშვნა…
 menu-edit-bookmark =
@@ -330,6 +326,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = ხარვეზის აღმოფხვრის რეჟიმის გამორთვა
     .accesskey = ჟ
+menu-help-switch-device =
+    .label = ახალ მოწყობილობაზე გადასვლა
+    .accesskey = ა
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

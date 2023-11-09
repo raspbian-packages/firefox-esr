@@ -22,6 +22,7 @@
 #include "nsDebug.h"
 #include "nsError.h"
 #include "NSSErrorsService.h"
+#include "pk11hpke.h"
 #include "pk11pub.h"
 #include "pkcs12.h"
 #include "prerror.h"
@@ -144,6 +145,12 @@ class DigestBase {
       case SEC_OID_SHA256:
         mLen = SHA256_LENGTH;
         break;
+      case SEC_OID_SHA384:
+        mLen = SHA384_LENGTH;
+        break;
+      case SEC_OID_SHA512:
+        mLen = SHA512_LENGTH;
+        break;
       default:
         return NS_ERROR_INVALID_ARG;
     }
@@ -218,8 +225,16 @@ class Digest : public DigestBase {
     if (!EnsureNSSInitializedChromeOrContent()) {
       return NS_ERROR_FAILURE;
     }
-    if (hashAlg != SEC_OID_SHA1 && hashAlg != SEC_OID_SHA256) {
-      return NS_ERROR_INVALID_ARG;
+
+    switch (hashAlg) {
+      case SEC_OID_SHA1:
+      case SEC_OID_SHA256:
+      case SEC_OID_SHA384:
+      case SEC_OID_SHA512:
+        break;
+
+      default:
+        return NS_ERROR_INVALID_ARG;
     }
 
     mDigestContext = UniquePK11Context(PK11_CreateDigestContext(hashAlg));
@@ -362,6 +377,10 @@ inline void VFY_DestroyContext_true(VFYContext* ctx) {
   VFY_DestroyContext(ctx, true);
 }
 
+inline void PK11_HPKE_DestroyContext_true(HpkeContext* cx) {
+  PK11_HPKE_DestroyContext(cx, true);
+}
+
 }  // namespace internal
 
 MOZ_TYPE_SPECIFIC_UNIQUE_PTR_TEMPLATE(UniqueCERTCertificate, CERTCertificate,
@@ -438,6 +457,8 @@ MOZ_TYPE_SPECIFIC_UNIQUE_PTR_TEMPLATE(UniqueSEC_PKCS12ExportContext,
 MOZ_TYPE_SPECIFIC_UNIQUE_PTR_TEMPLATE(
     UniqueSECKEYEncryptedPrivateKeyInfo, SECKEYEncryptedPrivateKeyInfo,
     internal::SECKEYEncryptedPrivateKeyInfo_true)
+MOZ_TYPE_SPECIFIC_UNIQUE_PTR_TEMPLATE(UniqueHpkeContext, HpkeContext,
+                                      internal::PK11_HPKE_DestroyContext_true)
 }  // namespace mozilla
 
 #endif  // ScopedNSSTypes_h

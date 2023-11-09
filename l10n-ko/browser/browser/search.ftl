@@ -20,7 +20,7 @@ opensearch-error-download-desc = { -brand-short-name }가 검색 플러그인을
 ##
 
 searchbar-submit =
-    .tooltiptext = 검색하기
+    .tooltiptext = 검색어 검색
 
 # This string is displayed in the search box when the input field is empty
 searchbar-input =

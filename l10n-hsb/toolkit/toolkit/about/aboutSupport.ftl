@@ -107,6 +107,7 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Rozsudowy protokol
 graphics-crash-guards-title = Funkcije, kotrež su so wot spadoweho stražnika znjemóžnili
 graphics-workarounds-title = Nuzowe rozrisanja
+graphics-device-pixel-ratios = Gratowe pikselowe poměry (device pixel ratios) wokna
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Woknowy protokol
 # Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
@@ -170,6 +171,15 @@ media-capabilities-title = Medijowe móžnosće
 media-codec-support-info = Informacije wo podpěrje codecow
 # List all the entries of the database.
 media-capabilities-enumerate = Datowu banku naličić
+
+## Codec support table
+
+media-codec-support-sw-decoding = Softwarowe dekodowanje
+media-codec-support-hw-decoding = Hardwarowe dekodowanje
+media-codec-support-codec-name = Mjeno Codec
+media-codec-support-supported = Podpěrany
+media-codec-support-unsupported = Njepodpěrany
+media-codec-support-error = Informacije wo podpěranych kodekach k dispoziciji njesteja. Spytajće hišće raz, po tym zo sće medijowu dataju wothrał.
 
 ##
 
@@ -294,6 +304,8 @@ webgl2-renderer = WebGL 2 - rysowak ćěrjaka
 webgl2-version = WebGL 2 - wersija ćěrjaka
 webgl2-driver-extensions = WebGL 2 - rozšěrjenja ćěrjaka
 webgl2-extensions = WebGL 2 - rozšěrjenja
+webgpu-default-adapter = Standardny adapter WebGPU
+webgpu-fallback-adapter = Adapter fallback WebGPU
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = W blokowanskej lisćinje znatych problemow dla: <a data-l10n-name="bug-link">programowy zmylk { $bugNumber }</a>

@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-sanitize-prefs =
-    .title = ඉතිහාසය හිස් කිරීමට සැකසුම්
-    .style = width: 34em
-
 sanitize-prefs2 =
     .title = ඉතිහාසය හිස් කිරීමට සැකසුම්
     .style = min-width: 34em
@@ -13,15 +9,15 @@ sanitize-prefs2 =
 sanitize-prefs-style =
     .style = width: 17em
 
-dialog-title =
+sanitize-dialog-title =
     .title = මෑත ඉතිහාසය මකන්න
-    .style = width: 34em
+    .style = min-width: 34em
 
 # When "Time range to clear" is set to "Everything", this message is used for the
 # title instead of dialog-title.
-dialog-title-everything =
+sanitize-dialog-title-everything =
     .title = සියළුම ඉතිහාසය මකන්න
-    .style = width: 34em
+    .style = min-width: 34em
 
 clear-data-settings-label = වසා දමන විට, { -brand-short-name } විසින් සියල්ල පිරිසිදු කළ යුතුයි
 

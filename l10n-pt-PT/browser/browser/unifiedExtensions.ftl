@@ -32,3 +32,13 @@ unified-extensions-context-menu-remove-extension =
     .label = Remover Extensão
 unified-extensions-context-menu-report-extension =
     .label = Reportar Extensão
+unified-extensions-context-menu-move-widget-up =
+    .label = Mover para cima
+unified-extensions-context-menu-move-widget-down =
+    .label = Mover para baixo
+
+## Notifications
+
+unified-extensions-mb-quarantined-domain-title = Algumas extensões não são permitidas
+unified-extensions-mb-quarantined-domain-message = Apenas são permitidas algumas extensões neste site, monitorizadas por { -vendor-short-name } para proteger os seus dados.
+unified-extensions-mb-quarantined-domain-message-2 = Para proteger os seus dados, algumas extensões não podem ler ou alterar os dados neste site. Utilize as definições da extensão para a permitir nos sites restritos por { -vendor-short-name }.

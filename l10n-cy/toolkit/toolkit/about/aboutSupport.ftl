@@ -4,7 +4,7 @@
 
 page-title = Gwybodaeth am Ddatrys Problemau
 page-subtitle = Mae'r dudalen hon yn cynnwys gwybodaeth dechnegol a allai fod yn ddefnyddiol pan fyddwch yn ceisio datrys problem. Os ydych yn chwilio am atebion i gwestiynau cyffredin am { -brand-short-name }, edrychwch ar ein <a data-l10n-name="support-link">gwefan cefnogaeth</a>.
-crashes-title = Ardroddiad Chwalu
+crashes-title = Adroddiadau Chwalu
 crashes-id = Enw'r Adroddiad
 crashes-send-date = Cyflwynwyd
 crashes-all-reports = Pob Adroddiad Chwalu
@@ -172,6 +172,15 @@ media-codec-support-info = Gwybodaeth Gymorth Codec
 # List all the entries of the database.
 media-capabilities-enumerate = Cyfrifo'r gronfa ddata
 
+## Codec support table
+
+media-codec-support-sw-decoding = Datgodio Meddalwedd
+media-codec-support-hw-decoding = Datgodio Caledwedd
+media-codec-support-codec-name = Enw Codec
+media-codec-support-supported = Cefnogaeth
+media-codec-support-unsupported = Heb eu Cynnal
+media-codec-support-error = Nid yw manylion cymorth codec ar gael. Ceisiwch eto ar ôl chwarae ffeil cyfryngau.
+
 ##
 
 intl-title = Rhyngwladoli a Lleoleiddio
@@ -305,6 +314,8 @@ webgl2-renderer = Rendrwr Gyrrwr WebGL 2
 webgl2-version = Fersiwn Gyrrwr WebGL 2
 webgl2-driver-extensions = Estyniadau Gyrrwr WebGL 2
 webgl2-extensions = Estyniadau WebGL 2
+webgpu-default-adapter = Addasydd Rhagosodedig WebGPU
+webgpu-fallback-adapter = Addasydd wrth Gefn WebGPU
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Ar y Rhestr Rhwystro oherwydd materion hysbys: <a data-l10n-name="bug-link">bug { $bugNumber }</a>

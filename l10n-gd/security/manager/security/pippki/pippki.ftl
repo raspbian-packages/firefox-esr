@@ -28,10 +28,6 @@ pippki-pw-change2empty-in-fips-mode = Tha thu ann am modh FIPS an-dràsta. Feuma
 
 ## Reset Primary Password dialog
 
-reset-primary-password-window =
-    .title = Ath-shuidhich am prìomh fhacal-faire
-    .style = width: 44em
-
 reset-primary-password-window2 =
     .title = Ath-shuidhich am prìomh fhacal-faire
     .style = min-width: 44em
@@ -43,10 +39,6 @@ pippki-reset-password-confirmation-title = Ath-shuidhich am prìomh fhacal-faire
 pippki-reset-password-confirmation-message = Chaidh am prìomh fhacal-faire agad ath-shuidheachadh
 
 ## Downloading cert dialog
-
-download-cert-window =
-    .title = A' luchdadh a-nuas teisteanas
-    .style = width: 46em
 
 download-cert-window2 =
     .title = A' luchdadh a-nuas teisteanas
@@ -82,7 +74,8 @@ set-password-reminder = Cudromach: ma dhìochuimhnicheas tu facal-faire lethbhre
 
 ## Protected Auth dialog
 
-protected-auth-window =
-    .title = Dearbhadh le tòcan dìonta
-protected-auth-msg = Dearbhaich an tòcan. Tha an dòigh dearbhachaidh a' crochadh air seòrsan an tòcain agad.
-protected-auth-token = Tòcan:
+## Protected authentication alert
+
+# Variables:
+# $tokenName (String) - The name of the token to authenticate to (for example, "OS Client Cert Token (Modern)")
+protected-auth-alert = Please authenticate to the token “{ $tokenName }”. How to do so depends on the token (for example, using a fingerprint reader or entering a code with a keypad).

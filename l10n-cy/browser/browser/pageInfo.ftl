@@ -66,7 +66,7 @@ media-dimension =
 media-long-desc =
     .value = Disgrifiad Hir:
 media-select-all =
-    .label = Dewis y Cyfan
+    .label = Dewis Popeth
     .accesskey = D
 media-save-as =
     .label = Cadw Fel…
@@ -85,7 +85,7 @@ security-tab =
     .label = Diogelwch
     .accesskey = D
 security-view =
-    .label = Darllen y Dystysgrif
+    .label = Darllen Tystysgrif
     .accesskey = D
 security-view-unknown = Anhysbys
     .value = Anhysbys
@@ -150,7 +150,7 @@ media-link = Eicon
 media-input = Mewnbwn
 media-video = Fideo
 media-audio = Sain
-saved-passwords-yes = Ydw
+saved-passwords-yes = Iawn
 saved-passwords-no = Na
 
 no-page-title =
@@ -259,18 +259,17 @@ media-dimensions =
 #   $size (number) - The size of the media file in kilobytes
 media-file-size = { $size } KB
 
+## Variables:
+##   $website (string) — The url of the website pageInfo is getting info for
+
 # This string is used to display the website name next to the
 # "Block Images" checkbox in the media tab
-# Variables:
-#   $website (string) - The website name
 media-block-image =
     .label = Rhwystro Delweddau o { $website }
     .accesskey = B
 
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
-# Variables:
-#   $website (string) — The url of the website pageInfo is getting info for
 page-info-page =
     .title = Gwyb. Tud. - { $website }
 page-info-frame =

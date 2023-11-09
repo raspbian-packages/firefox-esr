@@ -117,7 +117,7 @@ class ArrayBufferBuilder {
   ArrayBufferBuilder& operator=(const ArrayBufferBuilder&&) = delete;
 
   bool SetCapacityInternal(uint32_t aNewCap, const MutexAutoLock& aProofOfLock)
-      REQUIRES(mMutex);
+      MOZ_REQUIRES(mMutex);
 
   static bool AreOverlappingRegions(const uint8_t* aStart1, uint32_t aLength1,
                                     const uint8_t* aStart2, uint32_t aLength2);
@@ -125,10 +125,10 @@ class ArrayBufferBuilder {
   Mutex mMutex;
 
   // All of these are protected by mMutex.
-  uint8_t* mDataPtr GUARDED_BY(mMutex);
-  uint32_t mCapacity GUARDED_BY(mMutex);
-  uint32_t mLength GUARDED_BY(mMutex);
-  void* mMapPtr GUARDED_BY(mMutex);
+  uint8_t* mDataPtr MOZ_GUARDED_BY(mMutex);
+  uint32_t mCapacity MOZ_GUARDED_BY(mMutex);
+  uint32_t mLength MOZ_GUARDED_BY(mMutex);
+  void* mMapPtr MOZ_GUARDED_BY(mMutex);
 
   // This is used in assertions only.
   bool mNeutered;
@@ -168,8 +168,8 @@ class RequestHeaders {
   void MergeOrSet(const char* aName, const nsACString& aValue);
   void MergeOrSet(const nsACString& aName, const nsACString& aValue);
   void Clear();
-  void ApplyToChannel(nsIHttpChannel* aChannel,
-                      bool aStripRequestBodyHeader) const;
+  void ApplyToChannel(nsIHttpChannel* aChannel, bool aStripRequestBodyHeader,
+                      bool aStripAuth) const;
   void GetCORSUnsafeHeaders(nsTArray<nsCString>& aArray) const;
 };
 
@@ -204,7 +204,7 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   };
 
   // Make sure that any additions done to ErrorType enum are also mirrored in
-  // XHR_ERROR_TYPE enum of TelemetrySend.jsm.
+  // XHR_ERROR_TYPE enum of TelemetrySend.sys.mjs.
   enum class ErrorType : uint16_t {
     eOK,
     eRequest,
@@ -431,8 +431,6 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
                              const ProgressEventType aType, int64_t aLoaded,
                              int64_t aTotal);
 
-  void SetRequestObserver(nsIRequestObserver* aObserver);
-
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS_INHERITED(
       XMLHttpRequestMainThread, XMLHttpRequest)
   virtual bool IsCertainlyAliveForCC() const override;
@@ -493,7 +491,7 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
 
   void MaybeCreateBlobStorage();
 
-  nsresult OnRedirectVerifyCallback(nsresult result);
+  nsresult OnRedirectVerifyCallback(nsresult result, bool stripAuth = false);
 
   nsIEventTarget* GetTimerEventTarget();
 
@@ -643,8 +641,6 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
   nsCOMPtr<nsIChannelEventSink> mChannelEventSink;
   nsCOMPtr<nsIProgressEventSink> mProgressEventSink;
 
-  nsIRequestObserver* mRequestObserver;
-
   nsCOMPtr<nsIURI> mBaseURI;
   nsCOMPtr<nsILoadGroup> mLoadGroup;
 
@@ -730,9 +726,6 @@ class XMLHttpRequestMainThread final : public XMLHttpRequest,
    * @param aType The progress event type.
    */
   void CloseRequestWithError(const ProgressEventType aType);
-
-  bool mFirstStartRequestSeen;
-  bool mInLoadProgressEvent;
 
   nsCOMPtr<nsIAsyncVerifyRedirectCallback> mRedirectCallback;
   nsCOMPtr<nsIChannel> mNewRedirectChannel;

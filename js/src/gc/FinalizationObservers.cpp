@@ -14,12 +14,10 @@
 
 #include "builtin/FinalizationRegistryObject.h"
 #include "builtin/WeakRefObject.h"
-#include "gc/GCInternals.h"
 #include "gc/GCRuntime.h"
 #include "gc/Zone.h"
 #include "vm/JSContext.h"
 
-#include "gc/PrivateIterators-inl.h"
 #include "gc/WeakMap-inl.h"
 #include "vm/JSObject-inl.h"
 #include "vm/NativeObject-inl.h"
@@ -187,6 +185,10 @@ void FinalizationObservers::traceRoots(JSTracer* trc) {
 }
 
 void FinalizationObservers::traceWeakEdges(JSTracer* trc) {
+  // Removing dead pointers from vectors may reorder live pointers to gray
+  // things in the vector. This is OK.
+  AutoTouchingGrayThings atgt;
+
   traceWeakWeakRefEdges(trc);
   traceWeakFinalizationRegistryEdges(trc);
 }
@@ -214,7 +216,7 @@ void FinalizationObservers::traceWeakFinalizationRegistryEdges(JSTracer* trc) {
 
     // Sweep finalization records, updating any pointers moved by the GC and
     // remove if necessary.
-    records.mutableEraseIf([&](HeapPtrObject& heapPtr) {
+    records.mutableEraseIf([&](HeapPtr<JSObject*>& heapPtr) {
       auto result = TraceWeakEdge(trc, &heapPtr, "FinalizationRecord");
       JSObject* obj =
           result.isLive() ? result.finalTarget() : result.initialTarget();
@@ -313,10 +315,16 @@ void GCRuntime::queueFinalizationRegistryForCleanup(
   queue->setQueuedForCleanup(true);
 }
 
+// Insert a target -> weakRef mapping in the target's Zone so that a dying
+// target will clear out the weakRef's target. If the weakRef is in a different
+// Zone, then the crossZoneWeakRefs table will keep the weakRef alive. If the
+// weakRef is in the same Zone, then it must be the actual WeakRefObject and
+// not a cross-compartment wrapper, since nothing would keep that alive.
 bool GCRuntime::registerWeakRef(HandleObject target, HandleObject weakRef) {
   MOZ_ASSERT(!IsCrossCompartmentWrapper(target));
   MOZ_ASSERT(UncheckedUnwrap(weakRef)->is<WeakRefObject>());
-  MOZ_ASSERT(target->compartment() == weakRef->compartment());
+  MOZ_ASSERT_IF(target->zone() != weakRef->zone(),
+                target->compartment() == weakRef->compartment());
 
   Zone* zone = target->zone();
   return zone->ensureFinalizationObservers() &&
@@ -422,7 +430,7 @@ void FinalizationObservers::traceWeakWeakRefEdges(JSTracer* trc) {
 
 void FinalizationObservers::traceWeakWeakRefVector(
     JSTracer* trc, WeakRefHeapPtrVector& weakRefs, JSObject* target) {
-  weakRefs.mutableEraseIf([&](HeapPtrObject& obj) -> bool {
+  weakRefs.mutableEraseIf([&](HeapPtr<JSObject*>& obj) -> bool {
     auto result = TraceWeakEdge(trc, &obj, "WeakRef");
     if (result.isDead()) {
       JSObject* wrapper = result.initialTarget();

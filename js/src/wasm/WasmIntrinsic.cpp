@@ -92,41 +92,43 @@ bool EncodeIntrinsicBody(const Intrinsic& intrinsic, IntrinsicId id,
 bool wasm::CompileIntrinsicModule(JSContext* cx,
                                   const mozilla::Span<IntrinsicId> ids,
                                   Shareable sharedMemory,
-                                  MutableHandleWasmModuleObject result) {
+                                  MutableHandle<WasmModuleObject*> result) {
   // Create the options manually, enabling intrinsics
   FeatureOptions featureOptions;
   featureOptions.intrinsics = true;
 
   // Initialize the compiler environment, choosing the best tier possible
-  SharedCompileArgs compileArgs =
-      CompileArgs::buildAndReport(cx, ScriptedCaller(), featureOptions);
+  SharedCompileArgs compileArgs = CompileArgs::buildAndReport(
+      cx, ScriptedCaller(), featureOptions, /* reportOOM */ true);
   if (!compileArgs) {
     return false;
   }
   CompilerEnvironment compilerEnv(
       CompileMode::Once, IonAvailable(cx) ? Tier::Optimized : Tier::Baseline,
-      OptimizedBackend::Ion, DebugEnabled::False);
+      DebugEnabled::False);
   compilerEnv.computeParameters();
 
   // Build a module environment
   ModuleEnvironment moduleEnv(compileArgs->features);
+  if (!moduleEnv.init()) {
+    ReportOutOfMemory(cx);
+    return false;
+  }
 
   // Add (import (memory 0))
-  UniqueChars emptyString = DuplicateString("");
-  UniqueChars memoryString = DuplicateString("memory");
-  if (!emptyString || !memoryString ||
-      !moduleEnv.imports.append(Import(std::move(emptyString),
+  CacheableName emptyString;
+  CacheableName memoryString;
+  if (!CacheableName::fromUTF8Chars("memory", &memoryString)) {
+    ReportOutOfMemory(cx);
+    return false;
+  }
+  if (!moduleEnv.imports.append(Import(std::move(emptyString),
                                        std::move(memoryString),
                                        DefinitionKind::Memory))) {
     ReportOutOfMemory(cx);
     return false;
   }
   moduleEnv.memory = Some(MemoryDesc(Limits(0, Nothing(), sharedMemory)));
-
-  // Initialize the type section
-  if (!moduleEnv.initTypes(ids.size())) {
-    return false;
-  }
 
   // Add (type (func (params ...))) for each intrinsic. The function types will
   // be deduplicated by the runtime
@@ -135,19 +137,18 @@ bool wasm::CompileIntrinsicModule(JSContext* cx,
     const Intrinsic& intrinsic = Intrinsic::getFromId(id);
 
     FuncType type;
-    if (!intrinsic.funcType(&type)) {
+    if (!intrinsic.funcType(&type) ||
+        !moduleEnv.types->addType(std::move(type))) {
       ReportOutOfMemory(cx);
       return false;
     }
-    (*moduleEnv.types)[funcIndex] = TypeDef(std::move(type));
   }
 
   // Add (func (type $i)) declarations. Do this after all types have been added
   // as the function declaration metadata uses pointers into the type vectors
   // that must be stable.
   for (uint32_t funcIndex = 0; funcIndex < ids.size(); funcIndex++) {
-    FuncDesc decl(&(*moduleEnv.types)[funcIndex].funcType(),
-                  &moduleEnv.typeIds[funcIndex], funcIndex);
+    FuncDesc decl(&(*moduleEnv.types)[funcIndex].funcType(), funcIndex);
     if (!moduleEnv.funcs.append(decl)) {
       ReportOutOfMemory(cx);
       return false;
@@ -159,9 +160,9 @@ bool wasm::CompileIntrinsicModule(JSContext* cx,
   for (uint32_t funcIndex = 0; funcIndex < ids.size(); funcIndex++) {
     const Intrinsic& intrinsic = Intrinsic::getFromId(ids[funcIndex]);
 
-    UniqueChars exportString = DuplicateString(intrinsic.exportName);
-    if (!exportString ||
-        !moduleEnv.exports.append(Export(std::move(exportString), funcIndex,
+    CacheableName exportName;
+    if (!CacheableName::fromUTF8Chars(intrinsic.exportName, &exportName) ||
+        !moduleEnv.exports.append(Export(std::move(exportName), funcIndex,
                                          DefinitionKind::Function))) {
       ReportOutOfMemory(cx);
       return false;
@@ -212,8 +213,14 @@ bool wasm::CompileIntrinsicModule(JSContext* cx,
     return false;
   }
 
-  // Finish the module
+  // Create a dummy bytecode vector, that will not be used
   SharedBytes bytecode = js_new<ShareableBytes>();
+  if (!bytecode) {
+    ReportOutOfMemory(cx);
+    return false;
+  }
+
+  // Finish the module
   SharedModule module = mg.finishModule(*bytecode, nullptr);
   if (!module) {
     ReportOutOfMemory(cx);

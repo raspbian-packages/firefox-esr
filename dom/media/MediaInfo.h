@@ -70,6 +70,17 @@ struct AacCodecSpecificData {
            *mDecoderConfigDescriptorBinaryBlob ==
                *rhs.mDecoderConfigDescriptorBinaryBlob;
   }
+  // An explanation for the necessity of handling the encoder delay and the
+  // padding is available here:
+  // https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html
+
+  // The number of frames that should be skipped from the beginning of the
+  // decoded stream.
+  uint32_t mEncoderDelayFrames{0};
+
+  // The total number of frames of the media, that is, excluding the encoder
+  // delay and the padding of the last packet, that must be discarded.
+  uint64_t mMediaFrameCount{0};
 
   // The bytes of the ES_Descriptor field parsed out of esds box. We store
   // this as a blob as some decoders want this.
@@ -264,6 +275,7 @@ class TrackInfo {
   nsCString mMimeType;
   media::TimeUnit mDuration;
   media::TimeUnit mMediaTime;
+  uint32_t mTimeScale = 0;
   CryptoTrack mCrypto;
 
   CopyableTArray<MetadataTag> mTags;
@@ -433,11 +445,11 @@ class VideoInfo : public TrackInfo {
   // Matrix coefficients (if specified by the video) imply a colorspace.
   Maybe<gfx::YUVColorSpace> mColorSpace;
 
-  // Color primaries are assumed to match the colorspace.
+  // Color primaries are independent from the coefficients.
+  Maybe<gfx::ColorSpace2> mColorPrimaries;
 
-  // Transfer functions get their own member, since we support different
-  // values for the BT2020 primaries. For other colorspaces, this member
-  // is ignored.
+  // Transfer functions get their own member, which may not be strongly
+  // correlated to the colorspace.
   Maybe<gfx::TransferFunction> mTransferFunction;
 
   // True indicates no restriction on Y, U, V values (otherwise 16-235 for 8

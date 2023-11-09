@@ -3,19 +3,19 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = K'ak'a' Ruwi'
+tabbrowser-empty-private-tab-title = K'ak'a' ichinan ruwi'
+
 tabbrowser-menuitem-close-tab =
     .label = Titz'apïx ruwi'
 tabbrowser-menuitem-close =
     .label = Titz'apïx
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -67,15 +67,42 @@ tabbrowser-unblock-tab-audio-tooltip =
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
+# The singular form is not considered since this string is used only for multiple tabs.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-confirm-close-tabs-title =
+    { $tabCount ->
+        [one] ¿ La nitz'apïx { $tabCount } ruwi'?
+       *[other] ¿ La yetz'apïx { $tabCount } ruwi'?
+    }
 tabbrowser-confirm-close-tabs-button = Ketz'apïx Ruwi'
+tabbrowser-confirm-close-tabs-checkbox = Nab'ey tijikib'äx toq yetz'apïx jalajöj taq ruwi'
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
 
+# The forms for 0 or 1 items are not considered since this string is used only for
+# multiple windows.
+# Variables:
+#   $windowCount (Number): The number of windows that will be closed.
+tabbrowser-confirm-close-windows-title =
+    { $windowCount ->
+        [one] ¿La nitz'apïx { $windowCount } windows?
+       *[other] ¿La yetz'apïx { $windowCount } windows?
+    }
+tabbrowser-confirm-close-windows-button =
+    { PLATFORM() ->
+        [windows] Titz'apïx chuqa' tel
+       *[other] Titz'apïx chuqa' tel
+    }
 
 ## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
 ## Windows does not show a prompt on quit when using the keyboard shortcut by default.
 
+tabbrowser-confirm-close-tabs-with-key-title = ¿La nitz'apïx tzuwäch chuqa' nel pa { -brand-short-name }?
 tabbrowser-confirm-close-tabs-with-key-button = Titz'apïx { -brand-short-name }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-confirm-close-tabs-with-key-checkbox = Nab'ey tijikib'äx richin nel rik'in { $quitKey }
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -101,6 +128,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Man tik'ut chik pe re rutzuwach tzij
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Tiya' q'ij chi ri rutzijol { $domain } achi'el re', tikik'waj ri ruwi' ri'
+
 tabbrowser-customizemode-tab-title = Tichinäx { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -119,3 +147,13 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Ke'ak'axäx Ruwi'
     .accesskey = k
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Kecholajïx konojel ri { $tabCount } taq ruwi'
+
+## Tab manager menu buttons
+

@@ -220,8 +220,6 @@ menu-history-undo-menu =
     .label = Son kapatılan sekmeler
 menu-history-undo-window-menu =
     .label = Son kapatılan pencereler
-menu-history-reopen-all-tabs = Tüm sekmeleri yeniden aç
-menu-history-reopen-all-windows = Tüm pencereleri yeniden aç
 
 ## Bookmarks Menu
 
@@ -230,14 +228,13 @@ menu-bookmarks-menu =
     .accesskey = Y
 menu-bookmarks-manage =
     .label = Yer imlerini yönet
-menu-bookmark-current-tab =
-    .label = Bu sekmeyi yer imlerine ekle
-menu-bookmark-edit =
-    .label = Bu yer imini düzenle
 menu-bookmark-tab =
     .label = Bu sekmeyi yer imlerine ekle…
 menu-edit-bookmark =
     .label = Bu yer imini düzenle…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Yer imlerinde ara
 menu-bookmarks-all-tabs =
     .label = Tüm sekmeleri yer imlerine ekle…
 menu-bookmarks-toolbar =
@@ -331,6 +328,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Sorun giderme modunu kapat
     .accesskey = m
+menu-help-switch-device =
+    .label = Yeni bir cihaza geçiş
+    .accesskey = c
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

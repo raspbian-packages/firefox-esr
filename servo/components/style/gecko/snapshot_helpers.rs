@@ -4,13 +4,17 @@
 
 //! Element an snapshot common logic.
 
+use crate::dom::TElement;
 use crate::gecko_bindings::bindings;
 use crate::gecko_bindings::structs::{self, nsAtom};
+use crate::invalidation::element::element_wrapper::ElementSnapshot;
+use crate::selector_parser::SnapshotMap;
 use crate::string_cache::WeakAtom;
 use crate::values::AtomIdent;
 use crate::Atom;
 use crate::CaseSensitivityExt;
 use selectors::attr::CaseSensitivity;
+use smallvec::SmallVec;
 
 /// A function that, given an element of type `T`, allows you to get a single
 /// class or a class list.
@@ -51,7 +55,8 @@ unsafe fn get_class_or_part_from_attr(attr: &structs::nsAttrValue) -> Class {
             .__bindgen_anon_1
             .mAtomArray
             .as_ref();
-        let array = (*attr_array).mArray.as_ptr() as *const structs::nsTArray<structs::RefPtr<nsAtom>>;
+        let array =
+            (*attr_array).mArray.as_ptr() as *const structs::nsTArray<structs::RefPtr<nsAtom>>;
         return Class::More(&**array);
     }
     debug_assert_eq!(base_type, structs::nsAttrValue_ValueBaseType_eStringBase);
@@ -164,4 +169,28 @@ where
             },
         }
     }
+}
+
+/// Returns a list of classes that were either added to or removed from the
+/// element since the snapshot.
+pub fn classes_changed<E: TElement>(element: &E, snapshots: &SnapshotMap) -> SmallVec<[Atom; 8]> {
+    debug_assert!(element.has_snapshot(), "Why bothering?");
+    let snapshot = snapshots.get(element).expect("has_snapshot lied");
+    if !snapshot.class_changed() {
+        return SmallVec::new();
+    }
+
+    let mut classes_changed = SmallVec::<[Atom; 8]>::new();
+    snapshot.each_class(|c| {
+        if !element.has_class(c, CaseSensitivity::CaseSensitive) {
+            classes_changed.push(c.0.clone());
+        }
+    });
+    element.each_class(|c| {
+        if !snapshot.has_class(c, CaseSensitivity::CaseSensitive) {
+            classes_changed.push(c.0.clone());
+        }
+    });
+
+    classes_changed
 }

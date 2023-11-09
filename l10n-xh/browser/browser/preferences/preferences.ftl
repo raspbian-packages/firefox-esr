@@ -46,6 +46,17 @@ restart-later = Qalisa ngokutsha Kamva
 ##   $name (String): name of the extension
 
 
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
+
 ## Preferences UI Search Results
 
 search-results-header = IZiphumo zoKhangelo
@@ -86,6 +97,10 @@ browser-containers-settings =
     .accesskey = s
 
 containers-disable-alert-title = Ufuna ukuvala Zonke iiThebhu zeeKhonteyina?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] Ukuba uyazivala iiThebhu zeKhonteyina ngoku, i-{ $tabCount } ithebhu yekhonteyina iya kuvalwa. Uqinisekile ukuba ufuna ukuzivala iiThebhu zeKhonteyina?
@@ -97,6 +112,9 @@ containers-disable-alert-ok-button =
         [one] Vala iThebu yeKhonteyina i-{ $tabCount }
        *[other] Vala iiThebhu zeKhonteyina ii-{ $tabCount }.
     }
+
+##
+
 containers-disable-alert-cancel-button = Zigcina zivuliwe
 
 containers-remove-alert-title = Ufuna ukuSusa le Khonteyina?
@@ -349,6 +367,10 @@ choose-bookmark =
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
 
 
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+
+
 ##
 
 
@@ -359,6 +381,7 @@ search-engine-default-header = Injini yesiseko yokukhangela
 search-suggestions-option =
     .label = Nika khangela iingcebiso
     .accesskey = k
+
 
 search-suggestions-cant-show = Amacebiso okukhangela akayi kuboniswa kwiziphumo zebha yendawo ngenxa yokuba uyile i-{ -brand-short-name } ukuba ingaze iyikhumbule imbali.
 
@@ -393,6 +416,10 @@ containers-add-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = Phatha iWebhu Yakho Apho Ukhoyo
 
 # This message contains two links and two icon images.
@@ -407,11 +434,19 @@ sync-mobile-promo = Dawnlowuda iFirefox ye<img data-l10n-name="android-icon"/> <
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Tshintsha umfanekiso weprofayili
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } akuqinisekiswanga.
 sync-signedin-login-failure = Sicela ungene ukuze uphinde uqhagamshele { $email }
+
+##
 
 sync-sign-in =
     .label = Sayina uNgene
@@ -448,6 +483,16 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Gcina
     .accesskey = i
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Isiqinisekiso sithunyelwe
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = Ikhonkco lesiqinisekiso lithunyelwe kwi-{ $email }.
+sync-verification-not-sent-title = Ayikwazi ukuThumela uQinisekiso
+sync-verification-not-sent-body = Asikwazi kuthumela imeyili yokuqinisekisa ngeli xesha, sicela uphinde uzame ngelinye ixesha.
 
 ## Privacy Section
 
@@ -515,6 +560,9 @@ history-clear-on-close-settings =
 
 sitedata-learn-more = Funda okungakumbi
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-locbar-bookmarks-option =
@@ -534,6 +582,9 @@ addressbar-suggestions-settings = Tshintsha iipreferensi zamacebiso enjini yokuk
 
 
 ##
+
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 
 ## Privacy Section - Tracking
@@ -587,6 +638,9 @@ certs-enable-ocsp =
     .accesskey = B
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

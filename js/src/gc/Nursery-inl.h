@@ -10,13 +10,12 @@
 
 #include "gc/Nursery.h"
 
-#include "gc/Heap.h"
 #include "gc/RelocationOverlay.h"
-#include "gc/Zone.h"
 #include "js/TracingAPI.h"
 #include "vm/JSContext.h"
 #include "vm/Runtime.h"
-#include "vm/SharedMem.h"
+
+#include "vm/JSContext-inl.h"
 
 inline JSRuntime* js::Nursery::runtime() const { return gc->rt; }
 
@@ -110,7 +109,8 @@ static inline T* AllocateObjectBuffer(JSContext* cx, JSObject* obj,
   MOZ_ASSERT(cx->isMainThreadContext());
 
   size_t nbytes = RoundUp(count * sizeof(T), sizeof(Value));
-  auto* buffer = static_cast<T*>(cx->nursery().allocateBuffer(obj, nbytes));
+  auto* buffer =
+      static_cast<T*>(cx->nursery().allocateBuffer(cx->zone(), obj, nbytes));
   if (!buffer) {
     ReportOutOfMemory(cx);
   }

@@ -2,28 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
--profiler-brand-name = Firefox Profiler
-
-##
-
 # This is the title of the page
 about-logging-title = Re le registrationes
 about-logging-page-title = Gestor de registrationes
 about-logging-current-log-file = File de diario actual:
-about-logging-current-log-modules = Modulos de diario actual:
 about-logging-new-log-file = Nove file de registration:
 about-logging-currently-enabled-log-modules = Modulos de registro actualmente activate:
 about-logging-log-tutorial = Vide <a data-l10n-name="logging">HTTP Logging</a> pro instructiones re como usar iste instrumento.
@@ -44,15 +26,25 @@ about-logging-logging-to-profiler = Registration in { -profiler-brand-name }
 about-logging-no-log-modules = Nemo
 about-logging-no-log-file = Nemo
 about-logging-logging-preset-selector-text = Pre-configuration del registration:
+about-logging-with-profiler-stacks-checkbox = Activar le traciamento del pila pro messages de registration
 
 ## Logging presets
 
 about-logging-preset-networking-label = Rete
 about-logging-preset-networking-description = Modulos de registro pro diagnosticar problemas de rete
+about-logging-preset-networking-cookie-label = Cookies
+about-logging-preset-networking-cookie-description = Modulos de registration pro diagnosticar problemas de cookies
+about-logging-preset-networking-websocket-label = WebSockets
+about-logging-preset-networking-websocket-description = Modulos de registration pro diagnosticar problemas de WebSocket
+about-logging-preset-networking-http3-label = HTTP/3
+about-logging-preset-networking-http3-description = Modulos de registration pro diagnosticar problemas de HTTP/3 e QUIC
 about-logging-preset-media-playback-label = Reproduction de medios
 about-logging-preset-media-playback-description = Modulos de registro pro diagnosticar problemas de reproduction de medios (non problemas de video-conferentias)
+about-logging-preset-webrtc-label = WebRTC
+about-logging-preset-webrtc-description = Modulos de registration pro diagnosticar appellos WebRTC
 about-logging-preset-custom-label = Personalisate
 about-logging-preset-custom-description = Modulos de registro seligite manualmente
+
 # Error handling
 about-logging-error = Error:
 
@@ -66,4 +58,5 @@ about-logging-unknown-profiler-preset = Pre-configuration del profilator “{ $v
 about-logging-unknown-option = Option de about:logging “{ $k }“ incognite
 about-logging-configuration-url-ignored = Configuration URL ignorate
 about-logging-file-and-profiler-override = Impossibile fortiar un file de exito e al mesme tempore supplantar le optiones del profilator
+
 about-logging-configured-via-url = Option configurate per URL

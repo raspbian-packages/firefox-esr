@@ -32,3 +32,13 @@ unified-extensions-context-menu-remove-extension =
     .label = Xóa tiện ích
 unified-extensions-context-menu-report-extension =
     .label = Báo cáo tiện ích
+unified-extensions-context-menu-move-widget-up =
+    .label = Di chuyển lên
+unified-extensions-context-menu-move-widget-down =
+    .label = Di chuyển xuống
+
+## Notifications
+
+unified-extensions-mb-quarantined-domain-title = Vài tiện ích mở rộng không được phép
+unified-extensions-mb-quarantined-domain-message = Chỉ một số tiện ích do { -vendor-short-name } giám sát mới được phép trên trang web này để bảo vệ dữ liệu của bạn.
+unified-extensions-mb-quarantined-domain-message-2 = Để bảo vệ dữ liệu của bạn, một số tiện ích mở rộng không thể đọc hoặc thay đổi dữ liệu trên trang web này. Sử dụng cài đặt của tiện ích mở rộng để cho phép trên các trang web bị giới hạn bởi { -vendor-short-name }.

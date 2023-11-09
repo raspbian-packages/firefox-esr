@@ -4,23 +4,14 @@
 
 # Integrates the web-platform-tests test runner with mach.
 
-from __future__ import absolute_import, unicode_literals, print_function
-
 import os
 import sys
 
-from six import iteritems
-
-from mozbuild.base import (
-    MachCommandConditions as conditions,
-    MozbuildObject,
-)
-
-from mach.decorators import (
-    Command,
-)
-
+from mach.decorators import Command
 from mach_commands_base import WebPlatformTestsRunner, create_parser_wpt
+from mozbuild.base import MachCommandConditions as conditions
+from mozbuild.base import MozbuildObject
+from six import iteritems
 
 
 class WebPlatformTestsRunnerSetup(MozbuildObject):
@@ -58,9 +49,9 @@ class WebPlatformTestsRunnerSetup(MozbuildObject):
 
             # Note that this import may fail in non-firefox-for-android trees
             from mozrunner.devices.android_device import (
+                InstallIntent,
                 get_adb_path,
                 verify_android_device,
-                InstallIntent,
             )
 
             kwargs["adb_binary"] = get_adb_path(self)
@@ -237,11 +228,11 @@ class WebPlatformTestsServeRunner(MozbuildObject):
             0,
             os.path.abspath(os.path.join(os.path.dirname(__file__), "tests", "tools")),
         )
+        import logging
+
+        import manifestupdate
         from serve import serve
         from wptrunner import wptcommandline
-        import manifestupdate
-
-        import logging
 
         logger = logging.getLogger("web-platform-tests")
 
@@ -328,11 +319,11 @@ class WebPlatformTestsTestPathsRunner(MozbuildObject):
             0,
             os.path.abspath(os.path.join(os.path.dirname(__file__), "tests", "tools")),
         )
-        from wptrunner import wptcommandline
-        from manifest import testpaths
-        import manifestupdate
-
         import logging
+
+        import manifestupdate
+        from manifest import testpaths
+        from wptrunner import wptcommandline
 
         logger = logging.getLogger("web-platform-tests")
 
@@ -375,8 +366,8 @@ class WebPlatformTestsTestPathsRunner(MozbuildObject):
 
 class WebPlatformTestsFissionRegressionsRunner(MozbuildObject):
     def run(self, **kwargs):
-        import mozlog
         import fissionregressions
+        import mozlog
 
         src_root = self.topsrcdir
         obj_root = self.topobjdir
@@ -385,8 +376,8 @@ class WebPlatformTestsFissionRegressionsRunner(MozbuildObject):
         try:
             return fissionregressions.run(logger, src_root, obj_root, **kwargs)
         except Exception:
-            import traceback
             import pdb
+            import traceback
 
             traceback.print_exc()
             pdb.post_mortem()
@@ -439,6 +430,7 @@ def create_parser_fission_regressions():
 
 def create_parser_testpaths():
     import argparse
+
     from mach.util import get_state_dir
 
     parser = argparse.ArgumentParser()
@@ -503,6 +495,7 @@ def run_web_platform_tests(command_context, **params):
 
     wpt_setup = command_context._spawn(WebPlatformTestsRunnerSetup)
     wpt_setup._mach_context = command_context._mach_context
+    wpt_setup._virtualenv_name = command_context._virtualenv_name
     wpt_runner = WebPlatformTestsRunner(wpt_setup)
 
     logger = wpt_runner.setup_logging(**params)
@@ -526,6 +519,7 @@ def run_web_platform_tests(command_context, **params):
     conditions=[conditions.is_firefox_or_android],
     description="Run web-platform-tests.",
     parser=create_parser_wpt,
+    virtualenv_name="wpt",
 )
 def run_wpt(command_context, **params):
     return run_web_platform_tests(command_context, **params)
@@ -549,6 +543,7 @@ def update_web_platform_tests(command_context, **params):
     category="testing",
     description="Update web-platform-test metadata.",
     parser=create_parser_update,
+    virtualenv_name="wpt",
 )
 def update_wpt(command_context, **params):
     return update_web_platform_tests(command_context, **params)
@@ -593,6 +588,7 @@ def wpt_serve(command_context, **params):
     category="testing",
     description="Create a json summary of the wpt metadata",
     parser=create_parser_metadata_summary,
+    virtualenv_name="wpt",
 )
 def wpt_summary(command_context, **params):
     import metasummary
@@ -601,7 +597,12 @@ def wpt_summary(command_context, **params):
     return metasummary.run(wpt_setup.topsrcdir, wpt_setup.topobjdir, **params)
 
 
-@Command("wpt-metadata-merge", category="testing", parser=create_parser_metadata_merge)
+@Command(
+    "wpt-metadata-merge",
+    category="testing",
+    parser=create_parser_metadata_merge,
+    virtualenv_name="wpt",
+)
 def wpt_meta_merge(command_context, **params):
     import metamerge
 
@@ -627,6 +628,7 @@ def wpt_unittest(command_context, **params):
     category="testing",
     description="Get a mapping from test ids to files",
     parser=create_parser_testpaths,
+    virtualenv_name="wpt",
 )
 def wpt_test_paths(command_context, **params):
     runner = command_context._spawn(WebPlatformTestsTestPathsRunner)
@@ -639,6 +641,7 @@ def wpt_test_paths(command_context, **params):
     category="testing",
     description="Dump a list of fission-specific regressions",
     parser=create_parser_fission_regressions,
+    virtualenv_name="wpt",
 )
 def wpt_fission_regressions(command_context, **params):
     runner = command_context._spawn(WebPlatformTestsFissionRegressionsRunner)

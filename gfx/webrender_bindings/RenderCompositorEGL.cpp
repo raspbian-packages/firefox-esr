@@ -56,9 +56,12 @@ UniquePtr<RenderCompositor> RenderCompositorEGL::Create(
 EGLSurface RenderCompositorEGL::CreateEGLSurface() {
   EGLSurface surface = EGL_NO_SURFACE;
   surface = gl::GLContextEGL::CreateEGLSurfaceForCompositorWidget(
-      mWidget, gl::GLContextEGL::Cast(gl())->mConfig);
+      mWidget, gl::GLContextEGL::Cast(gl())->mSurfaceConfig);
   if (surface == EGL_NO_SURFACE) {
-    gfxCriticalNote << "Failed to create EGLSurface";
+    const auto* renderThread = RenderThread::Get();
+    gfxCriticalNote << "Failed to create EGLSurface. "
+                    << renderThread->RendererCount() << " renderers, "
+                    << renderThread->ActiveRendererCount() << " active.";
   }
   return surface;
 }
@@ -124,6 +127,11 @@ RenderedFrameId RenderCompositorEGL::EndFrame(
 #endif
 
   RenderedFrameId frameId = GetNextRenderFrameId();
+#ifdef MOZ_WAYLAND
+  if (mWidget->IsHidden()) {
+    return frameId;
+  }
+#endif
   if (mEGLSurface != EGL_NO_SURFACE && aDirtyRects.Length() > 0) {
     gfx::IntRegion bufferInvalid;
     const auto bufferSize = GetBufferSize();
@@ -153,7 +161,6 @@ bool RenderCompositorEGL::Resume() {
     // Destroy EGLSurface if it exists.
     DestroyEGLSurface();
 
-#ifdef MOZ_WIDGET_ANDROID
     auto size = GetBufferSize();
     GLint maxTextureSize = 0;
     gl()->fGetIntegerv(LOCAL_GL_MAX_TEXTURE_SIZE, (GLint*)&maxTextureSize);
@@ -167,11 +174,24 @@ bool RenderCompositorEGL::Resume() {
 
     mEGLSurface = CreateEGLSurface();
     if (mEGLSurface == EGL_NO_SURFACE) {
-      RenderThread::Get()->HandleWebRenderError(WebRenderError::NEW_SURFACE);
+      // Often when we fail to create an EGL surface it is because the Java
+      // Surface we have been provided is invalid. Therefore the on the first
+      // occurence we don't raise a WebRenderError and instead just return
+      // failure. This allows the widget a chance to request a new Java
+      // Surface. On subsequent failures, raising the WebRenderError will
+      // result in the compositor being recreated, falling back through
+      // webrender configurations, and eventually crashing if we still do not
+      // succeed.
+      if (!mHandlingNewSurfaceError) {
+        mHandlingNewSurfaceError = true;
+      } else {
+        RenderThread::Get()->HandleWebRenderError(WebRenderError::NEW_SURFACE);
+      }
       return false;
     }
+    mHandlingNewSurfaceError = false;
+
     gl::GLContextEGL::Cast(gl())->SetEGLSurfaceOverride(mEGLSurface);
-#endif  // MOZ_WIDGET_ANDROID
   } else if (kIsWayland || kIsX11) {
     // Destroy EGLSurface if it exists and create a new one. We will set the
     // swap interval after MakeCurrent() has been called.
@@ -220,7 +240,14 @@ void RenderCompositorEGL::DestroyEGLSurface() {
   // Release EGLSurface of back buffer before calling ResizeBuffers().
   if (mEGLSurface) {
     gle->SetEGLSurfaceOverride(EGL_NO_SURFACE);
-    egl->fDestroySurface(mEGLSurface);
+    if (!egl->fMakeCurrent(EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT)) {
+      const EGLint err = egl->mLib->fGetError();
+      gfxCriticalNote << "Error in eglMakeCurrent: " << gfx::hexa(err);
+    }
+    if (!egl->fDestroySurface(mEGLSurface)) {
+      const EGLint err = egl->mLib->fGetError();
+      gfxCriticalNote << "Error in eglDestroySurface: " << gfx::hexa(err);
+    }
     mEGLSurface = nullptr;
   }
 }

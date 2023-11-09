@@ -18,11 +18,39 @@
 
 namespace mozilla::camera {
 
+enum class CaptureDeviceType { Camera, Screen, Window, Browser };
+
+struct CaptureDeviceInfo {
+  CaptureDeviceType type;
+
+  CaptureDeviceInfo() : type(CaptureDeviceType::Camera) {}
+  explicit CaptureDeviceInfo(CaptureDeviceType t) : type(t) {}
+
+  const char* TypeName() const {
+    switch (type) {
+      case CaptureDeviceType::Camera: {
+        return "Camera";
+      }
+      case CaptureDeviceType::Screen: {
+        return "Screen";
+      }
+      case CaptureDeviceType::Window: {
+        return "Window";
+      }
+      case CaptureDeviceType::Browser: {
+        return "Browser";
+      }
+    }
+    assert(false);
+    return "UNKOWN-CaptureDeviceType!";
+  }
+};
+
 // Historically the video engine was part of webrtc
 // it was removed (and reimplemented in Talk)
 class VideoEngine {
  private:
-  virtual ~VideoEngine() = default;
+  virtual ~VideoEngine();
 
   // Base cache expiration period
   // Note because cameras use HW plug event detection, this
@@ -30,21 +58,20 @@ class VideoEngine {
   static const int64_t kCacheExpiryPeriodMs = 2000;
 
  public:
-  VideoEngine() : mId(0){};
   NS_INLINE_DECL_REFCOUNTING(VideoEngine)
 
   static already_AddRefed<VideoEngine> Create(
-      UniquePtr<const webrtc::Config>&& aConfig);
+      const CaptureDeviceType& aCaptureDeviceType);
 #if defined(ANDROID)
   static int SetAndroidObjects();
 #endif
   // Returns a non-negative capture identifier or -1 on failure.
-  int32_t CreateVideoCapture(const char* deviceUniqueIdUTF8);
+  int32_t CreateVideoCapture(const char* aDeviceUniqueIdUTF8);
 
-  int ReleaseVideoCapture(const int32_t id);
+  int ReleaseVideoCapture(const int32_t aId);
 
   // VideoEngine is responsible for any cleanup in its modules
-  static void Delete(VideoEngine* engine) {}
+  static void Delete(VideoEngine* aEngine) {}
 
   /** Returns an existing or creates a new new DeviceInfo.
    *   Camera info is cached to prevent repeated lengthy polling for "realness"
@@ -57,8 +84,6 @@ class VideoEngine {
    */
   std::shared_ptr<webrtc::VideoCaptureModule::DeviceInfo>
   GetOrCreateVideoCaptureDeviceInfo();
-
-  const UniquePtr<const webrtc::Config>& GetConfiguration();
 
   class CaptureEntry {
    public:
@@ -78,11 +103,10 @@ class VideoEngine {
                  const std::function<void(CaptureEntry& entry)>&& fn);
 
  private:
-  explicit VideoEngine(UniquePtr<const webrtc::Config>&& aConfig);
+  explicit VideoEngine(const CaptureDeviceType& aCaptureDeviceType);
   int32_t mId;
-  webrtc::CaptureDeviceInfo mCaptureDevInfo;
+  const CaptureDeviceInfo mCaptureDevInfo;
   std::shared_ptr<webrtc::VideoCaptureModule::DeviceInfo> mDeviceInfo;
-  UniquePtr<const webrtc::Config> mConfig;
   std::map<int32_t, CaptureEntry> mCaps;
   std::map<int32_t, int32_t> mIdMap;
   // The validity period for non-camera capture device infos`

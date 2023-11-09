@@ -3,19 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = ផ្ទាំង​ថ្មី
+
 tabbrowser-menuitem-close-tab =
     .label = បិទ​ផ្ទាំង
 tabbrowser-menuitem-close =
     .label = បិទ
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
 
 ## Tooltips for tab audio control
 ## Variables:
@@ -54,3 +52,13 @@ tabbrowser-context-mute-tab =
 tabbrowser-context-unmute-tab =
     .label = ផ្ទាំង​បើក​សំឡេង
     .accesskey = m
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = រាយបញ្ជី​ផ្ទាំង { $tabCount } ទាំងអស់
+
+## Tab manager menu buttons
+

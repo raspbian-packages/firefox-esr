@@ -5,10 +5,6 @@
 
 ## Strings used for device manager
 
-devmgr =
-    .title = 设备管理器
-    .style = width: 67em; height: 32em;
-
 devmgr-window =
     .title = 设备管理器
     .style = min-width: 67em; min-height: 32em;
@@ -35,7 +31,7 @@ devmgr-button-changepw =
     .accesskey = P
 
 devmgr-button-load =
-    .label = 载入
+    .label = 加载
     .accesskey = L
 
 devmgr-button-unload =
@@ -53,7 +49,7 @@ devmgr-button-disable-fips =
 ## Strings used for load device
 
 load-device =
-    .title = 载入 PKCS#11 设备驱动程序
+    .title = 加载 PKCS#11 设备驱动程序
 
 load-device-info = 输入您要添加的模块的信息。
 
@@ -122,7 +118,7 @@ devinfo-serialnum =
 
 fips-nonempty-primary-password-required = FIPS 需要您为各个安全设备设置一个主密码。请在启用 FIPS 模式之前设置主密码。
 unable-to-toggle-fips = 无法更换该安全设备的 FIPS 模式。建议您退出并重启本应用程序。
-load-pk11-module-file-picker-title = 选择要载入的 PKCS#11 设备驱动程序
+load-pk11-module-file-picker-title = 选择要加载的 PKCS#11 设备驱动程序
 
 # Load Module Dialog
 load-module-help-empty-module-name =

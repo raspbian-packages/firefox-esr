@@ -51,6 +51,17 @@ restart-later = Hurmitin so Ɓooyii
 ## Variables:
 ##   $name (String): name of the extension
 
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -114,6 +125,10 @@ browser-containers-settings =
     .accesskey = l
 
 containers-disable-alert-title = Uddu Tabbe Mooftirɗe Kala?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] So a daaƴii Tabbe Mooftirɗe jooni, tabbere mooftirde { $tabCount } maa udde. Aɗa yenanaa yiɗde daaƴde Tabbe Mooftirɗe?
@@ -125,6 +140,9 @@ containers-disable-alert-ok-button =
         [one] Uddu Tabbere Mooftirde { $tabCount }
        *[other] Uddu Tabbe Mooftirɗe { $tabCount }
     }
+
+##
+
 containers-disable-alert-cancel-button = Woppu hurma
 
 containers-remove-alert-title = Itta ngal baɗirgal ?
@@ -434,11 +452,6 @@ home-restore-defaults =
     .label = Artir Goowaaɗe
     .accesskey = R
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Jaɓɓorgo Firefox (Goowaaɗo)
-
 home-mode-choice-custom =
     .label = Heertin URLs...
 
@@ -466,14 +479,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Loowdi Jaɓɓorgo Firefox
-home-prefs-content-description = Suɓo hol loowdi njiɗɗaa e yaynirde jaɓɓorgo Firefox maa.
-
 home-prefs-search-header =
     .label = Njiilaw Geese
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 # Variables:
 #  $provider (String): Name of the corresponding content provider, e.g "Pocket".
@@ -529,6 +543,7 @@ search-show-suggestions-url-bar-option =
     .label = Hollo basiye njiilaw e njaltudi palal ñiiɓirɗe ngal
     .accesskey = l
 
+
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -581,6 +596,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = Nawor Geesa Maa
 
 # This message contains two links and two icon images.
@@ -595,6 +614,9 @@ sync-mobile-promo = Aawto Firefox mo <img data-l10n-name="android-icon"/> <a dat
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Waylu natal heftinirde
 
@@ -605,8 +627,13 @@ sync-sign-out =
 sync-manage-account = Toppito konte
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } ƴeewtaaka.
 sync-signedin-login-failure = Tiiɗno seŋo ngam naattude { $email }
+
+##
 
 sync-resend-verification =
     .label = Neldit Ƴeewtagol
@@ -689,6 +716,16 @@ sync-device-name-save =
     .accesskey = D
 
 sync-connect-another-device = Seŋ kaɓirgol goɗngol
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Ƴeewtagol Neldaama
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = Jokkol ƴeewtagol neldaama to { $email }.
+sync-verification-not-sent-title = Horiima Neldu Ƴeewtagol
+sync-verification-not-sent-body = Min koriima neldude iimeel ƴeewtagol e oo sahaa, tiiɗno eto kadi so ɓooyii.
 
 ## Privacy Section
 
@@ -813,6 +850,9 @@ sitedata-settings =
     .label = Yuɓɓin keɓe…
     .accesskey = M
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-header = Palal Ñiiɓirɗe
@@ -840,6 +880,9 @@ content-blocking-learn-more = Ɓeydu humpito
 
 
 ##
+
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-tracking-protection-change-block-list = Waylo doggol padde
 
@@ -946,6 +989,9 @@ certs-devices =
     .accesskey = k
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

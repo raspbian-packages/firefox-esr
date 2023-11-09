@@ -11,8 +11,6 @@
 // Definitions from test and other files used by the tests
 /* global getState */
 
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-
 function getTestDataFile(aFilename) {
   let file = Services.dirsvc.get("CurWorkD", Ci.nsIFile);
   let pathParts = REL_PATH_DATA.split("/");
@@ -81,7 +79,7 @@ function handleRequest(aRequest, aResponse) {
     let retries = 0;
     gSlowDownloadTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
     gSlowDownloadTimer.initWithCallback(
-      function(aTimer) {
+      function (aTimer) {
         let continueFile = getTestDataFile(CONTINUE_DOWNLOAD);
         retries++;
         if (continueFile.exists() || retries == MAX_SLOW_RESPONSE_RETRIES) {
@@ -199,7 +197,7 @@ function respond(aResponse, aParams, aResponseString) {
     aResponse.processAsync();
     gSlowCheckTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
     gSlowCheckTimer.initWithCallback(
-      function(aTimer) {
+      function (aTimer) {
         retries++;
         let continueFile = getTestDataFile(CONTINUE_CHECK);
         if (continueFile.exists() || retries == MAX_SLOW_RESPONSE_RETRIES) {

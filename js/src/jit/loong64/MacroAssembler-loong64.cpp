@@ -40,12 +40,9 @@ void MacroAssembler::clampDoubleToUint8(FloatRegister input, Register output) {
 }
 
 bool MacroAssemblerLOONG64Compat::buildOOLFakeExitFrame(void* fakeReturnAddr) {
-  uint32_t descriptor = MakeFrameDescriptor(
-      asMasm().framePushed(), FrameType::IonJS, ExitFrameLayout::Size());
-
-  asMasm().Push(Imm32(descriptor));  // descriptor_
+  asMasm().PushFrameDescriptor(FrameType::IonJS);  // descriptor_
   asMasm().Push(ImmPtr(fakeReturnAddr));
-
+  asMasm().Push(FramePointer);
   return true;
 }
 
@@ -2355,7 +2352,7 @@ void MacroAssemblerLOONG64Compat::profilerEnterFrame(Register framePtr,
 }
 
 void MacroAssemblerLOONG64Compat::profilerExitFrame() {
-  jump(GetJitContext()->runtime->jitRuntime()->getProfilerExitFrameTail());
+  jump(asMasm().runtime()->jitRuntime()->getProfilerExitFrameTail());
 }
 
 MacroAssembler& MacroAssemblerLOONG64::asMasm() {
@@ -2806,11 +2803,8 @@ void MacroAssembler::moveValue(const Value& src, const ValueOperand& dest) {
 // Branch functions
 
 void MacroAssembler::loadStoreBuffer(Register ptr, Register buffer) {
-  if (ptr != buffer) {
-    movePtr(ptr, buffer);
-  }
-  orPtr(Imm32(gc::ChunkMask), buffer);
-  loadPtr(Address(buffer, gc::ChunkStoreBufferOffsetFromLastByte), buffer);
+  ma_and(buffer, ptr, Imm32(int32_t(~gc::ChunkMask)));
+  loadPtr(Address(buffer, gc::ChunkStoreBufferOffset), buffer);
 }
 
 void MacroAssembler::branchPtrInNurseryChunk(Condition cond, Register ptr,
@@ -2822,10 +2816,9 @@ void MacroAssembler::branchPtrInNurseryChunk(Condition cond, Register ptr,
   MOZ_ASSERT(temp != ScratchRegister && temp != SecondScratchReg);
   MOZ_ASSERT(temp != InvalidReg);
 
-  movePtr(ptr, temp);
-  orPtr(Imm32(gc::ChunkMask), temp);
-  branchPtr(InvertCondition(cond),
-            Address(temp, gc::ChunkStoreBufferOffsetFromLastByte), zero, label);
+  ma_and(temp, ptr, Imm32(int32_t(~gc::ChunkMask)));
+  branchPtr(InvertCondition(cond), Address(temp, gc::ChunkStoreBufferOffset),
+            zero, label);
 }
 
 void MacroAssembler::branchValueIsNurseryCell(Condition cond,
@@ -2850,9 +2843,8 @@ void MacroAssembler::branchValueIsNurseryCellImpl(Condition cond,
   branchTestGCThing(Assembler::NotEqual, value,
                     cond == Assembler::Equal ? &done : label);
 
-  unboxGCThingForGCBarrier(value, temp);
-  orPtr(Imm32(gc::ChunkMask), temp);
-  loadPtr(Address(temp, gc::ChunkStoreBufferOffsetFromLastByte), temp);
+  getGCThingValueChunk(value, temp);
+  loadPtr(Address(temp, gc::ChunkStoreBufferOffset), temp);
   branchPtr(InvertCondition(cond), temp, zero, label);
 
   bind(&done);
@@ -2872,27 +2864,11 @@ void MacroAssembler::branchTestValue(Condition cond, const ValueOperand& lhs,
 
 template <typename T>
 void MacroAssembler::storeUnboxedValue(const ConstantOrRegister& value,
-                                       MIRType valueType, const T& dest,
-                                       MIRType slotType) {
+                                       MIRType valueType, const T& dest) {
+  MOZ_ASSERT(valueType < MIRType::Value);
+
   if (valueType == MIRType::Double) {
     boxDouble(value.reg().typedReg().fpu(), dest);
-    return;
-  }
-
-  // For known integers and booleans, we can just store the unboxed value if
-  // the slot has the same type.
-  if ((valueType == MIRType::Int32 || valueType == MIRType::Boolean) &&
-      slotType == valueType) {
-    if (value.constant()) {
-      Value val = value.value();
-      if (valueType == MIRType::Int32) {
-        store32(Imm32(val.toInt32()), dest);
-      } else {
-        store32(Imm32(val.toBoolean() ? 1 : 0), dest);
-      }
-    } else {
-      store32(value.reg().typedReg().gpr(), dest);
-    }
     return;
   }
 
@@ -2906,11 +2882,10 @@ void MacroAssembler::storeUnboxedValue(const ConstantOrRegister& value,
 
 template void MacroAssembler::storeUnboxedValue(const ConstantOrRegister& value,
                                                 MIRType valueType,
-                                                const Address& dest,
-                                                MIRType slotType);
+                                                const Address& dest);
 template void MacroAssembler::storeUnboxedValue(
     const ConstantOrRegister& value, MIRType valueType,
-    const BaseObjectElementIndex& dest, MIRType slotType);
+    const BaseObjectElementIndex& dest);
 
 void MacroAssembler::comment(const char* msg) { Assembler::comment(msg); }
 
@@ -5221,7 +5196,7 @@ void MacroAssemblerLOONG64Compat::breakpoint(uint32_t value) {
 }
 
 void MacroAssemblerLOONG64Compat::handleFailureWithHandlerTail(
-    Label* profilerExitTail) {
+    Label* profilerExitTail, Label* bailoutTail) {
   // Reserve space for exception information.
   int size = (sizeof(ResumeFromException) + ABIStackAlignment) &
              ~(ABIStackAlignment - 1);
@@ -5266,10 +5241,12 @@ void MacroAssemblerLOONG64Compat::handleFailureWithHandlerTail(
 
   breakpoint();  // Invalid kind.
 
-  // No exception handler. Load the error value, load the new stack pointer
-  // and return from the entry frame.
+  // No exception handler. Load the error value, restore state and return from
+  // the entry frame.
   bind(&entryFrame);
   asMasm().moveValue(MagicValue(JS_ION_ERROR), JSReturnOperand);
+  loadPtr(Address(StackPointer, ResumeFromException::offsetOfFramePointer()),
+          FramePointer);
   loadPtr(Address(StackPointer, ResumeFromException::offsetOfStackPointer()),
           StackPointer);
 
@@ -5312,8 +5289,6 @@ void MacroAssemblerLOONG64Compat::handleFailureWithHandlerTail(
           StackPointer);
   loadValue(Address(FramePointer, BaselineFrame::reverseOffsetOfReturnValue()),
             JSReturnOperand);
-  as_or(StackPointer, FramePointer, zero);
-  pop(FramePointer);
   jump(&profilingInstrumentation);
 
   // Return the given value to the caller.
@@ -5321,6 +5296,8 @@ void MacroAssemblerLOONG64Compat::handleFailureWithHandlerTail(
   loadValue(Address(StackPointer, ResumeFromException::offsetOfException()),
             JSReturnOperand);
   loadPtr(Address(StackPointer, ResumeFromException::offsetOfFramePointer()),
+          FramePointer);
+  loadPtr(Address(StackPointer, ResumeFromException::offsetOfStackPointer()),
           StackPointer);
 
   // If profiling is enabled, then update the lastProfilingFrame to refer to
@@ -5331,22 +5308,25 @@ void MacroAssemblerLOONG64Compat::handleFailureWithHandlerTail(
     Label skipProfilingInstrumentation;
     // Test if profiler enabled.
     AbsoluteAddress addressOfEnabled(
-        GetJitContext()->runtime->geckoProfiler().addressOfEnabled());
+        asMasm().runtime()->geckoProfiler().addressOfEnabled());
     asMasm().branch32(Assembler::Equal, addressOfEnabled, Imm32(0),
                       &skipProfilingInstrumentation);
     jump(profilerExitTail);
     bind(&skipProfilingInstrumentation);
   }
 
+  as_or(StackPointer, FramePointer, zero);
+  pop(FramePointer);
   ret();
 
   // If we are bailing out to baseline to handle an exception, jump to
   // the bailout tail stub. Load 1 (true) in ReturnReg to indicate success.
   bind(&bailout);
   loadPtr(Address(sp, ResumeFromException::offsetOfBailoutInfo()), a2);
+  loadPtr(Address(StackPointer, ResumeFromException::offsetOfStackPointer()),
+          StackPointer);
   ma_li(ReturnReg, Imm32(1));
-  loadPtr(Address(sp, ResumeFromException::offsetOfTarget()), a1);
-  jump(a1);
+  jump(bailoutTail);
 
   // If we are throwing and the innermost frame was a wasm frame, reset SP and
   // FP; SP is pointing to the unwound return address to the wasm entry, so
@@ -5356,6 +5336,7 @@ void MacroAssemblerLOONG64Compat::handleFailureWithHandlerTail(
           FramePointer);
   loadPtr(Address(StackPointer, ResumeFromException::offsetOfStackPointer()),
           StackPointer);
+  ma_li(InstanceReg, ImmWord(wasm::FailInstanceReg));
   ret();
 
   // Found a wasm catch handler, restore state and jump to it.

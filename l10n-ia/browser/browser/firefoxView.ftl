@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Recentemente claudite
 firefoxview-closed-tabs-description2 = Reaperi paginas que tu ha claudite in iste fenestra.
 firefoxview-closed-tabs-placeholder-header = Nulle schedas recentemente claudite
 firefoxview-closed-tabs-placeholder-body = Quando tu claude un scheda in iste fenestra, tu pote cercar lo de ci.
+firefoxview-closed-tabs-placeholder-body2 = Quando tu claude un scheda, tu pote cercar lo de ci.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Ultime active
 firefoxview-tabs-list-tab-button =
     .title = Aperir { $targetURI } in un nove scheda
 firefoxview-try-colorways-button = Prova combinationes de colores
-firefoxview-no-current-colorway-collection = Nove combinationes de colores es in cammino
 firefoxview-change-colorway-button = Cambiar combination de colores
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Monstrar lista
 firefoxview-collapse-button-hide =
     .title = Celar lista
+firefoxview-overview-nav = Navigation recente
+    .title = Navigation recente
+firefoxview-overview-header = Navigation recente
+    .title = Navigation recente
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Chronologia
+    .title = Chronologia
+firefoxview-history-header = Chronologia
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Schedas aperte
+    .title = Schedas aperte
+firefoxview-opentabs-header = Schedas aperte
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Schedas claudite recentemente
+    .title = Schedas claudite recentemente
+firefoxview-recently-closed-header = Schedas claudite recentemente
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Schedas ab altere apparatos
+    .title = Schedas ab altere apparatos
+firefoxview-synced-tabs-header = Schedas ab altere apparatos
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Vider toto
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Fenestra { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Fenestra { $winID } (Actual)
+firefoxview-opentabs-focus-tab =
+    .title = Passar a iste scheda
+firefoxview-show-more = Monstrar plus
+firefoxview-show-less = Monstrar minus
+firefoxview-sort-history-by-date-label = Ordinar per data
+firefoxview-sort-history-by-site-label = Ordinar per sito
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Hodie - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Heri - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Monstrar tote le chronologia

@@ -38,9 +38,11 @@ menu-quit =
             [windows] х
            *[other] ы
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Завершить { -brand-shorter-name }
+
 menu-about =
     .label = О { -brand-shorter-name }
     .accesskey = О
@@ -221,8 +223,6 @@ menu-history-undo-menu =
     .label = Недавно закрытые вкладки
 menu-history-undo-window-menu =
     .label = Недавно закрытые окна
-menu-history-reopen-all-tabs = Снова открыть все вкладки
-menu-history-reopen-all-windows = Снова открыть все окна
 
 ## Bookmarks Menu
 
@@ -231,14 +231,13 @@ menu-bookmarks-menu =
     .accesskey = З
 menu-bookmarks-manage =
     .label = Управление закладками
-menu-bookmark-current-tab =
-    .label = Добавить текущую вкладку в закладки
-menu-bookmark-edit =
-    .label = Изменить эту закладку
 menu-bookmark-tab =
     .label = Добавить текущую вкладку в закладки…
 menu-edit-bookmark =
     .label = Изменить эту закладку…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Искать в закладках
 menu-bookmarks-all-tabs =
     .label = Добавить все вкладки…
 menu-bookmarks-toolbar =
@@ -332,6 +331,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Отключить безопасный режим
     .accesskey = Б
+menu-help-switch-device =
+    .label = Переход на новое устройство
+    .accesskey = х
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

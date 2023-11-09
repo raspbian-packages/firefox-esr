@@ -11,6 +11,7 @@
 #include <stdint.h>
 
 #include "mozilla/widget/IMEData.h"
+#include "mozilla/ipc/IPCForwards.h"
 #include "mozilla/Assertions.h"
 #include "mozilla/CheckedInt.h"
 #include "mozilla/EventForwards.h"
@@ -43,6 +44,8 @@ class ContentCache {
   typedef widget::IMENotification IMENotification;
 
   ContentCache() = default;
+
+  [[nodiscard]] bool IsValid() const;
 
  protected:
   // Whole text in the target
@@ -87,6 +90,11 @@ class ContentCache {
         mAnchor = aSelectionChangeData.AnchorOffset();
         mFocus = aSelectionChangeData.FocusOffset();
       }
+    }
+
+    [[nodiscard]] bool IsValidIn(const nsAString& aText) const {
+      return !mHasRange ||
+             (mAnchor <= aText.Length() && mFocus <= aText.Length());
     }
 
     explicit Selection(const WidgetQueryContentEvent& aQuerySelectedTextEvent);
@@ -193,6 +201,10 @@ class ContentCache {
     uint32_t Offset() const { return mOffset; }
     bool HasRect() const { return !mRect.IsEmpty(); }
 
+    [[nodiscard]] bool IsValidIn(const nsAString& aText) const {
+      return mOffset <= aText.Length();
+    }
+
     friend std::ostream& operator<<(std::ostream& aStream,
                                     const Caret& aCaret) {
       aStream << "{ mOffset=" << aCaret.mOffset;
@@ -206,7 +218,7 @@ class ContentCache {
     Caret() = default;
 
     friend struct IPC::ParamTraits<ContentCache::Caret>;
-    friend struct IPC::ParamTraits<Maybe<ContentCache::Caret>>;
+    ALLOW_DEPRECATED_READPARAM
   };
   Maybe<Caret> mCaret;
 
@@ -279,7 +291,7 @@ class ContentCache {
     TextRectArray() = default;
 
     friend struct IPC::ParamTraits<ContentCache::TextRectArray>;
-    friend struct IPC::ParamTraits<Maybe<ContentCache::TextRectArray>>;
+    ALLOW_DEPRECATED_READPARAM
   };
   Maybe<TextRectArray> mTextRectArray;
   Maybe<TextRectArray> mLastCommitStringTextRectArray;
@@ -294,6 +306,7 @@ class ContentCache {
   friend std::ostream& operator<<(
       std::ostream& aStream,
       const Selection& aSelection);  // For e(Prev|Next)CharRect
+  ALLOW_DEPRECATED_READPARAM
 };
 
 class ContentCacheInChild final : public ContentCache {
@@ -314,13 +327,15 @@ class ContentCacheInChild final : public ContentCache {
 
   /**
    * Cache*() retrieves the latest content information and store them.
-   * Be aware, CacheSelection() calls CacheTextRects(), and also CacheText()
-   * calls CacheSelection().  So, related data is also retrieved automatically.
+   * Be aware, CacheSelection() calls CacheCaretAndTextRects(),
+   * CacheCaretAndTextRects() calls CacheCaret() and CacheTextRects(), and
+   * CacheText() calls CacheSelection().  So, related data is also retrieved
+   * automatically.
    */
   bool CacheEditorRect(nsIWidget* aWidget,
                        const IMENotification* aNotification = nullptr);
-  bool CacheSelection(nsIWidget* aWidget,
-                      const IMENotification* aNotification = nullptr);
+  bool CacheCaretAndTextRects(nsIWidget* aWidget,
+                              const IMENotification* aNotification = nullptr);
   bool CacheText(nsIWidget* aWidget,
                  const IMENotification* aNotification = nullptr);
 
@@ -330,8 +345,10 @@ class ContentCacheInChild final : public ContentCache {
   /**
    * SetSelection() modifies selection with specified raw data. And also this
    * tries to retrieve text rects too.
+   *
+   * @return true if the selection is cached.  Otherwise, false.
    */
-  void SetSelection(
+  [[nodiscard]] bool SetSelection(
       nsIWidget* aWidget,
       const IMENotification::SelectionChangeDataBase& aSelectionChangeData);
 
@@ -340,6 +357,8 @@ class ContentCacheInChild final : public ContentCache {
                      LayoutDeviceIntRect& aCharRect) const;
   bool QueryCharRectArray(nsIWidget* aWidget, uint32_t aOffset,
                           uint32_t aLength, RectArray& aCharRectArray) const;
+  bool CacheSelection(nsIWidget* aWidget,
+                      const IMENotification* aNotification = nullptr);
   bool CacheCaret(nsIWidget* aWidget,
                   const IMENotification* aNotification = nullptr);
   bool CacheTextRects(nsIWidget* aWidget,

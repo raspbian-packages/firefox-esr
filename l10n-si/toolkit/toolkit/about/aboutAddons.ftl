@@ -8,14 +8,16 @@ search-header =
     .placeholder = addons.mozilla.org හි සොයන්න
     .searchbuttonlabel = සොයන්න
 
-search-header-shortcut =
-    .key = f
+## Variables
+##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
 
 list-empty-get-extensions-message = <a data-l10n-name="get-extensions">{ $domain }</a> වෙතින් දිගු සහ තේමා ගන්න
 
 list-empty-get-dictionaries-message = <a data-l10n-name="get-extensions">{ $domain }</a> වෙතින් ශබ්දකෝෂ ගන්න
 
 list-empty-get-language-packs-message = <a data-l10n-name="get-extensions">{ $domain }</a> වෙතින් භාෂා ඇසුරුම් ගන්න
+
+##
 
 list-empty-installed =
     .value = මෙම වර්ගයේ කිසිදු එක්කහුවක් ස්ථාපනය කර නැත
@@ -41,7 +43,7 @@ sidebar-settings-button-title =
     .title = { -brand-short-name } සැකසුම්
 
 show-unsigned-extensions-button =
-    .label = ඇතැම් දිගු තහවුරු කළ නොහැකිය
+    .label = ඇතැම් දිගු සත්‍යාපනයට නොහැකි විය
 
 show-all-extensions-button =
     .label = සියළු දිගු පෙන්වන්න
@@ -139,7 +141,7 @@ addon-restart-now =
 disabled-unsigned-heading =
     .value = ඇතැම් එක්කහු අබල කර ඇත
 
-disabled-unsigned-description = { -brand-short-name } හි භාවිතයට පහත එක්කහු තහවුරු කර නැත. <label data-l10n-name="find-addons">ආදේශකයක් සොයා ගන්න</label> හෝ ඒවා තහවුරු කර ගන්නා ලෙස සංවර්ධකයාට දන්වන්න.
+disabled-unsigned-description = { -brand-short-name } හි භාවිතයට පහත එක්කහු සත්‍යාපනය කර නැත. <label data-l10n-name="find-addons">ආදේශකයක් සොයා ගන්න</label> හෝ ඒවා සත්‍යාපනය කරන ලෙස සංවර්ධකයාට දන්වන්න.
 
 addon-category-discover = නිර්දේශ
 addon-category-discover-title =
@@ -168,6 +170,10 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = අඩවි අවසර
 addon-category-sitepermission-title =
     .title = අඩවි අවසර
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string) - DNS host name for which the webextension enables permissions
+addon-sitepermission-host = { $host } සඳහා අඩවි අවසර
 
 ## These are global warnings
 
@@ -240,6 +246,8 @@ shortcuts-duplicate = අනුපිටපත් කෙටිමඟකි
 #   $addon (string) - Name of the add-on
 shortcuts-exists = දැනටමත් { $addon } සඳහා භාවිතා කරයි
 
+# Variables:
+#   $numberToShow (number) - Number of other elements available to show
 shortcuts-card-expand-button =
     { $numberToShow ->
        *[other] තවත් { $numberToShow } ක් පෙන්වන්න
@@ -302,18 +310,7 @@ extension-enabled-heading = සබල කර ඇත
 extension-disabled-heading = අබල කර ඇත
 
 theme-enabled-heading = සබල කර ඇත
-theme-disabled-heading = අබල කර ඇත
 theme-disabled-heading2 = සුරැකි තේමා
-theme-monochromatic-heading = වර්ණ පරාස
-theme-monochromatic-subheading = { -brand-product-name } වෙතින් උද්දීප්ත නව වර්ණ පරාස. සීමිත කාලයක් සඳහා තිබේ.
-
-# Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
-theme-colorways-button = වර්ණ පරාස ගන්න
-# Refers to the button label for the colorways card when a user has a colorway theme enabled.
-theme-colorways-button-colorway-enabled = වර්ණ පරාස සංශෝධනය
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
-colorway-collection-expiry-label = ඉකුත් වීම { DATETIME($expiryDate, month: "long", day: "numeric") }
 
 plugin-enabled-heading = සබලයි
 plugin-disabled-heading = අබලයි
@@ -376,6 +373,9 @@ addon-badge-private-browsing-allowed2 =
 addon-detail-private-browsing-allow = ඉඩ දෙන්න
 addon-detail-private-browsing-disallow = ඉඩ නොදෙන්න
 
+## "sites with restrictions" (internally called "quarantined") are special domains
+## where add-ons are normally blocked for security reasons.
+
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
 
@@ -405,6 +405,8 @@ addon-permissions-learnmore = අවසර ගැන තව දැනගන්�
 recommended-extensions-heading = නිර්දේශිත දිගු
 recommended-themes-heading = නිර්දේශිත තේමා
 
+# Variables:
+#   $hostname (string) - Host where the permissions are granted
 addon-sitepermissions-required = <span data-l10n-name="hostname">{ $hostname }</span> වෙත පහත ශක්‍යතා ප්‍රදානය කරයි:
 
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
@@ -434,16 +436,20 @@ addon-page-options-button =
 ## Variables:
 ##   $name (String): name of the add-on.
 
-# Variables:
-#   $version (String): application version.
-details-notification-incompatible = { -brand-short-name } { $version } සමඟ { $name } නොගැළපෙයි.
 
+## Detail notifications
+## Variables:
+##   $name (string) - Name of the add-on.
+
+# Variables:
+#   $version (string) - Application version.
+details-notification-incompatible = { -brand-short-name } { $version } සමඟ { $name } නොගැළපෙයි.
 details-notification-incompatible-link = තව තොරතුරු
 
-details-notification-unsigned-and-disabled = { -brand-short-name } හි භාවිතය සඳහා { $name } තහවුරු කළ නොහැකි බැවින් අබල කර ඇත.
+details-notification-unsigned-and-disabled = { -brand-short-name } හි භාවිතය සඳහා { $name } සත්‍යාපනය කළ නොහැකි බැවින් අබල කර ඇත.
 details-notification-unsigned-and-disabled-link = වැඩිදුර තොරතුරු
 
-details-notification-unsigned = { -brand-short-name } හි භාවිතයට { $name } තහවුරු කළ නොහැකිය. ප්‍රවේශම්ව ඉදිරියට යන්න.
+details-notification-unsigned = { -brand-short-name } හි භාවිතයට { $name } සත්‍යාපනය කළ නොහැකිය. ප්‍රවේශම්ව ඉදිරියට යන්න.
 details-notification-unsigned-link = වැඩිදුර තොරතුරු
 
 details-notification-blocked = ආරක්‍ෂණ හෝ ස්ථායිතා දෝෂ නිසා { $name } අබල කර ඇත.

@@ -11,8 +11,8 @@
 //
 // NOTE: Allowing a whole class of rejections should be avoided. Normally you
 //       should use "expectUncaughtRejection" to flag individual failures.
-const { PromiseTestUtils } = ChromeUtils.import(
-  "resource://testing-common/PromiseTestUtils.jsm"
+const { PromiseTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/PromiseTestUtils.sys.mjs"
 );
 PromiseTestUtils.allowMatchingRejectionsGlobally(/NS_ERROR_ILLEGAL_VALUE/);
 
@@ -21,11 +21,7 @@ const kApiKeyPref = "browser.translation.yandex.apiKeyOverride";
 const kDetectLanguagePref = "browser.translation.detectLanguage";
 const kShowUIPref = "browser.translation.ui.show";
 
-const { Translation } = ChromeUtils.import(
-  "resource:///modules/translation/TranslationParent.jsm"
-);
-
-add_setup(async function() {
+add_setup(async function () {
   await SpecialPowers.pushPrefEnv({
     set: [
       [kEnginePref, "Yandex"],
@@ -49,7 +45,7 @@ add_task(async function test_yandex_translation() {
   gBrowser.selectedTab = tab;
   let browser = tab.linkedBrowser;
 
-  await SpecialPowers.spawn(browser, [], async function() {
+  await SpecialPowers.spawn(browser, [], async function () {
     const { TranslationDocument } = ChromeUtils.import(
       "resource:///modules/translation/TranslationDocument.jsm"
     );
@@ -66,22 +62,6 @@ add_task(async function test_yandex_translation() {
 
     Assert.ok(result, "There should be a result.");
   });
-
-  gBrowser.removeTab(tab);
-});
-
-/**
- * Ensure that Yandex.Translate is propertly attributed.
- */
-add_task(async function test_yandex_attribution() {
-  // Loading the fixture page.
-  let url = constructFixtureURL("bug1022725-fr.html");
-  let tab = await promiseTestPageLoad(url);
-
-  info("Show an info bar saying the current page is in French");
-  let notif = showTranslationUI(tab, "fr");
-  let attribution = notif._getAnonElt("translationEngine").selectedIndex;
-  Assert.equal(attribution, 1, "Yandex attribution should be shown.");
 
   gBrowser.removeTab(tab);
 });
@@ -142,9 +122,8 @@ function promiseTestPageLoad(url) {
 
 function showTranslationUI(tab, aDetectedLanguage) {
   let browser = gBrowser.selectedBrowser;
-  let actor = browser.browsingContext.currentWindowGlobal.getActor(
-    "Translation"
-  );
+  let actor =
+    browser.browsingContext.currentWindowGlobal.getActor("Translation");
   actor.documentStateReceived({
     state: Translation.STATE_OFFER,
     originalShown: true,

@@ -5,10 +5,12 @@
 
 about-logins-page-title = Pśizjawjenja a gronidła
 
-login-filter =
-    .placeholder = Pśizjawjenja pytaś
+about-logins-login-filter =
+    .placeholder = Pśizjawjenja pśepytaś
+    .key = F
 
-create-login-button = Nowe pśizjawjenje załožyś
+create-new-login-button =
+    .title = Nowe pśizjawjenje załožyś
 
 fxaccounts-sign-in-text = Pśinjasćo swóje gronidła do wašych drugich rědow
 fxaccounts-sign-in-sync-button = Pla Sync pśizjawiś
@@ -35,12 +37,24 @@ about-logins-menu-menuitem-help = Pomoc
 
 login-list =
     .aria-label = Pśizjawjenja, kótarež pytańskemu napšašowanjeju wótpowěduju
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } pśizjawjenje
         [two] { $count } pśizjawjeni
         [few] { $count } pśizjawjenja
        *[other] { $count } pśizjawjenjow
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count } z { $total } přizjewjenja
+        [two] { $count } z { $total } přizjewjenjow
+        [few] { $count } z { $total } přizjewjenjow
+       *[other] { $count } z { $total } přizjewjenjow
     }
 login-list-sort-label-text = Sortěrowaś pó:
 login-list-name-option = Mjenju (A-Z)
@@ -101,9 +115,17 @@ login-item-copied-password-button-text = Kopěrowany!
 login-item-save-changes-button = Změny składowaś
 login-item-save-new-button = Składowaś
 login-item-cancel-button = Pśetergnuś
-login-item-time-changed = Slědna změna: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Załožony: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Slědne wužyśe: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = Napórany
+login-item-timeline-action-updated = Zaktualizěrowany
+login-item-timeline-action-used = Wužyty
 
 ## OS Authentication dialog
 
@@ -153,6 +175,9 @@ confirmation-dialog-dismiss-button =
 about-logins-confirm-remove-dialog-title = Toś to pśizjawjenje wótwónoźeś?
 confirm-delete-dialog-message = Toś ta akcija njedajo se anulěrowaś.
 about-logins-confirm-remove-dialog-confirm-button = Wótwónoźeś
+
+## Variables
+##   $count (number) - Number of items
 
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
@@ -204,6 +229,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] To pśizjawjenja wótwónoźijo, kótarež sćo składł w { -brand-short-name } na wšych rědach a kótarež su z wašym kontom { -fxaccount-brand-name } synchronizěrowane. To teke warnowanja wó datowych źěrach wótwónoźijo, kótarež se how pokazuju. Njamóžośo toś tu akciju anulěrowaś.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Pśizjawjenja a gronidła eksportěrowaś
 about-logins-confirm-export-dialog-message = Wašo gronidła budu se ako cytajobny tekst składowaś (na pś. BadP@ass0rd), togodla móžo kuždy, kótaryž móžo eksportěrowanu dataju wócyniś, je wiźeś.
 about-logins-confirm-export-dialog-confirm-button = Eksportěrowaś…
@@ -223,7 +250,6 @@ about-logins-breach-alert-date = Toś ta datowa źěra jo nastała { DATETIME($d
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = K { $hostname }
-about-logins-breach-alert-learn-more-link = Dalšne informacije
 
 ## Vulnerable Password notification
 

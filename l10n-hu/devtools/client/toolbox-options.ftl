@@ -46,6 +46,12 @@ options-inspector-draggable-properties-label = Kattintson és húzza a méretér
 options-inspector-draggable-properties-tooltip =
     .title = Kattintson és húzza a méretértékek szerkesztéséhez a vizsgáló szabályok nézetében.
 
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Egyszerűbb kiemelők használata a prefers-reduced-motion beállítás mellett
+options-inspector-simplified-highlighters-tooltip =
+    .title = Engedélyezi az egyszerűsített kiemelőket, ha a prefers-reduced-motion engedélyezett. A kitöltött téglalapok helyett vonalakat rajzol a kijelölt elemek köré, hogy elkerülje a villogó hatásokat.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Alapértelmezett színegység
@@ -124,6 +130,11 @@ options-enable-remote-label = Távoli hibakeresés be/ki
 options-enable-remote-tooltip2 =
     .title = A beállítás bekapcsolásával engedélyezi a böngészőpéldány távoli hibakeresését.
 
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = Használja az F12 billentyűt a fejlesztői eszközök megnyitásához vagy bezárásához
+options-enable-f12-tooltip =
+    .title = A beállítás bekapcsolása hozzáköti az F12 billentyűt a fejlesztői eszköztár megnyitásához és bezárásához
+
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Egyéni formázók engedélyezése
 options-enable-custom-formatters-tooltip =
@@ -141,4 +152,3 @@ options-source-maps-tooltip =
 
 # The message shown for settings that trigger page reload
 options-context-triggers-page-refresh = * Csak ez a munkamenet, újratölti az oldalt
-

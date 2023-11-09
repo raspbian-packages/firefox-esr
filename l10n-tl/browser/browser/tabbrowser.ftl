@@ -3,19 +3,18 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = Bagong Tab
+
 tabbrowser-menuitem-close-tab =
     .label = Isara ang Tab
 tabbrowser-menuitem-close =
     .label = Isara
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -100,6 +99,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Huwag kailanman ipakita ang dialog b
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Payagan ang mga katulad nitong notification mula sa { $domain } na dalhin ka sa kanilang tab
+
 tabbrowser-customizemode-tab-title = I-customize ang { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -118,3 +118,13 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = I-unmute ang mga Tab
     .accesskey = m
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Ilista ang lahat ng { $tabCount } na tab
+
+## Tab manager menu buttons
+

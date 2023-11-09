@@ -18,7 +18,7 @@
 
 "use strict";
 
-add_task(async function() {
+add_task(async function () {
   // Load the test page before opening the debugger so that WASM are built
   // without debugging instructions. Opening the console still doesn't enable debugging instructions.
   const tab = await addTab(EXAMPLE_URL + "doc-wasm-sourcemaps.html");
@@ -47,10 +47,10 @@ add_task(async function() {
   // as we aren't fetching any source.
   await dbg.actions.selectLocation(
     getContext(dbg),
-    { sourceId: source.id },
+    createLocation({ source }),
     { keepContext: false }
   );
-  is(getCM(dbg).getValue(), `Error loading this URI: Unknown source`);
+  is(getCM(dbg).getValue(), `Please refresh to debug this module`);
 
   info("Reload and assert that WASM files are then debuggable");
   await reload(dbg, "doc-wasm-sourcemaps.html", "fib.wasm", "fib.c");
@@ -99,7 +99,7 @@ add_task(async function() {
   // While the decimal one is the line where the line appear in CodeMirror.
   // So while we set the breakpoint on the decimal line in CodeMirror gutter,
   // internaly, the engine sets the breakpoint on the "virtual line".
-  const virtualBinaryLine = 0x118;
+  const virtualBinaryLine = 0x11a;
   is(
     "0x" + virtualBinaryLine.toString(16),
     "0x" + generatedLine.toString(16),
@@ -109,10 +109,10 @@ add_task(async function() {
     dbg.wasmOffsetToLine(binarySource.id, virtualBinaryLine) + 1;
 
   // We can't use selectSource here because binary source won't have symbols loaded
-  // (hasSymbols(source) selector will be false)
+  // (getSymbols(source) selector will be false)
   await dbg.actions.selectLocation(
     getContext(dbg),
-    { sourceId: binarySource.id },
+    createLocation({ source: binarySource }),
     { keepContext: false }
   );
 
@@ -121,16 +121,27 @@ add_task(async function() {
   await addBreakpoint(dbg, binarySource, virtualBinaryLine);
   invokeInTab("runWasm");
 
+  // We can't use waitForPaused test helper as the text content isn't displayed correctly
+  // so only assert that we are in paused state.
   await waitForPaused(dbg);
+  // We don't try to assert paused line as there is two types of line in wasm
+  assertPausedAtSourceAndLine(dbg, binarySource.id, virtualBinaryLine);
+
+  // Switch to original source
   info(
-    "The original C source is automatically displayed, even if we originaly set the breakpoint from the binary source"
+    "Manually switch to original C source as we set the breakpoint on binary source, we paused on it"
   );
+  await dbg.actions.jumpToMappedSelectedLocation(getContext(dbg));
+
+  // But once we switch to original source, we should have the original text content and be able
+  // to do all classic assertions for paused state.
+  await waitForPaused(dbg);
   assertPausedAtSourceAndLine(dbg, findSource(dbg, "fib.c").id, breakpointLine);
 
   info("Reselect the binary source");
   await dbg.actions.selectLocation(
     getContext(dbg),
-    { sourceId: binarySource.id },
+    createLocation({ source: binarySource }),
     { keepContext: false }
   );
 

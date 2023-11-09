@@ -16,7 +16,6 @@ styleeditor-save-button = ಉಳಿಸು
     .accesskey = S
 styleeditor-options-button =
     .tooltiptext = `ಶೈಲಿ ಸಂಪಾದಕ ಆಯ್ಕೆಗಳು
-styleeditor-media-rules = @media ನಿಯಮಗಳು
 styleeditor-editor-textbox =
     .data-placeholder = ಇಲ್ಲಿ CSS ಅನ್ನು ನಮೂದಿಸಿ.
 styleeditor-no-stylesheet = ಈ ಪುಟವು ಯಾವುದೆ ಶೈಲಿ ಹಾಳೆಯನ್ನು ಹೊಂದಿಲ್ಲ.
@@ -32,3 +31,12 @@ styleeditor-find-again =
 styleeditor-go-to-line =
     .label = ಈ ಸಾಲಿಗೆ ಹೋಗು…
     .accesskey = J
+
+# This string is shown in the style sheets list
+# Variables:
+#   $ruleCount (Integer) - The number of rules in the stylesheet.
+styleeditor-stylesheet-rule-count =
+    { $ruleCount ->
+        [one] { $ruleCount } ನಿಯಮ.
+       *[other] { $ruleCount } ನಿಯಮಗಳು.
+    }

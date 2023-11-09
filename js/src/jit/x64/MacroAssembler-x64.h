@@ -136,7 +136,6 @@ class MacroAssemblerX64 : public MacroAssemblerX86Shared {
   /////////////////////////////////////////////////////////////////
   // X86/X64-common interface.
   /////////////////////////////////////////////////////////////////
-  Address ToPayload(Address value) { return value; }
 
   void storeValue(ValueOperand val, Operand dest) {
     movq(val.valueReg(), dest);
@@ -217,6 +216,10 @@ class MacroAssemblerX64 : public MacroAssemblerX86Shared {
     push(scratch);
   }
   void pushValue(const Address& addr) { push(Operand(addr)); }
+
+  void pushValue(const BaseIndex& addr, Register scratch) {
+    push(Operand(addr));
+  }
 
   void boxValue(JSValueType type, Register src, Register dest);
 
@@ -904,6 +907,17 @@ class MacroAssemblerX64 : public MacroAssemblerX86Shared {
     andq(src.valueReg(), dest);
   }
 
+  // Like unboxGCThingForGCBarrier, but loads the GC thing's chunk base.
+  void getGCThingValueChunk(const Address& src, Register dest) {
+    movq(ImmWord(JS::detail::ValueGCThingPayloadChunkMask), dest);
+    andq(Operand(src), dest);
+  }
+  void getGCThingValueChunk(const ValueOperand& src, Register dest) {
+    MOZ_ASSERT(src.valueReg() != dest);
+    movq(ImmWord(JS::detail::ValueGCThingPayloadChunkMask), dest);
+    andq(src.valueReg(), dest);
+  }
+
   inline void fallibleUnboxPtrImpl(const Operand& src, Register dest,
                                    JSValueType type, Label* fail);
 
@@ -1162,10 +1176,6 @@ class MacroAssemblerX64 : public MacroAssemblerX86Shared {
     }
   }
 
-  void loadInstructionPointerAfterCall(Register dest) {
-    loadPtr(Address(StackPointer, 0x0), dest);
-  }
-
   // Checks whether a double is representable as a 64-bit integer. If so, the
   // integer is written to the output register. Otherwise, a bailout is taken to
   // the given snapshot. This function overwrites the scratch float register.
@@ -1192,7 +1202,8 @@ class MacroAssemblerX64 : public MacroAssemblerX86Shared {
                            Label* failure);
 
  public:
-  void handleFailureWithHandlerTail(Label* profilerExitTail);
+  void handleFailureWithHandlerTail(Label* profilerExitTail,
+                                    Label* bailoutTail);
 
   // Instrumentation for entering and leaving the profiler.
   void profilerEnterFrame(Register framePtr, Register scratch);

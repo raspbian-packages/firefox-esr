@@ -33,6 +33,8 @@ appmenuitem-print =
     .label = Moullañ…
 appmenuitem-find-in-page =
     .label = Klask er bajenn…
+appmenuitem-translate =
+    .label = Treiñ ar bajenn…
 appmenuitem-zoom =
     .value = Zoum
 appmenuitem-more-tools =
@@ -126,8 +128,6 @@ profiler-popup-button-recording =
 profiler-popup-button-capturing =
     .label = Aelader
     .tooltiptext = An aelader a enroll an aelad
-profiler-popup-title =
-    .value = { -profiler-brand-name }
 profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Diskouez muioc'h a ditouroù
@@ -164,7 +164,7 @@ profiler-popup-capture-shortcut =
 
 
 # Presets and their l10n IDs are defined in the file
-# devtools/client/performance-new/popup/background.jsm.js
+# devtools/client/performance-new/shared/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
 profiler-popup-presets-web-developer-description = Rakarventennoù erbedet evit diveugañ an arloadoù gant un overhead izel.
@@ -182,6 +182,7 @@ profiler-popup-presets-media-label =
 profiler-popup-presets-networking-description = Rakarventennoù evit enklask ar beugoù rouedad e { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = Rouedad
+profiler-popup-presets-power-description = Arventenn evit dielfennañ ar beugoù liammet gant an implij tredan e { -brand-shorter-name }, gant nebeut a zreistkarg.
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = Energiezh
@@ -192,8 +193,6 @@ profiler-popup-presets-custom-label =
 
 appmenu-manage-history =
     .label = Merañ ar roll istor
-appmenu-reopen-all-tabs = Digeriñ en-dro an holl ivinelloù
-appmenu-reopen-all-windows = Digeriñ en-dro an holl prenestroù
 appmenu-restore-session =
     .label = Assav an estez kent
 appmenu-clear-history =
@@ -203,6 +202,9 @@ appmenu-recently-closed-tabs =
     .label = Ivinelloù serret nevez zo
 appmenu-recently-closed-windows =
     .label = Prenestroù serret nevez zo
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Klask er roll istor
 
 ## Help panel
 
@@ -222,6 +224,8 @@ appmenu-help-report-site-issue =
 appmenu-help-share-ideas =
     .label = Kinnig mennozhioù hag alioù
     .accesskey = K
+appmenu-help-switch-device =
+    .label = Tremen war un trevnad nevez
 
 ## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
 ## are mutually exclusive, so it's possible to use the same accesskey for both.

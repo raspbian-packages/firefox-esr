@@ -20,11 +20,11 @@ origin:
 
   # Human-readable identifier for this version/release
   # Generally "version NNN", "tag SSS", "bookmark SSS"
-  release: commit 0b61a191
+  release: commit f71a1bc736fde37509262ca03e91d8f56a13aeb5
 
   # Revision to pull in
   # Must be a long or short commit SHA (long preferred)
-  revision: 0b61a191
+  revision: f71a1bc736fde37509262ca03e91d8f56a13aeb5
 
   license: ['MIT', 'Apache-2.0']
 
@@ -33,7 +33,7 @@ updatebot:
     maintainer-bz: jimb@mozilla.com
     tasks:
       - type: vendoring
-        enabled: true
+        enabled: false
         frequency: 1 week
 
 vendoring:

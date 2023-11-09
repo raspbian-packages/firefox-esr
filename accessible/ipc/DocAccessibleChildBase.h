@@ -20,8 +20,7 @@ class AccShowEvent;
 
 class DocAccessibleChildBase : public PDocAccessibleChild {
  public:
-  explicit DocAccessibleChildBase(DocAccessible* aDoc)
-      : mDoc(aDoc), mIsRemoteConstructed(false) {
+  explicit DocAccessibleChildBase(DocAccessible* aDoc) : mDoc(aDoc) {
     MOZ_COUNT_CTOR(DocAccessibleChildBase);
   }
 
@@ -75,6 +74,50 @@ class DocAccessibleChildBase : public PDocAccessibleChild {
   virtual mozilla::ipc::IPCResult RecvDoActionAsync(
       const uint64_t& aID, const uint8_t& aIndex) override;
 
+  virtual mozilla::ipc::IPCResult RecvSetCaretOffset(
+      const uint64_t& aID, const int32_t& aOffset) override;
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  virtual mozilla::ipc::IPCResult RecvSetTextSelection(
+      const uint64_t& aStartID, const int32_t& aStartOffset,
+      const uint64_t& aEndID, const int32_t& aEndOffset,
+      const int32_t& aSelectionNum) override;
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  virtual mozilla::ipc::IPCResult RecvScrollTextLeafRangeIntoView(
+      const uint64_t& aStartID, const int32_t& aStartOffset,
+      const uint64_t& aEndID, const int32_t& aEndOffset,
+      const uint32_t& aScrollType) override;
+
+  virtual mozilla::ipc::IPCResult RecvRemoveTextSelection(
+      const uint64_t& aID, const int32_t& aSelectionNum) override;
+
+  virtual mozilla::ipc::IPCResult RecvSetCurValue(
+      const uint64_t& aID, const double& aValue) override;
+
+  virtual mozilla::ipc::IPCResult RecvReplaceText(
+      const uint64_t& aID, const nsAString& aText) override;
+
+  virtual mozilla::ipc::IPCResult RecvInsertText(
+      const uint64_t& aID, const nsAString& aText,
+      const int32_t& aPosition) override;
+
+  virtual mozilla::ipc::IPCResult RecvCopyText(const uint64_t& aID,
+                                               const int32_t& aStartPos,
+                                               const int32_t& aEndPos) override;
+
+  virtual mozilla::ipc::IPCResult RecvCutText(const uint64_t& aID,
+                                              const int32_t& aStartPos,
+                                              const int32_t& aEndPos) override;
+
+  virtual mozilla::ipc::IPCResult RecvDeleteText(
+      const uint64_t& aID, const int32_t& aStartPos,
+      const int32_t& aEndPos) override;
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY
+  virtual mozilla::ipc::IPCResult RecvPasteText(
+      const uint64_t& aID, const int32_t& aPosition) override;
+
  protected:
   static void FlattenTree(LocalAccessible* aRoot,
                           nsTArray<LocalAccessible*>& aTree);
@@ -93,13 +136,10 @@ class DocAccessibleChildBase : public PDocAccessibleChild {
     }
   }
 
-  bool IsConstructedInParentProcess() const { return mIsRemoteConstructed; }
-  void SetConstructedInParentProcess() { mIsRemoteConstructed = true; }
-
   LocalAccessible* IdToAccessible(const uint64_t& aID) const;
+  HyperTextAccessible* IdToHyperTextAccessible(const uint64_t& aID) const;
 
   DocAccessible* mDoc;
-  bool mIsRemoteConstructed;
 
   friend void DocAccessible::DoInitialUpdate();
 };

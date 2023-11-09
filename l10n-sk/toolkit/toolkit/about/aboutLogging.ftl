@@ -2,28 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
--profiler-brand-name = Firefox Profiler
-
-##
-
 # This is the title of the page
 about-logging-title = O vytváraní protokolu
 about-logging-page-title = Správca protokolovania
 about-logging-current-log-file = Aktuálny súbor protokolu:
-about-logging-current-log-modules = Aktuálne moduly protokolu:
 about-logging-new-log-file = Nový súbor protokolu:
 about-logging-currently-enabled-log-modules = Aktuálne povolené moduly pre protokolovanie:
 about-logging-log-tutorial = Ak sa chcete dozvedieť informácie o používaní tohto nástroja, prosím, navštívte stránku <a data-l10n-name="logging">HTTP Logging</a>.
@@ -44,15 +26,25 @@ about-logging-logging-to-profiler = Záznam do nástroja { -profiler-brand-name 
 about-logging-no-log-modules = Žiadne
 about-logging-no-log-file = Žiadny
 about-logging-logging-preset-selector-text = Predvoľba protokolovania:
+about-logging-with-profiler-stacks-checkbox = Povoliť výpis zásobníka pre správy z protokolu
 
 ## Logging presets
 
 about-logging-preset-networking-label = Sieťová aktivita
 about-logging-preset-networking-description = Moduly protokolovania na diagnostiku problémov so sieťou
+about-logging-preset-networking-cookie-label = Súbory cookies
+about-logging-preset-networking-cookie-description = Moduly protokolovania na diagnostiku problémov so súbormi cookies
+about-logging-preset-networking-websocket-label = WebSockety
+about-logging-preset-networking-websocket-description = Moduly protokolovania na diagnostiku problémov s WebSocket
+about-logging-preset-networking-http3-label = HTTP/3
+about-logging-preset-networking-http3-description = Moduly protokolovania na diagnostiku problémov s HTTP/3 a QUIC
 about-logging-preset-media-playback-label = Prehrávanie médií
 about-logging-preset-media-playback-description = Moduly protokolovania na diagnostiku problémov s prehrávaním médií (nie problémov s videokonferenciami)
+about-logging-preset-webrtc-label = WebRTC
+about-logging-preset-webrtc-description = Moduly protokolovania na diagnostiku problémov volaní WebRTC
 about-logging-preset-custom-label = Vlastná
 about-logging-preset-custom-description = Moduly protokolovania zvolené manuálne
+
 # Error handling
 about-logging-error = Chyba:
 
@@ -66,4 +58,5 @@ about-logging-unknown-profiler-preset = Neznáma predvoľba profilovania “{ $v
 about-logging-unknown-option = Neznáma predvoľba about:logging “{ $k }“
 about-logging-configuration-url-ignored = Konfiguračná adresa URL bola ignorovaná
 about-logging-file-and-profiler-override = Nie je možné súčasne vynútiť výstup do súboru a prepísať nastavenia profilovania
+
 about-logging-configured-via-url = Možnosť nakonfigurovaná prostredníctvom adresy URL

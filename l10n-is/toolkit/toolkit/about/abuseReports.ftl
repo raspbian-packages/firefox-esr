@@ -18,6 +18,8 @@ abuse-report-addon-authored-by = eftir <a data-l10n-name="author-name">{ $author
 abuse-report-learnmore =
     Óviss um hvað ætti að velja?
     <a data-l10n-name="learnmore-link">Lærðu meira um hvernig á að tilkynna forritsauka eða þemu</a>
+abuse-report-learnmore-intro = Óviss um hvað ætti að velja?
+abuse-report-learnmore-link = Lærðu meira um hvernig á að tilkynna forritsauka eða þemu
 abuse-report-submit-description = Lýstu vandamálinu (valfrjálst)
 abuse-report-textarea =
     .placeholder = Það auðveldar okkur að tækla vandamálið ef við vitum meira um þetta. Lýstu því sem þú upplifir. Þakka þér fyrir að hjálpa okkur að halda vefnum heilbrigðums.

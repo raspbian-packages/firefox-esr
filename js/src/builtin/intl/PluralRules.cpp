@@ -10,13 +10,11 @@
 
 #include "mozilla/Assertions.h"
 #include "mozilla/Casting.h"
-#include "mozilla/intl/NumberFormat.h"
 #include "mozilla/intl/PluralRules.h"
 
 #include "builtin/Array.h"
 #include "builtin/intl/CommonFunctions.h"
 #include "gc/GCContext.h"
-#include "js/CharacterEncoding.h"
 #include "js/PropertySpec.h"
 #include "vm/GlobalObject.h"
 #include "vm/JSContext.h"
@@ -352,23 +350,15 @@ bool js::intl_SelectPluralRuleRange(JSContext* cx, unsigned argc, Value* vp) {
   double y = args[2].toNumber();
 
   // Step 5.
-  if (mozilla::IsNaN(x)) {
+  if (std::isnan(x)) {
     JS_ReportErrorNumberASCII(cx, GetErrorMessage, nullptr,
                               JSMSG_NAN_NUMBER_RANGE, "start", "PluralRules",
                               "selectRange");
     return false;
   }
-  if (mozilla::IsNaN(y)) {
+  if (std::isnan(y)) {
     JS_ReportErrorNumberASCII(cx, GetErrorMessage, nullptr,
                               JSMSG_NAN_NUMBER_RANGE, "end", "PluralRules",
-                              "selectRange");
-    return false;
-  }
-
-  // Step 6.
-  if (x > y) {
-    JS_ReportErrorNumberASCII(cx, GetErrorMessage, nullptr,
-                              JSMSG_START_AFTER_END_NUMBER, "PluralRules",
                               "selectRange");
     return false;
   }
@@ -379,7 +369,7 @@ bool js::intl_SelectPluralRuleRange(JSContext* cx, unsigned argc, Value* vp) {
     return false;
   }
 
-  // Steps 7-11.
+  // Steps 6-10.
   auto keywordResult = pr->SelectRange(x, y);
   if (keywordResult.isErr()) {
     intl::ReportInternalError(cx, keywordResult.unwrapErr());

@@ -71,7 +71,7 @@ restart-later = Reaviar mai tard
 ## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
 ##
 ## Variables:
-##   $name (String): name of the extension
+##   $name (string) - Name of the extension
 
 # This string is shown to notify the user that the password manager setting
 # is being controlled by an extension
@@ -120,6 +120,11 @@ startup-restore-warn-on-quit =
     .label = Vos avisar en sortir del navegador
 disable-extension =
     .label = Desactivar l’extension
+preferences-data-migration-header = Importar las donadas d’un navegador
+preferences-data-migration-description = Importar los marcapaginas, senhals, l’istoric e las donadas d’emplenatge automatic dins { -brand-short-name }.
+preferences-data-migration-button =
+    .label = Importar las donadas
+    .accesskey = m
 tabs-group-header = Onglets
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab fa passar los onglets dins l'òrdre de darrièra utilizacion
@@ -132,7 +137,7 @@ confirm-on-close-multiple-tabs =
     .accesskey = a
 # This string is used for the confirm before quitting preference.
 # Variables:
-#   $quitKey (String) - the quit keyboard shortcut, and formatted
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
 #                       in the same manner as it would appear,
 #                       for example, in the File menu.
 confirm-on-quit-with-key =
@@ -155,6 +160,10 @@ browser-containers-settings =
     .label = Paramètres…
     .accesskey = t
 containers-disable-alert-title = Tampar totes los onglets de contenedor ?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] Se desactivetz los onglets isolats ara, { $tabCount } onglet isolat serà tampat. Segur que volatz desactivar los onglets isolats ?
@@ -165,10 +174,13 @@ containers-disable-alert-ok-button =
         [one] Tampar { $tabCount } onglet isolat
        *[other] Tampar { $tabCount } onglets isolats
     }
+
+##
+
 containers-disable-alert-cancel-button = Gardar activat
 containers-remove-alert-title = Suprimir aqueste contenedor ?
 # Variables:
-#   $count (Number) - Number of tabs that will be closed.
+#   $count (number) - Number of tabs that will be closed.
 containers-remove-alert-msg =
     { $count ->
         [one] Se suprimiscatz aquel contenedor ara, { $count } onglet isolat serà tampat. Segur que volètz suprimir aqueste contenidor ? 
@@ -182,25 +194,15 @@ containers-remove-cancel-button = Suprimir pas aqueste contenedor
 language-and-appearance-header = Lenga e aparéncia
 preferences-web-appearance-header = Aparéncia dels sites web
 preferences-web-appearance-description = D’unes sites web adaptan lor jòc de colors segon vòstras preferéncias. Causissètz lo jòc de colors que volètz emplegar per aqueles sites.
-preferences-web-appearance-choice-browser = Tèma de { -brand-short-name }
-preferences-web-appearance-choice-system = Tèma del sistèma
 preferences-web-appearance-choice-auto = Automatic
 preferences-web-appearance-choice-light = Clar
 preferences-web-appearance-choice-dark = Escur
-preferences-web-appearance-choice-tooltip-browser =
-    .title = Fasètz correspondre los paramètres de tèma de { -brand-short-name } pels rèireplans e lo contengut dels sites web.
-preferences-web-appearance-choice-tooltip-system =
-    .title = Fasètz correspondre los paramètres sistèma pels rèireplans e lo contengut dels sites web.
 preferences-web-appearance-choice-tooltip-auto =
     .title = Cambiament automatic dels rèireplans e dels contenguts dels sites Web segon los paramètres sistèma e del tèma de { -brand-short-name }.
 preferences-web-appearance-choice-tooltip-light =
     .title = Utilizar una aparéncia clara pels rèireplans e lo contengut dels sites web.
 preferences-web-appearance-choice-tooltip-dark =
     .title = Utilizar una aparéncia escura pels rèireplans e lo contengut dels sites web.
-preferences-web-appearance-choice-input-browser =
-    .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
-preferences-web-appearance-choice-input-system =
-    .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
 preferences-web-appearance-choice-input-auto =
     .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
@@ -230,6 +232,8 @@ advanced-fonts =
 preferences-zoom-header = Zoom
 preferences-default-zoom = Zoom per defaut
     .accesskey = Z
+# Variables:
+#   $percentage (number) - Zoom percentage value
 preferences-default-zoom-value =
     .label = { $percentage } %
 preferences-zoom-text-only =
@@ -322,15 +326,15 @@ applications-manage-app =
 applications-always-ask =
     .label = Totjorn demandar
 # Variables:
-#   $type-description (String) - Description of the type (e.g "Portable Document Format")
-#   $type (String) - the MIME type (e.g application/binary)
+#   $type-description (string) - Description of the type (e.g "Portable Document Format")
+#   $type (string) - The MIME type (e.g application/binary)
 applications-type-description-with-type = { $type-description } ({ $type })
 # Variables:
-#   $extension (String) - file extension (e.g .TXT)
-#   $type (String) - the MIME type (e.g application/binary)
+#   $extension (string) - File extension (e.g .TXT)
+#   $type (string) - The MIME type (e.g application/binary)
 applications-file-ending-with-type = { applications-file-ending } ({ $type })
 # Variables:
-#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+#   $plugin-name (string) - Name of a plugin (e.g Adobe Flash)
 applications-use-plugin-in =
     .label = Utilizar { $plugin-name } (dins { -brand-short-name })
 applications-open-inapp =
@@ -373,6 +377,8 @@ play-drm-content =
 play-drm-content-learn-more = Ne saber mai
 update-application-title = Mesas a jorn de { -brand-short-name }
 update-application-description = Manténer { -brand-short-name } a jorn per de performança, estabilitat, e seguretat melhoras.
+# Variables:
+# $version (string) - Firefox version
 update-application-version = Version { $version } <a data-l10n-name="learn-more">Novetats</a>
 update-history =
     .label = Afichar l'istoric de las mesas a jorn…
@@ -399,7 +405,7 @@ update-application-suppress-prompts =
     .accesskey = n
 update-setting-write-failure-title2 = Error en enregistrant los paramètres de mesas a jorn
 # Variables:
-#   $path (String) - Path to the configuration file
+#   $path (string) - Path to the configuration file
 # The newlines between the main text and the line containing the path is
 # intentional so the path is easier to identify.
 update-setting-write-failure-message2 =
@@ -429,7 +435,7 @@ performance-limit-content-process-option = Limit del procediment del contengut
 performance-limit-content-process-enabled-desc = De procediments de contengut suplementaris pòdon melhorar las performanças en utilizant d'onglets multiples, pasmens aquò utiliza mai de memòria.
 performance-limit-content-process-blocked-desc = Modificar lo nombre de procediments de contenguts es possible sonque amb la version multiprocediment de { -brand-short-name }. <a data-l10n-name="learn-more">Aprendre a verificar se de multiprocediments son activats</a>
 # Variables:
-#   $num - default value of the `dom.ipc.processCount` pref.
+#   $num (number) - Default value of the `dom.ipc.processCount` pref.
 performance-default-content-process-count =
     .label = { $num } (defaut)
 
@@ -491,10 +497,6 @@ home-newtabs-mode-label = Onglets novèls
 home-restore-defaults =
     .label = Restablir los paramètres per defaut
     .accesskey = R
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Pagina d'acuèlh de Firefox (Per defaut)
 home-mode-choice-default-fx =
     .label = { -firefox-home-brand-name } (per defaut)
 home-mode-choice-custom =
@@ -520,8 +522,6 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Contengut de la pagina d’acuèlh de Firefox
-home-prefs-content-description = Causissètz lo contengut que volètz a la pagina d’acuèlh de Fireofx.
 home-prefs-content-header2 = Contengut de la { -firefox-home-brand-name }
 home-prefs-content-description2 = Causissètz lo contengut que volètz per l’ecran { -firefox-home-brand-name }.
 home-prefs-search-header =
@@ -533,7 +533,7 @@ home-prefs-shortcuts-by-option-sponsored =
     .label = Acorchis pairinejats
 
 ## Variables:
-##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 home-prefs-recommended-by-header =
     .label = Recomandat per { $provider }
@@ -564,6 +564,8 @@ home-prefs-recent-activity-description = Una seleccion de sites e contenguts rec
 home-prefs-snippets-header =
     .label = Extraches
 home-prefs-snippets-description-new = Astúcias e novetats de { -vendor-short-name } e { -brand-product-name }
+# Variables:
+#   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
     .label =
         { $num ->
@@ -628,7 +630,7 @@ search-find-more-link = Trobar mai de motors de recèrcas
 # ('Duplicate' is an adjective)
 search-keyword-warning-title = Doblon de mot clau
 # Variables:
-#   $name (String) - Name of a search engine.
+#   $name (string) - Name of a search engine.
 search-keyword-warning-engine = Avètz causit un mot clau que ja es utilizat per « { $name } ». Causissètz-ne un autre.
 search-keyword-warning-bookmark = Avètz causit un mot clau que ja es utilizat per un marcapaginas. Causissètz-ne un autre.
 
@@ -648,7 +650,7 @@ containers-settings-button =
 containers-remove-button =
     .label = Suprimir
 
-## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Emportatz vòstre Web pertot
@@ -666,7 +668,7 @@ sync-signedout-account-signin3 =
 # to your language, but should not be changed or translated.
 sync-mobile-promo = Telecargatz Firefox per <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> o <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a> per sincronizar vòstre periferic mobil.
 
-## Firefox Account - Signed in
+## Firefox account - Signed in
 
 sync-profile-picture =
     .tooltiptext = Cambiar la fòto de perfil de l'utilizaire
@@ -675,8 +677,15 @@ sync-sign-out =
     .accesskey = d
 sync-manage-account = Gestion del compte
     .accesskey = o
+
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } es pas verificat.
 sync-signedin-login-failure = Vos cal reconnectar { $email }
+
+##
+
 sync-resend-verification =
     .label = Tornar mandar la verificacion
     .accesskey = t
@@ -699,10 +708,15 @@ prefs-sync-now =
     .labelnotsyncing = Sincronizar ara
     .accesskeynotsyncing = n
     .labelsyncing = Sincronizacion…
+prefs-sync-now-button =
+    .label = Sincronizar ara
+    .accesskey = n
+prefs-syncing-button =
+    .label = Sincronizacion…
 
 ## The list of things currently syncing.
 
-sync-currently-syncing-heading = Los elements seguents son actualament sincronizats :
+sync-syncing-across-devices-heading = Actualament sincronizatz aquestes elements entre totes vòstres aparelhs connectats :
 sync-currently-syncing-bookmarks = Marcapaginas
 sync-currently-syncing-history = Istoric
 sync-currently-syncing-tabs = Onglets dobèrts
@@ -717,13 +731,6 @@ sync-change-options =
 
 ## The "Choose what to sync" dialog.
 
-sync-choose-what-to-sync-dialog =
-    .title = Causir qué sincronizar
-    .style = width: 36em; min-height: 35em;
-    .buttonlabelaccept = Enregistrar
-    .buttonaccesskeyaccept = E
-    .buttonlabelextra2 = Desconnectar…
-    .buttonaccesskeyextra2 = D
 sync-choose-what-to-sync-dialog3 =
     .title = Causir qué sincronizar
     .style = min-width: 36em;
@@ -731,6 +738,7 @@ sync-choose-what-to-sync-dialog3 =
     .buttonaccesskeyaccept = E
     .buttonlabelextra2 = Desconnectar…
     .buttonaccesskeyextra2 = D
+sync-choose-dialog-subtitle = Las modificacions portadas a la lista d’elements de sincronizar s’aplicaràn a totes los aparelhs connectats.
 sync-engine-bookmarks =
     .label = Marcapaginas
     .accesskey = M
@@ -776,6 +784,16 @@ sync-device-name-save =
     .accesskey = g
 sync-connect-another-device = Connectar un periferic de mai
 
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Ligam de verificacion mandat
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = Un ligam de verificacion es estat mandat a { $email }
+sync-verification-not-sent-title = Impossible de mandar lo ligam de verificacion
+sync-verification-not-sent-body = Sèm pas en capacitat d'enviar un corrièl de verificacion en aqueste moment, mercés de tornar ensajar mai tard.
+
 ## Privacy Section
 
 privacy-header = Confidencialitat del navegador
@@ -799,8 +817,6 @@ forms-breach-alerts =
     .label = Afichar las alèrtas pels senhals dels sites concernits per de pèrdas de donadas
     .accesskey = A
 forms-breach-alerts-learn-more-link = Ne saber mai
-relay-integration =
-    .label = Activatz { -relay-brand-name } al gestionari de senhals de { -brand-short-name }.
 relay-integration-learn-more-link = Ne saber mai
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
@@ -890,8 +906,8 @@ history-clear-button =
 sitedata-header = Cookies e donadas de sites
 sitedata-total-size-calculating = Calcul del pès de las donadas dels sites e del cache…
 # Variables:
-#   $value (Number) - Value of the unit (for example: 4.6, 500)
-#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
 sitedata-total-size = Los cookies, lo cache e las donadas dels sites utilizan actualament { $value } { $unit } d’espaci disc.
 sitedata-learn-more = Ne saber mai
 sitedata-delete-on-close =
@@ -916,8 +932,6 @@ sitedata-option-block-cross-site-cookies =
     .label = Los traçadors intersites, e isolar los cookies intersites demorants
 sitedata-option-block-unvisited =
     .label = Cookies de sites pas visitats
-sitedata-option-block-all-third-party =
-    .label = Totes los cookies tèrces (pòt arribar qu’unes sites quitan de foncionar)
 sitedata-option-block-all-cross-site-cookies =
     .label = Totes los cookies intersites (unes sites pòdon quitar de foncionar)
 sitedata-option-block-all =
@@ -931,6 +945,14 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Gerir las excepcions…
     .accesskey = x
+
+## Privacy Section - Cookie Banner Handling
+
+cookie-banner-handling-header = Reduccion de las bandièras de cookies
+cookie-banner-handling-description = Permetre a { -brand-short-name } de regetar automaticament las demandas de cookies ?
+cookie-banner-learn-more = Ne saber mai
+forms-handle-cookie-banners =
+    .label = Reduire las bandièras de cookies
 
 ## Privacy Section - Address Bar
 
@@ -973,13 +995,13 @@ content-blocking-fpi-incompatibility-warning = Utilizatz l’isolacion First-Par
 
 # "Standard" in this case is an adjective, meaning "default" or "normal".
 enhanced-tracking-protection-setting-standard =
-    .label = Estandard
+    .label = Estandarda
     .accesskey = d
 enhanced-tracking-protection-setting-strict =
-    .label = Estricte
+    .label = Estricta
     .accesskey = r
 enhanced-tracking-protection-setting-custom =
-    .label = Personalizat
+    .label = Personalizada
     .accesskey = P
 
 ##
@@ -989,7 +1011,6 @@ content-blocking-etp-strict-desc = Proteccion renfortida, pòt copar unes sites 
 content-blocking-etp-custom-desc = Causissètz quins traçadors e scripts cal blocar.
 content-blocking-etp-blocking-desc = { -brand-short-name } blocat los seguents :
 content-blocking-private-windows = Contengut utilizat per pistar dins las fenèstras de navegacion privada
-content-blocking-cross-site-cookies-in-all-windows = Cookies entresites dins totas las fenèstras (los cookies de seguiment tanben)
 content-blocking-cross-site-cookies-in-all-windows2 = Cookies intersites dins totas las fenèstras
 content-blocking-cross-site-tracking-cookies = Cookies de seguiment entre sites
 content-blocking-all-cross-site-cookies-private-windows = Cookies intersites en fenèstras privadas
@@ -998,15 +1019,9 @@ content-blocking-social-media-trackers = Traçadors de malhums socials
 content-blocking-all-cookies = Totes los cookies
 content-blocking-unvisited-cookies = Cookies dels sites pas visitats
 content-blocking-all-windows-tracking-content = Contengut utilizat per pistar totas las fenèstras
-content-blocking-all-third-party-cookies = Totes los cookies tèrces
 content-blocking-all-cross-site-cookies = Totes los cookies intersites
 content-blocking-cryptominers = Minaires de criptomonedas
 content-blocking-fingerprinters = Generadors d’emprentas numericas
-# "Test pilot" is used as a verb. Possible alternatives:
-# "Be the first to try", "Join an early experiment".
-content-blocking-etp-standard-tcp-rollout-checkbox =
-    .label = Ensajatz abans lo monde la melhora foncionalitat de confidencialitat jamai concebuda
-    .accesskey = E
 
 # The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
@@ -1071,6 +1086,11 @@ permissions-microphone = Microfòn
 permissions-microphone-settings =
     .label = Paramètres…
     .accesskey = P
+# Short form for "the act of choosing sound output devices and redirecting audio to the chosen devices".
+permissions-speaker = Seleccion del naut-parlaire
+permissions-speaker-settings =
+    .label = Paramètres…
+    .accesskey = t
 permissions-notification = Notificacions
 permissions-notification-settings =
     .label = Paramètres…
@@ -1175,6 +1195,59 @@ httpsonly-radio-enabled-pbm =
     .label = Activar lo mòde HTTPS solament dins totas las fenèstras privadas
 httpsonly-radio-disabled =
     .label = Activar pas lo mòde HTTPS solament
+
+## DoH Section
+
+preferences-doh-header = DNS sus HTTPS
+preferences-doh-description = Lo DNS (Domain Name Sistèma) sus HTTPS envia vòstras requèstas per un nom de domeni via una connexion chifrada, en creant un DNS segur e en fasent venir mai complicat per los autres de veire quines sites sètz a mand de visitar.
+# Variables:
+#   $status (string) - The status of the DoH connection
+preferences-doh-status = Estat : { $status }
+# Variables:
+#   $name (string) - The name of the DNS over HTTPS resolver. If a custom resolver is used, the name will be the domain of the URL.
+preferences-doh-resolver = Provesidor : { $name }
+# This is displayed instead of $name in preferences-doh-resolver
+# when the DoH URL is not a valid URL
+preferences-doh-bad-url = URL invalida
+preferences-doh-steering-status = En utilizant un provesidor local
+preferences-doh-status-active = Actiu
+preferences-doh-status-disabled = Desactivat
+# Variables:
+#   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
+preferences-doh-status-not-active = Inactiu ({ $reason })
+preferences-doh-group-message = Activar lo DNS segur amb :
+preferences-doh-expand-section =
+    .tooltiptext = Mai d’informacions
+preferences-doh-setting-default =
+    .label = Proteccion per defaut
+    .accesskey = d
+preferences-doh-default-desc = { -brand-short-name } decidís quand utilizar lo DNS segur per protegir vòstra vida privada.
+preferences-doh-default-detailed-desc-1 = Utilizar lo DNS segur dins las regions ont es disponible
+preferences-doh-default-detailed-desc-3 = Utilizar un provesidor local, se possible
+preferences-doh-setting-enabled =
+    .label = Proteccion espandida
+    .accesskey = e
+preferences-doh-enabled-desc = Contrarotlatz quand volètz utilizar lo DNS segur e causissètz vòstre provesidor.
+preferences-doh-enabled-detailed-desc-1 = Utilizar lo provesidor qu’avètz seleccionat
+preferences-doh-enabled-detailed-desc-2 = Utilizar lo servidor DNS per defaut sonque se i a un problèma amb lo DNS segur
+preferences-doh-setting-strict =
+    .label = Proteccion maximala
+    .accesskey = m
+preferences-doh-strict-desc = { -brand-short-name } utilizarà totjorn lo DNS segur. Veiretz un avís de seguretat abans d’utilizar lo DNS de sistèma.
+preferences-doh-strict-detailed-desc-1 = Utilizar sonque lo prevesidor que seleccionèretz
+preferences-doh-strict-detailed-desc-2 = Totjorn avertir se lo DNS segur es pas disponible
+preferences-doh-setting-off =
+    .label = Desactivat
+    .accesskey = D
+preferences-doh-off-desc = Utilizar lo servidor de resolucion DNS per defaut
+preferences-doh-checkbox-warn =
+    .label = Avertir se un tèrç empacha d’utilizar lo DNS segur
+    .accesskey = A
+preferences-doh-select-resolver = Causir lo provesidor :
+preferences-doh-exceptions-description = { -brand-short-name } utilizarà pas lo DNS segur per aquestes sites
+preferences-doh-manage-exceptions =
+    .label = Gerir las excepcions…
+    .accesskey = x
 
 ## The following strings are used in the Download section of settings
 

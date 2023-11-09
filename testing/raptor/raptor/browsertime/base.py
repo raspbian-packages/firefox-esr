@@ -4,20 +4,18 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, division
-
-from abc import ABCMeta, abstractmethod
-
-import os
 import json
+import os
 import re
-import six
 import sys
+from abc import ABCMeta, abstractmethod
+from copy import deepcopy
 
 import mozprocess
-from manifestparser.util import evaluate_list_from_string
+import six
 from benchmark import Benchmark
 from logger.logger import RaptorLogger
+from manifestparser.util import evaluate_list_from_string
 from perftest import Perftest
 from results import BrowsertimeResultsHandler
 
@@ -84,7 +82,8 @@ class Browsertime(Perftest):
 
     def build_browser_profile(self):
         super(Browsertime, self).build_browser_profile()
-        self.remove_mozprofile_delimiters_from_profile()
+        if self.profile is not None:
+            self.remove_mozprofile_delimiters_from_profile()
 
     def remove_mozprofile_delimiters_from_profile(self):
         # Perftest.build_browser_profile uses mozprofile to create the profile and merge in prefs;
@@ -136,6 +135,7 @@ class Browsertime(Perftest):
             "chrome",
             "chrome-m",
             "chromium",
+            "custom-car",
         ):
             if (
                 not self.config.get("run_local", None)
@@ -183,7 +183,19 @@ class Browsertime(Perftest):
     def clean_up(self):
         super(Browsertime, self).clean_up()
 
-    def _compose_cmd(self, test, timeout):
+    def _expose_gecko_profiler(self, extra_profiler_run, test):
+        """Use this method to check if we will use an exposed gecko profiler via browsertime.
+        The exposed gecko profiler let's us control the start/stop during tests.
+        At the moment we would only want this for the Firefox browser and for any test with the
+        `expose_gecko_profiler` field set true (e.g. benchmark tests).
+        """
+        return (
+            extra_profiler_run
+            and test.get("expose_gecko_profiler")
+            and self.config["app"] in ("firefox",)
+        )
+
+    def _compose_cmd(self, test, timeout, extra_profiler_run=False):
         """Browsertime has the following overwrite priorities(in order of highest-lowest)
         (1) User - input commandline flag.
         (2) Browsertime args mentioned for a test
@@ -200,7 +212,10 @@ class Browsertime(Perftest):
                 browsertime_path,
                 "browsertime_scenario.js",
             )
-        elif test.get("type", "") == "benchmark":
+        elif (
+            test.get("type", "") == "benchmark"
+            and test.get("test_script", None) is None
+        ):
             browsertime_script = os.path.join(
                 browsertime_path,
                 "browsertime_benchmark.js",
@@ -212,7 +227,7 @@ class Browsertime(Perftest):
                 # --browsertime-arg options
                 browsertime_script = None
                 for option in self.browsertime_user_args:
-                    arg, val = option.split("=")
+                    arg, val = option.split("=", 1)
                     if arg in ("test_script", "url"):
                         browsertime_script = val
                 if browsertime_script is None:
@@ -248,6 +263,17 @@ class Browsertime(Perftest):
             # Wait a bit longer when we run live site tests
             page_cycle_delay = "5000"
 
+        page_cycles = (
+            test.get("page_cycles", 1)
+            if not extra_profiler_run
+            else test.get("extra_profiler_run_page_cycles", 1)
+        )
+        browser_cycles = (
+            test.get("browser_cycles", 1)
+            if not extra_profiler_run
+            else test.get("extra_profiler_run_browser_cycles", 1)
+        )
+
         # All the configurations in the browsertime_options variable initialization
         # and the secondary_url are priority 3, since none overlap they are grouped together
         browsertime_options = [
@@ -267,13 +293,16 @@ class Browsertime(Perftest):
             # url load timeout (milliseconds)
             "--pageCompleteCheckPollTimeout",
             "1000",
+            # delay before pageCompleteCheck (milliseconds)
+            "--beforePageCompleteWaitTime",
+            "2000",
             # running browser scripts timeout (milliseconds)
             "--timeouts.pageLoad",
             str(timeout),
             "--timeouts.script",
-            str(timeout * int(test.get("page_cycles", 1))),
+            str(timeout * int(page_cycles)),
             "--browsertime.page_cycles",
-            str(test.get("page_cycles", 1)),
+            str(page_cycles),
             # a delay was added by default to browsertime from 5s -> 8s for iphones, not needed
             "--pageCompleteWaitTime",
             str(test.get("page_complete_wait_time", "5000")),
@@ -281,10 +310,44 @@ class Browsertime(Perftest):
             test["test_url"],
             # Raptor's `post startup delay` is settle time after the browser has started
             "--browsertime.post_startup_delay",
-            str(self.post_startup_delay),
+            # If we are on the extra profiler run, limit the startup delay to 1 second.
+            str(min(self.post_startup_delay, 1000))
+            if extra_profiler_run
+            else str(self.post_startup_delay),
             "--iterations",
-            str(test.get("browser_cycles", 1)),
+            str(browser_cycles),
+            "--videoParams.androidVideoWaitTime",
+            "20000",
+            # running browsertime test in chimera mode
+            "--browsertime.chimera",
+            "true" if self.config["chimera"] else "false",
+            "--browsertime.test_bytecode_cache",
+            "true" if self.config["test_bytecode_cache"] else "false",
+            "--firefox.perfStats",
+            test.get("perfstats", "false"),
+            "--browsertime.moz_fetch_dir",
+            os.environ.get("MOZ_FETCHES_DIR", "None"),
+            "--browsertime.expose_profiler",
+            "true"
+            if (self._expose_gecko_profiler(extra_profiler_run, test))
+            else "false",
         ]
+
+        if test.get("perfstats") == "true":
+            # Take a non-standard approach for perfstats as we
+            # want to enable them everywhere shortly (bug 1770152)
+            self.results_handler.perfstats = True
+
+        if self.config["app"] in ("fenix",):
+            # Fenix can take a lot of time to startup
+            browsertime_options.extend(
+                [
+                    "--browsertime.browserRestartTries",
+                    "10",
+                    "--timeouts.browserStart",
+                    "180000",
+                ]
+            )
 
         if test.get("secondary_url"):
             browsertime_options.extend(
@@ -312,17 +375,29 @@ class Browsertime(Perftest):
                     browsertime_options.extend(pairing)
 
         priority1_options = self.browsertime_args
-        if self.config["app"] in ("chrome", "chromium", "chrome-m"):
+        if self.config["app"] in ("chrome", "chromium", "chrome-m", "custom-car"):
             priority1_options.extend(self.setup_chrome_args(test))
 
-        # must happen before --firefox.profileTemplate and --resultDir
-        self.results_handler.remove_result_dir_for_test(test)
-        priority1_options.extend(
-            ["--firefox.profileTemplate", str(self.profile.profile)]
-        )
-        priority1_options.extend(
-            ["--resultDir", self.results_handler.result_dir_for_test(test)]
-        )
+        if self.debug_mode:
+            browsertime_options.extend(["-vv", "--debug", "true"])
+
+        if not extra_profiler_run:
+            # must happen before --firefox.profileTemplate and --resultDir
+            self.results_handler.remove_result_dir_for_test(test)
+            priority1_options.extend(
+                ["--resultDir", self.results_handler.result_dir_for_test(test)]
+            )
+        else:
+            priority1_options.extend(
+                [
+                    "--resultDir",
+                    self.results_handler.result_dir_for_test_profiling(test),
+                ]
+            )
+        if self.profile is not None:
+            priority1_options.extend(
+                ["--firefox.profileTemplate", str(self.profile.profile)]
+            )
 
         # This argument can have duplicates of the value "--firefox.env" so we do not need
         # to check if it conflicts
@@ -334,7 +409,7 @@ class Browsertime(Perftest):
         parsed_cmds = [":::".join([str(i) for i in item]) for item in cmds if item]
         browsertime_options.extend(["--browsertime.commands", ";;;".join(parsed_cmds)])
 
-        if self.verbose and "-vvv" not in browsertime_options:
+        if self.verbose:
             browsertime_options.append("-vvv")
 
         if self.browsertime_video:
@@ -359,6 +434,7 @@ class Browsertime(Perftest):
                 "chromium",
                 "chrome-m",
                 "chrome",
+                "custom-car",
             ):
                 priority1_options.extend(
                     [
@@ -382,26 +458,29 @@ class Browsertime(Perftest):
         else:
             priority1_options.extend(["--video", "false", "--visualMetrics", "false"])
 
-        # have browsertime use our newly-created conditioned-profile path
-        if self.config.get("conditioned_profile"):
-            self.profile.profile = self.conditioned_profile_dir
-
-        if self.config["gecko_profile"]:
+        if self.config["gecko_profile"] or extra_profiler_run:
             self.config[
                 "browsertime_result_dir"
             ] = self.results_handler.result_dir_for_test(test)
             self._init_gecko_profiling(test)
             priority1_options.append("--firefox.geckoProfiler")
+            if self._expose_gecko_profiler(extra_profiler_run, test):
+                priority1_options.extend(
+                    [
+                        "--firefox.geckoProfilerRecordingType",
+                        "custom",
+                    ]
+                )
             for option, browser_time_option, default in (
                 (
                     "gecko_profile_features",
                     "--firefox.geckoProfilerParams.features",
-                    "js,leaf,stackwalk,cpu,screenshots",
+                    "js,stackwalk,cpu,screenshots",
                 ),
                 (
                     "gecko_profile_threads",
                     "--firefox.geckoProfilerParams.threads",
-                    "GeckoMain,Compositor",
+                    "GeckoMain,Compositor,Renderer",
                 ),
                 (
                     "gecko_profile_interval",
@@ -411,7 +490,7 @@ class Browsertime(Perftest):
                 (
                     "gecko_profile_entries",
                     "--firefox.geckoProfilerParams.bufferSize",
-                    None,
+                    str(13_107_200 * 5),  # ~500mb
                 ),
             ):
                 # 0 is a valid value. The setting may be present but set to None.
@@ -429,13 +508,15 @@ class Browsertime(Perftest):
         # Add any user-specified flags here, let them override anything
         # with no restrictions
         for user_arg in self.browsertime_user_args:
-            arg, val = user_arg.split("=")
+            arg, val = user_arg.split("=", 1)
             priority1_options.extend([f"--{arg}", val])
 
         # In this code block we check if any priority 1 arguments are in conflict with a
         # priority 2/3/4 argument
         MULTI_OPTS = [
             "--firefox.android.intentArgument",
+            "--firefox.args",
+            "--firefox.preference",
         ]
         for index, argument in list(enumerate(priority1_options)):
             if argument in MULTI_OPTS:
@@ -458,6 +539,12 @@ class Browsertime(Perftest):
             else:
                 continue
 
+        # Finalize the `browsertime_options` before starting pageload tests
+        if test.get("type") == "pageload":
+            self._finalize_pageload_test_setup(
+                browsertime_options=browsertime_options, test=test
+            )
+
         return (
             [self.browsertime_node, self.browsertime_browsertimejs]
             + self.driver_paths
@@ -465,7 +552,71 @@ class Browsertime(Perftest):
             + browsertime_options
         )
 
-    def _compute_process_timeout(self, test, timeout):
+    def _finalize_pageload_test_setup(self, browsertime_options, test):
+        """This function finalizes remaining configurations for browsertime pageload tests.
+
+        For pageload tests, ensure that the test name is available to the `browsertime_pageload.js`
+        script. In addition, make the `live_sites` and `login` boolean available as these will be
+        required in determining the flow of the login-logic. Finally, we disable the verbose mode
+        as a safety precaution when doing a live login site.
+        """
+        browsertime_options.extend(["--browsertime.testName", str(test.get("name"))])
+        browsertime_options.extend(
+            ["--browsertime.liveSite", str(self.config["live_sites"])]
+        )
+
+        login_required = self.is_live_login_site(test.get("name"))
+        browsertime_options.extend(["--browsertime.loginRequired", str(login_required)])
+
+        # Turn off verbose if login logic is required and we are running on CI
+        if (
+            login_required
+            and self.config.get("verbose", False)
+            and os.environ.get("MOZ_AUTOMATION")
+        ):
+            LOG.info("Turning off verbose mode for login-logic.")
+            LOG.info(
+                "Please contact the perftest team if you need verbose mode enabled."
+            )
+            self.config["verbose"] = False
+            for verbose_level in ("-v", "-vv", "-vvv", "-vvvv"):
+                try:
+                    browsertime_options.remove(verbose_level)
+                except ValueError:
+                    pass
+
+    @staticmethod
+    def is_live_login_site(test_name):
+        """This function checks the login field of a live-site in the pageload_sites.json
+
+        After reading in the json file, perform a brute force search for the matching test name
+        and return the login field boolean
+        """
+
+        # That pathing is different on CI vs locally for the pageload_sites.json file
+        if os.environ.get("MOZ_AUTOMATION"):
+            PAGELOAD_SITES = os.path.join(
+                os.getcwd(), "tests/raptor/browsertime/pageload_sites.json"
+            )
+        else:
+            base_dir = os.path.dirname(os.path.dirname(os.getcwd()))
+            pageload_subpath = "raptor/browsertime/pageload_sites.json"
+            PAGELOAD_SITES = os.path.join(base_dir, pageload_subpath)
+
+        with open(PAGELOAD_SITES, "r") as f:
+            pageload_data = json.load(f)
+
+        desktop_sites = pageload_data["desktop"]
+        for site in desktop_sites:
+            if site["name"] == test_name:
+                return site["login"]
+
+        return False
+
+    def _compute_process_timeout(self, test, timeout, cmd):
+        if self.debug_mode:
+            return sys.maxsize
+
         # bt_timeout will be the overall browsertime cmd/session timeout (seconds)
         # browsertime deals with page cycles internally, so we need to give it a timeout
         # value that includes all page cycles
@@ -493,12 +644,78 @@ class Browsertime(Perftest):
 
         # browsertime also handles restarting the browser/running all of the browser cycles;
         # so we need to multiply our bt_timeout by the number of browser cycles
-        bt_timeout = bt_timeout * int(test.get("browser_cycles", 1))
+        iterations = int(test.get("browser_cycles", 1))
+        for i, entry in enumerate(cmd):
+            if entry == "--iterations":
+                try:
+                    iterations = int(cmd[i + 1])
+                    break
+                except ValueError:
+                    raise Exception(
+                        f"Received a non-int value for the iterations: {cmd[i+1]}"
+                    )
+        bt_timeout = bt_timeout * iterations
 
         # if geckoProfile enabled, give browser more time for profiling
         if self.config["gecko_profile"] is True:
             bt_timeout += 5 * 60
         return bt_timeout
+
+    @staticmethod
+    def _kill_browsertime_process(msg):
+        """This method determines if a browsertime process should be killed.
+
+        Examine the error message from the line handler to determine what to do by returning
+        a boolean.
+
+        In the future, we can extend this method to consider other scenarios.
+        """
+
+        # If we encounter an `xpath` & `double click` related error
+        # message, it is due to a failure in the 2FA checks during the
+        # login logic since not all websites have 2FA
+        if "xpath" in msg and "double click" in msg:
+            LOG.info("Ignoring 2FA error")
+            return False
+
+        return True
+
+    def run_extra_profiler_run(
+        self, test, timeout, proc_timeout, output_timeout, line_handler, env
+    ):
+        try:
+            LOG.info(
+                "Running browsertime with the profiler enabled after the main run."
+            )
+            profiler_test = deepcopy(test)
+            cmd = self._compose_cmd(profiler_test, timeout, True)
+            LOG.info(
+                "browsertime profiling cmd: {}".format(" ".join([str(c) for c in cmd]))
+            )
+            proc = self.process_handler(cmd, processOutputLine=line_handler, env=env)
+            proc.run(timeout=proc_timeout, outputTimeout=output_timeout)
+            proc.wait()
+
+            # Do not raise exception for the browsertime failure or timeout for this case.
+            # Second profiler browsertime run is fallible.
+            if proc.outputTimedOut:
+                LOG.info(
+                    "Browsertime process for extra profiler run timed out after "
+                    f"waiting {output_timeout} seconds for output"
+                )
+            if proc.timedOut:
+                LOG.info(
+                    "Browsertime process for extra profiler run timed out after "
+                    f"{proc_timeout} seconds"
+                )
+
+            if self.browsertime_failure:
+                LOG.info(
+                    f"Browsertime for extra profiler run failure: {self.browsertime_failure}"
+                )
+
+        except Exception as e:
+            LOG.info("Failed during the extra profiler run: " + str(e))
 
     def run_test(self, test, timeout):
         global BROWSERTIME_PAGELOAD_OUTPUT_TIMEOUT
@@ -508,10 +725,20 @@ class Browsertime(Perftest):
         # this will be used for btime --timeouts.pageLoad
         cmd = self._compose_cmd(test, timeout)
 
+        if test.get("support_class", None):
+            LOG.info("Test support class is modifying the command...")
+            test.get("support_class").modify_command(cmd)
+
+        output_timeout = BROWSERTIME_PAGELOAD_OUTPUT_TIMEOUT
         if test.get("type", "") == "scenario":
             # Change the timeout for scenarios since they
             # don't output much for a long period of time
-            BROWSERTIME_PAGELOAD_OUTPUT_TIMEOUT = timeout
+            output_timeout = timeout
+        elif self.benchmark:
+            output_timeout = BROWSERTIME_BENCHMARK_OUTPUT_TIMEOUT
+
+        if self.debug_mode:
+            output_timeout = 2147483647
 
         LOG.info("timeout (s): {}".format(timeout))
         LOG.info("browsertime cwd: {}".format(os.getcwd()))
@@ -537,53 +764,80 @@ class Browsertime(Perftest):
         try:
             line_matcher = re.compile(r".*(\[.*\])\s+([a-zA-Z]+):\s+(.*)")
 
-            def _line_handler(line):
-                """This function acts as a bridge between browsertime
-                and raptor. It reforms the lines to get rid of information
-                that is not needed, and outputs them appropriately based
-                on the level that is found. (Debug and info all go to info).
+            def _create_line_handler(extra_profiler_run=False):
+                def _line_handler(line):
+                    """This function acts as a bridge between browsertime
+                    and raptor. It reforms the lines to get rid of information
+                    that is not needed, and outputs them appropriately based
+                    on the level that is found. (Debug and info all go to info).
 
-                For errors, we set an attribute (self.browsertime_failure) to
-                it, then raise a generic exception. When we return, we check
-                if self.browsertime_failure, and raise an Exception if necessary
-                to stop Raptor execution (preventing the results processing).
-                """
+                    For errors, we set an attribute (self.browsertime_failure) to
+                    it, then raise a generic exception. When we return, we check
+                    if self.browsertime_failure, and raise an Exception if necessary
+                    to stop Raptor execution (preventing the results processing).
+                    """
 
-                # NOTE: this hack is to workaround encoding issues on windows
-                # a newer version of browsertime adds a `σ` character to output
-                line = line.replace(b"\xcf\x83", b"")
+                    # NOTE: this hack is to workaround encoding issues on windows
+                    # a newer version of browsertime adds a `σ` character to output
+                    line = line.replace(b"\xcf\x83", b"")
 
-                line = line.decode("utf-8")
-                match = line_matcher.match(line)
-                if not match:
-                    LOG.info(line)
-                    return
+                    line = line.decode("utf-8")
+                    match = line_matcher.match(line)
+                    if not match:
+                        LOG.info(line)
+                        return
 
-                date, level, msg = match.groups()
-                level = level.lower()
-                if "error" in level:
-                    self.browsertime_failure = msg
-                    LOG.error("Browsertime failed to run")
-                    proc.kill()
-                elif "warning" in level:
-                    LOG.warning(msg)
-                elif "metrics" in level:
-                    vals = msg.split(":")[-1].strip()
-                    self.page_count = vals.split(",")
-                else:
-                    LOG.info(msg)
+                    date, level, msg = match.groups()
+                    level = level.lower()
+                    if "error" in level and not self.debug_mode:
+                        if self._kill_browsertime_process(msg):
+                            self.browsertime_failure = msg
+                            if extra_profiler_run:
+                                # Do not trigger the log parser for extra profiler run.
+                                LOG.info(
+                                    "Browsertime failed to run on extra profiler run"
+                                )
+                            else:
+                                LOG.error("Browsertime failed to run")
+                            proc.kill()
+                    elif "warning" in level:
+                        if extra_profiler_run:
+                            # Do not trigger the log parser for extra profiler run.
+                            LOG.info(msg)
+                        else:
+                            LOG.warning(msg)
+                    elif "metrics" in level:
+                        vals = msg.split(":")[-1].strip()
+                        self.page_count = vals.split(",")
+                    else:
+                        LOG.info(msg)
 
-            proc_timeout = self._compute_process_timeout(test, timeout)
+                return _line_handler
+
+            proc_timeout = self._compute_process_timeout(test, timeout, cmd)
             output_timeout = BROWSERTIME_PAGELOAD_OUTPUT_TIMEOUT
             if self.benchmark:
                 output_timeout = BROWSERTIME_BENCHMARK_OUTPUT_TIMEOUT
+            elif test.get("output_timeout", None) is not None:
+                output_timeout = int(test.get("output_timeout"))
+                proc_timeout = max(proc_timeout, output_timeout)
 
-            # Double the timeouts on live sites
-            if self.config["live_sites"]:
-                output_timeout *= 2
+            # Double the timeouts on live sites and when running with Fenix
+            if self.config["live_sites"] or self.config["app"] in ("fenix",):
+                # Since output_timeout is None for benchmark tests we should
+                # not perform any operations on it.
+                if output_timeout is not None:
+                    output_timeout *= 2
                 proc_timeout *= 2
 
-            proc = self.process_handler(cmd, processOutputLine=_line_handler, env=env)
+            LOG.info(
+                f"Calling browsertime with proc_timeout={proc_timeout}, "
+                f"and output_timeout={output_timeout}"
+            )
+
+            proc = self.process_handler(
+                cmd, processOutputLine=_create_line_handler(), env=env
+            )
             proc.run(timeout=proc_timeout, outputTimeout=output_timeout)
             proc.wait()
 
@@ -599,6 +853,22 @@ class Browsertime(Perftest):
 
             if self.browsertime_failure:
                 raise Exception(self.browsertime_failure)
+
+            # We've run the main browsertime process, now we need to run the
+            # browsertime one more time if the profiler wasn't enabled already
+            # in the previous run and user wants this extra run.
+            if (
+                self.config.get("extra_profiler_run")
+                and not self.config["gecko_profile"]
+            ):
+                self.run_extra_profiler_run(
+                    test,
+                    timeout,
+                    proc_timeout,
+                    output_timeout,
+                    _create_line_handler(extra_profiler_run=True),
+                    env,
+                )
 
         except Exception as e:
             LOG.critical(str(e))

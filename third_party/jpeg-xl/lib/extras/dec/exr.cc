@@ -62,8 +62,8 @@ class InMemoryIStream : public OpenEXR::IStream {
 }  // namespace
 
 Status DecodeImageEXR(Span<const uint8_t> bytes, const ColorHints& color_hints,
-                      const SizeConstraints& constraints,
-                      PackedPixelFile* ppf) {
+                      PackedPixelFile* ppf,
+                      const SizeConstraints* constraints) {
   InMemoryIStream is(bytes);
 
 #ifdef __EXCEPTIONS
@@ -87,7 +87,7 @@ Status DecodeImageEXR(Span<const uint8_t> bytes, const ColorHints& color_hints,
 
   const float intensity_target = OpenEXR::hasWhiteLuminance(input.header())
                                      ? OpenEXR::whiteLuminance(input.header())
-                                     : kDefaultIntensityTarget;
+                                     : 0;
 
   auto image_size = input.displayWindow().size();
   // Size is computed as max - min, but both bounds are inclusive.

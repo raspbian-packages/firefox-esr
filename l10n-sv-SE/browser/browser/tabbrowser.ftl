@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Ny flik
 tabbrowser-empty-private-tab-title = Ny privat flik
+
 tabbrowser-menuitem-close-tab =
     .label = Stäng flik
 tabbrowser-menuitem-close =
     .label = Stäng
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -121,6 +120,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Visa inte denna dialogruta igen.
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Tillåt liknande meddelanden från { $domain } leder dig till deras flik
+
 tabbrowser-customizemode-tab-title = Anpassa { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -139,3 +139,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Ljud på för flikar
     .accesskey = d
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Spelar upp ljud
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Lista alla { $tabCount } flikar
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Ljud av för flik
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Ljud på för flik
+tabbrowser-manager-close-tab =
+    .tooltiptext = Stäng flik

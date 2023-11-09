@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-permissions-window =
-    .title = හැරදැමීම්
-    .style = width: 45em
-
 permissions-window2 =
     .title = හැරදැමීම්
     .style = min-width: 45em
@@ -19,6 +15,10 @@ permissions-address = අඩවියේ ලිපිනය
 permissions-block =
     .label = අවහිර
     .accesskey = B
+
+permissions-disable-etp =
+    .label = හැරදැමීමක් යොදන්න
+    .accesskey = E
 
 permissions-session =
     .label = වාරයට ඉඩදෙන්න
@@ -92,20 +92,11 @@ permissions-invalid-uri-label = වලංගු සත්කාරක නාම�
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-etp-window =
-    .title = වැඩිදියුණු කළ ලුහුබැඳීමේ ආරක්‍ෂාව සඳහා හැරදැමීම්
-    .style = { permissions-window.style }
-
 permissions-exceptions-etp-window2 =
-    .title = වැඩිදියුණු කළ ලුහුබැඳීමේ ආරක්‍ෂාව සඳහා හැරදැමීම්
+    .title = දියුණු කළ ලුහුබැඳීමේ රැකවරණය හැරදැමීම්
     .style = { permissions-window2.style }
-permissions-exceptions-etp-desc = ඔබ මෙම අඩවිවලට රැකවරණය අක්‍රිය කර ඇත.
 
 ## Exceptions - Cookies
-
-permissions-exceptions-cookie-window =
-    .title = හැරදැමීම් - දත්තකඩ හා අඩවි දත්ත
-    .style = { permissions-window.style }
 
 permissions-exceptions-cookie-window2 =
     .title = හැරදැමීම් - දත්තකඩ හා අඩවි දත්ත
@@ -114,20 +105,12 @@ permissions-exceptions-cookie-desc = දත්තකඩ හා අඩවි ද�
 
 ## Exceptions - HTTPS-Only Mode
 
-permissions-exceptions-https-only-window =
-    .title = හැරදැමීම් - HTTPS-පමණි ප්‍රකාරය
-    .style = { permissions-window.style }
-
 permissions-exceptions-https-only-window2 =
     .title = හැරදැමීම් - HTTPS-පමණි ප්‍රකාරය
     .style = { permissions-window2.style }
 permissions-exceptions-https-only-desc = ඔබට නිශ්චිත වියමන අඩවි සඳහා HTTPS-පමණි ප්‍රකාරය අක්‍රිය කළ හැකිය. { -brand-short-name } එම අඩවි වෙත සම්බන්ධතාවය ආරක්‍ෂිත HTTPS සඳහා උත්ශ්‍රේණි කිරීමට තැත් නොකරනු ඇත. පෞද්ගලික කවුළු සඳහා හැරදැමීම් අදාළ නොවේ.
 
 ## Exceptions - Pop-ups
-
-permissions-exceptions-popup-window =
-    .title = අවසර දුන් අඩවි - උත්පතන
-    .style = { permissions-window.style }
 
 permissions-exceptions-popup-window2 =
     .title = අවසර දුන් අඩවි - උත්පතන
@@ -136,20 +119,12 @@ permissions-exceptions-popup-desc = උපත්තන කවුළු විව
 
 ## Exceptions - Saved Logins
 
-permissions-exceptions-saved-logins-window =
-    .title = හැරදැමීම් - සුරැකි පිවිසුම්
-    .style = { permissions-window.style }
-
 permissions-exceptions-saved-logins-window2 =
     .title = හැරදැමීම් - සුරැකි පිවිසුම්
     .style = { permissions-window2.style }
 permissions-exceptions-saved-logins-desc = පහත වියමන අඩවි සඳහා පිවිසුම් සුරැකෙන්නේ නැත
 
 ## Exceptions - Add-ons
-
-permissions-exceptions-addons-window =
-    .title = ඉඩ දුන් වියමන අඩවි - එක්කහු ස්ථාපනය
-    .style = { permissions-window.style }
 
 permissions-exceptions-addons-window2 =
     .title = ඉඩ දුන් වියමන අඩවි - එක්කහු ස්ථාපනය
@@ -158,20 +133,12 @@ permissions-exceptions-addons-desc = එක්කහු ස්ථාපනය �
 
 ## Site Permissions - Autoplay
 
-permissions-site-autoplay-window =
-    .title = සැකසුම් - ස්වයං වාදනය
-    .style = { permissions-window.style }
-
 permissions-site-autoplay-window2 =
     .title = සැකසුම් - ස්වයං වාදනය
     .style = { permissions-window2.style }
 permissions-site-autoplay-desc = පෙරනිමි ස්වයං වාදන සැකසුම් අනුගමනය නොකරන අඩවි මෙහි කළමනාකරණය කළ හැකිය.
 
 ## Site Permissions - Notifications
-
-permissions-site-notification-window =
-    .title = සැකසුම් - දැනුම්දීමේ අවසර
-    .style = { permissions-window.style }
 
 permissions-site-notification-window2 =
     .title = සැකසුම් - දැනුම්දීමේ අවසර
@@ -183,10 +150,6 @@ permissions-site-notification-disable-desc = ඉහත ලේඛනගත කර
 
 ## Site Permissions - Location
 
-permissions-site-location-window =
-    .title = සැකසුම් - ස්ථාන අවසර
-    .style = { permissions-window.style }
-
 permissions-site-location-window2 =
     .title = සැකසුම් - ස්ථාන අවසර
     .style = { permissions-window2.style }
@@ -196,10 +159,6 @@ permissions-site-location-disable-label =
 permissions-site-location-disable-desc = ඉහත ලේඛනගත කර නැති අඩවි වලට ඔබගේ ස්ථානය වෙත ප්‍රවේශ වීමට අවසර නොදේ. මෙය අවහිර කිරීම නිසා ඇතැම් අඩවිවල විශේෂාංග නිසි අයුරින් ක්‍රියා නොකරනු ඇත.
 
 ## Site Permissions - Virtual Reality
-
-permissions-site-xr-window =
-    .title = සැකසුම් - අතථ්‍ය යථාර්ථය අවසර
-    .style = { permissions-window.style }
 
 permissions-site-xr-window2 =
     .title = සැකසුම් - අතථ්‍ය යථාර්ථය අවසර
@@ -211,10 +170,6 @@ permissions-site-xr-disable-desc = ඉහත ලේඛනගත කර නැත
 
 ## Site Permissions - Camera
 
-permissions-site-camera-window =
-    .title = සැකසුම් - රූගතයට අවසර
-    .style = { permissions-window.style }
-
 permissions-site-camera-window2 =
     .title = සැකසුම් - රූගතයට අවසර
     .style = { permissions-window2.style }
@@ -225,10 +180,6 @@ permissions-site-camera-disable-desc = ඉහත ලේඛනගත කර න�
 
 ## Site Permissions - Microphone
 
-permissions-site-microphone-window =
-    .title = සැකසුම් - ශබ්දවාහිනියේ අවසර
-    .style = { permissions-window.style }
-
 permissions-site-microphone-window2 =
     .title = සැකසුම් - ශබ්දවාහිනියේ අවසර
     .style = { permissions-window2.style }
@@ -236,3 +187,29 @@ permissions-site-microphone-desc = පහත වියමන අඩවි ඔබ
 permissions-site-microphone-disable-label =
     .label = ශබ්දවාහිනියට ප්‍රවේශය සඳහා නව ඉල්ලීම් අවහිර කරන්න
 permissions-site-microphone-disable-desc = ඉහත ලේඛනගත කර නැති අඩවි වලට ඔබගේ ශබ්දවාහිනිය වෙත ප්‍රවේශ වීමට අවසර නොදේ. මෙය අවහිර කිරීම නිසා ඇතැම් අඩවිවල විශේෂාංග නිසි අයුරින් ක්‍රියා නොකරනු ඇත.
+
+## Site Permissions - Speaker
+##
+## "Speaker" refers to an audio output device.
+
+permissions-site-speaker-window =
+    .title = සැකසුම් - විකාශකයේ අවසර
+    .style = { permissions-window2.style }
+
+permissions-doh-entry-field = අඩවියේ වසම් නාමය යොදන්න
+    .accesskey = d
+
+permissions-doh-add-exception =
+    .label = එකතු
+    .accesskey = A
+
+permissions-doh-col =
+    .label = වසම
+
+permissions-doh-remove =
+    .label = ඉවත් කරන්න
+    .accesskey = R
+
+permissions-doh-remove-all =
+    .label = සියල්ල ඉවත් කරන්න
+    .accesskey = e

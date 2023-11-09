@@ -65,7 +65,7 @@ auto PreferenceSheet::PrefsKindFor(const Document& aDoc) -> PrefsKind {
     return PrefsKind::Chrome;
   }
 
-  if (aDoc.IsBeingUsedAsImage() && aDoc.IsDocumentURISchemeChrome()) {
+  if (aDoc.IsBeingUsedAsImage() && aDoc.ChromeRulesEnabled()) {
     return PrefsKind::Chrome;
   }
 
@@ -285,6 +285,8 @@ void PreferenceSheet::Initialize() {
 
   Telemetry::ScalarSet(Telemetry::ScalarID::A11Y_BACKPLATE,
                        StaticPrefs::browser_display_permit_backplate());
+  Telemetry::ScalarSet(Telemetry::ScalarID::A11Y_USE_SYSTEM_COLORS,
+                       StaticPrefs::browser_display_use_system_colors());
 }
 
 bool PreferenceSheet::AffectedByPref(const nsACString& aPref) {

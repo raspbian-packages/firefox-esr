@@ -47,6 +47,8 @@ class gfxHarfBuzzShaper : public gfxFontShaper {
   // get harfbuzz glyph advance, in font design units
   hb_position_t GetGlyphHAdvance(hb_codepoint_t glyph) const;
 
+  // Get vertical glyph advance, or -1 if not available; caller should check
+  // for a negative result and provide a fallback or fail, as appropriate.
   hb_position_t GetGlyphVAdvance(hb_codepoint_t glyph);
 
   void GetGlyphVOrigin(hb_codepoint_t aGlyph, hb_position_t* aX,
@@ -97,6 +99,9 @@ class gfxHarfBuzzShaper : public gfxFontShaper {
   static hb_font_t* CreateHBFont(gfxFont* aFont,
                                  hb_font_funcs_t* aFontFuncs = nullptr,
                                  FontCallbackData* aCallbackData = nullptr);
+
+  hb_font_t* GetHBFont() const { return mHBFont; }
+  hb_face_t* GetHBFace() const { return hb_font_get_face(mHBFont); }
 
  protected:
   nsresult SetGlyphsFromRun(gfxShapedText* aShapedText, uint32_t aOffset,

@@ -19,7 +19,7 @@ about-private-browsing-handoff-no-engine =
 about-private-browsing-handoff-text = { $engine } দ্বারা অনুসন্ধান করুন অথবা ঠিকানা লিখুন
 about-private-browsing-handoff-text-no-engine = অনুসন্ধান করুন অথবা ঠিকানা লিখুন
 about-private-browsing-not-private = আপনি বর্তমানে কোনো ব্যক্তিগত উইন্ডোতে নেই।
-about-private-browsing-info-description-private-window = ব্যক্তিগত উইন্ডো: আপনি যখন সমস্ত ব্যক্তিগত উইন্ডো বন্ধ করেন, { -brand-short-name } আপনার অনুসন্ধান এবং ব্রাউজিং ইতিহাস সাফ করে। এটি আপনাকে বেনামী করে না।
+about-private-browsing-info-description-private-window = ব্যক্তিগত উইন্ডো: আপনি যখন সমস্ত ব্যক্তিগত উইন্ডো বন্ধ করেন, { -brand-short-name } আপনার অনুসন্ধান এবং ব্রাউজিং ইতিহাস মুছে দেয়। কিন্তু এতে করে আপনি এনোনিমাস বা বেনামী হয়ে যান না।
 about-private-browsing-info-description-simplified = আপনি যখন সমস্ত ব্যক্তিগত উইন্ডো বন্ধ করেন, { -brand-short-name } আপনার অনুসন্ধান এবং ব্রাউজিং ইতিহাস সাফ করে তবে এটি আপনাকে বেনামী করে না।
 about-private-browsing-learn-more-link = আরও জানুন
 
@@ -53,4 +53,7 @@ about-private-browsing-promo-close-button =
     .title = বন্ধ করুন
 
 ## Strings used in a “pin promotion” message, which prompts users to pin a private window
+
+
+## Strings used in a promotion message for cookie banner reduction
 

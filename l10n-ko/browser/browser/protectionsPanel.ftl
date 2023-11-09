@@ -63,7 +63,6 @@ protections-panel-not-found-label = 감지되지 않음
 ##
 
 protections-panel-settings-label = 보호 설정
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = 보호 대시보드
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = 양식
 protections-panel-site-not-working-view-issue-list-payments = 결제
 protections-panel-site-not-working-view-issue-list-comments = 댓글
 protections-panel-site-not-working-view-issue-list-videos = 동영상
+protections-panel-site-not-working-view-issue-list-fonts = 글꼴
 
 protections-panel-site-not-working-view-send-report = 보고서 보내기
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = 깨진 사이트 신고
 protections-panel-content-blocking-breakage-report-view-description = 특정 추적기를 차단하면 일부 웹 사이트에서 문제가 발생할 수 있습니다. 이러한 문제를 보고하면 모든 사람에게 더 나은 { -brand-short-name }를 제공하는데 도움이 됩니다. 이 보고서를 보내면 URL과 브라우저 설정에 대한 정보가 Mozilla로 전송됩니다. <label data-l10n-name="learn-more">더 알아보기</label>
+protections-panel-content-blocking-breakage-report-view-description2 = 특정 추적기를 차단하면 일부 웹 사이트에서 문제가 발생할 수 있습니다. 이러한 문제를 보고하면 모든 사람에게 더 나은 { -brand-short-name }를 제공하는데 도움이 됩니다. 이 보고서를 보내면 URL과 브라우저 설정에 대한 정보가 { -vendor-short-name }로 전송됩니다.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = 취소
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = 보고서 보내기
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = 쿠키 배너 감소
+protections-panel-cookie-banner-handling-enabled = 이 사이트에서 켜짐
+protections-panel-cookie-banner-handling-disabled = 이 사이트에서 꺼짐
+protections-panel-cookie-banner-handling-undetected = 현재 지원되지 않는 사이트
+
+protections-panel-cookie-banner-view-title =
+    .title = 쿠키 배너 감소
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = { $host }에 대해 쿠키 배너 감소를 끄시겠습니까?
+protections-panel-cookie-banner-view-turn-on-for-site = 이 사이트에 대해 쿠키 배너 감소를 켜시겠습니까?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name }는 이 사이트의 쿠키를 지우고 페이지를 새로 고침합니다. 모든 쿠키를 삭제하면 로그아웃되거나 장바구니가 비워질 수 있습니다.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name }는 지원되는 사이트에서 모든 쿠키 요청을 자동으로 거부하려고 시도합니다.
+protections-panel-cookie-banner-view-cancel = 취소
+protections-panel-cookie-banner-view-turn-off = 끄기
+protections-panel-cookie-banner-view-turn-on = 켜기

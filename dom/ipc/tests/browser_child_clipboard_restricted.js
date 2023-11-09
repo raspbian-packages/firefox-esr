@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-add_task(async function() {
+add_task(async function () {
   // Create a new content tab to make sure the paste is cross-process.
   let tab = await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
@@ -9,7 +9,7 @@ add_task(async function() {
   );
   let browser = tab.linkedBrowser;
 
-  await SpecialPowers.spawn(browser, [], async function(arg) {
+  await SpecialPowers.spawn(browser, [], async function (arg) {
     const trans = Cc["@mozilla.org/widget/transferable;1"].createInstance(
       Ci.nsITransferable
     );
@@ -23,8 +23,8 @@ add_task(async function() {
     trans.addDataFlavor("text/unknown");
     trans.setTransferData("text/unknown", string);
 
-    trans.addDataFlavor("text/unicode");
-    trans.setTransferData("text/unicode", string);
+    trans.addDataFlavor("text/plain");
+    trans.setTransferData("text/plain", string);
 
     // Write to clipboard.
     Services.clipboard.setData(trans, null, Ci.nsIClipboard.kGlobalClipboard);
@@ -34,7 +34,7 @@ add_task(async function() {
   for (var i = 0; i < 20; i++) {
     if (
       Services.clipboard.hasDataMatchingFlavors(
-        ["text/unicode"],
+        ["text/plain"],
         Services.clipboard.kGlobalClipboard
       )
     ) {
@@ -57,16 +57,16 @@ add_task(async function() {
 
   ok(
     Services.clipboard.hasDataMatchingFlavors(
-      ["text/unicode"],
+      ["text/plain"],
       Services.clipboard.kGlobalClipboard
     ),
-    "clipboard should have text/unicode"
+    "clipboard should have text/plain"
   );
 
   is(
-    readClipboard("text/unicode"),
+    readClipboard("text/plain"),
     "blablabla",
-    "matching string for text/unicode"
+    "matching string for text/plain"
   );
 
   ok(

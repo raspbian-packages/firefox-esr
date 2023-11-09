@@ -26,7 +26,7 @@ storage-context-menu-delete-all =
 
 # Context menu action to delete all session cookies
 storage-context-menu-delete-all-session-cookies =
-    .label = حذف همه کوکی‌های نشست
+    .label = حذف تمام کلوچک‌های نشست
 
 # Context menu action to delete storage item
 # Variables:
@@ -53,11 +53,11 @@ storage-table-headers-cache-status = وضعیت
 
 ## Labels for Storage type groups present in the Storage Tree, like cookies, local storage etc.
 
-storage-tree-labels-cookies = کوکی‌ها
+storage-tree-labels-cookies = کلوچک‌ها
 storage-tree-labels-local-storage = فضای ذخیره‌سازی محلی
 storage-tree-labels-session-storage = فضای ذخیره‌سازی نشست
-storage-tree-labels-indexed-db = پایگاه داده‌ی نشانه گذاری شده
-storage-tree-labels-cache = فضای ذخیره‌سازی حافظه نهان
+storage-tree-labels-indexed-db = پایگاه دادهٔ نشانه‌گذاری شده
+storage-tree-labels-cache = ذخیره‌گاه انباره
 
 ##
 
@@ -72,7 +72,7 @@ storage-collapse-pane =
     .title = بستن قطعه
 
 # String displayed in the expires column when the cookie is a Session Cookie
-storage-expires-session = جلسه
+storage-expires-session = نشست
 
 # Heading displayed over the item value in the sidebar
 storage-data = اطلاعات

@@ -10,13 +10,14 @@
 #include "ImageContainer.h"
 #include "FFmpegDataDecoder.h"
 #include "FFmpegLibWrapper.h"
+#include "PerformanceRecorder.h"
 #include "SimpleMap.h"
 #include "mozilla/ScopeExit.h"
 #include "nsTHashSet.h"
 #if LIBAVCODEC_VERSION_MAJOR >= 57 && LIBAVUTIL_VERSION_MAJOR >= 56
 #  include "mozilla/layers/TextureClient.h"
 #endif
-#ifdef MOZ_WAYLAND_USE_VAAPI
+#ifdef MOZ_WAYLAND_USE_HWDECODE
 #  include "FFmpegVideoFramePool.h"
 #endif
 
@@ -48,12 +49,13 @@ class FFmpegVideoDecoder<LIBAV_VER>
   FFmpegVideoDecoder(FFmpegLibWrapper* aLib, const VideoInfo& aConfig,
                      KnowsCompositor* aAllocator,
                      ImageContainer* aImageContainer, bool aLowLatency,
-                     bool aDisableHardwareDecoding);
+                     bool aDisableHardwareDecoding,
+                     Maybe<TrackingId> aTrackingId);
 
   ~FFmpegVideoDecoder();
 
   RefPtr<InitPromise> Init() override;
-  void InitCodecContext() REQUIRES(sMutex) override;
+  void InitCodecContext() MOZ_REQUIRES(sMutex) override;
   nsCString GetDescriptionName() const override {
 #ifdef USING_MOZFFVPX
     return "ffvpx video decoder"_ns;
@@ -61,6 +63,7 @@ class FFmpegVideoDecoder<LIBAV_VER>
     return "ffmpeg video decoder"_ns;
 #endif
   }
+  nsCString GetCodecName() const override;
   ConversionRequired NeedsConversion() const override {
     return ConversionRequired::kNeedAVCC;
   }
@@ -98,6 +101,7 @@ class FFmpegVideoDecoder<LIBAV_VER>
 #endif
   }
   gfx::YUVColorSpace GetFrameColorSpace() const;
+  gfx::ColorSpace2 GetFrameColorPrimaries() const;
   gfx::ColorRange GetFrameColorRange() const;
 
   MediaResult CreateImage(int64_t aOffset, int64_t aPts, int64_t aDuration,
@@ -119,7 +123,7 @@ class FFmpegVideoDecoder<LIBAV_VER>
                                           int32_t aHeight) const;
 #endif
 
-#ifdef MOZ_WAYLAND_USE_VAAPI
+#ifdef MOZ_WAYLAND_USE_HWDECODE
   void InitHWDecodingPrefs();
   MediaResult InitVAAPIDecoder();
   bool CreateVAAPIDeviceContext();
@@ -135,7 +139,7 @@ class FFmpegVideoDecoder<LIBAV_VER>
                                MediaDataDecoder::DecodedData& aResults);
 #endif
 
-#ifdef MOZ_WAYLAND_USE_VAAPI
+#ifdef MOZ_WAYLAND_USE_HWDECODE
   AVBufferRef* mVAAPIDeviceContext;
   bool mEnableHardwareDecoding;
   VADisplay mDisplay;
@@ -174,6 +178,8 @@ class FFmpegVideoDecoder<LIBAV_VER>
 
   DurationMap mDurationMap;
   const bool mLowLatency;
+  const Maybe<TrackingId> mTrackingId;
+  PerformanceRecorderMulti<DecodeStage> mPerformanceRecorder;
 
   // True if we're allocating shmem for ffmpeg decode buffer.
   Maybe<Atomic<bool>> mIsUsingShmemBufferForDecode;

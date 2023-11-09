@@ -7,14 +7,11 @@
 #include "vm/GlobalObject.h"
 
 #include "jsapi.h"
-#include "jsdate.h"
-#include "jsexn.h"
 #include "jsfriendapi.h"
 
 #include "builtin/AtomicsObject.h"
 #include "builtin/BigInt.h"
 #include "builtin/DataViewObject.h"
-#include "builtin/Eval.h"
 #ifdef JS_HAS_INTL_API
 #  include "builtin/intl/Collator.h"
 #  include "builtin/intl/DateTimeFormat.h"
@@ -27,15 +24,7 @@
 #endif
 #include "builtin/FinalizationRegistryObject.h"
 #include "builtin/MapObject.h"
-#include "builtin/ModuleObject.h"
-#include "builtin/Object.h"
-#include "builtin/RegExp.h"
-#include "builtin/SelfHostingDefines.h"
-#include "builtin/Stream.h"
-#include "builtin/streams/QueueingStrategies.h"  // js::{ByteLength,Count}QueueingStrategy
-#include "builtin/streams/ReadableStream.h"  // js::ReadableStream
-#include "builtin/streams/ReadableStreamController.h"  // js::Readable{StreamDefault,ByteStream}Controller
-#include "builtin/streams/ReadableStreamReader.h"  // js::ReadableStreamDefaultReader
+#include "builtin/ShadowRealm.h"
 #include "builtin/Symbol.h"
 #include "builtin/WeakMapObject.h"
 #include "builtin/WeakRefObject.h"
@@ -43,6 +32,7 @@
 #include "debugger/DebugAPI.h"
 #include "frontend/CompilationStencil.h"
 #include "gc/FinalizationObservers.h"
+#include "gc/GC.h"
 #include "gc/GCContext.h"
 #include "js/friend/ErrorMessages.h"  // js::GetErrorMessage, JSMSG_*
 #include "js/friend/WindowProxy.h"    // js::ToWindowProxyIfWindow
@@ -51,14 +41,16 @@
 #include "vm/AsyncFunction.h"
 #include "vm/AsyncIteration.h"
 #include "vm/BooleanObject.h"
+#include "vm/Compartment.h"
 #include "vm/DateObject.h"
 #include "vm/EnvironmentObject.h"
 #include "vm/ErrorObject.h"
 #include "vm/GeneratorObject.h"
-#include "vm/HelperThreads.h"
 #include "vm/JSContext.h"
 #include "vm/NumberObject.h"
 #include "vm/PIC.h"
+#include "vm/PlainObject.h"
+#include "vm/RegExpObject.h"
 #include "vm/RegExpStatics.h"
 #include "vm/SelfHosting.h"
 #include "vm/StringObject.h"
@@ -70,8 +62,6 @@
 
 #include "gc/GCContext-inl.h"
 #include "vm/JSObject-inl.h"
-#include "vm/JSScript-inl.h"
-#include "vm/NativeObject-inl.h"
 #include "vm/Realm-inl.h"
 
 using namespace js;
@@ -104,6 +94,7 @@ bool GlobalObject::skipDeselectedConstructor(JSContext* cx, JSProtoKey key) {
     case JSProto_Null:
     case JSProto_Object:
     case JSProto_Function:
+    case JSProto_BoundFunction:
     case JSProto_Array:
     case JSProto_Boolean:
     case JSProto_JSON:
@@ -185,15 +176,6 @@ bool GlobalObject::skipDeselectedConstructor(JSContext* cx, JSProtoKey key) {
     case JSProto_RelativeTimeFormat:
       return false;
 #endif
-#ifndef MOZ_DOM_STREAMS
-    case JSProto_ReadableStream:
-    case JSProto_ReadableStreamDefaultReader:
-    case JSProto_ReadableStreamDefaultController:
-    case JSProto_ReadableByteStreamController:
-    case JSProto_ByteLengthQueuingStrategy:
-    case JSProto_CountQueuingStrategy:
-      return !cx->realm()->creationOptions().getStreamsEnabled();
-#endif
 
     // Return true if the given constructor has been disabled at run-time.
     case JSProto_Atomics:
@@ -208,6 +190,9 @@ bool GlobalObject::skipDeselectedConstructor(JSContext* cx, JSProtoKey key) {
     case JSProto_Iterator:
     case JSProto_AsyncIterator:
       return !cx->realm()->creationOptions().getIteratorHelpersEnabled();
+
+    case JSProto_ShadowRealm:
+      return !cx->realm()->creationOptions().getShadowRealmsEnabled();
 
     default:
       MOZ_CRASH("unexpected JSProtoKey");
@@ -240,6 +225,8 @@ bool GlobalObject::resolveConstructor(JSContext* cx,
                                       Handle<GlobalObject*> global,
                                       JSProtoKey key, IfClassIsDisabled mode) {
   MOZ_ASSERT(key != JSProto_Null);
+  MOZ_ASSERT(key != JSProto_BoundFunction,
+             "bound functions don't have their own proto object");
   MOZ_ASSERT(!global->isStandardClassResolved(key));
   MOZ_ASSERT(cx->compartment() == global->compartment());
 
@@ -479,7 +466,7 @@ JSObject* GlobalObject::createBuiltinProto(JSContext* cx,
 
 JSObject* GlobalObject::createBuiltinProto(JSContext* cx,
                                            Handle<GlobalObject*> global,
-                                           ProtoKind kind, HandleAtom tag,
+                                           ProtoKind kind, Handle<JSAtom*> tag,
                                            ObjectInitWithTagOp init) {
   MOZ_ASSERT(!cx->isHelperThreadContext());
   if (!init(cx, global, tag)) {
@@ -487,29 +474,6 @@ JSObject* GlobalObject::createBuiltinProto(JSContext* cx,
   }
 
   return &global->getBuiltinProto(kind);
-}
-
-/* static */
-bool GlobalObject::initBuiltinConstructor(JSContext* cx,
-                                          Handle<GlobalObject*> global,
-                                          JSProtoKey key, HandleObject ctor,
-                                          HandleObject proto) {
-  MOZ_ASSERT(!global->empty());  // reserved slots already allocated
-  MOZ_ASSERT(key != JSProto_Null);
-  MOZ_ASSERT(ctor);
-  MOZ_ASSERT(proto);
-
-  RootedId id(cx, NameToId(ClassName(key, cx)));
-  MOZ_ASSERT(!global->lookup(cx, id));
-
-  RootedValue ctorValue(cx, ObjectValue(*ctor));
-  if (!DefineDataProperty(cx, global, id, ctorValue, JSPROP_RESOLVING)) {
-    return false;
-  }
-
-  global->setConstructor(key, ctor);
-  global->setPrototype(key, proto);
-  return true;
 }
 
 static bool ThrowTypeError(JSContext* cx, unsigned argc, Value* vp) {
@@ -610,6 +574,9 @@ GlobalObject* GlobalObject::createInternal(JSContext* cx,
   if (!JSObject::setQualifiedVarObj(cx, global)) {
     return nullptr;
   }
+  if (!JSObject::setGenerationCountedGlobal(cx, global)) {
+    return nullptr;
+  }
 
   return global;
 }
@@ -646,6 +613,15 @@ GlobalObject* GlobalObject::new_(JSContext* cx, const JSClass* clasp,
       return nullptr;
     }
 
+    // Make transactional initialization of these constructors by discarding the
+    // incompletely initialized global if an error occur. This also ensures the
+    // global's prototype chain is initialized (in FinishObjectClassInit).
+    if (!ensureConstructor(cx, global, JSProto_Object) ||
+        !ensureConstructor(cx, global, JSProto_Function)) {
+      return nullptr;
+    }
+
+    realm->clearInitializingGlobal();
     if (hookOption == JS::FireOnNewGlobalHook) {
       JS_FireOnNewGlobalObject(cx, global);
     }
@@ -656,17 +632,6 @@ GlobalObject* GlobalObject::new_(JSContext* cx, const JSClass* clasp,
 
 GlobalScope& GlobalObject::emptyGlobalScope() const {
   return *data().emptyGlobalScope;
-}
-
-/* static */
-bool GlobalObject::getOrCreateEval(JSContext* cx, Handle<GlobalObject*> global,
-                                   MutableHandleObject eval) {
-  if (!getOrCreateObjectPrototype(cx, global)) {
-    return false;
-  }
-  eval.set(global->data().eval);
-  MOZ_ASSERT(eval);
-  return true;
 }
 
 bool GlobalObject::valueIsEval(const Value& val) {
@@ -691,7 +656,8 @@ bool GlobalObject::initStandardClasses(JSContext* cx,
 
   for (size_t k = 0; k < JSProto_LIMIT; ++k) {
     JSProtoKey key = static_cast<JSProtoKey>(k);
-    if (key != JSProto_Null && !global->isStandardClassResolved(key)) {
+    if (key != JSProto_Null && key != JSProto_BoundFunction &&
+        !global->isStandardClassResolved(key)) {
       if (!resolveConstructor(cx, global, static_cast<JSProtoKey>(k),
                               IfClassIsDisabled::DoNothing)) {
         return false;
@@ -706,7 +672,7 @@ JSFunction* GlobalObject::createConstructor(JSContext* cx, Native ctor,
                                             JSAtom* nameArg, unsigned length,
                                             gc::AllocKind kind,
                                             const JSJitInfo* jitInfo) {
-  RootedAtom name(cx, nameArg);
+  Rooted<JSAtom*> name(cx, nameArg);
   JSFunction* fun = NewNativeConstructor(cx, ctor, length, name, kind);
   if (!fun) {
     return nullptr;
@@ -734,11 +700,7 @@ static NativeObject* CreateBlankProto(JSContext* cx, const JSClass* clasp,
 NativeObject* GlobalObject::createBlankPrototype(JSContext* cx,
                                                  Handle<GlobalObject*> global,
                                                  const JSClass* clasp) {
-  RootedObject objectProto(cx, getOrCreateObjectPrototype(cx, global));
-  if (!objectProto) {
-    return nullptr;
-  }
-
+  RootedObject objectProto(cx, &global->getObjectPrototype());
   return CreateBlankProto(cx, clasp, objectProto);
 }
 
@@ -862,13 +824,6 @@ bool GlobalObject::createIntrinsicsHolder(JSContext* cx,
     return false;
   }
 
-  // Define a top-level property 'undefined' with the undefined value.
-  if (!DefineDataProperty(cx, intrinsicsHolder, cx->names().undefined,
-                          UndefinedHandleValue,
-                          JSPROP_PERMANENT | JSPROP_READONLY)) {
-    return false;
-  }
-
   // Install the intrinsics holder on the global.
   global->data().intrinsicsHolder.init(intrinsicsHolder);
   return true;
@@ -877,8 +832,8 @@ bool GlobalObject::createIntrinsicsHolder(JSContext* cx,
 /* static */
 bool GlobalObject::getSelfHostedFunction(JSContext* cx,
                                          Handle<GlobalObject*> global,
-                                         HandlePropertyName selfHostedName,
-                                         HandleAtom name, unsigned nargs,
+                                         Handle<PropertyName*> selfHostedName,
+                                         Handle<JSAtom*> name, unsigned nargs,
                                          MutableHandleValue funVal) {
   if (global->maybeGetIntrinsicValue(selfHostedName, funVal.address(), cx)) {
     RootedFunction fun(cx, &funVal.toObject().as<JSFunction>());
@@ -926,7 +881,7 @@ bool GlobalObject::getSelfHostedFunction(JSContext* cx,
 /* static */
 bool GlobalObject::getIntrinsicValueSlow(JSContext* cx,
                                          Handle<GlobalObject*> global,
-                                         HandlePropertyName name,
+                                         Handle<PropertyName*> name,
                                          MutableHandleValue value) {
   // If this is a C++ intrinsic, simply define the function on the intrinsics
   // holder.
@@ -960,9 +915,9 @@ bool GlobalObject::getIntrinsicValueSlow(JSContext* cx,
 /* static */
 bool GlobalObject::addIntrinsicValue(JSContext* cx,
                                      Handle<GlobalObject*> global,
-                                     HandlePropertyName name,
+                                     Handle<PropertyName*> name,
                                      HandleValue value) {
-  RootedNativeObject holder(cx, &global->getIntrinsicsHolder());
+  Rooted<NativeObject*> holder(cx, &global->getIntrinsicsHolder());
 
   RootedId id(cx, NameToId(name));
   MOZ_ASSERT(!holder->containsPure(id));
@@ -975,15 +930,6 @@ bool GlobalObject::addIntrinsicValue(JSContext* cx,
   }
   holder->initSlot(slot, value);
   return true;
-}
-
-/* static */
-bool GlobalObject::ensureModulePrototypesCreated(JSContext* cx,
-                                                 Handle<GlobalObject*> global) {
-  return getOrCreateModulePrototype(cx, global) &&
-         getOrCreateImportEntryPrototype(cx, global) &&
-         getOrCreateExportEntryPrototype(cx, global) &&
-         getOrCreateRequestedModulePrototype(cx, global);
 }
 
 /* static */
@@ -1026,6 +972,8 @@ void GlobalObject::releaseData(JS::GCContext* gcx) {
 
 GlobalObjectData::GlobalObjectData(Zone* zone) : varNames(zone) {}
 
+GlobalObjectData::~GlobalObjectData() = default;
+
 void GlobalObjectData::trace(JSTracer* trc, GlobalObject* global) {
   // Atoms are always tenured so don't need to be traced during minor GC.
   if (trc->runtime()->heapState() != JS::HeapState::MinorCollecting) {
@@ -1066,6 +1014,9 @@ void GlobalObjectData::trace(JSTracer* trc, GlobalObject* global) {
                     "global-function-shape");
   TraceNullableEdge(trc, &extendedFunctionShapeWithDefaultProto,
                     "global-ext-function-shape");
+
+  TraceNullableEdge(trc, &boundFunctionShapeWithDefaultProto,
+                    "global-bound-function-shape");
 
   if (regExpStatics) {
     regExpStatics->trace(trc);

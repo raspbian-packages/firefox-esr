@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] Görev çubuğuna sabitle
     }
 about-private-browsing-pin-promo-title = Çerezleriniz ve geçmişiniz kaydedilmesin. Hiç kimse izlemiyormuş gibi gezin.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Çerez bildirimlerine son!
+about-private-browsing-cookie-banners-promo-button = Çerez bildirimlerini azaltın
+about-private-browsing-cookie-banners-promo-message = Dikkatiniz dağılmadan gezinmeniz için { -brand-short-name }, çerez bildirimlerini otomatik olarak yanıtlayabilir. { -brand-short-name }, mümkün olduğu sürece tüm istekleri reddedecektir.

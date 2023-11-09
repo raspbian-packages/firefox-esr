@@ -10,6 +10,8 @@
 
 origin-controls-no-access =
     .label = Кеңейту деректерді оқи және өзгерте алмайды
+origin-controls-quarantined =
+    .label = Кеңейту үшін деректерді оқу және өзгертуге рұқсат етілмеген
 origin-controls-options =
     .label = Кеңейту деректерді оқи және өзгерте алады:
 origin-controls-option-all-domains =
@@ -27,6 +29,7 @@ origin-controls-option-always-on =
 ## messages. They currently appear in the unified extensions panel.
 
 origin-controls-state-no-access = Бұл сайттағы деректерді оқи және өзгерте алмайды
+origin-controls-state-quarantined = { -vendor-short-name } бұл сайтта рұқсат етпеген
 origin-controls-state-always-on = Бұл сайттағы деректерді оқи және өзгерте алады
 origin-controls-state-when-clicked = Деректерді оқу және өзгерту үшін рұқсат керек
 origin-controls-state-hover-run-visit-only = Тек осы реттік шолу үшін орындау
@@ -48,3 +51,10 @@ origin-controls-toolbar-button-permission-needed =
     .tooltiptext =
         { $extensionTitle }
         Керек рұқсаттар
+# Extension's toolbar button when quarantined.
+# Note that the new line is intentionally part of the tooltip.
+origin-controls-toolbar-button-quarantined =
+    .label = { $extensionTitle }
+    .tooltiptext =
+        { $extensionTitle }
+        { -vendor-short-name } бұл сайтта рұқсат етпеген

@@ -33,8 +33,9 @@ you're going to want to write some automated tests.
 
 * You may see values from previous tests persist across tests because the profile directory was shared between test cases.
     * You can reset Glean before your test by calling
-      `Services.fog.testResetFOG()` (in JS), or
-      `mozilla::glean::TestResetFOG()` (in C++).
+      `Services.fog.testResetFOG()` (in JS).
+    * You shouldn't have to do this in C++ or Rust since there you should use the
+      `FOGFixture` test fixture.
 * If your metric is based on timing (`timespan`, `timing_distribution`),
   do not expect to be able to assert the correct timing value.
   Glean does a lot of timing for you deep in the SDK, so unless you mock the system's monotonic clock,
@@ -44,6 +45,9 @@ you're going to want to write some automated tests.
     but beware of rounding.
 * Errors in instrumentation APIs do not panic, throw, or crash.
   But Glean remembers that the errors happened.
+    * Test APIs, on the other hand, are permitted
+      (some may say "encouraged")
+      to panic, throw, or crash on bad behaviour.
     * If you call a test API and it panics, throws, or crashes,
       that means your instrumentation did something wrong.
       Check your test logs for details about what went awry.
@@ -138,10 +142,15 @@ for updates on a better design and implementation for ping tests. ))
 
 ## mochitest
 
-`browser-chrome`-flavoured mochitests can be tested very similarly to `xpcshell`.
+`browser-chrome`-flavoured mochitests can be tested very similarly to `xpcshell`,
+though you do not need to request a profile or initialize FOG.
+`plain`-flavoured mochitests aren't yet supported (follow
+[bug 1799977](https://bugzilla.mozilla.org/show_bug.cgi?id=1799977)
+for updates and a workaround).
 
-Prefer `xpcshell` and only use mochitests if you cannot express the behaviour in `xpcshell`.
-This can happen, for example, if the behaviour happens on a non-main process.
+If you're testing in `mochitest`, your instrumentation (or your test)
+might not be running in the parent process.
+This means you get to learn the IPC test APIs.
 
 ### IPC
 
@@ -157,18 +166,24 @@ In this case there's a slight addition to the Usual Test Format:
 
 ## GTests/Google Tests
 
-Unfortunately this is a pain to test at the moment.
-gtests run with a single temporary profile, but FOG's own gtests use it,
-polluting it from test to test.
+Please make use of the `FOGFixture` fixture when writing your tests, like:
 
-In this case there's a slight addition to the Usual Test Format:
-1) _Reset FOG with `mozilla::glean::impl::fog_test_reset(""_ns, ""_ns);`_
-2) Assert no value in the metric
-3) Express behaviour
-4) Assert correct value in the metric.
+```cpp
+TEST_F(FOGFixture, MyTestCase) {
+  // 1) Assert no value
+  ASSERT_EQ(mozilla::Nothing(),
+            my_metric_category::my_metric_name.TestGetValue());
 
-Work to improve this is tracked in
-[bug 1756057](https://bugzilla.mozilla.org/show_bug.cgi?id=1756057).
+  // 2) Express behaviour
+  // ...<left as an exercise to the reader>...
+
+  // 3) Assert correct value
+  ASSERT_EQ(kValue,
+            my_metric_category::my_metric_name.TestGetValue().unwrap().ref());
+}
+```
+
+The fixture will take care of ensuring storage is reset between tests.
 
 ## Rust `rusttests`
 
@@ -179,14 +194,33 @@ is a good thing to review first.
 Unfortunately, FOG requires gecko
 (to tell it where the profile dir is, and other things),
 which means we need to use the
-[GTest + FFI approach](/testing-rust-code/index.html#gtests)
+[GTest + FFI approach](/testing-rust-code/index.md#gtests)
 where GTest is the runner and Rust is just the language the test is written in.
 
-This means you follow the GTests/Google Tests variant on the Usual Test Format:
-1) _Reset FOG with `mozilla::glean::impl::fog_test_reset(""_ns, ""_ns);`_
-2) Assert no value in the metric
-3) Express behaviour
-4) Assert correct value in the metric.
+This means your test will look like a GTest like this:
+
+```cpp
+extern "C" void Rust_MyRustTest();
+TEST_F(FOGFixture, MyRustTest) { Rust_MyRustTest(); }
+```
+
+Plus a Rust test like this:
+
+```rust
+#[no_mangle]
+pub extern "C" fn Rust_MyRustTest() {
+    // 1) Assert no value
+    assert_eq!(None,
+               fog::metrics::my_metric_category::my_metric_name.test_get_value(None));
+
+    // 2) Express behaviour
+    // ...<left as an exercise to the reader>...
+
+    // 3) Assert correct value
+    assert_eq!(Some(value),
+               fog::metrics::my_metric_category::my_metric_name.test_get_value(None));
+}
+```
 
 [glean-metrics-apis]: https://mozilla.github.io/glean/book/reference/metrics/index.html
 [metrics-xpcshell-test]: https://searchfox.org/mozilla-central/rev/66e59131c1c76fe486424dc37f0a8a399ca874d4/toolkit/mozapps/update/tests/unit_background_update/test_backgroundupdate_glean.js#28

@@ -1093,6 +1093,7 @@ class MacroAssemblerARMCompat : public MacroAssemblerARM {
     ma_push(reg);
   }
   void pushValue(const Address& addr);
+  void pushValue(const BaseIndex& addr, Register scratch);
 
   void storePayload(const Value& val, const Address& dest);
   void storePayload(Register src, const Address& dest);
@@ -1101,7 +1102,8 @@ class MacroAssemblerARMCompat : public MacroAssemblerARM {
   void storeTypeTag(ImmTag tag, const Address& dest);
   void storeTypeTag(ImmTag tag, const BaseIndex& dest);
 
-  void handleFailureWithHandlerTail(Label* profilerExitTail);
+  void handleFailureWithHandlerTail(Label* profilerExitTail,
+                                    Label* bailoutTail);
 
   /////////////////////////////////////////////////////////////////
   // Common interface.
@@ -1363,17 +1365,6 @@ class MacroAssemblerARMCompat : public MacroAssemblerARM {
               FloatRegister tmp);
   void trunc(FloatRegister input, Register output, Label* handleNotAnInt);
   void truncf(FloatRegister input, Register output, Label* handleNotAnInt);
-
-  void clampCheck(Register r, Label* handleNotAnInt) {
-    // Check explicitly for r == INT_MIN || r == INT_MAX
-    // This is the instruction sequence that gcc generated for this
-    // operation.
-    ScratchRegisterScope scratch(asMasm());
-    SecondScratchRegisterScope scratch2(asMasm());
-    ma_sub(r, Imm32(0x80000001), scratch, scratch2);
-    as_cmn(scratch, Imm8(3));
-    ma_b(handleNotAnInt, Above);
-  }
 
   void lea(Operand addr, Register dest) {
     ScratchRegisterScope scratch(asMasm());

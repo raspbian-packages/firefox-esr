@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Ivinell nevez
 tabbrowser-empty-private-tab-title = Ivinell prevez nevez
+
 tabbrowser-menuitem-close-tab =
     .label = Serriñ an ivinell
 tabbrowser-menuitem-close =
     .label = Serriñ
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -129,6 +128,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Na ziskouez ar voestad-emziviz-mañ 
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Aotren ar rebuzadurioù giz-se o tont deus { $domain } d'ho kas betek o ivinell
+
 tabbrowser-customizemode-tab-title = Personelaat { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -147,3 +147,20 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Heglevat an ivinelloù
     .accesskey = H
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label =
+        { $tabCount ->
+            [one] Listennañ an ivinell
+            [two] Listennañ { $tabCount } ivinell
+            [few] Listennañ { $tabCount } ivinell
+            [many] Listennañ { $tabCount } a ivinelloù
+           *[other] Listennañ { $tabCount } ivinell
+        }
+
+## Tab manager menu buttons
+

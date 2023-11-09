@@ -90,6 +90,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Докладване за неработеща страница
 protections-panel-content-blocking-breakage-report-view-description = Спирането на определени проследявания може да наруши работата на някои страници. Като докладвате такива страници помагате да направим { -brand-short-name } по-добър за всички. Към Mozilla ще бъде изпратен адреса на страницата, а също и данни за настройките на четеца. <label data-l10n-name="learn-more">Научете повече</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Спирането на определени проследявания може да наруши работата на някои страници. Като докладвате такива страници помагате да направим { -brand-short-name } по-добър за всички. Към { -vendor-short-name } ще бъде изпратен адреса на страницата, а също и данни за настройките на четеца.
 protections-panel-content-blocking-breakage-report-view-collection-url = Адрес
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = Адрес
@@ -100,3 +101,14 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Отказ
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Докладване
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Намаляване на банерите за бисквитки
+
+protections-panel-cookie-banner-view-title =
+    .title = Намаляване на банерите за бисквитки
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Изключване на намаляването на банерите за бисквитки за { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Включване на намаляването на банерите за бисквитки за страницата?

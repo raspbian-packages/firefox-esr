@@ -29,9 +29,9 @@ function createDebuggerContext(toolbox) {
   return {
     ...win.dbg,
     commands: toolbox.commands,
-    toolbox: toolbox,
-    win: win,
-    panel: panel,
+    toolbox,
+    win,
+    panel,
   };
 }
 
@@ -41,16 +41,23 @@ const asyncStorage = require("devtools/shared/async-storage");
 const {
   getSelectedLocation,
 } = require("devtools/client/debugger/src/utils/selected-location");
+const {
+  createLocation,
+} = require("devtools/client/debugger/src/utils/location");
 
 const {
   resetSchemaVersion,
 } = require("devtools/client/debugger/src/utils/prefs");
 
 const {
+  safeDecodeItemName,
+} = require("devtools/client/debugger/src/utils/sources-tree/utils");
+
+const {
   isGeneratedId,
   isOriginalId,
   originalToGeneratedId,
-} = require("devtools/client/shared/source-map/index");
+} = require("devtools/client/shared/source-map-loader/index");
 
 /**
  * Waits for `predicate()` to be true. `state` is the redux app state.
@@ -197,16 +204,18 @@ function waitForSelectedLocation(dbg, line, column) {
  */
 function waitForSelectedSource(dbg, sourceOrUrl) {
   const {
-    getSelectedSource,
     getSelectedSourceTextContent,
-    hasSymbols,
+    getSymbols,
     getBreakableLines,
+    getSourceActorsForSource,
+    getSourceActorBreakableLines,
+    getFirstSourceActorForGeneratedSource,
   } = dbg.selectors;
 
   return waitForState(
     dbg,
     state => {
-      const source = getSelectedSource() || {};
+      const location = dbg.selectors.getSelectedLocation() || {};
       const sourceTextContent = getSelectedSourceTextContent();
       if (!sourceTextContent) {
         return false;
@@ -216,18 +225,45 @@ function waitForSelectedSource(dbg, sourceOrUrl) {
         // Second argument is either a source URL (string)
         // or a Source object.
         if (typeof sourceOrUrl == "string") {
-          if (!source.url.includes(sourceOrUrl)) {
+          if (!location.source.url.includes(encodeURI(sourceOrUrl))) {
             return false;
           }
-        } else if (source.id != sourceOrUrl.id) {
+        } else if (location.source.id != sourceOrUrl.id) {
           return false;
         }
       }
 
-      return hasSymbols(source) && getBreakableLines(source.id);
+      // Wait for symbols/AST to be parsed
+      if (!getSymbols(location) && !isWasmBinarySource(location.source)) {
+        return false;
+      }
+
+      // Finaly wait for breakable lines to be set
+      if (location.source.isHTML) {
+        // For HTML sources we need to wait for each source actor to be processed.
+        // getBreakableLines will return the aggregation without being able to know
+        // if that's complete, with all the source actors.
+        const sourceActors = getSourceActorsForSource(location.source.id);
+        const allSourceActorsProcessed = sourceActors.every(
+          sourceActor => !!getSourceActorBreakableLines(sourceActor.id)
+        );
+        return allSourceActorsProcessed;
+      }
+      return getBreakableLines(location.source.id);
     },
     "selected source"
   );
+}
+
+/**
+ * The generated source of WASM source are WASM binary file,
+ * which have many broken/disabled features in the debugger.
+ *
+ * They especially have a very special behavior in CodeMirror
+ * where line labels aren't line number, but hex addresses.
+ */
+function isWasmBinarySource(source) {
+  return source.isWasm && !source.isOriginal;
 }
 
 function getVisibleSelectedFrameLine(dbg) {
@@ -246,17 +282,20 @@ function getVisibleSelectedFrameColumn(dbg) {
  */
 function assertLineIsBreakable(dbg, file, line, shouldBeBreakable) {
   const lineInfo = getCM(dbg).lineInfo(line - 1);
+  const lineText = `${line}| ${lineInfo.text.substring(0, 50)}${
+    lineInfo.text.length > 50 ? "…" : ""
+  } — in ${file}`;
   // When a line is not breakable, the "empty-line" class is added
   // and the line is greyed out
   if (shouldBeBreakable) {
     ok(
       !lineInfo.wrapClass?.includes("empty-line"),
-      `${file}:${line} should be breakable`
+      `${lineText} should be breakable`
     );
   } else {
     ok(
       lineInfo?.wrapClass?.includes("empty-line"),
-      `${file}:${line} should NOT be breakable`
+      `${lineText} should NOT be breakable`
     );
   }
 }
@@ -303,9 +342,14 @@ function assertHighlightLocation(dbg, source, line) {
  * Assert that CodeMirror reports to be paused at the given line/column.
  */
 function _assertDebugLine(dbg, line, column) {
+  const source = dbg.selectors.getSelectedSource();
+  // WASM lines are hex addresses which have to be mapped to decimal line number
+  if (isWasmBinarySource(source)) {
+    line = dbg.wasmOffsetToLine(source.id, line) + 1;
+  }
+
   // Check the debug line
   const lineInfo = getCM(dbg).lineInfo(line - 1);
-  const source = dbg.selectors.getSelectedSource();
   const sourceTextContent = dbg.selectors.getSelectedSourceTextContent();
   if (source && !sourceTextContent) {
     const url = source.url;
@@ -344,7 +388,7 @@ function _assertDebugLine(dbg, line, column) {
   ok(isVisibleInEditor(dbg, debugLine), "debug line is visible");
 
   const markedSpans = lineInfo.handle.markedSpans;
-  if (markedSpans && markedSpans.length > 0) {
+  if (markedSpans && markedSpans.length && !isWasmBinarySource(source)) {
     const hasExpectedDebugLine = markedSpans.some(
       span =>
         span.marker.className?.includes("debug-expression") &&
@@ -401,6 +445,13 @@ function assertPausedAtSourceAndLine(
   ok(isVisibleInEditor(dbg, getCM(dbg).display.gutters), "gutter is visible");
 
   const frames = dbg.selectors.getCurrentThreadFrames();
+  const source = dbg.selectors.getSelectedSource();
+
+  // WASM support is limited when we are on the generated binary source
+  if (isWasmBinarySource(source)) {
+    return;
+  }
+
   ok(frames.length >= 1, "Got at least one frame");
 
   // Lets make sure we can assert both original and generated file locations when needed
@@ -490,11 +541,8 @@ function assertPaused(dbg, msg = "client is paused") {
  */
 async function waitForPaused(dbg, url) {
   info("Waiting for the debugger to pause");
-  const {
-    getSelectedScope,
-    getCurrentThread,
-    getCurrentThreadFrames,
-  } = dbg.selectors;
+  const { getSelectedScope, getCurrentThread, getCurrentThreadFrames } =
+    dbg.selectors;
 
   await waitForState(
     dbg,
@@ -555,6 +603,28 @@ function isSelectedFrameSelected(dbg, state) {
   }
 
   return source.id == sourceId;
+}
+
+/**
+ * Checks to see if the frame is selected and the title is correct.
+ *
+ * @param {Object} dbg
+ * @param {Integer} index
+ * @param {String} title
+ */
+function isFrameSelected(dbg, index, title) {
+  const $frame = findElement(dbg, "frame", index);
+
+  const {
+    selectors: { getSelectedFrame, getCurrentThread },
+  } = dbg;
+
+  const frame = getSelectedFrame(getCurrentThread());
+
+  const elSelected = $frame.classList.contains("selected");
+  const titleSelected = frame.displayName == title;
+
+  return elSelected && titleSelected;
 }
 
 /**
@@ -639,8 +709,9 @@ function findSource(
   const source = sources.find(s => {
     // Sources don't have a file name attribute, we need to compute it here:
     const sourceFileName = s.url
-      ? decodeURI(s.url.substring(s.url.lastIndexOf("/") + 1))
+      ? safeDecodeItemName(s.url.substring(s.url.lastIndexOf("/") + 1))
       : "";
+
     // The input argument may either be only the filename, or the complete URL
     // This helps match sources whose URL doesn't contain a filename, like data: URLs
     return (
@@ -659,36 +730,17 @@ function findSource(
   return source;
 }
 
-/**
- * Find the source in specied thread. Useful when there exists
- * same named sources in different targets (threads)
- *
- * @param {Object} dbg
- * @param {String} filenameOrUrl - The source file name of the full source url
- * @param {String} threadName - The name of the thread the source belongs to
- */
-function findSourceInThread(dbg, filenameOrUrl, threadName) {
-  const sources = dbg.selectors.getSourceList();
-  return sources.find(s => {
-    const sourceFileName = s.url
-      ? s.url.substring(s.url.lastIndexOf("/") + 1)
-      : "";
-    if (sourceFileName == filenameOrUrl || s.url == filenameOrUrl) {
-      const thread = dbg.selectors.getThread(s.thread);
-      return thread.name == threadName;
-    }
-    return false;
-  });
-}
-
 function findSourceContent(dbg, url, opts) {
   const source = findSource(dbg, url, opts);
 
   if (!source) {
     return null;
   }
-
-  const content = dbg.selectors.getSourceContent(source.id);
+  const content = dbg.selectors.getSettledSourceTextContent(
+    createLocation({
+      source,
+    })
+  );
 
   if (!content) {
     return null;
@@ -710,7 +762,14 @@ function waitForLoadedSource(dbg, url) {
     dbg,
     state => {
       const source = findSource(dbg, url, { silent: true });
-      return source && dbg.selectors.getSourceContent(source.id);
+      return (
+        source &&
+        dbg.selectors.getSettledSourceTextContent(
+          createLocation({
+            source,
+          })
+        )
+      );
     },
     "loaded source"
   );
@@ -722,6 +781,53 @@ function getContext(dbg) {
 
 function getThreadContext(dbg) {
   return dbg.selectors.getThreadContext();
+}
+
+/*
+ * Selects the source node for a specific source
+ * from the source tree.
+ *
+ * @param {Object} dbg
+ * @param {String} filename - The filename for the specific source
+ * @param {Number} sourcePosition - The source node postion in the tree
+ * @param {String} message - The info message to display
+ */
+async function selectSourceFromSourceTree(
+  dbg,
+  fileName,
+  sourcePosition,
+  message
+) {
+  info(message);
+  await clickElement(dbg, "sourceNode", sourcePosition);
+  await waitForSelectedSource(dbg, fileName);
+  await waitFor(
+    () => getCM(dbg).getValue() !== `Loading…`,
+    "Wait for source to completely load"
+  );
+}
+
+/*
+ * Trigger a context menu in the debugger source tree
+ *
+ * @param {Object} dbg
+ * @param {Obejct} sourceTreeNode - The node in the source tree which the context menu
+ *                                  item needs to be triggered on.
+ * @param {String} contextMenuItem - The id for the context menu item to be selected
+ */
+async function triggerSourceTreeContextMenu(
+  dbg,
+  sourceTreeNode,
+  contextMenuItem
+) {
+  const onContextMenu = waitForContextMenu(dbg);
+  rightClickEl(dbg, sourceTreeNode);
+  const menupopup = await onContextMenu;
+  const onHidden = new Promise(resolve => {
+    menupopup.addEventListener("popuphidden", resolve, { once: true });
+  });
+  selectContextMenuItem(dbg, contextMenuItem);
+  await onHidden;
 }
 
 /**
@@ -740,10 +846,10 @@ async function selectSource(dbg, url, line, column) {
 
   await dbg.actions.selectLocation(
     getContext(dbg),
-    { sourceId: source.id, line, column },
+    createLocation({ source, line, column }),
     { keepContext: false }
   );
-  return waitForSelectedSource(dbg, url);
+  return waitForSelectedSource(dbg, source);
 }
 
 async function closeTab(dbg, url) {
@@ -830,8 +936,34 @@ function deleteExpression(dbg, input) {
  * @static
  */
 async function reload(dbg, ...sources) {
-  // We aren't waiting for load as the page may not load because of a breakpoint
-  await reloadBrowser({ waitForLoad: false });
+  await reloadBrowser();
+  return waitForSources(dbg, ...sources);
+}
+
+// Only use this method when the page is paused by the debugger
+// during page load and we navigate away without resuming.
+//
+// In this particular scenario, the page will never be "loaded".
+// i.e. emit DOCUMENT_EVENT's dom-complete
+// And consequently, debugger panel won't emit "reloaded" event.
+async function reloadWhenPausedBeforePageLoaded(dbg, ...sources) {
+  // But we can at least listen for the next DOCUMENT_EVENT's dom-loading,
+  // which should be fired even if the page is pause the earliest.
+  const { resourceCommand } = dbg.commands;
+  const { onResource: onTopLevelDomLoading } =
+    await resourceCommand.waitForNextResource(
+      resourceCommand.TYPES.DOCUMENT_EVENT,
+      {
+        ignoreExistingResources: true,
+        predicate: resource =>
+          resource.targetFront.isTopLevel && resource.name === "dom-loading",
+      }
+    );
+
+  gBrowser.reloadTab(gBrowser.selectedTab);
+
+  info("Wait for DOCUMENT_EVENT dom-loading after reload");
+  await onTopLevelDomLoading;
   return waitForSources(dbg, ...sources);
 }
 
@@ -864,13 +996,13 @@ async function navigateToAbsoluteURL(dbg, url, ...sources) {
   return waitForSources(dbg, ...sources);
 }
 
-function getFirstBreakpointColumn(dbg, { line, sourceId }) {
-  const { getSource, getFirstBreakpointPosition } = dbg.selectors;
-  const source = getSource(sourceId);
-  const position = getFirstBreakpointPosition({
-    line,
-    sourceId,
-  });
+function getFirstBreakpointColumn(dbg, source, line) {
+  const position = dbg.selectors.getFirstBreakpointPosition(
+    createLocation({
+      line,
+      source,
+    })
+  );
 
   return getSelectedLocation(position, source).column;
 }
@@ -908,12 +1040,11 @@ function getBreakpointForLocation(dbg, location) {
  */
 async function addBreakpoint(dbg, source, line, column, options) {
   source = findSource(dbg, source);
-  const sourceId = source.id;
   const bpCount = dbg.selectors.getBreakpointCount();
   const onBreakpoint = waitForDispatch(dbg.store, "SET_BREAKPOINT");
   await dbg.actions.addBreakpoint(
     getContext(dbg),
-    { sourceId, line, column },
+    createLocation({ source, line, column }),
     options
   );
   await onBreakpoint;
@@ -936,9 +1067,13 @@ async function addBreakpointViaGutter(dbg, line) {
 }
 
 function disableBreakpoint(dbg, source, line, column) {
-  column =
-    column || getFirstBreakpointColumn(dbg, { line, sourceId: source.id });
-  const location = { sourceId: source.id, sourceUrl: source.url, line, column };
+  column = column || getFirstBreakpointColumn(dbg, source, line);
+  const location = createLocation({
+    source,
+    sourceUrl: source.url,
+    line,
+    column,
+  });
   const bp = getBreakpointForLocation(dbg, location);
   return dbg.actions.disableBreakpoint(getContext(dbg), bp);
 }
@@ -955,8 +1090,11 @@ function findColumnBreakpoint(dbg, url, line, column) {
     source.id,
     line
   );
+
   return lineBreakpoints.find(bp => {
-    return bp.generatedLocation.column === column;
+    return source.isOriginal
+      ? bp.location.column === column
+      : bp.generatedLocation.column === column;
   });
 }
 
@@ -976,7 +1114,7 @@ async function loadAndAddBreakpoint(dbg, filename, line, column) {
   await addBreakpoint(dbg, source, line, column);
 
   is(getBreakpointCount(), 1, "One breakpoint exists");
-  if (!getBreakpoint({ sourceId: source.id, line, column })) {
+  if (!getBreakpoint(createLocation({ source, line, column }))) {
     const breakpoints = getBreakpointsMap();
     const id = Object.keys(breakpoints).pop();
     const loc = breakpoints[id].location;
@@ -1066,21 +1204,51 @@ async function assertScopes(dbg, items) {
   is(getScopeLabel(dbg, items.length + 1), "Window");
 }
 
+function findSourceTreeThreadByName(dbg, name) {
+  return [...findAllElements(dbg, "sourceTreeThreads")].find(el => {
+    return el.textContent.includes(name);
+  });
+}
+
 function findSourceNodeWithText(dbg, text) {
   return [...findAllElements(dbg, "sourceNodes")].find(el => {
     return el.textContent.includes(text);
   });
 }
 
+/**
+ * Assert the icon type used in the SourceTree for a given source
+ *
+ * @param {Object} dbg
+ * @param {String} sourceName
+ *        Name of the source displayed in the source tree
+ * @param {String} icon
+ *        Expected icon CSS classname
+ */
+function assertSourceIcon(dbg, sourceName, icon) {
+  const sourceItem = findSourceNodeWithText(dbg, sourceName);
+  ok(sourceItem, `Found the source item for ${sourceName}`);
+  is(
+    sourceItem.querySelector(".source-icon").className,
+    `img source-icon ${icon}`,
+    `The icon for ${sourceName} is correct`
+  );
+}
+
+async function expandSourceTree(dbg) {
+  // Click on expand all context menu for all top level "expandable items".
+  // If there is no project root, it will be thread items.
+  // But when there is a project root, it can be directory or group items.
+  // Select only expandable in order to ignore source items.
+  for (const rootNode of dbg.win.document.querySelectorAll(
+    ".sources-list > .tree > .tree-node[data-expandable=true]"
+  )) {
+    await expandAllSourceNodes(dbg, rootNode);
+  }
+}
+
 async function expandAllSourceNodes(dbg, treeNode) {
-  const onContextMenu = waitForContextMenu(dbg);
-  rightClickEl(dbg, treeNode);
-  const menupopup = await onContextMenu;
-  const onHidden = new Promise(resolve => {
-    menupopup.addEventListener("popuphidden", resolve, { once: true });
-  });
-  selectContextMenuItem(dbg, "#node-menu-expand-all");
-  await onHidden;
+  return triggerSourceTreeContextMenu(dbg, treeNode, "#node-menu-expand-all");
 }
 
 /**
@@ -1096,8 +1264,13 @@ async function expandAllSourceNodes(dbg, treeNode) {
  */
 function removeBreakpoint(dbg, sourceId, line, column) {
   const source = dbg.selectors.getSource(sourceId);
-  column = column || getFirstBreakpointColumn(dbg, { line, sourceId });
-  const location = { sourceId, sourceUrl: source.url, line, column };
+  column = column || getFirstBreakpointColumn(dbg, source, line);
+  const location = createLocation({
+    source,
+    sourceUrl: source.url,
+    line,
+    column,
+  });
   const bp = getBreakpointForLocation(dbg, location);
   return dbg.actions.removeBreakpoint(getContext(dbg), bp);
 }
@@ -1146,17 +1319,19 @@ function invokeInTab(fnc, ...args) {
 function clickElementInTab(selector) {
   info(`click element ${selector} in tab`);
 
-  return SpecialPowers.spawn(gBrowser.selectedBrowser, [selector], function(
-    _selector
-  ) {
-    const element = content.document.querySelector(_selector);
-    // Run the click in another event loop in order to immediately resolve spawn's promise.
-    // Otherwise if we pause on click and navigate, the JSWindowActor used by spawn will
-    // be destroyed while its query is still pending. And this would reject the promise.
-    content.setTimeout(() => {
-      element.click();
-    });
-  });
+  return SpecialPowers.spawn(
+    gBrowser.selectedBrowser,
+    [selector],
+    function (_selector) {
+      const element = content.document.querySelector(_selector);
+      // Run the click in another event loop in order to immediately resolve spawn's promise.
+      // Otherwise if we pause on click and navigate, the JSWindowActor used by spawn will
+      // be destroyed while its query is still pending. And this would reject the promise.
+      content.setTimeout(() => {
+        element.click();
+      });
+    }
+  );
 }
 
 const isLinux = Services.appinfo.OS === "Linux";
@@ -1219,6 +1394,7 @@ const keyMappings = {
     code: "VK_F11",
     modifiers: { shiftKey: true },
   },
+  Backspace: { code: "VK_BACK_SPACE" },
 };
 
 /**
@@ -1232,8 +1408,8 @@ const keyMappings = {
  */
 function pressKey(dbg, keyName) {
   const keyEvent = keyMappings[keyName];
-
   const { code, modifiers } = keyEvent;
+  info(`The ${keyName} key is pressed`);
   return EventUtils.synthesizeKey(code, modifiers || {}, dbg.win);
 }
 
@@ -1304,6 +1480,89 @@ async function getEditorLineEl(dbg, line) {
   }
 
   return el;
+}
+
+/**
+ * Opens the debugger editor context menu in either codemirror or the
+ * the debugger gutter.
+ * @param {Object} dbg
+ * @param {String} elementName
+ *                  The element to select
+ * @param {Number} line
+ *                  The line to open the context menu on.
+ */
+async function openContextMenuInDebugger(dbg, elementName, line) {
+  const waitForOpen = waitForContextMenu(dbg);
+  info(`Open ${elementName} context menu on line ${line || ""}`);
+  rightClickElement(dbg, elementName, line);
+  return waitForOpen;
+}
+
+/**
+ * Select a range of lines in the editor and open the contextmenu
+ * @param {Object} dbg
+ * @param {Object} lines
+ * @returns
+ */
+async function selectEditorLinesAndOpenContextMenu(dbg, lines) {
+  const { startLine, endLine } = lines;
+  const elementName = "line";
+  if (!endLine) {
+    await clickElement(dbg, elementName, startLine);
+  } else {
+    getCM(dbg).setSelection(
+      { line: startLine - 1, ch: 0 },
+      { line: endLine, ch: 0 }
+    );
+  }
+  return openContextMenuInDebugger(dbg, elementName, startLine);
+}
+
+/**
+ * Asserts that the styling for ignored lines are applied
+ * @param {Object} dbg
+ * @param {Object} options
+ *                 lines {null | Number[]} [lines] Line(s) to assert.
+ *                   - If null is passed, the assertion is on all the blackboxed lines
+ *                   - If an array of one item (start line) is passed, the assertion is on the specified line
+ *                   - If an array (start and end lines) is passed, the assertion is on the multiple lines seelected
+ *                 hasBlackboxedLinesClass
+ *                   If `true` assert that style exist, else assert that style does not exist
+ */
+function assertIgnoredStyleInSourceLines(
+  dbg,
+  { lines, hasBlackboxedLinesClass }
+) {
+  if (lines) {
+    let currentLine = lines[0];
+    do {
+      const element = findElement(dbg, "line", currentLine);
+      const hasStyle = hasBlackboxedLinesClass
+        ? element.parentNode.classList.contains("blackboxed-line")
+        : !element.parentNode.classList.contains("blackboxed-line");
+      ok(
+        hasStyle,
+        `Line ${currentLine} ${
+          hasBlackboxedLinesClass ? "does not have" : "has"
+        } ignored styling`
+      );
+      currentLine = currentLine + 1;
+    } while (currentLine <= lines[1]);
+  } else {
+    const codeLines = findAllElementsWithSelector(
+      dbg,
+      ".CodeMirror-code .CodeMirror-line"
+    );
+    const blackboxedLines = findAllElementsWithSelector(
+      dbg,
+      ".CodeMirror-code .blackboxed-line"
+    );
+    is(
+      hasBlackboxedLinesClass ? codeLines.length : 0,
+      blackboxedLines.length,
+      `${blackboxedLines.length} of ${codeLines.length} lines are blackboxed`
+    );
+  }
 }
 
 /**
@@ -1465,6 +1724,7 @@ const selectors = {
   frame: i => `.frames [role="list"] [role="listitem"]:nth-child(${i})`,
   frames: '.frames [role="list"] [role="listitem"]',
   gutter: i => `.CodeMirror-code *:nth-child(${i}) .CodeMirror-linenumber`,
+  line: i => `.CodeMirror-code div:nth-child(${i}) .CodeMirror-line`,
   addConditionItem:
     "#node-menu-add-condition, #node-menu-add-conditional-breakpoint",
   editConditionItem:
@@ -1486,8 +1746,7 @@ const selectors = {
   stepOver: ".stepOver.active",
   stepOut: ".stepOut.active",
   stepIn: ".stepIn.active",
-  replayPrevious: ".replay-previous.active",
-  replayNext: ".replay-next.active",
+  trace: ".debugger-trace-menu-button",
   prettyPrintButton: ".source-footer .prettyPrint",
   sourceMapLink: ".source-footer .mapped-source",
   sourcesFooter: ".sources-panel .source-footer",
@@ -1499,8 +1758,6 @@ const selectors = {
     '.sources-list .tree-node[aria-level="1"] > .node > span:nth-child(1)',
   sourceTreeFiles: ".sources-list .tree-node[data-expandable=false]",
   threadSourceTree: i => `.threads-list .sources-pane:nth-child(${i})`,
-  threadSourceTreeHeader: i =>
-    `${selectors.threadSourceTree(i)} .thread-header`,
   threadSourceTreeSourceNode: (i, j) =>
     `${selectors.threadSourceTree(i)} .tree-node:nth-child(${j}) .node`,
   sourceDirectoryLabel: i => `.sources-list .tree-node:nth-child(${i}) .label`,
@@ -1522,9 +1779,16 @@ const selectors = {
   logPointInSecPane: ".breakpoint.is-log",
   searchField: ".search-field",
   blackbox: ".action.black-box",
+  projectSearchSearchInput: ".project-text-search .search-field input",
   projectSearchCollapsed: ".project-text-search .arrow:not(.expanded)",
   projectSearchExpandedResults: ".project-text-search .result",
   projectSearchFileResults: ".project-text-search .file-result",
+  projectSearchModifiersCaseSensitive:
+    ".project-text-search button.case-sensitive-btn",
+  projectSearchModifiersRegexMatch:
+    ".project-text-search button.regex-match-btn",
+  projectSearchModifiersWholeWordMatch:
+    ".project-text-search button.whole-word-btn",
   threadsPaneItems: ".threads-pane .thread",
   threadsPaneItem: i => `.threads-pane .thread:nth-child(${i})`,
   threadsPaneItemPause: i => `${selectors.threadsPaneItem(i)} .pause-badge`,
@@ -1542,6 +1806,8 @@ const selectors = {
   previewPopupObjectObject: ".preview-popup .objectBox-object",
   sourceTreeRootNode: ".sources-panel .node .window",
   sourceTreeFolderNode: ".sources-panel .node .folder",
+  excludePatternsInput: ".project-text-search .exclude-patterns-field input",
+  fileSearchInput: ".search-bar input",
 };
 
 function getSelector(elementName, ...args) {
@@ -1646,6 +1912,18 @@ function rightClickEl(dbg, el) {
   EventUtils.synthesizeMouseAtCenter(el, { type: "contextmenu" }, dbg.win);
 }
 
+async function clearElement(dbg, elementName) {
+  await clickElement(dbg, elementName);
+  await pressKey(dbg, "End");
+  const selector = getSelector(elementName);
+  const el = findElementWithSelector(dbg, getSelector(elementName));
+  let len = el.value.length;
+  while (len) {
+    pressKey(dbg, "Backspace");
+    len--;
+  }
+}
+
 async function clickGutter(dbg, line) {
   const el = await codeMirrorGutterElement(dbg, line);
   clickDOMElement(dbg, el);
@@ -1690,6 +1968,24 @@ async function waitForContextMenu(dbg) {
   return popup;
 }
 
+/**
+ * Closes and open context menu popup.
+ *
+ * @memberof mochitest/helpers
+ * @param {Object} dbg
+ * @param {String} popup - The currently opened popup returned by
+ *                         `waitForContextMenu`.
+ * @return {Promise}
+ */
+
+async function closeContextMenu(dbg, popup) {
+  const onHidden = new Promise(resolve => {
+    popup.addEventListener("popuphidden", resolve, { once: true });
+  });
+  popup.hidePopup();
+  return onHidden;
+}
+
 function selectContextMenuItem(dbg, selector) {
   const item = findContextMenu(dbg, selector);
   item.closest("menupopup").activateItem(item);
@@ -1706,9 +2002,13 @@ async function openContextMenuSubmenu(dbg, selector) {
   return popup;
 }
 
-async function assertContextMenuLabel(dbg, selector, label) {
+async function assertContextMenuLabel(dbg, selector, expectedLabel) {
   const item = await waitFor(() => findContextMenu(dbg, selector));
-  is(item.label, label, "The label of the context menu item shown to the user");
+  is(
+    item.label,
+    expectedLabel,
+    "The label of the context menu item shown to the user"
+  );
 }
 
 async function typeInPanel(dbg, text) {
@@ -1894,6 +2194,12 @@ async function closePreviewAtPos(dbg, line, column) {
   InspectorUtils.removePseudoClassLock(tokenEl, ":hover");
 
   const gutterEl = await getEditorLineGutter(dbg, line);
+
+  // The popup gets hidden when "mouseleave" is emitted on the tokenEl.
+  // EventUtils can't send "mouseleave" event, and since the mouse could have been moved
+  // since the tooltip was displayed, move it back to the token and then to the gutter,
+  // which should trigger a mouseleave event.
+  EventUtils.synthesizeMouseAtCenter(tokenEl, { type: "mousemove" }, dbg.win);
   EventUtils.synthesizeMouseAtCenter(gutterEl, { type: "mousemove" }, dbg.win);
   await waitUntil(() => findElement(dbg, "previewPopup") == null);
 }
@@ -1995,15 +2301,6 @@ async function waitForBreakableLine(dbg, source, lineNumber) {
   );
 }
 
-async function expandSourceTree(dbg) {
-  const rootNodes = dbg.win.document.querySelectorAll(
-    selectors.sourceTreeThreadsNodes
-  );
-  for (const rootNode of rootNodes) {
-    await expandAllSourceNodes(dbg, rootNode);
-  }
-}
-
 async function waitForSourceTreeThreadsCount(dbg, i) {
   info(`waiting for ${i} threads in the source tree`);
   await waitUntil(() => {
@@ -2054,10 +2351,10 @@ async function waitForSourcesInSourceTree(
         missingElements.push(source);
       }
     }
-    if (missingElements.length > 0) {
+    if (missingElements.length) {
       msg += "Missing elements: " + missingElements.join(", ") + "\n";
     }
-    if (displayedSources.length > 0) {
+    if (displayedSources.length) {
       msg += "Unexpected elements: " + displayedSources.join(", ");
     }
     throw new Error(msg);
@@ -2192,7 +2489,8 @@ async function checkEvaluateInTopFrame(dbg, text, expected) {
 async function findConsoleMessage({ toolbox }, query) {
   const [message] = await findConsoleMessages(toolbox, query);
   const value = message.querySelector(".message-body").innerText;
-  const link = message.querySelector(".frame-link-source").innerText;
+  // There are console messages which might not have a link e.g Error messages
+  const link = message.querySelector(".frame-link-source")?.innerText;
   return { value, link };
 }
 
@@ -2208,7 +2506,7 @@ async function findConsoleMessages(toolbox, query) {
 async function hasConsoleMessage({ toolbox }, msg) {
   return waitFor(async () => {
     const messages = await findConsoleMessages(toolbox, msg);
-    return messages.length > 0;
+    return !!messages.length;
   });
 }
 
@@ -2284,7 +2582,12 @@ async function toggleDebbuggerSettingsMenuItem(dbg, { className, isChecked }) {
 
   menuButton.click();
   // Waits for the debugger settings panel to appear.
-  await waitFor(() => document.querySelector("#debugger-settings-menu-list"));
+  await waitFor(() => {
+    const menuListEl = document.querySelector("#debugger-settings-menu-list");
+    // Lets check the offsetParent property to make sure the menu list is actually visible
+    // by its parents display property being no longer "none".
+    return menuListEl && menuListEl.offsetParent !== null;
+  });
 
   const menuItem = document.querySelector(className);
 
@@ -2307,85 +2610,62 @@ async function setLogPoint(dbg, index, value) {
   await typeInPanel(dbg, value);
   await onBreakpointSet;
 }
+/**
+ * Opens the project search panel
+ *
+ * @param {Object} dbg
+ * @return {Boolean} The project search is open
+ */
+function openProjectSearch(dbg) {
+  info("Opening the project search panel");
+  synthesizeKeyShortcut("CmdOrCtrl+Shift+F");
+  return waitForState(
+    dbg,
+    state => dbg.selectors.getActiveSearch() === "project"
+  );
+}
 
 /**
- * Instantiate a HTTP Server that serves files from a given test folder.
- * The test folder should be made of multiple sub folder named: v1, v2, v3,...
- * We will serve the content from one of these sub folder
- * and switch to the next one, each time `httpServer.switchToNextVersion()`
- * is called.
+ * Starts a project search based on the specified search term
  *
- * @return Object Test server with two functions:
- *   - urlFor(path)
- *     Returns the absolute url for a given file.
- *   - switchToNextVersion()
- *     Start serving files from the next available sub folder.
- *   - backToFirstVersion()
- *     When running more than one test, helps restart from the first folder.
+ * @param {Object} dbg
+ * @param {String} searchTerm - The test to search for
+ * @return {Array} List of search results element nodes
  */
-function createVersionizedHttpTestServer(testFolderName) {
-  const httpServer = createTestHTTPServer();
+async function doProjectSearch(dbg, searchTerm) {
+  await clearElement(dbg, "projectSearchSearchInput");
+  type(dbg, searchTerm);
+  pressKey(dbg, "Enter");
+  return waitForSearchResults(dbg);
+}
 
-  let currentVersion = 1;
+/**
+ * Waits for the search resluts node to render
+ *
+ * @param {Object} dbg
+ * @param {Number} expectedResults - The expected no of results to wait for
+ * @return (Array) List of search result element nodes
+ */
+async function waitForSearchResults(dbg, expectedResults) {
+  await waitForState(dbg, state => state.projectTextSearch.status === "DONE");
+  if (expectedResults) {
+    await waitUntil(
+      () =>
+        findAllElements(dbg, "projectSearchFileResults").length ==
+        expectedResults
+    );
+  }
+  return findAllElements(dbg, "projectSearchFileResults");
+}
 
-  httpServer.registerPrefixHandler("/", async (request, response) => {
-    response.processAsync();
-    response.setStatusLine(request.httpVersion, 200, "OK");
-    if (request.path.endsWith(".js")) {
-      response.setHeader("Content-Type", "application/javascript");
-    } else if (request.path.endsWith(".js.map")) {
-      response.setHeader("Content-Type", "application/json");
-    }
-    if (request.path == "/" || request.path == "/index.html") {
-      response.setHeader("Content-Type", "text/html");
-    }
-    // If a query string is passed, lookup with a matching file, if available
-    // The '?' is replaced by '.'
-    let fetchResponse;
-    if (request.queryString) {
-      const url = `${URL_ROOT}${testFolderName}/v${currentVersion}${request.path}.${request.queryString}`;
-      try {
-        fetchResponse = await fetch(url);
-        // Log this only if the request succeed
-        info(`[test-http-server] serving: ${url}`);
-      } catch (e) {
-        // Ignore any error and proceed without the query string
-        fetchResponse = null;
-      }
-    }
-    if (!fetchResponse) {
-      const url = `${URL_ROOT}${testFolderName}/v${currentVersion}${request.path}`;
-      info(`[test-http-server] serving: ${url}`);
-      fetchResponse = await fetch(url);
-    }
-
-    // Ensure forwarding the response headers generated by the other http server
-    // (this can be especially useful when query .sjs files)
-    for (const [name, value] of fetchResponse.headers.entries()) {
-      response.setHeader(name, value);
-    }
-
-    // Override cache settings so that versionized requests are never cached
-    // and we get brand new content for any request.
-    response.setHeader("Cache-Control", "no-store");
-
-    const text = await fetchResponse.text();
-    response.write(text);
-    response.finish();
-  });
-
-  return {
-    switchToNextVersion() {
-      currentVersion++;
-    },
-    backToFirstVersion() {
-      currentVersion = 1;
-    },
-    urlFor(path) {
-      const port = httpServer.identity.primaryPort;
-      return `http://localhost:${port}/${path}`;
-    },
-  };
+/**
+ * Get the no of expanded search results
+ *
+ * @param {Object} dbg
+ * @return {Number} No of expanded results
+ */
+function getExpandedResultsCount(dbg) {
+  return findAllElements(dbg, "projectSearchExpandedResults").length;
 }
 
 // This module is also loaded for Browser Toolbox tests, within the browser toolbox process
@@ -2395,8 +2675,8 @@ const protocolHandler = Services.io
   .getProtocolHandler("resource")
   .QueryInterface(Ci.nsIResProtocolHandler);
 if (protocolHandler.hasSubstitution("testing-common")) {
-  const { PromiseTestUtils } = ChromeUtils.import(
-    "resource://testing-common/PromiseTestUtils.jsm"
+  const { PromiseTestUtils } = ChromeUtils.importESModule(
+    "resource://testing-common/PromiseTestUtils.sys.mjs"
   );
 
   // Debugger operations that are canceled because they were rendered obsolete by
@@ -2411,4 +2691,29 @@ if (protocolHandler.hasSubstitution("testing-common")) {
   );
   PromiseTestUtils.allowMatchingRejectionsGlobally(/Connection closed/);
   this.PromiseTestUtils = PromiseTestUtils;
+}
+
+/**
+ * Selects the specific black box context menu item
+ * @param {Object} dbg
+ * @param {String} itemName
+ *                  The name of the context menu item.
+ */
+async function selectBlackBoxContextMenuItem(dbg, itemName) {
+  let wait = null;
+  if (itemName == "blackbox-line" || itemName == "blackbox-lines") {
+    wait = Promise.any([
+      waitForDispatch(dbg.store, "BLACKBOX_SOURCE_RANGES"),
+      waitForDispatch(dbg.store, "UNBLACKBOX_SOURCE_RANGES"),
+    ]);
+  } else if (itemName == "blackbox") {
+    wait = Promise.any([
+      waitForDispatch(dbg.store, "BLACKBOX_WHOLE_SOURCES"),
+      waitForDispatch(dbg.store, "UNBLACKBOX_WHOLE_SOURCES"),
+    ]);
+  }
+
+  info(`Select the ${itemName} context menu item`);
+  selectContextMenuItem(dbg, `#node-menu-${itemName}`);
+  return wait;
 }

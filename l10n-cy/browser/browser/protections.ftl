@@ -46,7 +46,7 @@ etp-card-title-always = Diogelwch Uwch Rhag Tracio: Ymlaen Drwy'r Amser
 etp-card-title-custom-not-blocking = Diogelwch Uwch Rhag Tracio: I FFWRDD
 etp-card-content-description = Mae { -brand-short-name } yn atal cwmnïau rhag eich dilyn yn gyfrinachol o amgylch y we, yn awtomatig.
 protection-report-etp-card-content-custom-not-blocking = Mae'r holl ddiogelu wedi'u diffodd ar hyn o bryd. Dewiswch pa dracwyr i'w rhwystro trwy reoli eich gosodiadau diogelu { -brand-short-name }.
-protection-report-manage-protections = Rheoli Gosodiadau
+protection-report-manage-protections = Rheoli gosodiadau
 
 # This string is used to label the X axis of a graph. Other days of the week are generated via Intl.DateTimeFormat,
 # capitalization for this string should match the output for your locale.
@@ -84,8 +84,8 @@ passwords-header-content = Mae { -brand-product-name } yn cadw'ch cyfrineiriau y
 lockwise-header-content-logged-in = Cadwch a chydweddwch eich cyfrineiriau'n ddiogel i'ch holl ddyfeisiau.
 protection-report-passwords-save-passwords-button = Cadw Cyfrineiriau
     .title = Cadw Cyfrineiriau
-protection-report-passwords-manage-passwords-button = Rheoli Cyfrineiriau
-    .title = Rheoli Cyfrineiriau
+protection-report-passwords-manage-passwords-button = Rheoli cyfrineiriau
+    .title = Rheoli cyfrineiriau
 
 
 # Variables:

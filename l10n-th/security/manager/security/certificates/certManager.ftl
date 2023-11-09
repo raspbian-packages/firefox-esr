@@ -26,10 +26,6 @@ certmgr-people = คุณมีใบรับรองในไฟล์ที
 certmgr-server = รายการเหล่านี้ระบุข้อผิดพลาดของใบรับรองเซิร์ฟเวอร์
 certmgr-ca = คุณมีใบรับรองในไฟล์ที่ระบุผู้ออกใบรับรองเหล่านี้
 
-certmgr-edit-ca-cert =
-    .title = แก้ไขการตั้งค่าความน่าเชื่อถือของใบรับรอง CA
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = แก้ไขการตั้งค่าความน่าเชื่อถือของใบรับรอง CA
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = ใบรับรองนี้สามารถระบุผู้ใช้จดหมาย
-
-certmgr-delete-cert =
-    .title = ลบใบรับรอง
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = ลบใบรับรอง
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = เซิร์ฟเวอร์
-
-certmgr-override-lifetime =
-    .label = อายุการใช้งาน
 
 certmgr-token-name =
     .label = อุปกรณ์ความปลอดภัย
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = หมายเลขอนุกรม
+
+certmgr-fingerprint-sha-256 =
+    .label = ลายนิ้วมือ SHA-256
 
 certmgr-view =
     .label = ดู…
@@ -213,7 +205,7 @@ temporary-override = ชั่วคราว
 add-exception-branded-warning = คุณกำลังก้าวล่วงวิธีการที่ { -brand-short-name } จะทำการระบุตัวตนเว็บไซต์นี้
 add-exception-invalid-header = ไซต์นี้พยายามจะระบุตัวเองด้วยข้อมูลที่ไม่ถูกต้อง
 add-exception-domain-mismatch-short = เว็บไซต์ผิด
-add-exception-domain-mismatch-long = ใบรับรองเป็นของไซต์อื่น ซึ่งอาจหมายความว่ามีคนพยายามเลียนแบบไซต์นี้
+add-exception-domain-mismatch-long = ใบรับรองเป็นของไซต์อื่น ซึ่งอาจหมายความว่ามีคนพยายามปลอมแปลงไซต์นี้
 add-exception-expired-short = ข้อมูลล้าสมัย
 add-exception-expired-long = ใบรับรองไม่ถูกต้องในขณะนี้ อาจถูกขโมยหรือสูญหาย และอาจถูกนำไปใช้โดยบางคนเพื่อปลอมแปลงไซต์นี้
 add-exception-unverified-or-bad-signature-short = ไม่ทราบข้อมูลประจำตัว

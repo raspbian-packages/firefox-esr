@@ -63,7 +63,6 @@ protections-panel-not-found-label = Neniu eltrovita
 ##
 
 protections-panel-settings-label = Agordoj de protekto
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Panelo de protektoj
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formularoj
 protections-panel-site-not-working-view-issue-list-payments = Pagoj
 protections-panel-site-not-working-view-issue-list-comments = Komentoj
 protections-panel-site-not-working-view-issue-list-videos = Filmetoj
+protections-panel-site-not-working-view-issue-list-fonts = Tiparoj
 
 protections-panel-site-not-working-view-send-report = Sendi raporton
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Raporti ne bone funkciantan retejon
 protections-panel-content-blocking-breakage-report-view-description = Blokado de kelkaj spuriloj povas misfunkciigi retejojn. Raportado de tiuj ĉi problemoj helpas plibonigi { -brand-short-name } por ĉiuj. Sendo de tiu ĉi raporto al Mozilla estos akompanata de retadreso kaj informo pri viaj retumilaj agordoj. <label data-l10n-name="learn-more">Pli da informo</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Blokado de kelkaj spuriloj povas misfunkciigi retejojn. Raportado de tiuj ĉi problemoj helpas plibonigi { -brand-short-name } por ĉiuj. Sendo de tiu ĉi raporto al { -vendor-short-name } estos akompanata de retadreso kaj informo pri viaj retumilaj agordoj.
 protections-panel-content-blocking-breakage-report-view-collection-url = Retadreso
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = Retadreso
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Nuligi
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Sendi raporton
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Redukto de kuketaj anoncoj
+protections-panel-cookie-banner-handling-enabled = Ŝaltita por tiu ĉi retejo
+protections-panel-cookie-banner-handling-disabled = Malŝaltita por tiu ĉi retejo
+protections-panel-cookie-banner-handling-undetected = Retejo nuntempe ne subtenata
+
+protections-panel-cookie-banner-view-title =
+    .title = Redukto de kuketaj anoncoj
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Ĉu malŝalti la redukton de kuketaj anoncoj por { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Ĉu ŝalti la redukton de kuketaj anoncoj por tiu ĉi retejo?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } forigos la kuketojn de tiuj ĉi retejo kaj reŝargos la paĝon. Forigo de ĉiuj kuketoj povas fini seancojn aŭ malplenigi aĉetumĉarojn.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } klopodas aŭtomate rifuzi ĉiujn kuketajn petojn en subtenataj retejoj.
+protections-panel-cookie-banner-view-cancel = Nuligi
+protections-panel-cookie-banner-view-turn-off = Malŝalti
+protections-panel-cookie-banner-view-turn-on = Ŝalti

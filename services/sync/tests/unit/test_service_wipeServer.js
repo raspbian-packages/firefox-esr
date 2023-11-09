@@ -1,5 +1,7 @@
 Svc.Prefs.set("registerEngines", "");
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
+);
 
 // configure the identity we use for this test.
 const identityConfig = makeIdentityConfig({ username: "johndoe" });
@@ -10,7 +12,7 @@ function FakeCollection() {
 FakeCollection.prototype = {
   handler() {
     let self = this;
-    return function(request, response) {
+    return function (request, response) {
       let body = "";
       self.timestamp = new_timestamp();
       let timestamp = "" + self.timestamp;

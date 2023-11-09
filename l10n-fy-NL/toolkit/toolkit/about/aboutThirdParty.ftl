@@ -29,10 +29,6 @@ third-party-tag-background = Eftergrûn
     .title =
         Dizze module hat de tapassing net blokkearre, omdat dizze yn de
         eftergrûn laden is
-third-party-unsigned-icon =
-    .title = Dizze module is net ûndertekene
-third-party-warning-icon =
-    .title = { -brand-short-name } is yn koade fan dizze module ferûngelokke.
 third-party-icon-unsigned =
     .title = Dizze module is net ûndertekene
     .alt = Dizze module is net ûndertekene
@@ -43,6 +39,9 @@ third-party-status-loaded = Laden
 third-party-status-blocked = Blokkearre
 third-party-status-redirected = Omlaat
 third-party-button-copy-to-clipboard = Rûge gegevens nei klamboerd kopiearje
+third-party-loading-data =
+    .alt = Systeemynformaasje lade…
+    .title = Systeemynformaasje lade…
 third-party-button-reload = Opnij lade mei systeemynfo
     .title = Opnij lade mei systeemynformaasje
 third-party-button-open =
@@ -60,13 +59,26 @@ third-party-button-to-unblock-disabled =
     .aria-label =
         Op dit stuit markearre as blokkearre, hoewol de blokkearlist útskeakele is foar dizze run
         fan { -brand-short-name }. Klik om te deblokkearjen.
+third-party-button-to-block-module = Dizze module blokkearje
+    .title = Dizze module blokkearje
+    .aria-label = Dizze module blokkearje
+third-party-button-to-unblock-module = Dizze module blokkearje
+    .title = Op dit stuit blokkearre. Klik om te deblokkearjen.
+    .aria-label = Op dit stuit blokkearre. Klik om te deblokkearjen.
+third-party-button-to-unblock-module-disabled = Dizze module deblokkearje (blokkearlist op dit stuit útskeakele)
+    .title =
+        Op dit stuit markearre as blokkearre, hoewol de blokkearlist útskeakele is foar dizze run
+        fan { -brand-short-name }. Klik om dizze te deblokkearjen.
+    .aria-label =
+        Op dit stuit markearre as blokkearre, hoewol de blokkearlist útskeakele is foar dizze run
+        fan { -brand-short-name }. Klik om dizze te deblokkearjen.
 third-party-button-expand =
     .title = Detailynformaasje toane
 third-party-button-collapse =
     .title = Detailynformaasje ynklappe
-third-party-requires-restart = { -brand-short-name } moat opnij starte om te wizigjen hokker modulen fan tredden blokkearre wurde.
+third-party-blocking-requires-restart = Om in eksterne module te blokkearjen, moat { -brand-short-name } opnij start wurden.
 third-party-should-restart-title = { -brand-short-name } opnij starte
-third-party-should-restart-ok = { -brand-short-name } no opnij starte
+third-party-restart-now = No opnij starte
 third-party-restart-later = Letter opnij starte
 third-party-blocked-by-builtin =
     .title = Blokkearre troch { -brand-short-name }

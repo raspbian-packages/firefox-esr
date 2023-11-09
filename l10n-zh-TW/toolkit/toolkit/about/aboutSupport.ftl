@@ -175,6 +175,15 @@ media-codec-support-info = 解碼器支援資訊
 # List all the entries of the database.
 media-capabilities-enumerate = 列舉資料庫
 
+## Codec support table
+
+media-codec-support-sw-decoding = 軟體解碼
+media-codec-support-hw-decoding = 硬體解碼
+media-codec-support-codec-name = 解碼器名稱
+media-codec-support-supported = 支援
+media-codec-support-unsupported = 不支援
+media-codec-support-error = 無法取得 Codec 支援資訊，請在播放媒體檔案後再試一次。
+
 ##
 
 intl-title = 國際化與在地化
@@ -268,6 +277,8 @@ webgl2-renderer = WebGL2 Renderer
 webgl2-version = WebGL 2 驅動程式 Renderer
 webgl2-driver-extensions = WebGL 2 驅動程式擴充套件
 webgl2-extensions = WebGL 2 擴充套件
+webgpu-default-adapter = WebGPU 預設顯示卡
+webgpu-fallback-adapter = WebGPU 備用顯示卡
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = 由於有已知問題，被加入封鎖名單: <a data-l10n-name="bug-link">bug { $bugNumber }</a>

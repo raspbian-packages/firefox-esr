@@ -219,8 +219,6 @@ menu-history-undo-menu =
     .label = แท็บที่ปิดล่าสุด
 menu-history-undo-window-menu =
     .label = หน้าต่างที่ปิดล่าสุด
-menu-history-reopen-all-tabs = เปิดแท็บทั้งหมดใหม่
-menu-history-reopen-all-windows = เปิดหน้าต่างทั้งหมดใหม่
 
 ## Bookmarks Menu
 
@@ -229,14 +227,13 @@ menu-bookmarks-menu =
     .accesskey = ท
 menu-bookmarks-manage =
     .label = จัดการที่คั่นหน้า
-menu-bookmark-current-tab =
-    .label = เพิ่มที่คั่นหน้าแท็บปัจจุบัน
-menu-bookmark-edit =
-    .label = แก้ไขที่คั่นหน้านี้
 menu-bookmark-tab =
     .label = เพิ่มที่คั่นหน้าสำหรับแท็บปัจจุบัน…
 menu-edit-bookmark =
     .label = แก้ไขที่คั่นหน้านี้…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = ค้นหาที่คั่นหน้า
 menu-bookmarks-all-tabs =
     .label = เพิ่มที่คั่นหน้าสำหรับแท็บทั้งหมด…
 menu-bookmarks-toolbar =
@@ -330,6 +327,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = ปิดโหมดแก้ไขปัญหา
     .accesskey = ด
+menu-help-switch-device =
+    .label = การสลับไปยังอุปกรณ์ใหม่
+    .accesskey = ม
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

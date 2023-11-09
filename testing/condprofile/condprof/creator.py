@@ -23,14 +23,14 @@ When Firefox changes its version, profiles from the previous version
 should work as expected. Each profile tarball comes with a metadata file
 that keep track of the Firefox version that was used and the profile age.
 """
-from __future__ import absolute_import
 import os
 import tempfile
+import shutil
 
 from arsenic import get_session
 from arsenic.browsers import Firefox
 
-from condprof.util import fresh_profile, logger, obfuscate_file, obfuscate
+from condprof.util import fresh_profile, logger, obfuscate_file, obfuscate, get_version
 from condprof.helpers import close_extra_windows
 from condprof.scenarii import scenarii
 from condprof.client import get_profile, ProfileNotFoundError
@@ -98,6 +98,8 @@ class ProfileCreator:
             try:
                 with self.env.get_browser():
                     metadata = await self.build_profile(device, headless)
+            except Exception:
+                raise
             finally:
                 if not self.skip_logs:
                     self.env.dump_logs()
@@ -105,20 +107,32 @@ class ProfileCreator:
         if not self.archive:
             return
 
-        logger.info("Creating archive")
-        archiver = Archiver(self.scenario, self.env.profile, self.archive)
-        # the archive name is of the form
-        # profile-<platform>-<scenario>-<customization>.tgz
-        name = "profile-%(platform)s-%(name)s-%(customization)s.tgz"
-        name = name % metadata
-        archive_name = os.path.join(self.archive, name)
-        dir = os.path.dirname(archive_name)
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        archiver.create_archive(archive_name)
-        logger.info("Archive created at %s" % archive_name)
-        statinfo = os.stat(archive_name)
-        logger.info("Current size is %d" % statinfo.st_size)
+        logger.info("Creating generic archive")
+        names = ["profile-%(platform)s-%(name)s-%(customization)s.tgz"]
+        if metadata["name"] == "full" and metadata["customization"] == "default":
+            names = [
+                "profile-%(platform)s-%(name)s-%(customization)s.tgz",
+                "profile-v%(version)s-%(platform)s-%(name)s-%(customization)s.tgz",
+            ]
+
+        for name in names:
+            # remove `cache` from profile
+            shutil.rmtree(os.path.join(self.env.profile, "cache"), ignore_errors=True)
+            shutil.rmtree(os.path.join(self.env.profile, "cache2"), ignore_errors=True)
+
+            archiver = Archiver(self.scenario, self.env.profile, self.archive)
+            # the archive name is of the form
+            # profile[-vXYZ.x]-<platform>-<scenario>-<customization>.tgz
+            name = name % metadata
+            archive_name = os.path.join(self.archive, name)
+            dir = os.path.dirname(archive_name)
+            if not os.path.exists(dir):
+                os.makedirs(dir)
+            archiver.create_archive(archive_name)
+            logger.info("Archive created at %s" % archive_name)
+            statinfo = os.stat(archive_name)
+            logger.info("Current size is %d" % statinfo.st_size)
+
         logger.info("Extracting logs")
         if "logs" in metadata:
             logs = metadata.pop("logs")

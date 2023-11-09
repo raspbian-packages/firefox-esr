@@ -38,9 +38,11 @@ menu-quit =
             [windows] צ
            *[other] צ
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = יציאה מ־{ -brand-shorter-name }
+
 menu-about =
     .label = על אודות { -brand-shorter-name }
     .accesskey = א
@@ -219,8 +221,6 @@ menu-history-undo-menu =
     .label = לשוניות שנסגרו לאחרונה
 menu-history-undo-window-menu =
     .label = חלונות שנסגרו לאחרונה
-menu-history-reopen-all-tabs = פתיחת כל הלשוניות מחדש
-menu-history-reopen-all-windows = פתיחת כל החלונות מחדש
 
 ## Bookmarks Menu
 
@@ -229,14 +229,13 @@ menu-bookmarks-menu =
     .accesskey = ס
 menu-bookmarks-manage =
     .label = ניהול סימניות
-menu-bookmark-current-tab =
-    .label = יצירת סימנייה ללשונית הנוכחית
-menu-bookmark-edit =
-    .label = עריכת סימנייה זו
 menu-bookmark-tab =
     .label = יצירת סימנייה ללשונית הנוכחית…
 menu-edit-bookmark =
     .label = עריכת סימנייה זו…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = חיפוש בסימניות
 menu-bookmarks-all-tabs =
     .label = יצירת סימנייה לכל הלשוניות…
 menu-bookmarks-toolbar =
@@ -330,6 +329,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = כיבוי מצב לפתרון בעיות
     .accesskey = פ
+menu-help-switch-device =
+    .label = מעבר למכשיר חדש
+    .accesskey = מ
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

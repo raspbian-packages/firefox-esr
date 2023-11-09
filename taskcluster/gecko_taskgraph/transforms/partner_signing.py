@@ -5,8 +5,8 @@
 Transform the signing task into an actual task description.
 """
 
+from taskgraph.transforms.base import TransformSequence
 
-from gecko_taskgraph.transforms.base import TransformSequence
 from gecko_taskgraph.util.attributes import copy_attributes_from_dependent_job
 from gecko_taskgraph.util.partners import get_partner_config_by_kind
 from gecko_taskgraph.util.signed_artifacts import (
@@ -20,7 +20,9 @@ transforms = TransformSequence()
 def set_mac_label(config, jobs):
     for job in jobs:
         dep_job = job["primary-dependency"]
-        job.setdefault("label", dep_job.label.replace("notarization-part-1", "signing"))
+        if "mac-notarization" in config.kind:
+            default_label = dep_job.label.replace("mac-signing", "mac-notarization")
+            job.setdefault("label", default_label)
         assert job["label"] != dep_job.label, "Unable to determine label for {}".format(
             config.kind
         )
@@ -46,7 +48,7 @@ def define_upstream_artifacts(config, jobs):
             kind=config.kind,
         )
         task_type = "build"
-        if "notarization" in job["depname"]:
+        if "notarization" in job["depname"] or "mac-signing" in job["depname"]:
             task_type = "scriptworker"
         job["upstream-artifacts"] = [
             {
@@ -61,5 +63,4 @@ def define_upstream_artifacts(config, jobs):
             }
             for spec in artifacts_specifications
         ]
-
         yield job

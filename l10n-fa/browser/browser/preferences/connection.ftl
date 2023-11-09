@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = تنظیمات اتصال
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = تنظیمات اتصال
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = ت
     .tooltip = این گزینه در پس‌زمینه شما را در پیشکارها، زمانی که گذرواژه‌ی آنها را ذخیره کرده باشید، تصدیق‌هویت می‌کند. شما در صورتی که تصدیق‌هویت شکست بخورد مطلع خواهید شد.
 
+connection-proxy-autologin-checkbox =
+    .label = اگر گذرواژه ذخیره شده است، جهت تصدیق‌هویت پیام نده
+    .accesskey = ت
+    .tooltiptext = این گزینه در پس‌زمینه شما را در پیشکارها، زمانی که گذرواژه‌ی آنها را ذخیره کرده باشید، تصدیق‌هویت می‌کند. شما در صورتی که تصدیق‌هویت شکست بخورد مطلع خواهید شد.
+
 connection-proxy-socks-remote-dns =
     .label = استفاده از پیشکار DNS هنگام استفاده از SOCKS v5
     .accesskey = d
-
-connection-dns-over-https =
-    .label = فعال‌سازی دی‌ان‌اس از طریق HTTPS
-    .accesskey = b
-
-connection-dns-over-https-url-resolver = استفاده از فراهم‌کننده
-    .accesskey = ا
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

@@ -17,8 +17,8 @@
 
 using namespace mozilla::a11y;
 
-StaticRefPtr<HyperTextAccessibleWrap> ia2AccessibleText::sLastTextChangeAcc;
-StaticAutoPtr<nsString> ia2AccessibleText::sLastTextChangeString;
+HyperTextAccessibleBase* ia2AccessibleText::sLastTextChangeAcc = nullptr;
+mozilla::StaticAutoPtr<nsString> ia2AccessibleText::sLastTextChangeString;
 uint32_t ia2AccessibleText::sLastTextChangeStart = 0;
 uint32_t ia2AccessibleText::sLastTextChangeEnd = 0;
 bool ia2AccessibleText::sLastTextChangeWasInsert = false;
@@ -46,9 +46,9 @@ std::pair<HyperTextAccessibleWrap*, HRESULT> ia2AccessibleText::LocalTextAcc() {
 
 STDMETHODIMP
 ia2AccessibleText::addSelection(long aStartOffset, long aEndOffset) {
-  auto [textAcc, hr] = LocalTextAcc();
+  HyperTextAccessibleBase* textAcc = TextAcc();
   if (!textAcc) {
-    return hr;
+    return CO_E_OBJNOTCONNECTED;
   }
 
   return textAcc->AddToSelection(aStartOffset, aEndOffset) ? S_OK
@@ -154,9 +154,9 @@ ia2AccessibleText::get_offsetAtPoint(long aX, long aY,
           ? nsIAccessibleCoordinateType::COORDTYPE_SCREEN_RELATIVE
           : nsIAccessibleCoordinateType::COORDTYPE_PARENT_RELATIVE;
 
-  auto [textAcc, hr] = LocalTextAcc();
+  HyperTextAccessibleBase* textAcc = TextAcc();
   if (!textAcc) {
-    return hr;
+    return CO_E_OBJNOTCONNECTED;
   }
 
   *aOffset = textAcc->OffsetAtPoint(aX, aY, geckoCoordType);
@@ -330,9 +330,9 @@ ia2AccessibleText::get_textAtOffset(long aOffset,
 
 STDMETHODIMP
 ia2AccessibleText::removeSelection(long aSelectionIndex) {
-  auto [textAcc, hr] = LocalTextAcc();
+  HyperTextAccessibleBase* textAcc = TextAcc();
   if (!textAcc) {
-    return hr;
+    return CO_E_OBJNOTCONNECTED;
   }
 
   return textAcc->RemoveFromSelection(aSelectionIndex) ? S_OK : E_INVALIDARG;
@@ -340,9 +340,9 @@ ia2AccessibleText::removeSelection(long aSelectionIndex) {
 
 STDMETHODIMP
 ia2AccessibleText::setCaretOffset(long aOffset) {
-  auto [textAcc, hr] = LocalTextAcc();
+  HyperTextAccessibleBase* textAcc = TextAcc();
   if (!textAcc) {
-    return hr;
+    return CO_E_OBJNOTCONNECTED;
   }
 
   if (!textAcc->IsValidOffset(aOffset)) return E_INVALIDARG;
@@ -354,9 +354,9 @@ ia2AccessibleText::setCaretOffset(long aOffset) {
 STDMETHODIMP
 ia2AccessibleText::setSelection(long aSelectionIndex, long aStartOffset,
                                 long aEndOffset) {
-  auto [textAcc, hr] = LocalTextAcc();
+  HyperTextAccessibleBase* textAcc = TextAcc();
   if (!textAcc) {
-    return hr;
+    return CO_E_OBJNOTCONNECTED;
   }
 
   return textAcc->SetSelectionBoundsAt(aSelectionIndex, aStartOffset,
@@ -380,9 +380,9 @@ ia2AccessibleText::get_nCharacters(long* aNCharacters) {
 STDMETHODIMP
 ia2AccessibleText::scrollSubstringTo(long aStartIndex, long aEndIndex,
                                      enum IA2ScrollType aScrollType) {
-  auto [textAcc, hr] = LocalTextAcc();
+  HyperTextAccessibleBase* textAcc = TextAcc();
   if (!textAcc) {
-    return hr;
+    return CO_E_OBJNOTCONNECTED;
   }
 
   if (!textAcc->IsValidRange(aStartIndex, aEndIndex)) return E_INVALIDARG;
@@ -464,12 +464,12 @@ AccessibleTextBoundary ia2AccessibleText::GetGeckoTextBoundary(
 }
 
 void ia2AccessibleText::InitTextChangeData() {
-  ClearOnShutdown(&sLastTextChangeAcc);
   ClearOnShutdown(&sLastTextChangeString);
 }
 
-void ia2AccessibleText::UpdateTextChangeData(HyperTextAccessibleWrap* aAcc,
-                                             bool aInsert, const nsString& aStr,
+void ia2AccessibleText::UpdateTextChangeData(HyperTextAccessibleBase* aAcc,
+                                             bool aInsert,
+                                             const nsAString& aStr,
                                              int32_t aStart, uint32_t aLen) {
   if (!sLastTextChangeString) sLastTextChangeString = new nsString();
 

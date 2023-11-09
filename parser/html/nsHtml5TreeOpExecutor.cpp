@@ -37,6 +37,7 @@
 #include "nsIDocShell.h"
 #include "nsIDocShellTreeItem.h"
 #include "nsINestedURI.h"
+#include "nsIHttpChannel.h"
 #include "nsIScriptContext.h"
 #include "nsIScriptError.h"
 #include "nsIScriptGlobalObject.h"
@@ -141,8 +142,8 @@ nsHtml5TreeOpExecutor::~nsHtml5TreeOpExecutor() {
       }
     }
   }
-  NS_ASSERTION(NS_FAILED(mBroken) || mOpQueue.IsEmpty(),
-               "Somehow there's stuff in the op queue.");
+  MOZ_ASSERT(NS_FAILED(mBroken) || mOpQueue.IsEmpty(),
+             "Somehow there's stuff in the op queue.");
 }
 
 // nsIContentSink
@@ -172,6 +173,13 @@ nsHtml5TreeOpExecutor::DidBuildModel(bool aTerminated) {
 
   MOZ_RELEASE_ASSERT(!IsInDocUpdate(),
                      "DidBuildModel from inside a doc update.");
+
+  RefPtr<nsHtml5TreeOpExecutor> pin(this);
+  auto queueClearer = MakeScopeExit([&] {
+    if (aTerminated && (mFlushState == eNotFlushing)) {
+      ClearOpQueue();  // clear in order to be able to assert in destructor
+    }
+  });
 
   // This comes from nsXMLContentSink and nsHTMLContentSink
   // If this parser has been marked as broken, treat the end of parse as
@@ -214,7 +222,7 @@ nsHtml5TreeOpExecutor::DidBuildModel(bool aTerminated) {
     // Gather telemetry only for top-level content navigations in order to
     // avoid noise from ad iframes.
     bool topLevel = false;
-    if (BrowsingContext* bc = mDocument->GetBrowsingContext()) {
+    if (mozilla::dom::BrowsingContext* bc = mDocument->GetBrowsingContext()) {
       topLevel = bc->IsTopContent();
     }
 
@@ -988,7 +996,7 @@ void nsHtml5TreeOpExecutor::NeedsCharsetSwitchTo(
     return;
   }
 
-  nsDocShell* docShell = static_cast<nsDocShell*>(mDocShell.get());
+  RefPtr<nsDocShell> docShell = static_cast<nsDocShell*>(mDocShell.get());
 
   if (NS_SUCCEEDED(docShell->CharsetChangeStopDocumentLoad())) {
     docShell->CharsetChangeReloadDocument(aEncoding, aSource);
@@ -1211,7 +1219,7 @@ void nsHtml5TreeOpExecutor::PreloadScript(
   mDocument->ScriptLoader()->PreloadURI(
       uri, aCharset, aType, aCrossOrigin, aIntegrity, aScriptFromHead, aAsync,
       aDefer, aNoModule, aLinkPreload,
-      GetPreloadReferrerPolicy(aReferrerPolicy));
+      GetPreloadReferrerPolicy(aReferrerPolicy), 0);
 }
 
 void nsHtml5TreeOpExecutor::PreloadStyle(const nsAString& aURL,
@@ -1240,7 +1248,8 @@ void nsHtml5TreeOpExecutor::PreloadStyle(const nsAString& aURL,
                           GetPreloadReferrerPolicy(aReferrerPolicy), aIntegrity,
                           aLinkPreload
                               ? css::StylePreloadKind::FromLinkRelPreloadElement
-                              : css::StylePreloadKind::FromParser);
+                              : css::StylePreloadKind::FromParser,
+                          0);
 }
 
 void nsHtml5TreeOpExecutor::PreloadImage(
@@ -1278,7 +1287,7 @@ void nsHtml5TreeOpExecutor::PreloadFont(const nsAString& aURL,
     return;
   }
 
-  mDocument->Preloads().PreloadFont(uri, aCrossOrigin, aReferrerPolicy);
+  mDocument->Preloads().PreloadFont(uri, aCrossOrigin, aReferrerPolicy, 0);
 }
 
 void nsHtml5TreeOpExecutor::PreloadFetch(const nsAString& aURL,
@@ -1290,7 +1299,7 @@ void nsHtml5TreeOpExecutor::PreloadFetch(const nsAString& aURL,
     return;
   }
 
-  mDocument->Preloads().PreloadFetch(uri, aCrossOrigin, aReferrerPolicy);
+  mDocument->Preloads().PreloadFetch(uri, aCrossOrigin, aReferrerPolicy, 0);
 }
 
 void nsHtml5TreeOpExecutor::PreloadOpenPicture() {
@@ -1366,7 +1375,9 @@ void nsHtml5TreeOpExecutor::AddSpeculationCSP(const nsAString& aCSP) {
   nsresult rv = NS_OK;
   nsCOMPtr<nsIContentSecurityPolicy> preloadCsp = mDocument->GetPreloadCsp();
   if (!preloadCsp) {
-    preloadCsp = new nsCSPContext();
+    RefPtr<nsCSPContext> csp = new nsCSPContext();
+    csp->SuppressParserLogMessages();
+    preloadCsp = csp;
     rv = preloadCsp->SetRequestContextWithDocument(mDocument);
     NS_ENSURE_SUCCESS_VOID(rv);
   }

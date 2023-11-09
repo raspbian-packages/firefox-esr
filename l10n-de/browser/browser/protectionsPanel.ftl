@@ -63,7 +63,6 @@ protections-panel-not-found-label = Nicht erkannt
 ##
 
 protections-panel-settings-label = Schutzmaßnahmen-Einstellungen
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Schutzmaßnahmen-Übersicht
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formularen
 protections-panel-site-not-working-view-issue-list-payments = Zahlungen
 protections-panel-site-not-working-view-issue-list-comments = Kommentaren
 protections-panel-site-not-working-view-issue-list-videos = Videos
+protections-panel-site-not-working-view-issue-list-fonts = Schriftarten
 
 protections-panel-site-not-working-view-send-report = Einen Bericht senden
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Problem mit Website melden
 protections-panel-content-blocking-breakage-report-view-description = Das Blockieren bestimmter Skripte zur Aktivitätenverfolgung kann bei einigen Websites zu Problemen führen. Wenn Sie Probleme melden, helfen Sie { -brand-short-name } für alle besser zu machen. Beim Senden des Berichts werden eine Adresse sowie Informationen über Ihre Browser-Einstellungen an Mozilla gesendet. <label data-l10n-name="learn-more">Weitere Informationen</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Das Blockieren bestimmter Skripte zur Aktivitätenverfolgung kann bei einigen Websites zu Problemen führen. Wenn Sie Probleme melden, helfen Sie { -brand-short-name } für alle besser zu machen. Beim Senden des Berichts werden eine Adresse sowie Informationen über Ihre Browser-Einstellungen an { -vendor-short-name } gesendet.
 protections-panel-content-blocking-breakage-report-view-collection-url = Adresse
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = Adresse
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Abbrechen
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Bericht senden
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Reduzierung von Cookie-Bannern
+protections-panel-cookie-banner-handling-enabled = Für diese Website aktiviert
+protections-panel-cookie-banner-handling-disabled = Für diese Website deaktiviert
+protections-panel-cookie-banner-handling-undetected = Website derzeit nicht unterstützt
+
+protections-panel-cookie-banner-view-title =
+    .title = Reduzierung von Cookie-Bannern
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Cookie-Banner-Reduzierung für { $host } deaktivieren?
+protections-panel-cookie-banner-view-turn-on-for-site = Cookie-Banner-Reduzierung für diese Website aktivieren?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } löscht die Cookies dieser Website und aktualisiert die Seite. Das Löschen aller Cookies kann Sie abmelden oder Warenkörbe leeren.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } versucht, alle Cookie-Anforderungen auf unterstützten Websites automatisch abzulehnen.
+protections-panel-cookie-banner-view-cancel = Abbrechen
+protections-panel-cookie-banner-view-turn-off = Deaktivieren
+protections-panel-cookie-banner-view-turn-on = Aktivieren

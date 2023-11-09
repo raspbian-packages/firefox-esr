@@ -63,7 +63,6 @@ protections-panel-not-found-label = Ingen upptäckt
 ##
 
 protections-panel-settings-label = Skyddsinställningar
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Säkerhetsöversikt
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formulär
 protections-panel-site-not-working-view-issue-list-payments = Betalningar
 protections-panel-site-not-working-view-issue-list-comments = Kommentarer
 protections-panel-site-not-working-view-issue-list-videos = Videor
+protections-panel-site-not-working-view-issue-list-fonts = Teckensnitt
 
 protections-panel-site-not-working-view-send-report = Skicka in en rapport
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Rapportera en trasig webbplats
 protections-panel-content-blocking-breakage-report-view-description = Blockering av vissa spårare kan orsaka problem med vissa webbplatser. Att rapportera dessa problem hjälper till att göra { -brand-short-name } bättre för alla. Genom att skicka in den här rapporten skickas en URL och information om dina webbläsarinställningar till Mozilla. <label data-l10n-name="learn-more">Läs mer</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Blockering av vissa spårare kan orsaka problem med vissa webbplatser. Att rapportera dessa problem hjälper till att göra { -brand-short-name } bättre för alla. Genom att skicka in den här rapporten skickas en URL och information om dina webbläsarinställningar till { -vendor-short-name }.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Avbryt
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Skicka rapport
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Reducering av kakbanner
+protections-panel-cookie-banner-handling-enabled = På för denna webbplats
+protections-panel-cookie-banner-handling-disabled = Av för denna webbplats
+protections-panel-cookie-banner-handling-undetected = Webbplatsen stöds för närvarande inte
+
+protections-panel-cookie-banner-view-title =
+    .title = Reducering av kakbanner
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Vill du stänga av reducering av kakbanners för { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Vill du aktivera reducering av kakbanners för den här webbplatsen?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } rensar webbplatsens kakor och uppdaterar sidan. Rensa alla kakor kan logga ut dig eller tömma kundvagnar.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } försöker automatiskt avvisa alla kak-förfrågningar på webbplatser som stöds.
+protections-panel-cookie-banner-view-cancel = Avbryt
+protections-panel-cookie-banner-view-turn-off = Stäng av
+protections-panel-cookie-banner-view-turn-on = Slå på

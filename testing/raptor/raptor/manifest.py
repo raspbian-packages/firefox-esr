@@ -1,18 +1,21 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from __future__ import absolute_import
-
 import json
 import os
+import pathlib
 import re
 
-from six.moves.urllib.parse import parse_qs, urlsplit, urlunsplit, urlencode, unquote
-
+from constants.raptor_tests_constants import YOUTUBE_PLAYBACK_MEASURE
 from logger.logger import RaptorLogger
 from manifestparser import TestManifest
-from utils import bool_from_str, transform_platform, transform_subtest
-from constants.raptor_tests_constants import YOUTUBE_PLAYBACK_MEASURE
+from six.moves.urllib.parse import parse_qs, unquote, urlencode, urlsplit, urlunsplit
+from utils import (
+    bool_from_str,
+    import_support_class,
+    transform_platform,
+    transform_subtest,
+)
 
 here = os.path.abspath(os.path.dirname(__file__))
 raptor_ini = os.path.join(here, "raptor.ini")
@@ -132,6 +135,18 @@ def validate_test_ini(test_details):
         # replace old alert_on values with valid elements (no more regexes inside)
         # and also remove duplicates if any, by converting valid_alerts to a 'set' first
         test_details["alert_on"] = sorted(set(valid_alerts))
+
+    # if repository is defined, then a revision also needs to be defined
+    # the path is optional and we'll default to the root of the repo
+    if test_details.get("repository", None) is not None:
+        if test_details.get("repository_revision", None) is None:
+            LOG.error(
+                "`repository_revision` is required when a `repository` is defined."
+            )
+            valid_settings = False
+        elif test_details.get("type") not in ("benchmark"):
+            LOG.error("`repository` is only available for benchmark test types.")
+            valid_settings = False
 
     return valid_settings
 
@@ -269,6 +284,9 @@ def write_test_settings_json(args, test_details, oskey):
         if features:
             test_settings["raptor-options"]["gecko_profile_features"] = features
 
+    if test_details.get("extra_profiler_run", False):
+        test_settings["raptor-options"]["extra_profiler_run"] = True
+
     if test_details.get("newtab_per_cycle", None) is not None:
         test_settings["raptor-options"]["newtab_per_cycle"] = bool(
             test_details["newtab_per_cycle"]
@@ -339,6 +357,14 @@ def get_raptor_test_list(args, oskey):
             if tail == _ini:
                 # subtest comes from matching test ini file name, so add it
                 tests_to_run.append(next_test)
+
+    if args.collect_perfstats and args.app.lower() not in (
+        "chrome",
+        "chromium",
+        "custom-car",
+    ):
+        for next_test in tests_to_run:
+            next_test["perfstats"] = "true"
 
     # enable live sites if requested with --live-sites
     if args.live_sites:
@@ -417,6 +443,18 @@ def get_raptor_test_list(args, oskey):
             next_test.pop("gecko_profile_interval", None)
             next_test.pop("gecko_profile_threads", None)
             next_test.pop("gecko_profile_features", None)
+
+        if args.extra_profiler_run is True and args.app == "firefox":
+            next_test["extra_profiler_run"] = True
+            LOG.info("extra-profiler-run enabled")
+            next_test["extra_profiler_run_browser_cycles"] = 1
+            if args.chimera:
+                next_test["extra_profiler_run_page_cycles"] = 2
+            else:
+                next_test["extra_profiler_run_page_cycles"] = 1
+        else:
+            args.extra_profiler_run = False
+            LOG.info("extra-profiler-run disabled")
 
         if args.debug_mode is True:
             next_test["debug_mode"] = True
@@ -564,11 +602,25 @@ def get_raptor_test_list(args, oskey):
                 # remove the 'hero =' line since no longer measuring hero
                 del next_test["hero"]
 
+        if next_test.get("support_class", None) is not None:
+            support_class = import_support_class(
+                pathlib.Path(
+                    here,
+                    "..",
+                    "browsertime",
+                    "support-scripts",
+                    next_test["support_class"],
+                ).resolve()
+            )
+            next_test["support_class"] = support_class()
+
         bool_settings = [
             "lower_is_better",
             "subtest_lower_is_better",
             "accept_zero_vismet",
             "interactive",
+            "host_from_parent",
+            "expose_gecko_profiler",
         ]
         for setting in bool_settings:
             if next_test.get(setting, None) is not None:

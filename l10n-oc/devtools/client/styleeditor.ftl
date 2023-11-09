@@ -20,7 +20,6 @@ styleeditor-save-button = Enregistrar
     .accesskey = s
 styleeditor-options-button =
     .tooltiptext = Opcions de l'editor d'estils
-styleeditor-media-rules = Règlas @media
 styleeditor-at-rules = Règlas @
 styleeditor-editor-textbox =
     .data-placeholder = Picatz de CSS aicí.
@@ -41,3 +40,12 @@ styleeditor-go-to-line =
     .accesskey = r
 # Label displayed when searching a term that is not found in any stylesheet path
 styleeditor-stylesheet-all-filtered = Cap de fuèlh d’estils correspondent pas trobat.
+
+# This string is shown in the style sheets list
+# Variables:
+#   $ruleCount (Integer) - The number of rules in the stylesheet.
+styleeditor-stylesheet-rule-count =
+    { $ruleCount ->
+        [one] { $ruleCount } règla.
+       *[other] { $ruleCount } règlas.
+    }

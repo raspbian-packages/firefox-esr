@@ -43,3 +43,13 @@ about-private-browsing-search-banner-close-button =
 
 ## Strings used in a “pin promotion” message, which prompts users to pin a private window
 
+about-private-browsing-pin-promo-header = Libertate de navigare privată cu un singur clic
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Păstrează în Dock
+       *[other] Fixează în bara de activități
+    }
+about-private-browsing-pin-promo-title = Fără cookie-uri sau istoric salvate, chiar de pe desktop. Răsfoiește ca și cum nimeni nu te privește.
+
+## Strings used in a promotion message for cookie banner reduction
+

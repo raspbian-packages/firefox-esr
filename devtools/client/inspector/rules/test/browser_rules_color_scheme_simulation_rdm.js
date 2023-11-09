@@ -6,14 +6,7 @@
 // Test color scheme simulation when RDM is toggled
 const TEST_URI = URL_ROOT + "doc_media_queries.html";
 
-add_task(async function() {
-  // Use a local file for the device list, otherwise the panel tries to reach an external
-  // URL, which makes the test fail.
-  await pushPref(
-    "devtools.devices.url",
-    "http://example.com/browser/devtools/client/responsive/test/browser/devices.json"
-  );
-
+add_task(async function () {
   const tab = await addTab(TEST_URI);
   const { inspector, view } = await openRuleView();
 

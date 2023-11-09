@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-webpage-languages-window =
-    .title = Jazyk webových stránek
-    .style = width: 40em
-
 webpage-languages-window2 =
     .title = Jazyk webových stránek
     .style = min-width: 40em
@@ -53,23 +49,11 @@ languages-code-format =
 languages-active-code-format =
     .value = { languages-code-format.label }
 
-browser-languages-window =
-    .title =
-        Jazyk { -brand-short-name.gender ->
-            [masculine] { -brand-short-name(case: "gen") }
-            [feminine] { -brand-short-name(case: "gen") }
-            [neuter] { -brand-short-name(case: "gen") }
-           *[other] aplikace { -brand-short-name }
-        }
-    .style = width: 40em
-
 browser-languages-window2 =
     .title =
-        Jazyk { -brand-short-name.gender ->
-            [masculine] { -brand-short-name(case: "gen") }
-            [feminine] { -brand-short-name(case: "gen") }
-            [neuter] { -brand-short-name(case: "gen") }
-           *[other] aplikace { -brand-short-name }
+        { -brand-short-name.case-status ->
+            [with-cases] Jazyk { -brand-short-name(case: "gen") }
+           *[no-cases] Jazyk aplikace { -brand-short-name }
         }
     .style = min-width: 40em
 

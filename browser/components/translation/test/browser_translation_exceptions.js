@@ -2,13 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// TODO (Bug 1817084) Remove this file when we disable the extension
 // tests the translation infobar, using a fake 'Translation' implementation.
 
-const { Translation } = ChromeUtils.import(
-  "resource:///modules/translation/TranslationParent.jsm"
-);
-const { PermissionTestUtils } = ChromeUtils.import(
-  "resource://testing-common/PermissionTestUtils.jsm"
+const { PermissionTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/PermissionTestUtils.sys.mjs"
 );
 
 const kLanguagesPref = "browser.translation.neverForLanguages";
@@ -22,13 +20,13 @@ function test() {
   Services.prefs.setBoolPref(kEnableTranslationPref, true);
   let tab = BrowserTestUtils.addTab(gBrowser);
   gBrowser.selectedTab = tab;
-  registerCleanupFunction(function() {
+  registerCleanupFunction(function () {
     gBrowser.removeTab(tab);
     Services.prefs.clearUserPref(kShowUIPref);
     Services.prefs.clearUserPref(kEnableTranslationPref);
   });
   BrowserTestUtils.browserLoaded(tab.linkedBrowser).then(() => {
-    (async function() {
+    (async function () {
       for (let testCase of gTests) {
         info(testCase.desc);
         await testCase.run();
@@ -39,7 +37,10 @@ function test() {
     });
   });
 
-  BrowserTestUtils.loadURI(gBrowser.selectedBrowser, "http://example.com/");
+  BrowserTestUtils.loadURIString(
+    gBrowser.selectedBrowser,
+    "http://example.com/"
+  );
 }
 
 function getLanguageExceptions() {
@@ -61,28 +62,11 @@ function getDomainExceptions() {
   return results;
 }
 
-function getInfoBar() {
-  return new Promise(resolve => {
-    let infobar = gBrowser
-      .getNotificationBox()
-      .getNotificationWithValue("translation");
-
-    if (!infobar) {
-      resolve();
-    } else {
-      // Wait for all animations to finish
-      Promise.all(
-        infobar.getAnimations().map(animation => animation.finished)
-      ).then(() => resolve(infobar));
-    }
-  });
-}
-
 function openPopup(aPopup) {
   return new Promise(resolve => {
     aPopup.addEventListener(
       "popupshown",
-      function() {
+      function () {
         TestUtils.executeSoon(resolve);
       },
       { once: true }
@@ -100,7 +84,7 @@ function waitForWindowLoad(aWin) {
   return new Promise(resolve => {
     aWin.addEventListener(
       "load",
-      function() {
+      function () {
         TestUtils.executeSoon(resolve);
       },
       { capture: true, once: true }
@@ -126,137 +110,6 @@ var gTests = [
   },
 
   {
-    desc: "never for language",
-    run: async function checkNeverForLanguage() {
-      // Show the infobar for example.com and fr.
-      let actor = gBrowser.selectedBrowser.browsingContext.currentWindowGlobal.getActor(
-        "Translation"
-      );
-      actor.documentStateReceived({
-        state: Translation.STATE_OFFER,
-        originalShown: true,
-        detectedLanguage: "fr",
-      });
-      let notif = await getInfoBar();
-      ok(notif, "the infobar is visible");
-
-      let principal = gBrowser.selectedBrowser.contentPrincipal;
-      ok(
-        actor.shouldShowInfoBar(principal, "fr"),
-        "check shouldShowInfoBar initially returns true"
-      );
-
-      // Open the "options" drop down.
-      await openPopup(notif._getAnonElt("options"));
-      ok(
-        notif._getAnonElt("options").getAttribute("open"),
-        "the options menu is open"
-      );
-
-      // Check that the item is not disabled.
-      ok(
-        !notif._getAnonElt("neverForLanguage").disabled,
-        "The 'Never translate <language>' item isn't disabled"
-      );
-
-      // Click the 'Never for French' item.
-      notif._getAnonElt("neverForLanguage").click();
-      notif = await getInfoBar();
-      ok(!notif, "infobar hidden");
-
-      // Check this has been saved to the exceptions list.
-      let langs = getLanguageExceptions();
-      is(langs.length, 1, "one language in the exception list");
-      is(langs[0], "fr", "correct language in the exception list");
-      ok(
-        !actor.shouldShowInfoBar(principal, "fr"),
-        "the infobar wouldn't be shown anymore"
-      );
-
-      // Reopen the infobar.
-      PopupNotifications.getNotification("translate").anchorElement.click();
-      notif = await getInfoBar();
-      // Open the "options" drop down.
-      await openPopup(notif._getAnonElt("options"));
-      ok(
-        notif._getAnonElt("neverForLanguage").disabled,
-        "The 'Never translate French' item is disabled"
-      );
-
-      // Cleanup.
-      Services.prefs.setCharPref(kLanguagesPref, "");
-      notif.close();
-    },
-  },
-
-  {
-    desc: "never for site",
-    run: async function checkNeverForSite() {
-      // Show the infobar for example.com and fr.
-      let actor = gBrowser.selectedBrowser.browsingContext.currentWindowGlobal.getActor(
-        "Translation"
-      );
-      actor.documentStateReceived({
-        state: Translation.STATE_OFFER,
-        originalShown: true,
-        detectedLanguage: "fr",
-      });
-      let notif = await getInfoBar();
-      ok(notif, "the infobar is visible");
-      let principal = gBrowser.selectedBrowser.contentPrincipal;
-      ok(
-        actor.shouldShowInfoBar(principal, "fr"),
-        "check shouldShowInfoBar initially returns true"
-      );
-
-      // Open the "options" drop down.
-      await openPopup(notif._getAnonElt("options"));
-      ok(
-        notif._getAnonElt("options").getAttribute("open"),
-        "the options menu is open"
-      );
-
-      // Check that the item is not disabled.
-      ok(
-        !notif._getAnonElt("neverForSite").disabled,
-        "The 'Never translate site' item isn't disabled"
-      );
-
-      // Click the 'Never for French' item.
-      notif._getAnonElt("neverForSite").click();
-      notif = await getInfoBar();
-      ok(!notif, "infobar hidden");
-
-      // Check this has been saved to the exceptions list.
-      let sites = getDomainExceptions();
-      is(sites.length, 1, "one site in the exception list");
-      is(
-        sites[0].origin,
-        "http://example.com",
-        "correct site in the exception list"
-      );
-      ok(
-        !actor.shouldShowInfoBar(principal, "fr"),
-        "the infobar wouldn't be shown anymore"
-      );
-
-      // Reopen the infobar.
-      PopupNotifications.getNotification("translate").anchorElement.click();
-      notif = await getInfoBar();
-      // Open the "options" drop down.
-      await openPopup(notif._getAnonElt("options"));
-      ok(
-        notif._getAnonElt("neverForSite").disabled,
-        "The 'Never translate French' item is disabled"
-      );
-
-      // Cleanup.
-      PermissionTestUtils.remove("http://example.com", "translate");
-      notif.close();
-    },
-  },
-
-  {
     desc: "language exception list",
     run: async function checkLanguageExceptions() {
       // Put 2 languages in the pref before opening the window to check
@@ -265,7 +118,7 @@ var gTests = [
 
       // Open the translation exceptions dialog.
       let win = openDialog(
-        "chrome://browser/content/preferences/dialogs/translation.xhtml",
+        "chrome://browser/content/preferences/dialogs/translationExceptions.xhtml",
         "Browser:TranslationExceptions",
         "",
         null
@@ -331,7 +184,7 @@ var gTests = [
 
       // Open the translation exceptions dialog.
       let win = openDialog(
-        "chrome://browser/content/preferences/dialogs/translation.xhtml",
+        "chrome://browser/content/preferences/dialogs/translationExceptions.xhtml",
         "Browser:TranslationExceptions",
         "",
         null

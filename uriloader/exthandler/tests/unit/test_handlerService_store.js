@@ -243,11 +243,7 @@ add_task(async function test_store_preferredAction() {
   const actions = [
     {
       preferred: Ci.nsIHandlerInfo.alwaysAsk,
-      expected: Services.prefs.getBoolPref(
-        "browser.download.improvements_to_download_panel"
-      )
-        ? Ci.nsIHandlerInfo.alwaysAsk
-        : Ci.nsIHandlerInfo.useHelperApp,
+      expected: Ci.nsIHandlerInfo.alwaysAsk,
     },
     {
       preferred: Ci.nsIHandlerInfo.handleInternally,
@@ -360,9 +356,8 @@ add_task(
 
     await unloadHandlerStore();
 
-    let actualHandlerInfo = HandlerServiceTestUtils.getHandlerInfo(
-      "example/new"
-    );
+    let actualHandlerInfo =
+      HandlerServiceTestUtils.getHandlerInfo("example/new");
     HandlerServiceTestUtils.assertHandlerInfoMatches(actualHandlerInfo, {
       type: "example/new",
       preferredAction: Ci.nsIHandlerInfo.saveToDisk,
@@ -392,9 +387,8 @@ add_task(
 
     await unloadHandlerStore();
 
-    let actualHandlerInfo = HandlerServiceTestUtils.getHandlerInfo(
-      "example/new"
-    );
+    let actualHandlerInfo =
+      HandlerServiceTestUtils.getHandlerInfo("example/new");
     HandlerServiceTestUtils.assertHandlerInfoMatches(actualHandlerInfo, {
       type: "example/new",
       preferredAction: Ci.nsIHandlerInfo.saveToDisk,
@@ -654,7 +648,7 @@ add_task(async function test_store_keeps_unknown_properties() {
   gHandlerService.store(handlerInfo);
 
   await unloadHandlerStore();
-  let data = JSON.parse(new TextDecoder().decode(await OS.File.read(jsonPath)));
+  let data = await IOUtils.readJSON(jsonPath);
   Assert.equal(
     data.mimeTypes["example/type.handleinternally"].unknownProperty,
     "preserved"
@@ -743,7 +737,7 @@ add_task(async function test_store_gioHandlerApp() {
     possibleApplicationHandlers: [expectedGIOMimeHandlerApp, webHandlerApp],
   });
 
-  await OS.File.remove(dummyHandlerFile.path);
+  await IOUtils.remove(dummyHandlerFile.path);
 
   // After removing dummyHandlerFile, the handler should disappear from the
   // list of possibleApplicationHandlers and preferredAppHandler should be null.

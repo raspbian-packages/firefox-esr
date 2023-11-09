@@ -1,12 +1,10 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from __future__ import absolute_import, division, unicode_literals
-
-
 import os
 import sys
 from unittest import mock
+
 import mozunit
 
 # need this so the raptor unit tests can find output & filter classes
@@ -19,11 +17,17 @@ from webextension import WebExtensionAndroid
 
 
 def test_no_device():
+    original_get = WebExtensionAndroid.get_browser_meta
+    WebExtensionAndroid.get_browser_meta = mock.MagicMock()
+    WebExtensionAndroid.get_browser_meta.return_value = ("app", "version")
+
     raptor = WebExtensionAndroid(
         "geckoview",
         "org.mozilla.org.mozilla.geckoview_example",
         cpu_test=True,
     )
+    WebExtensionAndroid.get_browser_meta = original_get
+
     raptor.device = None
     resp = cpu.start_android_cpu_profiler(raptor)
     assert resp is None
@@ -39,7 +43,14 @@ def test_usage_with_invalid_data_returns_zero():
             # Create a control server
             control_server.cpu_test = True
             control_server.device = device
+
+            original_get = WebExtensionAndroid.get_browser_meta
+            WebExtensionAndroid.get_browser_meta = mock.MagicMock()
+            WebExtensionAndroid.get_browser_meta.return_value = ("app", "version")
+
             raptor = WebExtensionAndroid("geckoview", "org.mozilla.geckoview_example")
+            WebExtensionAndroid.get_browser_meta = original_get
+
             raptor.config["cpu_test"] = True
             raptor.control_server = control_server
             raptor.device = device
@@ -94,7 +105,14 @@ def test_usage_with_output():
             control_server.test_name = "cpuunittest"
             control_server.device = device
             control_server.app_name = "org.mozilla.geckoview_example"
+
+            original_get = WebExtensionAndroid.get_browser_meta
+            WebExtensionAndroid.get_browser_meta = mock.MagicMock()
+            WebExtensionAndroid.get_browser_meta.return_value = ("app", "version")
+
             raptor = WebExtensionAndroid("geckoview", "org.mozilla.geckoview_example")
+            WebExtensionAndroid.get_browser_meta = original_get
+
             raptor.device = device
             raptor.config["cpu_test"] = True
             raptor.control_server = control_server
@@ -154,7 +172,14 @@ def test_usage_with_fallback():
             control_server.test_name = "cpuunittest"
             control_server.device = device
             control_server.app_name = "org.mozilla.geckoview_example"
+
+            original_get = WebExtensionAndroid.get_browser_meta
+            WebExtensionAndroid.get_browser_meta = mock.MagicMock()
+            WebExtensionAndroid.get_browser_meta.return_value = ("app", "version")
+
             raptor = WebExtensionAndroid("geckoview", "org.mozilla.geckoview_example")
+            WebExtensionAndroid.get_browser_meta = original_get
+
             raptor.device = device
             raptor.config["cpu_test"] = True
             raptor.control_server = control_server

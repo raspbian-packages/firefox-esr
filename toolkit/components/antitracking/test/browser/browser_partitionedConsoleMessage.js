@@ -3,8 +3,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* import-globals-from head.js */
-
 /*
  * Bug 1759496 - A test to verify if the console message of partitioned storage
  *               was sent correctly.
@@ -12,7 +10,7 @@
 
 "use strict";
 
-add_setup(async function() {
+add_setup(async function () {
   await setCookieBehaviorPref(
     BEHAVIOR_REJECT_TRACKER_AND_PARTITION_FOREIGN,
     false
@@ -26,22 +24,6 @@ add_task(async function runTest() {
 
   let browser = tab.linkedBrowser;
   await BrowserTestUtils.browserLoaded(browser);
-
-  info("Creating the third-party iframe");
-  let ifrBC = await SpecialPowers.spawn(
-    browser,
-    [TEST_TOP_PAGE_7],
-    async page => {
-      let ifr = content.document.createElement("iframe");
-
-      let loading = ContentTaskUtils.waitForEvent(ifr, "load");
-      content.document.body.appendChild(ifr);
-      ifr.src = page;
-      await loading;
-
-      return ifr.browsingContext;
-    }
-  );
 
   let consolePromise = new Promise(resolve => {
     let consoleListener = {
@@ -60,7 +42,23 @@ add_task(async function runTest() {
     Services.console.registerListener(consoleListener);
   });
 
-  info("Write cookie to the third-party iframe to trigger the console message");
+  info("Creating the third-party iframe");
+  let ifrBC = await SpecialPowers.spawn(
+    browser,
+    [TEST_TOP_PAGE_7],
+    async page => {
+      let ifr = content.document.createElement("iframe");
+
+      let loading = ContentTaskUtils.waitForEvent(ifr, "load");
+      content.document.body.appendChild(ifr);
+      ifr.src = page;
+      await loading;
+
+      return ifr.browsingContext;
+    }
+  );
+
+  info("Write cookie to the third-party iframe to ensure the console message");
   await SpecialPowers.spawn(ifrBC, [], async _ => {
     content.document.cookie = "foo";
   });

@@ -5,8 +5,14 @@
 
 //! `Encoder`s and `Decoder`s from items to/from `BytesMut` buffers.
 
+// The assert in LengthDelimitedCodec::decode triggers this clippy warning but
+// requires upgrading the workspace to Rust 2021 to resolve.
+// This should be fixed in Rust 1.68, after which the following `allow` can be deleted.
+#![allow(clippy::uninlined_format_args)]
+
 use bincode::{self, Options};
-use bytes::{BufMut, ByteOrder, BytesMut, LittleEndian};
+use byteorder::{ByteOrder, LittleEndian};
+use bytes::{Buf, BufMut, BytesMut};
 use serde::de::DeserializeOwned;
 use serde::ser::Serialize;
 use std::convert::TryInto;

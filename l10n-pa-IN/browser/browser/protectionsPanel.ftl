@@ -63,7 +63,6 @@ protections-panel-not-found-label = ਕੋਈ ਨਹੀਂ ਖੋਜੇ
 ##
 
 protections-panel-settings-label = ਸੁਰੱਖਿਆ ਸੈਟਿੰਗਾਂ
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = ਸੁਰੱਖਿਆ ਡੈਸ਼ਬੋਰਡ
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = ਫ਼ਾਰਮ
 protections-panel-site-not-working-view-issue-list-payments = ਭੁਗਤਾਨ
 protections-panel-site-not-working-view-issue-list-comments = ਟਿੱਪਣੀਆਂ
 protections-panel-site-not-working-view-issue-list-videos = ਵਿਡੀਓ
+protections-panel-site-not-working-view-issue-list-fonts = ਫੋਂਟ
 
 protections-panel-site-not-working-view-send-report = ਰਿਪੋਰਟ ਭੇਜੋ
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = ਖ਼ਰਾਬ ਸਾਈਟ ਬਾਰੇ ਰਿਪੋਰਟ ਕਰੋ
 protections-panel-content-blocking-breakage-report-view-description = ਕੁਝ ਟਰੈਕਰਾਂ ਉੱਤੇ ਪਾਬੰਦੀ ਲਗਾਉਣ ਕਰਕੇ ਕੁਝ ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਸਮੱਸਿਆਵਾਂ ਆ ਸਕਦੀਆਂ ਹਨ। ਇਹ ਸਮੱਸਿਆਵਾਂ ਬਾਰੇ ਰਿਪੋਰਟ ਕਰਨ ਨਾਲ ਹਰ ਕਿਸੇ ਲਈ { -brand-short-name } ਵਧੀਆ ਬਣਾਉਣ ਲਈ ਮਦਦ ਹੁੰਦੀ ਹੈ। ਇਹ ਰਿਪੋਰਟ URL ਦੇ ਨਾਲ ਨਾਲ ਤੁਹਾਡੀ ਬਰਾਊਜ਼ਰ ਸੈਟਿੰਗ ਬਾਰੇ ਕੁਝ ਜਾਣਕਾਰੀ ਮੋਜ਼ੀਲਾ ਨੂੰ ਭੇਜਦੀ ਹੈ। <label data-l10n-name="learn-more">ਹੋਰ ਜਾਣੋ</label>
+protections-panel-content-blocking-breakage-report-view-description2 = ਕੁਝ ਟਰੈਕਰਾਂ ਉੱਤੇ ਪਾਬੰਦੀ ਲਗਾਉਣ ਕਰਕੇ ਕੁਝ ਵੈੱਬਸਾਈਟਾਂ ਨਾਲ ਸਮੱਸਿਆਵਾਂ ਆ ਸਕਦੀਆਂ ਹਨ। ਇਹ ਸਮੱਸਿਆਵਾਂ ਬਾਰੇ ਰਿਪੋਰਟ ਕਰਨ ਨਾਲ ਹਰ ਕਿਸੇ ਲਈ { -brand-short-name } ਵਧੀਆ ਬਣਾਉਣ ਲਈ ਮਦਦ ਹੁੰਦੀ ਹੈ। ਇਹ ਰਿਪੋਰਟ URL ਦੇ ਨਾਲ ਨਾਲ ਤੁਹਾਡੀਆਂ ਬਰਾਊਜ਼ਰ ਸੈਟਿੰਗਾਂ ਬਾਰੇ ਕੁਝ ਜਾਣਕਾਰੀ { -vendor-short-name } ਨੂੰ ਭੇਜਦੀ ਹੈ।
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = ਰੱਦ ਕਰੋ
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = ਰਿਪੋਰਟ ਭੇਜੋ
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = ਕੂਕੀ ਬੈਨਰ ਘਟਾਉਣੇ
+protections-panel-cookie-banner-handling-enabled = ਇਸ ਸਾਈਟ ਲਈ ਚਾਲੂ
+protections-panel-cookie-banner-handling-disabled = ਇਸ ਸਾਈਟ ਲਈ ਬੰਦ
+protections-panel-cookie-banner-handling-undetected = ਸਾਈਟ ਇਸ ਵੇਲੇ ਸਹਾਇਕ ਨਹੀਂ ਹੈ
+
+protections-panel-cookie-banner-view-title =
+    .title = ਕੂਕੀ ਬੈਨਰ ਘਟਾਉਣਾ
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = { $host } ਲਈ ਕੂਕੀ ਬੈਨਰ ਘਟਾਉਣ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?
+protections-panel-cookie-banner-view-turn-on-for-site = ਇਸ ਸਾਈਟ ਲਈ ਕੂਕੀ ਬੈਨਰ ਘਟਾਉਣ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } ਇਸ ਸਾਈਟ ਦੀਆਂ ਕੁਕੀਆਂ ਨੂੰ ਸਾਫ਼ ਕਰ ਕੇ ਸਫ਼ੇ ਨੂੰ ਸੱਜਰਾ ਕਰ ਦੇਵੇਗਾ। ਸਾਰੀਆਂ ਕੁਕੀਆਂ ਨੂੰ ਸਾਫ਼ ਕਰਨ ਨਾਲ ਤੁਸੀਂ ਸਾਈਨ ਆਉਟ ਹੋ ਸਕਦੇ ਹੋ ਜਾਂ ਖਰੀਦਦਾਰੀ ਵਾਲੀ ਟੋਕਰੀ ਖਾਲੀ ਹੋ ਸਕਦੀ ਹੈ।
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } ਸਹਾਇਕ ਸਾਈਟਾਂ ਉੱਤੇ ਸਭ ਕੂਕੀ ਬੇਨਤੀਆਂ ਨੂੰ ਆਪਣੇ-ਆਪ ਹੀ ਰੱਦ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰਦਾ ਹੈ।
+protections-panel-cookie-banner-view-cancel = ਰੱਦ ਕਰੋ
+protections-panel-cookie-banner-view-turn-off = ਬੰਦ ਕਰੋ
+protections-panel-cookie-banner-view-turn-on = ਚਾਲੂ ਕਰੋ

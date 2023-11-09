@@ -2,11 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
-
 from marionette_driver.by import By
 from marionette_driver.errors import NoSuchElementException
-from marionette_driver.marionette import CHROME_ELEMENT_KEY, HTMLElement
+from marionette_driver.marionette import HTMLElement, WEB_ELEMENT_KEY
 
 from marionette_harness import MarionetteTestCase, parameterized, WindowManagerMixin
 
@@ -37,7 +35,7 @@ class TestElementsChrome(WindowManagerMixin, MarionetteTestCase):
         )
         found_el = self.marionette.find_element(By.ID, "textInput")
         self.assertEqual(HTMLElement, type(found_el))
-        self.assertEqual(CHROME_ELEMENT_KEY, found_el.kind)
+        self.assertEqual(WEB_ELEMENT_KEY, found_el.kind)
         self.assertEqual(el, found_el)
 
     @parameterized("XUL", PAGE_XUL)
@@ -51,7 +49,7 @@ class TestElementsChrome(WindowManagerMixin, MarionetteTestCase):
         )
         found_el = self.marionette.find_element(By.CSS_SELECTOR, "#textInput")
         self.assertEqual(HTMLElement, type(found_el))
-        self.assertEqual(CHROME_ELEMENT_KEY, found_el.kind)
+        self.assertEqual(WEB_ELEMENT_KEY, found_el.kind)
         self.assertEqual(el, found_el)
 
     @parameterized("XUL", PAGE_XUL)
@@ -64,7 +62,7 @@ class TestElementsChrome(WindowManagerMixin, MarionetteTestCase):
         parent = self.marionette.find_element(By.ID, "things")
         found_el = parent.find_element(By.TAG_NAME, "input")
         self.assertEqual(HTMLElement, type(found_el))
-        self.assertEqual(CHROME_ELEMENT_KEY, found_el.kind)
+        self.assertEqual(WEB_ELEMENT_KEY, found_el.kind)
         self.assertEqual(el, found_el)
 
     @parameterized("XUL", PAGE_XUL)
@@ -90,7 +88,7 @@ class TestElementsChrome(WindowManagerMixin, MarionetteTestCase):
         found_el = self.marionette.find_element(By.TAG_NAME, "vbox")
         self.assertEqual("vbox", found_el.tag_name)
         self.assertEqual(HTMLElement, type(found_el))
-        self.assertEqual(CHROME_ELEMENT_KEY, found_el.kind)
+        self.assertEqual(WEB_ELEMENT_KEY, found_el.kind)
         self.assertEqual(el, found_el)
 
     @parameterized("XUL", PAGE_XUL)
@@ -104,7 +102,7 @@ class TestElementsChrome(WindowManagerMixin, MarionetteTestCase):
         )
         found_el = self.marionette.find_element(By.CLASS_NAME, "asdf")
         self.assertEqual(HTMLElement, type(found_el))
-        self.assertEqual(CHROME_ELEMENT_KEY, found_el.kind)
+        self.assertEqual(WEB_ELEMENT_KEY, found_el.kind)
         self.assertEqual(el, found_el)
 
     @parameterized("XUL", PAGE_XUL)
@@ -118,7 +116,7 @@ class TestElementsChrome(WindowManagerMixin, MarionetteTestCase):
         )
         found_el = self.marionette.find_element(By.XPATH, "id('testBox')")
         self.assertEqual(HTMLElement, type(found_el))
-        self.assertEqual(CHROME_ELEMENT_KEY, found_el.kind)
+        self.assertEqual(WEB_ELEMENT_KEY, found_el.kind)
         self.assertEqual(el, found_el)
 
     @parameterized("XUL", PAGE_XUL)
@@ -162,7 +160,7 @@ class TestElementsChrome(WindowManagerMixin, MarionetteTestCase):
         )
         found_el = self.marionette.find_element(By.ID, "myid")
         self.assertEqual(HTMLElement, type(found_el))
-        self.assertEqual(CHROME_ELEMENT_KEY, found_el.kind)
+        self.assertEqual(WEB_ELEMENT_KEY, found_el.kind)
 
         self.marionette.execute_script(
             """

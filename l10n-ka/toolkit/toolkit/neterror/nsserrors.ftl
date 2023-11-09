@@ -8,18 +8,8 @@
 # gen_aboutneterror_codes.py . If we end up needing fluent attributes or
 # refactoring them in some way, the script will need updating.
 
-# Variables:
-# $hostname (String) - Hostname of the website with SSL error.
-# $errorMessage (String) - Error message corresponding to the type of error we are experiencing.
-ssl-connection-error = შეცდომა დაკავშირებისას - { $hostname }. { $errorMessage }
-
-# Variables:
-# $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
-cert-error-code-prefix = შეცდომის კოდი: { $error }
-
 psmerr-ssl-disabled = უსაფრთხო დაკავშირება ვერ ხერხდება, რადგან SSL ოქმი ამორთულია.
 psmerr-ssl2-disabled = უსაფრთხო დაკავშირება ვერ ხერხდება, რადგან საიტი SSL ოქმის მოძველებულ ვერსიას იყენებს.
-
 # This is a multi-line message.
 psmerr-hostreusedissuerandserial =
     თქვენ უმართებულო სერტიფიკატი მიიღეთ.  გთხოვთ დაუკავშირდეთ სერვერის მმართველს ან ელფოსტის მოპასუხეს და მიაწოდოთ შემდეგი მონაცემები:
@@ -162,6 +152,7 @@ ssl-error-no-supported-signature-algorithm = მხარდაჭერილ�
 ssl-error-unsupported-signature-algorithm = თანამონაწილემ ხელმოწერისა და ჰეშ-ალგორითმის მხარდაუჭერელი წყვილი გამოიყენა,
 ssl-error-missing-extended-master-secret = თანამონაწილემ არასწორი extended_master_secret გაფართოებით სცადა გაგრძელება.
 ssl-error-unexpected-extended-master-secret = თანამონაწილემ მოულოდნელი extended_master_secret გაფართოებით ცადა გაგრძელება.
+
 sec-error-io = An I/O error occurred during security authorization.
 sec-error-library-failure = security library failure.
 sec-error-bad-data = security library: received bad data.
@@ -212,14 +203,6 @@ sec-error-pkcs7-keyalg-mismatch = Cannot decrypt: key encryption algorithm does 
 sec-error-pkcs7-bad-signature = Signature verification failed: no signer found, too many signers found, or improper or corrupted data.
 sec-error-unsupported-keyalg = Unsupported or unknown key algorithm.
 sec-error-decryption-disallowed = Cannot decrypt: encrypted using a disallowed algorithm or key size.
-xp-sec-fortezza-bad-card = Fortezza ბარათი შესაფერისად არ დაწყებულა, გთხოვთ ამოიღეთ ის და დაუბრუნეთ გამომშვებს.
-xp-sec-fortezza-no-card = No Fortezza cards Found
-xp-sec-fortezza-none-selected = No Fortezza card selected
-xp-sec-fortezza-more-info = Please select a personality to get more info on
-xp-sec-fortezza-person-not-found = Personality not found
-xp-sec-fortezza-no-more-info = No more information on that Personality
-xp-sec-fortezza-bad-pin = Invalid Pin
-xp-sec-fortezza-person-error = Couldn't initialize Fortezza personalities.
 sec-error-no-krl = No KRL for this site's certificate has been found.
 sec-error-krl-expired = The KRL for this site's certificate has expired.
 sec-error-krl-bad-signature = The KRL for this site's certificate has an invalid signature.
@@ -234,9 +217,6 @@ sec-error-cert-nickname-collision = A certificate with the same nickname already
 sec-error-key-nickname-collision = A key with the same nickname already exists.
 sec-error-safe-not-created = error while creating safe object
 sec-error-baggage-not-created = error while creating baggage object
-xp-java-remove-principal-error = Couldn't remove the principal
-xp-java-delete-privilege-error = Couldn't delete the privilege
-xp-java-cert-not-exists-error = This principal doesn't have a certificate
 sec-error-bad-export-algorithm = Required algorithm is not allowed.
 sec-error-exporting-certificates = Error attempting to export certificates.
 sec-error-importing-certificates = Error attempting to import certificates.
@@ -317,7 +297,7 @@ sec-error-incompatible-pkcs11 = PKCS #11 წამყვანი არღვ�
 sec-error-no-event = ამ დროისთვის ახალი ბუდე არაა.
 sec-error-crl-already-exists = სია უკვე არსებობს.
 sec-error-not-initialized = NSS არ გაშვებულა.
-sec-error-token-not-logged-in = მოქმედება ვერ შესრულდა, რადგან PKCS#11 სიტყვა-ნიშანი, არაა გამოყენებული ანგარიშზე შესვლისთვის.
+sec-error-token-not-logged-in = მოქმედება ვერ შესრულდა, რადგან PKCS#11 საცნობი არაა გამოყენებული ანგარიშზე შესვლისთვის.
 sec-error-ocsp-responder-cert-invalid = დაყენებული OCSP მოპასუხის სერტიფიკატი უმართებულოა.
 sec-error-ocsp-bad-signature = OCSP მოპასუხის ხელმოწერა უმართებულოა.
 sec-error-out-of-search-limits = სერტიფიკატის მოწმობის მოძიება, სცდება ძიების საზღვრებს
@@ -331,7 +311,7 @@ sec-error-bad-info-access-location = ინფორმაციის წვდ
 sec-error-libpkix-internal = სერტიფიკატის გადამოწმებისას მოხდა Libpkix შიდა შეცდომა.
 sec-error-pkcs11-general-error = PKCS #11 მოდულმა დააბრუნა CKR_GENERAL_ERROR. მოხდა აღუდგენელი შეცდომა.
 sec-error-pkcs11-function-failed = PKCS #11 მოდულმა დააბრუნა CKR_FUNCTION_FAILED. მოთხოვნილი ფუნქცია ვერ შესრულდება. იმავე ოპერაციის ხელახლა ცდა შესაძლოა წარმატებით დასრულდეს.
-sec-error-pkcs11-device-error = PKCS #11 მოდულმა დააბრუნა CKR_DEVICE_ERROR. მოხდა ჟეტონის ან ჭრილის შეცდომა.
+sec-error-pkcs11-device-error = PKCS #11 მოდულმა დააბრუნა CKR_DEVICE_ERROR, მიუთითებს საცნობის ან მიმღების ხარვეზს.
 sec-error-bad-info-access-method = ინფორმაციის წვდომის უცნობი მეთოდი სერტიფიკატის გაფართოებაში.
 sec-error-crl-import-failed = CRL-ს შემოტანის შეცდომა.
 sec-error-expired-password = პაროლს ვადა გაუვიდა.
@@ -339,6 +319,7 @@ sec-error-locked-password = პაროლი ჩაკეტილია.
 sec-error-unknown-pkcs11-error = უცნობი PKCS #11 შეცდომა.
 sec-error-bad-crl-dp-url = არასწორი ან მხარდაუჭერელი URL CRL-ს დისტრიბუციის წერტილის სახელში.
 sec-error-cert-signature-algorithm-disabled = ეს სერტიფიკატი ხელმოწერილია იმ ალგორითმის საშუალებით, რომელიც გაუქმდა დაუცველობის გამო.
+
 mozilla-pkix-error-key-pinning-failure = სერვერი იყენებს გასაღების მიმაგრებას (HPKP), მაგრამ ვერ იქმნება სანდო სერტიფიკატის ჯაჭვი, რომელიც ამ მიმაგრებებს ემთხვევა. გასაღების მიმაგრების დარღვევების უგულებელყოფა, შეუძლებელია.
 mozilla-pkix-error-ca-cert-used-as-end-entity = სერვერი იყენებს სერტიფიკატს, რომელიც უბრალო ძალდატანებების გაფართოებით არის დამოწმებული. სწორად გაცემული სერტიფიკატისთვის ასე არ უნდა მომხდარიყო.
 mozilla-pkix-error-inadequate-key-size = სერვერმა წარადგინა სერტიფიკატი, რომლის გასაღების ზომაც უსაფრთხო კავშირის დასამყარებლად ძალიან პატარაა.
@@ -353,3 +334,16 @@ mozilla-pkix-error-invalid-integer-encoding = სერვერმა წარ
 mozilla-pkix-error-empty-issuer-name = სერვერმა წარმოადგინა სერტიფიკატი, რომლის გამცემის სახელიც არ ჩანს.
 mozilla-pkix-error-additional-policy-constraint-failed = დებულების დამატებითი შეზღუდვებმა ვერ იმუშავა, სერტიფიკატის დამოწმებისას.
 mozilla-pkix-error-self-signed-cert = სერტიფიკატი სანდო არაა, რადგან საკუთარი ხელმოწერითაა.
+
+xp-java-remove-principal-error = Couldn't remove the principal
+xp-java-delete-privilege-error = Couldn't delete the privilege
+xp-java-cert-not-exists-error = This principal doesn't have a certificate
+
+xp-sec-fortezza-bad-card = Fortezza ბარათი შესაფერისად არ დაწყებულა, გთხოვთ ამოიღეთ ის და დაუბრუნეთ გამომშვებს.
+xp-sec-fortezza-no-card = No Fortezza cards Found
+xp-sec-fortezza-none-selected = No Fortezza card selected
+xp-sec-fortezza-more-info = Please select a personality to get more info on
+xp-sec-fortezza-person-not-found = Personality not found
+xp-sec-fortezza-no-more-info = No more information on that Personality
+xp-sec-fortezza-bad-pin = Invalid Pin
+xp-sec-fortezza-person-error = Couldn't initialize Fortezza personalities.

@@ -58,22 +58,23 @@ class DllServicesBase : public Authenticode {
     mAuthenticode = aAuthenticode;
   }
 
-  void SetWinLauncherFunctions(const nt::WinLauncherFunctions& aFunctions) {
-    mWinLauncherFunctions = aFunctions;
+  void SetWinLauncherServices(const nt::WinLauncherServices& aWinLauncher) {
+    mWinLauncher = aWinLauncher;
   }
 
   template <typename... Args>
   LauncherVoidResultWithLineInfo InitDllBlocklistOOP(Args&&... aArgs) {
-    MOZ_RELEASE_ASSERT(mWinLauncherFunctions.mInitDllBlocklistOOP);
-    return mWinLauncherFunctions.mInitDllBlocklistOOP(
-        std::forward<Args>(aArgs)...);
+    MOZ_RELEASE_ASSERT(mWinLauncher.mInitDllBlocklistOOP);
+    return mWinLauncher.mInitDllBlocklistOOP(std::forward<Args>(aArgs)...);
   }
 
   template <typename... Args>
   void HandleLauncherError(Args&&... aArgs) {
-    MOZ_RELEASE_ASSERT(mWinLauncherFunctions.mHandleLauncherError);
-    mWinLauncherFunctions.mHandleLauncherError(std::forward<Args>(aArgs)...);
+    MOZ_RELEASE_ASSERT(mWinLauncher.mHandleLauncherError);
+    mWinLauncher.mHandleLauncherError(std::forward<Args>(aArgs)...);
   }
+
+  nt::SharedSection* GetSharedSection() { return mWinLauncher.mSharedSection; }
 
   // In debug builds we override GetBinaryOrgName to add a Gecko-specific
   // assertion. OTOH, we normally do not want people overriding this function,
@@ -112,7 +113,7 @@ class DllServicesBase : public Authenticode {
 
  private:
   Authenticode* mAuthenticode;
-  nt::WinLauncherFunctions mWinLauncherFunctions;
+  nt::WinLauncherServices mWinLauncher;
 };
 
 }  // namespace detail
@@ -148,6 +149,23 @@ struct EnhancedModuleLoadInfo final {
 class DllServices : public detail::DllServicesBase {
  public:
   void DispatchDllLoadNotification(ModuleLoadInfo&& aModLoadInfo) final {
+    // We only notify one blocked DLL load event per blocked DLL for the main
+    // thread, because dispatching a notification can trigger a new blocked
+    // DLL load if the DLL is registered as a WH_GETMESSAGE hook. In that case,
+    // dispatching a notification with every load results in an infinite cycle,
+    // see bug 1823412.
+    if (aModLoadInfo.WasBlocked() && NS_IsMainThread()) {
+      nsDependentString sectionName(aModLoadInfo.mSectionName.AsString());
+
+      for (const auto& blockedModule : mMainThreadBlockedModules) {
+        if (sectionName == blockedModule) {
+          return;
+        }
+      }
+
+      MOZ_ALWAYS_TRUE(mMainThreadBlockedModules.append(sectionName));
+    }
+
     nsCOMPtr<nsIRunnable> runnable(
         NewRunnableMethod<StoreCopyPassByRRef<EnhancedModuleLoadInfo>>(
             "DllServices::NotifyDllLoad", this, &DllServices::NotifyDllLoad,
@@ -185,6 +203,11 @@ class DllServices : public detail::DllServicesBase {
 
   virtual void NotifyDllLoad(EnhancedModuleLoadInfo&& aModLoadInfo) = 0;
   virtual void NotifyModuleLoadBacklog(ModuleLoadInfoVec&& aEvents) = 0;
+
+ private:
+  // This vector has no associated lock. It must only be used on the main
+  // thread.
+  Vector<nsString> mMainThreadBlockedModules;
 };
 
 #else

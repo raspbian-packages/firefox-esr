@@ -2,7 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 ### These strings appear in the Unified Extensions panel.
+
 
 ## Panel
 
@@ -34,3 +36,16 @@ unified-extensions-context-menu-remove-extension =
 
 unified-extensions-context-menu-report-extension =
     .label = Segnala estensione
+
+unified-extensions-context-menu-move-widget-up =
+    .label = Sposta su
+
+unified-extensions-context-menu-move-widget-down =
+    .label = Sposta giù
+
+## Notifications
+
+unified-extensions-mb-quarantined-domain-title = Alcune estensioni non sono consentite
+unified-extensions-mb-quarantined-domain-message = Solo alcune estensioni monitorate da { -vendor-short-name } sono consentite in questo sito per proteggere i tuoi dati.
+unified-extensions-mb-quarantined-domain-message-2 = Per proteggere i tuoi dati, alcune estensioni non possono leggere o modificare dati in questo sito. Utilizza le impostazioni dell’estensione per consentirne il funzionamento in siti con restrizioni identificati da { -vendor-short-name }.
+

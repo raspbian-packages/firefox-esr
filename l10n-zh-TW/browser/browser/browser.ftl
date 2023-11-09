@@ -5,46 +5,15 @@
 
 ## The main browser window's title
 
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
 #
 # default - "Mozilla Firefox"
 # private - "Mozilla Firefox (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name }（隱私瀏覽模式）
-    .data-content-title-default = { $content-title } — { -brand-full-name }
-    .data-content-title-private = { $content-title } — { -brand-full-name }（隱私瀏覽模式）
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
-#
-# "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox — (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
-#
-# Also note the other subtle difference here: we use a `-` to separate the
-# brand name from `(Private Browsing)`, which does not happen on other OSes.
-#
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window-mac =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } —（隱私瀏覽模式）
-    .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } —（隱私瀏覽模式）
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
-#
-# default - "Mozilla Firefox"
-# private - "Mozilla Firefox (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
 # Variables:
 #  $content-title (String): the title of the web content.
 browser-main-window-window-titles =
@@ -52,14 +21,17 @@ browser-main-window-window-titles =
     .data-title-private = { -brand-full-name } 隱私瀏覽
     .data-content-title-default = { $content-title } — { -brand-full-name }
     .data-content-title-private = { $content-title } — { -brand-full-name } 隱私瀏覽
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
 #
 # "default" - "Mozilla Firefox"
 # "private" - "Mozilla Firefox — (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -109,16 +81,12 @@ urlbar-xr-notification-anchor =
     .tooltiptext = 開啟虛擬實境權限面板
 urlbar-storage-access-anchor =
     .tooltiptext = 開啟瀏覽活動權限面板
-urlbar-translate-notification-anchor =
-    .tooltiptext = 翻譯此頁面
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = 管理您是否要與網站分享視窗或畫面
 urlbar-indexed-db-notification-anchor =
     .tooltiptext = 開啟離線儲存訊息面板
 urlbar-password-notification-anchor =
     .tooltiptext = 開啟儲存密碼訊息面板
-urlbar-translated-notification-anchor =
-    .tooltiptext = 管理頁面翻譯
 urlbar-plugins-notification-anchor =
     .tooltiptext = 管理附加元件使用情況
 urlbar-web-rtc-share-devices-notification-anchor =
@@ -144,6 +112,11 @@ urlbar-tip-icon-description =
     .alt = 秘訣:
 urlbar-result-menu-button =
     .title = 開啟選單
+urlbar-result-menu-button-feedback = 意見回饋
+    .title = 開啟選單
+urlbar-result-menu-learn-more =
+    .label = 了解更多
+    .accesskey = L
 urlbar-result-menu-remove-from-history =
     .label = 從紀錄移除
     .accesskey = Ｒ
@@ -188,7 +161,7 @@ urlbar-screen-blocked =
 urlbar-persistent-storage-blocked =
     .tooltiptext = 您已封鎖此網站儲存資料至持續性儲存空間。
 urlbar-popup-blocked =
-    .tooltiptext = 您封鎖了此網站的彈出視窗。
+    .tooltiptext = 您封鎖了此網站的彈出型視窗。
 urlbar-autoplay-media-blocked =
     .tooltiptext = 您已封鎖此網站自動播放有聲音的媒體內容。
 urlbar-canvas-blocked =
@@ -208,10 +181,6 @@ urlbar-star-add-bookmark =
 
 ## Page Action Context Menu
 
-page-action-manage-extension =
-    .label = 管理擴充套件…
-page-action-remove-extension =
-    .label = 移除擴充套件
 page-action-manage-extension2 =
     .label = 管理擴充套件…
     .accesskey = E
@@ -388,6 +357,7 @@ identity-weak-encryption = 此頁面使用了弱強度的加密。
 identity-insecure-login-forms = 在此頁面輸入的登入資訊可能會被洩漏。
 identity-https-only-connection-upgraded = （升級 HTTPS）
 identity-https-only-label = 純 HTTPS 模式
+identity-https-only-label2 = 自動將與此網站的連線升級為安全連線
 identity-https-only-dropdown-on =
     .label = 開啟
 identity-https-only-dropdown-off =
@@ -396,6 +366,8 @@ identity-https-only-dropdown-off-temporarily =
     .label = 暫時關閉
 identity-https-only-info-turn-on2 = 若您想要 { -brand-short-name } 盡可能升級使用安全連線，請對此網站開啟純 HTTPS 模式。
 identity-https-only-info-turn-off2 = 若網頁外觀看起來不正常，您可能會想要針對此網站關閉純 HTTPS 模式，使用不安全的 HTTP 重新載入。
+identity-https-only-info-turn-on3 = 若您想要 { -brand-short-name } 盡可能升級使用安全連線，請對此網站 HTTPS 升級。
+identity-https-only-info-turn-off3 = 若網頁外觀看起來不正常，您可能會想要針對此網站關閉 HTTPS 升級，使用不安全的 HTTP 重新載入。
 identity-https-only-info-no-upgrade = 無法將網站連線從 HTTP 升級。
 identity-permissions-storage-access-header = 跨網站 Cookie
 identity-permissions-storage-access-hint = 當您開啟此網站時，這些網站可以使用跨網站 Cookie，並且取得您在此網站的資料。
@@ -406,7 +378,7 @@ identity-clear-site-data =
 identity-connection-not-secure-security-view = 您並未安全地連線至此網站。
 identity-connection-verified = 您正安全地連線至此網站。
 identity-ev-owner-label = 憑證簽發給:
-identity-description-custom-root = Mozilla 不認識此憑證簽發者，可能是由您的作業系統或網路管理員所加入的。<label data-l10n-name="link">了解更多</label>
+identity-description-custom-root2 = Mozilla 不認識此憑證簽發者，可能是由您的作業系統或網路管理員所加入的。
 identity-remove-cert-exception =
     .label = 移除例外
     .accesskey = R
@@ -414,14 +386,12 @@ identity-description-insecure = 您對此網站的連線並不私密。發送的
 identity-description-insecure-login-forms = 此頁面並不安全，您的登入資訊可能會被洩漏。
 identity-description-weak-cipher-intro = 您與此網站間的連線使用了弱強度的加密，並不私密。
 identity-description-weak-cipher-risk = 其他人可以看到您的資訊，或修改網站的行為。
-identity-description-active-blocked = { -brand-short-name } 已經封鎖此頁面中不安全的部分。<label data-l10n-name="link">了解更多</label>
+identity-description-active-blocked2 = { -brand-short-name } 已經封鎖此頁面中不安全的部分。
 identity-description-passive-loaded = 您的連線並不私密，提供給此網站的資訊可能會被其他人看到。
-identity-description-passive-loaded-insecure = 此網站包含不安全的內容（例如圖片）。<label data-l10n-name="link">了解更多</label>
-identity-description-passive-loaded-mixed = 雖然 { -brand-short-name } 已經封鎖部分內容，但頁面中還是有不安全的內容（例如圖片）。<label data-l10n-name="link">了解更多</label>
+identity-description-passive-loaded-insecure2 = 此網站包含不安全的內容（例如圖片）。
+identity-description-passive-loaded-mixed2 = 雖然 { -brand-short-name } 已經封鎖部分內容，但頁面中還是有不安全的內容（例如圖片）。
 identity-description-active-loaded = 此網站包含不安全的內容（例如指令碼），與其之間的連線並不私密。
 identity-description-active-loaded-insecure = 您提供給此網站的資訊（例如密碼、訊息、信用卡號等等）可能會被其他人看到。
-identity-learn-more =
-    .value = 了解更多
 identity-disable-mixed-content-blocking =
     .label = 暫時停止保護
     .accesskey = D
@@ -498,13 +468,6 @@ popup-select-window-or-screen =
     .label = 視窗或畫面:
     .accesskey = W
 popup-all-windows-shared = 將分享您畫面上所有可見的視窗。
-popup-screen-sharing-block =
-    .label = 封鎖
-    .accesskey = B
-popup-screen-sharing-always-block =
-    .label = 總是封鎖
-    .accesskey = w
-popup-mute-notifications-checkbox = 分享視窗或畫面時，隱藏網站通知
 
 ## WebRTC window or screen share tab switch warning
 
@@ -517,7 +480,6 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
-enable-devtools-popup-description = 請透過「網頁開發者」選單開啟開發者工具，才能使用 F12 快速鍵。
 enable-devtools-popup-description2 = 請透過「瀏覽器工具」選單開啟開發者工具，才能使用 F12 快速鍵。
 
 ## URL Bar
@@ -660,6 +622,20 @@ reader-view-enter-button =
 reader-view-close-button =
     .aria-label = 關閉閱讀模式
 
+## Picture-in-Picture urlbar button
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+picture-in-picture-urlbar-button-open =
+    .tooltiptext = 開啟子母畫面（{ $shortcut }）
+picture-in-picture-urlbar-button-close =
+    .tooltiptext = 關閉子母畫面（{ $shortcut }）
+picture-in-picture-panel-header = 子母畫面
+picture-in-picture-panel-headline = 此網站不建議使用子母畫面功能
+picture-in-picture-panel-body = 開啟子母畫面功能時，影片可能無法如開發者所預期的顯示。
+picture-in-picture-enable-toggle =
+    .label = 還是開啟
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -676,19 +652,6 @@ fullscreen-exit-mac-button = 離開全螢幕模式（Esc）
 pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> 可控制您的滑鼠游標，按 Esc 取回控制權。
 pointerlock-warning-no-domain = 此文件可控制您的滑鼠游標，按 Esc 取回控制權。
 
-## Subframe crash notification
-
-crashed-subframe-message = <strong>此頁面中的部分內容發生錯誤。</strong>您同意的話，可將此問題回報給 { -brand-product-name }，讓我們更快修正。
-# The string for crashed-subframe-title.title should match crashed-subframe-message,
-# but without any markup.
-crashed-subframe-title =
-    .title = 此頁面中的部分內容發生錯誤。您同意的話，可將此問題回報給 { -brand-product-name }，讓我們更快修正。
-crashed-subframe-learnmore-link =
-    .value = 了解更多
-crashed-subframe-submit =
-    .label = 送出報告
-    .accesskey = S
-
 ## Bookmarks panels, menus and toolbar
 
 bookmarks-manage-bookmarks =
@@ -704,6 +667,11 @@ bookmarks-other-bookmarks-menu =
     .label = 其他書籤
 bookmarks-mobile-bookmarks-menu =
     .label = 行動書籤
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
@@ -728,12 +696,13 @@ bookmarks-tools-menu-button-visibility =
             [true] 從工具列移除書籤選單
            *[other] 在工具列中加入書籤選單
         }
+
+##
+
 bookmarks-search =
     .label = 搜尋書籤
 bookmarks-tools =
     .label = 書籤工具
-bookmarks-bookmark-edit-panel =
-    .label = 編輯此書籤
 bookmarks-subview-edit-bookmark =
     .label = 編輯此書籤…
 # The aria-label is a spoken label that should not include the word "toolbar" or
@@ -749,9 +718,6 @@ bookmarks-toolbar-placeholder =
     .title = 書籤工具列項目
 bookmarks-toolbar-placeholder-button =
     .label = 書籤工具列項目
-# "Bookmark" is a verb, as in "Add current tab to bookmarks".
-bookmarks-current-tab =
-    .label = 將目前分頁加入書籤
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-subview-bookmark-tab =
     .label = 將目前分頁加入書籤…
@@ -778,11 +744,6 @@ repair-text-encoding-button =
 ## Customize Toolbar Buttons
 
 # Variables:
-#  $shortcut (String): keyboard shortcut to open the add-ons manager
-toolbar-addons-themes-button =
-    .label = 附加元件與佈景主題
-    .tooltiptext = 管理您的附加元件與佈景主題（{ $shortcut }）
-# Variables:
 #  $shortcut (String): keyboard shortcut to open settings (only on macOS)
 toolbar-settings-button =
     .label = 設定
@@ -797,6 +758,9 @@ toolbar-overflow-customize-button =
 toolbar-button-email-link =
     .label = 寄送鏈結
     .tooltiptext = 寄出本頁面的鏈結
+toolbar-button-logins =
+    .label = 密碼
+    .tooltiptext = 檢視與管理您儲存的密碼
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
@@ -829,13 +793,6 @@ eme-notifications-drm-content-playing-dismiss-accesskey = D
 panel-save-update-username = 使用者名稱
 panel-save-update-password = 密碼
 
-## Add-on removal warning
-
-# Variables:
-#  $name (String): The name of the addon that will be removed.
-addon-removal-title = 要移除 { $name } 嗎？
-addon-removal-abuse-report-checkbox = 回報此擴充套件給 { -vendor-short-name }
-
 ##
 
 # "More" item in macOS share menu
@@ -860,7 +817,7 @@ popups-infobar-dont-show-message =
     .label = 擋下彈出型視窗時不顯示此訊息
     .accesskey = D
 edit-popup-settings =
-    .label = 管理彈出視窗設定…
+    .label = 管理彈出型視窗設定…
     .accesskey = M
 picture-in-picture-hide-toggle =
     .label = 隱藏子母畫面切換按鈕
@@ -903,8 +860,6 @@ navbar-library =
     .tooltiptext = 檢視瀏覽紀錄、已存書籤等資料
 navbar-search =
     .title = 搜尋
-navbar-accessibility-indicator =
-    .tooltiptext = 已開啟輔助功能
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
@@ -944,6 +899,15 @@ unified-extensions-button-permissions-needed =
     .label = 擴充套件
     .tooltiptext = 擴充套件需要權限
 
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = 擴充套件
+    .tooltiptext =
+        擴充套件
+        不允許某些擴充套件
+
 ## Autorefresh blocker
 
 refresh-blocked-refresh-label = { -brand-short-name } 已阻止本頁面自動重新載入。
@@ -954,9 +918,43 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-relay = { -relay-brand-name } 可隱藏您的實際電子郵件地址，以幫助您降低受到資料外洩事件與垃圾信的影響。
-firefox-relay-offer-how-we-integrate = 若繼續，將可以直接從 { -brand-shorter-name } 密碼管理員產生新的 { -relay-brand-short-name } 轉寄信箱。
+firefox-relay-offer-why-to-use-relay = 我們安全易用的轉寄信箱，可隱藏您的實際信箱，並保護您的身分並防止垃圾信入侵。
 # Variables:
-#  $sitename (String): name of the site where user enters their Relay mask
 #  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-does = 我們會將所有 <strong>{ $sitename }</strong> 收到的電子郵件，轉寄到 <strong>{ $useremail }</strong>。
+firefox-relay-offer-what-relay-provides = 所有寄到您的轉寄信箱中的郵件，將會再轉寄到 <strong>{ $useremail }</strong>，除非您決定要封鎖此轉寄信箱。
+firefox-relay-offer-legal-notice = 若點擊「使用轉寄信箱」，代表您同意<label data-l10n-name="tos-url">服務條款</label>與<label data-l10n-name="privacy-url">隱私權公告</label>。
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = （未驗證）
+popup-notification-xpinstall-prompt-learn-more = 了解如何於安裝附加元件時確保安全的更多資訊
+
+## Pop-up warning
+
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message =
+    { $popupCount ->
+        [1] { -brand-short-name } 封鎖了此網站開啟的彈出型視窗。
+       *[other] { -brand-short-name } 封鎖了此網站的 { $popupCount } 個彈出型視窗。
+    }
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message = { -brand-short-name } 封鎖了此網站開啟超過 { $popupCount } 個彈出型視窗。
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] 選項
+           *[other] 偏好設定
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] P
+        }
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = 顯示「{ $popupURI }」

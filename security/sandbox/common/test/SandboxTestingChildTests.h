@@ -7,6 +7,7 @@
 #include "SandboxTestingChild.h"
 
 #include "mozilla/StaticPrefs_security.h"
+#include "mozilla/ipc/UtilityProcessSandboxing.h"
 #ifdef XP_MACOSX
 #  include "nsCocoaFeatures.h"
 #endif
@@ -16,17 +17,19 @@
 #  include <fcntl.h>
 #  include <netdb.h>
 #  ifdef XP_LINUX
-#    include <sys/prctl.h>
-#    include <sys/ioctl.h>
-#    include <termios.h>
-#    include <sys/resource.h>
-#    include <sys/time.h>
-#    include <sys/utsname.h>
-#    include <sched.h>
-#    include <sys/socket.h>
-#    include <sys/syscall.h>
-#    include <sys/un.h>
 #    include <linux/mempolicy.h>
+#    include <sched.h>
+#    include <sys/ioctl.h>
+#    include <sys/prctl.h>
+#    include <sys/resource.h>
+#    include <sys/socket.h>
+#    include <sys/statfs.h>
+#    include <sys/syscall.h>
+#    include <sys/sysmacros.h>
+#    include <sys/time.h>
+#    include <sys/un.h>
+#    include <sys/utsname.h>
+#    include <termios.h>
 #    include "mozilla/ProcInfo_linux.h"
 #    include "mozilla/UniquePtrExtensions.h"
 #    ifdef MOZ_X11
@@ -62,6 +65,13 @@ namespace ApplicationServices {
 #  include "mozilla/DynamicallyLinkedFunctionPtr.h"
 #  include "nsAppDirectoryServiceDefs.h"
 #  include "mozilla/WindowsProcessMitigations.h"
+#endif
+
+#ifdef XP_LINUX
+// Defined in <linux/watch_queue.h> which was added in 5.8
+#  ifndef O_NOTIFICATION_PIPE
+#    define O_NOTIFICATION_PIPE O_EXCL
+#  endif
 #endif
 
 constexpr bool kIsDebug =
@@ -461,6 +471,30 @@ void RunTestsContent(SandboxTestingChild* child) {
                      });
   }
 
+  child->ErrnoTest("statfs"_ns, true, [] {
+    struct statfs sf;
+    return statfs("/usr/share", &sf);
+  });
+
+  child->ErrnoTest("pipe2"_ns, true, [] {
+    int fds[2];
+    int rv = pipe2(fds, O_CLOEXEC);
+    int savedErrno = errno;
+    if (rv == 0) {
+      close(fds[0]);
+      close(fds[1]);
+    }
+    errno = savedErrno;
+    return rv;
+  });
+
+  child->ErrnoValueTest("chroot"_ns, ENOSYS, [] { return chroot("/"); });
+
+  child->ErrnoValueTest("pipe2_notif"_ns, ENOSYS, [] {
+    int fds[2];
+    return pipe2(fds, O_NOTIFICATION_PIPE);
+  });
+
 #    ifdef MOZ_X11
   // Check that X11 access is blocked (bug 1129492).
   // This will fail if security.sandbox.content.headless is turned off.
@@ -475,7 +509,13 @@ void RunTestsContent(SandboxTestingChild* child) {
     }
   }
 #    endif  // MOZ_X11
-#  endif    // XP_LINUX
+
+  child->ErrnoTest("realpath localtime"_ns, true, [] {
+    char buf[PATH_MAX];
+    return realpath("/etc/localtime", buf) ? 0 : -1;
+  });
+
+#  endif  // XP_LINUX
 
 #  ifdef XP_MACOSX
   RunMacTestLaunchProcess(child, EPERM);
@@ -623,6 +663,23 @@ void RunTestsRDD(SandboxTestingChild* child) {
   int c;
   child->ErrnoTest("getcpu"_ns, true,
                    [&] { return syscall(SYS_getcpu, &c, NULL, NULL); });
+
+  // The nvidia proprietary drivers will, in some cases, try to
+  // mknod their device files; we reject this politely.
+  child->ErrnoValueTest("mknod"_ns, EPERM, [] {
+    return mknod("/dev/null", S_IFCHR | 0666, makedev(1, 3));
+  });
+
+  // nvidia defines some ioctls with the type 0x46 ('F', otherwise
+  // used by fbdev) and numbers starting from 200 (0xc8).
+  child->ErrnoValueTest("ioctl_nvidia"_ns, ENOTTY,
+                        [] { return ioctl(0, 0x46c8, nullptr); });
+
+  child->ErrnoTest("statfs"_ns, true, [] {
+    struct statfs sf;
+    return statfs("/usr/share", &sf);
+  });
+
 #  elif XP_MACOSX
   RunMacTestLaunchProcess(child);
   RunMacTestWindowServer(child);
@@ -680,6 +737,29 @@ void RunTestsGMPlugin(SandboxTestingChild* child) {
                        return fd;
                      });
   }
+
+  child->ErrnoValueTest("readlink_exe"_ns, EINVAL, [] {
+    char pathBuf[PATH_MAX];
+    return readlink("/proc/self/exe", pathBuf, sizeof(pathBuf));
+  });
+
+  child->ErrnoTest("memfd_sizing"_ns, true, [] {
+    int fd = syscall(__NR_memfd_create, "sandbox-test", 0);
+    if (fd < 0) {
+      if (errno == ENOSYS) {
+        // Don't fail the test if the kernel is old.
+        return 0;
+      }
+      return -1;
+    }
+
+    int rv = ftruncate(fd, 4096);
+    int savedErrno = errno;
+    close(fd);
+    errno = savedErrno;
+    return rv;
+  });
+
 #  elif XP_MACOSX  // XP_LINUX
   RunMacTestLaunchProcess(child);
   /* The Mac GMP process requires access to the window server */
@@ -728,7 +808,8 @@ void RunTestsGenericUtility(SandboxTestingChild* child) {
 #endif             // XP_MACOSX
 }
 
-void RunTestsUtilityAudioDecoder(SandboxTestingChild* child) {
+void RunTestsUtilityAudioDecoder(SandboxTestingChild* child,
+                                 ipc::SandboxingKind aSandbox) {
   MOZ_ASSERT(child, "No SandboxTestingChild*?");
 
   RunGenericTests(child);
@@ -760,7 +841,9 @@ void RunTestsUtilityAudioDecoder(SandboxTestingChild* child) {
 #  elif XP_MACOSX  // XP_LINUX
   RunMacTestLaunchProcess(child);
   RunMacTestWindowServer(child);
-  RunMacTestAudioAPI(child, true);
+  RunMacTestAudioAPI(
+      child,
+      aSandbox == ipc::SandboxingKind::UTILITY_AUDIO_DECODING_APPLE_MEDIA);
 #  endif           // XP_MACOSX
 #else              // XP_UNIX
 #  ifdef XP_WIN
@@ -768,6 +851,26 @@ void RunTestsUtilityAudioDecoder(SandboxTestingChild* child) {
 #  endif  // XP_WIN
   child->ReportNoTests();
 #endif    // XP_UNIX
+}
+
+void RunTestsGPU(SandboxTestingChild* child) {
+  MOZ_ASSERT(child, "No SandboxTestingChild*?");
+
+  RunGenericTests(child);
+
+#if defined(XP_WIN)
+
+  FileTest("R/W access to shader-cache dir"_ns, NS_APP_USER_PROFILE_50_DIR,
+           u"shader-cache\\"_ns, FILE_GENERIC_READ | FILE_GENERIC_WRITE, true,
+           child);
+
+  FileTest("R/W access to shader-cache files"_ns, NS_APP_USER_PROFILE_50_DIR,
+           u"shader-cache\\sandboxTest.txt"_ns,
+           FILE_GENERIC_READ | FILE_GENERIC_WRITE, true, child);
+
+#else   // defined(XP_WIN)
+  child->ReportNoTests();
+#endif  // defined(XP_WIN)
 }
 
 }  // namespace mozilla

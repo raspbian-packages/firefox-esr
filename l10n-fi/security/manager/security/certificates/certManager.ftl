@@ -26,10 +26,6 @@ certmgr-people = Seuraavat yksilöt todentavia varmenteita on tiedossa
 certmgr-server = Nämä tietueet identifioivat palvelinvarmenteen virhepoikkeukset
 certmgr-ca = Seuraavat varmentajat todentavia varmenteita on tiedossa
 
-certmgr-edit-ca-cert =
-    .title = Muokkaa varmentajan varmenteen luotettavuusasetuksia
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Muokkaa varmentajan varmenteen luotettavuusasetuksia
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Tämä varmenne voi todentaa sähköpostittajia.
-
-certmgr-delete-cert =
-    .title = Poista varmenne
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Poista varmenne
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Palvelin
-
-certmgr-override-lifetime =
-    .label = Elinikä
 
 certmgr-token-name =
     .label = Turvallisuuslaite
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Sarjanumero
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256-sormenjälki
 
 certmgr-view =
     .label = Näytä…

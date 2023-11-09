@@ -8,6 +8,7 @@
 
 #include "js/Array.h"               // JS::GetArrayLength
 #include "js/PropertyAndElement.h"  // JS_GetElement
+#include "mozilla/TaskQueue.h"
 #include "mozilla/Unused.h"
 #include "mozilla/dom/CacheBinding.h"
 #include "mozilla/dom/cache/CacheStorage.h"
@@ -799,7 +800,7 @@ void CompareNetwork::Abort() {
     mState = Finished;
 
     MOZ_ASSERT(mChannel);
-    mChannel->Cancel(NS_BINDING_ABORTED);
+    mChannel->CancelWithReason(NS_BINDING_ABORTED, "CompareNetwork::Abort"_ns);
     mChannel = nullptr;
 
     if (mCC) {
@@ -1154,7 +1155,7 @@ void CompareCache::Abort() {
     mState = Finished;
 
     if (mPump) {
-      mPump->Cancel(NS_BINDING_ABORTED);
+      mPump->CancelWithReason(NS_BINDING_ABORTED, "CompareCache::Abort"_ns);
       mPump = nullptr;
     }
   }
@@ -1278,7 +1279,9 @@ void CompareCache::ManageValueResult(JSContext* aCx,
   if (rr) {
     nsCOMPtr<nsIEventTarget> sts =
         do_GetService(NS_STREAMTRANSPORTSERVICE_CONTRACTID);
-    rv = rr->RetargetDeliveryTo(sts);
+    RefPtr<TaskQueue> queue =
+        TaskQueue::Create(sts.forget(), "CompareCache STS Delivery Queue");
+    rv = rr->RetargetDeliveryTo(queue);
     if (NS_WARN_IF(NS_FAILED(rv))) {
       mPump = nullptr;
       Finish(rv, false);

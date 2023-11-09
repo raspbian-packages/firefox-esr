@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-videocontrols-scrubber =
-    .aria-label = පිහිටීම
 # This label is used by screenreaders and other assistive technology to indicate
 # to users how much of the video has been loaded from the network. It will be
 # followed by the percentage of the video that has loaded (e.g. "Loading: 13%").
@@ -14,7 +12,7 @@ videocontrols-volume-control =
 videocontrols-play-button =
     .aria-label = වාදනය
 videocontrols-pause-button =
-    .aria-label = විරාමය
+    .aria-label = විරාමයක්
 videocontrols-mute-button =
     .aria-label = නිහඬ
 videocontrols-unmute-button =
@@ -25,6 +23,8 @@ videocontrols-exitfullscreen-button =
     .aria-label = පූර්ණ තිරයෙන් පිටවන්න
 videocontrols-casting-button-label =
     .aria-label = තිරයට විකාශනය
+# .offlabel is processed by the video control custom element to be used
+# as a text-track label
 videocontrols-closed-caption-off =
     .offlabel = අක්‍රිය
 
@@ -34,21 +34,12 @@ videocontrols-picture-in-picture-label = රූපයෙන් රූපයට
 
 # This string is used as the label for a variation of the Picture-in-Picture video
 # toggle button when the mouse is hovering over the video.
-videocontrols-picture-in-picture-toggle-label = රූපයෙන් රූපයට නරඹන්න
-
-# This string is used as part of a variation of the Picture-in-Picture video toggle
-# button. When using this variation, this string appears below the toggle when the
-# mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer = { -brand-short-name } හි ඔබ වෙනත් දෑ කරන අතරතුර පෙරබිමෙහි දෘශ්‍යක වාදනය කරන්න
-
-# This string is used as the label for a variation of the Picture-in-Picture video
-# toggle button when the mouse is hovering over the video.
 videocontrols-picture-in-picture-toggle-label2 = දෘශ්‍යකය පිටතට ගන්න
 
 # This string is used as part of a variation of the Picture-in-Picture video toggle
 # button. When using this variation, this string appears below the toggle when the
 # mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer2 = බොහෝ තිර වඩා විනෝදජනකයි. ඔබ පිරික්සන අතරතුර මෙම දෘශ්‍යකය රූපයෙන් රූපයට වාදනය කරන්න.
+videocontrols-picture-in-picture-explainer3 = බොහෝ තිර වඩා විනෝදජනකයි. ඔබ වෙනත් දෑ කරන අතරතුර මෙම දෘශ්‍යකය ධාවනය කරන්න.
 
 videocontrols-error-aborted = දෘශ්‍යකය පූරණය නැවතිණි.
 videocontrols-error-network = ජාලයේ දෝෂයක් නිසා දෘශ්‍යකය නැවත වාදනය නැවතිණි.
@@ -71,3 +62,13 @@ videocontrols-status-picture-in-picture = මෙම දෘශ්‍යකය ර
 # duration video, $position would be "5:00" and the string which is
 # surrounded by <span> would be deleted, result string would be "5:00".
 videocontrols-position-and-duration-labels = { $position }<span data-l10n-name="position-duration-format"> / { $duration }</span>
+
+# This is a plain text version of the videocontrols-position-and-duration-labels
+# string, used by screenreaders.
+#
+# Variables:
+#   $position (String): The current media position
+#   $duration (String): The total video duration
+videocontrols-scrubber-position-and-duration =
+    .aria-label = පිහිටීම
+    .aria-valuetext = { $position } / { $duration }

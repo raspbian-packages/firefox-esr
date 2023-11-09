@@ -55,3 +55,6 @@ screenshots-private-window-error-details = Tha sinn duilich mu dhèidhinn. Tha s
 
 screenshots-generic-error-title = Ìoc! Sin { -screenshots-brand-name } air feadh na fìdhle.
 screenshots-generic-error-details = Chan eil sinn cinnteach dè thachair. A bheil thu airson feuchainn ris a-rithist no glacadh a thogail de dhuilleag eile?
+
+screenshots-too-large-error-title = Chaidh an glacadh-sgrìn agad a bhearradh a chionn ’s gun robh e ro mhòr
+screenshots-too-large-error-details = Tagh raon a tha nas lugha na 32,700 piogsail air an taobh as fhaide no raon de 124,900,000 piogsail uile gu lèir.

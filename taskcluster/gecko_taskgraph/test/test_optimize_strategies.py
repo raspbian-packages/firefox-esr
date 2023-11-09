@@ -8,17 +8,18 @@ from time import mktime
 
 import pytest
 from mozunit import main
+from taskgraph.optimize.base import registry
 from taskgraph.task import Task
 
-from gecko_taskgraph.optimize import project, registry
-from gecko_taskgraph.optimize.strategies import IndexSearch, SkipUnlessSchedules
+from gecko_taskgraph.optimize import project
 from gecko_taskgraph.optimize.backstop import SkipUnlessBackstop, SkipUnlessPushInterval
 from gecko_taskgraph.optimize.bugbug import (
+    FALLBACK,
     BugBugPushSchedules,
     DisperseGroups,
-    FALLBACK,
     SkipUnlessDebug,
 )
+from gecko_taskgraph.optimize.strategies import IndexSearch, SkipUnlessSchedules
 from gecko_taskgraph.util.backstop import BACKSTOP_PUSH_INTERVAL
 from gecko_taskgraph.util.bugbug import (
     BUGBUG_BASE_URL,
@@ -35,7 +36,7 @@ def clear_push_schedules_memoize():
 @pytest.fixture
 def params():
     return {
-        "branch": "integration/autoland",
+        "branch": "autoland",
         "head_repository": "https://hg.mozilla.org/integration/autoland",
         "head_rev": "abcdef",
         "project": "autoland",
@@ -100,7 +101,7 @@ disperse_tasks = list(
             "attributes": {
                 "test_manifests": ["bar/test.ini"],
                 "test_platform": "linux/opt",
-                "unittest_variant": "fission",
+                "unittest_variant": "no-fission",
             }
         },
         {

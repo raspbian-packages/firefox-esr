@@ -21,6 +21,7 @@ include protocol PCacheStorage;
 include protocol PCacheStreamControl;
 include protocol PClientManager;
 include protocol PEndpointForReport;
+include protocol PFileSystemManager;
 include protocol PFileSystemRequest;
 include protocol PGamepadEventChannel;
 include protocol PGamepadTestChannel;
@@ -40,6 +41,7 @@ include protocol PLockManager;
 include protocol PMIDIManager;
 include protocol PMIDIPort;
 include protocol PQuota;
+include protocol PSelectTLSClientAuthCert;
 include protocol PServiceWorker;
 include protocol PServiceWorkerContainer;
 include protocol PServiceWorkerManager;
@@ -50,7 +52,10 @@ include protocol PVerifySSLServerCert;
 include protocol PVsync;
 include protocol PRemoteDecoderManager;
 include protocol PWebSocketConnection;
+include protocol PWebTransport;
+include protocol PFetch;
 
+include ClientIPCTypes;
 include DOMTypes;
 include IPCBlob;
 include IPCServiceWorkerDescriptor;
@@ -73,6 +78,8 @@ using mozilla::dom::cache::Namespace
   from "mozilla/dom/cache/Types.h";
 
 using class mozilla::dom::SSCacheCopy from "mozilla/dom/PBackgroundSessionStorageCache.h";
+
+using mozilla::RemoteDecodeIn from "mozilla/RemoteDecoderManagerChild.h";
 
 namespace mozilla {
 namespace ipc {
@@ -115,9 +122,8 @@ sync protocol PBackground
   manages PFileCreator;
   manages PMessagePort;
   manages PCameras;
-  manages PMIDIManager;
-  manages PMIDIPort;
   manages PQuota;
+  manages PSelectTLSClientAuthCert;
   manages PServiceWorker;
   manages PServiceWorkerContainer;
   manages PServiceWorkerManager;
@@ -127,6 +133,7 @@ sync protocol PBackground
   manages PUDPSocket;
   manages PVerifySSLServerCert;
   manages PVsync;
+  manages PFetch;
 
 parent:
   // Only called at startup during mochitests to check the basic infrastructure.
@@ -165,15 +172,6 @@ parent:
    */
   async PBackgroundLSSimpleRequest(LSSimpleRequestParams params);
 
-  /**
-   * Asynchronously propagates the "last-pb-context-exited" observer
-   * notification to LocalStorage NextGen implementation so it can clear
-   * retained private-browsing in-memory Datastores.  Using a (same-process)
-   * IPC message avoids the need for the main-thread nsIObserver to have a
-   * reference to the PBackground thread and directly dispatch a runnable to it.
-   */
-  async LSClearPrivateBrowsing();
-
   async PBackgroundLocalStorageCache(PrincipalInfo principalInfo,
                                      nsCString originKey,
                                      uint32_t privateBrowsingId);
@@ -183,6 +181,28 @@ parent:
   async PBackgroundSessionStorageService();
 
   async PBackgroundStorage(nsString profilePath, uint32_t privateBrowsingId);
+
+  /**
+   * Finish the setup of a new PFileSystemManager top level protocol.
+   */
+  async CreateFileSystemManagerParent(
+      PrincipalInfo principalInfo,
+      Endpoint<PFileSystemManagerParent> aParentEndpoint)
+      returns(nsresult rv);
+
+  /**
+   * Finish the setup of a new PWebTransport top level protocol.
+   */
+  async CreateWebTransportParent(
+      nsString aURL,
+      nullable nsIPrincipal aPrincipal,
+      IPCClientInfo?  aClientInfo,
+      bool aDedicated,
+      bool aRequireUnreliable,
+      uint32_t aCongestionControl,
+      /* Sequence<WebTransportHash>* aServerCertHashes, */
+      Endpoint<PWebTransportParent> aParentEndpoint)
+      returns(nsresult rv, uint8_t aReliability); // Actually WebTransportReliabityMode enum
 
   async PVsync();
 
@@ -239,8 +259,10 @@ parent:
 
   async PClientManager();
 
-  async PMIDIManager();
-  async PMIDIPort(MIDIPortInfo portInfo, bool sysexEnabled);
+  async CreateMIDIManager(Endpoint<PMIDIManagerParent> aEndpoint);
+  async CreateMIDIPort(Endpoint<PMIDIPortParent> aEndpoint,
+                       MIDIPortInfo portInfo, bool sysexEnabled);
+  async HasMIDIDevice() returns (bool hasDevice);
 
   // This method is used to propagate storage activities from the child actor
   // to the parent actor. See StorageActivityService.
@@ -265,6 +287,14 @@ parent:
 
   async PMediaTransport();
 
+  async PSelectTLSClientAuthCert(nsCString aHostName,
+                                 OriginAttributes aOriginAttributes,
+                                 int32_t aPort,
+                                 uint32_t aProviderFlags,
+                                 uint32_t aProviderTlsFlags,
+                                 ByteArray aServerCertBytes,
+                                 ByteArray[] aCANames);
+
   async PVerifySSLServerCert(ByteArray[] aPeerCertChain,
                              nsCString aHostName,
                              int32_t aPort,
@@ -278,7 +308,7 @@ parent:
   async EnsureRDDProcessAndCreateBridge()
       returns (nsresult rv, Endpoint<PRemoteDecoderManagerChild> aEndpoint);
 
-  async EnsureUtilityProcessAndCreateBridge()
+  async EnsureUtilityProcessAndCreateBridge(RemoteDecodeIn aLocation)
       returns (nsresult rv, Endpoint<PRemoteDecoderManagerChild> aEndpoint);
 
   async PWebSocketConnection(uint32_t aListenerId);
@@ -286,6 +316,8 @@ parent:
   async PLockManager(ContentPrincipalInfo aPrincipalInfo, nsID aClientId);
 
   async PIPCClientCerts();
+
+  async PFetch();
 
 child:
   async PCache();

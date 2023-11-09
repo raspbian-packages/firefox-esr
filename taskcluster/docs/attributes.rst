@@ -45,7 +45,6 @@ Project names are the repositories.  They can be:
 * `mozilla-central`
 * `mozilla-beta`
 * `mozilla-release`
-* `mozilla-esr91`
 * `mozilla-esr102`
 * ... A partial list can be found in taskcluster/gecko_taskgraph/util/attributes.py
 
@@ -253,6 +252,13 @@ toolchain-env
 =============
 Extra environment variables that will be set on the worker when fetching this
 toolchain.
+
+toolchain-command
+=================
+An extra attribute used to communicate to the build system bootstrap code the
+command used to build the toolchain. This is useful because the commands are
+formatted differently depending on the worker type, sometimes unconveniently
+to parse afterwards.
 
 always_target
 =============

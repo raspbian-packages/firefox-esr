@@ -23,14 +23,14 @@ PRODUCT := browser
 include debian/upstream.mk
 
 SYSTEM_LIBS = zlib ffi
-ifeq (,$(filter stretch buster bullseye,$(DIST)))
-SYSTEM_LIBS += nspr nss
+ifeq (,$(filter buster bullseye,$(DIST)))
+SYSTEM_LIBS += nspr vpx
 endif
-ifeq (,$(filter stretch buster,$(DIST)))
+ifeq (,$(filter buster bullseye bookworm,$(DIST)))
+SYSTEM_LIBS += nss
+endif
+ifeq (,$(filter buster,$(DIST)))
 SYSTEM_LIBS += libevent
-endif
-ifeq (,$(filter stretch buster,$(DIST)))
-SYSTEM_LIBS += vpx
 endif
 
 define system_lib
@@ -57,7 +57,7 @@ endif
 endif
 
 ifeq (firefox-esr,$(DEBIAN_SOURCE))
-ifneq (,$(filter stretch buster,$(DIST)))
+ifneq (,$(filter buster,$(DIST)))
 TRANSITION = 1
 endif
 endif
@@ -88,27 +88,18 @@ export CARGO_HOME=$(CURDIR)/debian/.cargo
 
 export MOZBUILD_STATE_PATH = $(CURDIR)/debian/.mozbuild
 
-ifneq (,$(filter stretch,$(DIST)))
-ifneq (,$(filter amd64 i386,$(DEB_HOST_ARCH)))
-export NASM=/usr/lib/nasm-mozilla/bin/nasm
-endif
-export NODEJS=/usr/lib/nodejs-mozilla/bin/node
-export PATH := /usr/lib/llvm-7/bin/:$(PATH)
-export PATH := /usr/lib/gcc-mozilla/bin/:$(PATH)
-LDFLAGS += -static-libstdc++
-endif
-
 LDFLAGS += -Wl,--as-needed
-# Make the linker generate compressed debug sections. dh_strip would do
-# the same anyways, but it allows elfhack to work in combination with
-# unstripped binaries when they would normally be larger than 2GiB.
-LDFLAGS += -Wl,--compress-debug-sections=zlib
 
 # Disable debug symbols when building on 32-bits machines, because
 # a) the rust compiler can't deal with it in the available address
 # space, and b) the linker can't deal with it in the available address space
 # either.
 ifneq (64,$(DEB_BUILD_ARCH_BITS))
+	CONFIGURE_FLAGS += --disable-debug-symbols
+endif
+# Also disable them on riscv64, because linking takes so long that buildds
+# kill the build after 420 minutes of "inactivity".
+ifeq (riscv64,$(DEB_BUILD_ARCH))
 	CONFIGURE_FLAGS += --disable-debug-symbols
 endif
 
@@ -119,8 +110,6 @@ LDFLAGS += -Wl,--reduce-memory-overheads
 LDFLAGS += -Wl,--no-keep-memory
 # Also add execution time and memory usage stats in the logs
 LDFLAGS += -Wl,--stats
-
-AUTOCONF_DIRS := build/autoconf
 
 CONFIGURE_FLAGS += --enable-update-channel=$(CHANNEL)
 
@@ -146,6 +135,10 @@ CC := gcc
 endif
 ifeq (default,$(origin CXX))
 CXX := g++
+endif
+
+ifeq (,$(filter buster bullseye,$(DIST)))
+PATH := /usr/lib/llvm-14/bin:$(PATH)
 endif
 
 #ifneq (,$(filter mips mipsel,$(DEB_HOST_ARCH)))
@@ -206,17 +199,6 @@ endif
 override_dh_auto_configure:
 	mkdir -p fakehome
 
-configure js/src/configure:
-	cp -f $@.in $@ && chmod +x $@
-	echo $@ >> debian/extra-clean
-
-stamps/prepare-configure:: stamps/dummy configure js/src/configure
-	for dir in $(AUTOCONF_DIRS); do \
-		for file in config.guess config.sub; do \
-			sed -i '2!b;/^#/ i\exec "/usr/share/misc/'$$file'" "$$@"' $$dir/$$file; \
-		done; \
-	done
-
 stamps/configure-check-$(PRODUCT):: stamps/configure-$(PRODUCT)
 # Ensure --{with,enable}-system options properly set expected variables
 # according to the definitions in the mozconfig file.
@@ -238,7 +220,7 @@ stamps/configure-check-$(PRODUCT):: stamps/configure-$(PRODUCT)
 	} \
 	END { if (error) { exit 1 }}' debian/$($(PRODUCT)).mozconfig
 
-stamps/configure-$(PRODUCT):: stamps/prepare-configure debian/$($(PRODUCT)).mozconfig
+stamps/configure-$(PRODUCT):: debian/$($(PRODUCT)).mozconfig
 ifeq (armhf,$(DEB_BUILD_ARCH))
 ifeq (,$(shell grep -l cpu:type:aarch64 /sys/devices/system/cpu/modalias))
 	# There is not enough memory in armhf userspace with a 32-bits kernel.
@@ -270,7 +252,7 @@ stamps/build-$(PRODUCT):: stamps/configure-check-$(PRODUCT)
 L10N_BUILD_STAMPS = $(foreach lang,$(L10N_LANGS),stamps/build-l10n-$(lang))
 stamps/build-l10n:: $(L10N_BUILD_STAMPS)
 
-$(L10N_BUILD_STAMPS):: stamps/build-l10n-%: stamps/prepare-configure
+$(L10N_BUILD_STAMPS):: stamps/build-l10n-%:
 	$(if $(wildcard build-l10n/$*),,mkdir -p build-l10n/$*)
 	$(if $(wildcard l10n),,mkdir -p l10n)
 	cd build-l10n/$* && \
@@ -297,7 +279,6 @@ endif
 
 override_dh_auto_clean::
 	rm -f $(filter-out debian/control debian/watch,$(GENERATED_FILES))
-	rm -f $$(cat debian/extra-clean 2>/dev/null) debian/extra-clean old-configure js/src/old-configure
 	rm -rf stamps l10n $(CARGO_HOME)
 	rm -f third_party/python/psutil/psutil/*.so
 	rm -rf third_party/python/psutil/build/temp*
@@ -309,14 +290,6 @@ override_dh_auto_clean::
 	find . -name "*.pyc" -o -name "*.pyo" | xargs --no-run-if-empty rm -f
 	rm -rf debian/objdir $(MOZBUILD_STATE_PATH)
 	find . -name __pycache__ -delete
-
-override_dh_clean:
-	dh_clean -XCargo.toml.orig
-	for dir in $(AUTOCONF_DIRS); do \
-		for file in config.guess config.sub; do \
-			sed -i '2!b;/^exec "/ d' $$dir/$$file; \
-		done; \
-	done
 	rm -rf build-browser
 	rm -rf fakehome
 
@@ -339,10 +312,15 @@ $(L10N_DH_INSTALL_STAMPS):: stamps/dh_install-l10n-%: stamps/build-l10n-%
 
 stamps/dh_install:: debian/noinstall debian/$($(PRODUCT))-symbolic.svg
 	awk '{print "debian/tmp/" $$1 }' < debian/noinstall | xargs rm -r
-	dh_install --fail-missing
+	dh_install
+	dh_missing --fail-missing
 
 override_dh_install-arch: stamps/dh_install
 override_dh_install-indep: stamps/dh_install-l10n
+
+# dwz trips on libxul, after using a lot of memory.
+override_dh_dwz:
+	dh_dwz -X libxul
 
 override_dh_strip:
 	dh_strip --dbgsym-migration='$($(PRODUCT))-dbg (<< 49.0-4~)'
@@ -350,16 +328,13 @@ override_dh_strip:
 override_dh_strip_nondeterminism:
 
 override_dh_shlibdeps:
-	dh_shlibdeps -a -l$(CURDIR)/debian/tmp$(LIB_DIR) -- -xlibgtk2.0-0
+	dh_shlibdeps -a -l$(CURDIR)/debian/tmp$(LIB_DIR)
 
 ifdef TRANSITION
 override_dh_gencontrol-indep:
 	dh_gencontrol$(foreach pkg,$(subst $($(PRODUCT)),iceweasel,$(L10N_PACKAGES)) iceweasel-l10n-all, -p$(pkg)) -- -v1:$(DEBIAN_VERSION)
 	dh_gencontrol$(foreach pkg,$(subst $($(PRODUCT)),iceweasel,$(L10N_PACKAGES)) iceweasel-l10n-all, -N$(pkg))
 endif
-
-# We're dealing with this manually and we don't want config.* files being touched under third_party/rust.
-override_dh_update_autotools_config:
 
 install binary binary-arch binary-indep: $(filter-out %.pc,$(GENERATED_FILES))
 
@@ -368,7 +343,7 @@ binary binary-arch binary-indep build build-arch build-indep clean install:
 
 .PHONY: build clean binary-indep binary-arch binary install
 
-$(eval ALL_STAMPS := $(shell awk -F:: '$$1 ~ /^stamps\// && !/%/ { print $$1 }' debian/rules) stamps/dummy $(L10N_BUILD_STAMPS) $(L10N_DH_INSTALL_STAMPS))
+$(eval ALL_STAMPS := $(shell awk -F:: '$$1 ~ /^stamps\// && !/%/ { print $$1 }' debian/rules) $(L10N_BUILD_STAMPS) $(L10N_DH_INSTALL_STAMPS))
 $(ALL_STAMPS)::
 	@mkdir -p stamps
 	$(if $(wildcard $@),,touch $@)

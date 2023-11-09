@@ -9,7 +9,6 @@
 #include "mozilla/Alignment.h"
 #include "mozilla/CheckedInt.h"
 #include "mozilla/EndianUtils.h"
-#include "mozilla/TypeTraits.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/ipc/ProtocolUtils.h"
 
@@ -18,6 +17,7 @@
 #include <limits>
 #include <string>
 #include <algorithm>
+#include <type_traits>
 
 #include "nsDebug.h"
 
@@ -31,10 +31,6 @@ static const uint32_t kHeaderSegmentCapacity = 64;
 static const uint32_t kDefaultSegmentCapacity = 4096;
 
 static const char kBytePaddingMarker = char(0xbf);
-
-// Note: we round the time to the nearest millisecond. So a min value of 1 ms
-// actually captures from 500us and above.
-static const uint32_t kMinTelemetryIPCReadLatencyMs = 1;
 
 namespace {
 
@@ -94,7 +90,8 @@ PickleIterator::PickleIterator(const Pickle& pickle)
 
 template <typename T>
 void PickleIterator::CopyInto(T* dest) {
-  static_assert(mozilla::IsPod<T>::value, "Copied type must be a POD type");
+  static_assert(std::is_trivially_copyable<T>::value,
+                "Copied type must be a POD type");
   Copier<T, sizeof(T),
          (MOZ_ALIGNOF(T) <=
           sizeof(Pickle::memberAlignmentType))>::Copy(dest, iter_.Data());
@@ -392,32 +389,6 @@ bool Pickle::ReadWString(PickleIterator* iter, std::wstring* result) const {
   return true;
 }
 
-bool Pickle::ExtractBuffers(PickleIterator* iter, size_t length,
-                            BufferList* buffers, uint32_t alignment) const {
-  DCHECK(iter);
-  DCHECK(buffers);
-  DCHECK(alignment == 4 || alignment == 8);
-  DCHECK(intptr_t(header_) % alignment == 0);
-
-  if (AlignInt(length) < length || iter->iter_.Done()) {
-    return false;
-  }
-
-  uint32_t padding_len = intptr_t(iter->iter_.Data()) % alignment;
-  if (!iter->iter_.AdvanceAcrossSegments(buffers_, padding_len)) {
-    return false;
-  }
-
-  bool success;
-  *buffers = const_cast<BufferList*>(&buffers_)->Extract(iter->iter_, length,
-                                                         &success);
-  if (!success) {
-    return false;
-  }
-
-  return iter->iter_.AdvanceAcrossSegments(buffers_, AlignInt(length) - length);
-}
-
 bool Pickle::ReadBytesInto(PickleIterator* iter, void* data,
                            uint32_t length) const {
   if (AlignInt(length) < length) {
@@ -467,130 +438,88 @@ void Pickle::Truncate(PickleIterator* iter) {
   header_->payload_size -= dropped;
 }
 
-void Pickle::BeginWrite(uint32_t length, uint32_t alignment) {
-  DCHECK(alignment % 4 == 0) << "Must be at least 32-bit aligned!";
+static const char kBytePaddingData[4] = {
+    kBytePaddingMarker,
+    kBytePaddingMarker,
+    kBytePaddingMarker,
+    kBytePaddingMarker,
+};
 
+static void WritePadding(Pickle::BufferList& buffers, uint32_t padding) {
+  MOZ_RELEASE_ASSERT(padding <= 4);
+  if (padding) {
+    MOZ_ALWAYS_TRUE(buffers.WriteBytes(kBytePaddingData, padding));
+  }
+}
+
+void Pickle::BeginWrite(uint32_t length) {
   // write at an alignment-aligned offset from the beginning of the header
   uint32_t offset = AlignInt(header_->payload_size);
-  uint32_t padding = (header_size_ + offset) % alignment;
+  uint32_t padding = (header_size_ + offset) % sizeof(memberAlignmentType);
   uint32_t new_size = offset + padding + AlignInt(length);
   MOZ_RELEASE_ASSERT(new_size >= header_->payload_size);
 
-  DCHECK(intptr_t(header_) % alignment == 0);
+  DCHECK(intptr_t(header_) % sizeof(memberAlignmentType) == 0);
 
 #ifdef ARCH_CPU_64_BITS
   DCHECK_LE(length, std::numeric_limits<uint32_t>::max());
 #endif
 
-  if (padding) {
-    MOZ_RELEASE_ASSERT(padding <= 8);
-    static const char padding_data[8] = {
-        kBytePaddingMarker, kBytePaddingMarker, kBytePaddingMarker,
-        kBytePaddingMarker, kBytePaddingMarker, kBytePaddingMarker,
-        kBytePaddingMarker, kBytePaddingMarker,
-    };
-    MOZ_ALWAYS_TRUE(buffers_.WriteBytes(padding_data, padding));
-  }
+  WritePadding(buffers_, padding);
 
-  DCHECK((header_size_ + header_->payload_size + padding) % alignment == 0);
+  DCHECK((header_size_ + header_->payload_size + padding) %
+             sizeof(memberAlignmentType) ==
+         0);
 
   header_->payload_size = new_size;
 }
 
 void Pickle::EndWrite(uint32_t length) {
-  // Zero-pad to keep tools like purify from complaining about uninitialized
-  // memory.
   uint32_t padding = AlignInt(length) - length;
-  if (padding) {
-    MOZ_RELEASE_ASSERT(padding <= 4);
-    static const char padding_data[4] = {
-        kBytePaddingMarker,
-        kBytePaddingMarker,
-        kBytePaddingMarker,
-        kBytePaddingMarker,
-    };
-    MOZ_ALWAYS_TRUE(buffers_.WriteBytes(padding_data, padding));
-  }
+  WritePadding(buffers_, padding);
 }
 
-bool Pickle::WriteBool(bool value) {
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzBool(&value);
-#endif
-  return WriteInt(value ? 1 : 0);
-}
+bool Pickle::WriteBool(bool value) { return WriteInt(value ? 1 : 0); }
 
 bool Pickle::WriteInt16(int16_t value) {
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzInt16(&value);
-#endif
   return WriteBytes(&value, sizeof(value));
 }
 
 bool Pickle::WriteUInt16(uint16_t value) {
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzUInt16(&value);
-#endif
   return WriteBytes(&value, sizeof(value));
 }
 
-bool Pickle::WriteInt(int value) {
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzInt(&value);
-#endif
-  return WriteBytes(&value, sizeof(value));
-}
+bool Pickle::WriteInt(int value) { return WriteBytes(&value, sizeof(value)); }
 
 bool Pickle::WriteLong(long value) {
   // Always written as a 64-bit value since the size for this type can
   // differ between architectures.
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzLong(&value);
-#endif
   return WriteInt64(int64_t(value));
 }
 
 bool Pickle::WriteULong(unsigned long value) {
   // Always written as a 64-bit value since the size for this type can
   // differ between architectures.
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzULong(&value);
-#endif
   return WriteUInt64(uint64_t(value));
 }
 
 bool Pickle::WriteInt32(int32_t value) {
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzInt(&value);
-#endif
   return WriteBytes(&value, sizeof(value));
 }
 
 bool Pickle::WriteUInt32(uint32_t value) {
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzUInt32(&value);
-#endif
   return WriteBytes(&value, sizeof(value));
 }
 
 bool Pickle::WriteInt64(int64_t value) {
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzInt64(&value);
-#endif
   return WriteBytes(&value, sizeof(value));
 }
 
 bool Pickle::WriteUInt64(uint64_t value) {
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzUInt64(&value);
-#endif
   return WriteBytes(&value, sizeof(value));
 }
 
 bool Pickle::WriteDouble(double value) {
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzDouble(&value);
-#endif
   return WriteBytes(&value, sizeof(value));
 }
 
@@ -601,15 +530,12 @@ bool Pickle::WriteIntPtr(intptr_t value) {
 }
 
 bool Pickle::WriteUnsignedChar(unsigned char value) {
-#ifdef FUZZING
-  mozilla::ipc::Faulty::instance().FuzzUChar(&value);
-#endif
   return WriteBytes(&value, sizeof(value));
 }
 
 bool Pickle::WriteBytesZeroCopy(void* data, uint32_t data_len,
                                 uint32_t capacity) {
-  BeginWrite(data_len, sizeof(memberAlignmentType));
+  BeginWrite(data_len);
 
   uint32_t new_capacity = AlignInt(capacity);
 #ifndef MOZ_MEMORY
@@ -632,12 +558,8 @@ bool Pickle::WriteBytesZeroCopy(void* data, uint32_t data_len,
   return true;
 }
 
-bool Pickle::WriteBytes(const void* data, uint32_t data_len,
-                        uint32_t alignment) {
-  DCHECK(alignment == 4 || alignment == 8);
-  DCHECK(intptr_t(header_) % alignment == 0);
-
-  BeginWrite(data_len, alignment);
+bool Pickle::WriteBytes(const void* data, uint32_t data_len) {
+  BeginWrite(data_len);
 
   MOZ_ALWAYS_TRUE(
       buffers_.WriteBytes(reinterpret_cast<const char*>(data), data_len));
@@ -647,32 +569,16 @@ bool Pickle::WriteBytes(const void* data, uint32_t data_len,
 }
 
 bool Pickle::WriteString(const std::string& value) {
-#ifdef FUZZING
-  std::string v(value);
-  mozilla::ipc::Faulty::instance().FuzzString(v);
-  if (!WriteInt(static_cast<int>(v.size()))) return false;
-
-  return WriteBytes(v.data(), static_cast<int>(v.size()));
-#else
   if (!WriteInt(static_cast<int>(value.size()))) return false;
 
   return WriteBytes(value.data(), static_cast<int>(value.size()));
-#endif
 }
 
 bool Pickle::WriteWString(const std::wstring& value) {
-#ifdef FUZZING
-  std::wstring v(value);
-  mozilla::ipc::Faulty::instance().FuzzWString(v);
-  if (!WriteInt(static_cast<int>(v.size()))) return false;
-
-  return WriteBytes(v.data(), static_cast<int>(v.size() * sizeof(wchar_t)));
-#else
   if (!WriteInt(static_cast<int>(value.size()))) return false;
 
   return WriteBytes(value.data(),
                     static_cast<int>(value.size() * sizeof(wchar_t)));
-#endif
 }
 
 bool Pickle::WriteData(const char* data, uint32_t length) {

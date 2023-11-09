@@ -20,7 +20,8 @@ class APZHitTestingTester : public APZCTreeManagerTester {
         manager->GetTargetAPZC(aPoint).mTargetApzc;
     if (hit) {
       transformToApzc = manager->GetScreenToApzcTransform(hit.get());
-      transformToGecko = manager->GetApzcToGeckoTransform(hit.get());
+      transformToGecko =
+          manager->GetApzcToGeckoTransform(hit.get(), LayoutAndVisual);
     }
     return hit.forget();
   }
@@ -247,8 +248,7 @@ TEST_F(APZHitTestingTester, TestRepaintFlushOnWheelEvents) {
   EXPECT_CALL(*mcc, RequestContentRepaint(_)).Times(AtLeast(3));
   ScreenPoint origin(100, 50);
   for (int i = 0; i < 3; i++) {
-    ScrollWheelInput swi(MillisecondsSinceStartup(mcc->Time()), mcc->Time(), 0,
-                         ScrollWheelInput::SCROLLMODE_INSTANT,
+    ScrollWheelInput swi(mcc->Time(), 0, ScrollWheelInput::SCROLLMODE_INSTANT,
                          ScrollWheelInput::SCROLLDELTA_PIXEL, origin, 0, 10,
                          false, WheelDeltaAdjustmentStrategy::eNone);
     EXPECT_EQ(nsEventStatus_eConsumeDoDefault,
@@ -275,8 +275,7 @@ TEST_F(APZHitTestingTester, TestForceDisableApz) {
   TestAsyncPanZoomController* apzcroot = ApzcOf(root);
 
   ScreenPoint origin(100, 50);
-  ScrollWheelInput swi(MillisecondsSinceStartup(mcc->Time()), mcc->Time(), 0,
-                       ScrollWheelInput::SCROLLMODE_INSTANT,
+  ScrollWheelInput swi(mcc->Time(), 0, ScrollWheelInput::SCROLLMODE_INSTANT,
                        ScrollWheelInput::SCROLLDELTA_PIXEL, origin, 0, 10,
                        false, WheelDeltaAdjustmentStrategy::eNone);
   EXPECT_EQ(nsEventStatus_eConsumeDoDefault,
@@ -306,8 +305,7 @@ TEST_F(APZHitTestingTester, TestForceDisableApz) {
   // With untransforming events we should get normal behaviour (in this case,
   // no noticeable untransform, because the repaint request already got
   // flushed).
-  swi = ScrollWheelInput(MillisecondsSinceStartup(mcc->Time()), mcc->Time(), 0,
-                         ScrollWheelInput::SCROLLMODE_INSTANT,
+  swi = ScrollWheelInput(mcc->Time(), 0, ScrollWheelInput::SCROLLMODE_INSTANT,
                          ScrollWheelInput::SCROLLDELTA_PIXEL, origin, 0, 0,
                          false, WheelDeltaAdjustmentStrategy::eNone);
   EXPECT_EQ(nsEventStatus_eConsumeDoDefault,

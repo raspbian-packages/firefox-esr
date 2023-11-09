@@ -41,7 +41,7 @@ class nsBufferedStream : public nsISeekableStream {
   NS_IMETHOD Flush() = 0;
 
   uint32_t mBufferSize{0};
-  char* mBuffer{nullptr};
+  char* mBuffer MOZ_GUARDED_BY(mBufferMutex){nullptr};
 
   mozilla::RecursiveMutex mBufferMutex{"nsBufferedStream::mBufferMutex"};
 

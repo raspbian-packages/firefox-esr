@@ -39,7 +39,7 @@ firefoxview-tabpickup-network-offline-primarybutton = 重试
 firefoxview-tabpickup-sync-error-header = 同步时遇到问题
 firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name } 目前无法连接到同步服务，请稍后再试。
 firefoxview-tabpickup-sync-error-primarybutton = 重试
-firefoxview-tabpickup-sync-disconnected-header = 启用同步服务以继续
+firefoxview-tabpickup-sync-disconnected-header = 开启同步服务以继续
 firefoxview-tabpickup-sync-disconnected-description = 若要接收您的标签页，需先启用 { -brand-short-name } 的同步服务。
 firefoxview-tabpickup-sync-disconnected-primarybutton = 在设置中启用
 firefoxview-tabpickup-password-locked-header = 请输入您的主密码以查看标签页
@@ -47,7 +47,7 @@ firefoxview-tabpickup-password-locked-description = 若要接收您的标签页�
 firefoxview-tabpickup-password-locked-link = 详细了解
 firefoxview-tabpickup-password-locked-primarybutton = 请输入主密码
 firefoxview-tabpickup-signed-out-header = 登录以重新连接
-firefoxview-tabpickup-signed-out-description = 登录 { -fxaccount-brand-name } 即可重新连接并取回标签页。
+firefoxview-tabpickup-signed-out-description = 登录 { -fxaccount-brand-name }即可重新连接并取回标签页。
 firefoxview-tabpickup-signed-out-primarybutton = 登录
 firefoxview-tabpickup-syncing = 您的标签页正在同步，请稍等片刻。
 firefoxview-mobile-promo-header = 从手机或平板电脑接收标签页
@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = 最近关闭
 firefoxview-closed-tabs-description2 = 再次打开您在此窗口关闭的页面。
 firefoxview-closed-tabs-placeholder-header = 暂无最近关闭的标签页
 firefoxview-closed-tabs-placeholder-body = 此窗口中关闭的标签页，可在该处找回。
+firefoxview-closed-tabs-placeholder-body2 = 关闭选项卡后，您可以在此处找回。
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = 最后浏览
 firefoxview-tabs-list-tab-button =
     .title = 新建标签页打开 { $targetURI }
 firefoxview-try-colorways-button = 配色随心换
-firefoxview-no-current-colorway-collection = 新的配色即将上线
 firefoxview-change-colorway-button = 更改配色
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = 显示列表
 firefoxview-collapse-button-hide =
     .title = 隐藏列表
+firefoxview-overview-nav = 近期浏览
+    .title = 近期浏览
+firefoxview-overview-header = 近期浏览
+    .title = 近期浏览
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = 历史记录
+    .title = 历史记录
+firefoxview-history-header = 历史记录
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = 打开的标签页
+    .title = 打开的标签页
+firefoxview-opentabs-header = 打开的标签页
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = 最近关闭的标签页
+    .title = 最近关闭的标签页
+firefoxview-recently-closed-header = 最近关闭的标签页
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = 来自其他设备的标签页
+    .title = 来自其他设备的标签页
+firefoxview-synced-tabs-header = 来自其他设备的标签页
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = 查看所有
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = 窗口 { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = 窗口 { $winID }（当前）
+firefoxview-opentabs-focus-tab =
+    .title = 切换到此标签页
+firefoxview-show-more = 展开
+firefoxview-show-less = 折叠
+firefoxview-sort-history-by-date-label = 按日期排序
+firefoxview-sort-history-by-site-label = 按网站排序
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = 今天 - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = 昨天 - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = 显示所有历史

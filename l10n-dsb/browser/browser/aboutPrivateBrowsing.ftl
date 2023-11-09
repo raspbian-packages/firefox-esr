@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] K nadawkowej rědce pśipěś
     }
 about-private-browsing-pin-promo-title = Žedne skłaźone cookieje abo žedna historiju, direktnje z wašogo desktopa. Pśeglědujśo ako njeby was nichten wobglědował.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Pšec z cookiejowymi chórgojami!
+about-private-browsing-cookie-banners-promo-button = Cookieje chórgoje reducěrowaś
+about-private-browsing-cookie-banners-promo-message = Dajśo { -brand-short-name } za was awtomatiski na cookiejowe wuskokujuce wokna wótegroniś, aby wy se k pśeglědowanjeju bźez wótchylenja wrośił. { -brand-short-name } wšykne napšašowanja wótpokažo, jolic móžno.

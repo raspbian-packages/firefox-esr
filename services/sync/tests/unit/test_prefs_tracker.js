@@ -1,16 +1,12 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { Preferences } = ChromeUtils.import(
-  "resource://gre/modules/Preferences.jsm"
+const { Preferences } = ChromeUtils.importESModule(
+  "resource://gre/modules/Preferences.sys.mjs"
 );
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
-
-// Attempting to set the
-// security.turn_off_all_security_so_that_viruses_can_take_over_this_computer
-// preference to enable Cu.exitIfInAutomation crashes, probably due to
-// shutdown behaviors faked by AddonTestUtils.jsm's cleanup function.
-do_disable_fast_shutdown();
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
+);
 
 add_task(async function run_test() {
   let engine = Service.engineManager.get("prefs");

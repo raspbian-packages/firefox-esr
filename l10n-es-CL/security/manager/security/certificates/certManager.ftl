@@ -26,10 +26,6 @@ certmgr-people = Tienes certificados en archivo que identifican a estas personas
 certmgr-server = Estas entradas identifican las excepciones de error de certificados del servidor
 certmgr-ca = Tienes certificados en archivo que identifican estas autoridades de certificados
 
-certmgr-edit-ca-cert =
-    .title = Modificar opciones de confianza en el certificado de CA
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Modificar opciones de confianza en el certificado de CA
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Este certificado puede identificar usuarios de email.
-
-certmgr-delete-cert =
-    .title = Eliminar Certificado
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Eliminar Certificado
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Servidor
-
-certmgr-override-lifetime =
-    .label = Tiempo de vida
 
 certmgr-token-name =
     .label = Dispositivo de seguridad
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Número de serie
+
+certmgr-fingerprint-sha-256 =
+    .label = Huella digital SHA-256
 
 certmgr-view =
     .label = Ver…
@@ -154,7 +146,7 @@ choose-p12-restore-file-dialog = Archivo de certificado a importar
 ## Import certificate(s) file dialog
 
 file-browse-certificate-spec = Archivos de certificados
-import-ca-certs-prompt = Seleccione el archivo que contiene el/los certificado(s) CA a importar
+import-ca-certs-prompt = Selecciona el archivo que contiene el/los certificado(s) CA a importar
 import-email-cert-prompt = Selecciona el archivo que contiene el certificado de email de otra persona a importar
 
 ## For editing certificates trust

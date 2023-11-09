@@ -42,9 +42,8 @@ let { maybeOnSpellCheck, onSpellCheck } = SpecialPowers.ChromeUtils.import(
 
 SimpleTest.waitForExplicitFinish();
 SimpleTest.waitForFocus(async function() {
-  /* global actorParent */
-  /* eslint-env mozilla/frame-script */
   script = SpecialPowers.loadChromeScript(function() {
+    /* eslint-env mozilla/chrome-script */
     var chromeWin = actorParent.rootFrameLoader
                     .ownerElement.ownerGlobal.browsingContext.topChromeWindow;
     var contextMenu = chromeWin.document.getElementById("contentAreaContextMenu");
@@ -72,7 +71,7 @@ SimpleTest.waitForFocus(async function() {
       var state = contextMenu.state;
 
       // Select Language from the menu.  Take a look at
-      // toolkit/modules/InlineSpellChecker.jsm to see how the menu works.
+      // toolkit/modules/InlineSpellChecker.sys.mjs to see how the menu works.
       contextMenu.ownerDocument.getElementById("spell-check-dictionary-en-US")
                  .doCommand();
       contextMenu.hidePopup();

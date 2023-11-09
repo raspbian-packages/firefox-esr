@@ -53,6 +53,17 @@ restart-later = Arvi torna Dòppo
 ## Variables:
 ##   $name (String): name of the extension
 
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -116,6 +127,10 @@ browser-containers-settings =
     .accesskey = i
 
 containers-disable-alert-title = Særa tutti i contegnitoî de feuggi?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] Se ti ti dizabiliti i Contegnitoî de Feuggi òua, { $tabCount } contegnitô de feuggi saiâ seròu. T'ê seguo de dizabilitâ i Contegnitoî de Feuggi?
@@ -127,6 +142,9 @@ containers-disable-alert-ok-button =
         [one] Særa { $tabCount } Contegnitô de feuggi
        *[other] Særa { $tabCount } Contegnitoî de feuggi
     }
+
+##
+
 containers-disable-alert-cancel-button = Lascia abilitou
 
 containers-remove-alert-title = Scancelâ sto contegnitô?
@@ -411,11 +429,6 @@ home-restore-defaults =
     .label = Repiggia predefinii
     .accesskey = R
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Pagina prinçipâ (Predefinia)
-
 home-mode-choice-custom =
     .label = Indirissi cliénti...
 
@@ -443,14 +456,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Pagina iniçiâ de Firefox
-home-prefs-content-description = Çerni i contegnui che ti veu vedde inta pagina iniçiâ de Firefox.
-
 home-prefs-search-header =
     .label = Çerca into Web
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 # Variables:
 #  $provider (String): Name of the corresponding content provider, e.g "Pocket".
@@ -504,6 +518,7 @@ search-show-suggestions-url-bar-option =
     .label = Fanni vedde conseggi de riçerca tra i rizoltæ da bara di indirissi
     .accesskey = l
 
+
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -552,6 +567,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = A teu Ræ, de longo con ti
 
 # This message contains two links and two icon images.
@@ -566,14 +585,22 @@ sync-mobile-promo = Descarega Firefox pe <img data-l10n-name="android-icon"/> <a
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Cangia l’inmagine do profî
 
 sync-manage-account = Gestisci conto
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } no l'é verificou.
 sync-signedin-login-failure = Acedi pe ativâ torna a conescion { $email }
+
+##
 
 sync-resend-verification =
     .label = Manda torna verifica
@@ -640,6 +667,16 @@ sync-device-name-save =
     .accesskey = v
 
 sync-connect-another-device = Conetti atro dispoxitivo
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Verifica mandâ
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = Un colegamento de verifica o l'é stæto mandou a { $email }.
+sync-verification-not-sent-title = No se peu mandâ a verifica
+sync-verification-not-sent-body = Òua no ariescimmo a mandâ 'na email de verifica, pe piaxei preuva torna dòppo.
 
 ## Privacy Section
 
@@ -748,8 +785,6 @@ sitedata-block-desc = Tipo de contegnuo blocòu
 
 sitedata-option-block-unvisited =
     .label = Cookie de sciti no vixitæ
-sitedata-option-block-all-third-party =
-    .label = Tutti i cookie de terse parte (quarche scito o porieiva no fonçionâ ben)
 sitedata-option-block-all =
     .label = Tutti i cookie (quarche scito no fonçioniâ ben)
 
@@ -760,6 +795,9 @@ sitedata-clear =
 sitedata-settings =
     .label = Gestisci dæti…
     .accesskey = G
+
+## Privacy Section - Cookie Banner Handling
+
 
 ## Privacy Section - Address Bar
 
@@ -802,7 +840,8 @@ enhanced-tracking-protection-setting-custom =
 ##
 
 content-blocking-all-cookies = Tutti i cookie
-content-blocking-all-third-party-cookies = Tutti i cookie de terse parte
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-warning-title = Stanni atento!
 
@@ -948,6 +987,9 @@ certs-devices =
     .accesskey = S
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

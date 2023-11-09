@@ -42,7 +42,7 @@ async function installSystemAddons(xml, waitIDs = []) {
 
   await serveSystemUpdate(
     xml,
-    async function() {
+    async function () {
       let { XPIProvider } = ChromeUtils.import(
         "resource://gre/modules/addons/XPIProvider.jsm"
       );
@@ -62,7 +62,7 @@ async function updateAllSystemAddons(xml) {
 
   await serveSystemUpdate(
     xml,
-    function() {
+    function () {
       return new Promise(resolve => {
         Services.obs.addObserver(function observer() {
           Services.obs.removeObserver(
@@ -119,7 +119,7 @@ function getSystemAddonXPI(num, version) {
         manifest: {
           name: `System Add-on ${num}`,
           version,
-          applications: {
+          browser_specific_settings: {
             gecko: {
               id: `system${num}@tests.mozilla.org`,
             },
@@ -292,14 +292,13 @@ async function getSystemAddonDirectories() {
   const updatesDir = FileUtils.getDir("ProfD", ["features"], false);
   let subdirs = [];
 
-  if (await OS.File.exists(updatesDir.path)) {
-    let iterator = new OS.File.DirectoryIterator(updatesDir.path);
-    await iterator.forEach(entry => {
-      if (entry.isDir) {
-        subdirs.push(entry);
+  if (await IOUtils.exists(updatesDir.path)) {
+    for (const child of await IOUtils.getChildren(updatesDir.path)) {
+      const stat = await IOUtils.stat(child);
+      if (stat.type === "directory") {
+        subdirs.push(child);
       }
-    });
-    iterator.close();
+    }
   }
 
   return subdirs;

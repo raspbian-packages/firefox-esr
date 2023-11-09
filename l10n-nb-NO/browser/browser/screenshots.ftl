@@ -55,3 +55,6 @@ screenshots-private-window-error-details = Beklager ulempen. Vi jobber med denne
 
 screenshots-generic-error-title = Oi! Det ser ut til at { -screenshots-brand-name } ikke fungerer korrekt.
 screenshots-generic-error-details = Vi er ikke sikre på hva som hendte. Kan du prøve igjen eller ta et bilde av en annen side?
+
+screenshots-too-large-error-title = Skjermbildet ditt ble beskåret fordi det var for stort
+screenshots-too-large-error-details = Prøv å velge et område som er mindre enn 32 700 piksler på den lengste siden eller 124 900 000 piksler totalt område.

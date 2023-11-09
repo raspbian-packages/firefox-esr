@@ -47,6 +47,7 @@
 using mozilla::fallible;
 using mozilla::LogLevel;
 using mozilla::MakeStringSpan;
+using mozilla::Maybe;
 using mozilla::Unused;
 using mozilla::dom::Document;
 
@@ -972,11 +973,14 @@ static nsresult AppendErrorPointer(tainted_expat<XML_Size> aColNumber,
                              "Unexpected value of column");
 
   // Last character will be '^'.
-  XML_Size last = (aColNumber - 1).copy_and_verify([&](XML_Size val) {
-    MOZ_RELEASE_ASSERT(val <= aSourceLineLength,
-                       "Unexpected value of last column");
-    return val;
-  });
+  XML_Size last =
+      (aColNumber - 1).copy_and_verify([&](XML_Size val) -> XML_Size {
+        if (val > aSourceLineLength) {
+          // Unexpected value of last column, just return a safe value
+          return 0;
+        }
+        return val;
+      });
 
   XML_Size i;
   uint32_t minuses = 0;
@@ -1454,7 +1458,9 @@ RLBoxExpatSandboxPool::CreateSandboxData(uint64_t aSize) {
   auto sandbox = mozilla::MakeUnique<rlbox_sandbox_expat>();
 
 #ifdef MOZ_WASM_SANDBOXING_EXPAT
-  bool create_ok = sandbox->create_sandbox(/* infallible = */ false, aSize);
+  const w2c_mem_capacity capacity =
+      get_valid_wasm2c_memory_capacity(aSize, true /* 32-bit wasm memory*/);
+  bool create_ok = sandbox->create_sandbox(/* infallible = */ false, &capacity);
 #else
   bool create_ok = sandbox->create_sandbox();
 #endif

@@ -25,6 +25,10 @@ namespace gfx {
 struct RecordingSourceSurfaceUserData {
   void* refPtr;
   RefPtr<DrawEventRecorderPrivate> recorder;
+
+  // The optimized surface holds a reference to our surface, for GetDataSurface
+  // calls, so we must hold a weak reference to avoid circular dependency.
+  ThreadSafeWeakPtr<SourceSurface> optimizedSurface;
 };
 
 static void RecordingSourceSurfaceUserDataFunc(void* aUserData) {
@@ -43,17 +47,16 @@ static void RecordingSourceSurfaceUserDataFunc(void* aUserData) {
   });
 }
 
-static void EnsureSurfaceStoredRecording(DrawEventRecorderPrivate* aRecorder,
+static bool EnsureSurfaceStoredRecording(DrawEventRecorderPrivate* aRecorder,
                                          SourceSurface* aSurface,
                                          const char* reason) {
-  if (aRecorder->HasStoredObject(aSurface)) {
-    return;
-  }
-
-  // It's important that AddStoredObject is called first because that will
+  // It's important that TryAddStoredObject is called first because that will
   // run any pending processing required by recorded objects that have been
   // deleted off the main thread.
-  aRecorder->AddStoredObject(aSurface);
+  if (!aRecorder->TryAddStoredObject(aSurface)) {
+    // Surface is already stored.
+    return false;
+  }
   aRecorder->StoreSourceSurfaceRecording(aSurface, reason);
   aRecorder->AddSourceSurface(aSurface);
 
@@ -62,6 +65,7 @@ static void EnsureSurfaceStoredRecording(DrawEventRecorderPrivate* aRecorder,
   userData->recorder = aRecorder;
   aSurface->AddUserData(reinterpret_cast<UserDataKey*>(aRecorder), userData,
                         &RecordingSourceSurfaceUserDataFunc);
+  return true;
 }
 
 class SourceSurfaceRecording : public SourceSurface {
@@ -464,6 +468,16 @@ void DrawTargetRecording::PushClip(const Path* aPath) {
     return;
   }
 
+  // The canvas doesn't have a clipRect API so we always end up in the generic
+  // path. The D2D backend doesn't have a good way of specializing rectangular
+  // clips so we take advantage of the fact that aPath is usually backed by a
+  // SkiaPath which implements AsRect() and specialize it here.
+  auto rect = aPath->AsRect();
+  if (rect.isSome()) {
+    PushClipRect(rect.value());
+    return;
+  }
+
   RefPtr<PathRecording> pathRecording = EnsurePathStored(aPath);
 
   mRecorder->RecordEvent(RecordedPushClip(this, pathRecording));
@@ -526,19 +540,37 @@ DrawTargetRecording::CreateSourceSurfaceFromData(unsigned char* aData,
 
 already_AddRefed<SourceSurface> DrawTargetRecording::OptimizeSourceSurface(
     SourceSurface* aSurface) const {
-  if (aSurface->GetType() == SurfaceType::RECORDING &&
-      static_cast<SourceSurfaceRecording*>(aSurface)->mRecorder == mRecorder) {
-    // aSurface is already optimized for our recorder.
-    return do_AddRef(aSurface);
-  }
+  // See if we have a previously optimized surface available. We have to do this
+  // check before the SurfaceType::RECORDING below, because aSurface might be a
+  // SurfaceType::RECORDING from another recorder we have previously optimized.
+  auto* userData = static_cast<RecordingSourceSurfaceUserData*>(
+      aSurface->GetUserData(reinterpret_cast<UserDataKey*>(mRecorder.get())));
+  if (userData) {
+    RefPtr<SourceSurface> strongRef(userData->optimizedSurface);
+    if (strongRef) {
+      return do_AddRef(strongRef);
+    }
+  } else {
+    if (!EnsureSurfaceStoredRecording(mRecorder, aSurface,
+                                      "OptimizeSourceSurface")) {
+      // Surface was already stored, but doesn't have UserData so must be one
+      // of our recording surfaces.
+      MOZ_ASSERT(aSurface->GetType() == SurfaceType::RECORDING);
+      return do_AddRef(aSurface);
+    }
 
-  EnsureSurfaceStoredRecording(mRecorder, aSurface, "OptimizeSourceSurface");
+    userData = static_cast<RecordingSourceSurfaceUserData*>(
+        aSurface->GetUserData(reinterpret_cast<UserDataKey*>(mRecorder.get())));
+    MOZ_ASSERT(userData,
+               "User data should always have been set by "
+               "EnsureSurfaceStoredRecording.");
+  }
 
   RefPtr<SourceSurface> retSurf = new SourceSurfaceRecording(
       aSurface->GetSize(), aSurface->GetFormat(), mRecorder, aSurface);
-
   mRecorder->RecordEvent(
       RecordedOptimizeSourceSurface(aSurface, this, retSurf));
+  userData->optimizedSurface = retSurf;
 
   return retSurf.forget();
 }
@@ -635,8 +667,8 @@ DrawTargetRecording::CreateSimilarDrawTargetForFilter(
 
 already_AddRefed<PathBuilder> DrawTargetRecording::CreatePathBuilder(
     FillRule aFillRule) const {
-  RefPtr<PathBuilder> builder = mFinalDT->CreatePathBuilder(aFillRule);
-  return MakeAndAddRef<PathBuilderRecording>(builder, aFillRule);
+  return MakeAndAddRef<PathBuilderRecording>(mFinalDT->GetBackendType(),
+                                             aFillRule);
 }
 
 already_AddRefed<GradientStops> DrawTargetRecording::CreateGradientStops(
@@ -660,23 +692,23 @@ already_AddRefed<PathRecording> DrawTargetRecording::EnsurePathStored(
   if (aPath->GetBackendType() == BackendType::RECORDING) {
     pathRecording =
         const_cast<PathRecording*>(static_cast<const PathRecording*>(aPath));
-    if (mRecorder->HasStoredObject(aPath)) {
+    if (!mRecorder->TryAddStoredObject(pathRecording)) {
+      // Path is already stored.
       return pathRecording.forget();
     }
   } else {
     MOZ_ASSERT(!mRecorder->HasStoredObject(aPath));
     FillRule fillRule = aPath->GetFillRule();
-    RefPtr<PathBuilder> builder = mFinalDT->CreatePathBuilder(fillRule);
     RefPtr<PathBuilderRecording> builderRecording =
-        new PathBuilderRecording(builder, fillRule);
+        new PathBuilderRecording(mFinalDT->GetBackendType(), fillRule);
     aPath->StreamToSink(builderRecording);
     pathRecording = builderRecording->Finish().downcast<PathRecording>();
+    mRecorder->AddStoredObject(pathRecording);
   }
 
-  // It's important that AddStoredObject is called first because that will
-  // run any pending processing required by recorded objects that have been
-  // deleted off the main thread.
-  mRecorder->AddStoredObject(pathRecording);
+  // It's important that AddStoredObject or TryAddStoredObject is called before
+  // this because that will run any pending processing required by recorded
+  // objects that have been deleted off the main thread.
   mRecorder->RecordEvent(RecordedPathCreation(pathRecording.get()));
   pathRecording->mStoredRecorders.push_back(mRecorder);
 

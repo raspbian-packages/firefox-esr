@@ -37,12 +37,12 @@ use rayon;
 use tracy_rs::register_thread_with_profiler;
 use webrender::sw_compositor::SwCompositor;
 use webrender::{
-    api::units::*, api::*, render_api::*, set_profiler_hooks, AsyncPropertySampler, AsyncScreenshotHandle, Compositor,
-    CompositorCapabilities, CompositorConfig, CompositorSurfaceTransform, DebugFlags, Device, MappableCompositor,
-    MappedTileInfo, NativeSurfaceId, NativeSurfaceInfo, NativeTileId, PartialPresentCompositor, PipelineInfo,
-    ProfilerHooks, RecordedFrameHandle, Renderer, RendererOptions, RendererStats, SWGLCompositeSurfaceInfo,
-    SceneBuilderHooks, ShaderPrecacheFlags, Shaders, SharedShaders, TextureCacheConfig, UploadMethod, WindowVisibility,
-    ONE_TIME_USAGE_HINT,
+    api::units::*, api::*, create_webrender_instance, render_api::*, set_profiler_hooks, AsyncPropertySampler,
+    AsyncScreenshotHandle, Compositor, CompositorCapabilities, CompositorConfig, CompositorSurfaceTransform,
+    DebugFlags, Device, MappableCompositor, MappedTileInfo, NativeSurfaceId, NativeSurfaceInfo, NativeTileId,
+    PartialPresentCompositor, PipelineInfo, ProfilerHooks, RecordedFrameHandle, Renderer, RendererStats,
+    SWGLCompositeSurfaceInfo, SceneBuilderHooks, ShaderPrecacheFlags, Shaders, SharedShaders, TextureCacheConfig,
+    UploadMethod, WebRenderOptions, WindowVisibility, ONE_TIME_USAGE_HINT,
 };
 use wr_malloc_size_of::MallocSizeOfOps;
 
@@ -107,11 +107,11 @@ type WrColorDepth = ColorDepth;
 type WrColorRange = ColorRange;
 
 #[inline]
-fn clip_chain_id_to_webrender(id: u64, pipeline_id: WrPipelineId) -> ClipId {
+fn clip_chain_id_to_webrender(id: u64, pipeline_id: WrPipelineId) -> ClipChainId {
     if id == ROOT_CLIP_CHAIN {
-        ClipId::root(pipeline_id)
+        ClipChainId::INVALID
     } else {
-        ClipId::ClipChain(ClipChainId(id, pipeline_id))
+        ClipChainId(id, pipeline_id)
     }
 }
 
@@ -126,7 +126,7 @@ impl WrSpaceAndClipChain {
         //Warning: special case here to support dummy clip chain
         SpaceAndClipInfo {
             spatial_id: self.space.to_webrender(pipeline_id),
-            clip_id: clip_chain_id_to_webrender(self.clip_chain, pipeline_id),
+            clip_chain_id: clip_chain_id_to_webrender(self.clip_chain, pipeline_id),
         }
     }
 }
@@ -134,16 +134,20 @@ impl WrSpaceAndClipChain {
 #[repr(C)]
 pub enum WrStackingContextClip {
     None,
-    ClipId(WrClipId),
     ClipChain(u64),
 }
 
 impl WrStackingContextClip {
-    fn to_webrender(&self, pipeline_id: WrPipelineId) -> Option<ClipId> {
+    fn to_webrender(&self, pipeline_id: WrPipelineId) -> Option<ClipChainId> {
         match *self {
             WrStackingContextClip::None => None,
-            WrStackingContextClip::ClipChain(id) => Some(clip_chain_id_to_webrender(id, pipeline_id)),
-            WrStackingContextClip::ClipId(id) => Some(id.to_webrender(pipeline_id)),
+            WrStackingContextClip::ClipChain(id) => {
+                if id == ROOT_CLIP_CHAIN {
+                    None
+                } else {
+                    Some(ClipChainId(id, pipeline_id))
+                }
+            },
         }
     }
 }
@@ -381,7 +385,6 @@ extern "C" {
         renderer: *mut c_void,
         external_image_id: ExternalImageId,
         channel_index: u8,
-        rendering: ImageRendering,
     ) -> WrExternalImage;
     fn wr_renderer_unlock_external_image(renderer: *mut c_void, external_image_id: ExternalImageId, channel_index: u8);
 }
@@ -393,8 +396,8 @@ pub struct WrExternalImageHandler {
 }
 
 impl ExternalImageHandler for WrExternalImageHandler {
-    fn lock(&mut self, id: ExternalImageId, channel_index: u8, rendering: ImageRendering) -> ExternalImage {
-        let image = unsafe { wr_renderer_lock_external_image(self.external_image_obj, id, channel_index, rendering) };
+    fn lock(&mut self, id: ExternalImageId, channel_index: u8) -> ExternalImage {
+        let image = unsafe { wr_renderer_lock_external_image(self.external_image_obj, id, channel_index) };
         ExternalImage {
             uv: TexelRect::new(image.u0, image.v0, image.u1, image.v1),
             source: match image.image_type {
@@ -524,8 +527,7 @@ unsafe impl Send for CppNotifier {}
 
 extern "C" {
     fn wr_notifier_wake_up(window_id: WrWindowId, composite_needed: bool);
-    fn wr_notifier_new_frame_ready(window_id: WrWindowId);
-    fn wr_notifier_nop_frame_done(window_id: WrWindowId);
+    fn wr_notifier_new_frame_ready(window_id: WrWindowId, composite_needed: bool, publish_id: FramePublishId);
     fn wr_notifier_external_event(window_id: WrWindowId, raw_event: usize);
     fn wr_schedule_render(window_id: WrWindowId, reasons: RenderReasons);
     // NOTE: This moves away from pipeline_info.
@@ -547,13 +549,9 @@ impl RenderNotifier for CppNotifier {
         }
     }
 
-    fn new_frame_ready(&self, _: DocumentId, _scrolled: bool, composite_needed: bool) {
+    fn new_frame_ready(&self, _: DocumentId, _scrolled: bool, composite_needed: bool, publish_id: FramePublishId) {
         unsafe {
-            if composite_needed {
-                wr_notifier_new_frame_ready(self.window_id);
-            } else {
-                wr_notifier_nop_frame_done(self.window_id);
-            }
+            wr_notifier_new_frame_ready(self.window_id, composite_needed, publish_id);
         }
     }
 
@@ -602,6 +600,11 @@ pub extern "C" fn wr_renderer_set_external_image_handler(
 #[no_mangle]
 pub extern "C" fn wr_renderer_update(renderer: &mut Renderer) {
     renderer.update();
+}
+
+#[no_mangle]
+pub extern "C" fn wr_renderer_set_target_frame_publish_id(renderer: &mut Renderer, publish_id: FramePublishId) {
+    renderer.set_target_frame_publish_id(publish_id);
 }
 
 #[no_mangle]
@@ -1109,7 +1112,7 @@ pub extern "C" fn wr_thread_pool_new(low_priority: bool) -> *mut WrThreadPool {
 
 #[no_mangle]
 pub unsafe extern "C" fn wr_thread_pool_delete(thread_pool: *mut WrThreadPool) {
-    Box::from_raw(thread_pool);
+    mem::drop(Box::from_raw(thread_pool));
 }
 
 #[no_mangle]
@@ -1124,7 +1127,7 @@ pub unsafe extern "C" fn wr_program_cache_new(
 
 #[no_mangle]
 pub unsafe extern "C" fn wr_program_cache_delete(program_cache: *mut WrProgramCache) {
-    Box::from_raw(program_cache);
+    mem::drop(Box::from_raw(program_cache));
 }
 
 #[no_mangle]
@@ -1210,6 +1213,7 @@ extern "C" {
         is_opaque: bool,
     );
     fn wr_compositor_create_external_surface(compositor: *mut c_void, id: NativeSurfaceId, is_opaque: bool);
+    fn wr_compositor_create_backdrop_surface(compositor: *mut c_void, id: NativeSurfaceId, color: ColorF);
     fn wr_compositor_destroy_surface(compositor: *mut c_void, id: NativeSurfaceId);
     fn wr_compositor_create_tile(compositor: *mut c_void, id: NativeSurfaceId, x: i32, y: i32);
     fn wr_compositor_destroy_tile(compositor: *mut c_void, id: NativeSurfaceId, x: i32, y: i32);
@@ -1270,6 +1274,7 @@ pub struct WrCompositor(*mut c_void);
 impl Compositor for WrCompositor {
     fn create_surface(
         &mut self,
+        _device: &mut Device,
         id: NativeSurfaceId,
         virtual_offset: DeviceIntPoint,
         tile_size: DeviceIntSize,
@@ -1280,37 +1285,49 @@ impl Compositor for WrCompositor {
         }
     }
 
-    fn create_external_surface(&mut self, id: NativeSurfaceId, is_opaque: bool) {
+    fn create_external_surface(&mut self, _device: &mut Device, id: NativeSurfaceId, is_opaque: bool) {
         unsafe {
             wr_compositor_create_external_surface(self.0, id, is_opaque);
         }
     }
 
-    fn destroy_surface(&mut self, id: NativeSurfaceId) {
+    fn create_backdrop_surface(&mut self, _device: &mut Device, id: NativeSurfaceId, color: ColorF) {
+        unsafe {
+            wr_compositor_create_backdrop_surface(self.0, id, color);
+        }
+    }
+
+    fn destroy_surface(&mut self, _device: &mut Device, id: NativeSurfaceId) {
         unsafe {
             wr_compositor_destroy_surface(self.0, id);
         }
     }
 
-    fn create_tile(&mut self, id: NativeTileId) {
+    fn create_tile(&mut self, _device: &mut Device, id: NativeTileId) {
         unsafe {
             wr_compositor_create_tile(self.0, id.surface_id, id.x, id.y);
         }
     }
 
-    fn destroy_tile(&mut self, id: NativeTileId) {
+    fn destroy_tile(&mut self, _device: &mut Device, id: NativeTileId) {
         unsafe {
             wr_compositor_destroy_tile(self.0, id.surface_id, id.x, id.y);
         }
     }
 
-    fn attach_external_image(&mut self, id: NativeSurfaceId, external_image: ExternalImageId) {
+    fn attach_external_image(&mut self, _device: &mut Device, id: NativeSurfaceId, external_image: ExternalImageId) {
         unsafe {
             wr_compositor_attach_external_image(self.0, id, external_image);
         }
     }
 
-    fn bind(&mut self, id: NativeTileId, dirty_rect: DeviceIntRect, valid_rect: DeviceIntRect) -> NativeSurfaceInfo {
+    fn bind(
+        &mut self,
+        _device: &mut Device,
+        id: NativeTileId,
+        dirty_rect: DeviceIntRect,
+        valid_rect: DeviceIntRect,
+    ) -> NativeSurfaceInfo {
         let mut surface_info = NativeSurfaceInfo {
             origin: DeviceIntPoint::zero(),
             fbo_id: 0,
@@ -1330,13 +1347,13 @@ impl Compositor for WrCompositor {
         surface_info
     }
 
-    fn unbind(&mut self) {
+    fn unbind(&mut self, _device: &mut Device) {
         unsafe {
             wr_compositor_unbind(self.0);
         }
     }
 
-    fn begin_frame(&mut self) {
+    fn begin_frame(&mut self, _device: &mut Device) {
         unsafe {
             wr_compositor_begin_frame(self.0);
         }
@@ -1344,6 +1361,7 @@ impl Compositor for WrCompositor {
 
     fn add_surface(
         &mut self,
+        _device: &mut Device,
         id: NativeSurfaceId,
         transform: CompositorSurfaceTransform,
         clip_rect: DeviceIntRect,
@@ -1356,6 +1374,7 @@ impl Compositor for WrCompositor {
 
     fn start_compositing(
         &mut self,
+        _device: &mut Device,
         clear_color: ColorF,
         dirty_rects: &[DeviceIntRect],
         opaque_rects: &[DeviceIntRect],
@@ -1372,25 +1391,25 @@ impl Compositor for WrCompositor {
         }
     }
 
-    fn end_frame(&mut self) {
+    fn end_frame(&mut self, _device: &mut Device) {
         unsafe {
             wr_compositor_end_frame(self.0);
         }
     }
 
-    fn enable_native_compositor(&mut self, enable: bool) {
+    fn enable_native_compositor(&mut self, _device: &mut Device, enable: bool) {
         unsafe {
             wr_compositor_enable_native_compositor(self.0, enable);
         }
     }
 
-    fn deinit(&mut self) {
+    fn deinit(&mut self, _device: &mut Device) {
         unsafe {
             wr_compositor_deinit(self.0);
         }
     }
 
-    fn get_capabilities(&self) -> CompositorCapabilities {
+    fn get_capabilities(&self, _device: &mut Device) -> CompositorCapabilities {
         unsafe {
             let mut caps: CompositorCapabilities = Default::default();
             wr_compositor_get_capabilities(self.0, &mut caps);
@@ -1398,7 +1417,7 @@ impl Compositor for WrCompositor {
         }
     }
 
-    fn get_window_visibility(&self) -> WindowVisibility {
+    fn get_window_visibility(&self, _device: &mut Device) -> WindowVisibility {
         unsafe {
             let mut visibility: WindowVisibility = Default::default();
             wr_compositor_get_window_visibility(self.0, &mut visibility);
@@ -1423,6 +1442,7 @@ impl MappableCompositor for WrCompositor {
     /// while supporting some form of native layers.
     fn map_tile(
         &mut self,
+        _device: &mut Device,
         id: NativeTileId,
         dirty_rect: DeviceIntRect,
         valid_rect: DeviceIntRect,
@@ -1452,7 +1472,7 @@ impl MappableCompositor for WrCompositor {
 
     /// Unmap a tile that was was previously mapped via map_tile to signal
     /// that SWGL is done rendering to the buffer.
-    fn unmap_tile(&mut self) {
+    fn unmap_tile(&mut self, _device: &mut Device) {
         unsafe {
             wr_compositor_unmap_tile(self.0);
         }
@@ -1460,13 +1480,14 @@ impl MappableCompositor for WrCompositor {
 
     fn lock_composite_surface(
         &mut self,
+        _device: &mut Device,
         ctx: *mut c_void,
         external_image_id: ExternalImageId,
         composite_info: *mut SWGLCompositeSurfaceInfo,
     ) -> bool {
         unsafe { wr_swgl_lock_composite_surface(ctx, external_image_id, composite_info) }
     }
-    fn unlock_composite_surface(&mut self, ctx: *mut c_void, external_image_id: ExternalImageId) {
+    fn unlock_composite_surface(&mut self, _device: &mut Device, ctx: *mut c_void, external_image_id: ExternalImageId) {
         unsafe { wr_swgl_unlock_composite_surface(ctx, external_image_id) }
     }
 }
@@ -1520,6 +1541,7 @@ pub extern "C" fn wr_window_new(
     picture_tile_height: i32,
     reject_software_rasterizer: bool,
     low_quality_pinch_zoom: bool,
+    max_shared_surface_size: i32,
 ) -> bool {
     assert!(unsafe { is_in_render_thread() });
 
@@ -1621,9 +1643,8 @@ pub extern "C" fn wr_window_new(
         }
     };
 
-    let opts = RendererOptions {
+    let opts = WebRenderOptions {
         enable_aa: true,
-        force_subpixel_aa: false,
         enable_subpixel_aa: cfg!(not(target_os = "android")),
         support_low_priority_transactions,
         allow_texture_swizzling,
@@ -1672,12 +1693,13 @@ pub extern "C" fn wr_window_new(
         texture_cache_config,
         reject_software_rasterizer,
         low_quality_pinch_zoom,
+        max_shared_surface_size,
         ..Default::default()
     };
 
     let window_size = DeviceIntSize::new(window_width, window_height);
     let notifier = Box::new(CppNotifier { window_id });
-    let (renderer, sender) = match Renderer::new(gl, notifier, opts, shaders.map(|sh| &sh.0)) {
+    let (renderer, sender) = match create_webrender_instance(gl, notifier, opts, shaders.map(|sh| &sh.0)) {
         Ok((renderer, sender)) => (renderer, sender),
         Err(e) => {
             warn!(" Failed to create a Renderer: {:?}", e);
@@ -1873,16 +1895,12 @@ pub extern "C" fn wr_transaction_remove_pipeline(txn: &mut Transaction, pipeline
 pub extern "C" fn wr_transaction_set_display_list(
     txn: &mut Transaction,
     epoch: WrEpoch,
-    background: ColorF,
-    viewport_size: LayoutSize,
     pipeline_id: WrPipelineId,
     dl_descriptor: BuiltDisplayListDescriptor,
     dl_items_data: &mut WrVecU8,
     dl_cache_data: &mut WrVecU8,
     dl_spatial_tree_data: &mut WrVecU8,
 ) {
-    let color = if background.a == 0.0 { None } else { Some(background) };
-
     let payload = DisplayListPayload {
         items_data: dl_items_data.flush_into_vec(),
         cache_data: dl_cache_data.flush_into_vec(),
@@ -1891,7 +1909,7 @@ pub extern "C" fn wr_transaction_set_display_list(
 
     let dl = BuiltDisplayList::from_data(payload, dl_descriptor);
 
-    txn.set_display_list(epoch, color, viewport_size, (pipeline_id, dl));
+    txn.set_display_list(epoch, (pipeline_id, dl));
 }
 
 #[no_mangle]
@@ -2178,7 +2196,7 @@ pub unsafe extern "C" fn wr_transaction_clear_display_list(
     let mut frame_builder = WebRenderFrameBuilder::new(pipeline_id);
     frame_builder.dl_builder.begin();
 
-    txn.set_display_list(epoch, None, LayoutSize::new(0.0, 0.0), frame_builder.dl_builder.end());
+    txn.set_display_list(epoch, frame_builder.dl_builder.end());
 }
 
 #[no_mangle]
@@ -2287,7 +2305,7 @@ fn read_font_descriptor(bytes: &mut WrVecU8, index: u32) -> NativeFontHandle {
 fn read_font_descriptor(bytes: &mut WrVecU8, _index: u32) -> NativeFontHandle {
     let chars = bytes.flush_into_vec();
     NativeFontHandle {
-        name: String::from_utf8(chars).unwrap()
+        name: String::from_utf8(chars).unwrap(),
     }
 }
 
@@ -2408,7 +2426,7 @@ pub extern "C" fn wr_state_delete(state: *mut WrState) {
     assert!(unsafe { !is_in_render_thread() });
 
     unsafe {
-        Box::from_raw(state);
+        mem::drop(Box::from_raw(state));
     }
 }
 
@@ -2650,7 +2668,7 @@ pub extern "C" fn wr_dp_define_clipchain(
 #[no_mangle]
 pub extern "C" fn wr_dp_define_image_mask_clip_with_parent_clip_chain(
     state: &mut WrState,
-    parent: &WrSpaceAndClipChain,
+    space: WrSpatialId,
     mask: ImageMask,
     points: *const LayoutPoint,
     point_count: usize,
@@ -2662,7 +2680,7 @@ pub extern "C" fn wr_dp_define_image_mask_clip_with_parent_clip_chain(
     let points: Vec<LayoutPoint> = c_points.iter().copied().collect();
 
     let clip_id = state.frame_builder.dl_builder.define_clip_image_mask(
-        &parent.to_webrender(state.pipeline_id),
+        space.to_webrender(state.pipeline_id),
         mask,
         &points,
         fill_rule,
@@ -2678,30 +2696,10 @@ pub extern "C" fn wr_dp_define_rounded_rect_clip(
 ) -> WrClipId {
     debug_assert!(unsafe { is_in_main_thread() });
 
-    let space_and_clip = SpaceAndClipInfo {
-        spatial_id: space.to_webrender(state.pipeline_id),
-        clip_id: ClipId::root(state.pipeline_id),
-    };
-
     let clip_id = state
         .frame_builder
         .dl_builder
-        .define_clip_rounded_rect(&space_and_clip, complex);
-    WrClipId::from_webrender(clip_id)
-}
-
-#[no_mangle]
-pub extern "C" fn wr_dp_define_rounded_rect_clip_with_parent_clip_chain(
-    state: &mut WrState,
-    parent: &WrSpaceAndClipChain,
-    complex: ComplexClipRegion,
-) -> WrClipId {
-    debug_assert!(unsafe { is_in_main_thread() });
-
-    let clip_id = state
-        .frame_builder
-        .dl_builder
-        .define_clip_rounded_rect(&parent.to_webrender(state.pipeline_id), complex);
+        .define_clip_rounded_rect(space.to_webrender(state.pipeline_id), complex);
     WrClipId::from_webrender(clip_id)
 }
 
@@ -2709,30 +2707,10 @@ pub extern "C" fn wr_dp_define_rounded_rect_clip_with_parent_clip_chain(
 pub extern "C" fn wr_dp_define_rect_clip(state: &mut WrState, space: WrSpatialId, clip_rect: LayoutRect) -> WrClipId {
     debug_assert!(unsafe { is_in_main_thread() });
 
-    let space_and_clip = SpaceAndClipInfo {
-        spatial_id: space.to_webrender(state.pipeline_id),
-        clip_id: ClipId::root(state.pipeline_id),
-    };
-
     let clip_id = state
         .frame_builder
         .dl_builder
-        .define_clip_rect(&space_and_clip, clip_rect);
-    WrClipId::from_webrender(clip_id)
-}
-
-#[no_mangle]
-pub extern "C" fn wr_dp_define_rect_clip_with_parent_clip_chain(
-    state: &mut WrState,
-    parent: &WrSpaceAndClipChain,
-    clip_rect: LayoutRect,
-) -> WrClipId {
-    debug_assert!(unsafe { is_in_main_thread() });
-
-    let clip_id = state
-        .frame_builder
-        .dl_builder
-        .define_clip_rect(&parent.to_webrender(state.pipeline_id), clip_rect);
+        .define_clip_rect(space.to_webrender(state.pipeline_id), clip_rect);
     WrClipId::from_webrender(clip_id)
 }
 
@@ -2860,7 +2838,7 @@ fn common_item_properties_for_rect(
         // early-return here for empty rects. I couldn't figure out why, but
         // it's pretty harmless to feed these through, so, uh, we do?
         clip_rect,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     }
@@ -2959,7 +2937,7 @@ pub extern "C" fn wr_dp_push_backdrop_filter(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip_rect.unwrap(),
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -2983,7 +2961,7 @@ pub extern "C" fn wr_dp_push_clear_rect(
 
     let prim_info = CommonItemProperties {
         clip_rect,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(true, /* prefer_compositor_surface */ false),
     };
@@ -3003,22 +2981,27 @@ pub extern "C" fn wr_dp_push_hit_test(
 ) {
     debug_assert!(unsafe { !is_in_render_thread() });
 
-    let space_and_clip = parent.to_webrender(state.pipeline_id);
-
     let clip_rect = clip.intersection(&rect);
     if clip_rect.is_none() {
         return;
     }
     let tag = (scroll_id, hit_info);
 
-    let prim_info = CommonItemProperties {
-        clip_rect: clip_rect.unwrap(),
-        clip_id: space_and_clip.clip_id,
-        spatial_id: space_and_clip.spatial_id,
-        flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
+    let spatial_id = parent.space.to_webrender(state.pipeline_id);
+
+    let clip_chain_id = if parent.clip_chain == ROOT_CLIP_CHAIN {
+        ClipChainId::INVALID
+    } else {
+        ClipChainId(parent.clip_chain, state.pipeline_id)
     };
 
-    state.frame_builder.dl_builder.push_hit_test(&prim_info, tag);
+    state.frame_builder.dl_builder.push_hit_test(
+        clip_rect.unwrap(),
+        clip_chain_id,
+        spatial_id,
+        prim_flags(is_backface_visible, false),
+        tag,
+    );
 }
 
 #[no_mangle]
@@ -3052,7 +3035,7 @@ pub extern "C" fn wr_dp_push_image(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags,
     };
@@ -3089,7 +3072,7 @@ pub extern "C" fn wr_dp_push_repeating_image(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3136,7 +3119,7 @@ pub extern "C" fn wr_dp_push_yuv_planar_image(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags2(
             is_backface_visible,
@@ -3179,7 +3162,7 @@ pub extern "C" fn wr_dp_push_yuv_NV12_image(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags2(
             is_backface_visible,
@@ -3222,7 +3205,7 @@ pub extern "C" fn wr_dp_push_yuv_P010_image(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags2(
             is_backface_visible,
@@ -3264,7 +3247,7 @@ pub extern "C" fn wr_dp_push_yuv_interleaved_image(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags2(
             is_backface_visible,
@@ -3306,7 +3289,7 @@ pub extern "C" fn wr_dp_push_text(
     let prim_info = CommonItemProperties {
         clip_rect: clip,
         spatial_id: space_and_clip.spatial_id,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
 
@@ -3361,7 +3344,7 @@ pub extern "C" fn wr_dp_push_line(
 
     let prim_info = CommonItemProperties {
         clip_rect: *clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3402,7 +3385,7 @@ pub extern "C" fn wr_dp_push_border(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3422,7 +3405,6 @@ pub struct WrBorderImage {
     height: i32,
     fill: bool,
     slice: DeviceIntSideOffsets,
-    outset: LayoutSideOffsets,
     repeat_horizontal: RepeatMode,
     repeat_vertical: RepeatMode,
 }
@@ -3443,7 +3425,6 @@ pub extern "C" fn wr_dp_push_border_image(
         height: params.height,
         slice: params.slice,
         fill: params.fill,
-        outset: params.outset,
         repeat_horizontal: params.repeat_horizontal,
         repeat_vertical: params.repeat_vertical,
     });
@@ -3451,7 +3432,7 @@ pub extern "C" fn wr_dp_push_border_image(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3479,7 +3460,6 @@ pub extern "C" fn wr_dp_push_border_gradient(
     stops: *const GradientStop,
     stops_count: usize,
     extend_mode: ExtendMode,
-    outset: LayoutSideOffsets,
 ) {
     debug_assert!(unsafe { is_in_main_thread() });
 
@@ -3497,7 +3477,6 @@ pub extern "C" fn wr_dp_push_border_gradient(
         height,
         slice,
         fill,
-        outset,
         repeat_horizontal: RepeatMode::Stretch,
         repeat_vertical: RepeatMode::Stretch,
     });
@@ -3506,7 +3485,7 @@ pub extern "C" fn wr_dp_push_border_gradient(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3531,7 +3510,6 @@ pub extern "C" fn wr_dp_push_border_radial_gradient(
     stops: *const GradientStop,
     stops_count: usize,
     extend_mode: ExtendMode,
-    outset: LayoutSideOffsets,
 ) {
     debug_assert!(unsafe { is_in_main_thread() });
 
@@ -3556,7 +3534,6 @@ pub extern "C" fn wr_dp_push_border_radial_gradient(
         height: rect.height() as i32,
         slice,
         fill,
-        outset,
         repeat_horizontal: RepeatMode::Stretch,
         repeat_vertical: RepeatMode::Stretch,
     });
@@ -3565,7 +3542,7 @@ pub extern "C" fn wr_dp_push_border_radial_gradient(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3590,7 +3567,6 @@ pub extern "C" fn wr_dp_push_border_conic_gradient(
     stops: *const GradientStop,
     stops_count: usize,
     extend_mode: ExtendMode,
-    outset: LayoutSideOffsets,
 ) {
     debug_assert!(unsafe { is_in_main_thread() });
 
@@ -3615,7 +3591,6 @@ pub extern "C" fn wr_dp_push_border_conic_gradient(
         height: rect.height() as i32,
         slice,
         fill,
-        outset,
         repeat_horizontal: RepeatMode::Stretch,
         repeat_vertical: RepeatMode::Stretch,
     });
@@ -3624,7 +3599,7 @@ pub extern "C" fn wr_dp_push_border_conic_gradient(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3664,7 +3639,7 @@ pub extern "C" fn wr_dp_push_linear_gradient(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3704,7 +3679,7 @@ pub extern "C" fn wr_dp_push_radial_gradient(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3744,7 +3719,7 @@ pub extern "C" fn wr_dp_push_conic_gradient(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3776,7 +3751,7 @@ pub extern "C" fn wr_dp_push_box_shadow(
 
     let prim_info = CommonItemProperties {
         clip_rect: clip,
-        clip_id: space_and_clip.clip_id,
+        clip_chain_id: space_and_clip.clip_chain_id,
         spatial_id: space_and_clip.spatial_id,
         flags: prim_flags(is_backface_visible, /* prefer_compositor_surface */ false),
     };
@@ -3880,6 +3855,7 @@ pub unsafe extern "C" fn wr_api_end_builder(
 pub struct HitResult {
     pipeline_id: WrPipelineId,
     scroll_id: u64,
+    animation_id: u64,
     hit_info: u16,
 }
 
@@ -3890,6 +3866,7 @@ pub extern "C" fn wr_api_hit_test(dh: &mut DocumentHandle, point: WorldPoint, ou
         out_results.push(HitResult {
             pipeline_id: item.pipeline,
             scroll_id: item.tag.0,
+            animation_id: item.animation_id,
             hit_info: item.tag.1,
         });
     }
@@ -3949,14 +3926,11 @@ pub struct WrClipId {
 
 impl WrClipId {
     fn to_webrender(&self, pipeline_id: WrPipelineId) -> ClipId {
-        ClipId::Clip(self.id, pipeline_id)
+        ClipId(self.id, pipeline_id)
     }
 
     fn from_webrender(clip_id: ClipId) -> Self {
-        match clip_id {
-            ClipId::Clip(id, _) => WrClipId { id },
-            ClipId::ClipChain(_) => panic!("Unexpected clip chain"),
-        }
+        WrClipId { id: clip_id.0 }
     }
 }
 
@@ -3978,7 +3952,7 @@ impl WrSpatialId {
 
 #[no_mangle]
 pub unsafe extern "C" fn wr_device_delete(device: *mut Device) {
-    Box::from_raw(device);
+    mem::drop(Box::from_raw(device));
 }
 
 // Call MakeCurrent before this.
@@ -3996,7 +3970,7 @@ pub extern "C" fn wr_shaders_new(
         ShaderPrecacheFlags::ASYNC_COMPILE
     };
 
-    let opts = RendererOptions {
+    let opts = WebRenderOptions {
         precache_flags,
         ..Default::default()
     };

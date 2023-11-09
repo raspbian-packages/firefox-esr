@@ -128,12 +128,13 @@ about-processes-frame-name-many = Subkadroj ({ $number }): { $shortUrl }
 ## Utility process actor names
 
 about-processes-utility-actor-unknown = Nekonata agento
-about-processes-utility-actor-audio-decoder = Sona malkodilo
-
 about-processes-utility-actor-audio-decoder-generic = Nespecifa sona malkodilo
 about-processes-utility-actor-audio-decoder-applemedia = Sona malkodilo de Apple Media
 about-processes-utility-actor-audio-decoder-wmf = Sona malkodilo de Windows Media Framework
 about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = JavaScript Oracle
+about-processes-utility-actor-windows-utils = Iloj de Windows
 
 ## Displaying CPU (percentage and total)
 ## Variables:

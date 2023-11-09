@@ -172,6 +172,15 @@ media-codec-support-info = Upplýsingar um stuðning við efniskóðun
 # List all the entries of the database.
 media-capabilities-enumerate = Númera gagnagrunn
 
+## Codec support table
+
+media-codec-support-sw-decoding = Hugbúnaðarafkóðun
+media-codec-support-hw-decoding = Vélbúnaðarafkóðun
+media-codec-support-codec-name = Heiti kóðunarlykils (codec)
+media-codec-support-supported = Stuðningur
+media-codec-support-unsupported = Óstutt
+media-codec-support-error = Upplýsingar um stuðning við kóðunarlykil eru ekki tiltækar. Reyndu aftur eftir að hafa spilað margmiðlunarskrá.
+
 ##
 
 intl-title = Alþjóðavæðing og þýðingar
@@ -285,6 +294,8 @@ webgl2-renderer = WebGL 2 myndrekill
 webgl2-version = WebGL 2 útgáfa rekils
 webgl2-driver-extensions = WebGL 2 reklaviðbætur
 webgl2-extensions = WebGL 2 viðbætur
+webgpu-default-adapter = Sjálfgefið WebGPU-millitengi
+webgpu-fallback-adapter = WebGPU-millitengi til vara
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Sett á bannlista vegna þekktra vandamála: <a data-l10n-name="bug-link">villa { $bugNumber }</a>

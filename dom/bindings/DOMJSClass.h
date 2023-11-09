@@ -109,9 +109,9 @@ static const uint32_t DedicatedWorkerGlobalScope = 1u << 1;
 static const uint32_t SharedWorkerGlobalScope = 1u << 2;
 static const uint32_t ServiceWorkerGlobalScope = 1u << 3;
 static const uint32_t WorkerDebuggerGlobalScope = 1u << 4;
-static const uint32_t WorkletGlobalScope = 1u << 5;
-static const uint32_t AudioWorkletGlobalScope = 1u << 6;
-static const uint32_t PaintWorkletGlobalScope = 1u << 7;
+static const uint32_t AudioWorkletGlobalScope = 1u << 5;
+static const uint32_t PaintWorkletGlobalScope = 1u << 6;
+static const uint32_t ShadowRealmGlobalScope = 1u << 7;
 
 static constexpr uint32_t kCount = 8;
 }  // namespace GlobalNames
@@ -220,6 +220,25 @@ struct PropertyInfo {
     mIdBits = aId.asRawBits();
   }
   MOZ_ALWAYS_INLINE jsid Id() const { return jsid::fromRawBits(mIdBits); }
+
+  bool IsStaticMethod() const { return type == eStaticMethod; }
+
+  static int Compare(const PropertyInfo& aInfo1, const PropertyInfo& aInfo2) {
+    // IdToIndexComparator needs to be updated if the order here is changed!
+    if (MOZ_UNLIKELY(aInfo1.mIdBits == aInfo2.mIdBits)) {
+      MOZ_ASSERT((aInfo1.type == eMethod || aInfo1.type == eStaticMethod) &&
+                 (aInfo2.type == eMethod || aInfo2.type == eStaticMethod));
+
+      bool isStatic1 = aInfo1.IsStaticMethod();
+
+      MOZ_ASSERT(isStatic1 != aInfo2.IsStaticMethod(),
+                 "We shouldn't have 2 static methods with the same name!");
+
+      return isStatic1 ? -1 : 1;
+    }
+
+    return aInfo1.mIdBits < aInfo2.mIdBits ? -1 : 1;
+  }
 };
 
 static_assert(
@@ -450,6 +469,7 @@ enum DOMObjectType : uint8_t {
   eInterface,
   eInterfacePrototype,
   eGlobalInterfacePrototype,
+  eNamespace,
   eNamedPropertiesObject
 };
 
@@ -548,8 +568,8 @@ struct DOMIfaceAndProtoJSClass {
   // initialization for aggregate/POD types.
   const JSClass mBase;
 
-  // Either eInterface, eInterfacePrototype, eGlobalInterfacePrototype or
-  // eNamedPropertiesObject.
+  // Either eInterface, eNamespace, eInterfacePrototype,
+  // eGlobalInterfacePrototype or eNamedPropertiesObject.
   DOMObjectType mType;  // uint8_t
 
   // Boolean indicating whether this object wants a @@hasInstance property
@@ -579,7 +599,7 @@ struct DOMIfaceAndProtoJSClass {
 class ProtoAndIfaceCache;
 
 inline bool DOMGlobalHasProtoAndIFaceCache(JSObject* global) {
-  MOZ_ASSERT(JS::GetClass(global)->flags & JSCLASS_DOM_GLOBAL);
+  MOZ_DIAGNOSTIC_ASSERT(JS::GetClass(global)->flags & JSCLASS_DOM_GLOBAL);
   // This can be undefined if we GC while creating the global
   return !JS::GetReservedSlot(global, DOM_PROTOTYPE_SLOT).isUndefined();
 }
@@ -592,7 +612,7 @@ inline bool HasProtoAndIfaceCache(JSObject* global) {
 }
 
 inline ProtoAndIfaceCache* GetProtoAndIfaceCache(JSObject* global) {
-  MOZ_ASSERT(JS::GetClass(global)->flags & JSCLASS_DOM_GLOBAL);
+  MOZ_DIAGNOSTIC_ASSERT(JS::GetClass(global)->flags & JSCLASS_DOM_GLOBAL);
   return static_cast<ProtoAndIfaceCache*>(
       JS::GetReservedSlot(global, DOM_PROTOTYPE_SLOT).toPrivate());
 }

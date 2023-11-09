@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Lisää sivu kirjanmerkkeihin
-    .accesskey = k
-    .tooltiptext = Lisää kirjanmerkki
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Lisää sivu kirjanmerkkeihin
-    .accesskey = m
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Muokkaa kirjanmerkkiä
-    .accesskey = M
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Lisää sivu kirjanmerkkeihin
-    .accesskey = k
-    .tooltiptext = Lisää kirjanmerkki ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Muokkaa kirjanmerkkiä
-    .accesskey = k
-    .tooltiptext = Muokkaa kirjanmerkkiä
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Muokkaa kirjanmerkkiä
-    .accesskey = k
-    .tooltiptext = Muokkaa kirjanmerkkiä ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Lisää sivu kirjanmerkkeihin…
     .accesskey = L
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Avaa uuteen yksityiseen ikkunaan
     .accesskey = y
-
-main-context-menu-bookmark-link =
-    .label = Lisää linkki kirjanmerkkeihin
-    .accesskey = L
 
 main-context-menu-bookmark-link-2 =
     .label = Lisää linkki kirjanmerkkeihin…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Lähetä äänite…
     .accesskey = L
 
-main-context-menu-plugin-play =
-    .label = Käynnistä liitännäinen
-    .accesskey = K
-
-main-context-menu-plugin-hide =
-    .label = Piilota liitännäinen
-    .accesskey = o
-
 main-context-menu-save-to-pocket =
     .label = Tallenna sivu { -pocket-brand-name }-palveluun
     .accesskey = c
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = s
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Käytä { -relay-brand-short-name }-sähköpostimaskia
+    .accesskey = E
 
 main-context-menu-suggest-strong-password =
     .label = Ehdota vahvaa salasanaa…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Päivitä kehys
     .accesskey = ä
 
-main-context-menu-frame-bookmark =
-    .label = Lisää kehyssivu kirjanmerkkeihin
-    .accesskey = A
-
 main-context-menu-frame-add-bookmark =
     .label = Lisää kehys kirjanmerkkeihin…
     .accesskey = L
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Näytä kehyksen tiedot
     .accesskey = o
-
-main-context-menu-print-selection =
-    .label = Tulosta valinta
-    .accesskey = v
 
 main-context-menu-print-selection-2 =
     .label = Tulosta valinta…

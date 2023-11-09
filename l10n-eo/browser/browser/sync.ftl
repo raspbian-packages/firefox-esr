@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = Ŝalti speguladon
 
 fxa-menu-connect-another-device =
     .label = Konekti alian aparaton…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Sendi langeton al aparato
+           *[other] Sendi { $tabCount } langetojn al aparato
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

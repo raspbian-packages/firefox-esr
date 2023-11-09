@@ -25,7 +25,7 @@ function generateDefaults(overrides) {
     flashLineRange: jest.fn(),
     isHidden: false,
     symbols: {},
-    selectedLocation: { sourceId },
+    selectedLocation: { id: sourceId },
     onAlphabetizeClick: jest.fn(),
     ...overrides,
   };
@@ -69,7 +69,14 @@ describe("Outline", () => {
     listItem.simulate("click");
     expect(selectLocation).toHaveBeenCalledWith(mockcx, {
       line: startLine,
+      column: undefined,
       sourceId,
+      source: {
+        id: sourceId,
+      },
+      sourceActor: null,
+      sourceActorId: undefined,
+      sourceUrl: "",
     });
   });
 
@@ -78,15 +85,6 @@ describe("Outline", () => {
       it("if symbols is not defined", () => {
         const { component } = render({
           symbols: null,
-        });
-        expect(component).toMatchSnapshot();
-      });
-
-      it("if symbols are loading", () => {
-        const { component } = render({
-          symbols: {
-            loading: true,
-          },
         });
         expect(component).toMatchSnapshot();
       });
@@ -212,7 +210,14 @@ describe("Outline", () => {
 
       expect(props.selectLocation).toHaveBeenCalledWith(mockcx, {
         line: 24,
+        column: undefined,
         sourceId,
+        source: {
+          id: sourceId,
+        },
+        sourceActor: null,
+        sourceActorId: undefined,
+        sourceUrl: "",
       });
     });
 

@@ -4,23 +4,21 @@
 
 "use strict";
 
-const { Capabilities, Timeouts } = ChromeUtils.import(
-  "chrome://remote/content/shared/webdriver/Capabilities.jsm"
+const { Capabilities, Timeouts } = ChromeUtils.importESModule(
+  "chrome://remote/content/shared/webdriver/Capabilities.sys.mjs"
 );
-const { WebDriverSession } = ChromeUtils.import(
-  "chrome://remote/content/shared/webdriver/Session.jsm"
+const { WebDriverSession } = ChromeUtils.importESModule(
+  "chrome://remote/content/shared/webdriver/Session.sys.mjs"
 );
 
-add_test(function test_WebDriverSession_ctor() {
+add_task(function test_WebDriverSession_ctor() {
   const session = new WebDriverSession();
 
   equal(typeof session.id, "string");
   ok(session.capabilities instanceof Capabilities);
-
-  run_next_test();
 });
 
-add_test(function test_WebDriverSession_getters() {
+add_task(function test_WebDriverSession_getters() {
   const session = new WebDriverSession();
 
   equal(
@@ -38,11 +36,9 @@ add_test(function test_WebDriverSession_getters() {
     session.unhandledPromptBehavior,
     session.capabilities.get("unhandledPromptBehavior")
   );
-
-  run_next_test();
 });
 
-add_test(function test_WebDriverSession_setters() {
+add_task(function test_WebDriverSession_setters() {
   const session = new WebDriverSession();
 
   const timeouts = new Timeouts();
@@ -50,6 +46,4 @@ add_test(function test_WebDriverSession_setters() {
 
   session.timeouts = timeouts;
   equal(session.timeouts, session.capabilities.get("timeouts"));
-
-  run_next_test();
 });

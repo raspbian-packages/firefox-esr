@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-videocontrols-scrubber =
-    .aria-label = Konum
 # This label is used by screenreaders and other assistive technology to indicate
 # to users how much of the video has been loaded from the network. It will be
 # followed by the percentage of the video that has loaded (e.g. "Loading: 13%").
@@ -36,21 +34,7 @@ videocontrols-picture-in-picture-label = Görüntü içinde görüntü
 
 # This string is used as the label for a variation of the Picture-in-Picture video
 # toggle button when the mouse is hovering over the video.
-videocontrols-picture-in-picture-toggle-label = Görüntü içinde görüntü
-
-# This string is used as part of a variation of the Picture-in-Picture video toggle
-# button. When using this variation, this string appears below the toggle when the
-# mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer = { -brand-short-name } ile başka şeyler yaparken videoları ön planda oynatın
-
-# This string is used as the label for a variation of the Picture-in-Picture video
-# toggle button when the mouse is hovering over the video.
 videocontrols-picture-in-picture-toggle-label2 = Bu videoyu dışarı çıkar
-
-# This string is used as part of a variation of the Picture-in-Picture video toggle
-# button. When using this variation, this string appears below the toggle when the
-# mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer2 = Daha fazla ekran, daha fazla eğlence. Bu videoyu görüntü içinde görüntü modunda izleyin.
 
 videocontrols-picture-in-picture-explainer3 = Daha çok ekran, daha çok eğlence. Başka şeyler yaparken bu videoyu da oynatın.
 
@@ -75,3 +59,13 @@ videocontrols-status-picture-in-picture = Bu video, görüntü içinde görünt�
 # duration video, $position would be "5:00" and the string which is
 # surrounded by <span> would be deleted, result string would be "5:00".
 videocontrols-position-and-duration-labels = { $position }<span data-l10n-name="position-duration-format"> / { $duration }</span>
+
+# This is a plain text version of the videocontrols-position-and-duration-labels
+# string, used by screenreaders.
+#
+# Variables:
+#   $position (String): The current media position
+#   $duration (String): The total video duration
+videocontrols-scrubber-position-and-duration =
+    .aria-label = Konum
+    .aria-valuetext = { $position } / { $duration }

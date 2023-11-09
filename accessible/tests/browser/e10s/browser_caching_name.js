@@ -225,20 +225,6 @@ const markupTests = [
     ],
   },
   {
-    id: "imgemptyalt",
-    ruleset: "HTMLImgEmptyAlt",
-    markup: `
-    <span id="l1">test2</span>
-    <span id="l2">test3</span>
-    <img id="imgemptyalt"
-         aria-label="Logo of Mozilla"
-         aria-labelledby="l1 l2"
-         title="This is a logo"
-         alt=""
-         src="http://example.com/a11y/accessible/tests/mochitest/moz.png"/>`,
-    expected: ["test2 test3", "Logo of Mozilla", "This is a logo", ""],
-  },
-  {
     id: "tc",
     ruleset: "HTMLElm",
     markup: `
@@ -486,7 +472,7 @@ async function testNameRule(browser, target, ruleset, expected) {
 markupTests.forEach(({ id, ruleset, markup, expected }) =>
   addAccessibleTask(
     markup,
-    async function(browser, accDoc) {
+    async function (browser, accDoc) {
       const observer = {
         observe(subject, topic, data) {
           const event = subject.QueryInterface(nsIAccessibleEvent);
@@ -509,13 +495,45 @@ markupTests.forEach(({ id, ruleset, markup, expected }) =>
  */
 addAccessibleTask(
   ``,
-  async function(browser, docAcc) {
+  async function (browser, docAcc) {
     let nameChanged = waitForEvent(EVENT_NAME_CHANGE, docAcc);
     await invokeContentTask(browser, [], () => {
       content.document.title = "new title";
     });
     await nameChanged;
     testName(docAcc, "new title");
+  },
+  { chrome: true, topLevel: true, iframe: true, remoteIframe: true }
+);
+
+/**
+ * Test that the name is updated when the content of a hidden aria-labelledby
+ * subtree changes.
+ */
+addAccessibleTask(
+  `
+<button id="button" aria-labelledby="label">
+<div id="label" hidden>a</div>
+  `,
+  async function (browser, docAcc) {
+    const button = findAccessibleChildByID(docAcc, "button");
+    testName(button, "a");
+    info("Changing label textContent");
+    let nameChanged = waitForEvent(EVENT_NAME_CHANGE, button);
+    await invokeContentTask(browser, [], () => {
+      content.document.getElementById("label").textContent = "c";
+    });
+    await nameChanged;
+    testName(button, "c");
+    info("Prepending text node to label");
+    nameChanged = waitForEvent(EVENT_NAME_CHANGE, button);
+    await invokeContentTask(browser, [], () => {
+      content.document
+        .getElementById("label")
+        .prepend(content.document.createTextNode("b"));
+    });
+    await nameChanged;
+    testName(button, "bc");
   },
   { chrome: true, topLevel: true, iframe: true, remoteIframe: true }
 );

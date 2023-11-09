@@ -6,15 +6,18 @@
 package org.mozilla.geckoview_example;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -40,6 +43,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -79,6 +83,7 @@ import org.mozilla.geckoview.GeckoSessionSettings;
 import org.mozilla.geckoview.GeckoView;
 import org.mozilla.geckoview.GeckoWebExecutor;
 import org.mozilla.geckoview.Image;
+import org.mozilla.geckoview.MediaSession;
 import org.mozilla.geckoview.OrientationController;
 import org.mozilla.geckoview.RuntimeTelemetry;
 import org.mozilla.geckoview.SlowScriptResponse;
@@ -679,6 +684,52 @@ public class GeckoViewActivity extends AppCompatActivity
         }
       };
 
+  private final StringSetting mCookieBannerHandling =
+      new StringSetting(
+          R.string.key_cookie_banner_handling, R.string.cookie_banner_handling_default) {
+        @Override
+        public void setValue(final GeckoRuntimeSettings settings, final String value) {
+          int cbMode;
+          switch (value) {
+            case "disabled":
+              cbMode = ContentBlocking.CookieBannerMode.COOKIE_BANNER_MODE_DISABLED;
+              break;
+            case "reject_all":
+              cbMode = ContentBlocking.CookieBannerMode.COOKIE_BANNER_MODE_REJECT;
+              break;
+            case "reject_accept_all":
+              cbMode = ContentBlocking.CookieBannerMode.COOKIE_BANNER_MODE_REJECT_OR_ACCEPT;
+              break;
+            default:
+              throw new RuntimeException("Invalid Cookie Banner Handling mode: " + value);
+          }
+          settings.getContentBlocking().setCookieBannerMode(cbMode);
+        }
+      };
+
+  private final StringSetting mCookieBannerHandlingPrivateMode =
+      new StringSetting(
+          R.string.key_cookie_banner_handling_pb, R.string.cookie_banner_handling_pb_default) {
+        @Override
+        public void setValue(final GeckoRuntimeSettings settings, final String value) {
+          int cbPrivateMode;
+          switch (value) {
+            case "disabled":
+              cbPrivateMode = ContentBlocking.CookieBannerMode.COOKIE_BANNER_MODE_DISABLED;
+              break;
+            case "reject_all":
+              cbPrivateMode = ContentBlocking.CookieBannerMode.COOKIE_BANNER_MODE_REJECT;
+              break;
+            case "reject_accept_all":
+              cbPrivateMode = ContentBlocking.CookieBannerMode.COOKIE_BANNER_MODE_REJECT_OR_ACCEPT;
+              break;
+            default:
+              throw new RuntimeException("Invalid Cookie Banner Handling private mode: " + value);
+          }
+          settings.getContentBlocking().setCookieBannerModePrivateBrowsing(cbPrivateMode);
+        }
+      };
+
   private final BooleanSetting mDynamicFirstPartyIsolation =
       new BooleanSetting(R.string.key_dfpi, R.bool.dfpi_default) {
         @Override
@@ -726,7 +777,7 @@ public class GeckoViewActivity extends AppCompatActivity
     createNotificationChannel();
     setContentView(R.layout.geckoview_activity);
     mGeckoView = findViewById(R.id.gecko_view);
-
+    mGeckoView.setActivityContextDelegate(new ExampleActivityDelegate());
     mTabSessionManager = new TabSessionManager();
 
     setSupportActionBar(findViewById(R.id.toolbar));
@@ -810,7 +861,8 @@ public class GeckoViewActivity extends AppCompatActivity
                 Intent clickIntent = new Intent(GeckoViewActivity.this, GeckoViewActivity.class);
                 clickIntent.putExtra("onClick", notification);
                 PendingIntent dismissIntent =
-                    PendingIntent.getActivity(GeckoViewActivity.this, mLastID, clickIntent, 0);
+                    PendingIntent.getActivity(
+                        GeckoViewActivity.this, mLastID, clickIntent, PendingIntent.FLAG_IMMUTABLE);
 
                 NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(GeckoViewActivity.this, CHANNEL_ID)
@@ -1068,6 +1120,8 @@ public class GeckoViewActivity extends AppCompatActivity
 
     session.setMediaDelegate(new ExampleMediaDelegate(this));
 
+    session.setMediaSessionDelegate(new ExampleMediaSessionDelegate(this));
+
     session.setSelectionActionDelegate(new BasicSelectionActionDelegate(this));
     if (sExtensionManager.extension != null) {
       final WebExtension.SessionController sessionController = session.getWebExtensionController();
@@ -1216,6 +1270,12 @@ public class GeckoViewActivity extends AppCompatActivity
       case R.id.action_close_tab:
         closeTab((TabSession) session);
         break;
+      case R.id.save_pdf:
+        savePdf(session);
+        break;
+      case R.id.print_page:
+        printPage(session);
+        break;
       default:
         return super.onOptionsItemSelected(item);
     }
@@ -1296,6 +1356,32 @@ public class GeckoViewActivity extends AppCompatActivity
     setGeckoViewSession(newSession);
     mToolbarView.updateTabCount();
     sGeckoRuntime.getProfilerController().addMarker("Create new tab", startTime);
+  }
+
+  @SuppressLint("WrongThread")
+  @UiThread
+  private void savePdf(GeckoSession session) {
+    session
+        .saveAsPdf()
+        .accept(
+            pdfStream -> {
+              try {
+                WebResponse response =
+                    new WebResponse.Builder(null)
+                        .body(pdfStream)
+                        .addHeader("Content-Type", "application/pdf")
+                        .addHeader("Content-Disposition", "attachment; filename=PDFDownload.pdf")
+                        .build();
+                session.getContentDelegate().onExternalResponse(session, response);
+
+              } catch (Exception e) {
+                Log.d(LOGTAG, e.getMessage());
+              }
+            });
+  }
+
+  private void printPage(GeckoSession session) {
+    session.printPageContent();
   }
 
   @Override
@@ -1485,6 +1571,7 @@ public class GeckoViewActivity extends AppCompatActivity
               + "/"
               + filename;
 
+      Log.i(LOGTAG, "Downloading to: " + downloadsPath);
       int bufferSize = 1024; // to read in 1Mb increments
       byte[] buffer = new byte[bufferSize];
       try (OutputStream out = new BufferedOutputStream(new FileOutputStream(downloadsPath))) {
@@ -1623,6 +1710,11 @@ public class GeckoViewActivity extends AppCompatActivity
     public GeckoResult<AllowOrDeny> onOrientationLock(@NonNull int aOrientation) {
       setRequestedOrientation(aOrientation);
       return GeckoResult.allow();
+    }
+
+    @Override
+    public void onOrientationUnlock() {
+      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
   }
 
@@ -1773,7 +1865,18 @@ public class GeckoViewActivity extends AppCompatActivity
       final View toolbar = findViewById(R.id.toolbar);
       if (toolbar != null) {
         toolbar.setTranslationY(0f);
+        mGeckoView.setVerticalClipping(0);
       }
+    }
+
+    @Override
+    public void onCookieBannerDetected(final GeckoSession session) {
+      Log.d("BELL", "A cookie banner was detected on this website");
+    }
+
+    @Override
+    public void onCookieBannerHandled(final GeckoSession session) {
+      Log.d("BELL", "A cookie banner was handled on this website");
     }
   }
 
@@ -2358,7 +2461,8 @@ public class GeckoViewActivity extends AppCompatActivity
       Intent intent = new Intent(mActivity, GeckoViewActivity.class);
       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
       PendingIntent pendingIntent =
-          PendingIntent.getActivity(mActivity.getApplicationContext(), 0, intent, 0);
+          PendingIntent.getActivity(
+              mActivity.getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
       NotificationCompat.Builder builder =
           new NotificationCompat.Builder(mActivity.getApplicationContext(), CHANNEL_ID)
@@ -2370,6 +2474,38 @@ public class GeckoViewActivity extends AppCompatActivity
               .setCategory(NotificationCompat.CATEGORY_SERVICE);
 
       notificationManager.notify(mNotificationId, builder.build());
+    }
+  }
+
+  private class ExampleMediaSessionDelegate implements MediaSession.Delegate {
+    private final Activity mActivity;
+
+    public ExampleMediaSessionDelegate(Activity activity) {
+      mActivity = activity;
+    }
+
+    @Override
+    public void onFullscreen(
+        @NonNull final GeckoSession session,
+        @NonNull final MediaSession mediaSession,
+        final boolean enabled,
+        @Nullable final MediaSession.ElementMetadata meta) {
+      Log.d(LOGTAG, "onFullscreen: Metadata=" + (meta != null ? meta.toString() : "null"));
+
+      if (!enabled) {
+        mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+        return;
+      }
+
+      if (meta == null) {
+        return;
+      }
+
+      if (meta.width > meta.height) {
+        mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+      } else {
+        mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+      }
     }
   }
 
@@ -2392,6 +2528,12 @@ public class GeckoViewActivity extends AppCompatActivity
     @Override
     public void onStringScalar(final @NonNull RuntimeTelemetry.Metric<String> scalar) {
       Log.d(LOGTAG, "onStringScalar " + scalar);
+    }
+  }
+
+  private class ExampleActivityDelegate implements GeckoView.ActivityContextDelegate {
+    public Context getActivityContext() {
+      return GeckoViewActivity.this;
     }
   }
 }

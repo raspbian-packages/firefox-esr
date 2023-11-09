@@ -38,9 +38,11 @@ menu-quit =
             [windows] U
            *[other] U
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Ukončiť { -brand-shorter-name }
+
 menu-about =
     .label = O aplikácii { -brand-shorter-name }
     .accesskey = O
@@ -221,8 +223,6 @@ menu-history-undo-menu =
     .label = Nedávno zatvorené karty
 menu-history-undo-window-menu =
     .label = Nedávno zatvorené okná
-menu-history-reopen-all-tabs = Obnoviť všetky karty
-menu-history-reopen-all-windows = Obnoviť všetky okná
 
 ## Bookmarks Menu
 
@@ -231,14 +231,13 @@ menu-bookmarks-menu =
     .accesskey = o
 menu-bookmarks-manage =
     .label = Spravovať záložky
-menu-bookmark-current-tab =
-    .label = Pridať túto kartu medzi záložky
-menu-bookmark-edit =
-    .label = Upraviť túto záložku
 menu-bookmark-tab =
     .label = Pridať túto kartu medzi záložky
 menu-edit-bookmark =
     .label = Upraviť túto záložku…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Hľadať v záložkách
 menu-bookmarks-all-tabs =
     .label = Pridať všetky karty medzi záložky…
 menu-bookmarks-toolbar =
@@ -332,6 +331,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Vypnúť režim riešenia problémov
     .accesskey = r
+menu-help-switch-device =
+    .label = Prechod na nové zariadenie
+    .accesskey = P
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

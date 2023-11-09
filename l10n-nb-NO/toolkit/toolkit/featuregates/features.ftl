@@ -12,7 +12,7 @@ experimental-features-css-masonry-description = Aktiverer støtte for den eksper
 # by various online articles and is technical in nature.
 experimental-features-web-gpu2 =
     .label = Web API: WebGPU
-experimental-features-web-gpu-description2 = Denne nye API-en gir støtte på lavt nivå for å utføre beregning og grafisk gjengivelse ved å bruke <a data-l10n-name="wikipedia">grafikkprosessoren (GPU)</a> på brukerens enhet eller datamaskin. <a data-l10n-name="spec">Spesifikasjonen</a> er fremdeles under arbeid. Se <a data-l10n-name="bugzilla">bug 1602129</a> for mer informasjon.
+experimental-features-web-gpu-description3 = <a data-l10n-name="wikipedia-webgpu">WebGPU API-et</a> gir støtte på lavt nivå for å utføre beregninger og grafikkgjengivelse ved bruk av <a data-l10n-name="wikipedia-gpu">grafikkprosessoren (GPU)</a> til brukerens enhet eller datamaskin. Den første versjonen av <a data-l10n-name="spec">spesifikasjonen</a> nærmer seg ferdigstillelse. Se <a data-l10n-name="bugzilla">bug 1616739</a> for mer informasjon.
 
 # The title of the experiment should be kept in English as it may be referenced
 # by various online articles and is technical in nature.
@@ -20,20 +20,10 @@ experimental-features-media-jxl =
     .label = Media: JPEG XL
 experimental-features-media-jxl-description = Med denne funksjonen aktivert støtter { -brand-short-name } formatet JPEG XL (JXL). Dette er et forbedret bildefilformat som støtter tapsfri overgang fra tradisjonelle JPEG-filer. Se <a data-l10n-name="bugzilla">feilrapport 1539075</a> for mer informasjon.
 
-# The title of the experiment should be kept in English as it may be referenced
-# by various online articles and is technical in nature.
-experimental-features-css-constructable-stylesheets =
-    .label = CSS: Constructable Stylesheets
-experimental-features-css-constructable-stylesheets-description = Tilleggingen av en konstruktør til <a data-l10n-name="mdn-cssstylesheet">CSSStyleSheet</a>-grensesnittet samt en rekke relaterte endringer gjør det mulig å lage nye stilsett direkte uten å måtte legge settet til HTML. Dette gjør det mye enklere å lage gjenbrukbare stilsett for bruk med <a data-l10n-name="mdn-shadowdom">Shadow DOM</a>. Se <a data-l10n-name="bugzilla">bug 1520690</a> for mer informasjon.
-
 experimental-features-devtools-compatibility-panel =
     .label = Utviklerverktøy: Kompatibilitetspanel
 experimental-features-devtools-compatibility-panel-description = Et sidepanel for Page Inspector som viser deg informasjon om appens kompatibilitetsstatus på tvers av nettlesere. Se <a data-l10n-name="bugzilla">bug 1584464</a> for mer informasjon.
 
-# Do not translate 'SameSite', 'Lax' and 'None'.
-experimental-features-cookie-samesite-lax-by-default2 =
-    .label = Infokapsel: SameSite=Lax som standard
-experimental-features-cookie-samesite-lax-by-default2-description = Behandle infokapsler som «SameSite=Lax» som standard hvis ingen «SameSite»-attributt er spesifisert. Utviklere kan velge fortsatt ubegrenset bruk ved å eksplisitt bruke «SameSite=None».
 
 # Do not translate 'SameSite', 'Lax' and 'None'.
 experimental-features-cookie-samesite-none-requires-secure2 =
@@ -45,12 +35,6 @@ experimental-features-cookie-samesite-none-requires-secure2-description = Infoka
 experimental-features-abouthome-startup-cache =
     .label = about:home oppstartshurtigbuffer
 experimental-features-abouthome-startup-cache-description = Et hurtigbuffer for det første about:home-dokument som er lastet som standard ved oppstart. Hensikten med hurtigbufferet er å forbedre oppstartsytelsen.
-
-# The title of the experiment should be kept in English as it may be referenced
-# by various online articles and is technical in nature.
-experimental-features-cookie-samesite-schemeful =
-    .label = Cookies: Schemeful SameSite
-experimental-features-cookie-samesite-schemeful-description = Behandle informasjonskapsler fra samme domene, men med forskjellige skjemaer (f.eks. http://example.com og https://example.com) som flere nettsteder i stedet for samme nettsted. Forbedrer sikkerheten, men introduserer potensielt brudd.
 
 # "Service Worker" is an API name and is usually not translated.
 experimental-features-devtools-serviceworker-debugger-support =
@@ -72,7 +56,3 @@ experimental-features-js-warp-description = Aktiver Warp, et prosjekt for å for
 experimental-features-ime-search =
     .label = Adresselinjen: Vis resultater under IME-sammensetning
 experimental-features-ime-search-description = En IME (Input Method Editor) er et verktøy som lar deg skrive inn komplekse symboler, for eksempel de som brukes i østasiatiske eller Indiske skriftspråk, ved hjelp av et standardtastatur. Aktivering av dette eksperimentet holder adresselinjepanelet åpent, viser søkeresultater og forslag mens du bruker IME til å legge inn tekst. Merk at IME kan vise et panel som dekker resultatene i adresselinjen, og derfor er denne preferansen kun anbefalt for IME som ikke bruker denne typen paneler.
-
-experimental-features-accessibility-cache =
-    .label = Tilgjengelighetshurtiglager
-experimental-features-accessibility-cache-description = Hurtiglagrer all tilgjengelighetsinformasjon fra alle dokumenter i { -brand-short-name }-hovedprosessen. Dette forbedrer ytelsen for skjermlesere og andre applikasjoner som bruker tilgjengelighets-APIer.

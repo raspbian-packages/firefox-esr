@@ -19,7 +19,7 @@
 
 namespace mozilla {
 
-SandboxTestingChild* SandboxTestingChild::sInstance = nullptr;
+StaticRefPtr<SandboxTestingChild> SandboxTestingChild::sInstance;
 
 bool SandboxTestingChild::IsTestThread() { return mThread->IsOnThread(); }
 
@@ -38,6 +38,9 @@ bool SandboxTestingChild::Initialize(
   }
   sInstance =
       new SandboxTestingChild(thread, std::move(aSandboxTestingEndpoint));
+  thread->Dispatch(NewRunnableMethod<Endpoint<PSandboxTestingChild>&&>(
+      "SandboxTestingChild::Bind", sInstance.get(), &SandboxTestingChild::Bind,
+      std::move(aSandboxTestingEndpoint)));
   return true;
 }
 
@@ -49,12 +52,9 @@ SandboxTestingChild* SandboxTestingChild::GetInstance() {
 
 SandboxTestingChild::SandboxTestingChild(
     SandboxTestingThread* aThread, Endpoint<PSandboxTestingChild>&& aEndpoint)
-    : mThread(aThread) {
-  MOZ_ASSERT(aThread);
-  PostToTestThread(NewNonOwningRunnableMethod<Endpoint<PSandboxTestingChild>&&>(
-      "SandboxTestingChild::Bind", this, &SandboxTestingChild::Bind,
-      std::move(aEndpoint)));
-}
+    : mThread(aThread) {}
+
+SandboxTestingChild::~SandboxTestingChild() = default;
 
 void SandboxTestingChild::Bind(Endpoint<PSandboxTestingChild>&& aEndpoint) {
   MOZ_RELEASE_ASSERT(mThread->IsOnThread());
@@ -81,16 +81,25 @@ void SandboxTestingChild::Bind(Endpoint<PSandboxTestingChild>&& aEndpoint) {
     RunTestsSocket(this);
   }
 
+  if (XRE_IsGPUProcess()) {
+    RunTestsGPU(this);
+  }
+
   if (XRE_IsUtilityProcess()) {
     RefPtr<ipc::UtilityProcessChild> s = ipc::UtilityProcessChild::Get();
     MOZ_ASSERT(s, "Unable to grab a UtilityProcessChild");
     switch (s->mSandbox) {
       case ipc::SandboxingKind::GENERIC_UTILITY:
         RunTestsGenericUtility(this);
-        break;
-
-      case ipc::SandboxingKind::UTILITY_AUDIO_DECODING:
-        RunTestsUtilityAudioDecoder(this);
+#ifdef MOZ_APPLEMEDIA
+        [[fallthrough]];
+      case ipc::SandboxingKind::UTILITY_AUDIO_DECODING_APPLE_MEDIA:
+#endif
+#ifdef XP_WIN
+        [[fallthrough]];
+      case ipc::SandboxingKind::UTILITY_AUDIO_DECODING_WMF:
+#endif
+        RunTestsUtilityAudioDecoder(this, s->mSandbox);
         break;
 
       default:
@@ -116,7 +125,6 @@ void SandboxTestingChild::ActorDestroy(ActorDestroyReason aWhy) {
 void SandboxTestingChild::Destroy() {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(sInstance);
-  delete sInstance;
   sInstance = nullptr;
 }
 

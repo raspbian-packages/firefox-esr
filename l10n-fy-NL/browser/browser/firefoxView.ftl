@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Koartlyn sluten
 firefoxview-closed-tabs-description2 = Iepenje siden opnij dy’t jo yn dit finster sluten hawwe.
 firefoxview-closed-tabs-placeholder-header = Gjin koartlyn sluten ljepblêden
 firefoxview-closed-tabs-placeholder-body = Wannear’t jo in ljepblêd yn dit finster slute, kinne jo it hjir ophelje.
+firefoxview-closed-tabs-placeholder-body2 = Wannear’t jo in ljepblêd, kinne jo it hjir ophelje.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Lêst aktyf
 firefoxview-tabs-list-tab-button =
     .title = { $targetURI } iepenje yn in nij ljepblêd
 firefoxview-try-colorways-button = Kleurstellingen probearje
-firefoxview-no-current-colorway-collection = Nije kleurstellingen binne ûnderweis
 firefoxview-change-colorway-button = Kleurstelling wizigje
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,63 @@ firefoxview-collapse-button-show =
     .title = List toane
 firefoxview-collapse-button-hide =
     .title = List ferstopje
+firefoxview-overview-nav = Koartlyn besjoen
+    .title = Koartlyn besjoen
+firefoxview-overview-header = Koartlyn besjoen
+    .title = Koartlyn besjoen
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Skiednis
+    .title = Skiednis
+firefoxview-history-header = Skiednis
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Iepen ljeplêden
+    .title = Iepen ljeplêden
+firefoxview-opentabs-header = Iepen ljeplêden
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Koartlyn sluten ljepblêden
+    .title = Koartlyn sluten ljepblêden
+firefoxview-recently-closed-header = Koartlyn sluten ljepblêden
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Ljepblêden fan oare apparaten
+    .title = Ljepblêden fan oare apparaten
+firefoxview-synced-tabs-header = Ljepblêden fan oare apparaten
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Alles besjen
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Finster { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Finster { $winID } (aktuele)
+firefoxview-opentabs-focus-tab =
+    .title = Wikselje nei dit ljepblêd
+firefoxview-show-more = Mear toane
+firefoxview-show-less = Minder toane
+firefoxview-sort-history-by-date-label = Sortearje op datum
+firefoxview-sort-history-by-site-label = Sortearje op website
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Hjoed – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Juster – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Alle skiednis toane
+firefoxview-view-more-browsing-history = Mear navigaasjeskiednis besjen

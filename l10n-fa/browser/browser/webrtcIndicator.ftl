@@ -19,7 +19,7 @@ webrtc-indicator-window =
 ## Used as list items in sharing menu
 
 webrtc-item-camera = دوربین
-webrtc-item-microphone = میکروفن
+webrtc-item-microphone = صدابَر
 webrtc-item-audio-capture = صدای زبانه
 webrtc-item-application = برنامه
 webrtc-item-screen = صفحه‌نمایش
@@ -30,6 +30,7 @@ webrtc-item-browser = زبانه
 
 # This is used for the website origin for the sharing menu if no readable origin could be deduced from the URL.
 webrtc-sharing-menuitem-unknown-host = مبدا نا‌شناخته
+
 # Variables:
 #   $origin (String): The website origin (e.g. www.mozilla.org)
 #   $itemList (String): A formatted list of items (e.g. "camera, microphone and tab audio")
@@ -38,14 +39,15 @@ webrtc-sharing-menuitem =
 webrtc-sharing-menu =
     .label = زبانه‌های دستگاه‌های به‌اشتراک‌گذاری شده
     .accesskey = د
+
 webrtc-sharing-window = شما پنجرهٔ یک برنامه دیگر را اشتراک گذاشته‌اید.
 webrtc-sharing-browser-window = شما { -brand-short-name } را به اشتراک گذاشته‌اید.
 webrtc-sharing-screen = شما تمامِ صفحهٔ خود را به اشتراک گذاشته‌اید.
 webrtc-stop-sharing-button = توقف اشتراک‌گذاری
 webrtc-microphone-unmuted =
-    .title = میکروفن را خاموش کنید
+    .title = صدابَر را خاموش کنید
 webrtc-microphone-muted =
-    .title = میکروفن را روشن کنید
+    .title = صدابَر را روشن کنید
 webrtc-camera-unmuted =
     .title = دوربین را خاموش کنید
 webrtc-camera-muted =
@@ -60,18 +62,18 @@ webrtc-minimize =
 webrtc-camera-system-menu =
     .label = شما دوربین خود را به اشتراک گذاشته‌اید. برای کنترل اشتراک‌گذاری کلیک کنید.
 webrtc-microphone-system-menu =
-    .label = شما میکروفن خود را به اشتراک گذاشته‌اید. برای کنترل اشتراک‌گذاری کلیک کنید.
+    .label = شما صدابَر خود را هم‌رسانی کرده‌اید. برای واپایش هم‌رسانی کلیک کنید.
 webrtc-screen-system-menu =
     .label = شما در حال اشتراک‌گذاری یک پنجره یا کل صفحه هستید. برای کنترل اشتراک‌گذاری کلیک کنید.
 
 ## Tooltips used by the legacy global sharing indicator
 
 webrtc-indicator-sharing-camera-and-microphone =
-    .tooltiptext = دوربین و میکروفن شما به اشتراک گذاشته شدند. کلیک برای مدیریت به اشتراک گذاری.
+    .tooltiptext = دوربین و صدابَر شما هم‌رسانی شدند. برای واپایش هم‌رسانی کلید کنید.
 webrtc-indicator-sharing-camera =
     .tooltiptext = دوربین شما به اشتراک گذاشته شد. کلیک برای مدیریت به اشتراک گذاری.
 webrtc-indicator-sharing-microphone =
-    .tooltiptext = میکروفن شما به اشتراک گذاشته شد. کلیک برای مدیریت به اشتراک گذاری.
+    .tooltiptext = صدابَر شما هم‌رسانی شد. برای واپایش هم‌رسانی کلید کنید.
 webrtc-indicator-sharing-application =
     .tooltiptext = برنامه به اشتراک گذاشته شد. کلیک برای مدیریت به اشتراک گذاری.
 webrtc-indicator-sharing-screen =
@@ -91,6 +93,7 @@ webrtc-indicator-menuitem-control-sharing =
     .label = مدیریت به اشتراک گذاری
 webrtc-indicator-menuitem-control-sharing-on =
     .label = مدیریت به اشتراک‌گذاری بر روی "{ $streamTitle }"
+
 webrtc-indicator-menuitem-sharing-camera-with =
     .label = به اشتراک گذاری دوربین با " { $streamTitle } "
 webrtc-indicator-menuitem-sharing-camera-with-n-tabs =
@@ -99,14 +102,16 @@ webrtc-indicator-menuitem-sharing-camera-with-n-tabs =
             [one] اشتراک‌گذاری دوربین با { $tabCount } زبانه
            *[other] اشتراک‌گذاری دوربین با { $tabCount } زبانه
         }
+
 webrtc-indicator-menuitem-sharing-microphone-with =
-    .label = به اشتراک گذاری میکروفن با " { $streamTitle } "
+    .label = هم‌رسانی صدابَر با " { $streamTitle } "
 webrtc-indicator-menuitem-sharing-microphone-with-n-tabs =
     .label =
         { $tabCount ->
-            [one] اشتراک‌گذاری میکروفن با { $tabCount } زبانه
-           *[other] اشتراک‌گذاری میکروفن با { $tabCount } زبانه
+            [one] هم‌رسانی صدابَر با { $tabCount } زبانه
+           *[other] هم‌رسانی صدابَر با { $tabCount } زبانه
         }
+
 webrtc-indicator-menuitem-sharing-application-with =
     .label = به اشتراک گذاری برنامه با " { $streamTitle } "
 webrtc-indicator-menuitem-sharing-application-with-n-tabs =
@@ -115,6 +120,7 @@ webrtc-indicator-menuitem-sharing-application-with-n-tabs =
             [one] اشتراک‌گذاری برنامه با { $tabCount } زبانه
            *[other] اشتراک‌گذاری برنامه‌ها با { $tabCount } زبانه
         }
+
 webrtc-indicator-menuitem-sharing-screen-with =
     .label = به اشتراک گذاری صفحه نمایشگر با " { $streamTitle } "
 webrtc-indicator-menuitem-sharing-screen-with-n-tabs =
@@ -123,6 +129,7 @@ webrtc-indicator-menuitem-sharing-screen-with-n-tabs =
             [one] اشتراک‌گذاری صفحه نمایش با { $tabCount } زبانه
            *[other] اشتراک‌گذاری صفحه نمایش با { $tabCount } زبانه
         }
+
 webrtc-indicator-menuitem-sharing-window-with =
     .label = به اشتراک گذاری پنجره با " { $streamTitle } "
 webrtc-indicator-menuitem-sharing-window-with-n-tabs =
@@ -131,6 +138,7 @@ webrtc-indicator-menuitem-sharing-window-with-n-tabs =
             [one] اشتراک‌گذاری پنجره با { $tabCount } زبانه
            *[other] اشتراک‌گذاری پنجره‌ها با { $tabCount } زبانه
         }
+
 webrtc-indicator-menuitem-sharing-browser-with =
     .label = به اشتراک گذاری زبانه با " { $streamTitle } "
 # This message is shown when the contents of a tab is shared during a WebRTC
@@ -147,36 +155,37 @@ webrtc-indicator-menuitem-sharing-browser-with-n-tabs =
 
 webrtc-allow-share-audio-capture = آیا { $origin } اجازه شنیدن صداهای این زبانه را دارد؟
 webrtc-allow-share-camera = آیا { $origin } اجازه استفاده از دوربین شما را دارد؟
-webrtc-allow-share-microphone = آیا { $origin } اجازه استفاده از میکروفن شما را دارد؟
+webrtc-allow-share-microphone = آیا { $origin } اجازهٔ استفاده از صدابَر شما را دارد؟
 webrtc-allow-share-screen = آیا { $origin } اجازه دیدن صفحه‌نمایش شما را دارد؟
 # "Speakers" is used in a general sense that might include headphones or
 # another audio output connection.
 webrtc-allow-share-speaker = آیا { $origin } اجازه استفاده از سایر بلندگوهای شما را دارد؟
-webrtc-allow-share-camera-and-microphone = آیا { $origin } اجازه استفاده از دوربین و میکروفن شما را دارد؟
+webrtc-allow-share-camera-and-microphone = آیا { $origin } اجازهٔ استفاده از دوربین و صدابَر شما را دارد؟
 webrtc-allow-share-camera-and-audio-capture = آیا { $origin } اجازه استفاده از دوربین و شنیدن صداهای این زبانه را دارد؟
-webrtc-allow-share-screen-and-microphone = آیا { $origin } اجازه استفاده از میکروفن و دیدن صفحه‌نمایش شما را دارد؟
+webrtc-allow-share-screen-and-microphone = آیا { $origin } اجازهٔ استفاده از صدابَر و دیدن صفحه‌نمایش شما را دارد؟
 webrtc-allow-share-screen-and-audio-capture = آیا { $origin } اجازه شنیدن صداهای این زبانه و دیدن صفحه‌نمایش شما را دارد؟
 
 ## Variables:
 ##   $origin (String): the first party origin.
 ##   $thirdParty (String): the third party origin.
 
+webrtc-allow-share-audio-capture-unsafe-delegation = به { $origin } اجازه می‌دهید تا به { $thirdParty } مجوز شنود این زبانه را بدهد؟
 webrtc-allow-share-camera-unsafe-delegation = آیا به { $origin } اجازه می دهید تا به { $thirdParty } اجازه دسترسی به دوربین شما را بدهد؟
-webrtc-allow-share-microphone-unsafe-delegations = آیا به { $origin } اجازه می دهید تا به { $thirdParty } اجازه دسترسی به میکروفن شما را بدهد؟
-webrtc-allow-share-microphone-unsafe-delegation = آیا به { $origin } اجازه می دهید تا به { $thirdParty } اجازه دسترسی به میکروفن شما را بدهد؟
+webrtc-allow-share-microphone-unsafe-delegation = آیا به { $origin } اجازه می‌دهید تا دسترسی به صدابَرتان را به { $thirdParty } بدهد؟
 webrtc-allow-share-screen-unsafe-delegation = آیا به { $origin } اجازه می دهید تا به { $thirdParty } اجازه دسترسی به صفحه‌نمایش شما را بدهد؟
 # "Speakers" is used in a general sense that might include headphones or
 # another audio output connection.
 webrtc-allow-share-speaker-unsafe-delegation = آیا به { $origin } اجازه می دهید تا به { $thirdParty } اجازه دسترسی به سایر بلندگوهای شما را بدهد؟
-webrtc-allow-share-camera-and-microphone-unsafe-delegation = آیا به { $origin } اجازه می دهید تا به { $thirdParty } اجازه دسترسی به دوربین و میکروفن شما را بدهد؟
+webrtc-allow-share-camera-and-microphone-unsafe-delegation = آیا به { $origin } اجازه می‌دهید تا دسترسی به دوربین و صدابَرتان را به { $thirdParty } بدهد؟
 webrtc-allow-share-camera-and-audio-capture-unsafe-delegation = آیا به { $origin } اجازه می دهید تا به { $thirdParty } اجازه دسترسی به دوربین و گوش دادن به صداهای این زبانه را بدهد؟
-webrtc-allow-share-screen-and-microphone-unsafe-delegation = آیا به { $origin } اجازه می دهید تا به { $thirdParty } اجازه دسترسی به میکروفن و دیدن صفحه‌نمایش شما را بدهد؟
+webrtc-allow-share-screen-and-microphone-unsafe-delegation = آیا به { $origin } اجازه می‌دهید تا دسترسی به صدابَرتان و دیدن صفحه‌نمایش‌تان را به { $thirdParty } بدهد؟
 webrtc-allow-share-screen-and-audio-capture-unsafe-delegation = آیا به { $origin } اجازه می دهید تا به { $thirdParty } اجازه شنیدن صداهای این زبانه و دیدن صفحه‌نمایش شما را بدهد؟
 
 ##
 
 webrtc-share-screen-warning = صفحه‌نمایش را تنها با سایت‌هایی که به آنها اعتماد دارید به اشتراک بگذارید. اشتراک‌گذاری صفحه می‌تواند به سایت‌های گمراه‌کننده اجازه دهد تا بجای شما در وب مرور کرده و داده‌های خصوصی شما را سرقت کنند.
 webrtc-share-browser-warning = { -brand-short-name } را تنها با سایت‌هایی که به آنها اعتماد دارید به اشتراک بگذارید. اشتراک‌گذاری صفحه می‌تواند به سایت‌های گمراه‌کننده اجازه دهد تا بجای شما در وب مرور کرده و داده‌های خصوصی شما را سرقت کنند.
+
 webrtc-share-screen-learn-more = اطلاعات بیشتر
 webrtc-pick-window-or-screen = پنجره یا صفحه را انتخاب کنید
 webrtc-share-entire-screen = تمام صفحه
@@ -212,6 +221,7 @@ webrtc-action-not-now =
 
 webrtc-remember-allow-checkbox = این تصمیم را به خاطر بسپار
 webrtc-mute-notifications-checkbox = هنگام به اشتراک‌گذاری، اعلان‌های وب‌سایت‌ها بی‌صدا باشند
+
 webrtc-reason-for-no-permanent-allow-screen = { -brand-short-name } به صورت موقت اجازه دسترسی به صفحه شما را ندارد.
 webrtc-reason-for-no-permanent-allow-audio = { -brand-short-name } نمی تواند به طور دائمی به گوش دادن صدای زبانه های شما بدون پرسیدن سوال در مورد به اشتراک گذاشتن‌ آن زبانه دسترسی داشته باشد.
 webrtc-reason-for-no-permanent-allow-insecure = ارتباط شما امن نیست. برای محافظت از خود، { -brand-short-name }  تنها مجوز دسترسی برای همین جلسه را دارد.

@@ -21,7 +21,6 @@
 #include "nsIFrame.h"
 #include "nsIFrameInlines.h"
 #include "nsImageRenderer.h"
-#include "nsMemory.h"
 
 using namespace mozilla;
 using namespace mozilla::image;
@@ -432,7 +431,7 @@ void nsFloatManager::PopState(SavedState* aState) {
   mFloats.TruncateLength(aState->mFloatInfoCount);
 }
 
-nscoord nsFloatManager::GetLowestFloatTop() const {
+nscoord nsFloatManager::LowestFloatBStart() const {
   if (mPushedLeftFloatPastBreak || mPushedRightFloatPastBreak) {
     return nscoord_MAX;
   }
@@ -462,7 +461,7 @@ nsresult nsFloatManager::List(FILE* out) const {
 #endif
 
 nscoord nsFloatManager::ClearFloats(nscoord aBCoord,
-                                    StyleClear aBreakType) const {
+                                    StyleClear aClearType) const {
   if (!HasAnyFloats()) {
     return aBCoord;
   }
@@ -470,7 +469,7 @@ nscoord nsFloatManager::ClearFloats(nscoord aBCoord,
   nscoord blockEnd = aBCoord + mBlockStart;
 
   const FloatInfo& tail = mFloats[mFloats.Length() - 1];
-  switch (aBreakType) {
+  switch (aClearType) {
     case StyleClear::Both:
       blockEnd = std::max(blockEnd, tail.mLeftBEnd);
       blockEnd = std::max(blockEnd, tail.mRightBEnd);
@@ -491,11 +490,11 @@ nscoord nsFloatManager::ClearFloats(nscoord aBCoord,
   return blockEnd;
 }
 
-bool nsFloatManager::ClearContinues(StyleClear aBreakType) const {
+bool nsFloatManager::ClearContinues(StyleClear aClearType) const {
   return ((mPushedLeftFloatPastBreak || mSplitLeftFloatAcrossBreak) &&
-          (aBreakType == StyleClear::Both || aBreakType == StyleClear::Left)) ||
+          (aClearType == StyleClear::Both || aClearType == StyleClear::Left)) ||
          ((mPushedRightFloatPastBreak || mSplitRightFloatAcrossBreak) &&
-          (aBreakType == StyleClear::Both || aBreakType == StyleClear::Right));
+          (aClearType == StyleClear::Both || aClearType == StyleClear::Right));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1940,11 +1939,12 @@ nsFloatManager::ImageShapeInfo::ImageShapeInfo(
                    (int32_t)col < (dfOffset.x + aImageSize.width) &&
                    (int32_t)row >= dfOffset.y &&
                    (int32_t)row < (dfOffset.y + aImageSize.height) &&
-                   aAlphaPixels[col - dfOffset.x +
-                                (row - dfOffset.y) * aStride] > threshold) {
+                   aAlphaPixels[col - dfOffset.x.value +
+                                (row - dfOffset.y.value) * aStride] >
+                       threshold) {
           // Case 2: Image pixel that is opaque.
           DebugOnly<uint32_t> alphaIndex =
-              col - dfOffset.x + (row - dfOffset.y) * aStride;
+              col - dfOffset.x.value + (row - dfOffset.y.value) * aStride;
           MOZ_ASSERT(alphaIndex < (aStride * h),
                      "Our aAlphaPixels index should be in-bounds.");
 
@@ -2522,14 +2522,14 @@ nsFloatManager::ShapeInfo::CreateInset(const StyleBasicShape& aBasicShape,
   // https://drafts.csswg.org/css-shapes-1/#funcdef-inset
   nsRect physicalShapeBoxRect =
       aShapeBoxRect.GetPhysicalRect(aWM, aContainerSize);
-  nsRect insetRect =
+  const nsRect insetRect =
       ShapeUtils::ComputeInsetRect(aBasicShape, physicalShapeBoxRect);
 
   nsRect logicalInsetRect = ConvertToFloatLogical(
       LogicalRect(aWM, insetRect, aContainerSize), aWM, aContainerSize);
   nscoord physicalRadii[8];
   bool hasRadii = ShapeUtils::ComputeInsetRadii(
-      aBasicShape, physicalShapeBoxRect, physicalRadii);
+      aBasicShape, physicalShapeBoxRect, insetRect, physicalRadii);
 
   // With a zero shape-margin, we will be able to use the fast constructor.
   if (aShapeMargin == 0) {
@@ -2703,11 +2703,10 @@ nsFloatManager::ShapeInfo::CreateImageShape(const StyleImage& aShapeImage,
     return nullptr;
   }
 
-  RefPtr<gfxContext> context = gfxContext::CreateOrNull(drawTarget);
-  MOZ_ASSERT(context);  // already checked the target above
+  gfxContext context(drawTarget);
 
   ImgDrawResult result =
-      imageRenderer.DrawShapeImage(aFrame->PresContext(), *context);
+      imageRenderer.DrawShapeImage(aFrame->PresContext(), context);
 
   if (result != ImgDrawResult::SUCCESS) {
     return nullptr;
@@ -2812,7 +2811,9 @@ nscoord nsFloatManager::ShapeInfo::XInterceptAtY(const nscoord aY,
                                                  const nscoord aRadiusY) {
   // Solve for x in the ellipse equation (x/radiusX)^2 + (y/radiusY)^2 = 1.
   MOZ_ASSERT(aRadiusY > 0);
-  return aRadiusX * std::sqrt(1 - (aY * aY) / double(aRadiusY * aRadiusY));
+  const auto ratioY = aY / static_cast<double>(aRadiusY);
+  MOZ_ASSERT(ratioY <= 1, "Why is position y outside of the radius on y-axis?");
+  return NSToCoordTrunc(aRadiusX * std::sqrt(1 - ratioY * ratioY));
 }
 
 /* static */

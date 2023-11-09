@@ -10,6 +10,7 @@
 // Keep others in (case-insensitive) order:
 #include "mozilla/css/ImageLoader.h"
 #include "mozilla/dom/CanvasRenderingContext2D.h"
+#include "mozilla/dom/ReferrerInfo.h"
 #include "mozilla/dom/SVGGeometryElement.h"
 #include "mozilla/dom/SVGTextPathElement.h"
 #include "mozilla/dom/SVGUseElement.h"
@@ -304,8 +305,14 @@ void SVGRenderingObserver::ContentRemoved(nsIContent* aChild,
  */
 class SVGIDRenderingObserver : public SVGRenderingObserver {
  public:
-  SVGIDRenderingObserver(URLAndReferrerInfo* aURI,
-                         nsIContent* aObservingContent, bool aReferenceImage);
+  // Callback for checking if the element being observed is valid for this
+  // observer. Note that this may be called during construction, before the
+  // deriving class is fully constructed.
+  using TargetIsValidCallback = bool (*)(const Element&);
+  SVGIDRenderingObserver(
+      URLAndReferrerInfo* aURI, nsIContent* aObservingContent,
+      bool aReferenceImage,
+      TargetIsValidCallback aTargetIsValidCallback = nullptr);
 
  protected:
   virtual ~SVGIDRenderingObserver() {
@@ -329,6 +336,9 @@ class SVGIDRenderingObserver : public SVGRenderingObserver {
           nsContentUtils::ContentIsHostIncludingDescendantOf(mObservingContent,
                                                              observed)) {
         return false;
+      }
+      if (mTargetIsValidCallback) {
+        return mTargetIsValidCallback(*observed);
       }
       return true;
     }());
@@ -375,6 +385,7 @@ class SVGIDRenderingObserver : public SVGRenderingObserver {
   ElementTracker mObservedElementTracker;
   RefPtr<Element> mObservingContent;
   bool mTargetIsValid = false;
+  TargetIsValidCallback mTargetIsValidCallback;
 };
 
 /**
@@ -393,11 +404,12 @@ class SVGIDRenderingObserver : public SVGRenderingObserver {
  * XXX: it would be nice to have a clear and concise executive summary of the
  * benefits/necessity of maintaining a second observer list.
  */
-SVGIDRenderingObserver::SVGIDRenderingObserver(URLAndReferrerInfo* aURI,
-                                               nsIContent* aObservingContent,
-                                               bool aReferenceImage)
+SVGIDRenderingObserver::SVGIDRenderingObserver(
+    URLAndReferrerInfo* aURI, nsIContent* aObservingContent,
+    bool aReferenceImage, TargetIsValidCallback aTargetIsValidCallback)
     : mObservedElementTracker(this),
-      mObservingContent(aObservingContent->AsElement()) {
+      mObservingContent(aObservingContent->AsElement()),
+      mTargetIsValidCallback(aTargetIsValidCallback) {
   // Start watching the target element
   nsIURI* uri = nullptr;
   nsIReferrerInfo* referrerInfo = nullptr;
@@ -482,9 +494,9 @@ void SVGTextPathObserver::OnRenderingChange() {
     return;
   }
 
-  MOZ_ASSERT(frame->IsFrameOfType(nsIFrame::eSVG) ||
-                 SVGUtils::IsInSVGTextSubtree(frame),
-             "SVG frame expected");
+  MOZ_ASSERT(
+      frame->IsFrameOfType(nsIFrame::eSVG) || frame->IsInSVGTextSubtree(),
+      "SVG frame expected");
 
   MOZ_ASSERT(frame->GetContent()->IsSVGElement(nsGkAtoms::textPath),
              "expected frame for a <textPath> element");
@@ -493,8 +505,7 @@ void SVGTextPathObserver::OnRenderingChange() {
       nsLayoutUtils::GetClosestFrameOfType(frame, LayoutFrameType::SVGText));
   MOZ_ASSERT(text, "expected to find an ancestor SVGTextFrame");
   if (text) {
-    text->AddStateBits(NS_STATE_SVG_TEXT_CORRESPONDENCE_DIRTY |
-                       NS_STATE_SVG_POSITIONING_DIRTY);
+    text->AddStateBits(NS_STATE_SVG_POSITIONING_DIRTY);
 
     if (SVGUtils::AnyOuterSVGIsCallingReflowSVG(text)) {
       text->AddStateBits(NS_FRAME_IS_DIRTY | NS_FRAME_HAS_DIRTY_CHILDREN);
@@ -530,6 +541,9 @@ void SVGMarkerObserver::OnRenderingChange() {
   MOZ_ASSERT(frame->IsFrameOfType(nsIFrame::eSVG), "SVG frame expected");
 
   // Don't need to request ReflowFrame if we're being reflowed.
+  // Because mRect for SVG frames includes the bounds of any markers
+  // (see the comment for nsIFrame::GetRect), the referencing frame must be
+  // reflowed for any marker changes.
   if (!frame->HasAnyStateBits(NS_FRAME_IN_REFLOW)) {
     // XXXjwatt: We need to unify SVG into standard reflow so we can just use
     // nsChangeHint_NeedReflow | nsChangeHint_NeedDirtyReflow here.
@@ -569,6 +583,8 @@ void SVGPaintingProperty::OnRenderingChange() {
   }
 }
 
+// Observer for -moz-element(#element). Note that the observed element does not
+// have to be an SVG element.
 class SVGMozElementObserver final : public SVGPaintingProperty {
  public:
   SVGMozElementObserver(URLAndReferrerInfo* aURI, nsIFrame* aFrame,
@@ -634,6 +650,10 @@ void BackgroundClipRenderingObserver::OnRenderingChange() {
   }
 }
 
+static bool IsSVGFilterElement(const Element& aObserved) {
+  return aObserved.IsSVGElement(nsGkAtoms::filter);
+}
+
 /**
  * In a filter chain, there can be multiple SVG reference filters.
  * e.g. filter: url(#svg-filter-1) blur(10px) url(#svg-filter-2);
@@ -650,7 +670,8 @@ class SVGFilterObserver final : public SVGIDRenderingObserver {
  public:
   SVGFilterObserver(URLAndReferrerInfo* aURI, nsIContent* aObservingContent,
                     SVGFilterObserverList* aFilterChainObserver)
-      : SVGIDRenderingObserver(aURI, aObservingContent, false),
+      : SVGIDRenderingObserver(aURI, aObservingContent, false,
+                               IsSVGFilterElement),
         mFilterObserverList(aFilterChainObserver) {}
 
   void DetachFromChainObserver() { mFilterObserverList = nullptr; }
@@ -1419,8 +1440,8 @@ SVGGeometryElement* SVGObserverUtils::GetAndObserveTextPathsPath(
 
     // There's no clear refererer policy spec about non-CSS SVG resource
     // references Bug 1415044 to investigate which referrer we should use
-    nsCOMPtr<nsIReferrerInfo> referrerInfo =
-        ReferrerInfo::CreateForSVGResources(content->OwnerDoc());
+    nsIReferrerInfo* referrerInfo =
+        content->OwnerDoc()->ReferrerInfoForInternalCSSAndSVGResources();
     RefPtr<URLAndReferrerInfo> target =
         ResolveURLUsingLocalRef(aTextPathFrame, href, referrerInfo);
 
@@ -1431,10 +1452,8 @@ SVGGeometryElement* SVGObserverUtils::GetAndObserveTextPathsPath(
     }
   }
 
-  Element* element = property->GetAndObserveReferencedElement();
-  return (element && element->IsNodeOfType(nsINode::eSHAPE))
-             ? static_cast<SVGGeometryElement*>(element)
-             : nullptr;
+  return SVGGeometryElement::FromNodeOrNull(
+      property->GetAndObserveReferencedElement());
 }
 
 void SVGObserverUtils::InitiateResourceDocLoads(nsIFrame* aFrame) {
@@ -1463,15 +1482,19 @@ nsIFrame* SVGObserverUtils::GetAndObserveTemplate(
 
     // Convert href to an nsIURI
     nsIContent* content = aFrame->GetContent();
+
+    nsCOMPtr<nsIURI> baseURI = content->GetBaseURI();
+    if (nsContentUtils::IsLocalRefURL(href)) {
+      baseURI = GetBaseURLForLocalRef(content, baseURI);
+    }
     nsCOMPtr<nsIURI> targetURI;
-    nsContentUtils::NewURIWithDocumentCharset(getter_AddRefs(targetURI), href,
-                                              content->GetUncomposedDoc(),
-                                              content->GetBaseURI());
+    nsContentUtils::NewURIWithDocumentCharset(
+        getter_AddRefs(targetURI), href, content->GetUncomposedDoc(), baseURI);
 
     // There's no clear refererer policy spec about non-CSS SVG resource
     // references.  Bug 1415044 to investigate which referrer we should use.
-    nsCOMPtr<nsIReferrerInfo> referrerInfo =
-        ReferrerInfo::CreateForSVGResources(content->OwnerDoc());
+    nsIReferrerInfo* referrerInfo =
+        content->OwnerDoc()->ReferrerInfoForInternalCSSAndSVGResources();
     RefPtr<URLAndReferrerInfo> target =
         new URLAndReferrerInfo(targetURI, referrerInfo);
 
@@ -1503,8 +1526,10 @@ Element* SVGObserverUtils::GetAndObserveBackgroundImage(nsIFrame* aFrame,
       getter_AddRefs(targetURI), elementId,
       aFrame->GetContent()->GetUncomposedDoc(),
       aFrame->GetContent()->GetBaseURI());
-  nsCOMPtr<nsIReferrerInfo> referrerInfo =
-      ReferrerInfo::CreateForSVGResources(aFrame->GetContent()->OwnerDoc());
+  nsIReferrerInfo* referrerInfo =
+      aFrame->GetContent()
+          ->OwnerDoc()
+          ->ReferrerInfoForInternalCSSAndSVGResources();
   RefPtr<URLAndReferrerInfo> url =
       new URLAndReferrerInfo(targetURI, referrerInfo);
 
@@ -1541,7 +1566,7 @@ SVGPaintServerFrame* SVGObserverUtils::GetAndObservePaintServer(
   // least look up past a text frame, and if the text frame's parent is the
   // anonymous block frame, then we look up to its parent (the SVGTextFrame).
   nsIFrame* paintedFrame = aPaintedFrame;
-  if (paintedFrame->GetContent()->IsText()) {
+  if (paintedFrame->IsInSVGTextSubtree()) {
     paintedFrame = paintedFrame->GetParent();
     nsIFrame* grandparent = paintedFrame->GetParent();
     if (grandparent && grandparent->IsSVGTextFrame()) {
@@ -1560,24 +1585,11 @@ SVGPaintServerFrame* SVGObserverUtils::GetAndObservePaintServer(
   MOZ_ASSERT(aPaint == &nsStyleSVG::mFill || aPaint == &nsStyleSVG::mStroke);
   PaintingPropertyDescriptor propDesc =
       (aPaint == &nsStyleSVG::mFill) ? FillProperty() : StrokeProperty();
-  SVGPaintingProperty* property =
-      GetPaintingProperty(paintServerURL, paintedFrame, propDesc);
-  if (!property) {
-    return nullptr;
+  if (auto* property =
+          GetPaintingProperty(paintServerURL, paintedFrame, propDesc)) {
+    return do_QueryFrame(property->GetAndObserveReferencedFrame());
   }
-  nsIFrame* result = property->GetAndObserveReferencedFrame();
-  if (!result) {
-    return nullptr;
-  }
-
-  LayoutFrameType type = result->Type();
-  if (type != LayoutFrameType::SVGLinearGradient &&
-      type != LayoutFrameType::SVGRadialGradient &&
-      type != LayoutFrameType::SVGPattern) {
-    return nullptr;
-  }
-
-  return static_cast<SVGPaintServerFrame*>(result);
+  return nullptr;
 }
 
 void SVGObserverUtils::UpdateEffects(nsIFrame* aFrame) {
@@ -1649,16 +1661,15 @@ void SVGObserverUtils::InvalidateRenderingObservers(nsIFrame* aFrame) {
   NS_ASSERTION(!aFrame->GetPrevContinuation(),
                "aFrame must be first continuation");
 
-  nsIContent* content = aFrame->GetContent();
-  if (!content || !content->IsElement()) {
+  auto* element = Element::FromNodeOrNull(aFrame->GetContent());
+  if (!element) {
     return;
   }
 
   // If the rendering has changed, the bounds may well have changed too:
   aFrame->RemoveProperty(SVGUtils::ObjectBoundingBoxProperty());
 
-  SVGRenderingObserverSet* observers = GetObserverSet(content->AsElement());
-  if (observers) {
+  if (auto* observers = GetObserverSet(element)) {
     observers->InvalidateAll();
     return;
   }
@@ -1667,9 +1678,8 @@ void SVGObserverUtils::InvalidateRenderingObservers(nsIFrame* aFrame) {
   // eSVGContainer so we don't have to check f for null here.
   for (nsIFrame* f = aFrame->GetParent();
        f->IsFrameOfType(nsIFrame::eSVGContainer); f = f->GetParent()) {
-    if (f->GetContent()->IsElement()) {
-      observers = GetObserverSet(f->GetContent()->AsElement());
-      if (observers) {
+    if (auto* element = Element::FromNode(f->GetContent())) {
+      if (auto* observers = GetObserverSet(element)) {
         observers->InvalidateAll();
         return;
       }
@@ -1698,9 +1708,8 @@ void SVGObserverUtils::InvalidateDirectRenderingObservers(
 
 void SVGObserverUtils::InvalidateDirectRenderingObservers(
     nsIFrame* aFrame, uint32_t aFlags /* = 0 */) {
-  nsIContent* content = aFrame->GetContent();
-  if (content && content->IsElement()) {
-    InvalidateDirectRenderingObservers(content->AsElement(), aFlags);
+  if (auto* element = Element::FromNodeOrNull(aFrame->GetContent())) {
+    InvalidateDirectRenderingObservers(element, aFlags);
   }
 }
 

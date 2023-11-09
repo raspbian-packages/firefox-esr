@@ -17,12 +17,14 @@ firefox-relay-must-login-to-fxa = Ak chcete používať { -relay-brand-name }, m
 firefox-relay-get-unlimited-masks =
     .label = Spravovať masky
     .accesskey = m
-firefox-relay-opt-in-title = Chráňte svoju e-mailovú adresu
-firefox-relay-opt-in-subtitle = Pridajte si { -relay-brand-name }
-firefox-relay-generate-mask-title = Chráňte svoju e-mailovú adresu
-firefox-relay-generate-mask-subtitle = Vygenerujte masku { -relay-brand-short-name }
-firefox-relay-opt-in-confirmation-enable =
-    .label = Pokračovať
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Chráňte svoju e-mailovú adresu:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = použite e-mailovú masku služby { -relay-brand-name }
+firefox-relay-use-mask-title = Použite e-mailovú masku služby { -relay-brand-name }
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = Použiť e-mailovú masku
     .accesskey = P
 firefox-relay-opt-in-confirmation-disable =
     .label = Nabudúce nezobrazovať

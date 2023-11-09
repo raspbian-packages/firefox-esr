@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Setja síðu í bókamerki
-    .accesskey = m
-    .tooltiptext = Setja síðu í bókamerki
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Bókamerkja síðu
-    .accesskey = m
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Breyta bókamerki
-    .accesskey = m
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Setja síðu í bókamerki
-    .accesskey = m
-    .tooltiptext = Setja síðu í bókamerki ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Breyta bókamerki
-    .accesskey = m
-    .tooltiptext = Breyta bókamerki
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Breyta bókamerki
-    .accesskey = m
-    .tooltiptext = Breyta bókamerki ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Bókamerkja síðu…
     .accesskey = m
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Opna tengil í nýjum huliðsglugga
     .accesskey = p
-
-main-context-menu-bookmark-link =
-    .label = Bókamerkja tengill
-    .accesskey = B
 
 main-context-menu-bookmark-link-2 =
     .label = Bókamerkja tengil…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Senda hljóðskrá…
     .accesskey = a
 
-main-context-menu-plugin-play =
-    .label = Gera þetta tengiforrit virkt
-    .accesskey = G
-
-main-context-menu-plugin-hide =
-    .label = Fela þetta tengiforrit
-    .accesskey = F
-
 main-context-menu-save-to-pocket =
     .label = Vista síðu í { -pocket-brand-name }
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = o
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Notaðu { -relay-brand-short-name } tölvupósthulu
+    .accesskey = o
 
 main-context-menu-suggest-strong-password =
     .label = Stinga upp á sterku lykilorði...
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Endurnýja ramma
     .accesskey = r
 
-main-context-menu-frame-bookmark =
-    .label = Setja ramma í bókamerki
-    .accesskey = m
-
 main-context-menu-frame-add-bookmark =
     .label = Bókamerkja ramma…
     .accesskey = m
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Skoða upplýsingar ramma
     .accesskey = i
-
-main-context-menu-print-selection =
-    .label = Prenta val
-    .accesskey = r
 
 main-context-menu-print-selection-2 =
     .label = Prenta val…

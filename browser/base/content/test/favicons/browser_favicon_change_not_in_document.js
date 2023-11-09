@@ -16,7 +16,7 @@ const TEST_URL = TEST_ROOT + "file_favicon_change_not_in_document.html";
  * should not fire the DOMLinkAdded event, nor should it fire the DOMLinkChanged
  * event after its href gets updated later.
  */
-add_task(async function() {
+add_task(async function () {
   let extraTab = (gBrowser.selectedTab = BrowserTestUtils.addTab(
     gBrowser,
     TEST_ROOT
@@ -39,7 +39,7 @@ add_task(async function() {
   let expectedFavicon = TEST_ROOT + "file_generic_favicon.ico";
   let faviconPromise = waitForFavicon(extraTab.linkedBrowser, expectedFavicon);
 
-  BrowserTestUtils.loadURI(extraTab.linkedBrowser, TEST_URL);
+  BrowserTestUtils.loadURIString(extraTab.linkedBrowser, TEST_URL);
   await BrowserTestUtils.browserLoaded(extraTab.linkedBrowser);
 
   await faviconPromise;

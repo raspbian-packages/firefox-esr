@@ -4,12 +4,16 @@
 
 about-reader-loading = පූරණය වෙමින්…
 about-reader-load-error = පිටුවෙන් ලිපිය පූරණය කිරීමට අසමත් විය
+
 about-reader-color-scheme-light = දීප්ත
     .title = දීප්තිමත් වර්ණ රටාව
 about-reader-color-scheme-dark = අඳුරු
     .title = අඳුරු වර්ණ රටාව
+about-reader-color-scheme-sepia = මද දුඹුරු
+    .title = මද රතු දුඹුරු
 about-reader-color-scheme-auto = ස්වයං
     .title = ස්වයං වර්ණ රටාව
+
 # An estimate for how long it takes to read an article,
 # expressed as a range covering both slow and fast readers.
 # Variables:
@@ -44,4 +48,5 @@ about-reader-font-type-sans-serif = Sans-serif
 ## Reader View toolbar buttons
 
 about-reader-toolbar-close = කියවීමේ දැක්ම වසන්න
+about-reader-toolbar-type-controls = පාලන වර්ග
 about-reader-toolbar-savetopocket = { -pocket-brand-name } වෙත සුරකින්න

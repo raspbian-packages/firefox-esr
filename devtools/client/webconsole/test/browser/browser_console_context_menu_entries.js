@@ -9,8 +9,8 @@ const TEST_URI =
   "http://example.com/browser/devtools/client/webconsole/" +
   "test/browser/test-console.html";
 
-add_task(async function() {
-  await pushPref("devtools.browserconsole.contentMessages", true);
+add_task(async function () {
+  await pushPref("devtools.browsertoolbox.scope", "everything");
   // Enable net messages in the console for this test.
   await pushPref("devtools.browserconsole.filter.net", true);
   // This is required for testing the text input in the browser console:
@@ -18,6 +18,10 @@ add_task(async function() {
 
   await addTab(TEST_URI);
   const hud = await BrowserConsoleManager.toggleBrowserConsole();
+
+  // Network monitoring is turned off by default in the browser console
+  info("Turn on network monitoring");
+  await toggleNetworkMonitoringConsoleSetting(hud, true);
 
   info("Reload the content window to produce a network log");
   const onNetworkMessage = waitForMessageByType(
@@ -119,6 +123,7 @@ add_task(async function() {
   );
 
   await hideContextMenu(hud);
+  await toggleNetworkMonitoringConsoleSetting(hud, false);
 });
 
 function addPrefBasedEntries(expectedEntries) {

@@ -10,7 +10,6 @@
 #include "mozilla/dom/cache/ActorUtils.h"
 #include "mozilla/dom/cache/CacheTypes.h"
 #include "mozilla/dom/cache/CacheWorkerRef.h"
-#include "mozilla/dom/cache/ReadStream.h"
 #include "mozilla/ipc/IPCStreamUtils.h"
 #include "mozilla/ipc/PBackgroundChild.h"
 #include "nsISupportsImpl.h"
@@ -68,8 +67,7 @@ void CacheStreamControlChild::SerializeControl(
     CacheReadStream* aReadStreamOut) {
   NS_ASSERT_OWNINGTHREAD(CacheStreamControlChild);
   MOZ_DIAGNOSTIC_ASSERT(aReadStreamOut);
-  aReadStreamOut->controlParent() = nullptr;
-  aReadStreamOut->controlChild() = this;
+  aReadStreamOut->control() = this;
 }
 
 void CacheStreamControlChild::SerializeStream(CacheReadStream* aReadStreamOut,

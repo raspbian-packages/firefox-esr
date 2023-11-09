@@ -8,7 +8,6 @@ package org.mozilla.gecko.process;
 import android.os.Binder;
 import android.util.SparseArray;
 import android.view.Surface;
-import android.view.SurfaceControl;
 import org.mozilla.gecko.annotation.WrapForJNI;
 import org.mozilla.gecko.gfx.ICompositorSurfaceManager;
 import org.mozilla.gecko.gfx.ISurfaceAllocator;
@@ -24,8 +23,8 @@ public class GeckoServiceGpuProcess extends GeckoServiceChildProcess {
     }
 
     @Override
-    public ISurfaceAllocator getSurfaceAllocator() {
-      return RemoteSurfaceAllocator.getInstance();
+    public ISurfaceAllocator getSurfaceAllocator(final int allocatorId) {
+      return RemoteSurfaceAllocator.getInstance(allocatorId);
     }
   }
 
@@ -46,16 +45,9 @@ public class GeckoServiceGpuProcess extends GeckoServiceChildProcess {
     }
 
     private final SparseArray<Surface> mSurfaces = new SparseArray<Surface>();
-    private final SparseArray<SurfaceControl> mSurfaceControls = new SparseArray<SurfaceControl>();
 
     @Override
-    public synchronized void onSurfaceChanged(
-        final int widgetId, final Surface surface, final SurfaceControl surfaceControl) {
-      if (surfaceControl != null) {
-        mSurfaceControls.put(widgetId, surfaceControl);
-      } else {
-        mSurfaceControls.remove(widgetId);
-      }
+    public synchronized void onSurfaceChanged(final int widgetId, final Surface surface) {
       if (surface != null) {
         mSurfaces.put(widgetId, surface);
       } else {
@@ -66,11 +58,6 @@ public class GeckoServiceGpuProcess extends GeckoServiceChildProcess {
     @WrapForJNI
     public synchronized Surface getCompositorSurface(final int widgetId) {
       return mSurfaces.get(widgetId);
-    }
-
-    @WrapForJNI
-    public synchronized SurfaceControl getCompositorSurfaceControl(final int widgetId) {
-      return mSurfaceControls.get(widgetId);
     }
   }
 }

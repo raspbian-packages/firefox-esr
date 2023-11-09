@@ -3,18 +3,17 @@
 
 "use strict";
 
-const { CryptoUtils } = ChromeUtils.import(
-  "resource://services-crypto/utils.js"
+const { CryptoUtils } = ChromeUtils.importESModule(
+  "resource://services-crypto/utils.sys.mjs"
 );
-const { FxAccounts } = ChromeUtils.import(
-  "resource://gre/modules/FxAccounts.jsm"
+const { FxAccounts } = ChromeUtils.importESModule(
+  "resource://gre/modules/FxAccounts.sys.mjs"
 );
-const { FxAccountsClient } = ChromeUtils.import(
-  "resource://gre/modules/FxAccountsClient.jsm"
+const { FxAccountsClient } = ChromeUtils.importESModule(
+  "resource://gre/modules/FxAccountsClient.sys.mjs"
 );
 const {
   ERRNO_INVALID_AUTH_TOKEN,
-  ERROR_NETWORK,
   ERROR_NO_ACCOUNT,
   FX_OAUTH_CLIENT_ID,
   ONLOGIN_NOTIFICATION,
@@ -23,17 +22,15 @@ const {
   DEPRECATED_SCOPE_ECOSYSTEM_TELEMETRY,
   PREF_LAST_FXA_USER,
 } = ChromeUtils.import("resource://gre/modules/FxAccountsCommon.js");
-const { PromiseUtils } = ChromeUtils.import(
-  "resource://gre/modules/PromiseUtils.jsm"
+const { PromiseUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/PromiseUtils.sys.mjs"
 );
 
 // We grab some additional stuff via backstage passes.
-var { AccountState } = ChromeUtils.import(
-  "resource://gre/modules/FxAccounts.jsm"
+var { AccountState } = ChromeUtils.importESModule(
+  "resource://gre/modules/FxAccounts.sys.mjs"
 );
 
-const ONE_HOUR_MS = 1000 * 60 * 60;
-const ONE_DAY_MS = ONE_HOUR_MS * 24;
 const MOCK_TOKEN_RESPONSE = {
   access_token:
     "43793fdfffec22eb39fc3c44ed09193a6fde4c24e5d6a73f73178597b268af69",
@@ -124,7 +121,7 @@ function MockFxAccountsClient() {
 
   // mock calls up to the auth server to determine whether the
   // user account has been verified
-  this.recoveryEmailStatus = async function(sessionToken) {
+  this.recoveryEmailStatus = async function (sessionToken) {
     // simulate a call to /recovery_email/status
     return {
       email: this._email,
@@ -132,18 +129,18 @@ function MockFxAccountsClient() {
     };
   };
 
-  this.accountStatus = async function(uid) {
+  this.accountStatus = async function (uid) {
     return !!uid && !this._deletedOnServer;
   };
 
-  this.sessionStatus = async function() {
+  this.sessionStatus = async function () {
     // If the sessionStatus check says an account is OK, we typically will not
     // end up calling accountStatus - so this must return false if accountStatus
     // would.
     return !this._deletedOnServer;
   };
 
-  this.accountKeys = function(keyFetchToken) {
+  this.accountKeys = function (keyFetchToken) {
     return new Promise(resolve => {
       do_timeout(50, () => {
         resolve({
@@ -154,7 +151,7 @@ function MockFxAccountsClient() {
     });
   };
 
-  this.getScopedKeyData = function(sessionToken, client_id, scopes) {
+  this.getScopedKeyData = function (sessionToken, client_id, scopes) {
     Assert.ok(sessionToken);
     Assert.equal(client_id, FX_OAUTH_CLIENT_ID);
     Assert.equal(scopes, SCOPE_OLD_SYNC);
@@ -172,7 +169,7 @@ function MockFxAccountsClient() {
     });
   };
 
-  this.resendVerificationEmail = function(sessionToken) {
+  this.resendVerificationEmail = function (sessionToken) {
     // Return the session token to show that we received it in the first place
     return Promise.resolve(sessionToken);
   };
@@ -181,10 +178,11 @@ function MockFxAccountsClient() {
 
   FxAccountsClient.apply(this);
 }
-MockFxAccountsClient.prototype = {
-  __proto__: FxAccountsClient.prototype,
-};
-
+MockFxAccountsClient.prototype = {};
+Object.setPrototypeOf(
+  MockFxAccountsClient.prototype,
+  FxAccountsClient.prototype
+);
 /*
  * We need to mock the FxAccounts module's interfaces to external
  * services, such as storage and the FxAccounts client.  We also
@@ -221,7 +219,7 @@ function MockFxAccounts(credentials = null) {
   });
   // and for convenience so we don't have to touch as many lines in this test
   // when we refactored FxAccounts.jsm :)
-  result.setSignedInUser = function(creds) {
+  result.setSignedInUser = function (creds) {
     return result._internal.setSignedInUser(creds);
   };
   return result;
@@ -234,7 +232,7 @@ function MockFxAccounts(credentials = null) {
 async function MakeFxAccounts({ internal = {}, credentials } = {}) {
   if (!internal.newAccountState) {
     // we use a real accountState but mocked storage.
-    internal.newAccountState = function(newCredentials) {
+    internal.newAccountState = function (newCredentials) {
       let storage = new MockStorageManager();
       storage.initialize(newCredentials);
       return new AccountState(storage);
@@ -405,7 +403,7 @@ add_test(function test_verification_poll() {
   let test_user = getTestUser("francine");
   let login_notification_received = false;
 
-  makeObserver(ONVERIFIED_NOTIFICATION, function() {
+  makeObserver(ONVERIFIED_NOTIFICATION, function () {
     log.debug("test_verification_poll observed onverified");
     // Once email verification is complete, we will observe onverified
     fxa._internal
@@ -423,7 +421,7 @@ add_test(function test_verification_poll() {
       .finally(run_next_test);
   });
 
-  makeObserver(ONLOGIN_NOTIFICATION, function() {
+  makeObserver(ONLOGIN_NOTIFICATION, function () {
     log.debug("test_verification_poll observer onlogin");
     login_notification_received = true;
   });
@@ -432,7 +430,7 @@ add_test(function test_verification_poll() {
     fxa._internal.getUserAccountData().then(user => {
       // The user is signing in, but email has not been verified yet
       Assert.equal(user.verified, false);
-      do_timeout(200, function() {
+      do_timeout(200, function () {
         log.debug("Mocking verification of francine's email");
         fxa._internal.fxAccountsClient._email = test_user.email;
         fxa._internal.fxAccountsClient._verified = true;
@@ -453,7 +451,7 @@ add_test(function test_polling_timeout() {
   let fxa = new MockFxAccounts();
   let test_user = getTestUser("carol");
 
-  let removeObserver = makeObserver(ONVERIFIED_NOTIFICATION, function() {
+  let removeObserver = makeObserver(ONVERIFIED_NOTIFICATION, function () {
     do_throw("We should not be getting a login event!");
   });
 
@@ -728,14 +726,12 @@ add_task(async function test_getKeyForScope_kb_migration() {
   Assert.deepEqual(newUser.scopedKeys, {
     "https://identity.mozilla.com/apps/oldsync": {
       kid: "1234567890123-IqQv4onc7VcVE1kTQkyyOw",
-      k:
-        "DW_ll5GwX6SJ5GPqJVAuMUP2t6kDqhUulc2cbt26xbTcaKGQl-9l29FHAQ7kUiJETma4s9fIpEHrt909zgFang",
+      k: "DW_ll5GwX6SJ5GPqJVAuMUP2t6kDqhUulc2cbt26xbTcaKGQl-9l29FHAQ7kUiJETma4s9fIpEHrt909zgFang",
       kty: "oct",
     },
     "sync:addon_storage": {
       kid: "1234567890123-pBOR6B6JulbJr3BxKVOqIU4Cq_WAjFp4ApLn5NRVARE",
-      k:
-        "ut7VPrNYfXkA5gTopo2GCr-d4wtclV08TV26Y_Jv2IJlzYWSP26dzRau87gryIA5qJxZ7NnojeCadBjH2U-QyQ",
+      k: "ut7VPrNYfXkA5gTopo2GCr-d4wtclV08TV26Y_Jv2IJlzYWSP26dzRau87gryIA5qJxZ7NnojeCadBjH2U-QyQ",
       kty: "oct",
     },
   });
@@ -832,7 +828,7 @@ add_task(async function test_getKeyForScope_nonexistent_account() {
   await fxa.setSignedInUser(bismarck);
 
   let promiseLogout = new Promise(resolve => {
-    makeObserver(ONLOGOUT_NOTIFICATION, function() {
+    makeObserver(ONLOGOUT_NOTIFICATION, function () {
       log.debug("test_getKeyForScope_nonexistent_account observed logout");
       resolve();
     });
@@ -911,8 +907,7 @@ add_task(async function test_getKeyForScope_oldsync() {
   Assert.deepEqual(key, {
     scope: SCOPE_OLD_SYNC,
     kid: "1510726317123-IqQv4onc7VcVE1kTQkyyOw",
-    k:
-      "DW_ll5GwX6SJ5GPqJVAuMUP2t6kDqhUulc2cbt26xbTcaKGQl-9l29FHAQ7kUiJETma4s9fIpEHrt909zgFang",
+    k: "DW_ll5GwX6SJ5GPqJVAuMUP2t6kDqhUulc2cbt26xbTcaKGQl-9l29FHAQ7kUiJETma4s9fIpEHrt909zgFang",
     kty: "oct",
   });
 });
@@ -970,7 +965,7 @@ add_test(function test_fetchAndUnwrapAndDeriveKeys_no_token() {
   let user = getTestUser("lettuce.protheroe");
   delete user.keyFetchToken;
 
-  makeObserver(ONLOGOUT_NOTIFICATION, function() {
+  makeObserver(ONLOGOUT_NOTIFICATION, function () {
     log.debug("test_fetchAndUnwrapKeys_no_token observed logout");
     fxa._internal.getUserAccountData().then(user2 => {
       fxa._internal.abortExistingFlow().then(run_next_test);
@@ -995,7 +990,7 @@ add_test(function test_overlapping_signins() {
   let alice = getTestUser("alice");
   let bob = getTestUser("bob");
 
-  makeObserver(ONVERIFIED_NOTIFICATION, function() {
+  makeObserver(ONVERIFIED_NOTIFICATION, function () {
     log.debug("test_overlapping_signins observed onverified");
     // Once email verification is complete, we will observe onverified
     fxa._internal.getUserAccountData().then(user => {
@@ -1016,7 +1011,7 @@ add_test(function test_overlapping_signins() {
       // Now Bob signs in instead and actually verifies his email
       log.debug("Bob signing in ...");
       fxa.setSignedInUser(bob).then(() => {
-        do_timeout(200, function() {
+        do_timeout(200, function () {
           // Mock email verification ...
           log.debug("Bob verifying his email ...");
           fxa._internal.fxAccountsClient._verified = true;
@@ -1365,7 +1360,7 @@ add_test(function test_getOAuthToken_misconfigure_oauth_uri() {
 add_test(function test_getOAuthToken_no_account() {
   let fxa = new MockFxAccounts();
 
-  fxa._internal.currentAccountState.getUserAccountData = function() {
+  fxa._internal.currentAccountState.getUserAccountData = function () {
     return Promise.resolve(null);
   };
 
@@ -1409,55 +1404,60 @@ add_task(async function test_listAttachedOAuthClients() {
   const ONE_HOUR = 60 * 60 * 1000;
   const ONE_DAY = 24 * ONE_HOUR;
 
+  const timestamp = Date.now();
+
   let fxa = new MockFxAccounts();
   let alice = getTestUser("alice");
   alice.verified = true;
 
   let client = fxa._internal.fxAccountsClient;
   client.attachedClients = async () => {
-    return [
-      // This entry was previously filtered but no longer is!
-      {
-        clientId: "a2270f727f45f648",
-        deviceId: "deadbeef",
-        sessionTokenId: null,
-        name: "Firefox Preview (no session token)",
-        scope: ["profile", "https://identity.mozilla.com/apps/oldsync"],
-        lastAccessTime: Date.now(),
-      },
-      {
-        clientId: "802d56ef2a9af9fa",
-        deviceId: null,
-        sessionTokenId: null,
-        name: "Firefox Monitor",
-        scope: ["profile"],
-        lastAccessTime: Date.now() - ONE_DAY - ONE_HOUR,
-      },
-      {
-        clientId: "1f30e32975ae5112",
-        deviceId: null,
-        sessionTokenId: null,
-        name: "Firefox Send",
-        scope: ["profile", "https://identity.mozilla.com/apps/send"],
-        lastAccessTime: Date.now() - ONE_DAY * 2 - ONE_HOUR,
-      },
-      // One with a future date should be impossible, but having a negative
-      // result here would almost certainly confuse something!
-      {
-        clientId: "future-date",
-        deviceId: null,
-        sessionTokenId: null,
-        name: "Whatever",
-        lastAccessTime: Date.now() + ONE_DAY,
-      },
-      // A missing/null lastAccessTime should end up with a missing lastAccessedDaysAgo
-      {
-        clientId: "missing-date",
-        deviceId: null,
-        sessionTokenId: null,
-        name: "Whatever",
-      },
-    ];
+    return {
+      body: [
+        // This entry was previously filtered but no longer is!
+        {
+          clientId: "a2270f727f45f648",
+          deviceId: "deadbeef",
+          sessionTokenId: null,
+          name: "Firefox Preview (no session token)",
+          scope: ["profile", "https://identity.mozilla.com/apps/oldsync"],
+          lastAccessTime: Date.now(),
+        },
+        {
+          clientId: "802d56ef2a9af9fa",
+          deviceId: null,
+          sessionTokenId: null,
+          name: "Firefox Monitor",
+          scope: ["profile"],
+          lastAccessTime: Date.now() - ONE_DAY - ONE_HOUR,
+        },
+        {
+          clientId: "1f30e32975ae5112",
+          deviceId: null,
+          sessionTokenId: null,
+          name: "Firefox Send",
+          scope: ["profile", "https://identity.mozilla.com/apps/send"],
+          lastAccessTime: Date.now() - ONE_DAY * 2 - ONE_HOUR,
+        },
+        // One with a future date should be impossible, but having a negative
+        // result here would almost certainly confuse something!
+        {
+          clientId: "future-date",
+          deviceId: null,
+          sessionTokenId: null,
+          name: "Whatever",
+          lastAccessTime: Date.now() + ONE_DAY,
+        },
+        // A missing/null lastAccessTime should end up with a missing lastAccessedDaysAgo
+        {
+          clientId: "missing-date",
+          deviceId: null,
+          sessionTokenId: null,
+          name: "Whatever",
+        },
+      ],
+      headers: { "x-timestamp": timestamp.toString() },
+    };
   };
 
   await fxa.setSignedInUser(alice);
@@ -1519,7 +1519,7 @@ add_task(async function test_getSignedInUserProfile_error_uses_account_data() {
   let alice = getTestUser("alice");
   alice.verified = true;
 
-  fxa._internal.getSignedInUser = function() {
+  fxa._internal.getSignedInUser = function () {
     return Promise.resolve({ email: "foo@bar.com" });
   };
   fxa._internal._profile = {

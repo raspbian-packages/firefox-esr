@@ -17,9 +17,16 @@ if CONFIG["ENABLE_TESTS"]:
         "gmock-custom/gmock-port.h",
     ]
 
+    EXPORTS.mozilla.gtest += [
+        "MozAssertions.h",
+        "MozHelpers.h",
+    ]
+
     SOURCES += [
         "GTestRunner.cpp",
+        "MozAssertions.cpp",
         "MozGTestBench.cpp",
+        "MozHelpers.cpp",
         "SanityTest.cpp",
     ]
 

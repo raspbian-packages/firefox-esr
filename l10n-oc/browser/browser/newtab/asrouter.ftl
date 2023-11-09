@@ -28,11 +28,13 @@ cfr-doorhanger-extension-author = per { $name }
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Recomandacions
+# .a11y-announcement is extracted in JS and announced via A11y.announce.
 cfr-doorhanger-extension-notification2 = Recomandacions
     .tooltiptext = Extensions recomandadas
     .a11y-announcement = Recomendacions d’extensions disponiblas
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
+# .a11y-announcement is extracted in JS and announced via A11y.announce.
 cfr-doorhanger-feature-notification = Recomandacions
     .tooltiptext = Foncion de recomandacions
     .a11y-announcement = Foncion de recomandacions disponibla
@@ -56,29 +58,6 @@ cfr-doorhanger-extension-total-users =
         [one] { $total } utilizaire
        *[other] { $total } utilizaires
     }
-
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = Fòra las bandièras de cookies !
-cfr-cookie-banner-handling-body = Permetre a { -brand-short-name } de regetar automaticament las demandas de cookies, quand es possible. Autrament, totes los cookies seràn acceptats per suprimir las bandièras de cookies.
-cfr-cookie-banner-accept-button = Regetar las demandas
-    .accesskey = R
-cfr-cookie-banner-reject-button = Pas ara
-    .accesskey = P
-cfr-cookie-banner-handling-header-variant-1 = Veire mens de fenèstras sorgissentas de cookies
-cfr-cookie-banner-handling-body-variant-1 = Permetre a { -brand-short-name } de gerir automaticament las fenèstras sorgissentas de cookies per vos que trapetz una navegacion sens distraccion. { -brand-short-name } regetarà totas las demandas se possible, autrament las acceptarà totas.
-cfr-cookie-banner-accept-button-variant-1 = Regetar las fenèstras sorgissentas
-    .accesskey = R
-cfr-cookie-banner-reject-button-variant-1 = Non mercés
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-2 = Reduccion de las bandièras de cookies
-cfr-cookie-banner-handling-body-variant-2 = Permetre a { -brand-short-name } de refusar la demanda de consentiment als cookies d’un site se possible o acceptar l’accès als cookies quand es pas possible ?
-cfr-cookie-banner-accept-button-variant-2 = Autorizar
-    .accesskey = A
-cfr-cookie-banner-reject-button-variant-2 = Pas ara
-    .accesskey = P
 
 ## Firefox Accounts Message
 
@@ -122,21 +101,12 @@ cfr-doorhanger-milestone-close-button = Tampar
 
 ## DOH Message
 
-cfr-doorhanger-doh-body = Vòstra vida privada es importanta. Ara { -brand-short-name } encamina de forma segura vòstras requèstas DNS tant coma se pòt via un servici partenari per vos protegir pendent la navegacion.
+cfr-doorhanger-doh-body = Vòstra vida privada es importanta. Ara { -brand-short-name } encamina de fòrma segura vòstras requèstas DNS tant coma se pòt via un servici partenari per vos protegir pendent la navegacion.
 cfr-doorhanger-doh-header = Requèstas DNS mai seguras e chifradas
 cfr-doorhanger-doh-primary-button-2 = OK
     .accesskey = O
 cfr-doorhanger-doh-secondary-button = Desactivar
     .accesskey = D
-
-## Fission Experiment Message
-
-cfr-doorhanger-fission-body-approved = Vòstra vida privada es importanta. Ara { -brand-short-name } estrema, o embarra dins un nauc de sabla, los sites web entre eles, çò que fa venir mai dificil als piratas los senhals, numèros de carta de crèdit e d’autras informacions sensiblas.
-cfr-doorhanger-fission-header = Isolacion de site
-cfr-doorhanger-fission-primary-button = Òc, plan comprés
-    .accesskey = p
-cfr-doorhanger-fission-secondary-button = Ne saber mai
-    .accesskey = N
 
 ## Full Video Support CFR message
 
@@ -144,13 +114,6 @@ cfr-doorhanger-video-support-body = Las vidèos d’aqueste site poirián se leg
 cfr-doorhanger-video-support-header = Actualizatz { -brand-short-name } per legir la vidèo
 cfr-doorhanger-video-support-primary-button = Actualizar ara
     .accesskey = A
-
-## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Ne saber mai
-    .title = Espandir per ne saber mai tocant aquesta foncionalitat
-spotlight-learn-more-expanded = Ne saber mai
-    .title = Tampar
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -165,20 +128,6 @@ spotlight-public-wifi-vpn-primary-button = Demoratz privat amb { -mozilla-vpn-br
     .accesskey = D
 spotlight-public-wifi-vpn-link = Pas ara
     .accesskey = a
-
-## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Ensajatz abans lo monde
-    la melhora experiéncia de confidencialitat jamai concebuda
-spotlight-total-cookie-protection-body = La proteccion totala contra los cookies empacha los traçadors d’utilizar de cookies per vos pistar pel Web.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } crèa una barrièra a l’entorn dels cookies, per los limitar al site ont vos trobatz per dire que los traçadors pòscan pas vos pistar. En participant d’un biais anticipat, contribuissètz a optimizar aquesta foncionalitat per que poscam téner de bastir un melhor Web per tot lo monde.
-spotlight-total-cookie-protection-primary-button = Activar la proteccion totala contra los cookies
-spotlight-total-cookie-protection-secondary-button = Pas ara
 
 ## Emotive Continuous Onboarding
 
@@ -249,28 +198,42 @@ colorways-cfr-header-today = Los colorits « Voses independentas » expiran u�
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = Fòra las bandièras de cookies !
-cfr-cookiebanner-body = Permetre a { -brand-short-name } de regetar automaticament las demandas de cookies quand es possible.
-cfr-cookiebanner-accept-button = Tampar las bandièras
-    .accesskey = T
-cfr-cookiebanner-reject-button = Pas ara
-    .accesskey = P
-cfr-cookiebanner-header-variant-1 = Veire mens de fenèstras sorgissentas de cookies
-cfr-cookiebanner-body-variant-1 = Permetre a { -brand-short-name } de gerir automaticament las fenèstras sorgissentas de cookies per vos que trapetz una navegacion sens distraccion. { -brand-short-name } regetarà totas las demandas se possible.
-cfr-cookiebanner-accept-button-variant-1 = Regetar las fenèstras sorgissentas
+cfr-cbh-header = Permetre a { -brand-short-name } de regetar las demandas de cookies ?
+cfr-cbh-body = { -brand-short-name } pòt regetar automaticament las demandas de cookies.
+cfr-cbh-confirm-button = Regetar las bandièras de cookies
     .accesskey = R
-cfr-cookiebanner-reject-button-variant-1 = Non, mercé
-    .accesskey = N
-cfr-cookiebanner-header-variant-2 = Reduccion de las bandièras de cookies
-cfr-cookiebanner-body-variant-2 = Redusissètz lo nombre de banièras de cookies que vesètz en autorizant { -brand-short-name } a refusar la demanda de consentiment dels cookies d’un site web se possible.
-cfr-cookiebanner-accept-button-variant-2 = Autorizar
-    .accesskey = A
-cfr-cookiebanner-reject-button-variant-2 = Pas ara
-    .accesskey = P
+cfr-cbh-dismiss-button = Mai tard
+    .accesskey = M
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
 july-jam-headline = Asseguram vòstra proteccion
 july-jam-body = Cada mes, { -brand-short-name } bloca una mejana de 3 000 traçadors per utilizaire, per tal qu’ajatz accès a un Internet segur e rapid.
 july-jam-set-default-primary = Dobrir mos ligams dins { -brand-short-name }
+fox-doodle-pin-headline = Urós de vos tornar veire !
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = Vos rapelam que podètz gardar vòstre navegador independent preferit a un sol clic.
+fox-doodle-pin-primary = Dobrir mos ligams dins { -brand-short-name }
+fox-doodle-pin-secondary = Pas ara
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>Vòstres fichièrs PDF se dobrisson d’ara enlà dins { -brand-short-name }.</strong> Modificatz o signatz de formularis dirèctament del navegador estant. Per modificar aqueste compòrtament, cercatz « PDF » als paramètres.
+set-default-pdf-handler-primary = Comprés !
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = Sètz per aver un aparelh novèl lèu ?
+fxa-sync-cfr-body = Asseguratz-vos que vòstres darrièrs marcapaginas, senhals e onglets vengan amb vos cada còp que dobrissètz un navegador { -brand-product-name } novèl.
+fxa-sync-cfr-primary = Ne saber mai
+    .accesskey = N
+fxa-sync-cfr-secondary = Lo me remembrar mai tard
+    .accesskey = r
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = Utilizatz un aparelh mai ancian ?
+device-migration-fxa-spotlight-body = Salvagardatz vòstras donadas per vos assegurar de pèrdre pas d’informacions importantas coma los marcapaginas o los senhals, mai que mai se cambiatz d’aparelh.
+device-migration-fxa-spotlight-primary-button = Cossí salvagardar las donadas
+device-migration-fxa-spotlight-link = Lo me remembrar mai tard

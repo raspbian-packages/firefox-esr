@@ -415,17 +415,6 @@ NS_IMETHODIMP nsWebBrowserPersist::SaveURI(
     nsIURI* aURI, nsIPrincipal* aPrincipal, uint32_t aCacheKey,
     nsIReferrerInfo* aReferrerInfo, nsICookieJarSettings* aCookieJarSettings,
     nsIInputStream* aPostData, const char* aExtraHeaders, nsISupports* aFile,
-    nsContentPolicyType aContentPolicyType, nsILoadContext* aPrivacyContext) {
-  bool isPrivate = aPrivacyContext && aPrivacyContext->UsePrivateBrowsing();
-  return SavePrivacyAwareURI(aURI, aPrincipal, aCacheKey, aReferrerInfo,
-                             aCookieJarSettings, aPostData, aExtraHeaders,
-                             aFile, aContentPolicyType, isPrivate);
-}
-
-NS_IMETHODIMP nsWebBrowserPersist::SavePrivacyAwareURI(
-    nsIURI* aURI, nsIPrincipal* aPrincipal, uint32_t aCacheKey,
-    nsIReferrerInfo* aReferrerInfo, nsICookieJarSettings* aCookieJarSettings,
-    nsIInputStream* aPostData, const char* aExtraHeaders, nsISupports* aFile,
     nsContentPolicyType aContentPolicy, bool aIsPrivate) {
   NS_ENSURE_TRUE(mFirstAndOnlyUse, NS_ERROR_FAILURE);
   mFirstAndOnlyUse = false;  // Stop people from reusing this object!
@@ -435,7 +424,7 @@ NS_IMETHODIMP nsWebBrowserPersist::SavePrivacyAwareURI(
   rv = GetValidURIFromObject(aFile, getter_AddRefs(fileAsURI));
   NS_ENSURE_SUCCESS(rv, NS_ERROR_INVALID_ARG);
 
-  // SaveURI doesn't like broken uris.
+  // SaveURIInternal doesn't like broken uris.
   mPersistFlags |= PERSIST_FLAGS_FAIL_ON_BROKEN_LINKS;
   rv = SaveURIInternal(aURI, aPrincipal, aContentPolicy, aCacheKey,
                        aReferrerInfo, aCookieJarSettings, aPostData,
@@ -456,7 +445,7 @@ NS_IMETHODIMP nsWebBrowserPersist::SaveChannel(nsIChannel* aChannel,
   rv = aChannel->GetURI(getter_AddRefs(mURI));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  // SaveURI doesn't like broken uris.
+  // SaveChannelInternal doesn't like broken uris.
   mPersistFlags |= PERSIST_FLAGS_FAIL_ON_BROKEN_LINKS;
   rv = SaveChannelInternal(aChannel, fileAsURI, false);
   return NS_FAILED(rv) ? rv : NS_OK;
@@ -1343,10 +1332,22 @@ nsresult nsWebBrowserPersist::SaveURIInternal(
   // current state of the prefs/permissions.
   nsCOMPtr<nsICookieJarSettings> cookieJarSettings = aCookieJarSettings;
   if (!cookieJarSettings) {
+    // Although the variable is called 'triggering principal', it is used as the
+    // loading principal in the download channel, so we treat it as a loading
+    // principal also.
+    bool shouldResistFingerprinting =
+        nsContentUtils::ShouldResistFingerprinting_dangerous(
+            aTriggeringPrincipal,
+            "We are creating a new CookieJar Settings, so none exists "
+            "currently. Although the variable is called 'triggering principal',"
+            "it is used as the loading principal in the download channel, so we"
+            "treat it as a loading principal also.");
     cookieJarSettings =
         aIsPrivate
-            ? net::CookieJarSettings::Create(net::CookieJarSettings::ePrivate)
-            : net::CookieJarSettings::Create(net::CookieJarSettings::eRegular);
+            ? net::CookieJarSettings::Create(net::CookieJarSettings::ePrivate,
+                                             shouldResistFingerprinting)
+            : net::CookieJarSettings::Create(net::CookieJarSettings::eRegular,
+                                             shouldResistFingerprinting);
   }
 
   // Open a channel to the URI
@@ -1418,7 +1419,7 @@ nsresult nsWebBrowserPersist::SaveURIInternal(
       const char* kWhitespace = "\b\t\r\n ";
       nsAutoCString extraHeaders(aExtraHeaders);
       while (true) {
-        crlf = extraHeaders.Find("\r\n", true);
+        crlf = extraHeaders.Find("\r\n");
         if (crlf == -1) break;
         extraHeaders.Mid(oneHeader, 0, crlf);
         extraHeaders.Cut(0, crlf + 2);
@@ -1457,8 +1458,7 @@ nsresult nsWebBrowserPersist::SaveChannelInternal(nsIChannel* aChannel,
 
   if (fc && !fu) {
     nsCOMPtr<nsIInputStream> fileInputStream, bufferedInputStream;
-    nsresult rv =
-        NS_MaybeOpenChannelUsingOpen(aChannel, getter_AddRefs(fileInputStream));
+    nsresult rv = aChannel->Open(getter_AddRefs(fileInputStream));
     NS_ENSURE_SUCCESS(rv, rv);
     rv = NS_NewBufferedInputStream(getter_AddRefs(bufferedInputStream),
                                    fileInputStream.forget(),
@@ -1476,7 +1476,7 @@ nsresult nsWebBrowserPersist::SaveChannelInternal(nsIChannel* aChannel,
   }
 
   // Read from the input channel
-  nsresult rv = NS_MaybeOpenChannelUsingAsyncOpen(aChannel, this);
+  nsresult rv = aChannel->AsyncOpen(this);
   if (rv == NS_ERROR_NO_CONTENT) {
     // Assume this is a protocol such as mailto: which does not feed out
     // data and just ignore it.

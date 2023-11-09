@@ -56,7 +56,7 @@ add_task(async function test() {
     mockTransferRegisterer.register();
   });
 
-  registerCleanupFunction(function() {
+  registerCleanupFunction(function () {
     mockTransferRegisterer.unregister();
     tempDir.remove(true);
   });
@@ -83,7 +83,6 @@ add_task(async () => {
   await new Promise(resolve => httpServer.stop(resolve));
 });
 
-/* import-globals-from ../../../../../toolkit/content/tests/browser/common/mockTransfer.js */
 Services.scriptloader.loadSubScript(
   "chrome://mochitests/content/browser/toolkit/content/tests/browser/common/mockTransfer.js",
   this

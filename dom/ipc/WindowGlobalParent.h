@@ -162,8 +162,6 @@ class WindowGlobalParent final : public WindowContext,
       const DOMRect* aRect, double aScale, const nsACString& aBackgroundColor,
       bool aResetScrollPosition, mozilla::ErrorResult& aRv);
 
-  already_AddRefed<Promise> GetSecurityInfo(ErrorResult& aRv);
-
   static already_AddRefed<WindowGlobalParent> CreateDisconnected(
       const WindowGlobalInit& aInit);
 
@@ -227,8 +225,11 @@ class WindowGlobalParent final : public WindowContext,
 
   void ExitTopChromeDocumentFullscreen();
 
+  void SetShouldReportHasBlockedOpaqueResponse(
+      nsContentPolicyType aContentPolicy);
+
  protected:
-  already_AddRefed<JSActor> InitJSActor(JS::HandleObject aMaybeActor,
+  already_AddRefed<JSActor> InitJSActor(JS::Handle<JSObject*> aMaybeActor,
                                         const nsACString& aName,
                                         ErrorResult& aRv) override;
   mozilla::ipc::IProtocol* AsNativeActor() override { return this; }
@@ -304,6 +305,10 @@ class WindowGlobalParent final : public WindowContext,
   mozilla::ipc::IPCResult RecvSetDocumentDomain(nsIURI* aDomain);
 
   mozilla::ipc::IPCResult RecvReloadWithHttpsOnlyException();
+
+  mozilla::ipc::IPCResult RecvDiscoverIdentityCredentialFromExternalSource(
+      const IdentityCredentialRequestOptions& aOptions,
+      const DiscoverIdentityCredentialFromExternalSourceResolver& aResolver);
 
  private:
   WindowGlobalParent(CanonicalBrowsingContext* aBrowsingContext,
@@ -405,6 +410,8 @@ class WindowGlobalParent final : public WindowContext,
 
   // True if the current loaded document is in fullscreen.
   bool mFullscreen = false;
+
+  bool mShouldReportHasBlockedOpaqueResponse = false;
 };
 
 }  // namespace dom

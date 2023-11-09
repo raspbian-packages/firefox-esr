@@ -8,6 +8,7 @@
 
 #include "GMPContentParent.h"
 #include "GMPCrashHelper.h"
+#include "gmp-video-codec.h"
 #include "mozIGeckoMediaPluginService.h"
 #include "mozilla/Atomics.h"
 #include "mozilla/gmp/GMPTypes.h"
@@ -32,6 +33,8 @@ class GMPCrashHelper;
 class MediaResult;
 
 extern LogModule* GetGMPLog();
+extern LogModule* GetGMPLibraryLog();
+extern GMPLogLevel GetGMPLibraryLogLevel();
 
 namespace gmp {
 
@@ -97,7 +100,7 @@ class GeckoMediaPluginService : public mozIGeckoMediaPluginService,
 
   virtual RefPtr<GetGMPContentParentPromise> GetContentParent(
       GMPCrashHelper* aHelper, const NodeIdVariant& aNodeIdVariant,
-      const nsCString& aAPI, const nsTArray<nsCString>& aTags) = 0;
+      const nsACString& aAPI, const nsTArray<nsCString>& aTags) = 0;
 
   nsresult GMPDispatch(nsIRunnable* event, uint32_t flags = NS_DISPATCH_NORMAL);
   nsresult GMPDispatch(already_AddRefed<nsIRunnable> event,

@@ -5,10 +5,8 @@
 
 about-logins-page-title = Регистрации и пароли
 
-login-filter =
-    .placeholder = Търсене на регистрация
-
-create-login-button = Нова регистрация
+create-new-login-button =
+    .title = Нова регистрация
 
 fxaccounts-sign-in-text = Вземете паролите си на всички ваши устройства
 fxaccounts-sign-in-sync-button = Вписване в Sync
@@ -35,6 +33,8 @@ about-logins-menu-menuitem-help = Помощ
 
 login-list =
     .aria-label = Регистрации, отговарящи на търсеното
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } регистрация
@@ -99,9 +99,17 @@ login-item-copied-password-button-text = Копирано!
 login-item-save-changes-button = Запазване
 login-item-save-new-button = Запазване
 login-item-cancel-button = Отказ
-login-item-time-changed = Последна промяна: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Създадване: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Последна употреба: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = Създадена
+login-item-timeline-action-updated = Обновена
+login-item-timeline-action-used = Използвана
 
 ## OS Authentication dialog
 
@@ -152,6 +160,9 @@ about-logins-confirm-remove-dialog-title = Изтриване на регист�
 confirm-delete-dialog-message = Действието е необратимо.
 about-logins-confirm-remove-dialog-confirm-button = Премахване
 
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
         [one] Премахване
@@ -186,6 +197,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] Така ще бъдат премахнати запазените във { -brand-short-name } регистрации от всички устройства, синхронизирани с { -fxaccount-brand-name }. Също и всички известия за пробиви, появяващи се тук. Действието е необратимо.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Изнасяне на регистрации и пароли
 about-logins-confirm-export-dialog-message = Вашите пароли ще бъдат запазени като четим текст (например Лош@Пар0ла), така че всеки, който има достъп до изнесения файл ще може да ги види.
 about-logins-confirm-export-dialog-confirm-button = Изнасяне…
@@ -205,7 +218,6 @@ about-logins-breach-alert-date = Пробивът е станал на { DATETIM
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Отидете на { $hostname }
-about-logins-breach-alert-learn-more-link = Научете повече
 
 ## Vulnerable Password notification
 

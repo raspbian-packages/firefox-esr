@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Fitur yang Direkomendasikan
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Mengapa saya melihat ini?
+
 cfr-doorhanger-extension-cancel-button = Jangan Sekarang
     .accesskey = J
+
 cfr-doorhanger-extension-ok-button = Tambahkan Sekarang
     .accesskey = T
+
 cfr-doorhanger-extension-manage-settings-button = Kelola Pengaturan Rekomendasi
     .accesskey = K
+
 cfr-doorhanger-extension-never-show-recommendation = Jangan Tampilkan Rekomendasi Ini
     .accesskey = T
+
 cfr-doorhanger-extension-learn-more-link = Pelajari lebih lanjut
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = oleh { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Rekomendasi
 cfr-doorhanger-extension-notification2 = Rekomendasi
     .tooltiptext = Rekomendasi ekstensi
     .a11y-announcement = Rekomendasi ekstensi tersedia
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Rekomendasi
@@ -55,29 +63,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } pengguna
     }
 
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = Lenyapkan spanduk kuki!
-cfr-cookie-banner-handling-body = Izinkan { -brand-short-name } untuk menolak semua permintaan banner kuki secara otomatis, jika memungkinkan. Jika tidak, semua kuki akan diterima untuk mengabaikan lebih banyak spanduk.
-cfr-cookie-banner-accept-button = Abaikan Permintaan
-    .accesskey = A
-cfr-cookie-banner-reject-button = Jangan sekarang
-    .accesskey = J
-cfr-cookie-banner-handling-header-variant-1 = Lihat lebih sedikit pop-up kuki
-cfr-cookie-banner-handling-body-variant-1 = Izinkan { -brand-short-name } menjawab pop-up kuki secara otomatis agar Anda dapat kembali ke penjelajahan bebas gangguan. { -brand-short-name } akan menolak semua permintaan jika memungkinkan, atau menerima semua jika tidak.
-cfr-cookie-banner-accept-button-variant-1 = Tutup Pop-up
-    .accesskey = T
-cfr-cookie-banner-reject-button-variant-1 = Tidak, terima kasih
-    .accesskey = T
-cfr-cookie-banner-handling-header-variant-2 = Pengurangan Spanduk Kuki
-cfr-cookie-banner-handling-body-variant-2 = Izinkan { -brand-short-name } untuk menolak permintaan persetujuan kuki dari situs jika memungkinkan atau menerima akses kuki jika tidak dimungkinkan?
-cfr-cookie-banner-accept-button-variant-2 = Izinkan
-    .accesskey = I
-cfr-cookie-banner-reject-button-variant-2 = Jangan sekarang
-    .accesskey = J
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Sinkronkan markah Anda di mana saja.
@@ -98,9 +83,11 @@ cfr-protections-panel-link-text = Pelajari lebih lanjut
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Fitur baru:
+
 cfr-whatsnew-button =
     .label = Yang Baru
     .tooltiptext = Yang Baru
+
 cfr-whatsnew-release-notes-link-text = Baca catatan rilis
 
 ## Enhanced Tracking Protection Milestones
@@ -128,13 +115,6 @@ cfr-doorhanger-doh-secondary-button = Nonaktifkan
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = Privasi Anda penting. { -brand-short-name } sekarang mengisolasi (atau memasukkan ke kotak pasir) masing-masing situs, yang mempersulit peretas untuk mencuri kata sandi, nomor kartu kredit, dan informasi sensitif lainnya.
-cfr-doorhanger-fission-header = Isolasi Situs
-cfr-doorhanger-fission-primary-button = Oke, paham
-    .accesskey = O
-cfr-doorhanger-fission-secondary-button = Pelajari lebih lanjut
-    .accesskey = P
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Video pada situs ini mungkin tidak dapat diputar dengan benar dalam versi { -brand-short-name } ini. Untuk dukungan video penuh, perbarui { -brand-short-name } sekarang.
@@ -143,11 +123,6 @@ cfr-doorhanger-video-support-primary-button = Perbarui Sekarang
     .accesskey = u
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Pelajari Lebih Lanjut
-    .title = Buka untuk pempelajari fitur ini lebih lanjut
-spotlight-learn-more-expanded = Pelajari lebih lanjut
-    .title = Tutup
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -164,18 +139,6 @@ spotlight-public-wifi-vpn-link = Jangan Sekarang
     .accesskey = J
 
 ## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Uji coba pengalaman privasi terkuat
-    kami yang pernah ada
-spotlight-total-cookie-protection-body = Perlindungan Kuki Total mencegah pelacak menggunakan kuki untuk menguntit Anda di web.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } membangun pagar di sekitar kuki, dengan membatasi kuki di situs tempat Anda berada, sehingga pelacak tidak dapat menggunakannya untuk mengikuti Anda. Dengan akses awal, Anda akan membantu mengoptimalkan fitur ini agar kami dapat terus membangun web yang lebih baik untuk semua orang.
-spotlight-total-cookie-protection-primary-button = Aktifkan Perlindungan Kuki Total
-spotlight-total-cookie-protection-secondary-button = Jangan sekarang
 
 ## Emotive Continuous Onboarding
 
@@ -205,11 +168,13 @@ spotlight-pin-secondary-button = Jangan sekarang
 
 mr2022-background-update-toast-title = { -brand-short-name } baru. Lebih pribadi. Lebih sedikit pelacak. Tanpa kompromi.
 mr2022-background-update-toast-text = Coba { -brand-short-name } terbaru sekarang, dengan peningkatan atas perlindungan anti-pelacakan terkuat kami.
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
 mr2022-background-update-toast-primary-button-label = Buka { -brand-shorter-name } Sekarang
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -228,6 +193,7 @@ firefoxview-cfr-body-v2 = Dapatkan kembali tab yang baru saja ditutup, plus mulu
 ## Firefox View Spotlight
 
 firefoxview-spotlight-promo-title = Mari menyambut { -firefoxview-brand-name }.
+
 # “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
 firefoxview-spotlight-promo-subtitle = Ingin mendapatkan tab terbuka di ponsel Anda? Buka saja. Perlu situs yang baru saja dikunjungi? Tentu! Langsung kembali dengan { -firefoxview-brand-name }.
 firefoxview-spotlight-promo-primarybutton = Lihat cara kerjanya
@@ -237,6 +203,7 @@ firefoxview-spotlight-promo-secondarybutton = Lewati
 
 colorways-cfr-primarybutton = Pilih ragam warna
     .accesskey = r
+
 # "shades" refers to the different color options available to users in colorways.
 colorways-cfr-body = Warnai peramban Anda dengan bayangan eksklusif { -brand-short-name } yang diilhami oleh suara yang mengubah budaya.
 colorways-cfr-header-28days = Ragam warna Suara Independen kedaluarsa pada 16 Januari
@@ -246,24 +213,9 @@ colorways-cfr-header-today = Ragam warna Suara Independen kedaluarsa hari ini
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = Lenyapkan spanduk kuki!
-cfr-cookiebanner-body = Izinkan { -brand-short-name } untuk secara otomatis menolak semua permintaan spanduk kuki jika memungkinkan.
-cfr-cookiebanner-accept-button = Tutup Spanduk
+cfr-cbh-confirm-button = Tolak spanduk kuki
     .accesskey = T
-cfr-cookiebanner-reject-button = Jangan sekarang
-    .accesskey = J
-cfr-cookiebanner-header-variant-1 = Lihat lebih sedikit pop-up kuki
-cfr-cookiebanner-body-variant-1 = Izinkan { -brand-short-name } menjawab pop-up kuki secara otomatis agar Anda dapat kembali ke penjelajahan bebas gangguan. { -brand-short-name } akan menolak semua permintaan jika memungkinkan.
-cfr-cookiebanner-accept-button-variant-1 = Tutup Pop-up
-    .accesskey = u
-cfr-cookiebanner-reject-button-variant-1 = Tidak, Terima kasih
-    .accesskey = h
-cfr-cookiebanner-header-variant-2 = Pengurangan Spanduk Kuki
-cfr-cookiebanner-body-variant-2 = Kurangi jumlah spanduk kuki yang Anda lihat dengan mengizinkan { -brand-short-name } untuk menolak permintaan izin kuki situs web jika memungkinkan.
-cfr-cookiebanner-accept-button-variant-2 = Izinkan
-    .accesskey = I
-cfr-cookiebanner-reject-button-variant-2 = Jangan sekarang
+cfr-cbh-dismiss-button = Jangan sekarang
     .accesskey = J
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
@@ -271,3 +223,13 @@ cfr-cookiebanner-reject-button-variant-2 = Jangan sekarang
 july-jam-headline = Kami membantu Anda
 july-jam-body = Setiap bulan { -brand-short-name } memblokir rata-rata 3000+ pelacak per pengguna, memberikan Anda akses yang aman dan cepat ke internet yang baik.
 july-jam-set-default-primary = Buka tautan saya dengan { -brand-short-name }
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-primary = Paham
+
+## FxA sync CFR
+
+
+## Device Migration FxA Spotlight
+

@@ -26,10 +26,6 @@ certmgr-people = Skilríki sem auðkenna þetta fólk
 certmgr-server = Þessar færslur auðkenna undantekningar á villum í skilríkjum netþjóna
 certmgr-ca = Skilríki sem auðkenna þessar vottunarstöðvar
 
-certmgr-edit-ca-cert =
-    .title = Breyta stillingum CA skilríkja trausts
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Breyta stillingum CA skilríkja trausts
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Þetta skilríki getur auðkennt póst notendur.
-
-certmgr-delete-cert =
-    .title = Eyða skilríki
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Eyða skilríki
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Netþjónn
-
-certmgr-override-lifetime =
-    .label = Æviskeið
 
 certmgr-token-name =
     .label = Öryggistæki
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Raðnúmer
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256 fingrafar
 
 certmgr-view =
     .label = Skoða…

@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = เพิ่งปิดล่าสุด
 firefoxview-closed-tabs-description2 = เปิดหน้าที่คุณปิดไปในหน้าต่างนี้ใหม่
 firefoxview-closed-tabs-placeholder-header = ไม่มีแท็บที่ปิดล่าสุด
 firefoxview-closed-tabs-placeholder-body = เมื่อคุณปิดแท็บในหน้าต่างนี้ คุณสามารถเรียกแท็บนั้นกลับมาได้จากที่นี่
+firefoxview-closed-tabs-placeholder-body2 = เมื่อคุณปิดแท็บ คุณสามารถเรียกแท็บนั้นกลับมาได้จากที่นี่
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = ใช้งานล่าสุด
 firefoxview-tabs-list-tab-button =
     .title = เปิด { $targetURI } ในแท็บใหม่
 firefoxview-try-colorways-button = ลองใช้ชุดรูปแบบสี
-firefoxview-no-current-colorway-collection = ชุดรูปแบบสีใหม่กำลังจะมีให้ใช้ในเร็ว ๆ นี้
 firefoxview-change-colorway-button = เปลี่ยนชุดรูปแบบสี
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = แสดงรายการ
 firefoxview-collapse-button-hide =
     .title = ซ่อนรายการ
+firefoxview-overview-nav = การเรียกดูล่าสุด
+    .title = การเรียกดูล่าสุด
+firefoxview-overview-header = การเรียกดูล่าสุด
+    .title = การเรียกดูล่าสุด
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = ประวัติ
+    .title = ประวัติ
+firefoxview-history-header = ประวัติ
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = แท็บที่เปิด
+    .title = แท็บที่เปิด
+firefoxview-opentabs-header = แท็บที่เปิด
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = แท็บที่ปิดล่าสุด
+    .title = แท็บที่ปิดล่าสุด
+firefoxview-recently-closed-header = แท็บที่ปิดล่าสุด
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = แท็บจากอุปกรณ์อื่น ๆ
+    .title = แท็บจากอุปกรณ์อื่น ๆ
+firefoxview-synced-tabs-header = แท็บจากอุปกรณ์อื่น ๆ
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = ดูทั้งหมด
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = หน้าต่าง { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = หน้าต่าง { $winID } (ปัจจุบัน)
+firefoxview-opentabs-focus-tab =
+    .title = สลับไปยังแท็บนี้
+firefoxview-show-more = แสดงเพิ่มเติม
+firefoxview-show-less = แสดงน้อยลง
+firefoxview-sort-history-by-date-label = เรียงตามวันที่
+firefoxview-sort-history-by-site-label = เรียงตามไซต์
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = วันนี้ - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = เมื่อวาน - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = แสดงประวัติทั้งหมด

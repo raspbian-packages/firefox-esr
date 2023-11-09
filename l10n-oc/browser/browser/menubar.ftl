@@ -220,8 +220,6 @@ menu-history-undo-menu =
     .label = Onglets tampats recentament
 menu-history-undo-window-menu =
     .label = Fenèstras tampadas recentament
-menu-history-reopen-all-tabs = Tornar dobrir totes los onglets
-menu-history-reopen-all-windows = Tornar dobrir totas las fenèstras
 
 ## Bookmarks Menu
 
@@ -230,14 +228,13 @@ menu-bookmarks-menu =
     .accesskey = M
 menu-bookmarks-manage =
     .label = Gerir los marcapaginas
-menu-bookmark-current-tab =
-    .label = Marcar l’onglet actual
-menu-bookmark-edit =
-    .label = Modificar aqueste marcapagina
 menu-bookmark-tab =
     .label = Marcar l’onglet actual…
 menu-edit-bookmark =
     .label = Modificar aqueste marcapagina…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Cercar dins los marcapaginas
 menu-bookmarks-all-tabs =
     .label = Marcar totes los onglets…
 menu-bookmarks-toolbar =
@@ -331,6 +328,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Arrestar la resolucion de problèmas
     .accesskey = A
+menu-help-switch-device =
+    .label = Passar a un aparelh novèl
+    .accesskey = P
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

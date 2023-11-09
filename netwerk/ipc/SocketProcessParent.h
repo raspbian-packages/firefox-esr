@@ -31,8 +31,9 @@ class SocketProcessParent final
  public:
   friend class SocketProcessHost;
 
+  NS_INLINE_DECL_REFCOUNTING(SocketProcessParent, final)
+
   explicit SocketProcessParent(SocketProcessHost* aHost);
-  ~SocketProcessParent();
 
   static SocketProcessParent* GetSingleton();
 
@@ -54,14 +55,15 @@ class SocketProcessParent final
       const Maybe<TabId>& aTabId);
   bool DeallocPWebrtcTCPSocketParent(PWebrtcTCPSocketParent* aActor);
   already_AddRefed<PDNSRequestParent> AllocPDNSRequestParent(
-      const nsCString& aHost, const nsCString& aTrrServer, const int32_t& port,
-      const uint16_t& aType, const OriginAttributes& aOriginAttributes,
-      const uint32_t& aFlags);
-  virtual mozilla::ipc::IPCResult RecvPDNSRequestConstructor(
-      PDNSRequestParent* actor, const nsCString& aHost,
-      const nsCString& trrServer, const int32_t& port, const uint16_t& type,
+      const nsACString& aHost, const nsACString& aTrrServer,
+      const int32_t& port, const uint16_t& aType,
       const OriginAttributes& aOriginAttributes,
-      const uint32_t& flags) override;
+      const nsIDNSService::DNSFlags& aFlags);
+  virtual mozilla::ipc::IPCResult RecvPDNSRequestConstructor(
+      PDNSRequestParent* actor, const nsACString& aHost,
+      const nsACString& trrServer, const int32_t& port, const uint16_t& type,
+      const OriginAttributes& aOriginAttributes,
+      const nsIDNSService::DNSFlags& flags) override;
 
   void ActorDestroy(ActorDestroyReason aWhy) override;
   bool SendRequestMemoryReport(const uint32_t& aGeneration,
@@ -72,19 +74,12 @@ class SocketProcessParent final
   mozilla::ipc::IPCResult RecvObserveHttpActivity(
       const HttpActivityArgs& aArgs, const uint32_t& aActivityType,
       const uint32_t& aActivitySubtype, const PRTime& aTimestamp,
-      const uint64_t& aExtraSizeData, const nsCString& aExtraStringData);
+      const uint64_t& aExtraSizeData, const nsACString& aExtraStringData);
 
   mozilla::ipc::IPCResult RecvInitBackground(
       Endpoint<PBackgroundStarterParent>&& aEndpoint);
 
   already_AddRefed<PAltServiceParent> AllocPAltServiceParent();
-
-  mozilla::ipc::IPCResult RecvGetTLSClientCert(
-      const nsCString& aHostName, const OriginAttributes& aOriginAttributes,
-      const int32_t& aPort, const uint32_t& aProviderFlags,
-      const uint32_t& aProviderTlsFlags, const ByteArray& aServerCert,
-      Maybe<ByteArray>&& aClientCert, nsTArray<ByteArray>&& aCollectedCANames,
-      bool* aSucceeded, ByteArray* aOutCert, nsTArray<ByteArray>* aBuiltChain);
 
   mozilla::ipc::IPCResult RecvFindIPCClientCertObjects(
       nsTArray<IPCClientCertObject>* aObjects);
@@ -103,8 +98,6 @@ class SocketProcessParent final
       nsIURI* aPushedURL, OriginAttributes&& aOriginAttributes,
       nsCString&& aRequestString, CachePushCheckResolver&& aResolver);
 
-  mozilla::ipc::IPCResult RecvODoHServiceActivated(const bool& aActivated);
-
   mozilla::ipc::IPCResult RecvExcludeHttp2OrHttp3(
       const HttpConnectionInfoCloneArgs& aArgs);
   mozilla::ipc::IPCResult RecvOnConsoleMessage(const nsString& aMessage);
@@ -118,10 +111,12 @@ class SocketProcessParent final
 #endif  // defined(XP_WIN)
 
  private:
+  ~SocketProcessParent();
+
   SocketProcessHost* mHost;
   UniquePtr<dom::MemoryReportRequestHost> mMemoryReportRequest;
 
-  static void Destroy(UniquePtr<SocketProcessParent>&& aParent);
+  static void Destroy(RefPtr<SocketProcessParent>&& aParent);
 };
 
 }  // namespace net

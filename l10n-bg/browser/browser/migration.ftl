@@ -30,6 +30,9 @@ import-from-nothing =
 import-from-safari =
     .label = Safari
     .accesskey = S
+import-from-opera =
+    .label = Opera
+    .accesskey = O
 import-from-brave =
     .label = Brave
     .accesskey = B
@@ -63,9 +66,6 @@ import-items-page-title = Елементи за внасяне
 import-items-description = Изберете елементите за внасяне:
 
 import-permissions-page-title = Дайте права на { -brand-short-name }
-
-# Do not translate "Bookmarks.plist"; the file name is the same everywhere.
-import-permissions-description = macOS изисква изрично да разрешите на { -brand-short-name } достъп до отметките на Safari. Щракнете върху „Напред“ и изберете файла „Bookmarks.plist“ в панела за избор на файл, който се появява.
 
 import-migrating-page-title = Внасяне…
 
@@ -158,3 +158,4 @@ browser-data-session-checkbox =
     .label = Прозорци и раздели
 browser-data-session-label =
     .value = Прозорци и раздели
+

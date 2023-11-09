@@ -11,6 +11,8 @@
 
 ## Application Menu (macOS only)
 
+menu-application-preferences =
+    .label = Preferense
 menu-application-services =
     .label = Serviççi
 menu-application-hide-this =
@@ -34,9 +36,11 @@ menu-quit =
             [windows] S
            *[other] S
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Sciòrti da { -brand-shorter-name }
+
 menu-about =
     .label = Informaçioin in sce { -brand-shorter-name }
     .accesskey = I
@@ -66,6 +70,16 @@ menu-file-open-location =
 menu-file-open-file =
     .label = Arvi schedaio…
     .accesskey = v
+# Variables:
+#  $tabCount (Number): the number of tabs that are affected by the action.
+menu-file-close-tab =
+    .label =
+        { $tabCount ->
+            [1] Særa feuggio
+            [one] Særa { $tabCount } feuggi
+           *[other] S
+        }
+    .accesskey = S
 menu-file-close-window =
     .label = Særa o barcon
     .accesskey = S
@@ -75,6 +89,9 @@ menu-file-save-page =
 menu-file-email-link =
     .label = Manda colegamento pe pòsta…
     .accesskey = c
+menu-file-share-url =
+    .label = Condividdi
+    .accesskey = C
 menu-file-print-setup =
     .label = Inpòsta pagina…
     .accesskey = I
@@ -93,6 +110,9 @@ menu-file-go-offline =
 menu-edit =
     .label = Cangia
     .accesskey = C
+menu-edit-find-in-page =
+    .label = Treuva inta pagina…
+    .accesskey = T
 menu-edit-find-again =
     .label = Treuva pròscimo
     .accesskey = T
@@ -108,6 +128,9 @@ menu-view =
 menu-view-toolbars-menu =
     .label = Bare
     .accesskey = B
+menu-view-customize-toolbar2 =
+    .label = Personaliza a bara di atressi…
+    .accesskey = P
 menu-view-sidebar =
     .label = Bara de scianco
     .accesskey = e
@@ -126,6 +149,9 @@ menu-view-full-zoom-enlarge =
 menu-view-full-zoom-reduce =
     .label = Diminoisci zoom
     .accesskey = o
+menu-view-full-zoom-actual-size =
+    .label = Dimenscioin efetive
+    .accesskey = D
 menu-view-full-zoom-toggle =
     .label = Zoom do solo testo
     .accesskey = t
@@ -197,8 +223,6 @@ menu-history-undo-window-menu =
 menu-bookmarks-menu =
     .label = Segnalibbri
     .accesskey = b
-menu-bookmark-edit =
-    .label = Cangia segnalibbro
 menu-bookmarks-all-tabs =
     .label = Azonzi tutti i feuggi a-i segnalibbri…
 menu-bookmarks-toolbar =
@@ -225,6 +249,13 @@ menu-tools-page-source =
 menu-tools-page-info =
     .label = Informaçioin da pagina
     .accesskey = I
+menu-settings =
+    .label = Inpostaçioin
+    .accesskey =
+        { PLATFORM() ->
+            [windows] I
+           *[other] n
+        }
 menu-tools-layout-debugger =
     .label = Aspeto do Debugger
     .accesskey = A
@@ -250,8 +281,20 @@ menu-window-bring-all-to-front =
 menu-help =
     .label = Agiutto
     .accesskey = A
+menu-get-help =
+    .label = Fatte agiutâ
+    .accesskey = F
+menu-help-more-troubleshooting-info =
+    .label = Informaçioin in sciâ soluçion di problemi
+    .accesskey = I
 menu-help-report-site-issue =
     .label = Denonçia Problema do Scito…
+menu-help-share-ideas =
+    .label = Condividdi idee e comenti…
+    .accesskey = C
+menu-help-enter-troubleshoot-mode2 =
+    .label = Mòddo soluçion problemi…
+    .accesskey = M
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

@@ -31,7 +31,6 @@
 #include "vm/HelperThreads.h"
 #include "vm/Realm.h"
 #include "wasm/WasmBaselineCompile.h"
-#include "wasm/WasmCraneliftCompile.h"
 #include "wasm/WasmGenerator.h"
 #include "wasm/WasmIonCompile.h"
 #include "wasm/WasmOpIter.h"
@@ -52,6 +51,7 @@ uint32_t wasm::ObservedCPUFeatures() {
     MIPS64 = 0x5,
     ARM64 = 0x6,
     LOONG64 = 0x7,
+    RISCV64 = 0x8,
     ARCH_BITS = 3
   };
 
@@ -75,7 +75,10 @@ uint32_t wasm::ObservedCPUFeatures() {
 #elif defined(JS_CODEGEN_LOONG64)
   MOZ_ASSERT(jit::GetLOONG64Flags() <= (UINT32_MAX >> ARCH_BITS));
   return LOONG64 | (jit::GetLOONG64Flags() << ARCH_BITS);
-#elif defined(JS_CODEGEN_NONE)
+#elif defined(JS_CODEGEN_RISCV64)
+  MOZ_ASSERT(jit::GetRISCV64Flags() <= (UINT32_MAX >> ARCH_BITS));
+  return RISCV64 | (jit::GetRISCV64Flags() << ARCH_BITS);
+#elif defined(JS_CODEGEN_NONE) || defined(JS_CODEGEN_WASM32)
   return 0;
 #else
 #  error "unknown architecture"
@@ -93,14 +96,7 @@ FeatureArgs FeatureArgs::build(JSContext* cx, const FeatureOptions& options) {
   features.sharedMemory =
       wasm::ThreadsAvailable(cx) ? Shareable::True : Shareable::False;
 
-  // See comments in WasmConstants.h regarding the meaning of the wormhole
-  // options.
-  bool wormholeOverride =
-      wasm::SimdWormholeAvailable(cx) && options.simdWormhole;
-  features.simdWormhole = wormholeOverride;
-  if (wormholeOverride) {
-    features.v128 = true;
-  }
+  features.simd = jit::JitSupportsWasmSimd();
   features.intrinsics = options.intrinsics;
 
   return features;
@@ -112,10 +108,6 @@ SharedCompileArgs CompileArgs::build(JSContext* cx,
                                      CompileArgsError* error) {
   bool baseline = BaselineAvailable(cx);
   bool ion = IonAvailable(cx);
-  bool cranelift = CraneliftAvailable(cx);
-
-  // At most one optimizing compiler.
-  MOZ_RELEASE_ASSERT(!(ion && cranelift));
 
   // Debug information such as source view or debug traps will require
   // additional memory and permanently stay in baseline code, so we try to
@@ -129,19 +121,19 @@ SharedCompileArgs CompileArgs::build(JSContext* cx,
   // The <Compiler>Available() predicates should ensure no failure here, but
   // when we're fuzzing we allow inconsistent switches and the check may thus
   // fail.  Let it go to a run-time error instead of crashing.
-  if (debug && (ion || cranelift)) {
+  if (debug && ion) {
     *error = CompileArgsError::NoCompiler;
     return nullptr;
   }
 
-  if (forceTiering && !(baseline && (cranelift || ion))) {
+  if (forceTiering && !(baseline && ion)) {
     // This can happen only in testing, and in this case we don't have a
     // proper way to signal the error, so just silently override the default,
     // instead of adding a skip-if directive to every test using debug/gc.
     forceTiering = false;
   }
 
-  if (!(baseline || ion || cranelift)) {
+  if (!(baseline || ion)) {
     *error = CompileArgsError::NoCompiler;
     return nullptr;
   }
@@ -154,7 +146,6 @@ SharedCompileArgs CompileArgs::build(JSContext* cx,
 
   target->baselineEnabled = baseline;
   target->ionEnabled = ion;
-  target->craneliftEnabled = cranelift;
   target->debugEnabled = debug;
   target->forceTiering = forceTiering;
   target->features = FeatureArgs::build(cx, options);
@@ -162,17 +153,33 @@ SharedCompileArgs CompileArgs::build(JSContext* cx,
   return target;
 }
 
+SharedCompileArgs CompileArgs::buildForAsmJS(ScriptedCaller&& scriptedCaller) {
+  CompileArgs* target = js_new<CompileArgs>(std::move(scriptedCaller));
+  if (!target) {
+    return nullptr;
+  }
+
+  // AsmJS is deprecated and doesn't have mechanisms for experimental features,
+  // so we don't need to initialize the FeatureArgs. It also only targets the
+  // Ion backend and does not need WASM debug support since it is de-optimized
+  // to JS in that case.
+  target->ionEnabled = true;
+  target->debugEnabled = false;
+
+  return target;
+}
+
 SharedCompileArgs CompileArgs::buildAndReport(JSContext* cx,
                                               ScriptedCaller&& scriptedCaller,
-                                              const FeatureOptions& options) {
+                                              const FeatureOptions& options,
+                                              bool reportOOM) {
   CompileArgsError error;
   SharedCompileArgs args =
       CompileArgs::build(cx, std::move(scriptedCaller), options, &error);
   if (args) {
     Log(cx, "available wasm compilers: tier1=%s tier2=%s",
         args->baselineEnabled ? "baseline" : "none",
-        args->ionEnabled ? "ion"
-                         : (args->craneliftEnabled ? "cranelift" : "none"));
+        args->ionEnabled ? "ion" : "none");
     return args;
   }
 
@@ -182,7 +189,11 @@ SharedCompileArgs CompileArgs::buildAndReport(JSContext* cx,
       break;
     }
     case CompileArgsError::OutOfMemory: {
-      // Intentionally do not report the OOM, as callers expect this behavior
+      // Most callers are required to return 'false' without reporting an OOM,
+      // so we make reporting it optional here.
+      if (reportOOM) {
+        ReportOutOfMemory(cx);
+      }
       break;
     }
   }
@@ -582,12 +593,10 @@ CompilerEnvironment::CompilerEnvironment(const CompileArgs& args)
     : state_(InitialWithArgs), args_(&args) {}
 
 CompilerEnvironment::CompilerEnvironment(CompileMode mode, Tier tier,
-                                         OptimizedBackend optimizedBackend,
                                          DebugEnabled debugEnabled)
     : state_(InitialWithModeTierDebug),
       mode_(mode),
       tier_(tier),
-      optimizedBackend_(optimizedBackend),
       debug_(debugEnabled) {}
 
 void CompilerEnvironment::computeParameters() {
@@ -607,16 +616,14 @@ void CompilerEnvironment::computeParameters(Decoder& d) {
   bool baselineEnabled = args_->baselineEnabled;
   bool ionEnabled = args_->ionEnabled;
   bool debugEnabled = args_->debugEnabled;
-  bool craneliftEnabled = args_->craneliftEnabled;
   bool forceTiering = args_->forceTiering;
 
-  bool hasSecondTier = ionEnabled || craneliftEnabled;
+  bool hasSecondTier = ionEnabled;
   MOZ_ASSERT_IF(debugEnabled, baselineEnabled);
   MOZ_ASSERT_IF(forceTiering, baselineEnabled && hasSecondTier);
 
   // Various constraints in various places should prevent failure here.
-  MOZ_RELEASE_ASSERT(baselineEnabled || ionEnabled || craneliftEnabled);
-  MOZ_RELEASE_ASSERT(!(ionEnabled && craneliftEnabled));
+  MOZ_RELEASE_ASSERT(baselineEnabled || ionEnabled);
 
   uint32_t codeSectionSize = 0;
 
@@ -634,9 +641,6 @@ void CompilerEnvironment::computeParameters(Decoder& d) {
     mode_ = CompileMode::Once;
     tier_ = hasSecondTier ? Tier::Optimized : Tier::Baseline;
   }
-
-  optimizedBackend_ =
-      craneliftEnabled ? OptimizedBackend::Cranelift : OptimizedBackend::Ion;
 
   debug_ = debugEnabled ? DebugEnabled::True : DebugEnabled::False;
 
@@ -690,7 +694,7 @@ static bool DecodeCodeSection(const ModuleEnvironment& env, DecoderT& d,
   }
 
   for (uint32_t funcDefIndex = 0; funcDefIndex < numFuncDefs; funcDefIndex++) {
-    if (!DecodeFunctionBody(d, mg, env.numFuncImports() + funcDefIndex)) {
+    if (!DecodeFunctionBody(d, mg, env.numFuncImports + funcDefIndex)) {
       return false;
     }
   }
@@ -710,7 +714,7 @@ SharedModule wasm::CompileBuffer(const CompileArgs& args,
   Decoder d(bytecode.bytes, 0, error, warnings);
 
   ModuleEnvironment moduleEnv(args.features);
-  if (!DecodeModuleEnvironment(d, &moduleEnv)) {
+  if (!moduleEnv.init() || !DecodeModuleEnvironment(d, &moduleEnv)) {
     return nullptr;
   }
   CompilerEnvironment compilerEnv(args);
@@ -737,16 +741,12 @@ bool wasm::CompileTier2(const CompileArgs& args, const Bytes& bytecode,
                         UniqueCharsVector* warnings, Atomic<bool>* cancelled) {
   Decoder d(bytecode, 0, error);
 
-  OptimizedBackend optimizedBackend = args.craneliftEnabled
-                                          ? OptimizedBackend::Cranelift
-                                          : OptimizedBackend::Ion;
-
   ModuleEnvironment moduleEnv(args.features);
-  if (!DecodeModuleEnvironment(d, &moduleEnv)) {
+  if (!moduleEnv.init() || !DecodeModuleEnvironment(d, &moduleEnv)) {
     return false;
   }
   CompilerEnvironment compilerEnv(CompileMode::Tier2, Tier::Optimized,
-                                  optimizedBackend, DebugEnabled::False);
+                                  DebugEnabled::False);
   compilerEnv.computeParameters(d);
 
   ModuleGenerator mg(args, &moduleEnv, &compilerEnv, cancelled, error,
@@ -849,6 +849,9 @@ SharedModule wasm::CompileStreaming(
     UniqueCharsVector* warnings) {
   CompilerEnvironment compilerEnv(args);
   ModuleEnvironment moduleEnv(args.features);
+  if (!moduleEnv.init()) {
+    return nullptr;
+  }
 
   {
     Decoder d(envBytes, 0, error, warnings);

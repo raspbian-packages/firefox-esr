@@ -48,7 +48,7 @@ void SharedStyleSheetCache::LoadCompleted(SharedStyleSheetCache* aCache,
     cancelledStatus = NS_BINDING_ABORTED;
     css::SheetLoadData* data = &aData;
     do {
-      if (data->mIsCancelled) {
+      if (data->IsCancelled()) {
         // We only need to mark loads for this loader as cancelled, so as to not
         // fire error events in unrelated documents.
         css::Loader::MarkLoadTreeFailed(*data, data->mLoader);
@@ -64,13 +64,13 @@ void SharedStyleSheetCache::LoadCompleted(SharedStyleSheetCache* aCache,
 
   // Now it's safe to go ahead and notify observers
   for (RefPtr<css::SheetLoadData>& data : datasToNotify) {
-    auto status = data->mIsCancelled ? cancelledStatus : aStatus;
+    auto status = data->IsCancelled() ? cancelledStatus : aStatus;
     data->mLoader->NotifyObservers(*data, status);
   }
 }
 
 void SharedStyleSheetCache::InsertIfNeeded(css::SheetLoadData& aData) {
-  MOZ_ASSERT(aData.mLoader->GetDocument(),
+  MOZ_ASSERT(aData.mLoader->IsDocumentAssociated(),
              "We only cache document-associated sheets");
   LOG("SharedStyleSheetCache::InsertIfNeeded");
   // If we ever start doing this for failed loads, we'll need to adjust the

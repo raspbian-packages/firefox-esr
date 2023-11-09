@@ -65,13 +65,19 @@ cryptominer-tab-content = Ri ajkriptom nikokisaj ruchuq'a' ruq'inoj akematz'ib' 
 protections-close-button2 =
     .aria-label = Titz'apïx
     .title = Titz'apïx
-  
+
 mobile-app-title = Keq'at ri rojqanela' eltzijol pa ch'aqa' okisab'äl
 mobile-app-card-content = Tokisäx ri oyonib'äl okik'amaya'l rik'in ri kemon chajinïk chuwäch ri retal eltzijol.
 mobile-app-links = { -brand-product-name } Okik'amaya'l richin <a data-l10n-name="android-mobile-inline-link">Android</a> chuqa' <a data-l10n-name="ios-mobile-inline-link">iOS</a>
 
 lockwise-title = Man tamestaj chik jun ewan tzij
+passwords-title-logged-in = Ke'anuk'samajij ewan taq atzij
+passwords-header-content = { -brand-product-name } ütz ke'ayaka' ri ewan taq atzij pan awokik'amaya'l.
 lockwise-header-content-logged-in = Ütz ke'ayaka' ri ewan taq atzij chuqa' ke'axima' pa ronojel awokisab'al.
+protection-report-passwords-save-passwords-button = Keyak ewan taq tzij
+    .title = Keyak ewan taq tzij
+protection-report-passwords-manage-passwords-button = Kenuk'samajïx ewan taq tzij
+    .title = Kenuk'samajïx ewan taq tzij
 
 
 # Variables:

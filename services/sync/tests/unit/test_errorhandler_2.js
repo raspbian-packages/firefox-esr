@@ -1,17 +1,20 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
-const { Status } = ChromeUtils.import("resource://services-sync/status.js");
-const { FileUtils } = ChromeUtils.import(
-  "resource://gre/modules/FileUtils.jsm"
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
+);
+const { Status } = ChromeUtils.importESModule(
+  "resource://services-sync/status.sys.mjs"
+);
+const { FileUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/FileUtils.sys.mjs"
 );
 
 const fakeServer = new SyncServer();
 fakeServer.start();
-const fakeServerUrl = "http://localhost:" + fakeServer.port;
 
-registerCleanupFunction(function() {
+registerCleanupFunction(function () {
   return promiseStopServer(fakeServer).finally(() => {
     Svc.Prefs.resetBranch("");
   });
@@ -68,13 +71,13 @@ add_task(async function test_crypto_keys_login_server_maintenance_error() {
   Service.collectionKeys.clear();
 
   let backoffInterval;
-  Svc.Obs.add("weave:service:backoff:interval", function observe(
-    subject,
-    data
-  ) {
-    Svc.Obs.remove("weave:service:backoff:interval", observe);
-    backoffInterval = subject;
-  });
+  Svc.Obs.add(
+    "weave:service:backoff:interval",
+    function observe(subject, data) {
+      Svc.Obs.remove("weave:service:backoff:interval", observe);
+      backoffInterval = subject;
+    }
+  );
 
   Assert.ok(!Status.enforceBackoff);
   Assert.equal(Status.service, STATUS_OK);
@@ -172,13 +175,13 @@ add_task(
     await configureIdentity({ username: "broken.info" }, server);
 
     let backoffInterval;
-    Svc.Obs.add("weave:service:backoff:interval", function observe(
-      subject,
-      data
-    ) {
-      Svc.Obs.remove("weave:service:backoff:interval", observe);
-      backoffInterval = subject;
-    });
+    Svc.Obs.add(
+      "weave:service:backoff:interval",
+      function observe(subject, data) {
+        Svc.Obs.remove("weave:service:backoff:interval", observe);
+        backoffInterval = subject;
+      }
+    );
 
     Assert.ok(!Status.enforceBackoff);
     Assert.equal(Status.service, STATUS_OK);
@@ -209,13 +212,13 @@ add_task(
     await configureIdentity({ username: "broken.meta" }, server);
 
     let backoffInterval;
-    Svc.Obs.add("weave:service:backoff:interval", function observe(
-      subject,
-      data
-    ) {
-      Svc.Obs.remove("weave:service:backoff:interval", observe);
-      backoffInterval = subject;
-    });
+    Svc.Obs.add(
+      "weave:service:backoff:interval",
+      function observe(subject, data) {
+        Svc.Obs.remove("weave:service:backoff:interval", observe);
+        backoffInterval = subject;
+      }
+    );
 
     Assert.ok(!Status.enforceBackoff);
     Assert.equal(Status.service, STATUS_OK);
@@ -248,13 +251,13 @@ add_task(
     Service.collectionKeys.clear();
 
     let backoffInterval;
-    Svc.Obs.add("weave:service:backoff:interval", function observe(
-      subject,
-      data
-    ) {
-      Svc.Obs.remove("weave:service:backoff:interval", observe);
-      backoffInterval = subject;
-    });
+    Svc.Obs.add(
+      "weave:service:backoff:interval",
+      function observe(subject, data) {
+        Svc.Obs.remove("weave:service:backoff:interval", observe);
+        backoffInterval = subject;
+      }
+    );
 
     Assert.ok(!Status.enforceBackoff);
     Assert.equal(Status.service, STATUS_OK);
@@ -285,13 +288,13 @@ add_task(
     await configureIdentity({ username: "broken.keys" }, server);
 
     let backoffInterval;
-    Svc.Obs.add("weave:service:backoff:interval", function observe(
-      subject,
-      data
-    ) {
-      Svc.Obs.remove("weave:service:backoff:interval", observe);
-      backoffInterval = subject;
-    });
+    Svc.Obs.add(
+      "weave:service:backoff:interval",
+      function observe(subject, data) {
+        Svc.Obs.remove("weave:service:backoff:interval", observe);
+        backoffInterval = subject;
+      }
+    );
 
     Assert.ok(!Status.enforceBackoff);
     Assert.equal(Status.service, STATUS_OK);
@@ -322,13 +325,13 @@ add_task(
     await configureIdentity({ username: "broken.wipe" }, server);
 
     let backoffInterval;
-    Svc.Obs.add("weave:service:backoff:interval", function observe(
-      subject,
-      data
-    ) {
-      Svc.Obs.remove("weave:service:backoff:interval", observe);
-      backoffInterval = subject;
-    });
+    Svc.Obs.add(
+      "weave:service:backoff:interval",
+      function observe(subject, data) {
+        Svc.Obs.remove("weave:service:backoff:interval", observe);
+        backoffInterval = subject;
+      }
+    );
 
     Assert.ok(!Status.enforceBackoff);
     Assert.equal(Status.service, STATUS_OK);
@@ -362,13 +365,13 @@ add_task(
     engine.enabled = true;
 
     let backoffInterval;
-    Svc.Obs.add("weave:service:backoff:interval", function observe(
-      subject,
-      data
-    ) {
-      Svc.Obs.remove("weave:service:backoff:interval", observe);
-      backoffInterval = subject;
-    });
+    Svc.Obs.add(
+      "weave:service:backoff:interval",
+      function observe(subject, data) {
+        Svc.Obs.remove("weave:service:backoff:interval", observe);
+        backoffInterval = subject;
+      }
+    );
 
     Assert.ok(!Status.enforceBackoff);
     Assert.equal(Status.service, STATUS_OK);

@@ -66,25 +66,9 @@ bool DateTimeInputTypeBase::IsRangeUnderflow() const {
   return value < minimum;
 }
 
-bool DateTimeInputTypeBase::HasStepMismatch(bool aUseZeroIfValueNaN) const {
+bool DateTimeInputTypeBase::HasStepMismatch() const {
   Decimal value = mInputElement->GetValueAsDecimal();
-  if (value.isNaN()) {
-    if (aUseZeroIfValueNaN) {
-      value = Decimal(0);
-    } else {
-      // The element can't suffer from step mismatch if it's value isn't a
-      // number.
-      return false;
-    }
-  }
-
-  Decimal step = mInputElement->GetStep();
-  if (step == kStepAny) {
-    return false;
-  }
-
-  // Value has to be an integral multiple of step.
-  return NS_floorModulo(value - GetStepBase(), step) != Decimal(0);
+  return mInputElement->ValueIsStepMismatch(value);
 }
 
 bool DateTimeInputTypeBase::HasBadInput() const {
@@ -137,15 +121,12 @@ nsresult DateTimeInputTypeBase::GetRangeUnderflowMessage(nsAString& aMessage) {
       minStr);
 }
 
-nsresult DateTimeInputTypeBase::MinMaxStepAttrChanged() {
+void DateTimeInputTypeBase::MinMaxStepAttrChanged() {
   if (Element* dateTimeBoxElement = mInputElement->GetDateTimeBoxElement()) {
-    AsyncEventDispatcher* dispatcher = new AsyncEventDispatcher(
-        dateTimeBoxElement, u"MozNotifyMinMaxStepAttrChanged"_ns,
+    AsyncEventDispatcher::RunDOMEventWhenSafe(
+        *dateTimeBoxElement, u"MozNotifyMinMaxStepAttrChanged"_ns,
         CanBubble::eNo, ChromeOnlyDispatch::eNo);
-    dispatcher->RunDOMEventWhenSafe();
   }
-
-  return NS_OK;
 }
 
 bool DateTimeInputTypeBase::GetTimeFromMs(double aValue, uint16_t* aHours,
@@ -208,7 +189,7 @@ bool DateInputType::ConvertNumberToString(Decimal aValue,
   double month = JS::MonthFromTime(aValue.toDouble());
   double day = JS::DayFromTime(aValue.toDouble());
 
-  if (IsNaN(year) || IsNaN(month) || IsNaN(day)) {
+  if (std::isnan(year) || std::isnan(month) || std::isnan(day)) {
     return false;
   }
 
@@ -501,7 +482,7 @@ bool DateTimeLocalInputType::ConvertNumberToString(
   double month = JS::MonthFromTime(aValue.toDouble());
   double day = JS::DayFromTime(aValue.toDouble());
 
-  if (IsNaN(year) || IsNaN(month) || IsNaN(day)) {
+  if (std::isnan(year) || std::isnan(month) || std::isnan(day)) {
     return false;
   }
 

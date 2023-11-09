@@ -3,14 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = Ново јазиче
+
 tabbrowser-menuitem-close-tab =
     .label = Затвори јазиче
 tabbrowser-menuitem-close =
     .label = Затвори
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
 
 ## Tooltips for tab audio control
 ## Variables:
@@ -40,4 +37,9 @@ tabbrowser-confirm-close-tabs-button = Затвори ги јазичињата
 tabbrowser-customizemode-tab-title = Прилагодување на { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
+
+
+## Ctrl-Tab dialog
+
+## Tab manager menu buttons
 

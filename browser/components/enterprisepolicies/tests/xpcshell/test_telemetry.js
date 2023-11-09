@@ -2,11 +2,11 @@
  * http://creativecommons.org/publicdomain/zero/1.0/ */
 "use strict";
 
-const { TelemetryTestUtils } = ChromeUtils.import(
-  "resource://testing-common/TelemetryTestUtils.jsm"
+const { TelemetryTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/TelemetryTestUtils.sys.mjs"
 );
-const { AppConstants } = ChromeUtils.import(
-  "resource://gre/modules/AppConstants.jsm"
+const { AppConstants } = ChromeUtils.importESModule(
+  "resource://gre/modules/AppConstants.sys.mjs"
 );
 
 add_task(async function test_telemetry_basic() {
@@ -57,6 +57,42 @@ add_task(async function test_telemetry_roots_plus_policy() {
 });
 
 add_task(async function test_telemetry_esr() {
+  await setupPolicyEngineWithJson({});
+  TelemetryTestUtils.assertScalar(
+    TelemetryTestUtils.getProcessScalars("parent"),
+    "policies.is_enterprise",
+    AppConstants.IS_ESR
+  );
+});
+
+add_task(async function test_telemetry_esr_mac_eol() {
+  Services.prefs
+    .getDefaultBranch(null)
+    .setCharPref("distribution.id", "mozilla-mac-eol-esr115");
+  await setupPolicyEngineWithJson({});
+  TelemetryTestUtils.assertScalar(
+    TelemetryTestUtils.getProcessScalars("parent"),
+    "policies.is_enterprise",
+    false
+  );
+});
+
+add_task(async function test_telemetry_esr_win_eol() {
+  Services.prefs
+    .getDefaultBranch(null)
+    .setCharPref("distribution.id", "mozilla-win-eol-esr115");
+  await setupPolicyEngineWithJson({});
+  TelemetryTestUtils.assertScalar(
+    TelemetryTestUtils.getProcessScalars("parent"),
+    "policies.is_enterprise",
+    false
+  );
+});
+
+add_task(async function test_telemetry_esr_distro() {
+  Services.prefs
+    .getDefaultBranch(null)
+    .setCharPref("distribution.id", "any-other-distribution-id");
   await setupPolicyEngineWithJson({});
   TelemetryTestUtils.assertScalar(
     TelemetryTestUtils.getProcessScalars("parent"),

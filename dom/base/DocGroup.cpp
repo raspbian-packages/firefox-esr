@@ -149,9 +149,6 @@ NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN(DocGroup)
   tmp->mDocuments.Clear();
 NS_IMPL_CYCLE_COLLECTION_UNLINK_END
 
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(DocGroup, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(DocGroup, Release)
-
 /* static */
 already_AddRefed<DocGroup> DocGroup::Create(
     BrowsingContextGroup* aBrowsingContextGroup, const nsACString& aKey) {
@@ -193,9 +190,14 @@ void DocGroup::AddDocument(Document* aDocument) {
   MOZ_ASSERT(NS_IsMainThread());
   MOZ_ASSERT(!mDocuments.Contains(aDocument));
   MOZ_ASSERT(mBrowsingContextGroup);
+  // If the document is loaded as data it may not have a container, in which
+  // case it can be difficult to determine the BrowsingContextGroup it's
+  // associated with. XSLT can also add the document to the DocGroup before it
+  // gets a container in some cases, in which case this will be asserted
+  // elsewhere.
   MOZ_ASSERT_IF(
-      FissionAutostart() && !mDocuments.IsEmpty(),
-      mDocuments[0]->CrossOriginIsolated() == aDocument->CrossOriginIsolated());
+      aDocument->GetBrowsingContext(),
+      aDocument->GetBrowsingContext()->Group() == mBrowsingContextGroup);
   mDocuments.AppendElement(aDocument);
 }
 
@@ -305,8 +307,7 @@ RefPtr<PerformanceInfoPromise> DocGroup::ReportPerformanceInfo() {
 
   MOZ_ASSERT(mainThread);
   RefPtr<DocGroup> self = this;
-  return (isTopLevel ? CollectMemoryInfo(top, mainThread)
-                     : CollectMemoryInfo(self, mainThread))
+  return CollectMemoryInfo(self, mainThread)
       ->Then(
           mainThread, __func__,
           [self, host, pid, windowID, duration, isTopLevel,

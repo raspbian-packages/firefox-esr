@@ -8,26 +8,28 @@
 #include "CachedTableAccessible.h"
 #include "DocAccessibleParent.h"
 #include "mozilla/a11y/Platform.h"
+#include "mozilla/Components.h"  // for mozilla::components
 #include "mozilla/dom/BrowserBridgeParent.h"
 #include "mozilla/dom/BrowserParent.h"
-#include "mozilla/StaticPrefs_accessibility.h"
+#include "mozilla/dom/CanonicalBrowsingContext.h"
+#include "nsAccessibilityService.h"
 #include "xpcAccessibleDocument.h"
 #include "xpcAccEvents.h"
 #include "nsAccUtils.h"
+#include "nsIIOService.h"
 #include "TextRange.h"
+#include "Relation.h"
+#include "RootAccessible.h"
 
 #if defined(XP_WIN)
-#  include "AccessibleWrap.h"
 #  include "Compatibility.h"
-#  include "mozilla/mscom/PassthruProxy.h"
-#  include "mozilla/mscom/Ptr.h"
 #  include "nsWinUtils.h"
-#  include "RootAccessible.h"
 #else
 #  include "mozilla/a11y/DocAccessiblePlatformExtParent.h"
 #endif
 
 #if defined(ANDROID)
+#  include "mozilla/a11y/SessionAccessibility.h"
 #  define ACQUIRE_ANDROID_LOCK \
     MonitorAutoLock mal(nsAccessibilityService::GetAndroidMonitor());
 #else
@@ -38,21 +40,47 @@
 
 namespace mozilla {
 
-#if defined(XP_WIN)
-namespace mscom {
-namespace detail {
-// Needed by mscom::PassthruProxy::Wrap<IAccessible>.
-template <>
-struct VTableSizer<IAccessible> {
-  // 3 methods in IUnknown + 4 in IDispatch + 21 in IAccessible = 28 total
-  enum { Size = 28 };
-};
-}  // namespace detail
-}  // namespace mscom
-#endif  // defined (XP_WIN)
-
 namespace a11y {
 uint64_t DocAccessibleParent::sMaxDocID = 0;
+
+DocAccessibleParent::DocAccessibleParent()
+    : RemoteAccessible(this),
+      mParentDoc(kNoParentDoc),
+#if defined(XP_WIN)
+      mEmulatedWindowHandle(nullptr),
+#endif  // defined(XP_WIN)
+      mTopLevel(false),
+      mTopLevelInContentProcess(false),
+      mShutdown(false),
+      mFocus(0),
+      mCaretId(0),
+      mCaretOffset(-1),
+      mIsCaretAtEndOfLine(false) {
+  sMaxDocID++;
+  mActorID = sMaxDocID;
+  MOZ_ASSERT(!LiveDocs().Get(mActorID));
+  LiveDocs().InsertOrUpdate(mActorID, this);
+}
+
+DocAccessibleParent::~DocAccessibleParent() {
+  UnregisterWeakMemoryReporter(this);
+  LiveDocs().Remove(mActorID);
+  MOZ_ASSERT(mChildDocs.Length() == 0);
+  MOZ_ASSERT(!ParentDoc());
+}
+
+already_AddRefed<DocAccessibleParent> DocAccessibleParent::New() {
+  RefPtr<DocAccessibleParent> dap(new DocAccessibleParent());
+  // We need to do this with a non-zero reference count.  The easiest way is to
+  // do it in this static method and hide the constructor.
+  RegisterWeakMemoryReporter(dap);
+  return dap.forget();
+}
+
+void DocAccessibleParent::SetBrowsingContext(
+    dom::CanonicalBrowsingContext* aBrowsingContext) {
+  mBrowsingContext = aBrowsingContext;
+}
 
 mozilla::ipc::IPCResult DocAccessibleParent::RecvShowEvent(
     const ShowEventData& aData, const bool& aFromUser) {
@@ -114,6 +142,11 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvShowEvent(
   RemoteAccessible* target = parent->RemoteChildAt(newChildIdx);
   ProxyShowHideEvent(target, parent, true, aFromUser);
 
+  if (nsCOMPtr<nsIObserverService> obsService =
+          services::GetObserverService()) {
+    obsService->NotifyObservers(nullptr, NS_ACCESSIBLE_CACHE_TOPIC, nullptr);
+  }
+
   if (!nsCoreUtils::AccEventObserversExist()) {
     return IPC_OK();
   }
@@ -158,11 +191,9 @@ uint32_t DocAccessibleParent::AddSubtree(
     mAccessibles.PutEntry(newChild.ID())->mProxy = newProxy;
     ProxyCreated(newProxy);
 
-#if defined(XP_WIN)
-    if (!StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-      MsaaAccessible::GetFrom(newProxy)->SetID(newChild.MsaaID());
+    if (RefPtr<AccAttributes> fields = newChild.CacheFields()) {
+      newProxy->ApplyCache(CacheUpdateType::Initial, fields);
     }
-#endif
 
     mPendingOOPChildDocs.RemoveIf([&](dom::BrowserBridgeParent* bridge) {
       MOZ_ASSERT(bridge->GetBrowserParent(),
@@ -207,10 +238,15 @@ void DocAccessibleParent::ShutdownOrPrepareForMove(RemoteAccessible* aAcc) {
   }
   // This is a move. Moves are sent as a hide and then a show, but for a move,
   // we want to keep the Accessible alive for reuse later.
-  aAcc->SetParent(nullptr);
   if (aAcc->IsTable() || aAcc->IsTableCell()) {
+    // For table cells, it's important that we do this before the parent is
+    // cleared because CachedTableAccessible::Invalidate needs the ancestry.
     CachedTableAccessible::Invalidate(aAcc);
   }
+  if (aAcc->IsHyperText()) {
+    aAcc->InvalidateCachedHyperTextOffsets();
+  }
+  aAcc->SetParent(nullptr);
   mMovingIDs.EnsureRemoved(id);
   if (aAcc->IsOuterDoc()) {
     // Leave child documents alone. They are added and removed differently to
@@ -251,18 +287,8 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvHideEvent(
     return IPC_OK();
   }
 
-#ifdef XP_WIN
-  WeakPtr<RemoteAccessible> parent = root->RemoteParent();
-#else
   RemoteAccessible* parent = root->RemoteParent();
-#endif
   ProxyShowHideEvent(root, parent, false, aFromUser);
-#ifdef XP_WIN
-  if (!parent) {
-    MOZ_ASSERT(!StaticPrefs::accessibility_cache_enabled_AtStartup());
-    return IPC_FAIL(this, "Parent removed while removing child");
-  }
-#endif
 
   RefPtr<xpcAccHideEvent> event = nullptr;
   if (nsCoreUtils::AccEventObserversExist()) {
@@ -311,17 +337,30 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvEvent(
 void DocAccessibleParent::FireEvent(RemoteAccessible* aAcc,
                                     const uint32_t& aEventType) {
   if (aEventType == nsIAccessibleEvent::EVENT_FOCUS) {
+#ifdef ANDROID
+    if (FocusMgr()) {
+      FocusMgr()->SetFocusedRemoteDoc(this);
+    }
+#endif
     mFocus = aAcc->ID();
   }
 
-  if (StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-    if (aEventType == nsIAccessibleEvent::EVENT_REORDER ||
-        aEventType == nsIAccessibleEvent::EVENT_INNER_REORDER) {
-      for (RemoteAccessible* child = aAcc->RemoteFirstChild(); child;
-           child = child->RemoteNextSibling()) {
-        child->InvalidateGroupInfo();
-      }
+  if (aEventType == nsIAccessibleEvent::EVENT_REORDER ||
+      aEventType == nsIAccessibleEvent::EVENT_INNER_REORDER) {
+    for (RemoteAccessible* child = aAcc->RemoteFirstChild(); child;
+         child = child->RemoteNextSibling()) {
+      child->InvalidateGroupInfo();
     }
+  } else if (aEventType == nsIAccessibleEvent::EVENT_DOCUMENT_LOAD_COMPLETE &&
+             aAcc == this) {
+    // A DocAccessible gets the STALE state while it is still loading, but we
+    // don't fire a state change for that. That state might have been
+    // included in the initial cache push, so clear it here.
+    // We also clear the BUSY state here. Although we do fire a state change
+    // for that, we fire it after doc load complete. It doesn't make sense
+    // for the document to report BUSY after doc load complete and doing so
+    // confuses JAWS.
+    UpdateStateCache(states::STALE | states::BUSY, false);
   }
 
   ProxyEvent(aAcc, aEventType);
@@ -352,8 +391,10 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvStateChangeEvent(
     return IPC_OK();
   }
 
-  if (StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-    target->UpdateStateCache(aState, aEnabled);
+  target->UpdateStateCache(aState, aEnabled);
+  if (nsCOMPtr<nsIObserverService> obsService =
+          services::GetObserverService()) {
+    obsService->NotifyObservers(nullptr, NS_ACCESSIBLE_CACHE_TOPIC, nullptr);
   }
   ProxyStateChangeEvent(target, aState, aEnabled);
 
@@ -428,7 +469,7 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvCaretMoveEvent(
 }
 
 mozilla::ipc::IPCResult DocAccessibleParent::RecvTextChangeEvent(
-    const uint64_t& aID, const nsString& aStr, const int32_t& aStart,
+    const uint64_t& aID, const nsAString& aStr, const int32_t& aStart,
     const uint32_t& aLen, const bool& aIsInsert, const bool& aFromUser) {
   ACQUIRE_ANDROID_LOCK
   if (mShutdown) {
@@ -462,7 +503,7 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvTextChangeEvent(
 #if defined(XP_WIN)
 
 mozilla::ipc::IPCResult DocAccessibleParent::RecvSyncTextChangeEvent(
-    const uint64_t& aID, const nsString& aStr, const int32_t& aStart,
+    const uint64_t& aID, const nsAString& aStr, const int32_t& aStart,
     const uint32_t& aLen, const bool& aIsInsert, const bool& aFromUser) {
   return RecvTextChangeEvent(aID, aStr, aStart, aLen, aIsInsert, aFromUser);
 }
@@ -533,7 +574,7 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvVirtualCursorChangeEvent(
           GetXPCAccessible(target), doc, nullptr, aFromUser,
           GetXPCAccessible(oldPosition), aOldStartOffset, aOldEndOffset,
           GetXPCAccessible(newPosition), aNewStartOffset, aNewEndOffset,
-          aBoundaryType, aReason);
+          aReason, aBoundaryType);
   nsCoreUtils::DispatchAccEvent(std::move(event));
 
   return IPC_OK();
@@ -579,7 +620,7 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvScrollingEvent(
 
 mozilla::ipc::IPCResult DocAccessibleParent::RecvCache(
     const mozilla::a11y::CacheUpdateType& aUpdateType,
-    nsTArray<CacheData>&& aData, const bool& aFinal) {
+    nsTArray<CacheData>&& aData) {
   ACQUIRE_ANDROID_LOCK
   if (mShutdown) {
     return IPC_OK();
@@ -603,6 +644,41 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvCache(
   return IPC_OK();
 }
 
+mozilla::ipc::IPCResult DocAccessibleParent::RecvSelectedAccessiblesChanged(
+    nsTArray<uint64_t>&& aSelectedIDs, nsTArray<uint64_t>&& aUnselectedIDs) {
+  ACQUIRE_ANDROID_LOCK
+  if (mShutdown) {
+    return IPC_OK();
+  }
+
+  for (auto& id : aSelectedIDs) {
+    RemoteAccessible* remote = GetAccessible(id);
+    if (!remote) {
+      MOZ_ASSERT_UNREACHABLE("No remote found!");
+      continue;
+    }
+
+    remote->UpdateStateCache(states::SELECTED, true);
+  }
+
+  for (auto& id : aUnselectedIDs) {
+    RemoteAccessible* remote = GetAccessible(id);
+    if (!remote) {
+      MOZ_ASSERT_UNREACHABLE("No remote found!");
+      continue;
+    }
+
+    remote->UpdateStateCache(states::SELECTED, false);
+  }
+
+  if (nsCOMPtr<nsIObserverService> obsService =
+          services::GetObserverService()) {
+    obsService->NotifyObservers(nullptr, NS_ACCESSIBLE_CACHE_TOPIC, nullptr);
+  }
+
+  return IPC_OK();
+}
+
 mozilla::ipc::IPCResult DocAccessibleParent::RecvAccessiblesWillMove(
     nsTArray<uint64_t>&& aIDs) {
   for (uint64_t id : aIDs) {
@@ -613,7 +689,7 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvAccessiblesWillMove(
 
 #if !defined(XP_WIN)
 mozilla::ipc::IPCResult DocAccessibleParent::RecvAnnouncementEvent(
-    const uint64_t& aID, const nsString& aAnnouncement,
+    const uint64_t& aID, const nsAString& aAnnouncement,
     const uint16_t& aPriority) {
   ACQUIRE_ANDROID_LOCK
   if (mShutdown) {
@@ -658,10 +734,8 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvTextSelectionChangeEvent(
     return IPC_OK();
   }
 
-  if (StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-    mTextSelections.ClearAndRetainStorage();
-    mTextSelections.AppendElements(aSelection);
-  }
+  mTextSelections.ClearAndRetainStorage();
+  mTextSelections.AppendElements(aSelection);
 
 #ifdef MOZ_WIDGET_COCOA
   ProxyTextSelectionChangeEvent(target, aSelection);
@@ -685,23 +759,24 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvTextSelectionChangeEvent(
 }
 
 mozilla::ipc::IPCResult DocAccessibleParent::RecvRoleChangedEvent(
-    const a11y::role& aRole) {
+    const a11y::role& aRole, const uint8_t& aRoleMapEntryIndex) {
   ACQUIRE_ANDROID_LOCK
   if (mShutdown) {
     return IPC_OK();
   }
 
   mRole = aRole;
+  mRoleMapEntryIndex = aRoleMapEntryIndex;
 
 #ifdef MOZ_WIDGET_COCOA
-  ProxyRoleChangedEvent(this, aRole);
+  ProxyRoleChangedEvent(this, aRole, aRoleMapEntryIndex);
 #endif
 
   return IPC_OK();
 }
 
 mozilla::ipc::IPCResult DocAccessibleParent::RecvBindChildDoc(
-    PDocAccessibleParent* aChildDoc, const uint64_t& aID) {
+    NotNull<PDocAccessibleParent*> aChildDoc, const uint64_t& aID) {
   ACQUIRE_ANDROID_LOCK
   // One document should never directly be the child of another.
   // We should always have at least an outer doc accessible in between.
@@ -714,7 +789,7 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvBindChildDoc(
 
   MOZ_ASSERT(CheckDocTree());
 
-  auto childDoc = static_cast<DocAccessibleParent*>(aChildDoc);
+  auto childDoc = static_cast<DocAccessibleParent*>(aChildDoc.get());
   childDoc->Unbind();
   ipc::IPCResult result = AddChildDoc(childDoc, aID, false);
   MOZ_ASSERT(result);
@@ -737,16 +812,16 @@ ipc::IPCResult DocAccessibleParent::AddChildDoc(DocAccessibleParent* aChildDoc,
   // document it self.
   ProxyEntry* e = mAccessibles.GetEntry(aParentID);
   if (!e) {
+#ifndef FUZZING_SNAPSHOT
+    // This diagnostic assert and the one down below expect a well-behaved
+    // child process. In IPC fuzzing, we directly fuzz parameters of each
+    // method over IPDL and the asserts are not valid under these conditions.
     MOZ_DIAGNOSTIC_ASSERT(false, "Binding to nonexistent proxy!");
+#endif
     return IPC_FAIL(this, "binding to nonexistant proxy!");
   }
 
-#ifdef XP_WIN
-  WeakPtr<RemoteAccessible> outerDoc = e->mProxy;
-#else
   RemoteAccessible* outerDoc = e->mProxy;
-#endif
-
   MOZ_ASSERT(outerDoc);
 
   // OuterDocAccessibles are expected to only have a document as a child.
@@ -754,8 +829,10 @@ ipc::IPCResult DocAccessibleParent::AddChildDoc(DocAccessibleParent* aChildDoc,
   // here.
   if (!outerDoc->IsOuterDoc() || outerDoc->ChildCount() > 1 ||
       (outerDoc->ChildCount() == 1 && !outerDoc->RemoteChildAt(0)->IsDoc())) {
+#ifndef FUZZING_SNAPSHOT
     MOZ_DIAGNOSTIC_ASSERT(false,
                           "Binding to parent that isn't a valid OuterDoc!");
+#endif
     return IPC_FAIL(this, "Binding to parent that isn't a valid OuterDoc!");
   }
 
@@ -782,83 +859,6 @@ ipc::IPCResult DocAccessibleParent::AddChildDoc(DocAccessibleParent* aChildDoc,
         embeddedBrowser->GetBrowserBridgeParent();
     if (bridge) {
 #if defined(XP_WIN)
-      if (!StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-        RefPtr<DocAccessibleParent> thisDoc = this;
-        RefPtr<DocAccessibleParent> childDoc = aChildDoc;
-        // Send a COM proxy for the embedded document to the embedder process
-        // hosting the iframe. This will be returned as the child of the
-        // embedder OuterDocAccessible.
-        RefPtr<IDispatch> docAcc;
-        childDoc->GetCOMInterface((void**)getter_AddRefs(docAcc));
-        MOZ_ASSERT(docAcc);
-        if (docAcc) {
-          RefPtr<IDispatch> docWrapped(
-              mscom::PassthruProxy::Wrap<IDispatch>(WrapNotNull(docAcc)));
-          IDispatchHolder::COMPtrType docPtr(
-              mscom::ToProxyUniquePtr(std::move(docWrapped)));
-          IDispatchHolder docHolder(std::move(docPtr));
-          if (bridge->SendSetEmbeddedDocAccessibleCOMProxy(docHolder)) {
-#  if defined(MOZ_SANDBOX)
-            childDoc->mDocProxyStream = docHolder.GetPreservedStream();
-#  endif  // defined(MOZ_SANDBOX)
-          }
-        }
-        if (!outerDoc) {
-          return IPC_FAIL(this, "OuterDoc removed while adding child doc");
-        }
-        if (childDoc->IsShutdown()) {
-          return IPC_FAIL(this, "Child doc removed while adding it");
-        }
-        // Send a COM proxy for the embedder OuterDocAccessible to the embedded
-        // document process. This will be returned as the parent of the
-        // embedded document.
-        childDoc->SendParentCOMProxy(outerDoc);
-        if (childDoc->IsShutdown()) {
-          return IPC_FAIL(this, "Child doc removed while adding it");
-        }
-        if (nsWinUtils::IsWindowEmulationStarted()) {
-          // The embedded document should use the same emulated window handle as
-          // its embedder. It will return the embedder document (not a window
-          // accessible) as the parent accessible, so we pass a null accessible
-          // when sending the window to the embedded document.
-          Unused << childDoc->SendEmulatedWindow(
-              reinterpret_cast<uintptr_t>(mEmulatedWindowHandle), nullptr);
-        }
-        if (thisDoc->IsShutdown()) {
-          return IPC_FAIL(this, "Parent doc removed while adding child doc");
-        }
-        // Send a COM proxy for the top level document to the embedded document
-        // process. This will be returned when the client calls QueryService
-        // with SID_IAccessibleContentDocument on an accessible in the embedded
-        // document.
-        DocAccessibleParent* topDoc = thisDoc;
-        while (DocAccessibleParent* parentDoc = topDoc->ParentDoc()) {
-          topDoc = parentDoc;
-        }
-        MOZ_ASSERT(topDoc && topDoc->IsTopLevel());
-        RefPtr<IAccessible> topDocAcc;
-        topDoc->GetCOMInterface((void**)getter_AddRefs(topDocAcc));
-        MOZ_ASSERT(topDocAcc);
-        if (topDocAcc) {
-          RefPtr<IAccessible> topDocWrapped(
-              mscom::PassthruProxy::Wrap<IAccessible>(WrapNotNull(topDocAcc)));
-          IAccessibleHolder::COMPtrType topDocPtr(
-              mscom::ToProxyUniquePtr(std::move(topDocWrapped)));
-          IAccessibleHolder topDocHolder(std::move(topDocPtr));
-          if (childDoc->SendTopLevelDocCOMProxy(topDocHolder)) {
-#  if defined(MOZ_SANDBOX)
-            aChildDoc->mTopLevelDocProxyStream =
-                topDocHolder.GetPreservedStream();
-#  endif  // defined(MOZ_SANDBOX)
-          }
-        }
-        if (!outerDoc) {
-          return IPC_FAIL(this, "OuterDoc removed while adding child doc");
-        }
-        if (childDoc->IsShutdown()) {
-          return IPC_FAIL(this, "Child doc removed while adding it");
-        }
-      }
       if (nsWinUtils::IsWindowEmulationStarted()) {
         aChildDoc->SetEmulatedWindowHandle(mEmulatedWindowHandle);
       }
@@ -913,6 +913,13 @@ void DocAccessibleParent::Destroy() {
   }
 
   mShutdown = true;
+  mBrowsingContext = nullptr;
+
+#ifdef ANDROID
+  if (FocusMgr() && FocusMgr()->IsFocusedRemoteDoc(this)) {
+    FocusMgr()->SetFocusedRemoteDoc(nullptr);
+  }
+#endif
 
   MOZ_DIAGNOSTIC_ASSERT(LiveDocs().Contains(mActorID));
   uint32_t childDocCount = mChildDocs.Length();
@@ -936,8 +943,12 @@ void DocAccessibleParent::Destroy() {
   }
 
   for (auto iter = mAccessibles.Iter(); !iter.Done(); iter.Next()) {
-    MOZ_ASSERT(iter.Get()->mProxy != this);
-    ProxyDestroyed(iter.Get()->mProxy);
+    RemoteAccessible* acc = iter.Get()->mProxy;
+    MOZ_ASSERT(acc != this);
+    if (acc->IsTable()) {
+      CachedTableAccessible::Invalidate(acc);
+    }
+    ProxyDestroyed(acc);
     iter.Remove();
   }
 
@@ -947,6 +958,7 @@ void DocAccessibleParent::Destroy() {
     return;
   }
 
+  mChildren.Clear();
   // The code above should have already completely cleared these, but to be
   // extra safe make sure they are cleared here.
   thisDoc->mAccessibles.Clear();
@@ -1044,25 +1056,9 @@ void DocAccessibleParent::MaybeInitWindowEmulation() {
   // However, static analysis complains without it.
   RefPtr<DocAccessibleParent> thisRef = this;
   nsWinUtils::NativeWindowCreateProc onCreate([thisRef](HWND aHwnd) -> void {
-    IDispatchHolder hWndAccHolder;
-
     ::SetPropW(aHwnd, kPropNameDocAccParent,
                reinterpret_cast<HANDLE>(thisRef.get()));
-
     thisRef->SetEmulatedWindowHandle(aHwnd);
-
-    RefPtr<IAccessible> hwndAcc;
-    if (SUCCEEDED(::AccessibleObjectFromWindow(
-            aHwnd, OBJID_WINDOW, IID_IAccessible, getter_AddRefs(hwndAcc)))) {
-      RefPtr<IDispatch> wrapped(
-          mscom::PassthruProxy::Wrap<IDispatch>(WrapNotNull(hwndAcc)));
-      hWndAccHolder.Set(IDispatchHolder::COMPtrType(
-          mscom::ToProxyUniquePtr(std::move(wrapped))));
-    }
-
-    Unused << thisRef->SendEmulatedWindow(
-        reinterpret_cast<uintptr_t>(thisRef->mEmulatedWindowHandle),
-        hWndAccHolder);
   });
 
   HWND parentWnd = reinterpret_cast<HWND>(rootDocument->GetNativeWindow());
@@ -1070,37 +1066,6 @@ void DocAccessibleParent::MaybeInitWindowEmulation() {
       kClassNameTabContent, parentWnd, rect.X(), rect.Y(), rect.Width(),
       rect.Height(), isActive, &onCreate);
   MOZ_ASSERT(hWnd);
-}
-
-void DocAccessibleParent::SendParentCOMProxy(Accessible* aOuterDoc) {
-  // Make sure that we're not racing with a tab shutdown
-  auto tab = static_cast<dom::BrowserParent*>(Manager());
-  MOZ_ASSERT(tab);
-  if (tab->IsDestroyed()) {
-    return;
-  }
-
-  RefPtr<IDispatch> nativeAcc =
-      already_AddRefed<IDispatch>(MsaaAccessible::NativeAccessible(aOuterDoc));
-  if (NS_WARN_IF(!nativeAcc)) {
-    // Couldn't get a COM proxy for the outer doc. That probably means it died,
-    // but the parent process hasn't received a message to remove it from the
-    // RemoteAccessible tree yet.
-    return;
-  }
-
-  RefPtr<IDispatch> wrapped(
-      mscom::PassthruProxy::Wrap<IDispatch>(WrapNotNull(nativeAcc)));
-
-  IDispatchHolder::COMPtrType ptr(mscom::ToProxyUniquePtr(std::move(wrapped)));
-  IDispatchHolder holder(std::move(ptr));
-  if (!PDocAccessibleParent::SendParentCOMProxy(holder)) {
-    return;
-  }
-
-#  if defined(MOZ_SANDBOX)
-  mParentProxyStream = holder.GetPreservedStream();
-#  endif  // defined(MOZ_SANDBOX)
 }
 
 void DocAccessibleParent::SetEmulatedWindowHandle(HWND aWindowHandle) {
@@ -1144,37 +1109,6 @@ mozilla::ipc::IPCResult DocAccessibleParent::RecvFocusEvent(
 #endif  // defined(XP_WIN)
 
 #if !defined(XP_WIN)
-mozilla::ipc::IPCResult DocAccessibleParent::RecvBatch(
-    const uint64_t& aBatchType, nsTArray<BatchData>&& aData) {
-  // Only do something in Android. We can't ifdef the entire protocol out in
-  // the ipdl because it doesn't allow preprocessing.
-#  if defined(ANDROID)
-  if (mShutdown) {
-    return IPC_OK();
-  }
-  nsTArray<RemoteAccessible*> proxies(aData.Length());
-  for (size_t i = 0; i < aData.Length(); i++) {
-    DocAccessibleParent* doc = static_cast<DocAccessibleParent*>(
-        aData.ElementAt(i).Document().get_PDocAccessibleParent());
-    MOZ_ASSERT(doc);
-
-    if (doc->IsShutdown()) {
-      continue;
-    }
-
-    RemoteAccessible* proxy = doc->GetAccessible(aData.ElementAt(i).ID());
-    if (!proxy) {
-      MOZ_ASSERT_UNREACHABLE("No proxy found!");
-      continue;
-    }
-
-    proxies.AppendElement(proxy);
-  }
-  ProxyBatch(this, aBatchType, proxies, aData);
-#  endif  // defined(XP_WIN)
-  return IPC_OK();
-}
-
 bool DocAccessibleParent::DeallocPDocAccessiblePlatformExtParent(
     PDocAccessiblePlatformExtParent* aActor) {
   delete aActor;
@@ -1195,14 +1129,175 @@ DocAccessiblePlatformExtParent* DocAccessibleParent::GetPlatformExtension() {
 
 void DocAccessibleParent::SelectionRanges(nsTArray<TextRange>* aRanges) const {
   for (const auto& data : mTextSelections) {
-    aRanges->AppendElement(
-        TextRange(const_cast<DocAccessibleParent*>(this),
-                  const_cast<RemoteAccessible*>(GetAccessible(data.StartID())),
-                  data.StartOffset(),
-                  const_cast<RemoteAccessible*>(GetAccessible(data.EndID())),
-                  data.EndOffset()));
+    // Selection ranges should usually be in sync with the tree. However, tree
+    // and selection updates happen using separate IPDL calls, so it's possible
+    // for a client selection query to arrive between them. Thus, we validate
+    // the Accessibles and offsets here.
+    auto* startAcc =
+        const_cast<RemoteAccessible*>(GetAccessible(data.StartID()));
+    auto* endAcc = const_cast<RemoteAccessible*>(GetAccessible(data.EndID()));
+    if (!startAcc || !endAcc) {
+      continue;
+    }
+    uint32_t startCount = startAcc->CharacterCount();
+    if (startCount == 0 ||
+        data.StartOffset() > static_cast<int32_t>(startCount)) {
+      continue;
+    }
+    uint32_t endCount = endAcc->CharacterCount();
+    if (endCount == 0 || data.EndOffset() > static_cast<int32_t>(endCount)) {
+      continue;
+    }
+    aRanges->AppendElement(TextRange(const_cast<DocAccessibleParent*>(this),
+                                     startAcc, data.StartOffset(), endAcc,
+                                     data.EndOffset()));
   }
 }
+
+Accessible* DocAccessibleParent::FocusedChild() {
+  LocalAccessible* outerDoc = OuterDocOfRemoteBrowser();
+  if (!outerDoc) {
+    return nullptr;
+  }
+
+  RootAccessible* rootDocument = outerDoc->RootAccessible();
+  return rootDocument->FocusedChild();
+}
+
+void DocAccessibleParent::URL(nsACString& aURL) const {
+  if (!mBrowsingContext) {
+    return;
+  }
+  nsCOMPtr<nsIURI> uri = mBrowsingContext->GetCurrentURI();
+  if (!uri) {
+    return;
+  }
+  // Let's avoid treating too long URI in the main process for avoiding
+  // memory fragmentation as far as possible.
+  if (uri->SchemeIs("data") || uri->SchemeIs("blob")) {
+    return;
+  }
+  nsCOMPtr<nsIIOService> io = mozilla::components::IO::Service();
+  if (NS_WARN_IF(!io)) {
+    return;
+  }
+  nsCOMPtr<nsIURI> exposableURI;
+  if (NS_FAILED(io->CreateExposableURI(uri, getter_AddRefs(exposableURI))) ||
+      MOZ_UNLIKELY(!exposableURI)) {
+    return;
+  }
+  exposableURI->GetSpec(aURL);
+}
+
+void DocAccessibleParent::URL(nsAString& aURL) const {
+  nsAutoCString url;
+  URL(url);
+  CopyUTF8toUTF16(url, aURL);
+}
+
+void DocAccessibleParent::MimeType(nsAString& aMime) const {
+  if (mCachedFields) {
+    mCachedFields->GetAttribute(nsGkAtoms::headerContentType, aMime);
+  }
+}
+
+Relation DocAccessibleParent::RelationByType(RelationType aType) const {
+  // If the accessible is top-level, provide the NODE_CHILD_OF relation so that
+  // MSAA clients can easily get to true parent instead of getting to oleacc's
+  // ROLE_WINDOW accessible when window emulation is enabled which will prevent
+  // us from going up further (because it is system generated and has no idea
+  // about the hierarchy above it).
+  if (aType == RelationType::NODE_CHILD_OF && IsTopLevel()) {
+    return Relation(Parent());
+  }
+
+  return RemoteAccessibleBase<RemoteAccessible>::RelationByType(aType);
+}
+
+DocAccessibleParent* DocAccessibleParent::GetFrom(
+    dom::BrowsingContext* aBrowsingContext) {
+  if (!aBrowsingContext) {
+    return nullptr;
+  }
+
+  dom::BrowserParent* bp = aBrowsingContext->Canonical()->GetBrowserParent();
+  if (!bp) {
+    return nullptr;
+  }
+
+  const ManagedContainer<PDocAccessibleParent>& docs =
+      bp->ManagedPDocAccessibleParent();
+  for (auto* key : docs) {
+    // Iterate over our docs until we find one with a browsing
+    // context that matches the one we passed in. Return that
+    // document.
+    auto* doc = static_cast<a11y::DocAccessibleParent*>(key);
+    if (doc->GetBrowsingContext() == aBrowsingContext) {
+      return doc;
+    }
+  }
+
+  return nullptr;
+}
+
+size_t DocAccessibleParent::SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) {
+  size_t size = 0;
+
+  size += RemoteAccessibleBase::SizeOfExcludingThis(aMallocSizeOf);
+
+  size += mReverseRelations.ShallowSizeOfExcludingThis(aMallocSizeOf);
+  for (auto i = mReverseRelations.Iter(); !i.Done(); i.Next()) {
+    size += i.Data().ShallowSizeOfExcludingThis(aMallocSizeOf);
+    for (auto j = i.Data().Iter(); !j.Done(); j.Next()) {
+      size += j.Data().ShallowSizeOfExcludingThis(aMallocSizeOf);
+    }
+  }
+
+  size += mOnScreenAccessibles.ShallowSizeOfExcludingThis(aMallocSizeOf);
+
+  size += mChildDocs.ShallowSizeOfExcludingThis(aMallocSizeOf);
+
+  size += mAccessibles.ShallowSizeOfExcludingThis(aMallocSizeOf);
+  for (auto i = mAccessibles.Iter(); !i.Done(); i.Next()) {
+    size += i.Get()->mProxy->SizeOfIncludingThis(aMallocSizeOf);
+  }
+
+  size += mPendingOOPChildDocs.ShallowSizeOfExcludingThis(aMallocSizeOf);
+
+  // The mTextSelections array contains structs of integers.  We can count them
+  // by counting the size of the array - there's no deep structure here.
+  size += mTextSelections.ShallowSizeOfExcludingThis(aMallocSizeOf);
+
+  return size;
+}
+
+MOZ_DEFINE_MALLOC_SIZE_OF(MallocSizeOfAccessibilityCache);
+
+NS_IMETHODIMP
+DocAccessibleParent::CollectReports(nsIHandleReportCallback* aHandleReport,
+                                    nsISupports* aData, bool aAnon) {
+  nsAutoCString path;
+
+  if (aAnon) {
+    path = nsPrintfCString("explicit/a11y/cache(%" PRIu64 ")", mActorID);
+  } else {
+    nsCString url;
+    URL(url);
+    url.ReplaceChar(
+        '/', '\\');  // Tell the memory reporter this is not a path seperator.
+    path = nsPrintfCString("explicit/a11y/cache(%s)", url.get());
+  }
+
+  aHandleReport->Callback(
+      /* process */ ""_ns, path, KIND_HEAP, UNITS_BYTES,
+      SizeOfIncludingThis(MallocSizeOfAccessibilityCache),
+      nsLiteralCString("Size of the accessability cache for this document."),
+      aData);
+
+  return NS_OK;
+}
+
+NS_IMPL_ISUPPORTS(DocAccessibleParent, nsIMemoryReporter);
 
 }  // namespace a11y
 }  // namespace mozilla

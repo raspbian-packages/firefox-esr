@@ -31,7 +31,7 @@ process-type-webisolated = Contido web illado
 process-type-webserviceworker = Service worker aillado
 
 # process preallocated; may change to other types
-process-type-prealloc = Prealocado
+process-type-prealloc = Preasignado
 
 ##
 ## Localization for Gecko process types defined in GeckoProcessTypes.h
@@ -49,6 +49,9 @@ process-type-socket = Zócalo
 
 # process used to decode media
 process-type-rdd = RDD
+
+# process used to run some IPC actor in their own sandbox
+process-type-utility = Actor de IPC illado
 
 ##
 ## Other

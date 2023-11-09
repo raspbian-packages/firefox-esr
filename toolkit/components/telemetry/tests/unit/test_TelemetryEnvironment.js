@@ -1,24 +1,23 @@
 /* Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { AddonManager, AddonManagerPrivate } = ChromeUtils.import(
-  "resource://gre/modules/AddonManager.jsm"
+const { AddonManager, AddonManagerPrivate } = ChromeUtils.importESModule(
+  "resource://gre/modules/AddonManager.sys.mjs"
 );
-const { TelemetryEnvironment } = ChromeUtils.import(
-  "resource://gre/modules/TelemetryEnvironment.jsm"
+const { TelemetryEnvironment } = ChromeUtils.importESModule(
+  "resource://gre/modules/TelemetryEnvironment.sys.mjs"
 );
-const { SearchTestUtils } = ChromeUtils.import(
-  "resource://testing-common/SearchTestUtils.jsm"
+const { SearchTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/SearchTestUtils.sys.mjs"
 );
-const { TelemetryEnvironmentTesting } = ChromeUtils.import(
-  "resource://testing-common/TelemetryEnvironmentTesting.jsm"
+const { TelemetryEnvironmentTesting } = ChromeUtils.importESModule(
+  "resource://testing-common/TelemetryEnvironmentTesting.sys.mjs"
 );
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "ExtensionTestUtils",
-  "resource://testing-common/ExtensionXPCShellUtils.jsm"
-);
+ChromeUtils.defineESModuleGetters(this, {
+  ExtensionTestUtils:
+    "resource://testing-common/ExtensionXPCShellUtils.sys.mjs",
+});
 
 async function installXPIFromURL(url) {
   let install = await AddonManager.getInstallForURL(url);
@@ -518,7 +517,7 @@ add_task(async function test_addonsWatch_NotInterestingChange() {
   let themeXpi = AddonTestUtils.createTempWebExtensionFile({
     manifest: {
       theme: {},
-      applications: { gecko: { id: THEME_ID } },
+      browser_specific_settings: { gecko: { id: THEME_ID } },
     },
   });
   let themeAddon = (await AddonTestUtils.promiseInstallFile(themeXpi)).addon;
@@ -526,7 +525,7 @@ add_task(async function test_addonsWatch_NotInterestingChange() {
   let dictXpi = AddonTestUtils.createTempWebExtensionFile({
     manifest: {
       dictionaries: {},
-      applications: { gecko: { id: DICT_ID } },
+      browser_specific_settings: { gecko: { id: DICT_ID } },
     },
   });
   let dictAddon = (await AddonTestUtils.promiseInstallFile(dictXpi)).addon;
@@ -637,7 +636,7 @@ add_task(async function test_addons() {
       name: "XPI Telemetry WebExtension Add-on Test",
       description: "A webextension addon.",
       version: "1.0",
-      applications: {
+      browser_specific_settings: {
         gecko: {
           id: WEBEXTENSION_ADDON_ID,
         },

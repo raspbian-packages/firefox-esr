@@ -55,3 +55,6 @@ screenshots-private-window-error-details = Barkatu eragozpenak. Eginbide honetan
 
 screenshots-generic-error-title = Kontxo! { -screenshots-brand-name } zerbitzua pikutara joan da.
 screenshots-generic-error-details = Ez gaude ziur zer gertatu den. Axola dizu berriro saiatzea edo beste orri baten argazkia hartzea?
+
+screenshots-too-large-error-title = Zure pantaila-argazkia moztu egin da handiegia zelako
+screenshots-too-large-error-details = Saiatu bere alderik luzeenean 32.700 pixel baino txikiagoa den edo gehienez 124.900.00 pixeleko azalera duen eremu bat hautatzen.

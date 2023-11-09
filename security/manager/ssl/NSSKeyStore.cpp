@@ -6,8 +6,11 @@
 
 #include "NSSKeyStore.h"
 
+#include "mozilla/AbstractThread.h"
 #include "mozilla/Base64.h"
+#include "mozilla/Logging.h"
 #include "mozilla/SyncRunnable.h"
+#include "nsIThread.h"
 #include "nsNSSComponent.h"
 #include "nsPK11TokenDB.h"
 #include "nsXULAppAPI.h"
@@ -62,10 +65,10 @@ nsresult NSSKeyStore::Lock() {
 
     // Forward to the main thread synchronously.
     SyncRunnable::DispatchToThread(
-        mainThread, new SyncRunnable(NS_NewRunnableFunction(
-                        "NSSKeyStoreMainThreadLock", [slot = mSlot.get()]() {
-                          NSSKeyStoreMainThreadLock(slot);
-                        })));
+        mainThread, NS_NewRunnableFunction("NSSKeyStoreMainThreadLock",
+                                           [slot = mSlot.get()]() {
+                                             NSSKeyStoreMainThreadLock(slot);
+                                           }));
 
     return NS_OK;
   }
@@ -91,11 +94,11 @@ nsresult NSSKeyStore::Unlock() {
     // Forward to the main thread synchronously.
     nsresult result = NS_ERROR_FAILURE;
     SyncRunnable::DispatchToThread(
-        mainThread, new SyncRunnable(NS_NewRunnableFunction(
-                        "NSSKeyStoreMainThreadUnlock",
-                        [slot = mSlot.get(), result = &result]() {
-                          *result = NSSKeyStoreMainThreadUnlock(slot);
-                        })));
+        mainThread,
+        NS_NewRunnableFunction("NSSKeyStoreMainThreadUnlock",
+                               [slot = mSlot.get(), result = &result]() {
+                                 *result = NSSKeyStoreMainThreadUnlock(slot);
+                               }));
 
     return result;
   }

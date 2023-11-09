@@ -13,6 +13,7 @@
 #include "mozilla/AspectRatio.h"
 #include "mozilla/EndianUtils.h"
 #include "mozilla/URLExtraData.h"
+#include "mozilla/dom/WorkerCommon.h"
 #include "nsGkAtoms.h"
 #include "MainThreadUtils.h"
 #include "nsNetUtil.h"
@@ -25,38 +26,33 @@
 namespace mozilla {
 
 // We need to explicitly instantiate these so that the clang plugin can see that
-// they're trivially copiable...
+// they're trivially copyable...
 //
 // https://github.com/eqrion/cbindgen/issues/402 tracks doing something like
 // this automatically from cbindgen.
-template struct StyleOwned<RawServoAnimationValueMap>;
-template struct StyleOwned<RawServoAuthorStyles>;
-template struct StyleOwned<RawServoSourceSizeList>;
-template struct StyleOwned<StyleUseCounters>;
-template struct StyleOwnedOrNull<StyleUseCounters>;
-template struct StyleOwnedOrNull<RawServoSelectorList>;
 template struct StyleStrong<ComputedStyle>;
-template struct StyleStrong<ServoCssRules>;
-template struct StyleStrong<RawServoAnimationValue>;
-template struct StyleStrong<RawServoDeclarationBlock>;
-template struct StyleStrong<RawServoStyleSheetContents>;
-template struct StyleStrong<RawServoKeyframe>;
-template struct StyleStrong<RawServoLayerBlockRule>;
-template struct StyleStrong<RawServoLayerStatementRule>;
-template struct StyleStrong<RawServoMediaList>;
-template struct StyleStrong<RawServoStyleRule>;
-template struct StyleStrong<RawServoImportRule>;
-template struct StyleStrong<RawServoKeyframesRule>;
-template struct StyleStrong<RawServoMediaRule>;
-template struct StyleStrong<RawServoMozDocumentRule>;
-template struct StyleStrong<RawServoNamespaceRule>;
-template struct StyleStrong<RawServoPageRule>;
-template struct StyleStrong<RawServoSupportsRule>;
-template struct StyleStrong<RawServoFontFeatureValuesRule>;
-template struct StyleStrong<RawServoFontFaceRule>;
-template struct StyleStrong<RawServoCounterStyleRule>;
-template struct StyleStrong<RawServoScrollTimelineRule>;
-template struct StyleStrong<RawServoContainerRule>;
+template struct StyleStrong<StyleLockedCssRules>;
+template struct StyleStrong<StyleAnimationValue>;
+template struct StyleStrong<StyleLockedDeclarationBlock>;
+template struct StyleStrong<StyleStylesheetContents>;
+template struct StyleStrong<StyleLockedKeyframe>;
+template struct StyleStrong<StyleLayerBlockRule>;
+template struct StyleStrong<StyleLayerStatementRule>;
+template struct StyleStrong<StyleLockedMediaList>;
+template struct StyleStrong<StyleLockedStyleRule>;
+template struct StyleStrong<StyleLockedImportRule>;
+template struct StyleStrong<StyleLockedKeyframesRule>;
+template struct StyleStrong<StyleMediaRule>;
+template struct StyleStrong<StyleDocumentRule>;
+template struct StyleStrong<StyleNamespaceRule>;
+template struct StyleStrong<StyleLockedPageRule>;
+template struct StyleStrong<StylePropertyRule>;
+template struct StyleStrong<StyleSupportsRule>;
+template struct StyleStrong<StyleFontFeatureValuesRule>;
+template struct StyleStrong<StyleFontPaletteValuesRule>;
+template struct StyleStrong<StyleLockedFontFaceRule>;
+template struct StyleStrong<StyleLockedCounterStyleRule>;
+template struct StyleStrong<StyleContainerRule>;
 
 template <typename T>
 inline void StyleOwnedSlice<T>::Clear() {
@@ -179,22 +175,40 @@ inline bool StyleArcInner<T>::DecrementRef() {
   return true;
 }
 
+template <typename H, typename T>
+inline bool StyleHeaderSlice<H, T>::operator==(
+    const StyleHeaderSlice& aOther) const {
+  return header == aOther.header && AsSpan() == aOther.AsSpan();
+}
+
+template <typename H, typename T>
+inline bool StyleHeaderSlice<H, T>::operator!=(
+    const StyleHeaderSlice& aOther) const {
+  return !(*this == aOther);
+}
+
+template <typename H, typename T>
+inline StyleHeaderSlice<H, T>::~StyleHeaderSlice() {
+  for (T& elem : Span(data, len)) {
+    elem.~T();
+  }
+}
+
+template <typename H, typename T>
+inline Span<const T> StyleHeaderSlice<H, T>::AsSpan() const {
+  // Explicitly specify template argument here to avoid instantiating Span<T>
+  // first and then implicitly converting to Span<const T>
+  return Span<const T>{data, len};
+}
+
 static constexpr const uint64_t kArcSliceCanary = 0xf3f3f3f3f3f3f3f3;
 
 #define ASSERT_CANARY \
-  MOZ_DIAGNOSTIC_ASSERT(_0.ptr->data.header.header == kArcSliceCanary, "Uh?");
+  MOZ_DIAGNOSTIC_ASSERT(_0.p->data.header == kArcSliceCanary, "Uh?");
 
 template <typename T>
-inline StyleArcSlice<T>::StyleArcSlice() {
-  _0.ptr = reinterpret_cast<decltype(_0.ptr)>(Servo_StyleArcSlice_EmptyPtr());
-  ASSERT_CANARY
-}
-
-template <typename T>
-inline StyleArcSlice<T>::StyleArcSlice(const StyleArcSlice& aOther) {
-  MOZ_DIAGNOSTIC_ASSERT(aOther._0.ptr);
-  _0.ptr = aOther._0.ptr;
-  _0.ptr->IncrementRef();
+inline StyleArcSlice<T>::StyleArcSlice()
+    : _0(reinterpret_cast<decltype(_0.p)>(Servo_StyleArcSlice_EmptyPtr())) {
   ASSERT_CANARY
 }
 
@@ -202,82 +216,26 @@ template <typename T>
 inline StyleArcSlice<T>::StyleArcSlice(
     const StyleForgottenArcSlicePtr<T>& aPtr) {
   // See the forget() implementation to see why reinterpret_cast() is ok.
-  _0.ptr = reinterpret_cast<decltype(_0.ptr)>(aPtr._0);
+  _0.p = reinterpret_cast<decltype(_0.p)>(aPtr._0);
   ASSERT_CANARY
 }
 
 template <typename T>
 inline size_t StyleArcSlice<T>::Length() const {
   ASSERT_CANARY
-  return _0.ptr->data.header.length;
+  return _0->Length();
 }
 
 template <typename T>
 inline bool StyleArcSlice<T>::IsEmpty() const {
   ASSERT_CANARY
-  return Length() == 0;
+  return _0->IsEmpty();
 }
 
 template <typename T>
 inline Span<const T> StyleArcSlice<T>::AsSpan() const {
   ASSERT_CANARY
-  // Explicitly specify template argument here to avoid instantiating Span<T>
-  // first and then implicitly converting to Span<const T>
-  return Span<const T>{_0.ptr->data.slice, Length()};
-}
-
-template <typename T>
-inline bool StyleArcSlice<T>::operator==(const StyleArcSlice& aOther) const {
-  ASSERT_CANARY
-  return _0.ptr == aOther._0.ptr || AsSpan() == aOther.AsSpan();
-}
-
-template <typename T>
-inline bool StyleArcSlice<T>::operator!=(const StyleArcSlice& aOther) const {
-  return !(*this == aOther);
-}
-
-template <typename T>
-inline void StyleArcSlice<T>::Release() {
-  ASSERT_CANARY
-  if (MOZ_LIKELY(!_0.ptr->DecrementRef())) {
-    return;
-  }
-  for (T& elem : Span(_0.ptr->data.slice, Length())) {
-    elem.~T();
-  }
-  free(_0.ptr);  // Drop the allocation now.
-}
-
-template <typename T>
-inline StyleArcSlice<T>::~StyleArcSlice() {
-  Release();
-}
-
-template <typename T>
-inline StyleArcSlice<T>& StyleArcSlice<T>::operator=(StyleArcSlice&& aOther) {
-  ASSERT_CANARY
-  std::swap(_0.ptr, aOther._0.ptr);
-  ASSERT_CANARY
-  return *this;
-}
-
-template <typename T>
-inline StyleArcSlice<T>& StyleArcSlice<T>::operator=(
-    const StyleArcSlice& aOther) {
-  ASSERT_CANARY
-
-  if (_0.ptr == aOther._0.ptr) {
-    return *this;
-  }
-
-  Release();
-
-  _0.ptr = aOther._0.ptr;
-  _0.ptr->IncrementRef();
-
-  ASSERT_CANARY
-  return *this;
+  return _0->AsSpan();
 }
 
 #undef ASSERT_CANARY
@@ -419,15 +377,18 @@ inline const URLExtraData& StyleCssUrl::ExtraData() const {
 }
 
 inline StyleLoadData& StyleCssUrl::LoadData() const {
-  MOZ_DIAGNOSTIC_ASSERT(NS_IsMainThread());
   if (MOZ_LIKELY(_0->load_data.tag == StyleLoadDataSource::Tag::Owned)) {
+    MOZ_DIAGNOSTIC_ASSERT(NS_IsMainThread() ||
+                          dom::IsCurrentThreadRunningWorker());
     return const_cast<StyleLoadData&>(_0->load_data.owned._0);
   }
+  MOZ_DIAGNOSTIC_ASSERT(NS_IsMainThread(),
+                        "Lazy load datas should come from user-agent sheets, "
+                        "which don't make sense on workers");
   return const_cast<StyleLoadData&>(*Servo_LoadData_GetLazy(&_0->load_data));
 }
 
 inline nsIURI* StyleCssUrl::GetURI() const {
-  MOZ_DIAGNOSTIC_ASSERT(NS_IsMainThread());
   auto& loadData = LoadData();
   if (!(loadData.flags & StyleLoadDataFlags::TRIED_TO_RESOLVE_URI)) {
     loadData.flags |= StyleLoadDataFlags::TRIED_TO_RESOLVE_URI;
@@ -988,9 +949,13 @@ inline const StyleImage& StyleImage::FinalImage() const {
   if (!IsImageSet()) {
     return *this;
   }
-  auto& set = AsImageSet();
-  auto& selectedItem = set->items.AsSpan()[set->selected_index];
-  return selectedItem.image.FinalImage();
+  auto& set = *AsImageSet();
+  auto items = set.items.AsSpan();
+  if (MOZ_LIKELY(set.selected_index < items.Length())) {
+    return items[set.selected_index].image.FinalImage();
+  }
+  static auto sNone = StyleImage::None();
+  return sNone;
 }
 
 template <>
@@ -1053,6 +1018,71 @@ inline AspectRatio StyleAspectRatio::ToLayoutRatio() const {
                                                           : UseBoxSizing::Yes)
                     : AspectRatio();
 }
+
+inline void StyleFontWeight::ToString(nsACString& aString) const {
+  Servo_FontWeight_ToCss(this, &aString);
+}
+
+inline void StyleFontStretch::ToString(nsACString& aString) const {
+  Servo_FontStretch_ToCss(this, &aString);
+}
+
+inline void StyleFontStyle::ToString(nsACString& aString) const {
+  Servo_FontStyle_ToCss(this, &aString);
+}
+
+inline bool StyleFontWeight::IsBold() const { return *this >= BOLD_THRESHOLD; }
+
+inline bool StyleFontStyle::IsItalic() const { return *this == ITALIC; }
+
+inline bool StyleFontStyle::IsOblique() const {
+  return !IsItalic() && !IsNormal();
+}
+
+inline float StyleFontStyle::ObliqueAngle() const {
+  MOZ_ASSERT(IsOblique());
+  return ToFloat();
+}
+
+inline float StyleFontStyle::SlantAngle() const {
+  return IsNormal() ? 0 : IsItalic() ? DEFAULT_OBLIQUE_DEGREES : ObliqueAngle();
+}
+
+using FontStretch = StyleFontStretch;
+using FontSlantStyle = StyleFontStyle;
+using FontWeight = StyleFontWeight;
+
+template <>
+inline double StyleComputedTimingFunction::At(double aPortion,
+                                              bool aBeforeFlag) const {
+  return Servo_EasingFunctionAt(
+      this, aPortion,
+      aBeforeFlag ? StyleEasingBeforeFlag::Set : StyleEasingBeforeFlag::Unset);
+}
+
+template <>
+inline void StyleComputedTimingFunction::AppendToString(
+    nsACString& aOut) const {
+  return Servo_SerializeEasing(this, &aOut);
+}
+
+template <>
+inline double StyleComputedTimingFunction::GetPortion(
+    const Maybe<StyleComputedTimingFunction>& aFn, double aPortion,
+    bool aBeforeFlag) {
+  return aFn ? aFn->At(aPortion, aBeforeFlag) : aPortion;
+}
+
+/* static */
+template <>
+inline LengthPercentageOrAuto LengthPercentageOrAuto::Zero() {
+  return LengthPercentage(LengthPercentage::Zero());
+}
+
+template <>
+inline StyleViewTimelineInset::StyleGenericViewTimelineInset()
+    : start(LengthPercentageOrAuto::Auto()),
+      end(LengthPercentageOrAuto::Auto()) {}
 
 }  // namespace mozilla
 

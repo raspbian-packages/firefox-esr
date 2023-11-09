@@ -77,38 +77,29 @@ class nsTextControlFrame : public nsContainerFrame,
               const ReflowInput& aReflowInput,
               nsReflowStatus& aStatus) override;
 
-  bool GetVerticalAlignBaseline(mozilla::WritingMode aWM,
-                                nscoord* aBaseline) const override {
-    return GetNaturalBaselineBOffset(aWM, BaselineSharingGroup::First,
-                                     aBaseline);
-  }
-
-  bool GetNaturalBaselineBOffset(mozilla::WritingMode aWM,
-                                 BaselineSharingGroup aBaselineGroup,
-                                 nscoord* aBaseline) const override {
+  Maybe<nscoord> GetNaturalBaselineBOffset(
+      mozilla::WritingMode aWM, BaselineSharingGroup aBaselineGroup,
+      BaselineExportContext) const override {
     if (!IsSingleLineTextControl()) {
-      return false;
+      return Nothing{};
     }
+    NS_ASSERTION(!IsSubtreeDirty(), "frame must not be dirty");
     return GetSingleLineTextControlBaseline(this, mFirstBaseline, aWM,
-                                            aBaselineGroup, aBaseline);
+                                            aBaselineGroup);
   }
 
-  static bool GetSingleLineTextControlBaseline(
+  static Maybe<nscoord> GetSingleLineTextControlBaseline(
       const nsIFrame* aFrame, nscoord aFirstBaseline, mozilla::WritingMode aWM,
-      BaselineSharingGroup aBaselineGroup, nscoord* aBaseline) {
+      BaselineSharingGroup aBaselineGroup) {
     if (aFrame->StyleDisplay()->IsContainLayout()) {
-      return false;
+      return Nothing{};
     }
     NS_ASSERTION(aFirstBaseline != NS_INTRINSIC_ISIZE_UNKNOWN,
                  "please call Reflow before asking for the baseline");
-    *aBaseline = aBaselineGroup == BaselineSharingGroup::First
-                     ? aFirstBaseline
-                     : aFrame->BSize(aWM) - aFirstBaseline;
-    return true;
+    return mozilla::Some(aBaselineGroup == BaselineSharingGroup::First
+                             ? aFirstBaseline
+                             : aFrame->BSize(aWM) - aFirstBaseline);
   }
-
-  nsSize GetXULMinSize(nsBoxLayoutState&) override;
-  bool IsXULCollapsed() override;
 
 #ifdef ACCESSIBILITY
   mozilla::a11y::AccType AccessibleType() override;
@@ -126,19 +117,12 @@ class nsTextControlFrame : public nsContainerFrame,
         aFlags & ~(nsIFrame::eReplaced | nsIFrame::eReplacedContainsBlock));
   }
 
-#ifdef DEBUG
-  void MarkIntrinsicISizesDirty() override {
-    // Need another Reflow to have a correct baseline value again.
-    mFirstBaseline = NS_INTRINSIC_ISIZE_UNKNOWN;
-  }
-#endif
-
   // nsIAnonymousContentCreator
   nsresult CreateAnonymousContent(nsTArray<ContentInfo>& aElements) override;
   void AppendAnonymousContentTo(nsTArray<nsIContent*>& aElements,
                                 uint32_t aFilter) override;
 
-  void SetInitialChildList(ChildListID, nsFrameList&) override;
+  void SetInitialChildList(ChildListID, nsFrameList&&) override;
 
   void BuildDisplayList(nsDisplayListBuilder* aBuilder,
                         const nsDisplayListSet& aLists) override;
@@ -156,7 +140,7 @@ class nsTextControlFrame : public nsContainerFrame,
   GetTextEditor() override;
   MOZ_CAN_RUN_SCRIPT NS_IMETHOD
   SetSelectionRange(uint32_t aSelectionStart, uint32_t aSelectionEnd,
-                    SelectionDirection aDirection = eNone) override;
+                    SelectionDirection = SelectionDirection::None) override;
   NS_IMETHOD GetOwnedSelectionController(
       nsISelectionController** aSelCon) override;
   nsFrameSelection* GetOwnedFrameSelection() override;
@@ -194,7 +178,7 @@ class nsTextControlFrame : public nsContainerFrame,
    */
   bool TextEquals(const nsAString& aText) const;
 
-  nsresult PeekOffset(nsPeekOffsetStruct* aPos) override;
+  nsresult PeekOffset(mozilla::PeekOffsetStruct* aPos) override;
 
   NS_DECL_QUERYFRAME
 
@@ -311,11 +295,11 @@ class nsTextControlFrame : public nsContainerFrame,
   // helper methods
   MOZ_CAN_RUN_SCRIPT nsresult SetSelectionInternal(
       nsINode* aStartNode, uint32_t aStartOffset, nsINode* aEndNode,
-      uint32_t aEndOffset, SelectionDirection aDirection = eNone);
+      uint32_t aEndOffset, SelectionDirection = SelectionDirection::None);
   MOZ_CAN_RUN_SCRIPT nsresult SelectAllOrCollapseToEndOfText(bool aSelect);
   MOZ_CAN_RUN_SCRIPT nsresult
   SetSelectionEndPoints(uint32_t aSelStart, uint32_t aSelEnd,
-                        SelectionDirection aDirection = eNone);
+                        SelectionDirection = SelectionDirection::None);
 
   void FinishedInitializer() { RemoveProperty(TextControlInitializer()); }
 
@@ -364,19 +348,19 @@ class nsTextControlFrame : public nsContainerFrame,
   // is modified, this is cleared.
   //
   // FIXME(bug 1402545): Consider using an nsAutoString here.
-  nsString mCachedValue;
+  nsString mCachedValue{VoidString()};
 
   // Our first baseline, or NS_INTRINSIC_ISIZE_UNKNOWN if we have a pending
   // Reflow (or if we're contain:layout, which means we have no baseline).
-  nscoord mFirstBaseline;
+  nscoord mFirstBaseline = NS_INTRINSIC_ISIZE_UNKNOWN;
 
   // these packed bools could instead use the high order bits on mState, saving
   // 4 bytes
-  bool mEditorHasBeenInitialized;
-  bool mIsProcessing;
+  bool mEditorHasBeenInitialized = false;
+  bool mIsProcessing = false;
 
 #ifdef DEBUG
-  bool mInEditorInitialization;
+  bool mInEditorInitialization = false;
   friend class EditorInitializerEntryTracker;
 #endif
 };

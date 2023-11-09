@@ -90,6 +90,8 @@ NS_EVENT_MESSAGE(eContextMenu)
 
 NS_EVENT_MESSAGE(eCueChange)
 
+NS_EVENT_MESSAGE(eBeforeToggle)
+
 NS_EVENT_MESSAGE(eLoad)
 NS_EVENT_MESSAGE(eUnload)
 NS_EVENT_MESSAGE(eHashChange)
@@ -363,7 +365,7 @@ NS_EVENT_MESSAGE(eOpen)
 
 // Device motion and orientation
 NS_EVENT_MESSAGE(eDeviceOrientation)
-NS_EVENT_MESSAGE(eAbsoluteDeviceOrientation)
+NS_EVENT_MESSAGE(eDeviceOrientationAbsolute)
 NS_EVENT_MESSAGE(eDeviceMotion)
 NS_EVENT_MESSAGE(eUserProximity)
 NS_EVENT_MESSAGE(eDeviceLight)
@@ -377,8 +379,6 @@ NS_EVENT_MESSAGE(eVRDisplayDeactivate)
 NS_EVENT_MESSAGE(eVRDisplayConnect)
 NS_EVENT_MESSAGE(eVRDisplayDisconnect)
 NS_EVENT_MESSAGE(eVRDisplayPresentChange)
-
-NS_EVENT_MESSAGE(eShow)
 
 // Fullscreen DOM API
 NS_EVENT_MESSAGE(eFullscreenChange)
@@ -448,6 +448,8 @@ NS_EVENT_MESSAGE(eClose)
 NS_EVENT_MESSAGE(eMarqueeBounce)
 NS_EVENT_MESSAGE(eMarqueeStart)
 NS_EVENT_MESSAGE(eMarqueeFinish)
+
+NS_EVENT_MESSAGE(eScrollend)
 
 #ifdef UNDEF_NS_EVENT_MESSAGE_FIRST_LAST
 #  undef UNDEF_NS_EVENT_MESSAGE_FIRST_LAST

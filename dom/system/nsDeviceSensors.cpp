@@ -394,7 +394,7 @@ void nsDeviceSensors::FireDOMOrientationEvent(EventTarget* aTarget,
     aEventTarget->DispatchEvent(*event);
   };
 
-  Dispatch(aTarget, aIsAbsolute ? u"absolutedeviceorientation"_ns
+  Dispatch(aTarget, aIsAbsolute ? u"deviceorientationabsolute"_ns
                                 : u"deviceorientation"_ns);
 
   // This is used to determine whether relative events have been dispatched
@@ -552,7 +552,5 @@ bool nsDeviceSensors::IsSensorAllowedByPref(uint32_t aType,
   if (!window) {
     return true;
   }
-  nsCOMPtr<nsIScriptObjectPrincipal> soPrincipal = do_QueryInterface(window);
-  return !nsContentUtils::ShouldResistFingerprinting(
-      soPrincipal->GetPrincipal());
+  return !nsGlobalWindowInner::Cast(window)->ShouldResistFingerprinting();
 }

@@ -17,7 +17,7 @@ function waitForLoginCountToReach(browser, loginCount) {
   );
 }
 
-add_setup(async function() {
+add_setup(async function () {
   await addLogin(TEST_LOGIN1);
   registerCleanupFunction(() => {
     Services.logins.removeAllUserFacingLogins();
@@ -29,7 +29,7 @@ add_task(async function test() {
   // Confirm that the mocking of the OS auth dialog isn't enabled so the
   // test will timeout if a real OS auth dialog is shown. We don't show
   // the OS auth dialog when Primary Password is enabled.
-  is(
+  Assert.equal(
     Services.prefs.getStringPref(
       "toolkit.osKeyStore.unofficialBuildOnlyLogin",
       ""
@@ -48,7 +48,7 @@ add_task(async function test() {
 
   let browser = gBrowser.selectedBrowser;
   let logins = await waitForLoginCountToReach(browser, 0);
-  is(
+  Assert.equal(
     logins,
     0,
     "No logins should be displayed when MP is set and unauthenticated"
@@ -63,7 +63,7 @@ add_task(async function test() {
     "waiting for primary-password-login-required notification"
   );
 
-  ok(
+  Assert.ok(
     notification,
     "primary-password-login-required notification should be visible"
   );
@@ -71,7 +71,7 @@ add_task(async function test() {
   let buttons = notification.buttonContainer.querySelectorAll(
     ".notification-button"
   );
-  is(buttons.length, 1, "Should have one button.");
+  Assert.equal(buttons.length, 1, "Should have one button.");
 
   let refreshPromise = BrowserTestUtils.browserLoaded(browser);
   // Sign in with the Primary Password this time the dialog is shown
@@ -85,11 +85,15 @@ add_task(async function test() {
   info("Primary Password dialog shown and authenticated");
 
   logins = await waitForLoginCountToReach(browser, 1);
-  is(logins, 1, "Logins should be displayed when MP is set and authenticated");
+  Assert.equal(
+    logins,
+    1,
+    "Logins should be displayed when MP is set and authenticated"
+  );
 
   // Show MP dialog when Copy Password button clicked
   mpDialogShown = forceAuthTimeoutAndWaitForMPDialog("cancel");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let copyButton = loginItem.shadowRoot.querySelector(
       ".copy-password-button"
@@ -100,7 +104,7 @@ add_task(async function test() {
   info("Primary Password dialog shown and canceled");
   mpDialogShown = forceAuthTimeoutAndWaitForMPDialog("authenticate");
   info("Clicking copy password button again");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let copyButton = loginItem.shadowRoot.querySelector(
       ".copy-password-button"
@@ -109,7 +113,7 @@ add_task(async function test() {
   });
   await mpDialogShown;
   info("Primary Password dialog shown and authenticated");
-  await SpecialPowers.spawn(browser, [], async function() {
+  await SpecialPowers.spawn(browser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let copyButton = loginItem.shadowRoot.querySelector(
       ".copy-password-button"
@@ -122,7 +126,7 @@ add_task(async function test() {
 
   // Show MP dialog when Reveal Password checkbox is checked if not on a new login
   mpDialogShown = forceAuthTimeoutAndWaitForMPDialog("cancel");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
@@ -131,18 +135,18 @@ add_task(async function test() {
   });
   await mpDialogShown;
   info("Primary Password dialog shown and canceled");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
     );
-    ok(
+    Assert.ok(
       !revealCheckbox.checked,
       "reveal checkbox should be unchecked if MP dialog canceled"
     );
   });
   mpDialogShown = forceAuthTimeoutAndWaitForMPDialog("authenticate");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
@@ -151,12 +155,12 @@ add_task(async function test() {
   });
   await mpDialogShown;
   info("Primary Password dialog shown and authenticated");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
     );
-    ok(
+    Assert.ok(
       revealCheckbox.checked,
       "reveal checkbox should be checked if MP dialog authenticated"
     );
@@ -176,27 +180,30 @@ add_task(async function test() {
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
     );
-    ok(ContentTaskUtils.is_visible(revealCheckbox), "Toggle visible");
-    ok(!revealCheckbox.checked, "Not revealed initially");
-    is(passwordField.type, "password", "type is password");
+    Assert.ok(ContentTaskUtils.is_visible(revealCheckbox), "Toggle visible");
+    Assert.ok(!revealCheckbox.checked, "Not revealed initially");
+    Assert.equal(passwordField.type, "password", "type is password");
     revealCheckbox.click();
 
     await ContentTaskUtils.waitForCondition(() => {
       return passwordField.type == "text";
     }, "Waiting for type='text'");
-    ok(revealCheckbox.checked, "Not revealed after click");
+    Assert.ok(revealCheckbox.checked, "Not revealed after click");
 
     let cancelButton = loginItem.shadowRoot.querySelector(".cancel-button");
     cancelButton.click();
   });
 
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
-    let loginFilter = Cu.waiveXrays(
-      content.document.querySelector("login-filter")
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
+    const loginList = Cu.waiveXrays(
+      content.document.querySelector("login-list")
+    );
+
+    const loginFilter = Cu.waiveXrays(
+      loginList.shadowRoot.querySelector("login-filter")
     );
     loginFilter.value = "pass1";
-    let loginList = Cu.waiveXrays(content.document.querySelector("login-list"));
-    is(
+    Assert.equal(
       loginList._list.querySelectorAll(
         ".login-list-item[data-guid]:not([hidden])"
       ).length,
@@ -204,7 +211,7 @@ add_task(async function test() {
       "login-list should show corresponding result when primary password is enabled"
     );
     loginFilter.value = "";
-    is(
+    Assert.equal(
       loginList._list.querySelectorAll(
         ".login-list-item[data-guid]:not([hidden])"
       ).length,
@@ -213,14 +220,16 @@ add_task(async function test() {
     );
   });
   LoginTestUtils.primaryPassword.disable();
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     Cu.waiveXrays(content).AboutLoginsUtils.primaryPasswordEnabled = false;
-    let loginFilter = Cu.waiveXrays(
-      content.document.querySelector("login-filter")
+    const loginList = Cu.waiveXrays(
+      content.document.querySelector("login-list")
+    );
+    const loginFilter = Cu.waiveXrays(
+      loginList.shadowRoot.querySelector("login-filter")
     );
     loginFilter.value = "pass1";
-    let loginList = Cu.waiveXrays(content.document.querySelector("login-list"));
-    is(
+    Assert.equal(
       loginList._list.querySelectorAll(
         ".login-list-item[data-guid]:not([hidden])"
       ).length,
@@ -236,7 +245,7 @@ add_task(async function test_login_item_after_successful_auth() {
   // Confirm that the mocking of the OS auth dialog isn't enabled so the
   // test will timeout if a real OS auth dialog is shown. We don't show
   // the OS auth dialog when Primary Password is enabled.
-  is(
+  Assert.equal(
     Services.prefs.getStringPref(
       "toolkit.osKeyStore.unofficialBuildOnlyLogin",
       ""
@@ -255,10 +264,14 @@ add_task(async function test_login_item_after_successful_auth() {
 
   let browser = gBrowser.selectedBrowser;
   let logins = await waitForLoginCountToReach(browser, 1);
-  is(logins, 1, "Logins should be displayed when MP is set and authenticated");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  Assert.equal(
+    logins,
+    1,
+    "Logins should be displayed when MP is set and authenticated"
+  );
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
-    ok(
+    Assert.ok(
       !loginItem.classList.contains("no-logins"),
       "Login item should have content after MP is authenticated"
     );

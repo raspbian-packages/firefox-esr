@@ -50,6 +50,8 @@ printui-backgrounds-checkbox = Տպել խորքերը
 ## options to select between the original page, selected text only, or a version
 ## where the page is processed with "Reader View".
 
+# Option for printing just the content a user selected prior to printing.
+printui-selection-radio = Ընտրությունը
 
 ##
 

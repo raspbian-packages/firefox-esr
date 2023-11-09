@@ -20,11 +20,9 @@
  *    for certain types of links (_blank links for example) to open new tabs.
  */
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "TalosParentProfiler",
-  "resource://talos-powers/TalosParentProfiler.jsm"
-);
+ChromeUtils.defineESModuleGetters(this, {
+  TalosParentProfiler: "resource://talos-powers/TalosParentProfiler.sys.mjs",
+});
 ChromeUtils.defineModuleGetter(
   this,
   "BrowserWindowTracker",
@@ -137,10 +135,12 @@ this.tabpaint = class extends ExtensionAPI {
 
     gBrowser.selectedTab = gBrowser.addTab(
       //win.performance.now() + win.performance.timing.navigationStart gives the UNIX timestamp.
-      `${target}?${win.performance.now() +
-        win.performance.timing.navigationStart}`,
+      `${target}?${
+        win.performance.now() + win.performance.timing.navigationStart
+      }`,
       {
-        triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+        triggeringPrincipal:
+          Services.scriptSecurityManager.getSystemPrincipal(),
       }
     );
 

@@ -46,6 +46,12 @@ options-inspector-draggable-properties-label = Klicka och dra för att redigera 
 options-inspector-draggable-properties-tooltip =
     .title = Klicka och dra för att redigera storleksvärden i vyn för inspektörsregler.
 
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Använd förenklad markering med prefers-reduced-motion
+options-inspector-simplified-highlighters-tooltip =
+    .title = Möjliggör förenklade markering när prefers-reduced-motion är aktiverat. Ritar linjer istället för fyllda rektanglar runt markerade element för att undvika blinkande effekter.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Standardfärgvärde
@@ -124,6 +130,11 @@ options-enable-remote-label = Aktivera fjärrfelsökning
 options-enable-remote-tooltip2 =
     .title = Om du slår på det här alternativet kan du felsöka den här webbläsarinstansen på distans
 
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = Använd F12-tangenten för att öppna eller stänga DevTools
+options-enable-f12-tooltip =
+    .title = Om du aktiverar det här alternativet binds F12-tangenten för att öppna eller stänga DevTools verktygslåda
+
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Aktivera anpassade formaterare
 options-enable-custom-formatters-tooltip =
@@ -141,4 +152,3 @@ options-source-maps-tooltip =
 
 # The message shown for settings that trigger page reload
 options-context-triggers-page-refresh = * Endast aktuell session, laddar om sidan
-

@@ -16,7 +16,6 @@ styleeditor-save-button = భద్రపరచు
     .accesskey = S
 styleeditor-options-button =
     .tooltiptext = శైలి ఎడిటర్ ఎంపికలు
-styleeditor-media-rules = @media నియమాలు
 styleeditor-editor-textbox =
     .data-placeholder = ఇక్కడ CSS టైపుచెయ్యండి.
 styleeditor-no-stylesheet = ఈ పేజీకి శైలి షీట్ ఏమీ లేదు.
@@ -32,3 +31,12 @@ styleeditor-find-again =
 styleeditor-go-to-line =
     .label = లైనుకు వెళ్ళు…
     .accesskey = J
+
+# This string is shown in the style sheets list
+# Variables:
+#   $ruleCount (Integer) - The number of rules in the stylesheet.
+styleeditor-stylesheet-rule-count =
+    { $ruleCount ->
+        [one] { $ruleCount } నియమం.
+       *[other] { $ruleCount } నియమాలు.
+    }

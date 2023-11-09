@@ -63,7 +63,6 @@ protections-panel-not-found-label = Nincs észlelve
 ##
 
 protections-panel-settings-label = Védelmi beállítások
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Védelmi vezérlőpult
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Űrlapok
 protections-panel-site-not-working-view-issue-list-payments = Fizetések
 protections-panel-site-not-working-view-issue-list-comments = Megjegyzések
 protections-panel-site-not-working-view-issue-list-videos = Videók
+protections-panel-site-not-working-view-issue-list-fonts = Betűkészletek
 
 protections-panel-site-not-working-view-send-report = Jelentés küldése
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Hibás webhely bejelentése
 protections-panel-content-blocking-breakage-report-view-description = Egyes nyomkövetők blokkolása problémákat okozhat néhány weboldalon. Ezen problémák bejelentése segít jobbá tenni a { -brand-short-name } böngészőt mindenki számára. A jelentés elküldi az URL-t és a böngészőbeállításait a Mozillának. <label data-l10n-name="learn-more">További tudnivalók</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Egyes nyomkövetők blokkolása problémákat okozhat néhány weboldalon. Ezen problémák bejelentése segít jobbá tenni a { -brand-short-name } böngészőt mindenki számára. A jelentés elküldi az URL-t és a böngészőbeállításait a { -vendor-short-name(ending: "accented") }nak.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Mégse
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Jelentés küldése
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Sütibannerek számának csökkentése
+protections-panel-cookie-banner-handling-enabled = Bekapcsolva erre az oldalra
+protections-panel-cookie-banner-handling-disabled = Kikapcsolva erre az oldalra
+protections-panel-cookie-banner-handling-undetected = A webhely jelenleg nem támogatott
+
+protections-panel-cookie-banner-view-title =
+    .title = Sütibannerek számának csökkentése
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Kikapcsolja a sütibanner-csökkentést a következőnél: { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Bekapcsolja a sütibanner-csökkentést ennél a webhelynél?
+protections-panel-cookie-banner-view-cookie-clear-warning = A { -brand-short-name } törli a webhely sütijeit, és frissíti az oldalt. Az összes süti törlésével kijelentkezhet, vagy kiürítheti a kosarait.
+protections-panel-cookie-banner-view-turn-on-description = A { -brand-short-name } automatikusan megpróbálja elutasítani az összes sütikérést a támogatott oldalakon.
+protections-panel-cookie-banner-view-cancel = Mégse
+protections-panel-cookie-banner-view-turn-off = Kikapcsolás
+protections-panel-cookie-banner-view-turn-on = Bekapcsolás

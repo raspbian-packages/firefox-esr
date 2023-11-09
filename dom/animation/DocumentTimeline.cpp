@@ -42,7 +42,8 @@ NS_IMPL_RELEASE_INHERITED(DocumentTimeline, AnimationTimeline)
 
 DocumentTimeline::DocumentTimeline(Document* aDocument,
                                    const TimeDuration& aOriginTime)
-    : AnimationTimeline(aDocument->GetParentObject()),
+    : AnimationTimeline(aDocument->GetParentObject(),
+                        aDocument->GetScopeObject()->GetRTPCallerType()),
       mDocument(aDocument),
       mIsObservingRefreshDriver(false),
       mOriginTime(aOriginTime) {
@@ -155,7 +156,7 @@ Nullable<TimeDuration> DocumentTimeline::ToTimelineTime(
 void DocumentTimeline::NotifyAnimationUpdated(Animation& aAnimation) {
   AnimationTimeline::NotifyAnimationUpdated(aAnimation);
 
-  if (!mIsObservingRefreshDriver) {
+  if (!mIsObservingRefreshDriver && !mAnimationOrder.isEmpty()) {
     nsRefreshDriver* refreshDriver = GetRefreshDriver();
     if (refreshDriver) {
       MOZ_ASSERT(isInList(),
@@ -245,8 +246,31 @@ void DocumentTimeline::NotifyRefreshDriverDestroying(nsRefreshDriver* aDriver) {
 void DocumentTimeline::RemoveAnimation(Animation* aAnimation) {
   AnimationTimeline::RemoveAnimation(aAnimation);
 
-  if (mIsObservingRefreshDriver && mAnimations.IsEmpty()) {
+  if (!mIsObservingRefreshDriver || !mAnimationOrder.isEmpty()) {
+    return;
+  }
+
+  UnregisterFromRefreshDriver();
+}
+
+void DocumentTimeline::NotifyAnimationContentVisibilityChanged(
+    Animation* aAnimation, bool aIsVisible) {
+  AnimationTimeline::NotifyAnimationContentVisibilityChanged(aAnimation,
+                                                             aIsVisible);
+
+  if (mIsObservingRefreshDriver && mAnimationOrder.isEmpty()) {
     UnregisterFromRefreshDriver();
+  }
+
+  if (!mIsObservingRefreshDriver && !mAnimationOrder.isEmpty()) {
+    nsRefreshDriver* refreshDriver = GetRefreshDriver();
+    if (refreshDriver) {
+      MOZ_ASSERT(isInList(),
+                 "We should not register with the refresh driver if we are not"
+                 " in the document's list of timelines");
+
+      ObserveRefreshDriver(refreshDriver);
+    }
   }
 }
 

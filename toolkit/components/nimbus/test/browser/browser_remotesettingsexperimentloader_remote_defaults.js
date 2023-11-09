@@ -3,28 +3,22 @@
 
 "use strict";
 
-const { RemoteSettings } = ChromeUtils.import(
-  "resource://services-settings/remote-settings.js"
+const { RemoteSettings } = ChromeUtils.importESModule(
+  "resource://services-settings/remote-settings.sys.mjs"
 );
 const {
   _ExperimentFeature: ExperimentFeature,
-  NimbusFeatures,
+
   ExperimentAPI,
-} = ChromeUtils.import("resource://nimbus/ExperimentAPI.jsm");
-const { ExperimentTestUtils } = ChromeUtils.import(
-  "resource://testing-common/NimbusTestUtils.jsm"
+} = ChromeUtils.importESModule("resource://nimbus/ExperimentAPI.sys.mjs");
+const { ExperimentTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/NimbusTestUtils.sys.mjs"
 );
-const { ExperimentManager } = ChromeUtils.import(
-  "resource://nimbus/lib/ExperimentManager.jsm"
+const { ExperimentManager } = ChromeUtils.importESModule(
+  "resource://nimbus/lib/ExperimentManager.sys.mjs"
 );
-const { RemoteSettingsExperimentLoader } = ChromeUtils.import(
-  "resource://nimbus/lib/RemoteSettingsExperimentLoader.jsm"
-);
-const { BrowserTestUtils } = ChromeUtils.import(
-  "resource://testing-common/BrowserTestUtils.jsm"
-);
-const { TelemetryEnvironment } = ChromeUtils.import(
-  "resource://gre/modules/TelemetryEnvironment.jsm"
+const { RemoteSettingsExperimentLoader } = ChromeUtils.importESModule(
+  "resource://nimbus/lib/RemoteSettingsExperimentLoader.sys.mjs"
 );
 
 const FOO_FAKE_FEATURE_MANIFEST = {
@@ -71,9 +65,8 @@ const REMOTE_CONFIGURATION_FOO = ExperimentFakes.recipe("foo-rollout", {
       features: [
         {
           featureId: "foo",
-          enabled: true,
           isEarlyStartup: true,
-          value: { remoteValue: 42 },
+          value: { remoteValue: 42, enabled: true },
         },
       ],
     },
@@ -89,9 +82,8 @@ const REMOTE_CONFIGURATION_BAR = ExperimentFakes.recipe("bar-rollout", {
       features: [
         {
           featureId: "bar",
-          enabled: true,
           isEarlyStartup: true,
-          value: { remoteValue: 3 },
+          value: { remoteValue: 3, enabled: true },
         },
       ],
     },
@@ -101,28 +93,34 @@ const REMOTE_CONFIGURATION_BAR = ExperimentFakes.recipe("bar-rollout", {
 
 const SYNC_DEFAULTS_PREF_BRANCH = "nimbus.syncdefaultsstore.";
 
+add_setup(function () {
+  const client = RemoteSettings("nimbus-desktop-experiments");
+  sinon.stub(client, "get").resolves([]);
+
+  registerCleanupFunction(() => client.get.restore());
+});
+
 async function setup(configuration) {
   const client = RemoteSettings("nimbus-desktop-experiments");
-  await client.db.importChanges(
-    {},
-    Date.now(),
-    configuration || [REMOTE_CONFIGURATION_FOO, REMOTE_CONFIGURATION_BAR],
-    {
-      clear: true,
-    }
+  client.get.resolves(
+    configuration ?? [REMOTE_CONFIGURATION_FOO, REMOTE_CONFIGURATION_BAR]
   );
 
-  registerCleanupFunction(async () => {
-    await client.db.clear();
-  });
-
-  return client;
+  // Simulate a state where no experiment exists.
+  const cleanup = () => client.get.resolves([]);
+  return { client, cleanup };
 }
 
 add_task(async function test_remote_fetch_and_ready() {
-  const sandbox = sinon.createSandbox();
   const fooInstance = new ExperimentFeature("foo", FOO_FAKE_FEATURE_MANIFEST);
   const barInstance = new ExperimentFeature("bar", BAR_FAKE_FEATURE_MANIFEST);
+
+  const cleanupTestFeatures = ExperimentTestUtils.addTestFeatures(
+    fooInstance,
+    barInstance
+  );
+
+  const sandbox = sinon.createSandbox();
   const setExperimentActiveStub = sandbox.stub(
     TelemetryEnvironment,
     "setExperimentActive"
@@ -130,10 +128,6 @@ add_task(async function test_remote_fetch_and_ready() {
   const setExperimentInactiveStub = sandbox.stub(
     TelemetryEnvironment,
     "setExperimentInactive"
-  );
-
-  registerCleanupFunction(
-    ExperimentTestUtils.addTestFeatures(fooInstance, barInstance)
   );
 
   Assert.equal(
@@ -149,7 +143,7 @@ add_task(async function test_remote_fetch_and_ready() {
 
   await ExperimentAPI.ready();
 
-  let rsClient = await setup();
+  let { cleanup } = await setup();
 
   // Fake being initialized so we can update recipes
   // we don't need to start any timers
@@ -162,7 +156,6 @@ add_task(async function test_remote_fetch_and_ready() {
   // async to evaluate targeting
   await Promise.all([fooUpdate, barUpdate]);
 
-  Assert.ok(fooInstance.isEnabled(), "Enabled by remote defaults");
   Assert.equal(
     fooInstance.getVariable("remoteValue"),
     REMOTE_CONFIGURATION_FOO.branches[0].features[0].value.remoteValue,
@@ -225,7 +218,7 @@ add_task(async function test_remote_fetch_and_ready() {
   Assert.equal(barInstance.getVariable("remoteValue"), 3, "Has rollout value");
 
   // Clear RS db and load again. No configurations so should clear the cache.
-  await rsClient.db.clear();
+  await cleanup();
   await RemoteSettingsExperimentLoader.updateRecipes(
     "browser_rsel_remote_defaults"
   );
@@ -266,6 +259,9 @@ add_task(async function test_remote_fetch_and_ready() {
   ExperimentAPI._store._deleteForTests(REMOTE_CONFIGURATION_FOO.slug);
   ExperimentAPI._store._deleteForTests(REMOTE_CONFIGURATION_BAR.slug);
   sandbox.restore();
+
+  cleanupTestFeatures();
+  await cleanup();
 });
 
 add_task(async function test_remote_fetch_on_updateRecipes() {
@@ -309,21 +305,25 @@ add_task(async function test_remote_fetch_on_updateRecipes() {
 add_task(async function test_finalizeRemoteConfigs_cleanup() {
   const featureFoo = new ExperimentFeature("foo", {
     description: "mochitests",
-    variables: {},
+    variables: {
+      foo: { type: "boolean" },
+    },
   });
   const featureBar = new ExperimentFeature("bar", {
     description: "mochitests",
-    variables: {},
+    variables: {
+      bar: { type: "boolean" },
+    },
   });
 
-  registerCleanupFunction(
-    ExperimentTestUtils.addTestFeatures(featureFoo, featureBar)
+  const cleanupTestFeatures = ExperimentTestUtils.addTestFeatures(
+    featureFoo,
+    featureBar
   );
 
   let fooCleanup = await ExperimentFakes.enrollWithRollout(
     {
       featureId: "foo",
-      enabled: true,
       isEarlyStartup: true,
       value: { foo: true },
     },
@@ -334,7 +334,6 @@ add_task(async function test_finalizeRemoteConfigs_cleanup() {
   await ExperimentFakes.enrollWithRollout(
     {
       featureId: "bar",
-      enabled: true,
       isEarlyStartup: true,
       value: { bar: true },
     },
@@ -348,6 +347,19 @@ add_task(async function test_finalizeRemoteConfigs_cleanup() {
   featureBar.onUpdate(stubBar);
   let cleanupPromise = new Promise(resolve => featureBar.onUpdate(resolve));
 
+  // stubFoo and stubBar will be called because the store is ready. We are not interested in these calls.
+  // Reset call history and check calls stats after cleanup.
+  Assert.ok(
+    stubFoo.called,
+    "feature foo update triggered becuase store is ready"
+  );
+  Assert.ok(
+    stubBar.called,
+    "feature bar update triggered because store is ready"
+  );
+  stubFoo.resetHistory();
+  stubBar.resetHistory();
+
   Services.prefs.setStringPref(
     `${SYNC_DEFAULTS_PREF_BRANCH}foo`,
     JSON.stringify({ foo: true, branch: { feature: { featureId: "foo" } } })
@@ -357,7 +369,24 @@ add_task(async function test_finalizeRemoteConfigs_cleanup() {
     JSON.stringify({ bar: true, branch: { feature: { featureId: "bar" } } })
   );
 
-  await setup([REMOTE_CONFIGURATION_FOO]);
+  const remoteConfiguration = {
+    ...REMOTE_CONFIGURATION_FOO,
+    branches: [
+      {
+        ...REMOTE_CONFIGURATION_FOO.branches[0],
+        features: [
+          {
+            ...REMOTE_CONFIGURATION_FOO.branches[0].features[0],
+            value: {
+              foo: true,
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+  const { cleanup } = await setup([remoteConfiguration]);
   RemoteSettingsExperimentLoader._initialized = true;
   await RemoteSettingsExperimentLoader.updateRecipes();
   await cleanupPromise;
@@ -382,6 +411,9 @@ add_task(async function test_finalizeRemoteConfigs_cleanup() {
   // only sets the recipe as inactive
   ExperimentAPI._store._deleteForTests("bar-rollout");
   ExperimentAPI._store._deleteForTests("foo-rollout");
+
+  cleanupTestFeatures();
+  cleanup();
 });
 
 // If the remote config data returned from the store is not modified
@@ -420,6 +452,12 @@ add_task(async function remote_defaults_active_remote_defaults() {
     description: "mochitest",
     variables: { enabled: { type: "boolean" } },
   });
+
+  const cleanupTestFeatures = ExperimentTestUtils.addTestFeatures(
+    barFeature,
+    fooFeature
+  );
+
   let rollout1 = ExperimentFakes.recipe("bar", {
     branches: [
       {
@@ -457,29 +495,35 @@ add_task(async function remote_defaults_active_remote_defaults() {
   });
 
   // Order is important, rollout2 won't match at first
-  await setup([rollout2, rollout1]);
+  const { cleanup } = await setup([rollout2, rollout1]);
   let updatePromise = new Promise(resolve => barFeature.onUpdate(resolve));
   RemoteSettingsExperimentLoader._initialized = true;
   await RemoteSettingsExperimentLoader.updateRecipes("mochitest");
 
   await updatePromise;
 
-  Assert.ok(barFeature.isEnabled(), "Enabled on first sync");
-  Assert.ok(!fooFeature.isEnabled(), "Targeting doesn't match");
+  Assert.ok(barFeature.getVariable("enabled"), "Enabled on first sync");
+  Assert.ok(!fooFeature.getVariable("enabled"), "Targeting doesn't match");
 
   let featureUpdate = new Promise(resolve => fooFeature.onUpdate(resolve));
   await RemoteSettingsExperimentLoader.updateRecipes("mochitest");
   await featureUpdate;
 
-  Assert.ok(fooFeature.isEnabled(), "Targeting should match");
+  Assert.ok(fooFeature.getVariable("enabled"), "Targeting should match");
   ExperimentAPI._store._deleteForTests("foo");
   ExperimentAPI._store._deleteForTests("bar");
+
+  cleanup();
+  cleanupTestFeatures();
 });
 
 add_task(async function remote_defaults_variables_storage() {
   let barFeature = new ExperimentFeature("bar", {
     description: "mochitest",
     variables: {
+      enabled: {
+        type: "boolean",
+      },
       storage: {
         type: "int",
       },
@@ -504,7 +548,6 @@ add_task(async function remote_defaults_variables_storage() {
 
   let doCleanup = await ExperimentFakes.enrollWithRollout({
     featureId: "bar",
-    enabled: true,
     isEarlyStartup: true,
     value: rolloutValue,
   });

@@ -10,7 +10,7 @@ const TEST_PATH = getRootDirectory(gTestPath).replace(
 
 let gPathsToRemove = [];
 
-add_setup(async function() {
+add_setup(async function () {
   await SpecialPowers.pushPrefEnv({
     set: [["browser.download.useDownloadDir", true]],
   });
@@ -27,7 +27,7 @@ add_setup(async function() {
 async function testLinkWithoutExtension(type, shouldHaveExtension) {
   info("Checking " + type);
 
-  let task = function() {
+  let task = function () {
     return SpecialPowers.spawn(gBrowser.selectedBrowser, [type], mimetype => {
       let link = content.document.createElement("a");
       link.textContent = "Click me";
@@ -37,12 +37,32 @@ async function testLinkWithoutExtension(type, shouldHaveExtension) {
       link.click();
     });
   };
-  await checkDownloadWithExtensionState(task, { type, shouldHaveExtension });
+
+  await checkDownloadWithExtensionState(task, {
+    type,
+    shouldHaveExtension,
+    alwaysViewPDFInline: false,
+  });
+
+  if (type == "application/pdf") {
+    // For PDF, try again with the always open inline preference set
+    await SpecialPowers.pushPrefEnv({
+      set: [["browser.download.open_pdf_attachments_inline", true]],
+    });
+
+    await checkDownloadWithExtensionState(task, {
+      type,
+      shouldHaveExtension,
+      alwaysViewPDFInline: true,
+    });
+
+    await SpecialPowers.popPrefEnv();
+  }
 }
 
 async function checkDownloadWithExtensionState(
   task,
-  { type, shouldHaveExtension, expectedName = null }
+  { type, shouldHaveExtension, expectedName = null, alwaysViewPDFInline }
 ) {
   const shouldExpectDialog = Services.prefs.getBoolPref(
     "browser.download.always_ask_before_handling_new_types",
@@ -63,7 +83,10 @@ async function checkDownloadWithExtensionState(
 
   // PDF should load using the internal viewer without downloading it.
   let waitForLoad;
-  if (!shouldExpectDialog && type == "application/pdf") {
+  if (
+    (!shouldExpectDialog || alwaysViewPDFInline) &&
+    type == "application/pdf"
+  ) {
     waitForLoad = BrowserTestUtils.waitForNewTab(gBrowser);
   }
 
@@ -102,14 +125,24 @@ async function checkDownloadWithExtensionState(
   }
 
   if (!shouldExpectDialog && type == "application/pdf") {
-    is(
-      gURLBar.inputField.value,
-      "data:application/pdf,hello",
-      "url is correct for " + type
-    );
+    if (alwaysViewPDFInline) {
+      is(
+        gURLBar.inputField.value,
+        "data:application/pdf,hello",
+        "url is correct for " + type
+      );
+    } else {
+      ok(
+        gURLBar.inputField.value.startsWith("file://") &&
+          gURLBar.inputField.value.endsWith("somefile.pdf"),
+        "url is correct for " + type
+      );
+    }
 
     BrowserTestUtils.removeTab(gBrowser.selectedTab);
-  } else {
+  }
+
+  if (shouldExpectDialog || !alwaysViewPDFInline || type != "application/pdf") {
     // Wait for the download if it exists (may produce null).
     let download = await downloadFinishedPromise;
     if (download) {
@@ -145,7 +178,7 @@ add_task(async function test_enforce_useful_extension() {
     await testLinkWithoutExtension("video/webm", true);
     await testLinkWithoutExtension("application/pdf", true);
 
-    await testLinkWithoutExtension("application/x-gobbledygook", false);
+    await testLinkWithoutExtension("application/x-nonsense", false);
     await testLinkWithoutExtension("application/octet-stream", false);
     await testLinkWithoutExtension("binary/octet-stream", false);
     await testLinkWithoutExtension("application/x-msdownload", false);
@@ -167,7 +200,7 @@ add_task(async function test_broken_saved_handlerinfo_and_useless_mimetypes() {
   );
   handlerSvc.store(bogusType);
   let tabToClean = null;
-  let task = function() {
+  let task = function () {
     return BrowserTestUtils.openNewForegroundTab({
       gBrowser,
       opening: TEST_PATH + "file_as.exe?foo=bar",

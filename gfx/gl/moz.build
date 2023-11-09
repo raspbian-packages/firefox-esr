@@ -22,7 +22,8 @@ if CONFIG["MOZ_GL_PROVIDER"]:
 
 EXPORTS += [
     "AndroidSurfaceTexture.h",
-    "DecomposeIntoNoRepeatTriangles.h",
+    "AutoMappable.h",
+    "Colorspaces.h",
     "ForceDiscreteGPUHelperCGL.h",
     "GfxTexturesReporter.h",
     "GLBlitHelper.h",
@@ -41,6 +42,7 @@ EXPORTS += [
     "GLTextureImage.h",
     "GLTypes.h",
     "GLUploadHelpers.h",
+    "GLVendor.h",
     "HeapCopyOfStackArray.h",
     "MozFramebuffer.h",
     "ScopedGLHelpers.h",
@@ -52,7 +54,6 @@ EXPORTS += [
 
 # Win32 is a special snowflake, for ANGLE
 if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
-    REQUIRES_UNIFIED_BUILD = True
     EXPORTS += [
         "GLContextWGL.h",
         "SharedSurfaceANGLE.h",  # Needs <windows.h> for `HANDLE`.
@@ -108,17 +109,18 @@ elif gl_provider == "Linux":
     # GLContextProviderGLX.cpp needs to be kept out of UNIFIED_SOURCES
     # as it includes X11 headers which cause conflicts.
     SOURCES += [
-        "GLContextProviderGLX.cpp",
         "GLContextProviderLinux.cpp",
     ]
     EXPORTS += ["GLContextGLX.h", "GLXLibrary.h"]
+    if CONFIG["MOZ_X11"]:
+        SOURCES += ["GLContextProviderGLX.cpp"]
 
 if CONFIG["MOZ_WAYLAND"]:
     SOURCES += ["SharedSurfaceDMABUF.cpp"]
 
 UNIFIED_SOURCES += [
     "AndroidSurfaceTexture.cpp",
-    "DecomposeIntoNoRepeatTriangles.cpp",
+    "Colorspaces.cpp",
     "GfxTexturesReporter.cpp",
     "GLBlitHelper.cpp",
     "GLContext.cpp",
@@ -138,6 +140,10 @@ UNIFIED_SOURCES += [
 ]
 SOURCES += [
     "GLScreenBuffer.cpp",
+]
+
+TEST_DIRS += [
+    "gtest",
 ]
 
 include("/ipc/chromium/chromium-config.mozbuild")

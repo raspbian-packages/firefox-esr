@@ -11,6 +11,8 @@
 #include "mozilla/NativeKeyBindingsType.h"
 #include "mozilla/ToString.h"
 
+#include "nsCOMPtr.h"
+#include "nsIURI.h"
 #include "nsPoint.h"
 #include "nsRect.h"
 #include "nsString.h"
@@ -403,7 +405,6 @@ struct NativeIMEContext final {
 struct InputContext final {
   InputContext()
       : mOrigin(XRE_IsParentProcess() ? ORIGIN_MAIN : ORIGIN_CONTENT),
-        mMayBeIMEUnaware(false),
         mHasHandledUserInput(false),
         mInPrivateBrowsing(false) {}
 
@@ -411,8 +412,9 @@ struct InputContext final {
   // of its members need to be deleted at XPCOM shutdown.  Otherwise, it's
   // detected as memory leak.
   void ShutDown() {
+    mURI = nullptr;
     mHTMLInputType.Truncate();
-    mHTMLInputInputmode.Truncate();
+    mHTMLInputMode.Truncate();
     mActionHint.Truncate();
     mAutocapitalize.Truncate();
   }
@@ -445,7 +447,7 @@ struct InputContext final {
            // input type and inputmode are supported by Windows IME API, GTK
            // IME API and Android IME API
            mHTMLInputType != aOldContext.mHTMLInputType ||
-           mHTMLInputInputmode != aOldContext.mHTMLInputInputmode ||
+           mHTMLInputMode != aOldContext.mHTMLInputMode ||
 #endif
 #if defined(ANDROID) || defined(MOZ_WIDGET_GTK)
            // autocapitalize is supported by Android IME API and GTK IME API
@@ -460,11 +462,14 @@ struct InputContext final {
 
   IMEState mIMEState;
 
+  // The URI of the document which has the editable element.
+  nsCOMPtr<nsIURI> mURI;
+
   /* The type of the input if the input is a html input field */
   nsString mHTMLInputType;
 
-  /* The type of the inputmode */
-  nsString mHTMLInputInputmode;
+  // The value of the inputmode
+  nsString mHTMLInputMode;
 
   /* A hint for the action that is performed when the input is submitted */
   nsString mActionHint;
@@ -483,11 +488,6 @@ struct InputContext final {
     ORIGIN_CONTENT
   };
   Origin mOrigin;
-
-  /* True if the webapp may be unaware of IME events such as input event or
-   * composiion events. This enables a key-events-only mode on Android for
-   * compatibility with webapps relying on key listeners. */
-  bool mMayBeIMEUnaware;
 
   /**
    * True if the document has ever received user input
@@ -780,8 +780,6 @@ struct IMENotification final {
     bool mCausedBySelectionEvent;
     bool mOccurredDuringComposition;
 
-    // FYI: Cannot we make these methods inline because of an include hell of
-    //      RawServoAnimationValueMap
     void SetWritingMode(const WritingMode& aWritingMode);
     WritingMode GetWritingMode() const;
 

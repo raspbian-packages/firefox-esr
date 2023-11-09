@@ -58,6 +58,17 @@ restart-later = कुछ देर से पुनर्प्रारंभ 
 ## Variables:
 ##   $name (String): name of the extension
 
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -121,6 +132,10 @@ browser-containers-settings =
     .accesskey = i
 
 containers-disable-alert-title = क्या आप सभी कंटेनर टैब्स बंद करना चाहते हैं?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] अगर आप अभी पात्र टैब निष्क्रिय करेंगे, { $tabCount } पात्र टैब बंद हो जाएगा. क्या आप पक्का पात्र टैब निष्क्रिय करना चाहते हैं?
@@ -132,6 +147,9 @@ containers-disable-alert-ok-button =
         [one] { $tabCount } कंटेनर टैब्स बंद करें
        *[other] { $tabCount } कंटेनर टैब्स बंद करें
     }
+
+##
+
 containers-disable-alert-cancel-button = सक्षम बनाए रखें
 
 containers-remove-alert-title = यह कंटेनर हटायें?
@@ -150,12 +168,6 @@ containers-remove-cancel-button = इस कंटेनर को नहीं 
 ## General Section - Language & Appearance
 
 language-and-appearance-header = भाषा और उपस्थिति
-
-preferences-web-appearance-choice-input-browser =
-    .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
-
-preferences-web-appearance-choice-input-system =
-    .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
 
 preferences-web-appearance-choice-input-light =
     .aria-description = { preferences-web-appearance-choice-tooltip-light.title }
@@ -460,11 +472,6 @@ home-restore-defaults =
     .label = डिफ़ॉल्ट पुनः स्थापित करें
     .accesskey = R
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Firefox होम (तयशुदा)
-
 home-mode-choice-custom =
     .label = संशोधित URLs
 
@@ -492,14 +499,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Firefox होम सामग्री
-home-prefs-content-description = चुनें जो सामग्री आप अपने Firefox होम स्क्रीन पर चाहते हैं ।
-
 home-prefs-search-header =
     .label = वेब खोज
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 home-prefs-recommended-by-header =
     .label = { $provider } द्वारा अनुशंसित
@@ -558,6 +566,7 @@ search-show-suggestions-url-bar-option =
     .label = पता पट्टी परिणाम में खोज सुझाव दिखाएँ
     .accesskey = l
 
+
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -615,6 +624,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = अपना वेब अपने साथ रखें
 
 # This message contains two links and two icon images.
@@ -629,6 +642,9 @@ sync-mobile-promo = Firefox डाउनलोड करें <img data-l10n-na
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = प्रोफ़ाइल तस्वीर बदलें
 
@@ -639,8 +655,13 @@ sync-sign-out =
 sync-manage-account = खाता प्रबंधित करें
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } सत्यापित नहीं है.
 sync-signedin-login-failure = फिर से कनेक्ट करने के लिए साइन इन करें { $email }
+
+##
 
 sync-resend-verification =
     .label = सत्यापन पुनः भेजें
@@ -661,9 +682,14 @@ prefs-sync-now =
     .accesskeynotsyncing = N
     .labelsyncing = सिंक हो रहा है…
 
-## The list of things currently syncing.
+prefs-sync-now-button =
+    .label = अभी सिंक करें
+    .accesskey = N
 
-sync-currently-syncing-heading = आप वर्तमान में इन चीज़ों को सिंक कर रहे हैं:
+prefs-syncing-button =
+    .label = सिंक हो रहा है…
+
+## The list of things currently syncing.
 
 sync-currently-syncing-bookmarks = बुकमार्क्स
 sync-currently-syncing-history = इतिहास
@@ -730,6 +756,16 @@ sync-device-name-save =
     .accesskey = v
 
 sync-connect-another-device = अन्य डिवाइस जोड़ें
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = सत्यापन प्रेषित
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = सत्यापन कड़ी { $email } को भेज दिया गया है.
+sync-verification-not-sent-title = सत्यापन भेजने में असमर्थ
+sync-verification-not-sent-body = हम अभी आपको सत्यापन मेल भेजने में असमर्थ हैं, कृपया कुछ देर बाद पुनः प्रयास करें.
 
 ## Privacy Section
 
@@ -861,6 +897,9 @@ sitedata-cookies-exceptions =
     .label = अपवादों को प्रबंधित करें...
     .accesskey = x
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-header = पता पट्टी
@@ -913,9 +952,10 @@ content-blocking-social-media-trackers = सोशल मीडिया ट्�
 content-blocking-all-cookies = सारे कुकीज़
 content-blocking-unvisited-cookies = नहीं देखे वेबसाइटों से कुकी
 content-blocking-all-windows-tracking-content = सभी विंडो में ट्रैकिंग सामग्री
-content-blocking-all-third-party-cookies = सभी तृतीय-पक्ष कुकीज़
 content-blocking-cryptominers = क्रिप्टोमाइनर
 content-blocking-fingerprinters = फिंगरप्रिंटर
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-etp-standard-tcp-rollout-learn-more = अधिक जानें
 
@@ -1080,6 +1120,9 @@ space-alert-over-5gb-settings-button =
 ## Privacy Section - HTTPS-Only
 
 httpsonly-learn-more = अधिक जानें
+
+## DoH Section
+
 
 ## The following strings are used in the Download section of settings
 

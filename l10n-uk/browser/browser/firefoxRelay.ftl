@@ -17,13 +17,15 @@ firefox-relay-must-login-to-fxa = Ви повинні увійти в { -fxaccou
 firefox-relay-get-unlimited-masks =
     .label = Керувати масками
     .accesskey = К
-firefox-relay-opt-in-title = Захистіть свою електронну адресу
-firefox-relay-opt-in-subtitle = Додайте { -relay-brand-name }
-firefox-relay-generate-mask-title = Захистити свою електронну адресу
-firefox-relay-generate-mask-subtitle = Згенерувати маску { -relay-brand-short-name }
-firefox-relay-opt-in-confirmation-enable =
-    .label = Продовжити
-    .accesskey = П
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Захистити свою електронну адресу:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = Використати маску електронної пошти { -relay-brand-name }
+firefox-relay-use-mask-title = Використати маску електронної пошти { -relay-brand-name }
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = Використовувати маску електронної пошти
+    .accesskey = В
 firefox-relay-opt-in-confirmation-disable =
     .label = Не показувати це знову
     .accesskey = Н

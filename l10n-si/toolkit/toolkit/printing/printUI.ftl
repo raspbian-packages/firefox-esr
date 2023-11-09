@@ -16,6 +16,8 @@ printui-sheets-count =
 
 printui-page-range-all = සියල්ල
 printui-page-range-current = වත්මන්
+printui-page-range-odd = ඔත්තේ
+printui-page-range-even = ඉරට්ටේ
 printui-page-range-custom = අභිරුචි
 printui-page-range-label = පිටු
 printui-page-range-picker =
@@ -46,6 +48,8 @@ printui-scale-fit-to-page-width = පිටුවේ පළලට ගළපන�
 # Label for input control where user can set the scale percentage
 printui-scale-pcent = පරිමාණය
 
+# Section title (noun) for the two-sided print options
+printui-two-sided-printing = දෙපැත්ත මුද්‍රණය
 printui-two-sided-printing-off = අක්‍රිය
 
 # Section title for miscellaneous print options

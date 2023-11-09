@@ -79,9 +79,6 @@ class HttpBackgroundChannelParent final : public PHttpBackgroundChannelParent {
   bool OnNotifyClassificationFlags(uint32_t aClassificationFlags,
                                    bool aIsThirdParty);
 
-  // To send NotifyFlashPluginStateChanged message over background channel.
-  bool OnNotifyFlashPluginStateChanged(nsIHttpChannel::FlashPluginState aState);
-
   // To send SetClassifierMatchedInfo message over background channel.
   bool OnSetClassifierMatchedInfo(const nsACString& aList,
                                   const nsACString& aProvider,
@@ -98,6 +95,8 @@ class HttpBackgroundChannelParent final : public PHttpBackgroundChannelParent {
   [[nodiscard]] RefPtr<ChildEndpointPromise> AttachStreamFilter(
       Endpoint<extensions::PStreamFilterParent>&& aParentEndpoint,
       Endpoint<extensions::PStreamFilterChild>&& aChildEndpoint);
+
+  [[nodiscard]] RefPtr<GenericPromise> DetachStreamFilters();
 
  protected:
   void ActorDestroy(ActorDestroyReason aWhy) override;

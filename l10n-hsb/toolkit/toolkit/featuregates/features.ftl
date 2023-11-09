@@ -12,7 +12,7 @@ experimental-features-css-masonry-description = Zmóžnja podpěru za eksperimen
 # by various online articles and is technical in nature.
 experimental-features-web-gpu2 =
     .label = Web API: WebGPU
-experimental-features-web-gpu-description2 = Tutón nowy API podpěru na niskim niwowje za wuwjedźenje wobličenjow a grafiske zwobraznjenje z  <a data-l10n-name="wikipedia">Graphics Processing Unit (GPU)</a> grata abo ličaka wužiwarja skići. <a data-l10n-name="spec">Specifikacija</a> je hišće w dźěle. Dalše informacije dóstanjeće w <a data-l10n-name="bugzilla">zmylkowej rozprawje 1602129</a>.
+experimental-features-web-gpu-description3 = <a data-l10n-name="wikipedia-webgpu">WebGPU API</a> podpěru na niskim niwowje za wuwjedźenje wobličenjow a grafiske zwobraznjenje z  <a data-l10n-name="wikipedia-gpu">Graphics Processing Unit (GPU)</a> grata abo ličaka wužiwarja skići. Prěnja wersija <a data-l10n-name="spec">Specifikacija</a> so dokónčenju bliži. Hlejće <a data-l10n-name="bugzilla">zmylkowu rozprawu 1616739</a> za dalše podrobnosće.
 
 # The title of the experiment should be kept in English as it may be referenced
 # by various online articles and is technical in nature.
@@ -20,20 +20,10 @@ experimental-features-media-jxl =
     .label = Medije: JPEG XL
 experimental-features-media-jxl-description = Hdyž tuta funkcija je zmóžnjena, { -brand-short-name } format JPEG XL (XL) podpěruje. To je polěpšeny datajowy format za wobrazy, kotryž přechad bjez stratow wot tradicionelnych JPEG-datajow podpěruje. Hlejće <a data-l10n-name="bugzilla">zmylkowu rozprawu 1539075</a> za dalše podrobnosće.
 
-# The title of the experiment should be kept in English as it may be referenced
-# by various online articles and is technical in nature.
-experimental-features-css-constructable-stylesheets =
-    .label = CSS: Constructable Stylesheets
-experimental-features-css-constructable-stylesheets-description = Přidawanje konstruktora interfejsej <a data-l10n-name="mdn-cssstylesheet">CSSStyleSheet</a> kaž tež wulkeje mnohosće přisłušnych změnow zmóžnja, nowe stilowe předłohi direktnje wutworić, bjeztoho zo byšće dyrbjał předłohu HTML přidać. To wosnadja, zaso wužiwajomne stilowe předłohi za wužiwanje z <a data-l10n-name="mdn-shadowdom">Shadow DOM</a> wutworić. Hlejće <a data-l10n-name="bugzilla">zmylkowu rozprawu 1520690</a> za dalše podrobnosće.
-
 experimental-features-devtools-compatibility-panel =
     .label = Wuwiwarske nastroje: Wokno kompatibelnosće
 experimental-features-devtools-compatibility-panel-description = Bóčnica za inspektor stronow, kotraž wam informacije wo statusu kompatibelnosće cross-browser wašeho nałoženja pokazuje. Hlejće <a data-l10n-name="bugzilla">zmylkowu rozprawu 1584464</a>.
 
-# Do not translate 'SameSite', 'Lax' and 'None'.
-experimental-features-cookie-samesite-lax-by-default2 =
-    .label = Placki: SameSite=Lax po standardźe
-experimental-features-cookie-samesite-lax-by-default2-description = Wobchadźejće z plackam jako „SameSite=Lax“ po standardźe, jeli atribut „SameSite“ podaty njeje. Wuwiwarjo dyrbja eksplicitnje „SameSite=None“ nastajić, zo bychu aktualnemu statusej quo njewobmjezowaneho wužiwanja přihłosowali.
 
 # Do not translate 'SameSite', 'Lax' and 'None'.
 experimental-features-cookie-samesite-none-requires-secure2 =
@@ -45,12 +35,6 @@ experimental-features-cookie-samesite-none-requires-secure2-description = Placki
 experimental-features-abouthome-startup-cache =
     .label = startowy pufrowak about:home
 experimental-features-abouthome-startup-cache-description = Pufrowak za spočatny dokument about:home, kotryž so po standardźe při startowanju začituje. Zaměr pufrowaka je, startowy wukon polěpšić.
-
-# The title of the experiment should be kept in English as it may be referenced
-# by various online articles and is technical in nature.
-experimental-features-cookie-samesite-schemeful =
-    .label = Placki: Schemeful SameSite
-experimental-features-cookie-samesite-schemeful-description = Z plackami ze samsneje domeny, ale z rozdźělnymi šemami (na př. http://example.com a https://example.com) jako sydła přesahowacy město samsneho sydła wobchadźeć. Polěpšuje wěstotu, ale zawinuje potencielnje problemy.
 
 # "Service Worker" is an API name and is usually not translated.
 experimental-features-devtools-serviceworker-debugger-support =
@@ -72,6 +56,3 @@ experimental-features-js-warp-description = Zmóžńće Warp, projekt za polěp�
 experimental-features-ime-search =
     .label = Adresowe polo: wuslědki za IME-kompoziciju pokazać
 experimental-features-ime-search-description = IME (Input Method Editor, editor zapodawanskeje metody)  je nastroj, kotryž wam zmóžnja, kompleksne symbole zapodać, kaž so na přikład we wuchodoaziskich abo indiskich rěčach wužiwaja, z pomocu standardneje tastatury. Hdyž tutón eksperiment zmóžnjeće, wostawa wokno adresoweho pola wočinjene, kotrež pytanske wuslědki a namjety pokazuje, mjeztym zo tekst z pomocu IME zapodawaće. Dźiwajće na to, zo móhł IME wokno pokazać, kotrež wuslědki adresoweho pola wobsahuje, tohodla so tute nastajenje jenož za IME namjetuje, kotryž tutón typ wokna njewužiwa.
-
-experimental-features-accessibility-cache =
-    .label = Pufrowak bjezbarjernosće

@@ -49,7 +49,6 @@ class WebRenderCanvasRenderer;
 class WebRenderCanvasRendererAsync;
 class WebRenderImageData;
 class WebRenderImageProviderData;
-class WebRenderInProcessImageData;
 class WebRenderFallbackData;
 class RenderRootStateManager;
 class WebRenderGroupData;
@@ -84,9 +83,6 @@ class WebRenderUserData {
 
   virtual WebRenderImageData* AsImageData() { return nullptr; }
   virtual WebRenderImageProviderData* AsImageProviderData() { return nullptr; }
-  virtual WebRenderInProcessImageData* AsInProcessImageData() {
-    return nullptr;
-  }
   virtual WebRenderFallbackData* AsFallbackData() { return nullptr; }
   virtual WebRenderCanvasData* AsCanvasData() { return nullptr; }
   virtual WebRenderGroupData* AsGroupData() { return nullptr; }
@@ -210,31 +206,7 @@ class WebRenderImageProviderData final : public WebRenderUserData {
  protected:
   RefPtr<image::WebRenderImageProvider> mProvider;
   Maybe<wr::ImageKey> mKey;
-  image::ImgDrawResult mDrawResult;
-};
-
-class WebRenderInProcessImageData final : public WebRenderUserData {
- public:
-  WebRenderInProcessImageData(RenderRootStateManager* aManager,
-                              nsDisplayItem* aItem);
-  WebRenderInProcessImageData(RenderRootStateManager* aManager,
-                              uint32_t aDisplayItemKey, nsIFrame* aFrame);
-  ~WebRenderInProcessImageData() override;
-
-  WebRenderInProcessImageData* AsInProcessImageData() override { return this; }
-  UserDataType GetType() override { return UserDataType::eInProcessImage; }
-  static UserDataType Type() { return UserDataType::eInProcessImage; }
-
-  void CreateWebRenderCommands(
-      mozilla::wr::DisplayListBuilder& aBuilder,
-      const CompositableHandle& aHandle, const StackingContextHelper& aSc,
-      const LayoutDeviceRect& aBounds, const LayoutDeviceRect& aSCBounds,
-      VideoInfo::Rotation aRotation, const wr::ImageRendering& aFilter,
-      const wr::MixBlendMode& aMixBlendMode, bool aIsBackfaceVisible);
-
- protected:
-  Maybe<wr::PipelineId> mPipelineId;
-  CompositableHandle mHandle = CompositableHandle();
+  image::ImgDrawResult mDrawResult = image::ImgDrawResult::NOT_READY;
 };
 
 /// Used for fallback rendering.

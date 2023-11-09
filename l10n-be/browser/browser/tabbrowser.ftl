@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Новая картка
 tabbrowser-empty-private-tab-title = Прыватная картка
+
 tabbrowser-menuitem-close-tab =
     .label = Закрыць картку
 tabbrowser-menuitem-close =
     .label = Закрыць
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -137,6 +136,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Не паказваць мне гэ�
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Дазволіць такім абвесткам з { $domain } пераключаць вас на іхнюю картку
+
 tabbrowser-customizemode-tab-title = Уладкаванне { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -155,3 +155,27 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Уключыць гук картак
     .accesskey = ь
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Прайграванне гуку
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label =
+        { $tabCount ->
+            [one] Улічыць усе { $tabCount } картку
+            [few] Улічыць усе { $tabCount } карткі
+           *[many] Улічыць усе { $tabCount } картак
+        }
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Сцішыць картку
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Раз-цішыць картку
+tabbrowser-manager-close-tab =
+    .tooltiptext = Закрыць картку

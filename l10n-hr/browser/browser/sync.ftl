@@ -21,6 +21,15 @@ fxa-menu-turn-on-sync-default = Uključi sinkronizaciju
 
 fxa-menu-connect-another-device =
     .label = Poveži novi uređaj…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Pošalji { $tabCount } karticu na uređaj
+            [few] Pošalji { $tabCount } kartice na uređaj
+           *[other] Pošalji { $tabCount } kartica na uređaj
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

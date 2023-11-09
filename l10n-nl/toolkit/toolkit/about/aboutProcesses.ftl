@@ -128,12 +128,13 @@ about-processes-frame-name-many = Subframes ({ $number }): { $shortUrl }
 ## Utility process actor names
 
 about-processes-utility-actor-unknown = Onbekende actor
-about-processes-utility-actor-audio-decoder = Audiodecoder
-
 about-processes-utility-actor-audio-decoder-generic = Generieke audiodecoder
 about-processes-utility-actor-audio-decoder-applemedia = Apple Media-audiodecoder
 about-processes-utility-actor-audio-decoder-wmf = Windows Media Framework-audiodecoder
 about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = JavaScript Oracle
+about-processes-utility-actor-windows-utils = Windows Utils
 
 ## Displaying CPU (percentage and total)
 ## Variables:

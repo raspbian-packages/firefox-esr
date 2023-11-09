@@ -8,12 +8,17 @@
 ## and are used to inform the user how the extension can access their
 ## data for the current website, and allow them to control it.
 
+origin-controls-option-all-domains =
+    .label = සියළුම අඩවිවල
 
 ## These strings are used to map Origin Controls states to user-friendly
 ## messages. They currently appear in the unified extensions panel.
 
 origin-controls-state-when-clicked = දත්ත කියවීමට හා සංශෝධනයට අවසරය අවශ්‍යයි
+
 origin-controls-state-runnable-hover-open = දිගුව අරින්න
+
+origin-controls-state-runnable-hover-run = දිගුව ධාවනය
 
 ## Extension's toolbar button.
 ## Variables:
@@ -22,6 +27,7 @@ origin-controls-state-runnable-hover-open = දිගුව අරින්න
 origin-controls-toolbar-button =
     .label = { $extensionTitle }
     .tooltiptext = { $extensionTitle }
+
 # Extension's toolbar button when permission is needed.
 # Note that the new line is intentionally part of the tooltip.
 origin-controls-toolbar-button-permission-needed =
@@ -29,3 +35,4 @@ origin-controls-toolbar-button-permission-needed =
     .tooltiptext =
         { $extensionTitle }
         අවසරය අවශ්‍යයි
+

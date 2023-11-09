@@ -36,7 +36,7 @@ class gfxFT2FontEntryBase : public gfxFontEntry {
     uint32_t mGlyphIndex;
   };
 
-  mozilla::UniquePtr<CmapCacheSlot[]> mCmapCache GUARDED_BY(mLock);
+  mozilla::UniquePtr<CmapCacheSlot[]> mCmapCache MOZ_GUARDED_BY(mLock);
 };
 
 class gfxFT2FontBase : public gfxFont {
@@ -45,7 +45,6 @@ class gfxFT2FontBase : public gfxFont {
       const RefPtr<mozilla::gfx::UnscaledFontFreeType>& aUnscaledFont,
       RefPtr<mozilla::gfx::SharedFTFace>&& aFTFace, gfxFontEntry* aFontEntry,
       const gfxFontStyle* aFontStyle, int aLoadFlags, bool aEmbolden);
-  virtual ~gfxFT2FontBase();
 
   uint32_t GetGlyph(uint32_t aCharCode) {
     auto* entry = static_cast<gfxFT2FontEntryBase*>(mFontEntry.get());
@@ -61,8 +60,7 @@ class gfxFT2FontBase : public gfxFont {
     return GetCachedGlyphMetrics(aGID).mAdvance;
   }
 
-  bool GetGlyphBounds(uint16_t aGID, gfxRect* aBounds,
-                      bool aTight) const override;
+  bool GetGlyphBounds(uint16_t aGID, gfxRect* aBounds, bool aTight) override;
 
   FontType GetType() const override { return FONT_TYPE_FT2; }
 
@@ -85,6 +83,7 @@ class gfxFT2FontBase : public gfxFont {
                          mozilla::gfx::IntRect* aBounds = nullptr) const;
 
  protected:
+  ~gfxFT2FontBase() override;
   void InitMetrics();
   const Metrics& GetHorizontalMetrics() const override { return mMetrics; }
   FT_Vector GetEmboldenStrength(FT_Face aFace) const;
@@ -147,38 +146,7 @@ class gfxFT2FontBase : public gfxFont {
       uint16_t aGID, mozilla::gfx::IntRect* aBounds = nullptr) const;
 
   mutable mozilla::UniquePtr<nsTHashMap<nsUint32HashKey, GlyphMetrics>>
-      mGlyphMetrics GUARDED_BY(mLock);
-};
-
-// Helper classes used for clearing out user font data when FT font
-// face is destroyed. Since multiple faces may use the same data, be
-// careful to assure that the data is only cleared out when all uses
-// expire. The font entry object contains a refptr to FTUserFontData and
-// each FT face created from that font entry contains a refptr to that
-// same FTUserFontData object.
-
-class FTUserFontData final
-    : public mozilla::gfx::SharedFTFaceRefCountedData<FTUserFontData> {
- public:
-  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(FTUserFontData)
-
-  FTUserFontData(const uint8_t* aData, uint32_t aLength)
-      : mFontData(aData), mLength(aLength) {}
-
-  const uint8_t* FontData() const { return mFontData; }
-
-  already_AddRefed<mozilla::gfx::SharedFTFace> CloneFace(
-      int aFaceIndex = 0) override;
-
- private:
-  ~FTUserFontData() {
-    if (mFontData) {
-      free((void*)mFontData);
-    }
-  }
-
-  const uint8_t* mFontData;
-  uint32_t mLength;
+      mGlyphMetrics MOZ_GUARDED_BY(mLock);
 };
 
 #endif /* GFX_FT2FONTBASE_H */

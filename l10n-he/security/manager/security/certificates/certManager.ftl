@@ -26,10 +26,6 @@ certmgr-people = יש לך אישורים בקובץ שמעידים על זהו�
 certmgr-server = רשומות אלו מייצגות חריגות של שגיאות אישורי שרתים
 certmgr-ca = יש לך אישורים בקובץ שמעידים על זהותן של רשויות אישורים אלו
 
-certmgr-edit-ca-cert =
-    .title = עריכת הגדרות אמון באישור של רשות אישורים
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = עריכת הגדרות אמון באישור של רשות אישורים
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = אישור זה יכול לזהות משתמשי דואר.
-
-certmgr-delete-cert =
-    .title = מחיקת אישור אבטחה
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = מחיקת אישור אבטחה
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = שרת
-
-certmgr-override-lifetime =
-    .label = משך חיים
 
 certmgr-token-name =
     .label = התקן אבטחה
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = מספר סידורי
+
+certmgr-fingerprint-sha-256 =
+    .label = טביעת אצבע SHA-256
 
 certmgr-view =
     .label = הצגה…

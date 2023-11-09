@@ -1,9 +1,9 @@
 "use strict";
 
 var FormAutofillUtils;
-add_task(async function setup() {
-  ({ FormAutofillUtils } = ChromeUtils.import(
-    "resource://autofill/FormAutofillUtils.jsm"
+add_setup(async () => {
+  ({ FormAutofillUtils } = ChromeUtils.importESModule(
+    "resource://gre/modules/shared/FormAutofillUtils.sys.mjs"
   ));
 });
 
@@ -86,7 +86,7 @@ const TESTCASES = [
 ];
 
 TESTCASES.forEach(testcase => {
-  add_task(async function() {
+  add_task(async function () {
     info("Starting testcase: " + testcase.document);
 
     let doc = MockDocument.createTestDocument(

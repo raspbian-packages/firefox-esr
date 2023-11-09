@@ -11,11 +11,10 @@
 #ifndef MODULES_VIDEO_CAPTURE_VIDEO_CAPTURE_H_
 #define MODULES_VIDEO_CAPTURE_VIDEO_CAPTURE_H_
 
-#include "modules/audio_processing/include/config.h"
 #include "api/video/video_rotation.h"
 #include "api/video/video_sink_interface.h"
-#include "modules/include/module.h"
 #include "modules/desktop_capture/desktop_capture_types.h"
+#include "modules/video_capture/raw_video_sink_interface.h"
 #include "modules/video_capture/video_capture_defines.h"
 #include "rtc_base/synchronization/mutex.h"
 #include "rtc_base/thread_annotations.h"
@@ -26,43 +25,6 @@
 #endif
 
 namespace webrtc {
-
-// Mozilla addition
-enum class CaptureDeviceType {
-  Camera,
-  Screen,
-  Window,
-  Browser
-};
-// Mozilla addition
-
-struct CaptureDeviceInfo {
-  CaptureDeviceType type;
-
-  CaptureDeviceInfo() : type(CaptureDeviceType::Camera) {}
-  CaptureDeviceInfo(CaptureDeviceType t) : type(t) {}
-
-  static const ConfigOptionID identifier = ConfigOptionID::kCaptureDeviceInfo;
-  const char * TypeName() const
-  {
-    switch(type) {
-    case CaptureDeviceType::Camera: {
-      return "Camera";
-    }
-    case CaptureDeviceType::Screen: {
-      return "Screen";
-    }
-    case CaptureDeviceType::Window: {
-      return "Window";
-    }
-    case CaptureDeviceType::Browser: {
-      return "Browser";
-    }
-    }
-    assert(false);
-    return "UNKOWN-CaptureDeviceType!";
-  }
-};
 
 class VideoInputFeedBack
 {
@@ -123,7 +85,7 @@ class VideoCaptureModule : public rtc::RefCountInterface {
 
     // Gets the capabilities of the named device.
     virtual int32_t GetCapability(const char* deviceUniqueIdUTF8,
-                                  const uint32_t deviceCapabilityNumber,
+                                  uint32_t deviceCapabilityNumber,
                                   VideoCaptureCapability& capability) = 0;
 
     // Gets clockwise angle the captured frames should be rotated in order
@@ -156,6 +118,8 @@ class VideoCaptureModule : public rtc::RefCountInterface {
   //   Register capture data callback
   virtual void RegisterCaptureDataCallback(
       rtc::VideoSinkInterface<VideoFrame>* dataCallback) = 0;
+  virtual void RegisterCaptureDataCallback(
+      RawVideoSinkInterface* dataCallback) = 0;
 
   //  Remove capture data callback
   virtual void DeRegisterCaptureDataCallback(
@@ -193,6 +157,9 @@ class VideoCaptureModule : public rtc::RefCountInterface {
 
   // Return whether the rotation is applied or left pending.
   virtual bool GetApplyRotation() = 0;
+
+  // Mozilla: TrackingId setter for use in profiler markers.
+  virtual void SetTrackingId(uint32_t aTrackingIdProcId) {}
 
  protected:
   ~VideoCaptureModule() override {}

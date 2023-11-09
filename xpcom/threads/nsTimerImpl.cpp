@@ -50,16 +50,17 @@ class TimerThreadWrapper {
   void Shutdown();
 
   nsresult AddTimer(nsTimerImpl* aTimer, const MutexAutoLock& aProofOfLock)
-      REQUIRES(aTimer->mMutex);
+      MOZ_REQUIRES(aTimer->mMutex);
   nsresult RemoveTimer(nsTimerImpl* aTimer, const MutexAutoLock& aProofOfLock)
-      REQUIRES(aTimer->mMutex);
+      MOZ_REQUIRES(aTimer->mMutex);
   TimeStamp FindNextFireTimeForCurrentThread(TimeStamp aDefault,
                                              uint32_t aSearchBound);
   uint32_t AllowedEarlyFiringMicroseconds();
+  nsresult GetTimers(nsTArray<RefPtr<nsITimer>>& aRetVal);
 
  private:
   static mozilla::StaticMutex sMutex;
-  TimerThread* mThread GUARDED_BY(sMutex);
+  TimerThread* mThread MOZ_GUARDED_BY(sMutex);
 };
 
 mozilla::StaticMutex TimerThreadWrapper::sMutex;
@@ -122,6 +123,18 @@ TimeStamp TimerThreadWrapper::FindNextFireTimeForCurrentThread(
 uint32_t TimerThreadWrapper::AllowedEarlyFiringMicroseconds() {
   mozilla::StaticMutexAutoLock lock(sMutex);
   return mThread ? mThread->AllowedEarlyFiringMicroseconds() : 0;
+}
+
+nsresult TimerThreadWrapper::GetTimers(nsTArray<RefPtr<nsITimer>>& aRetVal) {
+  RefPtr<TimerThread> thread;
+  {
+    mozilla::StaticMutexAutoLock lock(sMutex);
+    if (!mThread) {
+      return NS_ERROR_NOT_AVAILABLE;
+    }
+    thread = mThread;
+  }
+  return thread->GetTimers(aRetVal);
 }
 
 static TimerThreadWrapper gThreadWrapper;
@@ -308,11 +321,12 @@ static mozilla::LogModule* GetTimerFiringsLog() { return sTimerFiringsLog; }
 /* static */
 mozilla::StaticMutex nsTimerImpl::sDeltaMutex;
 /* static */
-double nsTimerImpl::sDeltaSumSquared GUARDED_BY(nsTimerImpl::sDeltaMutex) = 0;
+double nsTimerImpl::sDeltaSumSquared MOZ_GUARDED_BY(nsTimerImpl::sDeltaMutex) =
+    0;
 /* static */
-double nsTimerImpl::sDeltaSum GUARDED_BY(nsTimerImpl::sDeltaMutex) = 0;
+double nsTimerImpl::sDeltaSum MOZ_GUARDED_BY(nsTimerImpl::sDeltaMutex) = 0;
 /* static */
-double nsTimerImpl::sDeltaNum GUARDED_BY(nsTimerImpl::sDeltaMutex) = 0;
+double nsTimerImpl::sDeltaNum MOZ_GUARDED_BY(nsTimerImpl::sDeltaMutex) = 0;
 
 static void myNS_MeanAndStdDev(double n, double sumOfValues,
                                double sumOfSquaredValues, double* meanResult,
@@ -336,6 +350,12 @@ static void myNS_MeanAndStdDev(double n, double sumOfValues,
 NS_IMPL_QUERY_INTERFACE(nsTimer, nsITimer)
 NS_IMPL_ADDREF(nsTimer)
 
+NS_IMPL_ISUPPORTS(nsTimerManager, nsITimerManager)
+
+NS_IMETHODIMP nsTimerManager::GetTimers(nsTArray<RefPtr<nsITimer>>& aRetVal) {
+  return gThreadWrapper.GetTimers(aRetVal);
+}
+
 NS_IMETHODIMP_(MozExternalRefCountType)
 nsTimer::Release(void) {
   nsrefcnt count = --mRefCnt;
@@ -353,7 +373,7 @@ nsTimer::Release(void) {
 
 nsTimerImpl::nsTimerImpl(nsITimer* aTimer, nsIEventTarget* aTarget)
     : mEventTarget(aTarget),
-      mHolder(nullptr),
+      mIsInTimerThread(false),
       mType(0),
       mGeneration(0),
       mITimer(aTimer),
@@ -609,9 +629,8 @@ void nsTimerImpl::Fire(int32_t aGeneration) {
     }
 
     // We modify mTimeout, so we must not be in the current TimerThread's
-    // mTimers list.  Adding to that list calls SetHolder(), so use mHolder
-    // as a proxy to know if we're in the list
-    MOZ_ASSERT(!mHolder);
+    // mTimers list.
+    MOZ_ASSERT(!mIsInTimerThread);
 
     ++mFiring;
     callbackDuringFire = mCallback;
@@ -772,16 +791,15 @@ void nsTimerImpl::GetName(nsACString& aName,
       [&](const ClosureCallback& c) { aName.Assign(c.mName); });
 }
 
-void nsTimerImpl::GetName(nsACString& aName) {
+nsresult nsTimerImpl::GetName(nsACString& aName) {
   MutexAutoLock lock(mMutex);
   GetName(aName, lock);
+  return NS_OK;
 }
-
-void nsTimerImpl::SetHolder(nsTimerImplHolder* aHolder) { mHolder = aHolder; }
 
 nsTimer::~nsTimer() = default;
 
-size_t nsTimer::SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const {
+size_t nsTimer::SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) {
   return aMallocSizeOf(this);
 }
 

@@ -6,9 +6,11 @@
 #define DOM_MEDIA_IPC_MFMEDIAENGINECHILD_H_
 
 #include "ExternalEngineStateMachine.h"
+#include "MFMediaEngineUtils.h"
 #include "TimeUnits.h"
 #include "mozilla/Atomics.h"
 #include "mozilla/PMFMediaEngineChild.h"
+#include "mozilla/NotNull.h"
 
 namespace mozilla {
 
@@ -24,16 +26,22 @@ class MFMediaEngineChild final : public PMFMediaEngineChild {
  public:
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(MFMediaEngineChild);
 
-  explicit MFMediaEngineChild(MFMediaEngineWrapper* aOwner);
+  MFMediaEngineChild(MFMediaEngineWrapper* aOwner,
+                     FrameStatistics* aFrameStats);
 
   void OwnerDestroyed();
   void IPDLActorDestroyed();
 
   RefPtr<GenericNonExclusivePromise> Init(bool aShouldPreload);
+  void Shutdown();
 
   // Methods for PMFMediaEngineChild
-  mozilla::ipc::IPCResult RecvRequestSample(TrackInfo::TrackType aType);
+  mozilla::ipc::IPCResult RecvRequestSample(TrackInfo::TrackType aType,
+                                            bool aIsEnough);
   mozilla::ipc::IPCResult RecvUpdateCurrentTime(double aCurrentTimeInSecond);
+  mozilla::ipc::IPCResult RecvNotifyEvent(MFMediaEngineEvent aEvent);
+  mozilla::ipc::IPCResult RecvNotifyError(const MediaResult& aError);
+  mozilla::ipc::IPCResult RecvUpdateStatisticData(const StatisticData& aData);
 
   nsISerialEventTarget* ManagerThread() { return mManagerThread; }
   void AssertOnManagerThread() const {
@@ -44,6 +52,9 @@ class MFMediaEngineChild final : public PMFMediaEngineChild {
 
  private:
   ~MFMediaEngineChild() = default;
+
+  uint64_t GetUpdatedRenderedFrames(const StatisticData& aData);
+  uint64_t GetUpdatedDroppedFrames(const StatisticData& aData);
 
   // Only modified on the manager thread.
   MFMediaEngineWrapper* MOZ_NON_OWNING_REF mOwner;
@@ -57,6 +68,21 @@ class MFMediaEngineChild final : public PMFMediaEngineChild {
   Atomic<uint64_t> mMediaEngineId;
 
   RefPtr<MFMediaEngineChild> mIPDLSelfRef;
+
+  MozPromiseHolder<GenericNonExclusivePromise> mInitPromiseHolder;
+  MozPromiseRequestHolder<InitMediaEnginePromise> mInitEngineRequest;
+
+  // This is guaranteed always being alive in our lifetime.
+  NotNull<FrameStatistics*> const MOZ_NON_OWNING_REF mFrameStats;
+
+  bool mShutdown = false;
+
+  // Whenever the remote media engine process crashes, we will create a new
+  // engine child to rebuild the connection. These engine child shares the same
+  // frame stats data so we need to keep accumulate same data from previous
+  // engine.
+  Maybe<uint64_t> mAccumulatedPresentedFramesFromPrevEngine;
+  Maybe<uint64_t> mAccumulatedDroppedFramesFromPrevEngine;
 };
 
 /**
@@ -67,7 +93,8 @@ class MFMediaEngineChild final : public PMFMediaEngineChild {
  */
 class MFMediaEngineWrapper final : public ExternalPlaybackEngine {
  public:
-  explicit MFMediaEngineWrapper(ExternalEngineStateMachine* aOwner);
+  MFMediaEngineWrapper(ExternalEngineStateMachine* aOwner,
+                       FrameStatistics* aFrameStats);
   ~MFMediaEngineWrapper();
 
   // Methods for ExternalPlaybackEngine
@@ -84,6 +111,7 @@ class MFMediaEngineWrapper final : public ExternalPlaybackEngine {
   void NotifyEndOfStream(TrackInfo::TrackType aType) override;
   uint64_t Id() const override { return mEngine->Id(); }
   void SetMediaInfo(const MediaInfo& aInfo) override;
+  bool SetCDMProxy(CDMProxy* aProxy) override;
 
   nsISerialEventTarget* ManagerThread() { return mEngine->ManagerThread(); }
   void AssertOnManagerThread() const { mEngine->AssertOnManagerThread(); }
@@ -94,6 +122,7 @@ class MFMediaEngineWrapper final : public ExternalPlaybackEngine {
   bool IsInited() const { return mEngine->Id() != 0; }
   void UpdateCurrentTime(double aCurrentTimeInSecond);
   void NotifyEvent(ExternalEngineEvent aEvent);
+  void NotifyError(const MediaResult& aError);
 
   const RefPtr<MFMediaEngineChild> mEngine;
 

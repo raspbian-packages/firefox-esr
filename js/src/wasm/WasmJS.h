@@ -31,7 +31,7 @@
 #include "js/GCHashTable.h"    // GCHashMap, GCHashSet
 #include "js/GCVector.h"       // GCVector
 #include "js/PropertySpec.h"   // JSPropertySpec, JSFunctionSpec
-#include "js/RootingAPI.h"     // MovableCellHasher
+#include "js/RootingAPI.h"     // StableCellHasher
 #include "js/SweepingAPI.h"    // JS::WeakCache
 #include "js/TypeDecls.h"  // HandleValue, HandleObject, MutableHandleObject, MutableHandleFunction
 #include "js/Vector.h"  // JS::Vector
@@ -42,10 +42,9 @@
 #include "wasm/WasmConstants.h"
 #include "wasm/WasmException.h"
 #include "wasm/WasmExprType.h"
-#include "wasm/WasmInstanceData.h"
 #include "wasm/WasmMemory.h"
 #include "wasm/WasmModuleTypes.h"
-#include "wasm/WasmTypeDecls.h"  // MutableHandleWasmInstanceObject
+#include "wasm/WasmTypeDecls.h"
 #include "wasm/WasmValType.h"
 #include "wasm/WasmValue.h"
 
@@ -63,10 +62,10 @@ namespace js {
 class ArrayBufferObject;
 class ArrayBufferObjectMaybeShared;
 class JSStringBuilder;
-class SharedArrayRawBuffer;
 class TypedArrayObject;
 class WasmFunctionScope;
 class WasmInstanceScope;
+class WasmSharedArrayRawBuffer;
 
 namespace wasm {
 
@@ -102,7 +101,6 @@ bool HasSupport(JSContext* cx);
 
 bool BaselineAvailable(JSContext* cx);
 bool IonAvailable(JSContext* cx);
-bool CraneliftAvailable(JSContext* cx);
 
 // Test all three.
 
@@ -130,8 +128,6 @@ bool BaselineDisabledByFeatures(JSContext* cx, bool* isDisabled,
                                 JSStringBuilder* reason = nullptr);
 bool IonDisabledByFeatures(JSContext* cx, bool* isDisabled,
                            JSStringBuilder* reason = nullptr);
-bool CraneliftDisabledByFeatures(JSContext* cx, bool* isDisabled,
-                                 JSStringBuilder* reason = nullptr);
 
 // Predicates for feature availability.
 //
@@ -153,11 +149,11 @@ bool ThreadsAvailable(JSContext* cx);
 JS_FOR_WASM_FEATURES(WASM_FEATURE, WASM_FEATURE, WASM_FEATURE)
 #undef WASM_FEATURE
 
+// SIMD operations.
+bool SimdAvailable(JSContext* cx);
+
 // Privileged content that can access experimental intrinsics
 bool IsSimdPrivilegedContext(JSContext* cx);
-
-// Very experimental SIMD operations.
-bool SimdWormholeAvailable(JSContext* cx);
 
 #if defined(ENABLE_WASM_SIMD) && defined(DEBUG)
 // Report the result of a Simd simplification to the testing infrastructure.
@@ -172,8 +168,8 @@ bool ExceptionsAvailable(JSContext* cx);
 // and links the module's imports with the given import object.
 
 [[nodiscard]] bool Eval(JSContext* cx, Handle<TypedArrayObject*> code,
-                        HandleObject importObj, HandleValue maybeOptions,
-                        MutableHandleWasmInstanceObject instanceObj);
+                        HandleObject importObj,
+                        MutableHandle<WasmInstanceObject*> instanceObj);
 
 // Extracts the various imports from the given import object into the given
 // ImportValues structure while checking the imports against the given module.
@@ -311,7 +307,7 @@ class WasmInstanceObject : public NativeObject {
   // objects on demand (instead up-front for all table elements) while
   // correctly preserving observable function object identity.
   using ExportMap = GCHashMap<uint32_t, HeapPtr<JSFunction*>,
-                              DefaultHasher<uint32_t>, ZoneAllocPolicy>;
+                              DefaultHasher<uint32_t>, CellAllocPolicy>;
   ExportMap& exports() const;
 
   // See the definition inside WasmJS.cpp.
@@ -328,13 +324,12 @@ class WasmInstanceObject : public NativeObject {
   static bool construct(JSContext*, unsigned, Value*);
 
   static WasmInstanceObject* create(
-      JSContext* cx, RefPtr<const wasm::Code> code,
+      JSContext* cx, const RefPtr<const wasm::Code>& code,
       const wasm::DataSegmentVector& dataSegments,
-      const wasm::ElemSegmentVector& elemSegments, uint32_t globalDataLength,
-      HandleWasmMemoryObject memory,
+      const wasm::ElemSegmentVector& elemSegments, uint32_t instanceDataLength,
+      Handle<WasmMemoryObject*> memory,
       Vector<RefPtr<wasm::Table>, 0, SystemAllocPolicy>&& tables,
-      const JSFunctionVector& funcImports,
-      const wasm::GlobalDescVector& globals,
+      const JSObjectVector& funcImports, const wasm::GlobalDescVector& globals,
       const wasm::ValVector& globalImportValues,
       const WasmGlobalObjectVector& globalObjs,
       const WasmTagObjectVector& tagObjs, HandleObject proto,
@@ -345,19 +340,20 @@ class WasmInstanceObject : public NativeObject {
   JSObject& exportsObj() const;
 
   [[nodiscard]] static bool getExportedFunction(
-      JSContext* cx, HandleWasmInstanceObject instanceObj, uint32_t funcIndex,
-      MutableHandleFunction fun);
+      JSContext* cx, Handle<WasmInstanceObject*> instanceObj,
+      uint32_t funcIndex, MutableHandleFunction fun);
 
   const wasm::CodeRange& getExportedFunctionCodeRange(JSFunction* fun,
                                                       wasm::Tier tier);
 
   static WasmInstanceScope* getScope(JSContext* cx,
-                                     HandleWasmInstanceObject instanceObj);
+                                     Handle<WasmInstanceObject*> instanceObj);
   static WasmFunctionScope* getFunctionScope(
-      JSContext* cx, HandleWasmInstanceObject instanceObj, uint32_t funcIndex);
+      JSContext* cx, Handle<WasmInstanceObject*> instanceObj,
+      uint32_t funcIndex);
 
   using GlobalObjectVector =
-      GCVector<HeapPtr<WasmGlobalObject*>, 0, ZoneAllocPolicy>;
+      GCVector<HeapPtr<WasmGlobalObject*>, 0, CellAllocPolicy>;
   GlobalObjectVector& indirectGlobals() const;
 };
 
@@ -377,12 +373,13 @@ class WasmMemoryObject : public NativeObject {
   static bool type(JSContext* cx, unsigned argc, Value* vp);
   static bool growImpl(JSContext* cx, const CallArgs& args);
   static bool grow(JSContext* cx, unsigned argc, Value* vp);
-  static uint64_t growShared(HandleWasmMemoryObject memory, uint64_t delta);
+  static bool discardImpl(JSContext* cx, const CallArgs& args);
+  static bool discard(JSContext* cx, unsigned argc, Value* vp);
+  static uint64_t growShared(Handle<WasmMemoryObject*> memory, uint64_t delta);
 
-  using InstanceSet =
-      JS::WeakCache<GCHashSet<WeakHeapPtrWasmInstanceObject,
-                              MovableCellHasher<WeakHeapPtrWasmInstanceObject>,
-                              ZoneAllocPolicy>>;
+  using InstanceSet = JS::WeakCache<GCHashSet<
+      WeakHeapPtr<WasmInstanceObject*>,
+      StableCellHasher<WeakHeapPtr<WasmInstanceObject*>>, CellAllocPolicy>>;
   bool hasObservers() const;
   InstanceSet& observers() const;
   InstanceSet* getOrCreateObservers(JSContext* cx);
@@ -393,6 +390,7 @@ class WasmMemoryObject : public NativeObject {
   static const JSClass& protoClass_;
   static const JSPropertySpec properties[];
   static const JSFunctionSpec methods[];
+  static const JSFunctionSpec memoryControlMethods[];
   static const JSFunctionSpec static_methods[];
   static bool construct(JSContext*, unsigned, Value*);
 
@@ -430,11 +428,13 @@ class WasmMemoryObject : public NativeObject {
   size_t boundsCheckLimit() const;
 
   // If isShared() is true then obtain the underlying buffer object.
-  SharedArrayRawBuffer* sharedArrayRawBuffer() const;
+  WasmSharedArrayRawBuffer* sharedArrayRawBuffer() const;
 
   bool addMovingGrowObserver(JSContext* cx, WasmInstanceObject* instance);
-  static uint64_t grow(HandleWasmMemoryObject memory, uint64_t delta,
+  static uint64_t grow(Handle<WasmMemoryObject*> memory, uint64_t delta,
                        JSContext* cx);
+  static void discard(Handle<WasmMemoryObject*> memory, uint64_t byteOffset,
+                      uint64_t len, JSContext* cx);
 };
 
 // The class of WebAssembly.Table. A WasmTableObject holds a refcount on a
@@ -481,9 +481,6 @@ class WasmTableObject : public NativeObject {
   // the range is within bounds. Returns false if the coercion failed.
   bool fillRange(JSContext* cx, uint32_t index, uint32_t length,
                  HandleValue value) const;
-#ifdef DEBUG
-  void assertRangeNull(uint32_t index, uint32_t length) const;
-#endif
 };
 
 // The class of WebAssembly.Tag. This class is used to track exception tag

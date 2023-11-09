@@ -4,7 +4,7 @@
 
 # "Search" is a verb, as in "Search through tabs".
 all-tabs-menu-search-tabs =
-    .label = Chwilio'r Tabiau
+    .label = Chwilio’r tabiau
 
 all-tabs-menu-new-user-context =
     .label = Tab Cynhwysydd Newydd

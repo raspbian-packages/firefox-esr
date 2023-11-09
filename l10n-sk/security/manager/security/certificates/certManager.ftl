@@ -26,10 +26,6 @@ certmgr-people = Máte uložené certifikáty, ktoré identifikujú týchto ľud
 certmgr-server = Tento zoznam obsahuje výnimky pre chyby certifikátov serverov
 certmgr-ca = Máte uložené certifikáty, ktoré identifikujú tieto certifikačné autority
 
-certmgr-edit-ca-cert =
-    .title = Úprava nastavenia dôvery pre certifikát od certifikačnej autority
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Úprava nastavenia dôvery pre certifikát od certifikačnej autority
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Tento certifikát môže identifikovať poštových používateľov.
-
-certmgr-delete-cert =
-    .title = Odstránenie certifikátu
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Odstránenie certifikátu
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Server
-
-certmgr-override-lifetime =
-    .label = Životnosť
 
 certmgr-token-name =
     .label = Bezpečnostné zariadenie
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Sériové číslo
+
+certmgr-fingerprint-sha-256 =
+    .label = Odtlačok prsta SHA-256
 
 certmgr-view =
     .label = Zobraziť…

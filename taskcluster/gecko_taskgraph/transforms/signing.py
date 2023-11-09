@@ -5,19 +5,21 @@
 Transform the signing task into an actual task description.
 """
 
+from taskgraph.transforms.base import TransformSequence
+from taskgraph.util.keyed_by import evaluate_keyed_by
+from taskgraph.util.schema import taskref_or_string
+from voluptuous import Optional, Required
 
 from gecko_taskgraph.loader.single_dep import schema
-from gecko_taskgraph.transforms.base import TransformSequence
+from gecko_taskgraph.transforms.task import task_description_schema
 from gecko_taskgraph.util.attributes import (
     copy_attributes_from_dependent_job,
     release_level,
 )
-from gecko_taskgraph.util.keyed_by import evaluate_keyed_by
-from gecko_taskgraph.util.schema import taskref_or_string
-from gecko_taskgraph.util.scriptworker import get_signing_cert_scope_per_platform
-from gecko_taskgraph.transforms.task import task_description_schema
-from voluptuous import Required, Optional
-
+from gecko_taskgraph.util.scriptworker import (
+    add_scope_prefix,
+    get_signing_cert_scope_per_platform,
+)
 
 transforms = TransformSequence()
 
@@ -184,7 +186,6 @@ def make_task_description(config, jobs):
             build_platform, is_shippable, config
         )
         worker_type_alias = "linux-signing" if is_shippable else "linux-depsigning"
-        mac_behavior = None
         task = {
             "label": label,
             "description": description,
@@ -205,34 +206,20 @@ def make_task_description(config, jobs):
         if dep_job.kind in task["dependencies"]:
             task["if-dependencies"] = [dep_job.kind]
 
-        if "macosx" in build_platform:
-            shippable = "false"
-            if "shippable" in attributes and attributes["shippable"]:
-                shippable = "true"
-            mac_behavior = evaluate_keyed_by(
-                config.graph_config["mac-notarization"]["mac-behavior"],
-                "mac behavior",
-                {
-                    "project": config.params["project"],
-                    "shippable": shippable,
-                },
-            )
-            if mac_behavior == "mac_notarize":
-                if "part-1" in config.kind:
-                    mac_behavior = "mac_notarize_part_1"
-                elif config.kind.endswith("signing"):
-                    mac_behavior = "mac_notarize_part_3"
-                else:
-                    raise Exception(f"Unknown kind {config.kind} for mac_behavior!")
-            else:
-                if "part-1" in config.kind:
-                    continue
-            task["worker"]["mac-behavior"] = mac_behavior
+        # build-mac-{signing,notarization} uses signingscript instead of iscript
+        if "macosx" in build_platform and config.kind.endswith("-mac-notarization"):
+            task["worker"]["mac-behavior"] = "apple_notarization"
+            task["scopes"] = [
+                add_scope_prefix(config, "signing:cert:release-apple-notarization")
+            ]
+        elif "macosx" in build_platform:
+            # iscript overrides
+            task["worker"]["mac-behavior"] = "mac_sign_and_pkg"
+
             worker_type_alias_map = {
                 "linux-depsigning": "mac-depsigning",
                 "linux-signing": "mac-signing",
             }
-
             assert worker_type_alias in worker_type_alias_map, (
                 "Make sure to adjust the below worker_type_alias logic for "
                 "mac if you change the signing workerType aliases!"

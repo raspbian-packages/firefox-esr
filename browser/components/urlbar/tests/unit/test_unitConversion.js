@@ -8,9 +8,9 @@
  * Unit test for unit conversion module.
  */
 
-XPCOMUtils.defineLazyModuleGetters(this, {
+ChromeUtils.defineESModuleGetters(this, {
   UrlbarProviderUnitConversion:
-    "resource:///modules/UrlbarProviderUnitConversion.jsm",
+    "resource:///modules/UrlbarProviderUnitConversion.sys.mjs",
 });
 
 const TEST_DATA = [
@@ -455,7 +455,7 @@ const TEST_DATA = [
   },
 ];
 
-add_task(function() {
+add_task(function () {
   // Enable unit conversion.
   Services.prefs.setBoolPref("browser.urlbar.unitConversion.enabled", true);
   registerCleanupFunction(() => {

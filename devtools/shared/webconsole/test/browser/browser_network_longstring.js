@@ -5,12 +5,14 @@
 
 // Test that the network actor uses the LongStringActor
 
-const { DevToolsServer } = require("devtools/server/devtools-server");
+const {
+  DevToolsServer,
+} = require("resource://devtools/server/devtools-server.js");
 const LONG_STRING_LENGTH = 400;
 const LONG_STRING_INITIAL_LENGTH = 400;
 let ORIGINAL_LONG_STRING_LENGTH, ORIGINAL_LONG_STRING_INITIAL_LENGTH;
 
-add_task(async function() {
+add_task(async function () {
   const tab = await addTab(URL_ROOT + "network_requests_iframe.html");
 
   const commands = await CommandsFactory.forTab(tab);
@@ -39,7 +41,7 @@ add_task(async function() {
       })
       .then(() => {
         // Spawn the network request after we started watching
-        SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+        SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
           content.wrappedJSObject.testXhrPost();
         });
       });
@@ -67,13 +69,14 @@ add_task(async function() {
   await commands.destroy();
 
   DevToolsServer.LONG_STRING_LENGTH = ORIGINAL_LONG_STRING_LENGTH;
-  DevToolsServer.LONG_STRING_INITIAL_LENGTH = ORIGINAL_LONG_STRING_INITIAL_LENGTH;
+  DevToolsServer.LONG_STRING_INITIAL_LENGTH =
+    ORIGINAL_LONG_STRING_INITIAL_LENGTH;
 });
 
 function assertRequestHeaders(response) {
   info("checking request headers");
 
-  ok(response.headers.length > 0, "request headers > 0");
+  ok(!!response.headers.length, "request headers > 0");
   ok(response.headersSize > 0, "request headersSize > 0");
 
   checkHeadersOrCookies(response.headers, {
@@ -119,7 +122,7 @@ function assertRequestPostData(response) {
 function assertResponseHeaders(response) {
   info("checking response headers");
 
-  ok(response.headers.length > 0, "response headers > 0");
+  ok(!!response.headers.length, "response headers > 0");
   ok(response.headersSize > 0, "response headersSize > 0");
 
   checkHeadersOrCookies(response.headers, {

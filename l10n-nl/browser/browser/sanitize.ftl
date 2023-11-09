@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-sanitize-prefs =
-    .title = Instellingen voor het wissen van geschiedenis
-    .style = width: 34em
-
 sanitize-prefs2 =
     .title = Instellingen voor het wissen van geschiedenis
     .style = min-width: 34em
@@ -13,15 +9,15 @@ sanitize-prefs2 =
 sanitize-prefs-style =
     .style = width: 17em
 
-dialog-title =
+sanitize-dialog-title =
     .title = Recente geschiedenis wissen
-    .style = width: 34em
+    .style = min-width: 34em
 
 # When "Time range to clear" is set to "Everything", this message is used for the
 # title instead of dialog-title.
-dialog-title-everything =
+sanitize-dialog-title-everything =
     .title = Alle geschiedenis wissen
-    .style = width: 34em
+    .style = min-width: 34em
 
 clear-data-settings-label = Als { -brand-short-name } wordt afgesloten, automatisch het volgende wissen
 

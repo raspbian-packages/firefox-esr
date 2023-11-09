@@ -4,15 +4,17 @@
 
 
 use api::units::*;
-use api::{ColorF, ImageFormat, LineOrientation, BorderStyle};
-use crate::batch::{AlphaBatchBuilder, AlphaBatchContainer, BatchTextures};
-use crate::batch::{ClipBatcher, BatchBuilder, CommandBufferList};
+use api::{ColorF, ClipMode, ImageFormat, LineOrientation, BorderStyle};
+use crate::batch::{AlphaBatchBuilder, AlphaBatchContainer, BatchTextures, add_quad_to_batch};
+use crate::batch::{ClipBatcher, BatchBuilder, INVALID_SEGMENT_INDEX};
+use crate::command_buffer::{CommandBufferList};
 use crate::spatial_tree::SpatialTree;
-use crate::clip::ClipStore;
+use crate::clip::{ClipStore, ClipNodeRange, ClipItemKind};
 use crate::frame_builder::{FrameGlobalResources};
 use crate::gpu_cache::{GpuCache, GpuCacheAddress};
 use crate::gpu_types::{BorderInstance, SvgFilterInstance, BlurDirection, BlurInstance, PrimitiveHeaders, ScalingInstance};
-use crate::gpu_types::{TransformPalette, ZBufferIdGenerator};
+use crate::gpu_types::{TransformPalette, ZBufferIdGenerator, TransformPaletteId, PrimitiveInstanceData, MaskInstance};
+use crate::gpu_types::{ZBufferId};
 use crate::internal_types::{FastHashMap, TextureSource, CacheTextureId};
 use crate::picture::{SliceId, SurfaceInfo, ResolvedSurfaceTexture, TileCacheInstance};
 use crate::prim_store::{PrimitiveInstance, PrimitiveStore, PrimitiveScratchBuffer};
@@ -20,12 +22,13 @@ use crate::prim_store::gradient::{
     FastLinearGradientInstance, LinearGradientInstance, RadialGradientInstance,
     ConicGradientInstance,
 };
+use crate::renderer::{GpuBufferAddress, GpuBufferBuilder};
 use crate::render_backend::DataStores;
 use crate::render_task::{RenderTaskKind, RenderTaskAddress};
 use crate::render_task::{RenderTask, ScalingTask, SvgFilterInfo};
 use crate::render_task_graph::{RenderTaskGraph, RenderTaskId};
 use crate::resource_cache::ResourceCache;
-use crate::spatial_tree::SpatialNodeIndex;
+use crate::spatial_tree::{SpatialNodeIndex};
 
 
 const STYLE_SOLID: i32 = ((BorderStyle::Solid as i32) << 8) | ((BorderStyle::Solid as i32) << 16);
@@ -49,6 +52,7 @@ pub struct RenderTargetIndex(pub usize);
 pub struct RenderTargetContext<'a, 'rc> {
     pub global_device_pixel_scale: DevicePixelScale,
     pub prim_store: &'a PrimitiveStore,
+    pub clip_store: &'a ClipStore,
     pub resource_cache: &'rc mut ResourceCache,
     pub use_dual_source_blending: bool,
     pub use_advanced_blending: bool,
@@ -115,6 +119,7 @@ pub trait RenderTarget {
         task_id: RenderTaskId,
         ctx: &RenderTargetContext,
         gpu_cache: &mut GpuCache,
+        gpu_buffer_builder: &mut GpuBufferBuilder,
         render_tasks: &RenderTaskGraph,
         clip_store: &ClipStore,
         transforms: &mut TransformPalette,
@@ -224,6 +229,10 @@ pub struct ColorRenderTarget {
     pub used_rect: DeviceIntRect,
     pub resolve_ops: Vec<ResolveOp>,
     pub clear_color: Option<ColorF>,
+
+    pub prim_instances: Vec<PrimitiveInstanceData>,
+    pub mask_instances_fast: Vec<MaskInstance>,
+    pub mask_instances_slow: Vec<MaskInstance>,
 }
 
 impl RenderTarget for ColorRenderTarget {
@@ -246,6 +255,9 @@ impl RenderTarget for ColorRenderTarget {
             used_rect,
             resolve_ops: Vec::new(),
             clear_color: Some(ColorF::TRANSPARENT),
+            prim_instances: Vec::new(),
+            mask_instances_fast: Vec::new(),
+            mask_instances_slow: Vec::new(),
         }
     }
 
@@ -262,6 +274,7 @@ impl RenderTarget for ColorRenderTarget {
     ) {
         profile_scope!("build");
         let mut merged_batches = AlphaBatchContainer::new(None);
+        let mut gpu_buffer_builder = GpuBufferBuilder::new();
 
         for task_id in &self.alpha_tasks {
             profile_scope!("alpha_task");
@@ -297,12 +310,9 @@ impl RenderTarget for ColorRenderTarget {
                     let mut batch_builder = BatchBuilder::new(alpha_batch_builder);
                     let cmd_buffer = cmd_buffers.get(pic_task.cmd_buffer_index);
 
-                    cmd_buffer.iter_prims(&mut |prim_instance_index, spatial_node_index, gpu_address| {
-                        let prim_instance = &prim_instances[prim_instance_index.0 as usize];
-
+                    cmd_buffer.iter_prims(&mut |cmd, spatial_node_index, segments| {
                         batch_builder.add_prim_to_batch(
-                            prim_instance,
-                            gpu_address,
+                            cmd,
                             spatial_node_index,
                             ctx,
                             gpu_cache,
@@ -312,6 +322,9 @@ impl RenderTarget for ColorRenderTarget {
                             pic_task.raster_spatial_node_index,
                             pic_task.surface_spatial_node_index,
                             z_generator,
+                            prim_instances,
+                            &mut gpu_buffer_builder,
+                            segments,
                         );
                     });
 
@@ -342,16 +355,75 @@ impl RenderTarget for ColorRenderTarget {
     fn add_task(
         &mut self,
         task_id: RenderTaskId,
-        _ctx: &RenderTargetContext,
+        ctx: &RenderTargetContext,
         gpu_cache: &mut GpuCache,
+        gpu_buffer_builder: &mut GpuBufferBuilder,
         render_tasks: &RenderTaskGraph,
         _: &ClipStore,
-        _: &mut TransformPalette,
+        transforms: &mut TransformPalette,
     ) {
         profile_scope!("add_task");
         let task = &render_tasks[task_id];
 
         match task.kind {
+            RenderTaskKind::Prim(ref info) => {
+                let render_task_address = task_id.into();
+
+                add_quad_to_batch(
+                    render_task_address,
+                    info.transform_id,
+                    info.prim_address,
+                    info.quad_flags,
+                    info.edge_flags,
+                    INVALID_SEGMENT_INDEX as u8,
+                    RenderTaskId::INVALID,
+                    ZBufferId(0),
+                    render_tasks,
+                    |_, instance| {
+                        self.prim_instances.push(instance);
+                    }
+                );
+
+                let mask_instances_fast = &mut self.mask_instances_fast;
+                let mask_instances_slow = &mut self.mask_instances_slow;
+
+                build_mask_tasks(
+                    info.clip_node_range,
+                    info.prim_spatial_node_index,
+                    ctx.clip_store,
+                    ctx.data_stores,
+                    ctx.spatial_tree,
+                    gpu_buffer_builder,
+                    transforms,
+                    |fast_path, clip_address, clip_transform_id| {
+                        add_quad_to_batch(
+                            render_task_address,
+                            info.transform_id,
+                            info.prim_address,
+                            info.quad_flags,
+                            info.edge_flags,
+                            INVALID_SEGMENT_INDEX as u8,
+                            RenderTaskId::INVALID,
+                            ZBufferId(0),
+                            render_tasks,
+                            |_, prim| {
+                                let instance = MaskInstance {
+                                    prim,
+                                    clip_transform_id,
+                                    clip_address: clip_address.as_int(),
+                                    info: [0; 2],
+                                };
+
+                                if fast_path {
+                                    mask_instances_fast.push(instance);
+                                } else {
+                                    mask_instances_slow.push(instance);
+                                }
+                            }
+                        );
+                    }
+                );
+            }
             RenderTaskKind::VerticalBlur(..) => {
                 add_blur_instances(
                     &mut self.vertical_blurs,
@@ -410,8 +482,7 @@ impl RenderTarget for ColorRenderTarget {
                 );
             }
             RenderTaskKind::Blit(ref task_info) => {
-                let target_rect = task
-                    .get_target_rect();
+                let target_rect = task.get_target_rect();
                 self.blits.push(BlitJob {
                     source: task_info.source,
                     target_rect,
@@ -473,6 +544,7 @@ impl RenderTarget for AlphaRenderTarget {
         task_id: RenderTaskId,
         ctx: &RenderTargetContext,
         gpu_cache: &mut GpuCache,
+        _: &mut GpuBufferBuilder,
         render_tasks: &RenderTaskGraph,
         clip_store: &ClipStore,
         transforms: &mut TransformPalette,
@@ -482,6 +554,7 @@ impl RenderTarget for AlphaRenderTarget {
         let target_rect = task.get_target_rect();
 
         match task.kind {
+            RenderTaskKind::Prim(..) |
             RenderTaskKind::Image(..) |
             RenderTaskKind::Cached(..) |
             RenderTaskKind::Readback(..) |
@@ -636,7 +709,6 @@ impl TextureCacheRenderTarget {
         &mut self,
         task_id: RenderTaskId,
         render_tasks: &RenderTaskGraph,
-        gpu_cache: &mut GpuCache,
     ) {
         profile_scope!("add_task");
         let task_address = task_id.into();
@@ -700,14 +772,15 @@ impl TextureCacheRenderTarget {
                 self.fast_linear_gradients.push(task_info.to_instance(&target_rect));
             }
             RenderTaskKind::LinearGradient(ref task_info) => {
-                self.linear_gradients.push(task_info.to_instance(&target_rect, gpu_cache));
+                self.linear_gradients.push(task_info.to_instance(&target_rect));
             }
             RenderTaskKind::RadialGradient(ref task_info) => {
-                self.radial_gradients.push(task_info.to_instance(&target_rect, gpu_cache));
+                self.radial_gradients.push(task_info.to_instance(&target_rect));
             }
             RenderTaskKind::ConicGradient(ref task_info) => {
-                self.conic_gradients.push(task_info.to_instance(&target_rect, gpu_cache));
+                self.conic_gradients.push(task_info.to_instance(&target_rect));
             }
+            RenderTaskKind::Prim(..) |
             RenderTaskKind::Image(..) |
             RenderTaskKind::Cached(..) |
             RenderTaskKind::VerticalBlur(..) |
@@ -771,6 +844,86 @@ fn add_scaling_instances(
         });
 }
 
+fn build_mask_tasks<F>(
+    clips_range: ClipNodeRange,
+    prim_spatial_node_index: SpatialNodeIndex,
+    clip_store: &ClipStore,
+    data_stores: &DataStores,
+    spatial_tree: &SpatialTree,
+    gpu_buffer_builder: &mut GpuBufferBuilder,
+    transforms: &mut TransformPalette,
+    mut f: F,
+) where F: FnMut(bool, GpuBufferAddress, TransformPaletteId) {
+    for i in 0 .. clips_range.count {
+        let clip_instance = clip_store.get_instance_from_range(&clips_range, i);
+        let clip_node = &data_stores.clip[clip_instance.handle];
+
+        // TODO(gw): We know that the prim <-> clip mapping is 2d in this initial patch
+        //           set, due to the checks in `can_use_clip_chain_for_quad_path`. The
+        //           next set of patches needs to account for perspective here in how
+        //           we draw the mask.
+
+        let clip_transform_id = transforms.get_id(
+            prim_spatial_node_index,
+            clip_node.item.spatial_node_index,
+            spatial_tree,
+        );
+
+        match clip_node.item.kind {
+            ClipItemKind::RoundedRectangle { rect, radius, mode } => {
+                let (fast_path, clip_address) = if radius.is_uniform().is_some() {
+                    let mut writer = gpu_buffer_builder.write_blocks(3);
+                    writer.push_one(rect);
+                    writer.push_one([radius.top_left.width, 0.0, 0.0, 0.0]);
+                    writer.push_one([mode as i32 as f32, 0.0, 0.0, 0.0]);
+                    let clip_address = writer.finish();
+
+                    (true, clip_address)
+                } else {
+                    let mut writer = gpu_buffer_builder.write_blocks(4);
+                    writer.push_one(rect);
+                    writer.push_one([
+                        radius.top_left.width,
+                        radius.top_left.height,
+                        radius.top_right.width,
+                        radius.top_right.height,
+                    ]);
+                    writer.push_one([
+                        radius.bottom_left.width,
+                        radius.bottom_left.height,
+                        radius.bottom_right.width,
+                        radius.bottom_right.height,
+                    ]);
+                    writer.push_one([mode as i32 as f32, 0.0, 0.0, 0.0]);
+                    let clip_address = writer.finish();
+
+                    (false, clip_address)
+                };
+
+                f(fast_path, clip_address, clip_transform_id);
+            }
+            ClipItemKind::Rectangle { rect, mode: ClipMode::ClipOut, .. } => {
+                let mut writer = gpu_buffer_builder.write_blocks(3);
+                writer.push_one(rect);
+                writer.push_one([0.0, 0.0, 0.0, 0.0]);
+                writer.push_one([ClipMode::ClipOut as i32 as f32, 0.0, 0.0, 0.0]);
+                let clip_address = writer.finish();
+
+                f(true, clip_address, clip_transform_id);
+            }
+            ClipItemKind::Rectangle { mode: ClipMode::Clip, .. } => {
+                // Handled by local clip rect in vertex shader
+            }
+            ClipItemKind::BoxShadow { .. } => {
+                panic!("bug: box-shadow clips not expected on non-legacy rect/quads");
+            }
+            ClipItemKind::Image { .. } => {
+                panic!("bug: image-masks not expected on rect/quads");
+            }
+        }
+    }
+}
+
 fn add_svg_filter_instances(
     instances: &mut Vec<(BatchTextures, Vec<SvgFilterInstance>)>,
     render_tasks: &RenderTaskGraph,
@@ -824,10 +977,10 @@ fn add_svg_filter_instances(
     let generic_int = match filter {
         SvgFilterInfo::Blend(mode) => *mode as u16,
         SvgFilterInfo::ComponentTransfer(data) =>
-            ((data.r_func.to_int() << 12 |
-              data.g_func.to_int() << 8 |
-              data.b_func.to_int() << 4 |
-              data.a_func.to_int()) as u16),
+            (data.r_func.to_int() << 12 |
+             data.g_func.to_int() << 8 |
+             data.b_func.to_int() << 4 |
+             data.a_func.to_int()) as u16,
         SvgFilterInfo::Composite(operator) =>
             operator.as_int() as u16,
         SvgFilterInfo::LinearToSrgb |

@@ -96,43 +96,43 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Lakaat ur sined war ar bajenn-mañ
-    .accesskey = b
-    .tooltiptext = Lakaat ur sined war ar bajenn-mañ
+main-context-menu-bookmark-page =
+    .aria-label = Lakaat ar bajenn-mañ er sinedoù…
+    .accesskey = L
+    .tooltiptext = Lakaat ar bajenn-mañ er sinedoù
 
 # This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
+# Cannot be shown at the same time as main-context-menu-edit-bookmark-mac,
 # so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Lakaat ar bajenn-mañ er sinedoù
+main-context-menu-bookmark-page-mac =
+    .label = Lakaat ar bajenn-mañ er sinedoù…
     .accesskey = L
 
 # This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
+# Cannot be shown at the same time as main-context-menu-bookmark-page-mac,
 # so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Kemmañ ar sined
-    .accesskey = K
+main-context-menu-edit-bookmark-mac =
+    .label = Embann ar sined…
+    .accesskey = E
 
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Lakaat ur sined war ar bajenn-mañ
-    .accesskey = b
-    .tooltiptext = Lakaat ur sined war ar bajenn-mañ ({ $shortcut })
+main-context-menu-bookmark-page-with-shortcut =
+    .aria-label = Lakaat ar bajenn-mañ er sinedoù…
+    .accesskey = L
+    .tooltiptext = Lakaat ar bajenn-mañ er sinedoù ({ $shortcut })
 
-main-context-menu-bookmark-change =
-    .aria-label = Embann ar sined-mañ
-    .accesskey = b
-    .tooltiptext = Embann ar sined-mañ
+main-context-menu-edit-bookmark =
+    .aria-label = Embann ar sined…
+    .accesskey = E
+    .tooltiptext = Embann ar sined
 
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Embann ar sined-mañ
-    .accesskey = b
-    .tooltiptext = Embann ar sined-mañ ({ $shortcut })
+main-context-menu-edit-bookmark-with-shortcut =
+    .aria-label = Embann ar sined…
+    .accesskey = E
+    .tooltiptext = Embann ar sined -{ $shortcut })
 
 main-context-menu-open-link =
     .label = Digeriñ an ere
@@ -154,7 +154,7 @@ main-context-menu-open-link-new-private-window =
     .label = Digeriñ an ere e-barzh ur prenestr merdeiñ prevez nevez
     .accesskey = m
 
-main-context-menu-bookmark-link =
+main-context-menu-bookmark-link-2 =
     .label = Lakaat an ere-mañ er sinedoù
     .accesskey = L
 
@@ -296,6 +296,10 @@ main-context-menu-image-set-image-as-background =
     .label = Lakaat ar skeudenn da zrekleur ar vurev…
     .accesskey = z
 
+main-context-menu-image-copy-text =
+    .label = Eilañ an destenn a-ziwar ar skeudenn
+    .accesskey = E
+
 main-context-menu-image-info =
     .label = Gwelout stlennoù ar skeudenn
     .accesskey = w
@@ -324,14 +328,6 @@ main-context-menu-audio-email =
     .label = Kas ar restr klevet dre bostel…
     .accesskey = K
 
-main-context-menu-plugin-play =
-    .label = Gweredekaat an enlugellad-mañ
-    .accesskey = w
-
-main-context-menu-plugin-hide =
-    .label = Kuzhat an enlugellad-mañ
-    .accesskey = u
-
 main-context-menu-save-to-pocket =
     .label = Enrollañ ar bajenn etrezek { -pocket-brand-name }
     .accesskey = k
@@ -353,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = g
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Implijout ar maskl chomlec'h postel { -relay-brand-short-name }
+    .accesskey = I
 
 main-context-menu-suggest-strong-password =
     .label = Kinnig ur ger-tremen kreñv…
@@ -390,9 +390,9 @@ main-context-menu-frame-reload =
     .label = Adkargañ ar frammad
     .accesskey = k
 
-main-context-menu-frame-bookmark =
-    .label = Merkañ ar frammad war ur sined
-    .accesskey = M
+main-context-menu-frame-add-bookmark =
+    .label = Ouzhpennañ er sinedoù…
+    .accesskey = O
 
 main-context-menu-frame-save-as =
     .label = Enrollañ ar frammad evel…
@@ -410,9 +410,9 @@ main-context-menu-frame-view-info =
     .label = Gwelout stlennoù ar frammad
     .accesskey = t
 
-main-context-menu-print-selection =
-    .label = Moullañ an diuzad
-    .accesskey = l
+main-context-menu-print-selection-2 =
+    .label = Moullañ an diuzad…
+    .accesskey = M
 
 main-context-menu-view-selection-source =
     .label = Gwelout tarzh an diuzad

@@ -128,12 +128,13 @@ about-processes-frame-name-many = Υποπλαίσια ({ $number }): { $shortUr
 ## Utility process actor names
 
 about-processes-utility-actor-unknown = Άγνωστος παράγοντας
-about-processes-utility-actor-audio-decoder = Αποκωδικοποιητής ήχου
-
 about-processes-utility-actor-audio-decoder-generic = Γενικός αποκωδικοποιητής ήχου
 about-processes-utility-actor-audio-decoder-applemedia = Αποκωδικοποιητής ήχου Apple Media
 about-processes-utility-actor-audio-decoder-wmf = Αποκωδικοποιητής ήχου Windows Media Framework
 about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = JavaScript Oracle
+about-processes-utility-actor-windows-utils = Βοηθήματα των Windows
 
 ## Displaying CPU (percentage and total)
 ## Variables:

@@ -9,6 +9,7 @@
 #include "nsISeekableStream.h"
 #include "nsIAsyncInputStream.h"
 #include "nsIOService.h"
+#include "nsSocketTransportService2.h"
 #include "nsStreamUtils.h"
 #include "nsNetUtil.h"
 
@@ -73,6 +74,15 @@ ThrottleInputStream::Available(uint64_t* aResult) {
   }
 
   return mStream->Available(aResult);
+}
+
+NS_IMETHODIMP
+ThrottleInputStream::StreamStatus() {
+  if (NS_FAILED(mClosedStatus)) {
+    return mClosedStatus;
+  }
+
+  return mStream->StreamStatus();
 }
 
 NS_IMETHODIMP

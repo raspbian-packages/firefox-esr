@@ -220,8 +220,6 @@ menu-history-undo-menu =
     .label = Lapelas pechadas recentemente
 menu-history-undo-window-menu =
     .label = Xanelas pechadas recentemente
-menu-history-reopen-all-tabs = Reabrir todas as lapelas
-menu-history-reopen-all-windows = Reabrir todas as xanelas
 
 ## Bookmarks Menu
 
@@ -230,10 +228,13 @@ menu-bookmarks-menu =
     .accesskey = M
 menu-bookmarks-manage =
     .label = Xestionar marcadores
-menu-bookmark-current-tab =
-    .label = Marcar lapela actual
-menu-bookmark-edit =
-    .label = Editar este marcador
+menu-bookmark-tab =
+    .label = Marcar esta lapela…
+menu-edit-bookmark =
+    .label = Editar este marcador…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Buscar nos marcadores
 menu-bookmarks-all-tabs =
     .label = Marcar todas as lapelas…
 menu-bookmarks-toolbar =
@@ -318,12 +319,18 @@ menu-help-more-troubleshooting-info =
     .accesskey = P
 menu-help-report-site-issue =
     .label = Informar dunha incidencia no sitio…
+menu-help-share-ideas =
+    .label = Compartir ideas e comentarios…
+    .accesskey = s
 menu-help-enter-troubleshoot-mode2 =
     .label = Modo de resolución de problemas…
     .accesskey = r
 menu-help-exit-troubleshoot-mode =
     .label = Desactivar o modo de resolución de problemas
     .accesskey = M
+menu-help-switch-device =
+    .label = Cambiando a un dispositivo novo
+    .accesskey = C
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

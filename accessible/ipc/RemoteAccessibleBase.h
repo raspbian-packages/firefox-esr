@@ -11,7 +11,6 @@
 #include "mozilla/a11y/CacheConstants.h"
 #include "mozilla/a11y/HyperTextAccessibleBase.h"
 #include "mozilla/a11y/Role.h"
-#include "mozilla/WeakPtr.h"
 #include "AccAttributes.h"
 #include "nsIAccessibleText.h"
 #include "nsIAccessibleTypes.h"
@@ -27,14 +26,12 @@ class DocAccessibleParent;
 class RemoteAccessible;
 enum class RelationType;
 
+/**
+ * The base type for an accessibility tree node that originated in the parent
+ * process.
+ */
 template <class Derived>
-#ifdef XP_WIN
-class RemoteAccessibleBase : public Accessible,
-                             public HyperTextAccessibleBase,
-                             public SupportsWeakPtr {
-#else
 class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
-#endif
  public:
   virtual ~RemoteAccessibleBase() { MOZ_ASSERT(!mWrapper); }
 
@@ -181,10 +178,17 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
   virtual double MinValue() const override;
   virtual double MaxValue() const override;
   virtual double Step() const override;
+  virtual bool SetCurValue(double aValue) override;
+
+  virtual Accessible* ChildAtPoint(
+      int32_t aX, int32_t aY,
+      LocalAccessible::EWhichChildAtPoint aWhichChild) override;
 
   virtual LayoutDeviceIntRect Bounds() const override;
 
-  nsRect GetBoundsInAppUnits() const;
+  virtual nsRect BoundsInAppUnits() const override;
+
+  virtual Relation RelationByType(RelationType aType) const override;
 
   virtual uint64_t State() override;
 
@@ -192,9 +196,17 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
 
   virtual nsAtom* TagName() const override;
 
+  virtual already_AddRefed<nsAtom> InputType() const override;
+
   virtual already_AddRefed<nsAtom> DisplayStyle() const override;
 
-  virtual Maybe<float> Opacity() const override;
+  virtual float Opacity() const override;
+
+  virtual void LiveRegionAttributes(nsAString* aLive, nsAString* aRelevant,
+                                    Maybe<bool>* aAtomic,
+                                    nsAString* aBusy) const override;
+
+  virtual Maybe<bool> ARIASelected() const override;
 
   virtual uint8_t ActionCount() const override;
 
@@ -202,7 +214,31 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
 
   virtual bool DoAction(uint8_t aIndex) const override;
 
+  virtual KeyBinding AccessKey() const override;
+
   virtual void SelectionRanges(nsTArray<TextRange>* aRanges) const override;
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY virtual bool RemoveFromSelection(
+      int32_t aSelectionNum) override;
+
+  virtual Maybe<int32_t> GetIntARIAAttr(nsAtom* aAttrName) const override;
+
+  virtual void Language(nsAString& aLocale) override;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // EditableTextAccessible
+
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY virtual void ReplaceText(
+      const nsAString& aText) override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY virtual void InsertText(
+      const nsAString& aText, int32_t aPosition) override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY virtual void CopyText(int32_t aStartPos,
+                                                    int32_t aEndPos) override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY virtual void CutText(int32_t aStartPos,
+                                                   int32_t aEndPos) override;
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY virtual void DeleteText(int32_t aStartPos,
+                                                      int32_t aEndPos) override;
+  MOZ_CAN_RUN_SCRIPT virtual void PasteText(int32_t aPosition) override;
 
   //////////////////////////////////////////////////////////////////////////////
   // SelectAccessible
@@ -231,6 +267,7 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
 
   virtual void TakeFocus() const override;
   virtual void ScrollTo(uint32_t aHow) const override;
+  virtual void SetCaretOffset(int32_t aOffset) override;
 
   /**
    * Allow the platform to store a pointers worth of data on us.
@@ -249,6 +286,20 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
   DocAccessibleParent* AsDoc() const { return IsDoc() ? mDoc : nullptr; }
 
   void ApplyCache(CacheUpdateType aUpdateType, AccAttributes* aFields) {
+    const nsTArray<bool> relUpdatesNeeded = PreProcessRelations(aFields);
+    if (auto maybeViewportCache =
+            aFields->GetAttribute<nsTArray<uint64_t>>(nsGkAtoms::viewport)) {
+      // Updating the viewport cache means the offscreen state of this
+      // document's accessibles has changed. Update the HashSet we use for
+      // checking offscreen state here.
+      MOZ_ASSERT(IsDoc(),
+                 "Fetched the viewport cache from a non-doc accessible?");
+      AsDoc()->mOnScreenAccessibles.Clear();
+      for (auto id : *maybeViewportCache) {
+        AsDoc()->mOnScreenAccessibles.Insert(id);
+      }
+    }
+
     if (aUpdateType == CacheUpdateType::Initial) {
       mCachedFields = aFields;
     } else {
@@ -260,13 +311,16 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
         mCachedFields = new AccAttributes();
       }
       mCachedFields->Update(aFields);
-      if (IsTextLeaf()) {
-        Derived* parent = RemoteParent();
-        if (parent && parent->IsHyperText()) {
-          parent->InvalidateCachedHyperTextOffsets();
-        }
+    }
+
+    if (IsTextLeaf()) {
+      Derived* parent = RemoteParent();
+      if (parent && parent->IsHyperText()) {
+        parent->InvalidateCachedHyperTextOffsets();
       }
     }
+
+    PostProcessRelations(relUpdatesNeeded);
   }
 
   void UpdateStateCache(uint64_t aState, bool aEnabled) {
@@ -297,10 +351,42 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
 
   virtual bool TableIsProbablyForLayout();
 
+  /**
+   * Iterates through each atom in kRelationTypeAtoms, checking to see
+   * if it is present in aFields. If it is present (or if aFields contains
+   * a DeleteEntry() for this atom) and mCachedFields is initialized,
+   * fetches the old rel targets and removes their existing reverse relations
+   * stored in mReverseRelations.
+   * Returns an array of bools where the ith array entry corresponds
+   * to whether or not the rel at the ith entry of kRelationTypeAtoms
+   * requires a post-processing update.
+   */
+  nsTArray<bool> PreProcessRelations(AccAttributes* aFields);
+
+  /**
+   * Takes in the array returned from PreProcessRelations.
+   * For each entry requiring an update, fetches the new relation
+   * targets stored in mCachedFields and appropriately
+   * updates their reverse relations in mReverseRelations.
+   */
+  void PostProcessRelations(const nsTArray<bool>& aToUpdate);
+
+  /**
+   * This method is called during shutdown, before we clear our
+   * reverse rel map from the document's mReverseRelations cache.
+   * Here, we traverse our reverse relations, removing our ID from
+   * the corresponding forward relation's target list. This ensures
+   * the stored forward relations do not reference defunct accessibles.
+   */
+  void PruneRelationsOnShutdown();
+
   uint32_t GetCachedTextLength();
   Maybe<const nsTArray<int32_t>&> GetCachedTextLines();
-  Maybe<nsTArray<nsRect>> GetCachedCharData();
+  nsRect GetCachedCharRect(int32_t aOffset);
   RefPtr<const AccAttributes> GetCachedTextAttributes();
+  RefPtr<const AccAttributes> GetCachedARIAAttributes() const;
+
+  nsString GetCachedHTMLNameAttribute() const;
 
   virtual HyperTextAccessibleBase* AsHyperTextBase() override {
     return IsHyperText() ? static_cast<HyperTextAccessibleBase*>(this)
@@ -315,11 +401,24 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
   // HyperTextAccessibleBase
   virtual already_AddRefed<AccAttributes> DefaultTextAttributes() override;
 
-  virtual void InvalidateCachedHyperTextOffsets() override {
+  /**
+   * Invalidate cached HyperText offsets. This should be called whenever a
+   * child is added or removed or the text of a text leaf child is changed.
+   * Although GetChildOffset can either fully or partially invalidate the
+   * offsets cache, calculating which offset to invalidate is not worthwhile
+   * because a client might not even query offsets. This is in contrast to
+   * LocalAccessible, where the offsets are always needed to fire text change
+   * events. For RemoteAccessible, it's cheaper overall to just rebuild the
+   * offsets cache when a client next needs it.
+   */
+  void InvalidateCachedHyperTextOffsets() {
     if (mCachedFields) {
       mCachedFields->Remove(nsGkAtoms::offset);
     }
   }
+
+  size_t SizeOfIncludingThis(MallocSizeOf aMallocSizeOf);
+  virtual size_t SizeOfExcludingThis(MallocSizeOf aMallocSizeOf);
 
  protected:
   RemoteAccessibleBase(uint64_t aID, Derived* aParent,
@@ -347,9 +446,15 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
  protected:
   void SetParent(Derived* aParent);
   Maybe<nsRect> RetrieveCachedBounds() const;
-  bool ApplyTransform(nsRect& aBounds) const;
-  void ApplyScrollOffset(nsRect& aBounds) const;
-  LayoutDeviceIntRect BoundsWithOffset(Maybe<nsRect> aOffset) const;
+  bool ApplyTransform(nsRect& aCumulativeBounds) const;
+  bool ApplyScrollOffset(nsRect& aBounds) const;
+  void ApplyCrossDocOffset(nsRect& aBounds) const;
+  LayoutDeviceIntRect BoundsWithOffset(
+      Maybe<nsRect> aOffset, bool aBoundsAreForHittesting = false) const;
+  bool IsFixedPos() const;
+
+  // This function is used exclusively for hit testing.
+  bool ContainsPoint(int32_t aX, int32_t aY);
 
   virtual void ARIAGroupPosition(int32_t* aLevel, int32_t* aSetSize,
                                  int32_t* aPosInSet) const override;
@@ -358,11 +463,19 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
 
   virtual AccGroupInfo* GetOrCreateGroupInfo() override;
 
+  virtual void GetPositionAndSetSize(int32_t* aPosInSet,
+                                     int32_t* aSetSize) override;
+
   virtual bool HasPrimaryAction() const override;
 
   nsAtom* GetPrimaryAction() const;
 
-  virtual const nsTArray<int32_t>& GetCachedHyperTextOffsets() const override;
+  virtual nsTArray<int32_t>& GetCachedHyperTextOffsets() override;
+
+  // XXX: Declare ourselves as a template friend to work around a suspected gcc
+  // bug with calling protected functions. See Bug 1825516.
+  template <class>
+  friend class RemoteAccessibleBase;
 
  private:
   uintptr_t mParent;
@@ -374,6 +487,9 @@ class RemoteAccessibleBase : public Accessible, public HyperTextAccessibleBase {
   friend HyperTextAccessibleBase;
   friend class xpcAccessible;
   friend class CachedTableCellAccessible;
+#ifdef XP_WIN
+  friend class sdnAccessible;
+#endif
 
   nsTArray<Derived*> mChildren;
   DocAccessibleParent* mDoc;

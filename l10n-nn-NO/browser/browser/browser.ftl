@@ -5,46 +5,15 @@
 
 ## The main browser window's title
 
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
 #
 # default - "Mozilla Firefox"
 # private - "Mozilla Firefox (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } (Privat nettlesing)
-    .data-content-title-default = { $content-title } - { -brand-full-name }
-    .data-content-title-private = { $content-title } - { -brand-full-name } (Privat nettlesing)
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
-#
-# "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox — (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
-#
-# Also note the other subtle difference here: we use a `-` to separate the
-# brand name from `(Private Browsing)`, which does not happen on other OSes.
-#
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window-mac =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } - (Privat nettlesing)
-    .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } - (Privat nettlesing)
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
-#
-# default - "Mozilla Firefox"
-# private - "Mozilla Firefox (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
 # Variables:
 #  $content-title (String): the title of the web content.
 browser-main-window-window-titles =
@@ -52,14 +21,17 @@ browser-main-window-window-titles =
     .data-title-private = { -brand-full-name } Privat nettlesing
     .data-content-title-default = { $content-title } — { -brand-full-name }
     .data-content-title-private = { $content-title } — { -brand-full-name } Privat nettlesing
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
 #
 # "default" - "Mozilla Firefox"
 # "private" - "Mozilla Firefox — (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -109,16 +81,12 @@ urlbar-xr-notification-anchor =
     .tooltiptext = Opne autoriseringspanelet for virtuell røyndom
 urlbar-storage-access-anchor =
     .tooltiptext = Opne løyvepanelet for nettlesaraktivitet
-urlbar-translate-notification-anchor =
-    .tooltiptext = Omset denne sida
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = Handsam deling av vindauge eller skjerm med nettstaden
 urlbar-indexed-db-notification-anchor =
     .tooltiptext = Opne meldingspanel for fråkopla data
 urlbar-password-notification-anchor =
     .tooltiptext = Opne meldingspanel for lagring av passord
-urlbar-translated-notification-anchor =
-    .tooltiptext = Handsam sideomsetting
 urlbar-plugins-notification-anchor =
     .tooltiptext = Administrer bruk av programtillegg
 urlbar-web-rtc-share-devices-notification-anchor =
@@ -144,6 +112,11 @@ urlbar-tip-icon-description =
     .alt = Tips:
 urlbar-result-menu-button =
     .title = Opne meny
+urlbar-result-menu-button-feedback = Tilbakemelding
+    .title = Opne meny
+urlbar-result-menu-learn-more =
+    .label = Les meir
+    .accesskey = L
 urlbar-result-menu-remove-from-history =
     .label = Fjern frå historikk
     .accesskey = F
@@ -208,10 +181,6 @@ urlbar-star-add-bookmark =
 
 ## Page Action Context Menu
 
-page-action-manage-extension =
-    .label = Handsam utviding…
-page-action-remove-extension =
-    .label = Fjern utviding
 page-action-manage-extension2 =
     .label = Handter utviding…
     .accesskey = H
@@ -406,7 +375,7 @@ identity-clear-site-data =
 identity-connection-not-secure-security-view = Du er ikkje trygt kopla til denne nettstaden.
 identity-connection-verified = Du er trygt kopla til denne nettstaden.
 identity-ev-owner-label = Sertifikat skrive ut til:
-identity-description-custom-root = Mozilla kjenner ikkje att utskrivaren av dette sertifikatet. Det kan ha blitt lagt til av operativsystemet ditt, eller av ein administrator. <label data-l10n-name="link">Les meir</label>
+identity-description-custom-root2 = Mozilla kjenner ikkje att utskrivaren av dette sertifikatet. Det kan ha blitt lagt til av operativsystemet ditt, eller av ein administrator.
 identity-remove-cert-exception =
     .label = Fjern unntak
     .accesskey = F
@@ -414,14 +383,12 @@ identity-description-insecure = Tilkoplinga til denne nettstaden er ikkje privat
 identity-description-insecure-login-forms = Innloggingsinformasjonen du skreiv inn på denne sida er ikkje trygg og kan difor verte kompromittert.
 identity-description-weak-cipher-intro = Sambandet til denne nettsida brukar ei svak kryptering og er ikkje privat.
 identity-description-weak-cipher-risk = Andre personar kan sjå informasjon eller endre måten nettsida oppfører seg på.
-identity-description-active-blocked = { -brand-short-name } har blokkert delar av denne sida som ikkje er trygg. <label data-l10n-name="link">Les meir</label>
+identity-description-active-blocked2 = { -brand-short-name } har blokkert delar av denne sida som ikkje er trygg.
 identity-description-passive-loaded = Sambandet til denne nettstaden er ikkje privat og informasjon du deler med denne sida kan sjåast av andre.
-identity-description-passive-loaded-insecure = Denne nettsida har innhald som ikkje er trygt (t.d. bilde). <label data-l10n-name="link">Les meir</label>
-identity-description-passive-loaded-mixed = Sjølv om { -brand-short-name } har blokkert noko innhald, finst det framleis innhald på sida som ikkje er trygt (slik som bilde). <label data-l10n-name="link">Les meir</label>
+identity-description-passive-loaded-insecure2 = Denne nettsida har innhald som ikkje er trygt (t.d. bilde).
+identity-description-passive-loaded-mixed2 = Sjølv om { -brand-short-name } har blokkert noko innhald, finst det framleis innhald på sida som ikkje er trygt (slik som bilde).
 identity-description-active-loaded = Denne nettstaden har innhald som ikkje er overført trygt (slik som skript) og tilkoplinga di er difor ikkje privat.
 identity-description-active-loaded-insecure = Informasjonen du deler med denne nettstaden kan sjåast av andre (t.d. passords, meldingar, kredittkort osb.).
-identity-learn-more =
-    .value = Les meir
 identity-disable-mixed-content-blocking =
     .label = Slå av vern
     .accesskey = a
@@ -498,13 +465,6 @@ popup-select-window-or-screen =
     .label = Vindauge eller skjerm:
     .accesskey = V
 popup-all-windows-shared = Alle synlege vindauge på skjermen vil bli delte.
-popup-screen-sharing-block =
-    .label = Blokker
-    .accesskey = B
-popup-screen-sharing-always-block =
-    .label = Blokker alltid
-    .accesskey = k
-popup-mute-notifications-checkbox = Slå av nettstadvarsel mesn du deler
 
 ## WebRTC window or screen share tab switch warning
 
@@ -517,7 +477,6 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
-enable-devtools-popup-description = For å bruke F12-snarvegen, må du først opne DevTools via menyen for Nettsideutvikling
 enable-devtools-popup-description2 = For å bruke F12-snarvegen, må du først opne DevTools via menyen Nettlesarverktøy.
 
 ## URL Bar
@@ -660,6 +619,20 @@ reader-view-enter-button =
 reader-view-close-button =
     .aria-label = Lat att lesevising
 
+## Picture-in-Picture urlbar button
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+picture-in-picture-urlbar-button-open =
+    .tooltiptext = Opne bilde-i-bilde ({ $shortcut })
+picture-in-picture-urlbar-button-close =
+    .tooltiptext = Lat att bilde-i-bilde ({ $shortcut })
+picture-in-picture-panel-header = Bilde-i-bilde
+picture-in-picture-panel-headline = Denne nettstaden tilrår ikkje bilde-i-bilde
+picture-in-picture-panel-body = Det kan hende at videoar ikkje vert vist slik utviklaren hadde tenkt mens bilde-i-bilde er aktivert.
+picture-in-picture-enable-toggle =
+    .label = Slå på likevel
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -676,19 +649,6 @@ fullscreen-exit-mac-button = Avslutt fullskjerm (esc)
 pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> har kontroll over peikaren din. Trykk Esc for å ta tilbake kontrollen.
 pointerlock-warning-no-domain = Dette dokumentet har kontroll over musepeikaren. Trykk på Esc for å ta tilbake kontrollen.
 
-## Subframe crash notification
-
-crashed-subframe-message = <strong>Ein del av denne sida krasja.</strong> For å informere { -brand-product-name } om dette problemet og få det løyst raskare, må du sende inn ein rapport.
-# The string for crashed-subframe-title.title should match crashed-subframe-message,
-# but without any markup.
-crashed-subframe-title =
-    .title = Ein del av denne sida krasja. For å informere { -brand-product-name } om dette problemet og få det løyst raskare, må du sende inn ein rapport.
-crashed-subframe-learnmore-link =
-    .value = Les meir
-crashed-subframe-submit =
-    .label = Send inn rapport
-    .accesskey = S
-
 ## Bookmarks panels, menus and toolbar
 
 bookmarks-manage-bookmarks =
@@ -704,6 +664,11 @@ bookmarks-other-bookmarks-menu =
     .label = Andre bokmerke
 bookmarks-mobile-bookmarks-menu =
     .label = Mobile bokmerke
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
@@ -728,12 +693,13 @@ bookmarks-tools-menu-button-visibility =
             [true] Fjern bokmerkemeny frå verktøylinja
            *[other] Legg til bokmerkemeny i verktøylinja
         }
+
+##
+
 bookmarks-search =
     .label = Søk i bokmerke
 bookmarks-tools =
     .label = Verktøy for bokmerke
-bookmarks-bookmark-edit-panel =
-    .label = Rediger dette bokmerket
 bookmarks-subview-edit-bookmark =
     .label = Rediger dette bokmerket…
 # The aria-label is a spoken label that should not include the word "toolbar" or
@@ -749,9 +715,6 @@ bookmarks-toolbar-placeholder =
     .title = Element i bokmerkelinja
 bookmarks-toolbar-placeholder-button =
     .label = Element i bokmerkelinja
-# "Bookmark" is a verb, as in "Add current tab to bookmarks".
-bookmarks-current-tab =
-    .label = Bokmerk gjeldande fane
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-subview-bookmark-tab =
     .label = Bokmerk gjeldande fane…
@@ -778,11 +741,6 @@ repair-text-encoding-button =
 ## Customize Toolbar Buttons
 
 # Variables:
-#  $shortcut (String): keyboard shortcut to open the add-ons manager
-toolbar-addons-themes-button =
-    .label = Tillegg og tema
-    .tooltiptext = Handter tillegg og tema ({ $shortcut })
-# Variables:
 #  $shortcut (String): keyboard shortcut to open settings (only on macOS)
 toolbar-settings-button =
     .label = Innstillingar
@@ -797,6 +755,9 @@ toolbar-overflow-customize-button =
 toolbar-button-email-link =
     .label = Send lenke med e-post
     .tooltiptext = Send ei lenke til sida med e-post
+toolbar-button-logins =
+    .label = Passord
+    .tooltiptext = Vis og handsam dei lagra passorda dine
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
@@ -828,13 +789,6 @@ eme-notifications-drm-content-playing-dismiss-accesskey = I
 
 panel-save-update-username = Brukarnamn
 panel-save-update-password = Passord
-
-## Add-on removal warning
-
-# Variables:
-#  $name (String): The name of the addon that will be removed.
-addon-removal-title = Fjerne { $name }?
-addon-removal-abuse-report-checkbox = Rapporter denne utvidinga til { -vendor-short-name }
 
 ##
 
@@ -903,8 +857,6 @@ navbar-library =
     .tooltiptext = Vis historikk, lagra bokmerker med meir
 navbar-search =
     .title = Søk
-navbar-accessibility-indicator =
-    .tooltiptext = Tilgjengefunksjonar aktiverte
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
@@ -946,6 +898,15 @@ unified-extensions-button-permissions-needed =
         Utvidingar
         Treng løyve
 
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = Utvidingar
+    .tooltiptext =
+        Utvidingar
+        Nokre utvidingar er ikkje tillatne
+
 ## Autorefresh blocker
 
 refresh-blocked-refresh-label = { -brand-short-name } hindra denne nettsida frå å automatisk laste på nytt.
@@ -956,9 +917,43 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-relay = { -relay-brand-name } skjuler den eigentlege e-postadressa di for å verne deg mot datainnbrot og spam.
-firefox-relay-offer-how-we-integrate = Ved å halde fram kan du generere nye { -relay-brand-short-name } e-postmasker direkte frå passordhandsamaren for { -brand-shorter-name }.
+firefox-relay-offer-why-to-use-relay = Dei sikre, brukarvennlege aliasa våre vernar identiteten din og hindrar spam ved å skjule e-postadressa di.
 # Variables:
-#  $sitename (String): name of the site where user enters their Relay mask
 #  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-does = Vi videaresender alle e-postar frå <strong>{ $sitename }</strong> til <strong>{ $useremail }</strong>.
+firefox-relay-offer-what-relay-provides = Alle e-postar som vert sende til e-postaliasa dine vil bli vidaresende til <strong>{ $useremail }</strong> (med mindre du bestemmer deg for å blokkere dei).
+firefox-relay-offer-legal-notice = Ved å klikke «Bruk e-postalias» godtek du <label data-l10n-name="tos-url">tenestevilkåra</label> og <label data-l10n-name="privacy-url">personvernerklæringa</label>.
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = (Ikkje stadfesta)
+popup-notification-xpinstall-prompt-learn-more = Les meir om sikker installering av tillegg
+
+## Pop-up warning
+
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message =
+    { $popupCount ->
+        [one] { -brand-short-name } hindra denne nettstaden frå å opne eit sprettopp-vindauge.
+       *[other] { -brand-short-name } hindra denne nettstaden frå å opne { $popupCount } sprettopp-vindauge.
+    }
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message = { -brand-short-name } hindra denne nettstaden frå å opne meir enn { $popupCount } sprettopp-vindauge.
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Innstillingar
+           *[other] Innstillingar
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] I
+           *[other] I
+        }
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = Vis «{ $popupURI }»

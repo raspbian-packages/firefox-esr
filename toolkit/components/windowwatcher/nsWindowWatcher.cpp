@@ -15,7 +15,6 @@
 #include "nsISimpleEnumerator.h"
 #include "nsIInterfaceRequestorUtils.h"
 #include "nsJSUtils.h"
-#include "plstr.h"
 
 #include "nsDocShell.h"
 #include "nsGlobalWindow.h"
@@ -63,6 +62,7 @@
 #include "mozilla/NullPrincipal.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/ResultExtensions.h"
+#include "mozilla/StaticPrefs_browser.h"
 #include "mozilla/StaticPrefs_full_screen_api.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/Storage.h"
@@ -70,6 +70,7 @@
 #include "mozilla/dom/BrowserParent.h"
 #include "mozilla/dom/BrowserHost.h"
 #include "mozilla/dom/DocGroup.h"
+#include "mozilla/dom/WindowGlobalChild.h"
 #include "mozilla/dom/SessionStorageManager.h"
 #include "nsIAppWindow.h"
 #include "nsIXULBrowserWindow.h"
@@ -203,18 +204,18 @@ nsWatcherWindowEntry* nsWatcherWindowEnumerator::FindNext() {
   nsWatcherWindowEntry* info;
 
   if (!mCurrentPosition) {
-    return 0;
+    return nullptr;
   }
 
   info = mCurrentPosition->mYounger;
-  return info == mWindowWatcher->mOldestWindow ? 0 : info;
+  return info == mWindowWatcher->mOldestWindow ? nullptr : info;
 }
 
 // if a window is being removed adjust the iterator's current position
 void nsWatcherWindowEnumerator::WindowRemoved(nsWatcherWindowEntry* aInfo) {
   if (mCurrentPosition == aInfo) {
     mCurrentPosition =
-        mCurrentPosition != aInfo->mYounger ? aInfo->mYounger : 0;
+        mCurrentPosition != aInfo->mYounger ? aInfo->mYounger : nullptr;
   }
 }
 
@@ -229,7 +230,7 @@ NS_IMPL_QUERY_INTERFACE(nsWindowWatcher, nsIWindowWatcher, nsIPromptFactory,
 
 nsWindowWatcher::nsWindowWatcher()
     : mEnumeratorList(),
-      mOldestWindow(0),
+      mOldestWindow(nullptr),
       mListLock("nsWindowWatcher.mListLock") {}
 
 nsWindowWatcher::~nsWindowWatcher() {
@@ -476,7 +477,7 @@ static void MaybeDisablePersistence(const SizeSpec& aSizeSpec,
 
 NS_IMETHODIMP
 nsWindowWatcher::OpenWindowWithRemoteTab(nsIRemoteTab* aRemoteTab,
-                                         const nsACString& aFeatures,
+                                         const WindowFeatures& aFeatures,
                                          bool aCalledFromJS,
                                          float aOpenerFullZoom,
                                          nsIOpenWindowInfo* aOpenWindowInfo,
@@ -495,7 +496,7 @@ nsWindowWatcher::OpenWindowWithRemoteTab(nsIRemoteTab* aRemoteTab,
 
   bool isFissionWindow = FissionAutostart();
   bool isPrivateBrowsingWindow =
-      Preferences::GetBool("browser.privatebrowsing.autostart");
+      StaticPrefs::browser_privatebrowsing_autostart();
 
   nsCOMPtr<nsPIDOMWindowOuter> parentWindowOuter;
   RefPtr<BrowsingContext> parentBC = aOpenWindowInfo->GetParent();
@@ -534,22 +535,19 @@ nsWindowWatcher::OpenWindowWithRemoteTab(nsIRemoteTab* aRemoteTab,
     return NS_ERROR_UNEXPECTED;
   }
 
-  WindowFeatures features;
-  features.Tokenize(aFeatures);
-
   // get various interfaces for aDocShellItem, used throughout this method
   CSSToDesktopScale cssToDesktopScale(1.0f);
   if (nsCOMPtr<nsIBaseWindow> win = do_QueryInterface(parentTreeOwner)) {
-    cssToDesktopScale = win->GetCSSToDesktopScale();
+    cssToDesktopScale = win->GetUnscaledCSSToDesktopScale();
   }
-  SizeSpec sizeSpec = CalcSizeSpec(features, false, cssToDesktopScale);
+  SizeSpec sizeSpec = CalcSizeSpec(aFeatures, false, cssToDesktopScale);
   sizeSpec.ScaleBy(aOpenerFullZoom);
 
   // This is not initiated by window.open call in content context, and we
   // don't need to propagate isPopupRequested out-parameter to the resulting
   // browsing context.
   bool unused = false;
-  uint32_t chromeFlags = CalculateChromeFlagsForContent(features, &unused);
+  uint32_t chromeFlags = CalculateChromeFlagsForContent(aFeatures, &unused);
 
   if (isPrivateBrowsingWindow) {
     chromeFlags |= nsIWebBrowserChrome::CHROME_PRIVATE_WINDOW;
@@ -630,22 +628,22 @@ nsresult nsWindowWatcher::OpenWindowInternal(
   nsAutoString name;           // string version of aName
   nsCOMPtr<nsIURI> uriToLoad;  // from aUrl, if any
   nsCOMPtr<nsIDocShellTreeOwner>
-      parentTreeOwner;            // from the parent window, if any
-  RefPtr<BrowsingContext> newBC;  // from the new window
+      parentTreeOwner;               // from the parent window, if any
+  RefPtr<BrowsingContext> targetBC;  // from the new window
 
-  nsCOMPtr<nsPIDOMWindowOuter> parentWindow =
+  nsCOMPtr<nsPIDOMWindowOuter> parentOuterWin =
       aParent ? nsPIDOMWindowOuter::From(aParent) : nullptr;
 
   NS_ENSURE_ARG_POINTER(aResult);
-  *aResult = 0;
+  *aResult = nullptr;
 
   if (!nsContentUtils::IsSafeToRunScript()) {
     nsContentUtils::WarnScriptWasIgnored(nullptr);
     return NS_ERROR_FAILURE;
   }
 
-  if (parentWindow) {
-    parentTreeOwner = parentWindow->GetTreeOwner();
+  if (parentOuterWin) {
+    parentTreeOwner = parentOuterWin->GetTreeOwner();
   }
 
   // We expect BrowserParent to have provided us the absolute URI of the window
@@ -677,9 +675,13 @@ nsresult nsWindowWatcher::OpenWindowInternal(
   }
 
   RefPtr<BrowsingContext> parentBC(
-      parentWindow ? parentWindow->GetBrowsingContext() : nullptr);
+      parentOuterWin ? parentOuterWin->GetBrowsingContext() : nullptr);
   nsCOMPtr<nsIDocShell> parentDocShell(parentBC ? parentBC->GetDocShell()
                                                 : nullptr);
+  RefPtr<Document> parentDoc(parentOuterWin ? parentOuterWin->GetDoc()
+                                            : nullptr);
+  nsCOMPtr<nsPIDOMWindowInner> parentInnerWin(
+      parentOuterWin ? parentOuterWin->GetCurrentInnerWindow() : nullptr);
 
   // Return null for any attempt to trigger a load from a discarded browsing
   // context. The spec is non-normative, and doesn't specify what should happen
@@ -694,37 +696,54 @@ nsresult nsWindowWatcher::OpenWindowInternal(
     return NS_ERROR_ABORT;
   }
 
+  // If no parent, consider it chrome when running in the parent process.
+  bool hasChromeParent = !XRE_IsContentProcess();
+  if (aParent) {
+    // Check if the parent document has chrome privileges.
+    hasChromeParent = parentDoc && nsContentUtils::IsChromeDoc(parentDoc);
+  }
+
+  bool isCallerChrome = nsContentUtils::LegacyIsCallerChromeOrNativeCode();
+
   // try to find an extant browsing context with the given name
-  newBC = GetBrowsingContextByName(name, aForceNoOpener, parentBC);
+  if (!name.IsEmpty() &&
+      (!aForceNoOpener || nsContentUtils::IsSpecialName(name))) {
+    if (parentInnerWin && parentInnerWin->GetWindowGlobalChild()) {
+      // If we have a parent window, perform the look-up relative to the parent
+      // inner window.
+      targetBC =
+          parentInnerWin->GetWindowGlobalChild()->FindBrowsingContextWithName(
+              name);
+    } else if (hasChromeParent && isCallerChrome &&
+               !nsContentUtils::IsSpecialName(name)) {
+      // Otherwise, if this call is from chrome, perform the lookup relative
+      // to the system group.
+      nsCOMPtr<mozIDOMWindowProxy> chromeWindow;
+      MOZ_ALWAYS_SUCCEEDS(GetWindowByName(name, getter_AddRefs(chromeWindow)));
+      if (chromeWindow) {
+        targetBC = nsPIDOMWindowOuter::From(chromeWindow)->GetBrowsingContext();
+      }
+    }
+  }
 
   // Do sandbox checks here, instead of waiting until nsIDocShell::LoadURI.
   // The state of the window can change before this call and if we are blocked
   // because of sandboxing, we wouldn't want that to happen.
-  if (parentBC && parentBC->IsSandboxedFrom(newBC)) {
+  if (parentBC && parentBC->IsSandboxedFrom(targetBC)) {
     return NS_ERROR_DOM_INVALID_ACCESS_ERR;
   }
 
   // If our target BrowsingContext is still pending initialization, ignore the
   // navigation request targeting it.
-  if (newBC && NS_WARN_IF(newBC->GetPendingInitialization())) {
+  if (targetBC && NS_WARN_IF(targetBC->GetPendingInitialization())) {
     return NS_ERROR_ABORT;
   }
 
   // no extant window? make a new one.
 
-  // If no parent, consider it chrome when running in the parent process.
-  bool hasChromeParent = !XRE_IsContentProcess();
-  if (aParent) {
-    // Check if the parent document has chrome privileges.
-    Document* doc = parentWindow->GetDoc();
-    hasChromeParent = doc && nsContentUtils::IsChromeDoc(doc);
-  }
-
-  bool isCallerChrome = nsContentUtils::LegacyIsCallerChromeOrNativeCode();
-
   CSSToDesktopScale cssToDesktopScale(1.0);
   if (nsCOMPtr<nsIBaseWindow> win = do_QueryInterface(parentDocShell)) {
-    cssToDesktopScale = win->GetCSSToDesktopScale();
+    cssToDesktopScale = win->GetUnscaledCSSToDesktopScale();
   }
   SizeSpec sizeSpec =
       CalcSizeSpec(features, hasChromeParent, cssToDesktopScale);
@@ -809,10 +828,56 @@ nsresult nsWindowWatcher::OpenWindowInternal(
     }
   }
 
+  // Now that the jsapiChromeGuard has been set, fetch the system principal
+  // potentially configured by it. We want to make sure to respect any principal
+  // changes imposed by that guard throughout this function.
+  //
+  // Note: The check for the current JSContext isn't necessarily sensical.
+  // It's just designed to preserve old semantics during a mass-conversion
+  // patch.
+  // Bug 1498605 verify usages of systemPrincipal here
+  JSContext* cx = nsContentUtils::GetCurrentJSContext();
+  nsCOMPtr<nsIPrincipal> subjectPrincipal =
+      cx ? nsContentUtils::SubjectPrincipal()
+         : nsContentUtils::GetSystemPrincipal();
+  MOZ_ASSERT(subjectPrincipal);
+
+  nsCOMPtr<nsIPrincipal> newWindowPrincipal;
+  if (!targetBC) {
+    if (windowTypeIsChrome) {
+      // If we are creating a chrome window, we must be called with a system
+      // principal, and should inherit that for the new chrome window.
+      MOZ_RELEASE_ASSERT(subjectPrincipal->IsSystemPrincipal(),
+                         "Only system principals can create chrome windows");
+      newWindowPrincipal = subjectPrincipal;
+    } else if (nsContentUtils::IsSystemOrExpandedPrincipal(subjectPrincipal)) {
+      // Don't allow initial about:blank documents to inherit a system or
+      // expanded principal, instead replace it with a null principal. We can't
+      // inherit origin attributes from the system principal, so use the parent
+      // BC if it's available.
+      if (parentBC) {
+        newWindowPrincipal =
+            NullPrincipal::Create(parentBC->OriginAttributesRef());
+      } else {
+        newWindowPrincipal = NullPrincipal::CreateWithoutOriginAttributes();
+      }
+    } else if (aForceNoOpener) {
+      // If we're opening a new window with noopener, create a new opaque
+      // principal for the new window, rather than re-using the existing
+      // principal.
+      newWindowPrincipal =
+          NullPrincipal::CreateWithInheritedAttributes(subjectPrincipal);
+    } else {
+      // Finally, if there's an opener relationship and it's not a special
+      // principal, we should inherit that principal for the new window.
+      newWindowPrincipal = subjectPrincipal;
+    }
+  }
+
   // Information used when opening new content windows. This object will be
   // passed through to the inner nsFrameLoader.
   RefPtr<nsOpenWindowInfo> openWindowInfo;
-  if (!newBC && !windowTypeIsChrome) {
+  if (!targetBC && !windowTypeIsChrome) {
     openWindowInfo = new nsOpenWindowInfo();
     openWindowInfo->mForceNoOpener = aForceNoOpener;
     openWindowInfo->mParent = parentBC;
@@ -823,17 +888,12 @@ nsresult nsWindowWatcher::OpenWindowInternal(
     // want it to match the current remoteness.
     openWindowInfo->mIsRemote = XRE_IsContentProcess();
 
-    // If we have a non-system non-expanded subject principal, we can inherit
-    // our OriginAttributes from it.
-    nsCOMPtr<nsIPrincipal> subjectPrincipal =
-        nsContentUtils::SubjectPrincipalOrSystemIfNativeCaller();
-    if (subjectPrincipal &&
-        !nsContentUtils::IsSystemOrExpandedPrincipal(subjectPrincipal)) {
-      openWindowInfo->mOriginAttributes =
-          subjectPrincipal->OriginAttributesRef();
-    } else if (parentBC) {
-      openWindowInfo->mOriginAttributes = parentBC->OriginAttributesRef();
-    }
+    // Inherit our OriginAttributes from the computed new window principal.
+    MOZ_ASSERT(
+        newWindowPrincipal &&
+        !nsContentUtils::IsSystemOrExpandedPrincipal(newWindowPrincipal));
+    openWindowInfo->mOriginAttributes =
+        newWindowPrincipal->OriginAttributesRef();
 
     MOZ_DIAGNOSTIC_ASSERT(
         !parentBC || openWindowInfo->mOriginAttributes.EqualsIgnoringFPD(
@@ -842,7 +902,9 @@ nsresult nsWindowWatcher::OpenWindowInternal(
   }
 
   uint32_t activeDocsSandboxFlags = 0;
-  if (!newBC) {
+  nsCOMPtr<nsIContentSecurityPolicy> cspToInheritForAboutBlank;
+  Maybe<nsILoadInfo::CrossOriginEmbedderPolicy> coepToInheritForAboutBlank;
+  if (!targetBC) {
     // We're going to either open up a new window ourselves or ask a
     // nsIWindowProvider for one.  In either case, we'll want to set the right
     // name on it.
@@ -850,16 +912,20 @@ nsresult nsWindowWatcher::OpenWindowInternal(
 
     // If the parent trying to open a new window is sandboxed
     // without 'allow-popups', this is not allowed and we fail here.
-    if (aParent) {
-      if (Document* doc = parentWindow->GetDoc()) {
-        // Save sandbox flags for copying to new browsing context (docShell).
-        activeDocsSandboxFlags = doc->GetSandboxFlags();
-        // Check to see if this frame is allowed to navigate, but don't check if
-        // we're printing, as that's not a real navigation.
-        if (aPrintKind == PRINT_NONE &&
-            (activeDocsSandboxFlags & SANDBOXED_AUXILIARY_NAVIGATION)) {
-          return NS_ERROR_DOM_INVALID_ACCESS_ERR;
-        }
+    if (parentDoc) {
+      // Save sandbox flags for copying to new browsing context (docShell).
+      activeDocsSandboxFlags = parentDoc->GetSandboxFlags();
+
+      if (!aForceNoOpener) {
+        cspToInheritForAboutBlank = parentDoc->GetCsp();
+        coepToInheritForAboutBlank = parentDoc->GetEmbedderPolicy();
+      }
+
+      // Check to see if this frame is allowed to navigate, but don't check if
+      // we're printing, as that's not a real navigation.
+      if (aPrintKind == PRINT_NONE &&
+          (activeDocsSandboxFlags & SANDBOXED_AUXILIARY_NAVIGATION)) {
+        return NS_ERROR_DOM_INVALID_ACCESS_ERR;
       }
     }
 
@@ -877,17 +943,17 @@ nsresult nsWindowWatcher::OpenWindowInternal(
         rv = provider->ProvideWindow(
             openWindowInfo, chromeFlags, aCalledFromJS, uriToLoad, name,
             featuresStr, aForceNoOpener, aForceNoReferrer, isPopupRequested,
-            aLoadState, &windowIsNew, getter_AddRefs(newBC));
+            aLoadState, &windowIsNew, getter_AddRefs(targetBC));
 
-        if (NS_SUCCEEDED(rv) && newBC) {
-          nsCOMPtr<nsIDocShell> newDocShell = newBC->GetDocShell();
+        if (NS_SUCCEEDED(rv) && targetBC) {
+          nsCOMPtr<nsIDocShell> newDocShell = targetBC->GetDocShell();
 
           // If this is a new window, but it's incompatible with the current
           // userContextId, we ignore it and we pretend that nothing has been
           // returned by ProvideWindow.
           if (!windowIsNew && newDocShell) {
             if (!CheckUserContextCompatibility(newDocShell)) {
-              newBC = nullptr;
+              targetBC = nullptr;
               windowIsNew = false;
             }
           }
@@ -906,7 +972,7 @@ nsresult nsWindowWatcher::OpenWindowInternal(
 
   bool newWindowShouldBeModal = false;
   bool parentIsModal = false;
-  if (!newBC) {
+  if (!targetBC) {
     if (XRE_IsContentProcess()) {
       // If our window provider failed to provide a window in the content
       // process, we cannot recover. Reject the window open request and bail.
@@ -960,9 +1026,9 @@ nsresult nsWindowWatcher::OpenWindowInternal(
       nsCOMPtr<nsIWebBrowserChrome> newChrome;
 
       nsCOMPtr<nsPIDOMWindowInner> parentTopInnerWindow;
-      if (parentWindow) {
+      if (parentOuterWin) {
         nsCOMPtr<nsPIDOMWindowOuter> parentTopWindow =
-            parentWindow->GetInProcessTop();
+            parentOuterWin->GetInProcessTop();
         if (parentTopWindow) {
           parentTopInnerWindow = parentTopWindow->GetCurrentInnerWindow();
         }
@@ -999,53 +1065,53 @@ nsresult nsWindowWatcher::OpenWindowInternal(
         if (!newDocShellItem) {
           rv = NS_ERROR_FAILURE;
         }
-        newBC = newDocShellItem->GetBrowsingContext();
+        targetBC = newDocShellItem->GetBrowsingContext();
       }
     }
   }
 
   // better have a window to use by this point
-  if (!newBC) {
+  if (!targetBC) {
     return rv;
   }
 
   // If our parent is sandboxed, set it as the one permitted sandboxed navigator
   // on the new window we're opening.
   if (activeDocsSandboxFlags && parentBC) {
-    MOZ_ALWAYS_SUCCEEDS(newBC->SetOnePermittedSandboxedNavigator(parentBC));
+    MOZ_ALWAYS_SUCCEEDS(targetBC->SetOnePermittedSandboxedNavigator(parentBC));
   }
 
   if (!aForceNoOpener && parentBC) {
     // If we've created a new content window, its opener should have been set
     // when its BrowsingContext was created, in order to ensure that the context
     // is loaded within the correct BrowsingContextGroup.
-    if (windowIsNew && newBC->IsContent()) {
+    if (windowIsNew && targetBC->IsContent()) {
       if (parentBC->IsDiscarded()) {
         // If the parent BC was discarded in a nested event loop before we got
         // to this point, we can't set it as the opener. Ideally we would still
         // set `HadOriginalOpener()` in that case, but that's somewhat
         // nontrivial, and not worth the effort given the nature of the corner
         // case (see comment in `nsFrameLoader::CreateBrowsingContext`.
-        MOZ_RELEASE_ASSERT(newBC->GetOpenerId() == parentBC->Id() ||
-                           newBC->GetOpenerId() == 0);
+        MOZ_RELEASE_ASSERT(targetBC->GetOpenerId() == parentBC->Id() ||
+                           targetBC->GetOpenerId() == 0);
       } else {
-        MOZ_RELEASE_ASSERT(newBC->GetOpenerId() == parentBC->Id());
-        MOZ_RELEASE_ASSERT(newBC->HadOriginalOpener());
+        MOZ_RELEASE_ASSERT(targetBC->GetOpenerId() == parentBC->Id());
+        MOZ_RELEASE_ASSERT(targetBC->HadOriginalOpener());
       }
     } else {
       // Update the opener for an existing or chrome BC.
-      newBC->SetOpener(parentBC);
+      targetBC->SetOpener(parentBC);
     }
   }
 
-  RefPtr<nsDocShell> newDocShell(nsDocShell::Cast(newBC->GetDocShell()));
+  RefPtr<nsDocShell> targetDocShell(nsDocShell::Cast(targetBC->GetDocShell()));
 
   // As required by spec, new windows always start out same-process, even if the
   // URL being loaded will eventually load in a new process.
-  MOZ_DIAGNOSTIC_ASSERT(!windowIsNew || newDocShell);
+  MOZ_DIAGNOSTIC_ASSERT(!windowIsNew || targetDocShell);
   // New top-level windows are only opened in the parent process and are, by
   // definition, always in-process.
-  MOZ_DIAGNOSTIC_ASSERT(!isNewToplevelWindow || newDocShell);
+  MOZ_DIAGNOSTIC_ASSERT(!isNewToplevelWindow || targetDocShell);
 
   // Copy sandbox flags to the new window if activeDocsSandboxFlags says to do
   // so.  Note that it's only nonzero if the window is new, so clobbering
@@ -1053,45 +1119,46 @@ nsresult nsWindowWatcher::OpenWindowInternal(
   if (activeDocsSandboxFlags &
       SANDBOX_PROPAGATES_TO_AUXILIARY_BROWSING_CONTEXTS) {
     MOZ_ASSERT(windowIsNew, "Should only get here for new windows");
-    MOZ_ALWAYS_SUCCEEDS(newBC->SetSandboxFlags(activeDocsSandboxFlags));
+    MOZ_ALWAYS_SUCCEEDS(targetBC->SetSandboxFlags(activeDocsSandboxFlags));
     MOZ_ALWAYS_SUCCEEDS(
-        newBC->SetInitialSandboxFlags(newBC->GetSandboxFlags()));
+        targetBC->SetInitialSandboxFlags(targetBC->GetSandboxFlags()));
   }
 
-  RefPtr<nsGlobalWindowOuter> win(
-      nsGlobalWindowOuter::Cast(newBC->GetDOMWindow()));
+  RefPtr<nsGlobalWindowOuter> targetOuterWin(
+      nsGlobalWindowOuter::Cast(targetBC->GetDOMWindow()));
 #ifdef DEBUG
-  if (win && windowIsNew) {
+  if (targetOuterWin && windowIsNew) {
     // Assert that we're not loading things right now.  If we are, when
     // that load completes it will clobber whatever principals we set up
     // on this new window!
     nsCOMPtr<nsIChannel> chan;
-    newDocShell->GetDocumentChannel(getter_AddRefs(chan));
+    targetDocShell->GetDocumentChannel(getter_AddRefs(chan));
     MOZ_ASSERT(!chan, "Why is there a document channel?");
 
-    if (RefPtr<Document> doc = win->GetExtantDoc()) {
+    if (RefPtr<Document> doc = targetOuterWin->GetExtantDoc()) {
       MOZ_ASSERT(doc->IsInitialDocument(),
                  "New window's document should be an initial document");
     }
   }
 #endif
 
-  MOZ_ASSERT(win || !windowIsNew, "New windows are always created in-process");
+  MOZ_ASSERT(targetOuterWin || !windowIsNew,
+             "New windows are always created in-process");
 
-  *aResult = do_AddRef(newBC).take();
+  *aResult = do_AddRef(targetBC).take();
 
   if (isNewToplevelWindow) {
     nsCOMPtr<nsIDocShellTreeOwner> newTreeOwner;
-    newDocShell->GetTreeOwner(getter_AddRefs(newTreeOwner));
+    targetDocShell->GetTreeOwner(getter_AddRefs(newTreeOwner));
     MaybeDisablePersistence(sizeSpec, newTreeOwner);
   }
 
   if (aDialog && aArgv) {
-    MOZ_ASSERT(win);
-    NS_ENSURE_TRUE(win, NS_ERROR_UNEXPECTED);
+    MOZ_ASSERT(targetOuterWin);
+    NS_ENSURE_TRUE(targetOuterWin, NS_ERROR_UNEXPECTED);
 
     // Set the args on the new window.
-    MOZ_TRY(win->SetArguments(aArgv));
+    MOZ_TRY(targetOuterWin->SetArguments(aArgv));
   }
 
   /* allow a window that we found by name to keep its name (important for cases
@@ -1099,52 +1166,39 @@ nsresult nsWindowWatcher::OpenWindowInternal(
      is not a window name. */
   if (windowNeedsName) {
     if (nameSpecified && !name.LowerCaseEqualsLiteral("_blank")) {
-      MOZ_ALWAYS_SUCCEEDS(newBC->SetName(name));
+      MOZ_ALWAYS_SUCCEEDS(targetBC->SetName(name));
     } else {
-      MOZ_ALWAYS_SUCCEEDS(newBC->SetName(u""_ns));
+      MOZ_ALWAYS_SUCCEEDS(targetBC->SetName(u""_ns));
     }
   }
 
   // Now we have to set the right opener principal on the new window.  Note
   // that we have to do this _before_ starting any URI loads, thanks to the
   // sync nature of javascript: loads.
-  //
-  // Note: The check for the current JSContext isn't necessarily sensical.
-  // It's just designed to preserve old semantics during a mass-conversion
-  // patch.
-  // Bug 1498605 verify usages of systemPrincipal here
-  JSContext* cx = nsContentUtils::GetCurrentJSContext();
-  nsCOMPtr<nsIPrincipal> subjectPrincipal =
-      cx ? nsContentUtils::SubjectPrincipal()
-         : nsContentUtils::GetSystemPrincipal();
 
   if (windowIsNew) {
-    if (subjectPrincipal &&
-        !nsContentUtils::IsSystemOrExpandedPrincipal(subjectPrincipal) &&
-        newBC->IsContent()) {
-      MOZ_DIAGNOSTIC_ASSERT(
-          subjectPrincipal->OriginAttributesRef().EqualsIgnoringFPD(
-              newBC->OriginAttributesRef()));
-    }
+    MOZ_DIAGNOSTIC_ASSERT(
+        !targetBC->IsContent() ||
+        newWindowPrincipal->OriginAttributesRef().EqualsIgnoringFPD(
+            targetBC->OriginAttributesRef()));
 
-    bool autoPrivateBrowsing =
-        Preferences::GetBool("browser.privatebrowsing.autostart");
+    bool autoPrivateBrowsing = StaticPrefs::browser_privatebrowsing_autostart();
 
     if (!autoPrivateBrowsing &&
         (chromeFlags & nsIWebBrowserChrome::CHROME_NON_PRIVATE_WINDOW)) {
-      if (newBC->IsChrome()) {
-        newBC->SetUsePrivateBrowsing(false);
+      if (targetBC->IsChrome()) {
+        targetBC->SetUsePrivateBrowsing(false);
       }
       MOZ_DIAGNOSTIC_ASSERT(
-          !newBC->UsePrivateBrowsing(),
+          !targetBC->UsePrivateBrowsing(),
           "CHROME_NON_PRIVATE_WINDOW passed, but got private window");
     } else if (autoPrivateBrowsing ||
                (chromeFlags & nsIWebBrowserChrome::CHROME_PRIVATE_WINDOW)) {
-      if (newBC->IsChrome()) {
-        newBC->SetUsePrivateBrowsing(true);
+      if (targetBC->IsChrome()) {
+        targetBC->SetUsePrivateBrowsing(true);
       }
       MOZ_DIAGNOSTIC_ASSERT(
-          newBC->UsePrivateBrowsing(),
+          targetBC->UsePrivateBrowsing(),
           "CHROME_PRIVATE_WINDOW passed, but got non-private window");
     }
 
@@ -1153,33 +1207,47 @@ nsresult nsWindowWatcher::OpenWindowInternal(
     // the JS stack, just use the principal of our parent window.  In those
     // cases we do _not_ set the parent window principal as the owner of the
     // load--since we really don't know who the owner is, just leave it null.
-    NS_ASSERTION(win == newDocShell->GetWindow(), "Different windows??");
+    NS_ASSERTION(targetOuterWin == targetDocShell->GetWindow(),
+                 "Different windows??");
 
-    // The principal of the initial about:blank document gets set up in
-    // nsWindowWatcher::AddWindow. Make sure to call it. In the common case
-    // this call already happened when the window was created, but
-    // SetInitialPrincipalToSubject is safe to call multiple times.
-    if (win) {
-      nsCOMPtr<nsIContentSecurityPolicy> cspToInheritForAboutBlank;
-      Maybe<nsILoadInfo::CrossOriginEmbedderPolicy> coepToInheritForAboutBlank;
-      nsCOMPtr<mozIDOMWindowProxy> targetOpener = win->GetSameProcessOpener();
-      nsCOMPtr<nsIDocShell> openerDocShell(do_GetInterface(targetOpener));
-      if (openerDocShell) {
-        RefPtr<Document> openerDoc =
-            static_cast<nsDocShell*>(openerDocShell.get())->GetDocument();
-        cspToInheritForAboutBlank = openerDoc ? openerDoc->GetCsp() : nullptr;
-        coepToInheritForAboutBlank = openerDoc->GetEmbedderPolicy();
-      }
-      win->SetInitialPrincipalToSubject(cspToInheritForAboutBlank,
-                                        coepToInheritForAboutBlank);
+    // Initialize the principal of the initial about:blank document. For
+    // toplevel windows, this call may have already happened when the window was
+    // created, but SetInitialPrincipal is safe to call multiple times.
+    if (targetOuterWin) {
+      MOZ_ASSERT(windowIsNew);
+      MOZ_ASSERT(!targetOuterWin->GetSameProcessOpener() ||
+                 targetOuterWin->GetSameProcessOpener() == aParent);
+      targetOuterWin->SetInitialPrincipal(newWindowPrincipal,
+                                          cspToInheritForAboutBlank,
+                                          coepToInheritForAboutBlank);
 
       if (aIsPopupSpam) {
-        MOZ_ASSERT(!newBC->GetIsPopupSpam(),
+        MOZ_ASSERT(!targetBC->GetIsPopupSpam(),
                    "Who marked it as popup spam already???");
         // Make sure we don't mess up our counter even if the above assert
         // fails.
-        if (!newBC->GetIsPopupSpam()) {
-          MOZ_ALWAYS_SUCCEEDS(newBC->SetIsPopupSpam(true));
+        if (!targetBC->GetIsPopupSpam()) {
+          MOZ_ALWAYS_SUCCEEDS(targetBC->SetIsPopupSpam(true));
+        }
+      }
+    }
+
+    // Copy the current session storage for the current domain. Don't perform
+    // the copy if we're forcing noopener, however.
+    if (!aForceNoOpener && subjectPrincipal && parentDocShell &&
+        targetDocShell) {
+      const RefPtr<SessionStorageManager> parentStorageManager =
+          parentDocShell->GetBrowsingContext()->GetSessionStorageManager();
+      const RefPtr<SessionStorageManager> newStorageManager =
+          targetDocShell->GetBrowsingContext()->GetSessionStorageManager();
+
+      if (parentStorageManager && newStorageManager) {
+        RefPtr<Storage> storage;
+        parentStorageManager->GetStorage(
+            parentInnerWin, subjectPrincipal, subjectPrincipal,
+            targetBC->UsePrivateBrowsing(), getter_AddRefs(storage));
+        if (storage) {
+          newStorageManager->CloneStorage(storage);
         }
       }
     }
@@ -1188,15 +1256,12 @@ nsresult nsWindowWatcher::OpenWindowInternal(
   // We rely on CalculateChromeFlags to decide whether remote (out-of-process)
   // tabs should be used.
   MOZ_DIAGNOSTIC_ASSERT(
-      newBC->UseRemoteTabs() ==
+      targetBC->UseRemoteTabs() ==
       !!(chromeFlags & nsIWebBrowserChrome::CHROME_REMOTE_WINDOW));
   MOZ_DIAGNOSTIC_ASSERT(
-      newBC->UseRemoteSubframes() ==
+      targetBC->UseRemoteSubframes() ==
       !!(chromeFlags & nsIWebBrowserChrome::CHROME_FISSION_WINDOW));
 
-  nsCOMPtr<nsPIDOMWindowInner> pInnerWin =
-      parentWindow ? parentWindow->GetCurrentInnerWindow() : nullptr;
-  ;
   RefPtr<nsDocShellLoadState> loadState = aLoadState;
   if (uriToLoad && loadState) {
     // If a URI was passed to this function, open that, not what was passed in
@@ -1204,7 +1269,7 @@ nsresult nsWindowWatcher::OpenWindowInternal(
     loadState->SetURI(uriToLoad);
   } else if (uriToLoad && aNavigate && !loadState) {
     RefPtr<WindowContext> context =
-        pInnerWin ? pInnerWin->GetWindowContext() : nullptr;
+        parentInnerWin ? parentInnerWin->GetWindowContext() : nullptr;
     loadState = new nsDocShellLoadState(uriToLoad);
 
     loadState->SetSourceBrowsingContext(parentBC);
@@ -1231,8 +1296,8 @@ nsresult nsWindowWatcher::OpenWindowInternal(
          screw up focus in the hidden window; see bug 36016.
       */
       RefPtr<Document> doc = GetEntryDocument();
-      if (!doc && parentWindow) {
-        doc = parentWindow->GetExtantDoc();
+      if (!doc) {
+        doc = parentDoc;
       }
       if (doc) {
         auto referrerInfo = MakeRefPtr<ReferrerInfo>(*doc);
@@ -1255,14 +1320,14 @@ nsresult nsWindowWatcher::OpenWindowInternal(
     nsCOMPtr<nsIObserverService> obsSvc =
         mozilla::services::GetObserverService();
     if (obsSvc) {
-      obsSvc->NotifyObservers(ToSupports(win), "toplevel-window-ready",
-                              nullptr);
+      obsSvc->NotifyObservers(ToSupports(targetOuterWin),
+                              "toplevel-window-ready", nullptr);
     }
   }
 
   // Before loading the URI we want to be 100% sure that we use the correct
   // userContextId.
-  MOZ_ASSERT_IF(newDocShell, CheckUserContextCompatibility(newDocShell));
+  MOZ_ASSERT_IF(targetDocShell, CheckUserContextCompatibility(targetDocShell));
 
   // If this tab or window has been opened by a window.open call, we have to
   // provide all the data needed to send a
@@ -1282,7 +1347,7 @@ nsresult nsWindowWatcher::OpenWindowInternal(
 
       props->SetPropertyAsInterface(u"sourceTabDocShell"_ns, parentDocShell);
       props->SetPropertyAsInterface(u"createdTabDocShell"_ns,
-                                    ToSupports(newDocShell));
+                                    ToSupports(targetDocShell));
 
       obsSvc->NotifyObservers(static_cast<nsIPropertyBag2*>(props),
                               "webNavigation-createdNavigationTarget-from-js",
@@ -1291,49 +1356,40 @@ nsresult nsWindowWatcher::OpenWindowInternal(
   }
 
   if (uriToLoad && aNavigate) {
-    // XXXBFCache Per spec this should effectively use
-    // LOAD_FLAGS_DISALLOW_INHERIT_PRINCIPAL when noopener is passed to
-    // window.open(). Bug 1694993.
-    loadState->SetLoadFlags(
-        windowIsNew
-            ? static_cast<uint32_t>(nsIWebNavigation::LOAD_FLAGS_FIRST_LOAD)
-            : static_cast<uint32_t>(nsIWebNavigation::LOAD_FLAGS_NONE));
+    uint32_t loadFlags = nsIWebNavigation::LOAD_FLAGS_NONE;
+    if (windowIsNew) {
+      loadFlags |= nsIWebNavigation::LOAD_FLAGS_FIRST_LOAD;
+
+      // Per spec, the explicit navigation to about:blank after the initial
+      // about:blank document in a new window does not occur, so there is no
+      // opportunity for it to inherit the source document's principal. This
+      // doesn't perfectly model this, as a noopener creation of `about:blank`
+      // will replace the global due to a principal mismatch, but it should be
+      // unobservable (bug 1694993).
+      // This isn't set for chrome windows, as an about:blank chrome document
+      // needs to inherit its principal from its opener.
+      if (aForceNoOpener && !windowTypeIsChrome) {
+        loadFlags |= nsIWebNavigation::LOAD_FLAGS_DISALLOW_INHERIT_PRINCIPAL;
+      }
+    }
+    loadState->SetLoadFlags(loadFlags);
     loadState->SetFirstParty(true);
 
     // Should this pay attention to errors returned by LoadURI?
-    newBC->LoadURI(loadState);
-  }
-
-  // Copy the current session storage for the current domain. Don't perform the
-  // copy if we're forcing noopener, however.
-  if (!aForceNoOpener && subjectPrincipal && parentDocShell && newDocShell) {
-    const RefPtr<SessionStorageManager> parentStorageManager =
-        parentDocShell->GetBrowsingContext()->GetSessionStorageManager();
-    const RefPtr<SessionStorageManager> newStorageManager =
-        newDocShell->GetBrowsingContext()->GetSessionStorageManager();
-
-    if (parentStorageManager && newStorageManager) {
-      RefPtr<Storage> storage;
-      parentStorageManager->GetStorage(
-          pInnerWin, subjectPrincipal, subjectPrincipal,
-          newBC->UsePrivateBrowsing(), getter_AddRefs(storage));
-      if (storage) {
-        newStorageManager->CloneStorage(storage);
-      }
-    }
+    targetBC->LoadURI(loadState);
   }
 
   if (isNewToplevelWindow) {
     nsCOMPtr<nsIDocShellTreeOwner> newTreeOwner;
-    newDocShell->GetTreeOwner(getter_AddRefs(newTreeOwner));
+    targetDocShell->GetTreeOwner(getter_AddRefs(newTreeOwner));
     SizeOpenedWindow(newTreeOwner, aParent, isCallerChrome, sizeSpec);
   }
 
   if (windowIsModal) {
-    NS_ENSURE_TRUE(newDocShell, NS_ERROR_NOT_IMPLEMENTED);
+    NS_ENSURE_TRUE(targetDocShell, NS_ERROR_NOT_IMPLEMENTED);
 
     nsCOMPtr<nsIDocShellTreeOwner> newTreeOwner;
-    newDocShell->GetTreeOwner(getter_AddRefs(newTreeOwner));
+    targetDocShell->GetTreeOwner(getter_AddRefs(newTreeOwner));
     nsCOMPtr<nsIWebBrowserChrome> newChrome(do_GetInterface(newTreeOwner));
 
     // Throw an exception here if no web browser chrome is available,
@@ -1347,7 +1403,7 @@ nsresult nsWindowWatcher::OpenWindowInternal(
     // Make sure we maintain the state on an outer window, because
     // that's where it lives; inner windows assert if you try to
     // maintain the state on them.
-    nsAutoWindowStateHelper windowStateHelper(parentWindow);
+    nsAutoWindowStateHelper windowStateHelper(parentOuterWin);
 
     if (!windowStateHelper.DefaultEnabled()) {
       // Default to cancel not opening the modal window.
@@ -1380,8 +1436,8 @@ nsresult nsWindowWatcher::OpenWindowInternal(
   }
   // If a website opens a popup exit DOM fullscreen
   if (StaticPrefs::full_screen_api_exit_on_windowOpen() && aCalledFromJS &&
-      !hasChromeParent && !isCallerChrome && parentWindow) {
-    Document::AsyncExitFullscreen(parentWindow->GetDoc());
+      !hasChromeParent && !isCallerChrome && parentOuterWin) {
+    Document::AsyncExitFullscreen(parentOuterWin->GetDoc());
   }
 
   if (aForceNoOpener && windowIsNew) {
@@ -1565,7 +1621,7 @@ nsWindowWatcher::AddWindow(mozIDOMWindowProxy* aWindow,
   }
 
   nsCOMPtr<nsISupports> domwin(do_QueryInterface(aWindow));
-  return os->NotifyObservers(domwin, "domwindowopened", 0);
+  return os->NotifyObservers(domwin, "domwindowopened", nullptr);
 }
 
 NS_IMETHODIMP
@@ -1592,7 +1648,7 @@ nsWatcherWindowEntry* nsWindowWatcher::FindWindowEntry(
   nsWatcherWindowEntry* listEnd;
 
   info = mOldestWindow;
-  listEnd = 0;
+  listEnd = nullptr;
   while (info != listEnd) {
     if (info->mWindow == aWindow) {
       return info;
@@ -1600,7 +1656,7 @@ nsWatcherWindowEntry* nsWindowWatcher::FindWindowEntry(
     info = info->mYounger;
     listEnd = mOldestWindow;
   }
-  return 0;
+  return nullptr;
 }
 
 nsresult nsWindowWatcher::RemoveWindow(nsWatcherWindowEntry* aInfo) {
@@ -1615,7 +1671,8 @@ nsresult nsWindowWatcher::RemoveWindow(nsWatcherWindowEntry* aInfo) {
 
     // remove the element from the list
     if (aInfo == mOldestWindow) {
-      mOldestWindow = aInfo->mYounger == mOldestWindow ? 0 : aInfo->mYounger;
+      mOldestWindow =
+          aInfo->mYounger == mOldestWindow ? nullptr : aInfo->mYounger;
     }
     aInfo->Unlink();
   }
@@ -1625,7 +1682,7 @@ nsresult nsWindowWatcher::RemoveWindow(nsWatcherWindowEntry* aInfo) {
   nsCOMPtr<nsIObserverService> os = mozilla::services::GetObserverService();
   if (os) {
     nsCOMPtr<nsISupports> domwin(do_QueryInterface(aInfo->mWindow));
-    os->NotifyObservers(domwin, "domwindowclosed", 0);
+    os->NotifyObservers(domwin, "domwindowclosed", nullptr);
   }
 
   delete aInfo;
@@ -1638,7 +1695,7 @@ nsWindowWatcher::GetChromeForWindow(mozIDOMWindowProxy* aWindow,
   if (!aWindow || !aResult) {
     return NS_ERROR_INVALID_ARG;
   }
-  *aResult = 0;
+  *aResult = nullptr;
 
   MutexAutoLock lock(mListLock);
   nsWatcherWindowEntry* info = FindWindowEntry(aWindow);
@@ -1655,7 +1712,6 @@ nsWindowWatcher::GetChromeForWindow(mozIDOMWindowProxy* aWindow,
 
 NS_IMETHODIMP
 nsWindowWatcher::GetWindowByName(const nsAString& aTargetName,
-                                 mozIDOMWindowProxy* aCurrentWindow,
                                  mozIDOMWindowProxy** aResult) {
   if (!aResult) {
     return NS_ERROR_INVALID_ARG;
@@ -1663,17 +1719,22 @@ nsWindowWatcher::GetWindowByName(const nsAString& aTargetName,
 
   *aResult = nullptr;
 
-  BrowsingContext* currentContext =
-      aCurrentWindow
-          ? nsPIDOMWindowOuter::From(aCurrentWindow)->GetBrowsingContext()
-          : nullptr;
+  // We won't be able to find any windows with a special or empty name.
+  if (aTargetName.IsEmpty() || nsContentUtils::IsSpecialName(aTargetName)) {
+    return NS_OK;
+  }
 
-  RefPtr<BrowsingContext> context =
-      GetBrowsingContextByName(aTargetName, false, currentContext);
-
-  if (context) {
-    *aResult = do_AddRef(context->GetDOMWindow()).take();
-    MOZ_ASSERT(*aResult);
+  // Search each toplevel in the chrome BrowsingContextGroup for a window with
+  // the given name.
+  for (const RefPtr<BrowsingContext>& toplevel :
+       BrowsingContextGroup::GetChromeGroup()->Toplevels()) {
+    BrowsingContext* context =
+        toplevel->FindWithNameInSubtree(aTargetName, nullptr);
+    if (context) {
+      *aResult = do_AddRef(context->GetDOMWindow()).take();
+      MOZ_ASSERT(*aResult);
+      return NS_OK;
+    }
   }
 
   return NS_OK;
@@ -1990,34 +2051,9 @@ uint32_t nsWindowWatcher::CalculateChromeFlagsForSystem(
   return chromeFlags;
 }
 
-already_AddRefed<BrowsingContext> nsWindowWatcher::GetBrowsingContextByName(
-    const nsAString& aName, bool aForceNoOpener,
-    BrowsingContext* aCurrentContext) {
-  if (aName.IsEmpty()) {
-    return nullptr;
-  }
-
-  if (aForceNoOpener && !nsContentUtils::IsSpecialName(aName)) {
-    // Ignore all other names in the noopener case.
-    return nullptr;
-  }
-
-  RefPtr<BrowsingContext> foundContext;
-  if (aCurrentContext) {
-    foundContext = aCurrentContext->FindWithName(aName);
-  } else if (!nsContentUtils::IsSpecialName(aName)) {
-    // If we are looking for an item and we don't have a docshell we are
-    // checking on, let's just look in the chrome browsing context group!
-    for (RefPtr<BrowsingContext> toplevel :
-         BrowsingContextGroup::GetChromeGroup()->Toplevels()) {
-      foundContext = toplevel->FindWithNameInSubtree(aName, *toplevel);
-      if (foundContext) {
-        break;
-      }
-    }
-  }
-
-  return foundContext.forget();
+// public static
+bool nsWindowWatcher::HaveSpecifiedSize(const WindowFeatures& features) {
+  return CalcSizeSpec(features, false, CSSToDesktopScale()).SizeSpecified();
 }
 
 // static
@@ -2192,13 +2228,17 @@ static void SizeOpenedWindow(nsIDocShellTreeOwner* aTreeOwner,
   // between chrome and content sizes on aDocShellItem's window.
   // This latter point becomes important if chrome and content
   // specifications are mixed in aFeatures, and when bringing the window
-  // back from too far off the right or bottom edges of the screen. */
-  DesktopIntCoord left = 0, top = 0;
-  CSSIntCoord width = 0, height = 0;
+  // back from too far off the right or bottom edges of the screen.
+  DesktopIntCoord left = 0;
+  DesktopIntCoord top = 0;
+  CSSIntCoord width = 0;
+  CSSIntCoord height = 0;
   // difference between chrome and content size
-  CSSIntCoord chromeWidth = 0, chromeHeight = 0;
+  CSSIntCoord chromeWidth = 0;
+  CSSIntCoord chromeHeight = 0;
   // whether the window size spec refers to chrome or content
-  bool sizeChromeWidth = true, sizeChromeHeight = true;
+  bool sizeChromeWidth = true;
+  bool sizeChromeHeight = true;
 
   {
     CSSToLayoutDeviceScale cssToDevScale =
@@ -2206,24 +2246,25 @@ static void SizeOpenedWindow(nsIDocShellTreeOwner* aTreeOwner,
     DesktopToLayoutDeviceScale devToDesktopScale =
         treeOwnerAsWin->DevicePixelsPerDesktopPixel();
 
-    LayoutDeviceIntRect devPxRect;
-    treeOwnerAsWin->GetPositionAndSize(&devPxRect.x, &devPxRect.y,
-                                       &devPxRect.width, &devPxRect.height);
+    LayoutDeviceIntRect devPxRect = treeOwnerAsWin->GetPositionAndSize();
     width = (LayoutDeviceCoord(devPxRect.width) / cssToDevScale).Rounded();
     height = (LayoutDeviceCoord(devPxRect.height) / cssToDevScale).Rounded();
     left = (LayoutDeviceCoord(devPxRect.x) / devToDesktopScale).Rounded();
     top = (LayoutDeviceCoord(devPxRect.y) / devToDesktopScale).Rounded();
 
-    int32_t contentWidth, contentHeight;  // CSS pixels.
+    LayoutDeviceIntSize contentSize;
     bool hasPrimaryContent = false;
     aTreeOwner->GetHasPrimaryContent(&hasPrimaryContent);
     if (hasPrimaryContent) {
-      aTreeOwner->GetPrimaryContentSize(&contentWidth, &contentHeight);
+      aTreeOwner->GetPrimaryContentSize(&contentSize.width,
+                                        &contentSize.height);
     } else {
-      aTreeOwner->GetRootShellSize(&contentWidth, &contentHeight);
+      aTreeOwner->GetRootShellSize(&contentSize.width, &contentSize.height);
     }
-    chromeWidth = width - contentWidth;
-    chromeHeight = height - contentHeight;
+
+    CSSIntSize contentSizeCSS = RoundedToInt(contentSize / cssToDevScale);
+    chromeWidth = width - contentSizeCSS.width;
+    chromeHeight = height - contentSizeCSS.height;
   }
 
   // Set up left/top
@@ -2284,7 +2325,8 @@ static void SizeOpenedWindow(nsIDocShellTreeOwner* aTreeOwner,
       CSSIntCoord winWidth = width + extraWidth;
       CSSIntCoord winHeight = height + extraHeight;
 
-      const auto screenCssToDesktopScale = screen->GetCSSToDesktopScale();
+      auto screenCssToDesktopScale = screen->GetCSSToDesktopScale();
+
       const DesktopIntRect screenDesktopRect = screen->GetAvailRectDisplayPix();
       // Get screen dimensions (in CSS pixels)
       const CSSSize screenCssSize =

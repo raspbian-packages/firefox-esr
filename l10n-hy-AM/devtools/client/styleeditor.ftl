@@ -16,7 +16,6 @@ styleeditor-save-button = Պահպանել
     .accesskey = Պ
 styleeditor-options-button =
     .tooltiptext = Ոճի խմբագրիչի ընտրանքներ
-styleeditor-media-rules = @media կանոններ
 styleeditor-editor-textbox =
     .data-placeholder = Հավաքեք CSS-ը այստեղ:
 styleeditor-no-stylesheet = Այս էջը ոճային աղյուսակ չունի:
@@ -34,3 +33,12 @@ styleeditor-find-again =
 styleeditor-go-to-line =
     .label = Անցնել տողին…
     .accesskey = Ա
+
+# This string is shown in the style sheets list
+# Variables:
+#   $ruleCount (Integer) - The number of rules in the stylesheet.
+styleeditor-stylesheet-rule-count =
+    { $ruleCount ->
+        [one] { $ruleCount } կանոն։
+       *[other] { $ruleCount } կանոններ։
+    }

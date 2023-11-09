@@ -17,13 +17,15 @@ firefox-relay-must-login-to-fxa = Do korzystania z { -relay-brand-name } wymaga
 firefox-relay-get-unlimited-masks =
     .label = Zarządzaj maskami
     .accesskey = Z
-firefox-relay-opt-in-title = Chroń swój adres e-mail
-firefox-relay-opt-in-subtitle = Dodaj { -relay-brand-name }
-firefox-relay-generate-mask-title = Chroń swój adres e-mail
-firefox-relay-generate-mask-subtitle = Wygeneruj maskę { -relay-brand-short-name }
-firefox-relay-opt-in-confirmation-enable =
-    .label = Kontynuuj
-    .accesskey = K
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Chroń swój adres e-mail:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = Użyj maski { -relay-brand-name } dla adresu e-mail
+firefox-relay-use-mask-title = Użyj maski { -relay-brand-name } dla adresu e-mail
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = Użyj maski dla adresu e-mail
+    .accesskey = U
 firefox-relay-opt-in-confirmation-disable =
     .label = Nie pokazuj ponownie
     .accesskey = o

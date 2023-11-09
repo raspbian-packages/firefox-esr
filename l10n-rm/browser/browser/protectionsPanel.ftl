@@ -63,7 +63,6 @@ protections-panel-not-found-label = Chattà nagin
 ##
 
 protections-panel-settings-label = Parameters da protecziun
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Survista da las protecziuns
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formulars
 protections-panel-site-not-working-view-issue-list-payments = Pajaments
 protections-panel-site-not-working-view-issue-list-comments = Commentaris
 protections-panel-site-not-working-view-issue-list-videos = Videos
+protections-panel-site-not-working-view-issue-list-fonts = Scrittiras
 
 protections-panel-site-not-working-view-send-report = Trametter in rapport
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Annunziar problems cun questa site
 protections-panel-content-blocking-breakage-report-view-description = La bloccada da cuntegn po chaschunar problems cun tschertas websites. L'annunzia da problems gida a meglierar { -brand-short-name } per tuts. Quest rapport vegn tramess a Mozilla ed includa in URL, sco era infurmaziuns davart la configuraziun da tes navigatur. <label data-l10n-name="learn-more">Ulteriuras infurmaziuns</label>
+protections-panel-content-blocking-breakage-report-view-description2 = La bloccada da cuntegn po chaschunar problems cun tschertas websites. L'annunzia da problems gida a meglierar { -brand-short-name } per tuts. Quest rapport vegn tramess a { -vendor-short-name } ed includa in URL, sco era infurmaziuns davart la configuraziun da tes navigatur.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Interrumper
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Trametter l'annunzia
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Reducziun da bandieras da cookies
+protections-panel-cookie-banner-handling-enabled = Activà per questa website
+protections-panel-cookie-banner-handling-disabled = Deactivà per questa website
+protections-panel-cookie-banner-handling-undetected = Questa website na vegn actualmain betg sustegnida
+
+protections-panel-cookie-banner-view-title =
+    .title = Reducziun da bandieras da cookies
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Deactivar la reducziun da bandieras da cookies per { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Activar la reducziun da bandieras da cookies per questa website?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } vegn a stizzar ils cookies da questa website ed actualisar la pagina. L'eliminaziun da tut ils cookies po ta deconnectar u svidar eventuals chanasters da cumpra.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } emprova da refusar automaticamain tut las dumondas da deponer cookies da websites sustegnidas.
+protections-panel-cookie-banner-view-cancel = Interrumper
+protections-panel-cookie-banner-view-turn-off = Deactivar
+protections-panel-cookie-banner-view-turn-on = Activar

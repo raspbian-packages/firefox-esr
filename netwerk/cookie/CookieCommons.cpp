@@ -7,11 +7,11 @@
 #include "CookieCommons.h"
 #include "CookieLogging.h"
 #include "CookieService.h"
-#include "mozilla/ContentBlocking.h"
 #include "mozilla/ConsoleReportCollector.h"
 #include "mozilla/ContentBlockingNotifier.h"
 #include "mozilla/ScopeExit.h"
 #include "mozilla/StaticPrefs_network.h"
+#include "mozilla/StorageAccess.h"
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/nsMixedContentBlocker.h"
 #include "mozilla/net/CookieJarSettings.h"
@@ -204,7 +204,19 @@ bool CookieCommons::CheckName(const CookieStruct& aCookieData) {
       0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16,
       0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x00};
 
-  return aCookieData.name().FindCharInSet(illegalNameCharacters, 0) == -1;
+  const auto* start = aCookieData.name().BeginReading();
+  const auto* end = aCookieData.name().EndReading();
+
+  auto charFilter = [&](unsigned char c) {
+    if (StaticPrefs::network_cookie_blockUnicode() && c >= 0x80) {
+      return true;
+    }
+    return std::find(std::begin(illegalNameCharacters),
+                     std::end(illegalNameCharacters),
+                     c) != std::end(illegalNameCharacters);
+  };
+
+  return std::find_if(start, end, charFilter) == end;
 }
 
 bool CookieCommons::CheckValue(const CookieStruct& aCookieData) {
@@ -216,7 +228,19 @@ bool CookieCommons::CheckValue(const CookieStruct& aCookieData) {
       0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x0A, 0x0B, 0x0C,
       0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
       0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x3B, 0x7F, 0x00};
-  return aCookieData.value().FindCharInSet(illegalCharacters, 0) == -1;
+
+  const auto* start = aCookieData.value().BeginReading();
+  const auto* end = aCookieData.value().EndReading();
+
+  auto charFilter = [&](unsigned char c) {
+    if (StaticPrefs::network_cookie_blockUnicode() && c >= 0x80) {
+      return true;
+    }
+    return std::find(std::begin(illegalCharacters), std::end(illegalCharacters),
+                     c) != std::end(illegalCharacters);
+  };
+
+  return std::find_if(start, end, charFilter) == end;
 }
 
 // static
@@ -280,29 +304,6 @@ bool CookieCommons::CheckCookiePermission(
     return false;
   }
 
-  // Here we can have any legacy permission value.
-
-  // now we need to figure out what type of accept policy we're dealing with
-  // if we accept cookies normally, just bail and return
-  if (StaticPrefs::network_cookie_lifetimePolicy() ==
-      nsICookieService::ACCEPT_NORMALLY) {
-    return true;
-  }
-
-  // declare this here since it'll be used in all of the remaining cases
-  int64_t currentTime = PR_Now() / PR_USEC_PER_SEC;
-  int64_t delta = aCookieData.expiry() - currentTime;
-
-  // We are accepting the cookie, but,
-  // if it's not a session cookie, we may have to limit its lifetime.
-  if (!aCookieData.isSession() && delta > 0) {
-    if (StaticPrefs::network_cookie_lifetimePolicy() ==
-        nsICookieService::ACCEPT_SESSION) {
-      // limit lifetime to session
-      aCookieData.isSession() = true;
-    }
-  }
-
   return true;
 }
 
@@ -349,7 +350,7 @@ already_AddRefed<Cookie> CookieCommons::CreateCookieFromDocument(
         aHasExistingCookiesLambda,
     nsIURI** aDocumentURI, nsACString& aBaseDomain, OriginAttributes& aAttrs) {
   nsCOMPtr<nsIPrincipal> storagePrincipal =
-      aDocument->EffectiveStoragePrincipal();
+      aDocument->EffectiveCookiePrincipal();
   MOZ_ASSERT(storagePrincipal);
 
   nsCOMPtr<nsIURI> principalURI;
@@ -383,8 +384,7 @@ already_AddRefed<Cookie> CookieCommons::CreateCookieFromDocument(
   if (aDocument->CookieJarSettings()->GetLimitForeignContexts() &&
       !aHasExistingCookiesLambda(baseDomain,
                                  storagePrincipal->OriginAttributesRef()) &&
-      !ContentBlocking::ShouldAllowAccessFor(innerWindow, principalURI,
-                                             &dummyRejectedReason)) {
+      !ShouldAllowAccessFor(innerWindow, principalURI, &dummyRejectedReason)) {
     return nullptr;
   }
 
@@ -411,6 +411,7 @@ already_AddRefed<Cookie> CookieCommons::CreateCookieFromDocument(
   nsCString cookieString(aCookieString);
 
   CookieStruct cookieData;
+  MOZ_ASSERT(cookieData.creationTime() == 0, "Must be initialized to 0");
   bool canSetCookie = false;
   CookieService::CanSetCookie(principalURI, baseDomain, cookieData,
                               requireHostMatch, cookieStatus, cookieString,
@@ -450,15 +451,19 @@ already_AddRefed<Cookie> CookieCommons::CreateCookieFromDocument(
 already_AddRefed<nsICookieJarSettings> CookieCommons::GetCookieJarSettings(
     nsIChannel* aChannel) {
   nsCOMPtr<nsICookieJarSettings> cookieJarSettings;
+  bool shouldResistFingerprinting =
+      nsContentUtils::ShouldResistFingerprinting(aChannel);
   if (aChannel) {
     nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
     nsresult rv =
         loadInfo->GetCookieJarSettings(getter_AddRefs(cookieJarSettings));
     if (NS_WARN_IF(NS_FAILED(rv))) {
-      cookieJarSettings = CookieJarSettings::GetBlockingAll();
+      cookieJarSettings =
+          CookieJarSettings::GetBlockingAll(shouldResistFingerprinting);
     }
   } else {
-    cookieJarSettings = CookieJarSettings::Create(CookieJarSettings::eRegular);
+    cookieJarSettings = CookieJarSettings::Create(CookieJarSettings::eRegular,
+                                                  shouldResistFingerprinting);
   }
 
   MOZ_ASSERT(cookieJarSettings);
@@ -630,7 +635,7 @@ bool CookieCommons::IsSameSiteForeign(nsIChannel* aChannel, nsIURI* aHostURI,
       rv = redirectPrincipal->IsThirdPartyChannel(aChannel, &isForeign);
       // if at any point we encounter a cross-origin redirect we can return.
       if (NS_FAILED(rv) || isForeign) {
-        *aHadCrossSiteRedirects = true;
+        *aHadCrossSiteRedirects = isForeign;
         return true;
       }
 

@@ -8,15 +8,16 @@ This is the nascent documentation of the Firefox front-end code.
    :maxdepth: 2
 
    urlbar/index
-   /toolkit/mozapps/update/docs/BackgroundUpdates
    BrowserUsageTelemetry
    CommandLineParameters
+   app/pbproxy/docs/index
    components/enterprisepolicies/docs/index
    extensions/formautofill/docs/index
    components/newtab/docs/index
    installer/windows/installer/index
    components/attribution/docs/index
    /toolkit/mozapps/defaultagent/default-browser-agent/index
+   components/migration/docs/index
    components/pagedata/docs/index
    places/index
    components/newtab/content-src/asrouter/docs/index
@@ -25,3 +26,6 @@ This is the nascent documentation of the Firefox front-end code.
    base/tabbrowser/index
    touchbar/index
    components/uitour/docs/index
+   branding/docs/index
+   components/storybook/docs/README.storybook.stories
+   components/storybook/docs/README.reusable-widgets.stories

@@ -4,114 +4,46 @@
 
 "use strict";
 
-Services.prefs.setCharPref(
-  "dom.securecontext.allowlist",
-  "example.com,example.net"
+Services.prefs.setBoolPref("network.early-hints.enabled", true);
+// Disable mixed-content upgrading as this test is expecting HTTP image loads
+Services.prefs.setBoolPref(
+  "security.mixed_content.upgrade_display_content",
+  false
 );
 
-Services.prefs.setBoolPref("network.early-hints.enabled", true);
-
 const {
-  lax_request_count_checking,
+  request_count_checking,
   test_hint_preload_internal,
   test_hint_preload,
-} = ChromeUtils.import(
-  "resource://testing-common/early_hint_preload_test_helper.jsm"
+} = ChromeUtils.importESModule(
+  "resource://testing-common/early_hint_preload_test_helper.sys.mjs"
 );
 
 // TODO testing:
 //  * Abort main document load while early hint is still loading -> early hint should be aborted
 
-// two early hint responses
-add_task(async function test_103_two_preload_responses() {
-  await test_hint_preload_internal(
-    "103_two_preload_responses",
-    "http://example.com",
-    [
-      [
-        "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
-        Services.uuid.generateUUID().toString(),
-      ],
-      ["", "new_response"], // empty string to indicate new early hint response
-      [
-        "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
-        Services.uuid.generateUUID().toString(),
-      ],
-    ],
-    { hinted: 2, normal: 0 }
-  );
-});
-
-// two link header in one early hint response
-add_task(async function test_103_two_link_header() {
-  await test_hint_preload_internal(
-    "103_two_link_header",
-    "http://example.com",
-    [
-      [
-        "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
-        Services.uuid.generateUUID().toString(),
-      ],
-      ["", ""], // empty string to indicate new early hint response
-      [
-        "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
-        Services.uuid.generateUUID().toString(),
-      ],
-    ],
-    { hinted: 2, normal: 0 }
-  );
-});
-
-// two links in one early hint link header
-add_task(async function test_103_two_links() {
-  await test_hint_preload_internal(
-    "103_two_links",
-    "http://example.com",
-    [
-      [
-        "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
-        Services.uuid.generateUUID().toString(),
-      ],
-      [
-        "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
-        Services.uuid.generateUUID().toString(),
-      ],
-    ],
-    { hinted: 2, normal: 0 }
-  );
-});
-
-// Preload twice same origin in secure context
-add_task(async function test_103_preload_twice() {
-  // pass two times the same uuid so that on the second request, the response is
-  // already in the cache
-  let uuid = Services.uuid.generateUUID();
-  await test_hint_preload(
-    "test_103_preload_twice_1",
-    "http://example.com",
-    "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
-    { hinted: 1, normal: 0 },
-    uuid
-  );
-  await test_hint_preload(
-    "test_103_preload_twice_2",
-    "http://example.com",
-    "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
-    { hinted: 0, normal: 0 },
-    uuid
-  );
-});
-
-// Test that with config option disabled, no early hint requests are made
+// Test that with early hint config option disabled, no early hint requests are made
 add_task(async function test_103_preload_disabled() {
   Services.prefs.setBoolPref("network.early-hints.enabled", false);
   await test_hint_preload(
     "test_103_preload_disabled",
-    "http://example.com",
-    "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
+    "https://example.com",
+    "https://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
     { hinted: 0, normal: 1 }
   );
   Services.prefs.setBoolPref("network.early-hints.enabled", true);
+});
+
+// Test that with preload config option disabled, no early hint requests are made
+add_task(async function test_103_preload_disabled() {
+  Services.prefs.setBoolPref("network.preload", false);
+  await test_hint_preload(
+    "test_103_preload_disabled",
+    "https://example.com",
+    "https://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
+    { hinted: 0, normal: 1 }
+  );
+  Services.prefs.clearUserPref("network.preload");
 });
 
 // Preload with same origin in secure context with mochitest http proxy
@@ -128,8 +60,8 @@ add_task(async function test_103_preload_https() {
 add_task(async function test_103_preload() {
   await test_hint_preload(
     "test_103_preload",
-    "http://example.com",
-    "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
+    "https://example.com",
+    "https://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
     { hinted: 1, normal: 0 }
   );
 });
@@ -138,9 +70,9 @@ add_task(async function test_103_preload() {
 add_task(async function test_103_preload_cor() {
   await test_hint_preload(
     "test_103_preload_cor",
-    "http://example.com",
-    "http://example.net/browser/netwerk/test/browser/early_hint_pixel.sjs",
-    { hinted: 0, normal: 1 }
+    "https://example.com",
+    "https://example.net/browser/netwerk/test/browser/early_hint_pixel.sjs",
+    { hinted: 1, normal: 0 }
   );
 });
 
@@ -148,7 +80,7 @@ add_task(async function test_103_preload_cor() {
 add_task(async function test_103_preload_insecure_cor() {
   await test_hint_preload(
     "test_103_preload_insecure_cor",
-    "http://example.com",
+    "https://example.com",
     "http://mochi.test:8888/browser/netwerk/test/browser/early_hint_pixel.sjs",
     { hinted: 0, normal: 1 }
   );
@@ -158,7 +90,7 @@ add_task(async function test_103_preload_insecure_cor() {
 add_task(async function test_103_relative_preload() {
   await test_hint_preload(
     "test_103_relative_preload",
-    "http://example.com",
+    "https://example.com",
     "/browser/netwerk/test/browser/early_hint_pixel.sjs",
     { hinted: 1, normal: 0 }
   );
@@ -174,36 +106,6 @@ add_task(async function test_103_insecure_preload() {
   );
 });
 
-// Early hint to redirect to same origin in secure context
-add_task(async function test_103_redirect_same_origin() {
-  await test_hint_preload(
-    "test_103_redirect_same_origin",
-    "http://example.com",
-    "http://example.com/browser/netwerk/test/browser/early_hint_redirect.sjs?http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs",
-    { hinted: 2, normal: 0 } // successful preload of redirect and resulting image
-  );
-});
-
-// Early hint to redirect to cross origin in secure context
-add_task(async function test_103_redirect_cross_origin() {
-  await test_hint_preload(
-    "test_103_redirect_cross_origin",
-    "http://example.com",
-    "http://example.com/browser/netwerk/test/browser/early_hint_redirect.sjs?http://example.net/browser/netwerk/test/browser/early_hint_pixel.sjs",
-    { hinted: 1, normal: 1 } // successful load of redirect in preload, but image loaded via normal load
-  );
-});
-
-// Early hint to redirect to cross origin in insecure context
-add_task(async function test_103_redirect_insecure_cross_origin() {
-  await test_hint_preload(
-    "test_103_redirect_insecure_cross_origin",
-    "http://example.com",
-    "http://example.com/browser/netwerk/test/browser/early_hint_redirect.sjs?http://mochi.test:8888/browser/netwerk/test/browser/early_hint_pixel.sjs",
-    { hinted: 1, normal: 1 }
-  );
-});
-
 // Cross origin preload from secure context to insecure context on same domain
 add_task(async function test_103_preload_mixed_content() {
   await test_hint_preload(
@@ -214,13 +116,13 @@ add_task(async function test_103_preload_mixed_content() {
   );
 });
 
-// Cross origin preload from secure context to redirected insecure context on same domain
-add_task(async function test_103_preload_redirect_mixed_content() {
+// Same preload from localhost to localhost should preload
+add_task(async function test_103_preload_localhost_to_localhost() {
   await test_hint_preload(
-    "test_103_preload_redirect_mixed_content",
-    "https://example.org",
-    "https://example.org/browser/netwerk/test/browser/early_hint_redirect.sjs?http://example.org/browser/netwerk/test/browser/early_hint_pixel.sjs",
-    { hinted: 1, normal: 1 }
+    "test_103_preload_localhost_to_localhost",
+    "http://127.0.0.1:8888",
+    "http://127.0.0.1:8888/browser/netwerk/test/browser/early_hint_pixel.sjs",
+    { hinted: 1, normal: 0 }
   );
 });
 
@@ -228,107 +130,8 @@ add_task(async function test_103_preload_redirect_mixed_content() {
 add_task(async function test_103_preload_only_file() {
   await test_hint_preload(
     "test_103_preload_only_file",
-    "http://example.com",
+    "https://example.com",
     "early_hint_pixel.sjs",
     { hinted: 1, normal: 0 }
   );
-});
-
-// csp header with "img-src: 'none'" only on main html response, don't show the image on the page
-add_task(async function test_preload_csp_imgsrc_none() {
-  // reset the count
-  let headers = new Headers();
-  headers.append("X-Early-Hint-Count-Start", "");
-  await fetch(
-    "http://example.com/browser/netwerk/test/browser/early_hint_pixel_count.sjs",
-    { headers }
-  );
-
-  let requestUrl =
-    "http://example.com/browser/netwerk/test/browser/103_preload_csp_imgsrc_none.html";
-
-  await BrowserTestUtils.withNewTab(
-    {
-      gBrowser,
-      url: requestUrl,
-      waitForLoad: true,
-    },
-    async function(browser) {
-      let noImgLoaded = await SpecialPowers.spawn(browser, [], function() {
-        let loadInfo = content.performance.getEntriesByName(
-          "http://example.com/browser/netwerk/test/browser/early_hint_pixel.sjs?1ac2a5e1-90c7-4171-b0f0-676f7d899af3"
-        );
-        return loadInfo.every(entry => entry.decodedBodySize === 0);
-      });
-      await Assert.ok(
-        noImgLoaded,
-        "test_preload_csp_imgsrc_none: Image dislpayed unexpectedly"
-      );
-    }
-  );
-
-  let gotRequestCount = await fetch(
-    "http://example.com/browser/netwerk/test/browser/early_hint_pixel_count.sjs"
-  ).then(response => response.json());
-  let expectedRequestCount = { hinted: 1, normal: 0 };
-
-  // TODO: Switch to stricter counting method after fixing https://bugzilla.mozilla.org/show_bug.cgi?id=1753730#c11
-  await lax_request_count_checking(
-    "test_preload_csp_imgsrc_none",
-    gotRequestCount,
-    expectedRequestCount
-  );
-  /* stricter counting method:
-  await Assert.deepEqual(
-    gotRequestCount,
-    { hinted: 1, normal: 0 },
-    "test_preload_csp_imgsrc_none: Unexpected amount of requests made"
-  );
-  */
-
-  Services.cache2.clear();
-});
-
-// Test that preloads in iframes don't get triggered
-add_task(async function test_103_iframe() {
-  // reset the count
-  let headers = new Headers();
-  headers.append("X-Early-Hint-Count-Start", "");
-  await fetch(
-    "http://example.com/browser/netwerk/test/browser/early_hint_pixel_count.sjs",
-    { headers }
-  );
-
-  let iframeUri =
-    "http://example.com/browser/netwerk/test/browser/103_preload_iframe.html";
-
-  await BrowserTestUtils.withNewTab(
-    {
-      gBrowser,
-      url: iframeUri,
-      waitForLoad: true,
-    },
-    async function() {}
-  );
-
-  let gotRequestCount = await fetch(
-    "http://example.com/browser/netwerk/test/browser/early_hint_pixel_count.sjs"
-  ).then(response => response.json());
-  let expectedRequestCount = { hinted: 0, normal: 1 };
-
-  // TODO: Switch to stricter counting method after fixing https://bugzilla.mozilla.org/show_bug.cgi?id=1753730#c11
-  await lax_request_count_checking(
-    "test_103_iframe",
-    gotRequestCount,
-    expectedRequestCount
-  );
-  /* stricter counting method:
-  await Assert.deepEqual(
-    gotRequestCount,
-    { hinted: 0, normal: 1 },
-    "test_103_iframe: Unexpected amount of requests made"
-  );
-  */
-
-  Services.cache2.clear();
 });

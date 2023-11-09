@@ -21,14 +21,10 @@ certmgr-tab-ca =
     .label = Entidades
 
 certmgr-mine = Ten certificados destas organizacións que o identifican
-certmgr-remembered = Estes certificados úsanse para identificalo a sitios web
+certmgr-remembered = Estes certificados úsanse para a súa identificación nos sitios web
 certmgr-people = Ten certificados arquivados que identifican a estas persoas
 certmgr-server = Estas entradas identifican excepcións de erros de certificado dos servidores
 certmgr-ca = Ten certificados arquivados que identifican a estas entidades de acreditación
-
-certmgr-edit-ca-cert =
-    .title = Editar a configuración de confianza do certificado da AC
-    .style = width: 48em;
 
 certmgr-edit-ca-cert2 =
     .title = Editar a configuración de confianza do certificado da AC
@@ -42,10 +38,6 @@ certmgr-edit-cert-trust-ssl =
 certmgr-edit-cert-trust-email =
     .label = Este certificado identifica usuarios de correo.
 
-certmgr-delete-cert =
-    .title = Eliminar certificado
-    .style = width: 48em; height: 24em;
-
 certmgr-delete-cert2 =
     .title = Eliminar certificado
     .style = min-width: 48em; min-height: 24em;
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Servidor
-
-certmgr-override-lifetime =
-    .label = Duración
 
 certmgr-token-name =
     .label = Dispositivo de seguranza
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Número de serie
+
+certmgr-fingerprint-sha-256 =
+    .label = Pegada dixital SHA-256
 
 certmgr-view =
     .label = Ver…

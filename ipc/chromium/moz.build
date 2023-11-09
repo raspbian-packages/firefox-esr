@@ -29,6 +29,7 @@ UNIFIED_SOURCES += [
     "src/chrome/common/chrome_switches.cc",
     "src/chrome/common/ipc_channel_utils.cc",
     "src/chrome/common/ipc_message.cc",
+    "src/chrome/common/ipc_message_utils.cc",
     "src/mojo/core/ports/event.cc",
     "src/mojo/core/ports/message_queue.cc",
     "src/mojo/core/ports/name.cc",
@@ -133,5 +134,3 @@ TEST_DIRS += [
 include("/ipc/chromium/chromium-config.mozbuild")
 
 FINAL_LIBRARY = "xul"
-
-REQUIRES_UNIFIED_BUILD = True

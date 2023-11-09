@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Recently closed
 firefoxview-closed-tabs-description2 = Reopen pages you’ve closed in this window.
 firefoxview-closed-tabs-placeholder-header = No recently closed tabs
 firefoxview-closed-tabs-placeholder-body = When you close a tab in this window, you can fetch it from here.
+firefoxview-closed-tabs-placeholder-body2 = When you close a tab, you can fetch it from here.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Last active
 firefoxview-tabs-list-tab-button =
     .title = Open { $targetURI } in a new tab
 firefoxview-try-colorways-button = Try colourways
-firefoxview-no-current-colorway-collection = New colourways are on the way
 firefoxview-change-colorway-button = Change colourway
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,63 @@ firefoxview-collapse-button-show =
     .title = Show list
 firefoxview-collapse-button-hide =
     .title = Hide list
+firefoxview-overview-nav = Recent browsing
+    .title = Recent browsing
+firefoxview-overview-header = Recent browsing
+    .title = Recent browsing
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = History
+    .title = History
+firefoxview-history-header = History
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Open tabs
+    .title = Open tabs
+firefoxview-opentabs-header = Open tabs
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Recently closed tabs
+    .title = Recently closed tabs
+firefoxview-recently-closed-header = Recently closed tabs
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Tabs from other devices
+    .title = Tabs from other devices
+firefoxview-synced-tabs-header = Tabs from other devices
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = View all
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Window { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Window { $winID } (Current)
+firefoxview-opentabs-focus-tab =
+    .title = Switch to this tab
+firefoxview-show-more = Show more
+firefoxview-show-less = Show less
+firefoxview-sort-history-by-date-label = Sort by date
+firefoxview-sort-history-by-site-label = Sort by site
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Today - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Yesterday - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Show all history
+firefoxview-view-more-browsing-history = View more browsing history

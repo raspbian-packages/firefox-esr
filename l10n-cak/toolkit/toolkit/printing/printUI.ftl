@@ -15,6 +15,9 @@ printui-sheets-count =
     }
 
 printui-page-range-all = Ronojel
+printui-page-range-current = Wakami
+printui-page-range-odd = Mek'ulaj
+printui-page-range-even = K'ulaj
 printui-page-range-custom = Ichinan
 printui-page-range-label = Taq ruxaq
 printui-page-range-picker =
@@ -64,6 +67,12 @@ printui-backgrounds-checkbox = Ketz'ajb'äx taq rupam
 
 # The section title.
 printui-source-label = B'anikil
+# Option for printing the original page.
+printui-source-radio = Qitzij
+# Option for printing just the content a user selected prior to printing.
+printui-selection-radio = Cha'onïk
+# Option for "simplifying" the page by printing the Reader View version.
+printui-simplify-page-radio = Ch'utinisan
 
 ##
 

@@ -283,30 +283,18 @@ class RegisterAllocator {
   LMoveGroup* getFixReuseMoveGroup(LInstruction* ins);
   LMoveGroup* getMoveGroupAfter(LInstruction* ins);
 
-  CodePosition minimalDefEnd(LNode* ins) {
-    // Compute the shortest interval that captures vregs defined by ins.
-    // Watch for instructions that are followed by an OSI point.
-    // If moves are introduced between the instruction and the OSI point then
-    // safepoint information for the instruction may be incorrect.
-    while (true) {
-      LNode* next = insData[ins->id() + 1];
-      if (!next->isOsiPoint()) {
-        break;
-      }
-      ins = next;
-    }
-
-    return outputOf(ins);
-  }
+  // Atomic group helper.  See comments in BacktrackingAllocator.cpp.
+  CodePosition minimalDefEnd(LNode* ins) const;
 
   void dumpInstructions(const char* who);
 
  public:
   template <typename TakeableSet>
   static void takeWasmRegisters(TakeableSet& regs) {
-#if defined(JS_CODEGEN_X64) || defined(JS_CODEGEN_ARM) ||      \
-    defined(JS_CODEGEN_ARM64) || defined(JS_CODEGEN_MIPS32) || \
-    defined(JS_CODEGEN_MIPS64) || defined(JS_CODEGEN_LOONG64)
+#if defined(JS_CODEGEN_X64) || defined(JS_CODEGEN_ARM) ||        \
+    defined(JS_CODEGEN_ARM64) || defined(JS_CODEGEN_MIPS32) ||   \
+    defined(JS_CODEGEN_MIPS64) || defined(JS_CODEGEN_LOONG64) || \
+    defined(JS_CODEGEN_RISCV64)
     regs.take(HeapReg);
 #endif
     MOZ_ASSERT(!regs.has(FramePointer));

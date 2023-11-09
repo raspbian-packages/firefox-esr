@@ -72,7 +72,7 @@ pub struct CommonItemProperties {
     /// (solid colors, background-images, gradients, etc).
     pub clip_rect: LayoutRect,
     /// Additional clips
-    pub clip_id: ClipId,
+    pub clip_chain_id: ClipChainId,
     /// The coordinate-space the item is in (yes, it can be really granular)
     pub spatial_id: SpatialId,
     /// Various flags describing properties of this primitive.
@@ -88,7 +88,7 @@ impl CommonItemProperties {
         Self {
             clip_rect,
             spatial_id: space_and_clip.spatial_id,
-            clip_id: space_and_clip.clip_id,
+            clip_chain_id: space_and_clip.clip_chain_id,
             flags: PrimitiveFlags::default(),
         }
     }
@@ -103,7 +103,7 @@ impl CommonItemProperties {
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize, PeekPoke)]
 pub struct SpaceAndClipInfo {
     pub spatial_id: SpatialId,
-    pub clip_id: ClipId,
+    pub clip_chain_id: ClipChainId,
 }
 
 impl SpaceAndClipInfo {
@@ -112,7 +112,7 @@ impl SpaceAndClipInfo {
     pub fn root_scroll(pipeline_id: PipelineId) -> Self {
         SpaceAndClipInfo {
             spatial_id: SpatialId::root_scroll_node(pipeline_id),
-            clip_id: ClipId::root(pipeline_id),
+            clip_chain_id: ClipChainId::INVALID,
         }
     }
 }
@@ -239,7 +239,7 @@ pub enum DebugDisplayItem {
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize, PeekPoke)]
 pub struct ImageMaskClipDisplayItem {
     pub id: ClipId,
-    pub parent_space_and_clip: SpaceAndClipInfo,
+    pub spatial_id: SpatialId,
     pub image_mask: ImageMask,
     pub fill_rule: FillRule,
 } // IMPLICIT points: Vec<LayoutPoint>
@@ -247,23 +247,16 @@ pub struct ImageMaskClipDisplayItem {
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize, PeekPoke)]
 pub struct RectClipDisplayItem {
     pub id: ClipId,
-    pub parent_space_and_clip: SpaceAndClipInfo,
+    pub spatial_id: SpatialId,
     pub clip_rect: LayoutRect,
 }
 
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize, PeekPoke)]
 pub struct RoundedRectClipDisplayItem {
     pub id: ClipId,
-    pub parent_space_and_clip: SpaceAndClipInfo,
+    pub spatial_id: SpatialId,
     pub clip: ComplexClipRegion,
 }
-
-#[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize, PeekPoke)]
-pub struct ClipDisplayItem {
-    pub id: ClipId,
-    pub parent_space_and_clip: SpaceAndClipInfo,
-    pub clip_rect: LayoutRect,
-} // IMPLICIT: complex_clips: Vec<ComplexClipRegion>
 
 /// The minimum and maximum allowable offset for a sticky frame in a single dimension.
 #[repr(C)]
@@ -365,7 +358,10 @@ pub struct ClearRectangleDisplayItem {
 /// distinct item also makes it easier to inspect/debug display items.
 #[derive(Clone, Copy, Debug, Default, Deserialize, PartialEq, Serialize, PeekPoke)]
 pub struct HitTestDisplayItem {
-    pub common: CommonItemProperties,
+    pub rect: LayoutRect,
+    pub clip_chain_id: ClipChainId,
+    pub spatial_id: SpatialId,
+    pub flags: PrimitiveFlags,
     pub tag: ItemTag,
 }
 
@@ -529,10 +525,6 @@ pub struct NinePatchBorder {
     /// Determines what happens if the vertical side parts of the 9-part
     /// image have a different size than the vertical parts of the border.
     pub repeat_vertical: RepeatMode,
-
-    /// The outset for the border.
-    /// TODO(mrobinson): This should be removed and handled by the client.
-    pub outset: LayoutSideOffsets, // TODO: what unit is this in?
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, PeekPoke)]
@@ -879,7 +871,7 @@ pub struct PushStackingContextDisplayItem {
 pub struct StackingContext {
     pub transform_style: TransformStyle,
     pub mix_blend_mode: MixBlendMode,
-    pub clip_id: Option<ClipId>,
+    pub clip_chain_id: Option<ClipChainId>,
     pub raster_space: RasterSpace,
     pub flags: StackingContextFlags,
 }
@@ -1476,17 +1468,12 @@ impl YuvFormat {
 pub struct ImageMask {
     pub image: ImageKey,
     pub rect: LayoutRect,
-    pub repeat: bool,
 }
 
 impl ImageMask {
     /// Get a local clipping rect contributed by this mask.
     pub fn get_local_clip_rect(&self) -> Option<LayoutRect> {
-        if self.repeat {
-            None
-        } else {
-            Some(self.rect)
-        }
+        Some(self.rect)
     }
 }
 
@@ -1633,11 +1620,18 @@ impl From<FillRule> for u8 {
 #[derive(Clone, Copy, Debug, Default, Deserialize, Eq, Hash, PartialEq, Serialize, PeekPoke)]
 pub struct ClipChainId(pub u64, pub PipelineId);
 
+impl ClipChainId {
+    pub const INVALID: Self = ClipChainId(!0, PipelineId::INVALID);
+}
+
 /// A reference to a clipping node defining how an item is clipped.
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq, Serialize, PeekPoke)]
-pub enum ClipId {
-    Clip(usize, PipelineId),
-    ClipChain(ClipChainId),
+pub struct ClipId(pub usize, pub PipelineId);
+
+impl Default for ClipId {
+    fn default() -> Self {
+        ClipId::invalid()
+    }
 }
 
 const ROOT_CLIP_ID: usize = 0;
@@ -1645,33 +1639,30 @@ const ROOT_CLIP_ID: usize = 0;
 impl ClipId {
     /// Return the root clip ID - effectively doing no clipping.
     pub fn root(pipeline_id: PipelineId) -> Self {
-        ClipId::Clip(ROOT_CLIP_ID, pipeline_id)
+        ClipId(ROOT_CLIP_ID, pipeline_id)
     }
 
     /// Return an invalid clip ID - needed in places where we carry
     /// one but need to not attempt to use it.
     pub fn invalid() -> Self {
-        ClipId::Clip(!0, PipelineId::dummy())
+        ClipId(!0, PipelineId::dummy())
     }
 
     pub fn pipeline_id(&self) -> PipelineId {
         match *self {
-            ClipId::Clip(_, pipeline_id) |
-            ClipId::ClipChain(ClipChainId(_, pipeline_id)) => pipeline_id,
+            ClipId(_, pipeline_id) => pipeline_id,
         }
     }
 
     pub fn is_root(&self) -> bool {
         match *self {
-            ClipId::Clip(id, _) => id == ROOT_CLIP_ID,
-            ClipId::ClipChain(_) => false,
+            ClipId(id, _) => id == ROOT_CLIP_ID,
         }
     }
 
     pub fn is_valid(&self) -> bool {
         match *self {
-            ClipId::Clip(id, _) => id != !0,
-            _ => true,
+            ClipId(id, _) => id != !0,
         }
     }
 }
@@ -1788,7 +1779,6 @@ impl_default_for_enums! {
     ComponentTransferFuncType => Identity,
     ClipMode => Clip,
     FillRule => Nonzero,
-    ClipId => ClipId::invalid(),
     ReferenceFrameKind => Transform {
         is_2d_scale_translation: false,
         should_snap: false,

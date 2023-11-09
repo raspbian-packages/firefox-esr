@@ -26,10 +26,6 @@ certmgr-people = 您有用来识别这些人的证书文件
 certmgr-server = 下列是服务器证书例外项目
 certmgr-ca = 您有用来识别这些证书颁发机构的证书文件
 
-certmgr-edit-ca-cert =
-    .title = 编辑证书颁发机构信任关系设置
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = 编辑证书颁发机构信任关系设置
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = 此证书可以标识电子邮件用户。
-
-certmgr-delete-cert =
-    .title = 删除证书
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = 删除证书
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = 服务器
-
-certmgr-override-lifetime =
-    .label = 生命周期
 
 certmgr-token-name =
     .label = 安全设备
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = 序列号
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256 指纹
 
 certmgr-view =
     .label = 查看…

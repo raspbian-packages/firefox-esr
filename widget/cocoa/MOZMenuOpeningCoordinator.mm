@@ -15,10 +15,8 @@
 
 #include "nsCocoaFeatures.h"
 #include "nsCocoaUtils.h"
-#include "nsDeque.h"
 #include "nsMenuX.h"
 #include "nsObjCExceptions.h"
-#include "nsThreadUtils.h"
 #include "SDKDeclarations.h"
 
 static BOOL sNeedToUnwindForMenuClosing = NO;
@@ -29,6 +27,7 @@ static BOOL sNeedToUnwindForMenuClosing = NO;
 @property NSPoint position;
 @property(retain) NSView* view;
 @property(retain) NSAppearance* appearance;
+@property BOOL isContextMenu;
 @end
 
 @implementation MOZMenuOpeningInfo
@@ -38,10 +37,6 @@ static BOOL sNeedToUnwindForMenuClosing = NO;
   // non-nil between asynchronouslyOpenMenu:atScreenPosition:forView: and the
   // time at at which it is unqueued in _runMenu.
   MOZMenuOpeningInfo* mPendingOpening;  // strong
-
-  // Any runnables we want to run after the current menu event loop has been exited.
-  // Only non-empty if mRunMenuIsOnTheStack is true.
-  nsRefPtrDeque<mozilla::Runnable> mPendingAfterMenuCloseRunnables;
 
   // An incrementing counter
   NSInteger mLastHandle;
@@ -64,14 +59,14 @@ static BOOL sNeedToUnwindForMenuClosing = NO;
 
 - (void)dealloc {
   MOZ_RELEASE_ASSERT(!mPendingOpening, "should be empty at shutdown");
-  MOZ_RELEASE_ASSERT(mPendingAfterMenuCloseRunnables.GetSize() == 0, "should be empty at shutdown");
   [super dealloc];
 }
 
 - (NSInteger)asynchronouslyOpenMenu:(NSMenu*)aMenu
                    atScreenPosition:(NSPoint)aPosition
                             forView:(NSView*)aView
-                     withAppearance:(NSAppearance*)aAppearance {
+                     withAppearance:(NSAppearance*)aAppearance
+                      asContextMenu:(BOOL)aIsContextMenu {
   MOZ_RELEASE_ASSERT(!mPendingOpening,
                      "A menu is already waiting to open. Before opening the next one, either wait "
                      "for this one to open or cancel the request.");
@@ -84,6 +79,7 @@ static BOOL sNeedToUnwindForMenuClosing = NO;
   info.position = aPosition;
   info.view = aView;
   info.appearance = aAppearance;
+  info.isContextMenu = aIsContextMenu;
   mPendingOpening = [info retain];
   [info release];
 
@@ -109,7 +105,8 @@ static BOOL sNeedToUnwindForMenuClosing = NO;
       [self _openMenu:info.menu
           atScreenPosition:info.position
                    forView:info.view
-            withAppearance:info.appearance];
+            withAppearance:info.appearance
+             asContextMenu:info.isContextMenu];
     } @catch (NSException* exception) {
       nsObjCExceptionLog(exception);
     }
@@ -118,11 +115,6 @@ static BOOL sNeedToUnwindForMenuClosing = NO;
 
     // We have exited _openMenu's nested event loop.
     MOZMenuOpeningCoordinator.needToUnwindForMenuClosing = NO;
-
-    // Dispatch any pending "after menu close" runnables to the event loop.
-    while (mPendingAfterMenuCloseRunnables.GetSize() != 0) {
-      NS_DispatchToCurrentThread(mPendingAfterMenuCloseRunnables.PopFront());
-    }
   }
 
   mRunMenuIsOnTheStack = NO;
@@ -135,20 +127,11 @@ static BOOL sNeedToUnwindForMenuClosing = NO;
   }
 }
 
-- (void)runAfterMenuClosed:(RefPtr<mozilla::Runnable>&&)aRunnable {
-  MOZ_RELEASE_ASSERT(aRunnable);
-
-  if (mRunMenuIsOnTheStack) {
-    mPendingAfterMenuCloseRunnables.Push(aRunnable.forget());
-  } else {
-    NS_DispatchToCurrentThread(aRunnable.forget());
-  }
-}
-
 - (void)_openMenu:(NSMenu*)aMenu
     atScreenPosition:(NSPoint)aPosition
              forView:(NSView*)aView
-      withAppearance:(NSAppearance*)aAppearance {
+      withAppearance:(NSAppearance*)aAppearance
+       asContextMenu:(BOOL)aIsContextMenu {
   // There are multiple ways to display an NSMenu as a context menu.
   //
   //  1. We can return the NSMenu from -[ChildView menuForEvent:] and the NSView will open it for
@@ -171,8 +154,10 @@ static BOOL sNeedToUnwindForMenuClosing = NO;
   // NativeMenuMac::ShowAsContextMenu can be called at any time. It could be called during a
   // menuForEvent call (during a "contextmenu" event handler), or during a mouseDown handler, or at
   // a later time.
-  // The code below uses option 4 as the preferred option because it's the simplest: It works in all
-  // scenarios and it doesn't have the positioning drawbacks of option 5.
+  // The code below uses option 4 as the preferred option for context menus because it's the
+  // simplest: It works in all scenarios and it doesn't have the drawbacks of option 5. For popups
+  // that aren't context menus and that should be positioned as close as possible to the given
+  // screen position, we use option 5.
 
   if (aAppearance) {
 #if !defined(MAC_OS_VERSION_11_0) || MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_11_0
@@ -189,18 +174,28 @@ static BOOL sNeedToUnwindForMenuClosing = NO;
 
   if (aView) {
     NSWindow* window = aView.window;
-    // Create a synthetic event at the right location and open the menu [option 4].
     NSPoint locationInWindow = nsCocoaUtils::ConvertPointFromScreen(window, aPosition);
-    NSEvent* event = [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
-                                        location:locationInWindow
-                                   modifierFlags:0
-                                       timestamp:NSProcessInfo.processInfo.systemUptime
-                                    windowNumber:window.windowNumber
-                                         context:nil
-                                     eventNumber:0
-                                      clickCount:1
-                                        pressure:0.0f];
-    [NSMenu popUpContextMenu:aMenu withEvent:event forView:aView];
+    if (aIsContextMenu) {
+      // Create a synthetic event at the right location and open the menu [option 4].
+      NSEvent* event = [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
+                                          location:locationInWindow
+                                     modifierFlags:0
+                                         timestamp:NSProcessInfo.processInfo.systemUptime
+                                      windowNumber:window.windowNumber
+                                           context:nil
+                                       eventNumber:0
+                                        clickCount:1
+                                          pressure:0.0f];
+      [NSMenu popUpContextMenu:aMenu withEvent:event forView:aView];
+    } else {
+      // For popups which are not context menus, we open the menu using [option
+      // 5]. We pass `nil` to indicate that we're positioning the top left
+      // corner of the menu. This path is used for anchored menupopups, so we
+      // prefer option 5 over option 4 so that the menu doesn't get flipped if
+      // space is tight.
+      NSPoint locationInView = [aView convertPoint:locationInWindow fromView:nil];
+      [aMenu popUpMenuPositioningItem:nil atLocation:locationInView inView:aView];
+    }
   } else {
     // Open the menu using popUpMenuPositioningItem:atLocation:inView: [option 5].
     // This is not preferred, because it positions the menu differently from how a native context

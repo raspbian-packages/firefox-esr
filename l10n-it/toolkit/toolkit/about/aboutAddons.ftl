@@ -8,14 +8,16 @@ search-header =
     .placeholder = Cerca in addons.mozilla.org
     .searchbuttonlabel = Cerca
 
-search-header-shortcut =
-    .key = f
+## Variables
+##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
 
 list-empty-get-extensions-message = Visita <a data-l10n-name="get-extensions">{ $domain }</a> per installare estensioni e temi
 
 list-empty-get-dictionaries-message = Visita <a data-l10n-name="get-extensions">{ $domain }</a> per installare dizionari
 
 list-empty-get-language-packs-message = Visita <a data-l10n-name="get-extensions">{ $domain }</a> per installare pacchetti per la lingua
+
+##
 
 list-empty-installed =
     .value = Non risulta installato alcun componente aggiuntivo di questo tipo
@@ -187,6 +189,7 @@ addon-category-recent-updates-title =
 addon-category-sitepermission = Permessi siti
 addon-category-sitepermission-title =
     .title = Permessi siti
+
 # String displayed in about:addons in the Site Permissions section
 # Variables:
 #  $host (string): DNS host name for which the webextension enables permissions
@@ -201,6 +204,9 @@ extensions-warning-check-compatibility-button = Attiva
 extensions-warning-update-security = Il controllo sulla sicurezza degli aggiornamenti dei componenti aggiuntivi è disattivato. Il sistema potrebbe essere danneggiato da un aggiornamento.
 extensions-warning-update-security-button = Attiva
     .title = Attiva il controllo sulla sicurezza degli aggiornamenti dei componenti aggiuntivi
+
+extensions-warning-imported-addons = Completa l’installazione delle estensioni importate in { -brand-short-name }.
+extensions-warning-imported-addons-button = Installa estensioni
 
 ## Strings connected to add-on updates
 
@@ -341,15 +347,8 @@ extension-enabled-heading = Attive
 extension-disabled-heading = Disattivate
 
 theme-enabled-heading = Attivi
-theme-disabled-heading = Disattivati
+
 theme-disabled-heading2 = Temi salvati
-theme-monochromatic-heading = Tonalità
-theme-monochromatic-subheading = Nuove vibranti tonalità da { -brand-product-name }. Disponibili per un periodo limitato.
-
-theme-colorways-button = Prova nuove tonalità
-theme-colorways-button-colorway-enabled = Cambia tonalità
-
-colorway-collection-expiry-label = Scade il { DATETIME($expiryDate, month: "long", day: "numeric") }
 
 plugin-enabled-heading = Attivi
 plugin-disabled-heading = Disattivati
@@ -402,12 +401,32 @@ addon-detail-updates-radio-off = Disattivato
 addon-detail-update-check-label = Controlla aggiornamenti
 install-update-button = Aggiorna
 
+addon-detail-group-label-updates =
+    .aria-label = { addon-detail-updates-label }
+
 addon-badge-private-browsing-allowed2 =
     .title = Attiva in finestre anonime
     .aria-label = { addon-badge-private-browsing-allowed2.title }
 addon-detail-private-browsing-help = Se viene garantito il permesso, l’estensione potrà accedere alle tue attività online nelle finestre anonime. <a data-l10n-name="learn-more">Ulteriori informazioni</a>
 addon-detail-private-browsing-allow = Consenti
 addon-detail-private-browsing-disallow = Non consentire
+
+addon-detail-group-label-private-browsing =
+    .aria-label = { detail-private-browsing-label }
+
+## "sites with restrictions" (internally called "quarantined") are special domains
+## where add-ons are normally blocked for security reasons.
+
+# Used as a description for the option to allow or block an add-on on quarantined domains.
+addon-detail-quarantined-domains-label = Funzionamento in siti con restrizioni
+# Used as help text part of the quarantined domains UI controls row.
+addon-detail-quarantined-domains-help = Se viene garantito il permesso, l’estensione avrà accesso a siti con restrizioni identificati da { -vendor-short-name }. Consentire solo se si considera l’estensione affidabile.
+# Used as label and tooltip text on the radio inputs associated to the quarantined domains UI controls.
+addon-detail-quarantined-domains-allow = Consenti
+addon-detail-quarantined-domains-disallow = Non consentire
+# aria-label associated to the quarantined domains exempt row to help screen readers to announce the group.
+addon-detail-group-label-quarantined-domains =
+    .aria-label = { addon-detail-quarantined-domains-label }
 
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
@@ -465,6 +484,10 @@ addon-page-options-button =
 ## Variables:
 ##   $name (String): name of the add-on.
 
+## Detail notifications
+## Variables:
+##   $name (string) - Name of the add-on.
+
 # Variables:
 #   $version (String): application version.
 details-notification-incompatible = { $name } non è compatibile con { -brand-short-name } { $version }.
@@ -484,3 +507,4 @@ details-notification-softblocked = { $name } è riconosciuto come causa di probl
 details-notification-softblocked-link = Ulteriori informazioni
 
 details-notification-gmp-pending = { $name } verrà installato tra qualche istante.
+

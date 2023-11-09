@@ -3,19 +3,19 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = Taba ùr
+tabbrowser-empty-private-tab-title = Taba prìobhaideach ùr
+
 tabbrowser-menuitem-close-tab =
     .label = Dùin an taba
 tabbrowser-menuitem-close =
     .label = Dùin
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -79,14 +79,46 @@ tabbrowser-unblock-tab-audio-tooltip =
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
+# The singular form is not considered since this string is used only for multiple tabs.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-confirm-close-tabs-title =
+    { $tabCount ->
+        [one] A bheil thu airson an { $tabCount } taba a dhùnadh?
+        [two] A bheil thu airson an { $tabCount } thaba a dhùnadh?
+        [few] A bheil thu airson na { $tabCount } tabaichean a dhùnadh?
+       *[other] A bheil thu airson an { $tabCount } taba a dhùnadh?
+    }
 tabbrowser-confirm-close-tabs-button = Dùin na tabaichean
+tabbrowser-confirm-close-tabs-checkbox = Dearbh mus dèid iomadh taba a dhùnadh
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
 
+# The forms for 0 or 1 items are not considered since this string is used only for
+# multiple windows.
+# Variables:
+#   $windowCount (Number): The number of windows that will be closed.
+tabbrowser-confirm-close-windows-title =
+    { $windowCount ->
+        [one] A bheil thu airson an { $windowCount } uinneag a dhùnadh?
+        [two] A bheil thu airson an { $windowCount } uinneag a dhùnadh?
+        [few] A bheil thu airson na { $windowCount } uinneagan a dhùnadh?
+       *[other] A bheil thu airson an { $windowCount } uinneag a dhùnadh?
+    }
+tabbrowser-confirm-close-windows-button =
+    { PLATFORM() ->
+        [windows] Dùin is fàg an-seo
+       *[other] Dùin is fàg an-seo
+    }
 
 ## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
 ## Windows does not show a prompt on quit when using the keyboard shortcut by default.
 
+tabbrowser-confirm-close-tabs-with-key-title = A bheil thu airson an uinneag a dhùnadh is { -brand-short-name } a dhùnadh?
+tabbrowser-confirm-close-tabs-with-key-button = Fàg { -brand-short-name }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-confirm-close-tabs-with-key-checkbox = Dearbh mus dèid fàgail an-seo le { $quitKey }
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -112,6 +144,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Na seall am bogsa-còmhraidh seo dho
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Thoir cead do brathan mar am fear seo o { $domain } gun doir iad dhan taba aca-san thu
+
 tabbrowser-customizemode-tab-title = Gnàthaich { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -130,3 +163,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Till fuaim nan tabaichean
     .accesskey = m
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = A’ cluich fuaim
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label =
+        { $tabCount ->
+            [one] Seall na tabaichean air fad ({ $tabCount })
+            [two] Seall na tabaichean air fad ({ $tabCount })
+            [few] Seall na tabaichean air fad ({ $tabCount })
+           *[other] Seall na tabaichean air fad ({ $tabCount })
+        }
+
+## Tab manager menu buttons
+

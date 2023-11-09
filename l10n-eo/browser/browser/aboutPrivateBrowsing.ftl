@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] Alpingli al la taska ilaro
     }
 about-private-browsing-pin-promo-title = Sen konservitaj kuketoj aŭ historio, rekte el via skribotablo. Retumu kvazaŭ neniu vin vidus.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Kuketaj anoncoj, for!
+about-private-browsing-cookie-banners-promo-button = Redukti kuketajn anoncojn
+about-private-browsing-cookie-banners-promo-message = Permesi al { -brand-short-name } aŭtomate respondi por vi kuketajn ŝprucaĵojn, tiel ke vi povas sendistre plu retumi. { -brand-short-name } rifuzos ĉiujn petojn, se tio eblas.

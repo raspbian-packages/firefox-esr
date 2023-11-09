@@ -26,7 +26,7 @@ policy-BlockAboutSupport = دسترسی به صفحه about:support را مسد�
 
 policy-CertificatesDescription = گواهینامه‌ها را اضافه کنید یا از گواهینامه‌های داخلی استفاده کنید.
 
-policy-Cookies = اجازه دادن یا اجازه ندادن به وب‌سایت‌ها برای تنظیم کوکی.
+policy-Cookies = اجازه دادن یا اجازه ندادن به وبگاه‌ها برای تنظیم کلوچک.
 
 policy-DefaultDownloadDirectory = پوشه پیش‌فرض برای بارگیری را تنظیم کنید.
 
@@ -47,7 +47,7 @@ policy-DisableForgetButton = دسترسی به دکمه فراموش کردن ر
 
 policy-DisableFormHistory = جستجو وتاریخچه فرم را به خاطر نسپار.
 
-policy-DisablePocket = ویژگی ذخیره کردن صفحات وب در Pocket را غیرفعال کن.
+policy-DisablePocket2 = ویژگی ذخیره کردن صفحات وب در { -pocket-brand-name } را غیرفعال کن.
 
 policy-DisablePrivateBrowsing = مرور ناشناس را غیرفعال کن.
 
@@ -55,7 +55,7 @@ policy-DisableProfileImport = دستور ورود داده از مرورگرها
 
 policy-DisableProfileRefresh = کلید راه‌اندازی مجدد { -brand-short-name } را در صفحه about:support غیرفعال کن.
 
-policy-DNSOverHTTPS = پیکربندی DNS بر روی HTTPS.
+policy-DNSOverHTTPS = پیکربندی ساناد روی HTTPS.
 
 policy-DontCheckDefaultBrowser = غیر فعال کردن بررسی مرورگر پیش‌فرض در هنگام راه اندازی
 
@@ -63,6 +63,8 @@ policy-DontCheckDefaultBrowser = غیر فعال کردن بررسی مرورگ�
 
 
 ##
+
+policy-Permissions2 = پیکربندی اجازه‌ها برای دوربین، صدابَر، مکان، اعلا‌ها، و پخش خودکار.
 
 policy-Proxy = پیکربندی تنظیمات پروکسی
 

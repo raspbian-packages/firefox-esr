@@ -26,10 +26,6 @@ certmgr-people = Mae gennych dystysgrifau ar ffeil sy'n adnabod y bobl hyn
 certmgr-server = Mae'r cofnodion hyn yn nodi eithriadau gwall tystysgrif gweinydd
 certmgr-ca = Mae gennych dystysgrifau ar ffeil sy'n adnabod yr awdurdodau tystysgrif
 
-certmgr-edit-ca-cert =
-    .title = Golygu gosodiadau ymddiried tystysgrif CA
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Golygu gosodiadau ymddiried tystysgrif CA
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Mae'r dystysgrif yn medru adnabod defnyddwyr e-bost.
-
-certmgr-delete-cert =
-    .title = Dileu Tystysgrif
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Dileu Tystysgrif
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Gweinydd
-
-certmgr-override-lifetime =
-    .label = Hyd Oes
 
 certmgr-token-name =
     .label = Dyfais Diogelwch
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Rhif Cyfresol
+
+certmgr-fingerprint-sha-256 =
+    .label = Bysbrint SHA-256
 
 certmgr-view =
     .label = Golwg…

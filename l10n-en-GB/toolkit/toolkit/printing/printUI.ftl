@@ -99,7 +99,7 @@ printui-margins-custom-right = Right
 printui-margins-custom-right-inches = Right (inches)
 printui-margins-custom-right-mm = Right (mm)
 
-printui-system-dialog-link = Print using the system dialog…
+printui-system-dialog-link = Print using the system dialogue…
 
 printui-primary-button = Print
 printui-primary-button-save = Save

@@ -2,15 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-containers-window-new =
-    .title = Engadir un novo contedor
-    .style = width: 45em
-# Variables
-#   $name (String) - Name of the container
-containers-window-update-settings =
-    .title = Configuración do contedor { $name }
-    .style = width: 45em
-
 containers-window-new2 =
     .title = Engadir un novo contedor
     .style = min-width: 45em
@@ -75,7 +66,7 @@ containers-color-toolbar =
 containers-icon-fence =
     .label = Valado
 containers-icon-fingerprint =
-    .label = Pegada dactilar
+    .label = Pegada dixital
 containers-icon-briefcase =
     .label = Maletín
 # String represents a money sign but currently uses a dollar sign

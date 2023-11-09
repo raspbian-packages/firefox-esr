@@ -13,6 +13,11 @@ about-webrtc-document-title = Interní WebRTC
 # translated. This string is used as a title for a file save dialog box.
 about-webrtc-save-page-dialog-title = uložit about:webrtc jako
 
+## These labels are for a disclosure which contains the information for closed PeerConnection sections
+
+about-webrtc-closed-peerconnection-disclosure-show-msg = Zobrazit uzavřená PeerConnections
+about-webrtc-closed-peerconnection-disclosure-hide-msg = Skrýt uzavřená PeerConnections
+
 ## AEC is an abbreviation for Acoustic Echo Cancellation.
 
 about-webrtc-aec-logging-msg-label = Protokol AEC
@@ -20,15 +25,33 @@ about-webrtc-aec-logging-off-state-label = Spustit protokol AEC
 about-webrtc-aec-logging-on-state-label = Zastavit protokol AEC
 about-webrtc-aec-logging-on-state-msg = Protokol AEC je aktivní (hovořte s volajícím pár minut, a pak zastavte sběr)
 
-# The autorefresh checkbox causes the page to autorefresh its content when checked
-about-webrtc-auto-refresh-label = Automatické opětovné načtení
+about-webrtc-aec-logging-toggled-on-state-msg = Protokol AEC je aktivní (hovořte s volajícím pár minut, a pak zastavte sběr)
+# Variables:
+#  $path (String) - The path to which the aec log file is saved.
+about-webrtc-aec-logging-toggled-off-state-msg = Soubory sběru protokolu můžete nalézt v: { $path }
 
 ##
+
+# The autorefresh checkbox causes a stats section to autorefresh its content when checked
+about-webrtc-auto-refresh-label = Automatické opětovné načtení
+
+# Determines the default state of the Auto Refresh check boxes
+about-webrtc-auto-refresh-default-label = Automaticky obnovovat
+
+# A button which forces a refresh of displayed statistics
+about-webrtc-force-refresh-button = Obnovit
+
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
 # an abbreviation for Identifier. This string should not normally be translated
 # and is used as a data label.
 about-webrtc-peerconnection-id-label = PeerConnection ID:
+
+# The number of DataChannels that a PeerConnection has opened
+about-webrtc-data-channels-opened-label = Otevřené datové kanály:
+
+# The number of once open DataChannels that a PeerConnection has closed
+about-webrtc-data-channels-closed-label = Zavřené datové kanály:
 
 ## "SDP" is an abbreviation for Session Description Protocol, an IETF standard.
 ## See http://wikipedia.org/wiki/Session_Description_Protocol
@@ -62,8 +85,6 @@ about-webrtc-ice-pair-bytes-sent = Odesláno bajtů:
 about-webrtc-ice-pair-bytes-received = Staženo bajtů:
 about-webrtc-ice-component-id = ID komponenty
 
-## "Avg." is an abbreviation for Average. These are used as data labels.
-
 ## These adjectives are used to label a line of statistics collected for a peer
 ## connection. The data represents either the local or remote end of the
 ## connection.
@@ -95,6 +116,13 @@ about-webrtc-log-show-msg = zobrazit protokol
 about-webrtc-log-hide-msg = skrýt protokol
     .title = klepněte pro zabalení této sekce
 
+about-webrtc-log-section-show-msg = Zobrazit protokol
+    .title = Klepněte pro rozbalení této sekce
+about-webrtc-log-section-hide-msg = Skrýt protokol
+    .title = Klepněte pro zabalení této sekce
+about-webrtc-copy-report-button = Kopírovat hlášení
+about-webrtc-copy-report-history-button = Kopírovat historii hlášení
+
 ## These are used to display a header for a PeerConnection.
 ## Variables:
 ##  $browser-id (Number) - A numeric id identifying the browser tab for the PeerConnection.
@@ -104,6 +132,14 @@ about-webrtc-log-hide-msg = skrýt protokol
 
 about-webrtc-connection-open = [ { $browser-id } | { $id } ] { $url } { $now }
 about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (uzavřeno) { $now }
+
+## These are used to indicate what direction media is flowing.
+## Variables:
+##  $codecs - a list of media codecs
+
+about-webrtc-short-send-receive-direction = Odesílání/přijímání: { $codecs }
+about-webrtc-short-send-direction = Odesílání: { $codecs }
+about-webrtc-short-receive-direction = Přijímání: { $codecs }
 
 ##
 
@@ -116,11 +152,19 @@ about-webrtc-raw-cand-show-msg = zobrazit raw candidates
     .title = klepněte pro rozbalení této sekce
 about-webrtc-raw-cand-hide-msg = skrýt raw candidates
     .title = klepněte pro zabalení této sekce
+about-webrtc-raw-cand-section-show-msg = Zobrazit raw candidates
+    .title = Klepněte pro rozbalení této sekce
+about-webrtc-raw-cand-section-hide-msg = Skrýt raw candidates
+    .title = Klepněte pro zabalení této sekce
 about-webrtc-priority = Priorita
 about-webrtc-fold-show-msg = zobrazit detaily
     .title = klepněte pro rozbalení této sekce
 about-webrtc-fold-hide-msg = skrýt detaily
     .title = klepněte pro zabalení této sekce
+about-webrtc-fold-default-show-msg = Zobrazit detaily
+    .title = Klepněte pro rozbalení této sekce
+about-webrtc-fold-default-hide-msg = Skrýt detaily
+    .title = Klepněte pro zabalení této sekce
 about-webrtc-dropped-frames-label = Vynecháno snímků:
 about-webrtc-discarded-packets-label = Zahozeno paketů:
 about-webrtc-decoder-label = Dekodér
@@ -142,6 +186,12 @@ about-webrtc-last-frame-timestamp = Časová značka posledního zaznamenaného 
 about-webrtc-local-receive-ssrc = Místní příchozí SSRC
 # This is an SSRC on the remote side of the connection that is sending RTP
 about-webrtc-remote-send-ssrc = Vzdálené odchozí SSRC
+
+## These are displayed on the button that shows or hides the
+## PeerConnection configuration disclosure
+
+about-webrtc-pc-configuration-show-msg = Zobrazit konfiguraci
+about-webrtc-pc-configuration-hide-msg = Skrýt konfiguraci
 
 ##
 
@@ -193,6 +243,10 @@ about-webrtc-save-page-msg = stránka uložena do: { $path }
 about-webrtc-debug-mode-off-state-msg = trasu protokolu lze nalézt na adrese: { $path }
 about-webrtc-debug-mode-on-state-msg = režim ladění aktivní, protokol v: { $path }
 about-webrtc-aec-logging-off-state-msg = soubory sběru protokolu můžete nalézt v: { $path }
+
+about-webrtc-save-page-complete-msg = Stránka uložena do: { $path }
+about-webrtc-debug-mode-toggled-off-state-msg = Trasu protokolu lze nalézt na adrese: { $path }
+about-webrtc-debug-mode-toggled-on-state-msg = Režim ladění aktivní, protokol v: { $path }
 
 ##
 
@@ -275,6 +329,19 @@ about-webrtc-sdp-set-at-timestamp-remote = Nastavit Remote SDP v časové značc
 #  $timestamp (Number) - The Unix Epoch time at which the SDP was set.
 #  $relative-timestamp (Number) - The timestamp relative to the timestamp of the earliest received SDP.
 about-webrtc-sdp-set-timestamp = Časová značka { NUMBER($timestamp, useGrouping: "false") } (+ { $relative-timestamp } ms)
+
+## These are displayed on the button that shows or hides the SDP information disclosure
+
+about-webrtc-show-msg-sdp = Zobrazit SDP
+about-webrtc-hide-msg-sdp = Skrýt SDP
+
+## These are displayed on the button that shows or hides the Media Context information disclosure.
+## The Media Context is the set of preferences and detected capabilities that informs
+## the negotiated CODEC settings.
+
+about-webrtc-media-context-show-msg = Zobrazit kontext médií
+about-webrtc-media-context-hide-msg = Skrýt kontext médií
+about-webrtc-media-context-heading = Informace o kontextu médií
 
 ##
 

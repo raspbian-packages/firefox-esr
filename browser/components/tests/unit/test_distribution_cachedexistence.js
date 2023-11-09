@@ -13,11 +13,11 @@ const PREF_LOAD_FROM_PROFILE = "distribution.testing.loadFromProfile";
 
 const gTestDir = do_get_cwd();
 
-const { AppConstants } = ChromeUtils.import(
-  "resource://gre/modules/AppConstants.jsm"
+const { AppConstants } = ChromeUtils.importESModule(
+  "resource://gre/modules/AppConstants.sys.mjs"
 );
 
-add_task(async function() {
+add_task(async function () {
   // Start with a clean slate of the prefs that control this feature.
   Services.prefs.clearUserPref(PREF_CACHED_FILE_APPVERSION);
   Services.prefs.clearUserPref(PREF_CACHED_FILE_EXISTENCE);
@@ -125,7 +125,7 @@ function setupTest() {
   Services.prefs.setBoolPref(PREF_LOAD_FROM_PROFILE, true);
 }
 
-registerCleanupFunction(function() {
+registerCleanupFunction(function () {
   deleteDistribution();
   Services.prefs.clearUserPref(PREF_LOAD_FROM_PROFILE);
 });

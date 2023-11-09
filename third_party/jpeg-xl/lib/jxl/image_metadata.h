@@ -9,12 +9,13 @@
 #ifndef LIB_JXL_IMAGE_METADATA_H_
 #define LIB_JXL_IMAGE_METADATA_H_
 
+#include <jxl/codestream_header.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
-#include "jxl/codestream_header.h"
 #include "lib/jxl/color_encoding_internal.h"
 #include "lib/jxl/fields.h"
 #include "lib/jxl/headers.h"
@@ -22,6 +23,8 @@
 #include "lib/jxl/opsin_params.h"
 
 namespace jxl {
+
+struct AuxOut;
 
 // EXIF orientation of the image. This field overrides any field present in
 // actual EXIF metadata. The value tells which transformation the decoder must
@@ -79,6 +82,8 @@ struct BitDepth : public Fields {
 
   Status VisitFields(Visitor* JXL_RESTRICT visitor) override;
 
+  std::string DebugString() const;
+
   // Whether the original (uncompressed) samples are floating point or
   // unsigned integer.
   bool floating_point_sample;
@@ -106,6 +111,8 @@ struct ExtraChannelInfo : public Fields {
   JXL_FIELDS_NAME(ExtraChannelInfo)
 
   Status VisitFields(Visitor* JXL_RESTRICT visitor) override;
+
+  std::string DebugString() const;
 
   mutable bool all_default;
 
@@ -276,6 +283,8 @@ struct ImageMetadata : public Fields {
 
   bool ExtraFieldsDefault() const;
 
+  std::string DebugString() const;
+
   mutable bool all_default;
 
   BitDepth bit_depth;
@@ -407,6 +416,8 @@ struct CodecMetadata {
       return m.preview_size.ysize();
     }
   }
+
+  std::string DebugString() const;
 };
 
 }  // namespace jxl

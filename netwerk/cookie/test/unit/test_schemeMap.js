@@ -1,22 +1,17 @@
 const { NetUtil } = ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-
-var { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
 
 function inChildProcess() {
   return Services.appinfo.processType != Ci.nsIXULRuntime.PROCESS_TYPE_DEFAULT;
 }
 
-const { CookieXPCShellUtils } = ChromeUtils.import(
-  "resource://testing-common/CookieXPCShellUtils.jsm"
+const { CookieXPCShellUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/CookieXPCShellUtils.sys.mjs"
 );
 
-let cookieXPCShellUtilsInitialized = false;
+let CookieXPCShellUtilsInitialized = false;
 function maybeInitializeCookieXPCShellUtils() {
-  if (!cookieXPCShellUtilsInitialized) {
-    cookieXPCShellUtilsInitialized = true;
+  if (!CookieXPCShellUtilsInitialized) {
+    CookieXPCShellUtilsInitialized = true;
     CookieXPCShellUtils.init(this);
 
     CookieXPCShellUtils.createServer({ hosts: ["example.org"] });
@@ -38,8 +33,6 @@ add_task(async _ => {
     );
   }
 
-  let cs = Cc["@mozilla.org/cookieService;1"].getService(Ci.nsICookieService);
-
   info("Let's set a cookie from HTTP example.org");
 
   let uri = NetUtil.newURI("http://example.org/");
@@ -54,7 +47,7 @@ add_task(async _ => {
     contentPolicyType: Ci.nsIContentPolicy.TYPE_OTHER,
   });
 
-  cs.setCookieStringFromHttp(uri, "a=b; sameSite=lax", channel);
+  Services.cookies.setCookieStringFromHttp(uri, "a=b; sameSite=lax", channel);
 
   let cookies = Services.cookies.getCookiesFromHost("example.org", {});
   Assert.equal(cookies.length, 1, "We expect 1 cookie only");
@@ -72,7 +65,7 @@ add_task(async _ => {
     contentPolicyType: Ci.nsIContentPolicy.TYPE_OTHER,
   });
 
-  cs.setCookieStringFromHttp(uri, "a=b; sameSite=lax", channel);
+  Services.cookies.setCookieStringFromHttp(uri, "a=b; sameSite=lax", channel);
 
   cookies = Services.cookies.getCookiesFromHost("example.org", {});
   Assert.equal(cookies.length, 1, "We expect 1 cookie only");
@@ -106,8 +99,6 @@ add_task(async _ => {
       );
     }
 
-    let cs = Cc["@mozilla.org/cookieService;1"].getService(Ci.nsICookieService);
-
     info(
       `Testing schemefulSameSite=${schemefulComparison}. Let's set a cookie from HTTPS example.org`
     );
@@ -124,7 +115,7 @@ add_task(async _ => {
       contentPolicyType: Ci.nsIContentPolicy.TYPE_OTHER,
     });
 
-    cs.setCookieStringFromHttp(
+    Services.cookies.setCookieStringFromHttp(
       https_uri,
       "a=b; sameSite=lax",
       same_site_channel

@@ -5,10 +5,12 @@
 
 about-logins-page-title = Titouroù kennaskañ
 
-login-filter =
+about-logins-login-filter =
     .placeholder = Klask titouroù kennaskañ
+    .key = F
 
-create-login-button = Krouiñ un titour nevez
+create-new-login-button =
+    .title = Krouiñ titouroù kennaskañ nevez
 
 fxaccounts-sign-in-text = Adkavit ho kerioù-tremen war ho trevnadoù all
 fxaccounts-sign-in-sync-button = Kennaskañ evit goubredañ
@@ -35,6 +37,8 @@ about-logins-menu-menuitem-help = Skoazell
 
 login-list =
     .aria-label = Titouroù kennaskañ a glot gant ar c’hlask
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } titour kennaskañ
@@ -42,6 +46,17 @@ login-list-count =
         [few] { $count } zitour kennaskañ
         [many] { $count } a ditouroù kennaskañ
        *[other] { $count } titour kennaskañ
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count } anaouder war { $total }
+        [two] { $count } anaouder war { $total }
+        [few] { $count } anaouder war { $total }
+        [many] { $count } anaouder war { $total }
+       *[other] { $count } anaouder war { $total }
     }
 login-list-sort-label-text = Rummañ dre:
 login-list-name-option = Anv (A-Z)
@@ -102,9 +117,17 @@ login-item-copied-password-button-text = Eilet!
 login-item-save-changes-button = Enrollañ ar c’hemmoù
 login-item-save-new-button = Enrollañ
 login-item-cancel-button = Nullañ
-login-item-time-changed = Kemmet da ziwezhañ: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Krouet: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Implijet da ziwezhañ: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = Krouet
+login-item-timeline-action-updated = Hizivaet
+login-item-timeline-action-used = Implijet
 
 ## OS Authentication dialog
 
@@ -154,6 +177,9 @@ confirmation-dialog-dismiss-button =
 about-logins-confirm-remove-dialog-title = Dilemel an titour kennaskañ-mañ?
 confirm-delete-dialog-message = N'haller ket dizober kement-se.
 about-logins-confirm-remove-dialog-confirm-button = Dilemel
+
+## Variables
+##   $count (number) - Number of items
 
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
@@ -211,6 +237,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] Dilemel a raio an titouroù kennaskañ enrollet e { -brand-short-name } war an holl drevnadoù goubredet war ho { -fxaccount-brand-name }. Dilemel a raio ivez ar galvoù frailhoù a vez skrammet amañ. Ne vo ket posupl deoc’h dizober ar gwered-mañ.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Ezporzhiañ an titouroù kennaskañ
 about-logins-confirm-export-dialog-message = Enrollet e vo ar gerioù-tremen dindan ur stumm lennus (sk: g3rTremenF4ll) neuze e c’hallo bezañ lennet gant an holl a c’hall digeriñ ar restr ezporzhiet.
 about-logins-confirm-export-dialog-confirm-button = Ezporzhiañ…
@@ -230,7 +258,6 @@ about-logins-breach-alert-date = C’hoarvezet eo bet ar fuadur d’ar { DATETIM
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Mont da { $hostname }
-about-logins-breach-alert-learn-more-link = Gouzout hiroc’h
 
 ## Vulnerable Password notification
 

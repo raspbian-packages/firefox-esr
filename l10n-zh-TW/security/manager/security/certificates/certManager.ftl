@@ -26,10 +26,6 @@ certmgr-people = 您有可識別下列人員的憑證
 certmgr-server = 下列是伺服器憑證例外項目
 certmgr-ca = 您有可識別下列憑證機構的憑證
 
-certmgr-edit-ca-cert =
-    .title = 編輯憑證機構信任關係設定
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = 編輯憑證機構信任關係設定
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = 此憑證可用來識別 Email 使用者。
-
-certmgr-delete-cert =
-    .title = 刪除憑證
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = 刪除憑證
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = 伺服器
-
-certmgr-override-lifetime =
-    .label = 有效時間
 
 certmgr-token-name =
     .label = 安全裝置
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = 序號
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256 指紋
 
 certmgr-view =
     .label = 檢視…

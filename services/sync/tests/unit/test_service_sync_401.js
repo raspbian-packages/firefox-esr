@@ -1,10 +1,12 @@
 /* Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
+);
 
 function login_handling(handler) {
-  return function(request, response) {
+  return function (request, response) {
     if (
       request.hasHeader("Authorization") &&
       request.getHeader("Authorization").includes('Hawk id="id"')
@@ -46,7 +48,7 @@ add_task(async function run_test() {
     Svc.Prefs.set("lastPing", Math.floor(Date.now() / 1000));
 
     let threw = false;
-    Svc.Obs.add("weave:service:sync:error", function(subject, data) {
+    Svc.Obs.add("weave:service:sync:error", function (subject, data) {
       threw = true;
     });
 

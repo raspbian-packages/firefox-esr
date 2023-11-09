@@ -10,8 +10,6 @@
 
 namespace mozilla::dom {
 
-AnimationTimeline::~AnimationTimeline() { mAnimationOrder.clear(); }
-
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_CLASS(AnimationTimeline)
 
 NS_IMPL_CYCLE_COLLECTION_UNLINK_BEGIN(AnimationTimeline)
@@ -32,6 +30,14 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(AnimationTimeline)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
+AnimationTimeline::AnimationTimeline(nsIGlobalObject* aWindow,
+                                     RTPCallerType aRTPCallerType)
+    : mWindow(aWindow), mRTPCallerType(aRTPCallerType) {
+  MOZ_ASSERT(mWindow);
+}
+
+AnimationTimeline::~AnimationTimeline() { mAnimationOrder.clear(); }
+
 bool AnimationTimeline::Tick() {
   bool needsTicks = false;
 
@@ -40,6 +46,12 @@ bool AnimationTimeline::Tick() {
   for (Animation* animation = mAnimationOrder.getFirst(); animation;
        animation =
            static_cast<LinkedListElement<Animation>*>(animation)->getNext()) {
+    MOZ_ASSERT(mAnimations.Contains(animation),
+               "The sampling order list should be a subset of the hashset");
+    MOZ_ASSERT(!animation->IsHiddenByContentVisibility(),
+               "The sampling order list should not contain any animations "
+               "that are hidden by content-visibility");
+
     // Skip any animations that are longer need associated with this timeline.
     if (animation->GetTimeline() != this) {
       // If animation has some other timeline, it better not be also in the
@@ -72,16 +84,33 @@ void AnimationTimeline::NotifyAnimationUpdated(Animation& aAnimation) {
     if (aAnimation.GetTimeline() && aAnimation.GetTimeline() != this) {
       aAnimation.GetTimeline()->RemoveAnimation(&aAnimation);
     }
-    mAnimationOrder.insertBack(&aAnimation);
+    if (!aAnimation.IsHiddenByContentVisibility()) {
+      mAnimationOrder.insertBack(&aAnimation);
+    }
   }
 }
 
 void AnimationTimeline::RemoveAnimation(Animation* aAnimation) {
   MOZ_ASSERT(!aAnimation->GetTimeline() || aAnimation->GetTimeline() == this);
   if (static_cast<LinkedListElement<Animation>*>(aAnimation)->isInList()) {
+    MOZ_ASSERT(mAnimations.Contains(aAnimation),
+               "The sampling order list should be a subset of the hashset");
     static_cast<LinkedListElement<Animation>*>(aAnimation)->remove();
   }
   mAnimations.Remove(aAnimation);
+}
+
+void AnimationTimeline::NotifyAnimationContentVisibilityChanged(
+    Animation* aAnimation, bool aIsVisible) {
+  bool inList =
+      static_cast<LinkedListElement<Animation>*>(aAnimation)->isInList();
+  MOZ_ASSERT(!inList || mAnimations.Contains(aAnimation),
+             "The sampling order list should be a subset of the hashset");
+  if (aIsVisible && !inList && mAnimations.Contains(aAnimation)) {
+    mAnimationOrder.insertBack(aAnimation);
+  } else if (!aIsVisible && inList) {
+    static_cast<LinkedListElement<Animation>*>(aAnimation)->remove();
+  }
 }
 
 }  // namespace mozilla::dom

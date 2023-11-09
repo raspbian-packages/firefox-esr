@@ -26,10 +26,6 @@ certmgr-people = Tyto certifikáty jsou dostupné pro identifikaci následujíc�
 certmgr-server = Tento seznam obsahuje výjimky pro chyby serverových certifikátů
 certmgr-ca = Tyto certifikáty jsou dostupné pro identifikaci certifikačních autorit
 
-certmgr-edit-ca-cert =
-    .title = Upravit nastavení důvěryhodnosti CA
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Upravit nastavení důvěryhodnosti CA
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Tento certifikát může identifikovat uživatele e-mailu.
-
-certmgr-delete-cert =
-    .title = Smazat certifikát
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Smazat certifikát
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Server
-
-certmgr-override-lifetime =
-    .label = Platnost
 
 certmgr-token-name =
     .label = Bezpečnostní zařízení
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Sériové číslo
+
+certmgr-fingerprint-sha-256 =
+    .label = Otisk SHA-256
 
 certmgr-view =
     .label = Zobrazit…

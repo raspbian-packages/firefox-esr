@@ -18,6 +18,8 @@ abuse-report-addon-authored-by = โดย <a data-l10n-name="author-name">{ $au
 abuse-report-learnmore =
     ไม่มั่นใจว่าประเด็นอะไรที่จะเลือก?
     <a data-l10n-name="learnmore-link">เรียนรู้เพิ่มเติมเกี่ยวกับการรายงานส่วนขยายและธีม</a>
+abuse-report-learnmore-intro = ไม่มั่นใจว่าประเด็นอะไรที่จะเลือก?
+abuse-report-learnmore-link = เรียนรู้เพิ่มเติมเกี่ยวกับการรายงานส่วนขยายและธีม
 abuse-report-submit-description = อธิบายปัญหา (เพิ่มเติม)
 abuse-report-textarea =
     .placeholder = เราจะสามารถแก้ไขปัญหาได้ง่ายขึ้นหากคุณระบุปัญหาที่เกิดขึ้นให้เราทราบ โปรดอธิบายปัญหาที่คุณพบ ขอบคุณที่ช่วยเรารักษาเว็บให้แข็งแรง

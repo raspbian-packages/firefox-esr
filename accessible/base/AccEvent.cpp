@@ -65,9 +65,6 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(AccEvent)
   }
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(AccEvent, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(AccEvent, Release)
-
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 // AccTextChangeEvent
@@ -113,13 +110,6 @@ AccHideEvent::AccHideEvent(LocalAccessible* aTarget, bool aNeedsShutdown)
 ////////////////////////////////////////////////////////////////////////////////
 // AccShowEvent
 ////////////////////////////////////////////////////////////////////////////////
-
-AccShowEvent::AccShowEvent(LocalAccessible* aTarget)
-    : AccMutationEvent(::nsIAccessibleEvent::EVENT_SHOW, aTarget) {
-  int32_t idx = aTarget->IndexInParent();
-  MOZ_ASSERT(idx >= 0);
-  mInsertionIndex = idx;
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // AccTextSelChangeEvent

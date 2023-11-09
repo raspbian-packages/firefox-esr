@@ -9,6 +9,7 @@
 
 #ifdef USE_CAIRO
 #  include "DrawTargetCairo.h"
+#  include "PathCairo.h"
 #  include "SourceSurfaceCairo.h"
 #endif
 
@@ -42,6 +43,7 @@
 
 #ifdef WIN32
 #  include "DrawTargetD2D1.h"
+#  include "PathD2D.h"
 #  include "ScaledFontDWrite.h"
 #  include "NativeFontResourceDWrite.h"
 #  include "UnscaledFontDWrite.h"
@@ -58,20 +60,12 @@
 
 #include "SourceSurfaceRawData.h"
 
-#include "DrawEventRecorder.h"
-
-#include "Logging.h"
-
 #include "mozilla/CheckedInt.h"
-
-#include "mozilla/layers/TextureClient.h"
 
 #ifdef MOZ_ENABLE_FREETYPE
 #  include "ft2build.h"
 #  include FT_FREETYPE_H
 #endif
-#include "MainThreadUtils.h"
-#include "mozilla/Preferences.h"
 #include "mozilla/StaticPrefs_gfx.h"
 
 #if defined(MOZ_LOGGING)
@@ -180,11 +174,11 @@ void mozilla_ForgetSharedFTFaceLockOwner(void* aContext, void* aOwner) {
 }
 
 int mozilla_LockSharedFTFace(void* aContext,
-                             void* aOwner) NO_THREAD_SAFETY_ANALYSIS {
+                             void* aOwner) MOZ_NO_THREAD_SAFETY_ANALYSIS {
   return int(static_cast<mozilla::gfx::SharedFTFace*>(aContext)->Lock(aOwner));
 }
 
-void mozilla_UnlockSharedFTFace(void* aContext) NO_THREAD_SAFETY_ANALYSIS {
+void mozilla_UnlockSharedFTFace(void* aContext) MOZ_NO_THREAD_SAFETY_ANALYSIS {
   static_cast<mozilla::gfx::SharedFTFace*>(aContext)->Unlock();
 }
 
@@ -208,6 +202,25 @@ namespace mozilla::gfx {
 #ifdef MOZ_ENABLE_FREETYPE
 FT_Library Factory::mFTLibrary = nullptr;
 StaticMutex Factory::mFTLock;
+
+already_AddRefed<SharedFTFace> FTUserFontData::CloneFace(int aFaceIndex) {
+  if (mFontData) {
+    RefPtr<SharedFTFace> face = Factory::NewSharedFTFaceFromData(
+        nullptr, mFontData, mLength, aFaceIndex, this);
+    if (!face ||
+        (FT_Select_Charmap(face->GetFace(), FT_ENCODING_UNICODE) != FT_Err_Ok &&
+         FT_Select_Charmap(face->GetFace(), FT_ENCODING_MS_SYMBOL) !=
+             FT_Err_Ok)) {
+      return nullptr;
+    }
+    return face.forget();
+  }
+  FT_Face face = Factory::NewFTFace(nullptr, mFilename.c_str(), aFaceIndex);
+  if (face) {
+    return MakeAndAddRef<SharedFTFace>(face, this);
+  }
+  return nullptr;
+}
 #endif
 
 #ifdef WIN32
@@ -313,10 +326,6 @@ bool Factory::AllowedSurfaceSize(const IntSize& aSize) {
   return CheckSurfaceSize(aSize);
 }
 
-bool Factory::CheckBufferSize(int32_t bufSize) {
-  return !sConfig || bufSize < sConfig->mMaxAllocSize;
-}
-
 bool Factory::CheckSurfaceSize(const IntSize& sz, int32_t extentLimit,
                                int32_t allocLimit) {
   if (sz.width <= 0 || sz.height <= 0) {
@@ -405,8 +414,29 @@ already_AddRefed<DrawTarget> Factory::CreateDrawTarget(BackendType aBackend,
   return retVal.forget();
 }
 
+already_AddRefed<PathBuilder> Factory::CreatePathBuilder(BackendType aBackend,
+                                                         FillRule aFillRule) {
+  switch (aBackend) {
+#ifdef WIN32
+    case BackendType::DIRECT2D1_1:
+      return PathBuilderD2D::Create(aFillRule);
+#endif
+    case BackendType::SKIA:
+    case BackendType::WEBGL:
+      return PathBuilderSkia::Create(aFillRule);
+#ifdef USE_CAIRO
+    case BackendType::CAIRO:
+      return PathBuilderCairo::Create(aFillRule);
+#endif
+    default:
+      gfxCriticalNote << "Invalid PathBuilder type specified: "
+                      << (int)aBackend;
+      return nullptr;
+  }
+}
+
 already_AddRefed<PathBuilder> Factory::CreateSimplePathBuilder() {
-  return MakeAndAddRef<PathBuilderSkia>(FillRule::FILL_WINDING);
+  return CreatePathBuilder(BackendType::SKIA);
 }
 
 already_AddRefed<DrawTarget> Factory::CreateRecordingDrawTarget(
@@ -632,12 +662,12 @@ void Factory::ReleaseFTLibrary(FT_Library aFTLibrary) {
 }
 
 void Factory::LockFTLibrary(FT_Library aFTLibrary)
-    CAPABILITY_ACQUIRE(mFTLock) NO_THREAD_SAFETY_ANALYSIS {
+    MOZ_CAPABILITY_ACQUIRE(mFTLock) MOZ_NO_THREAD_SAFETY_ANALYSIS {
   mFTLock.Lock();
 }
 
 void Factory::UnlockFTLibrary(FT_Library aFTLibrary)
-    CAPABILITY_RELEASE(mFTLock) NO_THREAD_SAFETY_ANALYSIS {
+    MOZ_CAPABILITY_RELEASE(mFTLock) MOZ_NO_THREAD_SAFETY_ANALYSIS {
   mFTLock.Unlock();
 }
 
@@ -657,11 +687,21 @@ FT_Face Factory::NewFTFace(FT_Library aFTLibrary, const char* aFileName,
 already_AddRefed<SharedFTFace> Factory::NewSharedFTFace(FT_Library aFTLibrary,
                                                         const char* aFilename,
                                                         int aFaceIndex) {
-  if (FT_Face face = NewFTFace(aFTLibrary, aFilename, aFaceIndex)) {
-    return MakeAndAddRef<SharedFTFace>(face);
-  } else {
+  FT_Face face = NewFTFace(aFTLibrary, aFilename, aFaceIndex);
+  if (!face) {
     return nullptr;
   }
+
+  RefPtr<FTUserFontData> data;
+#  ifdef ANDROID
+  // If the font has variations, we may later need to "clone" it in
+  // UnscaledFontFreeType::CreateScaledFont. To support this, we attach an
+  // FTUserFontData that records the filename used to instantiate the face.
+  if (face->face_flags & FT_FACE_FLAG_MULTIPLE_MASTERS) {
+    data = new FTUserFontData(aFilename);
+  }
+#  endif
+  return MakeAndAddRef<SharedFTFace>(face, data);
 }
 
 FT_Face Factory::NewFTFaceFromData(FT_Library aFTLibrary, const uint8_t* aData,

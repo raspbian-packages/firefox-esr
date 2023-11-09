@@ -202,7 +202,6 @@ BaseEventFlags TextComposition::CloneAndDispatchAs(
 
   WidgetCompositionEvent compositionEvent(aCompositionEvent->IsTrusted(),
                                           aMessage, aCompositionEvent->mWidget);
-  compositionEvent.mTime = aCompositionEvent->mTime;
   compositionEvent.mTimeStamp = aCompositionEvent->mTimeStamp;
   compositionEvent.mData = aCompositionEvent->mData;
   compositionEvent.mNativeIMEContext = aCompositionEvent->mNativeIMEContext;
@@ -512,9 +511,16 @@ void TextComposition::HandleSelectionEvent(
     return;
   }
 
-  ContentEventHandler handler(aPresContext);
   AutoRestore<bool> saveHandlingSelectionEvent(sHandlingSelectionEvent);
   sHandlingSelectionEvent = true;
+
+  if (RefPtr<IMEContentObserver> contentObserver =
+          IMEStateManager::GetActiveContentObserver()) {
+    contentObserver->MaybeHandleSelectionEvent(aPresContext, aSelectionEvent);
+    return;
+  }
+
+  ContentEventHandler handler(aPresContext);
   // XXX During setting selection, a selection listener may change selection
   //     again.  In such case, sHandlingSelectionEvent doesn't indicate if
   //     the selection change is caused by a selection event.  However, it
@@ -545,7 +551,7 @@ uint32_t TextComposition::GetSelectionStartOffset() {
       IMEStateManager::GetActiveContentObserver();
   bool doQuerySelection = true;
   if (contentObserver) {
-    if (contentObserver->IsManaging(this)) {
+    if (contentObserver->IsManaging(*this)) {
       doQuerySelection = false;
       contentObserver->HandleQueryContentEvent(&querySelectedTextEvent);
     }
@@ -621,7 +627,7 @@ void TextComposition::MaybeNotifyIMEOfCompositionEventHandled(
   //     event handled.  Although, this is a bug but it should be okay since
   //     destroying IMEContentObserver notifies IME of blur.  So, native IME
   //     handler can treat it as this notification too.
-  if (contentObserver && contentObserver->IsManaging(this)) {
+  if (contentObserver && contentObserver->IsManaging(*this)) {
     contentObserver->MaybeNotifyCompositionEventHandled();
     return;
   }

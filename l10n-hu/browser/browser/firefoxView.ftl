@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Nemrég bezárt
 firefoxview-closed-tabs-description2 = Az ebben az ablakban bezárt oldalak újranyitása.
 firefoxview-closed-tabs-placeholder-header = Nincsenek nemrég bezárt lapok
 firefoxview-closed-tabs-placeholder-body = Ha bezár egy lapot ebben az ablakban, innen kérheti le.
+firefoxview-closed-tabs-placeholder-body2 = Ha bezár egy lapot, innen kérheti le.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Utoljára aktív
 firefoxview-tabs-list-tab-button =
     .title = A(z) { $targetURI } megnyitása új lapon
 firefoxview-try-colorways-button = Próbálja ki a színvilágokat
-firefoxview-no-current-colorway-collection = Úton vannak az új színvilágok
 firefoxview-change-colorway-button = Színvilág módosítása
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Lista megjelenítése
 firefoxview-collapse-button-hide =
     .title = Lista elrejtése
+firefoxview-overview-nav = Legutóbbi böngészés
+    .title = Legutóbbi böngészés
+firefoxview-overview-header = Legutóbbi böngészés
+    .title = Legutóbbi böngészés
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Előzmények
+    .title = Előzmények
+firefoxview-history-header = Előzmények
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Nyitott lapok
+    .title = Nyitott lapok
+firefoxview-opentabs-header = Nyitott lapok
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Nemrég bezárt lapok
+    .title = Nemrég bezárt lapok
+firefoxview-recently-closed-header = Nemrég bezárt lapok
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Lapok más eszközökről
+    .title = Lapok más eszközökről
+firefoxview-synced-tabs-header = Lapok más eszközökről
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Összes megtekintése
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = { $winID }. ablak
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = { $winID }. ablak (jelenlegi)
+firefoxview-opentabs-focus-tab =
+    .title = Váltás erre a lapra
+firefoxview-show-more = Több megjelenítése
+firefoxview-show-less = Kevesebb megjelenítése
+firefoxview-sort-history-by-date-label = Rendezés dátum szerint
+firefoxview-sort-history-by-site-label = Rendezés webhely szerint
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Ma – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Tegnap – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Összes előzmény megjelenítése

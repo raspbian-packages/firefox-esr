@@ -1,10 +1,6 @@
 mod macros;
 
-use core::{
-    cmp::Ordering::*,
-    convert::{TryFrom, TryInto},
-    str::FromStr,
-};
+use core::{cmp::Ordering::*, str::FromStr};
 use num_traits::{Inv, Signed, ToPrimitive};
 use rust_decimal::{Decimal, Error, RoundingStrategy};
 
@@ -146,9 +142,40 @@ fn it_can_serialize_deserialize_borsh() {
         borsh::BorshSerialize::serialize(&a, &mut bytes).unwrap();
         let b: Decimal = borsh::BorshDeserialize::deserialize(&mut bytes.as_slice()).unwrap();
         assert_eq!(test.to_string(), b.to_string());
-        let bytes = borsh::schema_helper::serialize_with_schema(&a);
-        let b: Decimal = borsh::schema_helper::deserialize_with_schema(&bytes);
+        let bytes = borsh::try_to_vec_with_schema(&a);
+        assert!(bytes.is_ok(), "try_to_vec_with_schema.is_ok()");
+        let bytes = bytes.unwrap();
+        let result = borsh::try_from_slice_with_schema(&bytes);
+        assert!(result.is_ok(), "try_from_slice_with_schema.is_ok()");
+        let b: Decimal = result.unwrap();
         assert_eq!(test.to_string(), b.to_string());
+    }
+}
+
+#[test]
+#[cfg(feature = "rkyv")]
+fn it_can_serialize_deserialize_rkyv() {
+    use rkyv::Deserialize;
+    let tests = [
+        "12.3456789",
+        "5233.9008808150288439427720175",
+        "-5233.9008808150288439427720175",
+    ];
+    for test in &tests {
+        let a = Decimal::from_str(test).unwrap();
+        let bytes = rkyv::to_bytes::<_, 256>(&a).unwrap();
+
+        #[cfg(feature = "rkyv-safe")]
+        {
+            let archived = rkyv::check_archived_root::<Decimal>(&bytes[..]).unwrap();
+            assert_eq!(archived, &a);
+        }
+
+        let archived = unsafe { rkyv::archived_root::<Decimal>(&bytes[..]) };
+        assert_eq!(archived, &a);
+
+        let deserialized: Decimal = archived.deserialize(&mut rkyv::Infallible).unwrap();
+        assert_eq!(deserialized, a);
     }
 }
 
@@ -289,6 +316,95 @@ fn it_formats_lower_exp_padding() {
     for (value, expected) in &tests {
         let a = Decimal::from_str(value).unwrap();
         assert_eq!(&format!("{:05e}", a), *expected, "format!(\"{{:05e}}\", {})", a);
+    }
+}
+
+#[test]
+fn it_formats_scientific_precision() {
+    for (num, scale, expected_no_precision, expected_precision) in [
+        (
+            123456,
+            10,
+            "1.23456e-5",
+            [
+                "1e-5",
+                "1.2e-5",
+                "1.23e-5",
+                "1.234e-5",
+                "1.2345e-5",
+                "1.23456e-5",
+                "1.234560e-5",
+                "1.2345600e-5",
+            ],
+        ),
+        (
+            123456,
+            0,
+            "1.23456e5",
+            [
+                "1e5",
+                "1.2e5",
+                "1.23e5",
+                "1.234e5",
+                "1.2345e5",
+                "1.23456e5",
+                "1.234560e5",
+                "1.2345600e5",
+            ],
+        ),
+        (
+            1,
+            0,
+            "1e0",
+            [
+                "1e0",
+                "1.0e0",
+                "1.00e0",
+                "1.000e0",
+                "1.0000e0",
+                "1.00000e0",
+                "1.000000e0",
+                "1.0000000e0",
+            ],
+        ),
+        (
+            -123456,
+            10,
+            "-1.23456e-5",
+            [
+                "-1e-5",
+                "-1.2e-5",
+                "-1.23e-5",
+                "-1.234e-5",
+                "-1.2345e-5",
+                "-1.23456e-5",
+                "-1.234560e-5",
+                "-1.2345600e-5",
+            ],
+        ),
+        (
+            -100000,
+            10,
+            "-1e-5",
+            [
+                "-1e-5",
+                "-1.0e-5",
+                "-1.00e-5",
+                "-1.000e-5",
+                "-1.0000e-5",
+                "-1.00000e-5",
+                "-1.000000e-5",
+                "-1.0000000e-5",
+            ],
+        ),
+    ] {
+        assert_eq!(format!("{:e}", Decimal::new(num, scale)), expected_no_precision);
+        for i in 0..expected_precision.len() {
+            assert_eq!(
+                format!("{:.prec$e}", Decimal::new(num, scale), prec = i),
+                expected_precision[i]
+            );
+        }
     }
 }
 
@@ -2556,14 +2672,14 @@ fn it_can_return_the_min_value() {
 #[test]
 fn it_can_go_from_and_into() {
     let d = Decimal::from_str("5").unwrap();
-    let di8 = 5u8.into();
-    let di32 = 5i32.into();
-    let disize = 5isize.into();
-    let di64 = 5i64.into();
-    let du8 = 5u8.into();
-    let du32 = 5u32.into();
-    let dusize = 5usize.into();
-    let du64 = 5u64.into();
+    let di8: Decimal = 5u8.into();
+    let di32: Decimal = 5i32.into();
+    let disize: Decimal = 5isize.into();
+    let di64: Decimal = 5i64.into();
+    let du8: Decimal = 5u8.into();
+    let du32: Decimal = 5u32.into();
+    let dusize: Decimal = 5usize.into();
+    let du64: Decimal = 5u64.into();
 
     assert_eq!(d, di8);
     assert_eq!(di8, di32);
@@ -2741,6 +2857,12 @@ fn it_converts_from_u128() {
             assert_eq!(num_traits::FromPrimitive::from_u128(*value), Some(decimal));
         }
     }
+}
+
+#[test]
+fn it_converts_from_str() {
+    assert_eq!(Decimal::try_from("1").unwrap(), Decimal::ONE);
+    assert_eq!(Decimal::try_from("10").unwrap(), Decimal::TEN);
 }
 
 #[test]
@@ -3049,11 +3171,9 @@ fn it_can_reject_large_numbers_with_panic() {
         "79228162514264337593543950340",
     ];
     for &value in tests {
-        assert!(
-            Decimal::from_str(value).is_err(),
-            "This succeeded unexpectedly: {}",
-            value
-        );
+        if let Ok(out) = Decimal::from_str(value) {
+            panic!("Unexpectedly parsed {} into {}", value, out)
+        }
     }
 }
 
@@ -3204,10 +3324,23 @@ fn test_zero_eq_negative_zero() {
 }
 
 #[test]
+fn declarative_dec_product() {
+    let vs = (1..5).map(|i| i.into()).collect::<Vec<Decimal>>();
+    let product: Decimal = vs.into_iter().product();
+    assert_eq!(product, Decimal::from(24))
+}
+
+#[test]
+fn declarative_ref_dec_product() {
+    let vs = (1..5).map(|i| i.into()).collect::<Vec<Decimal>>();
+    let product: Decimal = vs.iter().product();
+    assert_eq!(product, Decimal::from(24))
+}
+
+#[test]
 fn declarative_dec_sum() {
     let vs = (0..10).map(|i| i.into()).collect::<Vec<Decimal>>();
-    let sum: Decimal = vs.iter().cloned().sum();
-
+    let sum: Decimal = vs.into_iter().sum();
     assert_eq!(sum, Decimal::from(45))
 }
 
@@ -3215,7 +3348,6 @@ fn declarative_dec_sum() {
 fn declarative_ref_dec_sum() {
     let vs = (0..10).map(|i| i.into()).collect::<Vec<Decimal>>();
     let sum: Decimal = vs.iter().sum();
-
     assert_eq!(sum, Decimal::from(45))
 }
 

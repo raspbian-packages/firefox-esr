@@ -5,10 +5,12 @@
 
 about-logins-page-title = Prijave i lozinke
 
-login-filter =
+about-logins-login-filter =
     .placeholder = Pretraži prijave
+    .key = F
 
-create-login-button = Stvori novu prijavu
+create-new-login-button =
+    .title = Stvori novu prijavu
 
 fxaccounts-sign-in-text = Preuzmi lozinke na drugim uređajima
 fxaccounts-sign-in-sync-button = Prijavi se za sinkronizaciju
@@ -35,11 +37,22 @@ about-logins-menu-menuitem-help = Pomoć
 
 login-list =
     .aria-label = Prijave koje odgovaraju upitu
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } prijava
         [few] { $count } prijave
        *[other] { $count } prijava
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count } od { $total } prijave
+        [few] { $count } od { $total } prijava
+       *[other] { $count } od { $total } prijava
     }
 login-list-sort-label-text = Poredaj po:
 login-list-name-option = Naziv (A-Z)
@@ -100,9 +113,17 @@ login-item-copied-password-button-text = Kopirano!
 login-item-save-changes-button = Spremi promjene
 login-item-save-new-button = Spremi
 login-item-cancel-button = Odustani
-login-item-time-changed = Zadnja izmjena: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Stvoreno: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Zadnji put korišteno: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = Stvoreno
+login-item-timeline-action-updated = Aktualizirano
+login-item-timeline-action-used = Korišteno
 
 ## OS Authentication dialog
 
@@ -153,6 +174,9 @@ about-logins-confirm-remove-dialog-title = Ukloniti ovu prijavu?
 confirm-delete-dialog-message = Ova radnja je nepovratna.
 about-logins-confirm-remove-dialog-confirm-button = Ukloni
 
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
         [1] Ukloni
@@ -197,6 +221,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] Ovo će ukloniti prijave spremljene u { -brand-short-name }u na svim uređajima sinkroniziranim s tvojim { -fxaccount-brand-name }. Ovo će ukloniti i upozorenja o curenju podataka koja se nalaze ovdje. Ovu radnju nije moguće poništiti.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Izvezi prijave i lozinke
 about-logins-confirm-export-dialog-message = Vaše lozinke bit će spremljene kao čitljivi tekst (npr. Loš@L0zinka) pa će ih moći vidjeti svi koji mogu otvoriti izvezenu datoteku.
 about-logins-confirm-export-dialog-confirm-button = Izvezi …
@@ -216,7 +242,6 @@ about-logins-breach-alert-date = Curenje podataka dogodilo se { DATETIME($date, 
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Idi na { $hostname }
-about-logins-breach-alert-learn-more-link = Saznaj više
 
 ## Vulnerable Password notification
 

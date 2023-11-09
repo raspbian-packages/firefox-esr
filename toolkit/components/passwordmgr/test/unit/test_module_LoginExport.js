@@ -8,21 +8,22 @@
 
 "use strict";
 
-let { LoginExport } = ChromeUtils.import(
-  "resource://gre/modules/LoginExport.jsm"
+let { LoginExport } = ChromeUtils.importESModule(
+  "resource://gre/modules/LoginExport.sys.mjs"
 );
-let { sinon } = ChromeUtils.import("resource://testing-common/Sinon.jsm");
+let { sinon } = ChromeUtils.importESModule(
+  "resource://testing-common/Sinon.sys.mjs"
+);
 
 /**
  * Saves the logins to a temporary CSV file, reads the lines and returns the CSV lines.
  * After extracting the CSV lines, it deletes the tmp file.
  */
 async function exportAsCSVInTmpFile() {
-  let tmpFilePath = FileTestUtils.getTempFile("logins.csv").path;
+  const tmpFilePath = FileTestUtils.getTempFile("logins.csv").path;
   await LoginExport.exportAsCSV(tmpFilePath);
-  let csvContent = await OS.File.read(tmpFilePath);
-  let csvString = new TextDecoder().decode(csvContent);
-  await OS.File.remove(tmpFilePath);
+  const csvString = await IOUtils.readUTF8(tmpFilePath);
+  await IOUtils.remove(tmpFilePath);
   // CSV uses CRLF
   return csvString.split(/\r\n/);
 }
@@ -57,7 +58,7 @@ function exportAuthLogin(modifications) {
   });
 }
 
-add_task(async function setup() {
+add_setup(async () => {
   let oldLogins = Services.logins;
   Services.logins = { getAllLoginsAsync: sinon.stub() };
   registerCleanupFunction(() => {
@@ -100,6 +101,7 @@ add_task(async function test_no_new_properties_to_export() {
       "usernameField",
       "password",
       "passwordField",
+      "unknownFields",
       "init",
       "equals",
       "matches",

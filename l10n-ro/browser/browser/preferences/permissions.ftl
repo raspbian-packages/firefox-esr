@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-permissions-window =
-    .title = Excepții
-    .style = width: 50em
-
 permissions-window2 =
     .title = Excepții
     .style = min-width: 50em
@@ -92,20 +88,11 @@ permissions-invalid-uri-label = Te rugăm să introduci un nume de gazdă valid
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-etp-window =
-    .title = Excepții pentru protecția îmbunătățită împotriva urmăririi
-    .style = { permissions-window.style }
-
 permissions-exceptions-etp-window2 =
     .title = Excepții pentru protecția îmbunătățită împotriva urmăririi
     .style = { permissions-window2.style }
-permissions-exceptions-etp-desc = Ai dezactivat protecțiile pe aceste site-uri web.
 
 ## Exceptions - Cookies
-
-permissions-exceptions-cookie-window =
-    .title = Excepții - Cookie-uri și date ale site-urilor
-    .style = { permissions-window.style }
 
 permissions-exceptions-cookie-window2 =
     .title = Excepții - Cookie-uri și date ale site-urilor
@@ -114,20 +101,12 @@ permissions-exceptions-cookie-desc = Poți specifica ce site-uri web au întotde
 
 ## Exceptions - HTTPS-Only Mode
 
-permissions-exceptions-https-only-window =
-    .title = Excepții - Mod doar HTTPS
-    .style = { permissions-window.style }
-
 permissions-exceptions-https-only-window2 =
-    .title = Excepții - Mod doar HTTPS
+    .title = Excepții - Mod numai HTTPS
     .style = { permissions-window2.style }
-permissions-exceptions-https-only-desc = Poți opri modul doar HTTPS pentru anumite site-uri web. { -brand-short-name } nu va încerca să actualizeze conexiunea la HTTPS securizat pentru aceste site-uri. Excepțiile nu se aplică ferestrelor private.
+permissions-exceptions-https-only-desc = Poți opri modul numai HTTPS pentru anumite site-uri web. { -brand-short-name } nu va încerca să actualizeze conexiunea la HTTPS securizat pentru aceste site-uri. Excepțiile nu se aplică ferestrelor private.
 
 ## Exceptions - Pop-ups
-
-permissions-exceptions-popup-window =
-    .title = Site-uri web permise - Ferestre pop-up
-    .style = { permissions-window.style }
 
 permissions-exceptions-popup-window2 =
     .title = Site-uri web permise - Ferestre pop-up
@@ -136,20 +115,12 @@ permissions-exceptions-popup-desc = Poți specifica ce site-uri web au permisiun
 
 ## Exceptions - Saved Logins
 
-permissions-exceptions-saved-logins-window =
-    .title = Excepții - Date de autentificare salvate
-    .style = { permissions-window.style }
-
 permissions-exceptions-saved-logins-window2 =
     .title = Excepții - Date de autentificare salvate
     .style = { permissions-window2.style }
 permissions-exceptions-saved-logins-desc = Nu vor fi salvate date de autentificare pentru următoarele site-uri web
 
 ## Exceptions - Add-ons
-
-permissions-exceptions-addons-window =
-    .title = Site-uri web permise - Instalare de extensii
-    .style = { permissions-window.style }
 
 permissions-exceptions-addons-window2 =
     .title = Site-uri web permise - Instalare de extensii
@@ -158,20 +129,12 @@ permissions-exceptions-addons-desc = Poți specifica ce site-uri web au permisiu
 
 ## Site Permissions - Autoplay
 
-permissions-site-autoplay-window =
-    .title = Setări - Redare automată
-    .style = { permissions-window.style }
-
 permissions-site-autoplay-window2 =
     .title = Setări - Redare automată
     .style = { permissions-window2.style }
 permissions-site-autoplay-desc = Poți gestiona aici site-urile care nu respectă setările implicite de redare automată.
 
 ## Site Permissions - Notifications
-
-permissions-site-notification-window =
-    .title = Setări - Permisiuni pentru notificări
-    .style = { permissions-window.style }
 
 permissions-site-notification-window2 =
     .title = Setări - Permisiuni pentru notificări
@@ -183,10 +146,6 @@ permissions-site-notification-disable-desc = Acest lucru va împiedica orice sit
 
 ## Site Permissions - Location
 
-permissions-site-location-window =
-    .title = Setări - Permisiuni pentru locație
-    .style = { permissions-window.style }
-
 permissions-site-location-window2 =
     .title = Setări - Permisiuni pentru locație
     .style = { permissions-window2.style }
@@ -196,10 +155,6 @@ permissions-site-location-disable-label =
 permissions-site-location-disable-desc = Acest lucru va împiedica orice site web care nu este listat mai sus să ceară permisiunea de a-ți accesa locația. Blocarea accesului la locație ar putea interfera cu unele funcții ale site-urilor web.
 
 ## Site Permissions - Virtual Reality
-
-permissions-site-xr-window =
-    .title = Setări - Permisiuni pentru realitate virtuală
-    .style = { permissions-window.style }
 
 permissions-site-xr-window2 =
     .title = Setări - Permisiuni pentru realitate virtuală
@@ -211,10 +166,6 @@ permissions-site-xr-disable-desc = Acest lucru va împiedica orice site web care
 
 ## Site Permissions - Camera
 
-permissions-site-camera-window =
-    .title = Setări - Permisiuni pentru cameră
-    .style = { permissions-window.style }
-
 permissions-site-camera-window2 =
     .title = Setări - Permisiuni pentru cameră
     .style = { permissions-window2.style }
@@ -225,10 +176,6 @@ permissions-site-camera-disable-desc = Acest lucru va împiedica orice site web 
 
 ## Site Permissions - Microphone
 
-permissions-site-microphone-window =
-    .title = Setări - Permisiuni pentru microfon
-    .style = { permissions-window.style }
-
 permissions-site-microphone-window2 =
     .title = Setări - Permisiuni pentru microfon
     .style = { permissions-window2.style }
@@ -236,3 +183,8 @@ permissions-site-microphone-desc = Următoarele site-uri web au solicitat să î
 permissions-site-microphone-disable-label =
     .label = Blochează noile solicitări de accesare a microfonului
 permissions-site-microphone-disable-desc = Acest lucru va împiedica orice site web care nu este listat mai sus să ceară permisiunea de a-ți accesa microfonul. Blocarea accesului la microfon ar putea interfera cu unele funcții ale site-urilor web.
+
+## Site Permissions - Speaker
+##
+## "Speaker" refers to an audio output device.
+

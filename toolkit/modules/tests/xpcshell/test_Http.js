@@ -1,7 +1,9 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { httpRequest } = ChromeUtils.import("resource://gre/modules/Http.jsm");
+const { httpRequest } = ChromeUtils.importESModule(
+  "resource://gre/modules/Http.sys.mjs"
+);
 const { HttpServer } = ChromeUtils.import("resource://testing-common/httpd.js");
 
 const BinaryInputStream = Components.Constructor(
@@ -51,7 +53,7 @@ function getDataChecker(
   aExpectedData,
   aExpectedMimeType = null
 ) {
-  return function(aRequest, aResponse) {
+  return function (aRequest, aResponse) {
     let body = new BinaryInputStream(aRequest.bodyInputStream);
     let bytes = [];
     let avail;
@@ -266,8 +268,8 @@ function run_test() {
   run_next_test();
 
   // Teardown.
-  registerCleanupFunction(function() {
+  registerCleanupFunction(function () {
     Services.prefs.clearUserPref(PREF);
-    server.stop(function() {});
+    server.stop(function () {});
   });
 }

@@ -48,6 +48,8 @@ class DummyMediaDataDecoder final
 
   nsCString GetDescriptionName() const override;
 
+  nsCString GetCodecName() const override;
+
   ConversionRequired NeedsConversion() const override;
 
  private:

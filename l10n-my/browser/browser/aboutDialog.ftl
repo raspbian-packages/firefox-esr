@@ -16,7 +16,15 @@ update-updateButton =
     .accesskey = R
 
 update-checkingForUpdates = မွမ်းမံချက် အသစ်ရှိမရှိ စစ်နေသည်...
-update-downloading = <img data-l10n-name="icon"/>နောက်ဆုံးပေါ်ပြုပြင်ချက်ကို ရယူနေသည် — <label data-l10n-name="download-status"/>
+
+## Variables:
+##   $transfer (string) - Transfer progress.
+
+settings-update-downloading = <img data-l10n-name="icon"/>နောက်ဆုံးပေါ်ပြုပြင်ချက်ကို ရယူနေသည် — <label data-l10n-name="download-status">{ $transfer }</label>
+aboutdialog-update-downloading = အပ်ဒိတ်ကို ဒေါင်းလုဒ်လုပ်နေသည် — <label data-l10n-name="download-status">{ $transfer }</label>
+
+##
+
 update-applying = အဆင့်မြှင့်တင်မှု ဆောင်ရွက်နေသည်…
 
 update-failed = အဆင့်မြှင့်တင်ခြင်း မပြုလုပ်နိုင်ပါ။ <label data-l10n-name="failed-link">နောက်ဆုံးထွက်ဗားရှင်းကို ရယူမည်</label>
@@ -26,13 +34,21 @@ update-adminDisabled = အဆင့်မြှင့်တင်ခြင်း
 update-noUpdatesFound = { -brand-short-name } သည် နောက်ဆုံးပေါ်အသစ် ဖြစ်သွားပြီဖြစ်သည်။
 update-otherInstanceHandlingUpdates = { -brand-short-name } ကို အခြားတစ်ဖက်မှာ အဆင့်မြှင့်ပေးနေပါသည်။
 
-update-manual = နောက်ဆုံးပေါ်ရနိုင်သောနေရာသည် <label data-l10n-name="manual-link"/>
+## Variables:
+##   $displayUrl (String): URL to page with download instructions. Example: www.mozilla.org/firefox/nightly/
+
+aboutdialog-update-manual-with-link = နောက်ဆုံးပေါ်ရနိုင်သောနေရာသည် <label data-l10n-name="manual-link">{ $displayUrl }</label>
+settings-update-manual-with-link = နောက်ဆုံးပေါ်ရနိုင်သောနေရာသည် <a data-l10n-name="manual-link">{ $displayUrl }</a>
 
 update-unsupported = ဒီကွန်ပျူတာစနစ်တွင် နောင်လာမည့် အဆင့်မြှင့်တင်မှုများကို လုပ်ဆောင်နိုင်တော့မည် မဟုတ်ပါ။ <label data-l10n-name="unsupported-link">ပိုမို လေ့လာပါ</label>
 
 update-restarting = ပြန်ဖွင့်နေသည်…
 
-channel-description = သင်သည် နောက်ဆုံး ထွက်ရှိသော အဆင့်မြင့်တင်မှု့ ချန်နယ် <label data-l10n-name="current-channel"></label> သို့‌ ရောက်ရှိနေပါသည်။
+##
+
+# Variables:
+#   $channel (String): description of the update channel (e.g. "release", "beta", "nightly" etc.)
+aboutdialog-channel-description = သင်သည် နောက်ဆုံး ထွက်ရှိသော အဆင့်မြင့်တင်မှု့ ချန်နယ် <label data-l10n-name="current-channel">{ $channel }</label> သို့‌ ရောက်ရှိနေပါသည်။
 
 warningDesc-version = { -brand-short-name } သည် စမ်းသပ်နေဆဲအရာဖြစ်ပြီး မတည်ငြိမ်မှု ဖြစ်ကောင်းဖြစ်နိုင်သည်။
 

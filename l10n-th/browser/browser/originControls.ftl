@@ -10,6 +10,8 @@
 
 origin-controls-no-access =
     .label = ส่วนขยายไม่สามารถอ่านและเปลี่ยนแปลงข้อมูลได้
+origin-controls-quarantined =
+    .label = ส่วนขยายไม่ได้รับอนุญาตให้อ่านและเปลี่ยนแปลงข้อมูล
 origin-controls-options =
     .label = ส่วนขยายสามารถอ่านและเปลี่ยนแปลงข้อมูลต่อไปนี้ได้:
 origin-controls-option-all-domains =
@@ -27,6 +29,7 @@ origin-controls-option-always-on =
 ## messages. They currently appear in the unified extensions panel.
 
 origin-controls-state-no-access = ไม่สามารถอ่านและเปลี่ยนแปลงข้อมูลบนไซต์นี้ได้
+origin-controls-state-quarantined = ไม่ได้รับอนุญาตโดย { -vendor-short-name } บนไซต์นี้
 origin-controls-state-always-on = สามารถอ่านและเปลี่ยนแปลงข้อมูลบนไซต์นี้ได้เสมอ
 origin-controls-state-when-clicked = ต้องการสิทธิอนุญาตในการอ่านและเปลี่ยนแปลงข้อมูล
 origin-controls-state-hover-run-visit-only = เรียกใช้ตอนเยี่ยมชมครั้งนี้เท่านั้น
@@ -48,3 +51,10 @@ origin-controls-toolbar-button-permission-needed =
     .tooltiptext =
         { $extensionTitle }
         ต้องการสิทธิอนุญาต
+# Extension's toolbar button when quarantined.
+# Note that the new line is intentionally part of the tooltip.
+origin-controls-toolbar-button-quarantined =
+    .label = { $extensionTitle }
+    .tooltiptext =
+        { $extensionTitle }
+        ไม่ได้รับอนุญาตโดย { -vendor-short-name } บนไซต์นี้

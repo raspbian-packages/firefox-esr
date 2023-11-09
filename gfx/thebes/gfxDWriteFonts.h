@@ -28,7 +28,6 @@ class gfxDWriteFont final : public gfxFont {
                 gfxFontEntry* aFontEntry, const gfxFontStyle* aFontStyle,
                 RefPtr<IDWriteFontFace> aFontFace = nullptr,
                 AntialiasOption = kAntialiasDefault);
-  ~gfxDWriteFont();
 
   static bool InitDWriteSupport();
 
@@ -58,8 +57,7 @@ class gfxDWriteFont final : public gfxFont {
 
   int32_t GetGlyphWidth(uint16_t aGID) override;
 
-  bool GetGlyphBounds(uint16_t aGID, gfxRect* aBounds,
-                      bool aTight) const override;
+  bool GetGlyphBounds(uint16_t aGID, gfxRect* aBounds, bool aTight) override;
 
   void AddSizeOfExcludingThis(mozilla::MallocSizeOf aMallocSizeOf,
                               FontCacheSizes* aSizes) const override;
@@ -74,7 +72,9 @@ class gfxDWriteFont final : public gfxFont {
   bool ShouldRoundXOffset(cairo_t* aCairo) const override;
 
  protected:
-  const Metrics& GetHorizontalMetrics() const override { return *mMetrics; }
+  ~gfxDWriteFont() override;
+
+  const Metrics& GetHorizontalMetrics() const override { return mMetrics; }
 
   bool GetFakeMetricsForArialBlack(DWRITE_FONT_METRICS* aFontMetrics);
 
@@ -92,7 +92,7 @@ class gfxDWriteFont final : public gfxFont {
   RefPtr<IDWriteFontFace> mFontFace;
   RefPtr<IDWriteFontFace1> mFontFace1;  // may be unavailable on older DWrite
 
-  Metrics* mMetrics;
+  Metrics mMetrics;
 
   // cache of glyph widths in 16.16 fixed-point pixels
   mozilla::UniquePtr<nsTHashMap<nsUint32HashKey, int32_t>> mGlyphWidths;

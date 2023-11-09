@@ -89,6 +89,11 @@ enum class AsmJSOption : uint8_t {
   _(ConcurrentDepthFirst)                                                      \
                                                                                \
   /*                                                                           \
+   * Delazifiy functions strating with the largest function first.             \
+   */                                                                          \
+  _(ConcurrentLargeFirst)                                                      \
+                                                                               \
+  /*                                                                           \
    * Parse everything eagerly, from the first parse.                           \
    *                                                                           \
    * NOTE: Either the Realm configuration or specialized VM operating modes    \
@@ -118,8 +123,12 @@ class JS_PUBLIC_API TransitiveCompileOptions {
  protected:
   // non-POD options:
 
+  // UTF-8 encoded file name.
   const char* filename_ = nullptr;
+
+  // UTF-8 encoded introducer file name.
   const char* introducerFilename_ = nullptr;
+
   const char16_t* sourceMapURL_ = nullptr;
 
   // POD options:
@@ -144,6 +153,9 @@ class JS_PUBLIC_API TransitiveCompileOptions {
   // Either the Realm configuration or the compile request may force
   // strict-mode.
   bool forceStrictMode_ = false;
+
+  // The Realm of this script is configured to resist fingerprinting.
+  bool shouldResistFingerprinting_ = false;
 
   // The context has specified that source pragmas should be parsed.
   bool sourcePragmas_ = true;
@@ -182,8 +194,6 @@ class JS_PUBLIC_API TransitiveCompileOptions {
   // Top-level await is enabled by default but is not supported for chrome
   // modules loaded with ChromeUtils.importModule.
   bool topLevelAwait = true;
-
-  bool useFdlibmForSinCosTan = false;
 
   bool importAssertions = false;
 
@@ -227,8 +237,8 @@ class JS_PUBLIC_API TransitiveCompileOptions {
   bool deoptimizeModuleGlobalVars = false;
 
   /**
-   * |introductionType| is a statically allocated C string: one of "eval",
-   * "Function", or "GeneratorFunction".
+   * |introductionType| is a statically allocated C string. See JSScript.h
+   * for more information.
    */
   const char* introductionType = nullptr;
 
@@ -259,27 +269,32 @@ class JS_PUBLIC_API TransitiveCompileOptions {
   // Read-only accessors for non-POD options. The proper way to set these
   // depends on the derived type.
   bool mutedErrors() const { return mutedErrors_; }
+  bool shouldResistFingerprinting() const {
+    return shouldResistFingerprinting_;
+  }
   bool forceFullParse() const {
     return eagerDelazificationIsOneOf<
-      DelazificationOption::ParseEverythingEagerly>();
+        DelazificationOption::ParseEverythingEagerly>();
   }
   bool forceStrictMode() const { return forceStrictMode_; }
   bool consumeDelazificationCache() const {
     return eagerDelazificationIsOneOf<
-      DelazificationOption::ConcurrentDepthFirst>();
+        DelazificationOption::ConcurrentDepthFirst,
+        DelazificationOption::ConcurrentLargeFirst>();
   }
   bool populateDelazificationCache() const {
     return eagerDelazificationIsOneOf<
-      DelazificationOption::CheckConcurrentWithOnDemand,
-      DelazificationOption::ConcurrentDepthFirst>();
+        DelazificationOption::CheckConcurrentWithOnDemand,
+        DelazificationOption::ConcurrentDepthFirst,
+        DelazificationOption::ConcurrentLargeFirst>();
   }
   bool waitForDelazificationCache() const {
     return eagerDelazificationIsOneOf<
-      DelazificationOption::CheckConcurrentWithOnDemand>();
+        DelazificationOption::CheckConcurrentWithOnDemand>();
   }
   bool checkDelazificationCache() const {
     return eagerDelazificationIsOneOf<
-      DelazificationOption::CheckConcurrentWithOnDemand>();
+        DelazificationOption::CheckConcurrentWithOnDemand>();
   }
   DelazificationOption eagerDelazificationStrategy() const {
     return eagerDelazificationStrategy_;
@@ -295,12 +310,13 @@ class JS_PUBLIC_API TransitiveCompileOptions {
 #if defined(DEBUG) || defined(JS_JITSPEW)
   template <typename Printer>
   void dumpWith(Printer& print) const {
-#  define PrintFields_(Name) print(#  Name, Name)
+#  define PrintFields_(Name) print(#Name, Name)
     PrintFields_(filename_);
     PrintFields_(introducerFilename_);
     PrintFields_(sourceMapURL_);
     PrintFields_(mutedErrors_);
     PrintFields_(forceStrictMode_);
+    PrintFields_(shouldResistFingerprinting_);
     PrintFields_(sourcePragmas_);
     PrintFields_(skipFilenameValidation_);
     PrintFields_(hideScriptFromDebugger_);
@@ -315,7 +331,6 @@ class JS_PUBLIC_API TransitiveCompileOptions {
     PrintFields_(allowHTMLComments);
     PrintFields_(nonSyntacticScope);
     PrintFields_(topLevelAwait);
-    PrintFields_(useFdlibmForSinCosTan);
     PrintFields_(importAssertions);
     PrintFields_(borrowBuffer);
     PrintFields_(usePinnedBytecode);
@@ -374,7 +389,7 @@ class JS_PUBLIC_API ReadOnlyCompileOptions : public TransitiveCompileOptions {
   template <typename Printer>
   void dumpWith(Printer& print) const {
     this->TransitiveCompileOptions::dumpWith(print);
-#  define PrintFields_(Name) print(#  Name, Name)
+#  define PrintFields_(Name) print(#Name, Name)
     PrintFields_(lineno);
     PrintFields_(column);
     PrintFields_(scriptSourceOffset);
@@ -458,6 +473,11 @@ class MOZ_STACK_CLASS JS_PUBLIC_API CompileOptions final
     introducerFilename_ = rhs.introducerFilename();
     sourceMapURL_ = rhs.sourceMapURL();
   }
+
+  // Construct CompileOptions for FrontendContext-APIs.
+  struct ForFrontendContext {};
+  explicit CompileOptions(const ForFrontendContext&)
+      : ReadOnlyCompileOptions() {}
 
   CompileOptions& setFile(const char* f) {
     filename_ = f;

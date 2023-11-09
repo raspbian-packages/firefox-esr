@@ -9,6 +9,7 @@
 #include "gfxUtils.h"
 #include "mozilla/ComputedStyle.h"
 #include "mozilla/PresShell.h"
+#include "mozilla/StaticPrefs_layout.h"
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/Helpers.h"
 #include "nsTableFrame.h"
@@ -82,10 +83,7 @@ void nsTableCellFrame::Init(nsIContent* aContent, nsContainerFrame* aParent,
 
 void nsTableCellFrame::DestroyFrom(nsIFrame* aDestructRoot,
                                    PostDestroyData& aPostDestroyData) {
-  if (HasAnyStateBits(NS_FRAME_CAN_HAVE_ABSPOS_CHILDREN)) {
-    nsTableFrame::UnregisterPositionedTablePart(this, aDestructRoot);
-  }
-
+  nsTableFrame::MaybeUnregisterPositionedTablePart(this, aDestructRoot);
   nsContainerFrame::DestroyFrom(aDestructRoot, aPostDestroyData);
 }
 
@@ -168,7 +166,7 @@ nsresult nsTableCellFrame::AttributeChanged(int32_t aNameSpaceID,
   // BasicTableLayoutStrategy
   if (aNameSpaceID == kNameSpaceID_None && aAttribute == nsGkAtoms::nowrap &&
       PresContext()->CompatibilityMode() == eCompatibility_NavQuirks) {
-    PresShell()->FrameNeedsReflow(this, IntrinsicDirty::TreeChange,
+    PresShell()->FrameNeedsReflow(this, IntrinsicDirty::FrameAndAncestors,
                                   NS_FRAME_IS_DIRTY);
   }
 
@@ -182,9 +180,11 @@ nsresult nsTableCellFrame::AttributeChanged(int32_t aNameSpaceID,
 /* virtual */
 void nsTableCellFrame::DidSetComputedStyle(ComputedStyle* aOldComputedStyle) {
   nsContainerFrame::DidSetComputedStyle(aOldComputedStyle);
+  nsTableFrame::PositionedTablePartMaybeChanged(this, aOldComputedStyle);
 
-  if (!aOldComputedStyle)  // avoid this on init
-    return;
+  if (!aOldComputedStyle) {
+    return;  // avoid the following on init
+  }
 
 #ifdef ACCESSIBILITY
   if (nsAccessibilityService* accService = GetAccService()) {
@@ -215,13 +215,13 @@ void nsTableCellFrame::DidSetComputedStyle(ComputedStyle* aOldComputedStyle) {
 
 #ifdef DEBUG
 void nsTableCellFrame::AppendFrames(ChildListID aListID,
-                                    nsFrameList& aFrameList) {
+                                    nsFrameList&& aFrameList) {
   MOZ_CRASH("unsupported operation");
 }
 
 void nsTableCellFrame::InsertFrames(ChildListID aListID, nsIFrame* aPrevFrame,
                                     const nsLineList::iterator* aPrevFrameLine,
-                                    nsFrameList& aFrameList) {
+                                    nsFrameList&& aFrameList) {
   MOZ_CRASH("unsupported operation");
 }
 
@@ -533,13 +533,16 @@ nscoord nsTableCellFrame::GetCellBaseline() const {
   // Ignore the position of the inner frame relative to the cell frame
   // since we want the position as though the inner were top-aligned.
   nsIFrame* inner = mFrames.FirstChild();
-  nscoord borderPadding = GetUsedBorderAndPadding().top;
+  const auto wm = GetWritingMode();
+  const auto borderPadding = GetLogicalUsedBorderAndPadding(wm);
   nscoord result;
   if (!StyleDisplay()->IsContainLayout() &&
-      nsLayoutUtils::GetFirstLineBaseline(GetWritingMode(), inner, &result)) {
-    return result + borderPadding;
+      nsLayoutUtils::GetFirstLineBaseline(wm, inner, &result)) {
+    return result + borderPadding.BStart(wm);
   }
-  return inner->GetContentRectRelativeToSelf().YMost() + borderPadding;
+  const auto logicalSize = inner->GetLogicalSize(wm);
+  // ::-moz-cell-content shouldn't have any border/padding.
+  return logicalSize.BSize(wm) + borderPadding.BStart(wm);
 }
 
 int32_t nsTableCellFrame::GetRowSpan() {
@@ -680,7 +683,6 @@ void nsTableCellFrame::Reflow(nsPresContext* aPresContext,
       aReflowInput.ComputedLogicalPadding(wm) + GetBorderWidth(wm);
 
   ReflowOutput kidSize(wm);
-  kidSize.ClearSize();
   SetPriorAvailISize(aReflowInput.AvailableISize());
   nsIFrame* firstKid = mFrames.FirstChild();
   NS_ASSERTION(
@@ -852,8 +854,6 @@ void nsTableCellFrame::Reflow(nsPresContext* aPresContext,
   // nsIFrame::FixupPositionedTableParts in another pass, so propagate our
   // dirtiness to them before our parent clears our dirty bits.
   PushDirtyBitToAbsoluteFrames();
-
-  NS_FRAME_SET_TRUNCATION(aStatus, aReflowInput, aDesiredSize);
 }
 
 /* ----- global methods ----- */
@@ -988,8 +988,9 @@ ImgDrawResult nsBCTableCellFrame::PaintBackground(gfxContext& aRenderingContext,
 
   nsStyleBorder myBorder(*StyleBorder());
 
+  const auto a2d = PresContext()->AppUnitsPerDevPixel();
   for (const auto side : mozilla::AllPhysicalSides()) {
-    myBorder.SetBorderWidth(side, borderWidth.Side(side));
+    myBorder.SetBorderWidth(side, borderWidth.Side(side), a2d);
   }
 
   // bypassing nsCSSRendering::PaintBackground is safe because this kind
@@ -1046,14 +1047,9 @@ void nsTableCellFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
     nsRect bgRect = GetRectRelativeToSelf() + aBuilder->ToReferenceFrame(this);
 
     // display background if we need to.
-    AppendedBackgroundType result = AppendedBackgroundType::None;
-    if (aBuilder->IsForEventDelivery() ||
-        !StyleBackground()->IsTransparent(this) ||
-        StyleDisplay()->HasAppearance()) {
-      result = nsDisplayBackgroundImage::AppendBackgroundItemsToTop(
-          aBuilder, this, bgRect, aLists.BorderBackground());
-    }
-
+    const AppendedBackgroundType result =
+        nsDisplayBackgroundImage::AppendBackgroundItemsToTop(
+            aBuilder, this, bgRect, aLists.BorderBackground());
     if (result == AppendedBackgroundType::None) {
       aBuilder->BuildCompositorHitTestInfoIfNeeded(this,
                                                    aLists.BorderBackground());
@@ -1124,12 +1120,12 @@ void nsTableCellFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
       Maybe<nsDisplayListBuilder::AutoBuildingDisplayList> buildingForColGroup;
       nsDisplayBackgroundImage::AppendBackgroundItemsToTop(
           aBuilder, colGroup, bgRect, backgrounds->ColGroupBackgrounds(), false,
-          nullptr, colGroup->GetRect() + backgrounds->TableToReferenceFrame(),
-          this, &buildingForColGroup);
+          colGroup->GetRect() + backgrounds->TableToReferenceFrame(), this,
+          &buildingForColGroup);
 
       Maybe<nsDisplayListBuilder::AutoBuildingDisplayList> buildingForCol;
       nsDisplayBackgroundImage::AppendBackgroundItemsToTop(
-          aBuilder, col, bgRect, backgrounds->ColBackgrounds(), false, nullptr,
+          aBuilder, col, bgRect, backgrounds->ColBackgrounds(), false,
           col->GetRect() + colGroup->GetPosition() +
               backgrounds->TableToReferenceFrame(),
           this, &buildingForCol);

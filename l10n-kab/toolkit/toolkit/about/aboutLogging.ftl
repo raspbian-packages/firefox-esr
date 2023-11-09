@@ -15,14 +15,13 @@
 ## For further details, consult:
 ## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
 
--profiler-brand-name = Firefox Profiler
-
 ##
 
 # This is the title of the page
 about-logging-title = Ɣef tɣamsa
+about-logging-page-title = Amsefrak n tɣamsa
 about-logging-current-log-file = Afaylu aɣmis amiran:
-about-logging-current-log-modules = Izegrar iɣmisen imiranen:
+about-logging-new-log-file = Afaylu amaynut n umis:
 about-logging-log-tutorial = Wali <a data-l10n-name="logging">Asniɣmes HTTP </a> ɣe wamek ad tesqedceḍ afecku-agi.
 # This message is used as a button label, "Open" indicates an action.
 about-logging-open-log-file-dir = Ldi akaram
@@ -31,9 +30,23 @@ about-logging-set-log-modules = Sbadu izegrar iɣmisen
 about-logging-start-logging = Senker asniɣmes
 about-logging-stop-logging = Seḥbes asniɣmes
 about-logging-info = Talɣut:
+about-logging-log-modules-selection = Tafrant n uzegrir n uɣmus
+about-logging-new-log-modules = Izegrar imaynuten n uɣmus:
+about-logging-logging-output-selection = Tuffɣa n uɣmus
+about-logging-logging-to-file = Tuffɣa ɣer ufaylu
+about-logging-logging-to-profiler = Tuffɣa ɣer { -profiler-brand-name }
+about-logging-no-log-modules = Ula yiwen
+about-logging-no-log-file = Ula yiwen
+about-logging-logging-preset-selector-text = Awennez n tɣamsa:
 
 ## Logging presets
 
+about-logging-preset-networking-label = Azeṭṭa
+about-logging-preset-media-playback-label = Taɣuri n wallalen n teywalt
+about-logging-preset-custom-label = Udmawan
+
+# Error handling
+about-logging-error = Tuccḍa:
 
 ## Variables:
 ##   $k (String) - Variable name

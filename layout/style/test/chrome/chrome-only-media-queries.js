@@ -6,7 +6,6 @@ const CHROME_ONLY_TOGGLES = [
   "-moz-scrollbar-start-forward",
   "-moz-scrollbar-end-backward",
   "-moz-scrollbar-end-forward",
-  "-moz-scrollbar-thumb-proportional",
   "-moz-overlay-scrollbars",
   "-moz-windows-classic",
   "-moz-windows-compositor",
@@ -25,6 +24,7 @@ const CHROME_ONLY_TOGGLES = [
   "-moz-gtk-csd-maximize-button",
   "-moz-gtk-csd-close-button",
   "-moz-gtk-csd-reversed-placement",
+  "-moz-panel-animations",
 ];
 
 // Non-parseable queries can be tested directly in

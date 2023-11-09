@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Viimeksi suljetut
 firefoxview-closed-tabs-description2 = Avaa uudelleen tässä ikkunassa sulkemasi sivut.
 firefoxview-closed-tabs-placeholder-header = Ei viimeksi suljettuja välilehtiä
 firefoxview-closed-tabs-placeholder-body = Kun suljet välilehden tässä ikkunassa, voit hakea sen täältä.
+firefoxview-closed-tabs-placeholder-body2 = Kun suljet välilehden, voit hakea sen täältä.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Viimeksi aktiivinen
 firefoxview-tabs-list-tab-button =
     .title = Avaa { $targetURI } uuteen välilehteen
 firefoxview-try-colorways-button = Kokeile väriteemoja
-firefoxview-no-current-colorway-collection = Uusia värejä on tulossa
 firefoxview-change-colorway-button = Vaihda väriteemaa
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Näytä lista
 firefoxview-collapse-button-hide =
     .title = Piilota lista
+firefoxview-overview-nav = Viimeaikainen selaus
+    .title = Viimeaikainen selaus
+firefoxview-overview-header = Viimeaikainen selaus
+    .title = Viimeaikainen selaus
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Sivuhistoria
+    .title = Sivuhistoria
+firefoxview-history-header = Sivuhistoria
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Avoimet välilehdet
+    .title = Avoimet välilehdet
+firefoxview-opentabs-header = Avoimet välilehdet
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Suljetut välilehdet
+    .title = Suljetut välilehdet
+firefoxview-recently-closed-header = Suljetut välilehdet
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Välilehdet muista laitteista
+    .title = Välilehdet muista laitteista
+firefoxview-synced-tabs-header = Välilehdet muista laitteista
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Näytä kaikki
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Ikkuna { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Ikkuna { $winID } (nykyinen)
+firefoxview-opentabs-focus-tab =
+    .title = Siirry tähän välilehteen
+firefoxview-show-more = Näytä lisää
+firefoxview-show-less = Näytä vähemmän
+firefoxview-sort-history-by-date-label = Järjestä päiväyksen mukaan
+firefoxview-sort-history-by-site-label = Järjestä sivuston mukaan
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Tänään - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Eilen - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Näytä koko historia

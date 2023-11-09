@@ -176,13 +176,13 @@ class FrameInfo {
     return Address(FramePointer, BaselineFrame::reverseOffsetOfLocal(local));
   }
   Address addressOfArg(size_t arg) const {
-    return Address(FramePointer, BaselineFrame::offsetOfArg(arg));
+    return Address(FramePointer, JitFrameLayout::offsetOfActualArg(arg));
   }
   Address addressOfThis() const {
-    return Address(FramePointer, BaselineFrame::offsetOfThis());
+    return Address(FramePointer, JitFrameLayout::offsetOfThis());
   }
   Address addressOfCalleeToken() const {
-    return Address(FramePointer, BaselineFrame::offsetOfCalleeToken());
+    return Address(FramePointer, JitFrameLayout::offsetOfCalleeToken());
   }
   Address addressOfEnvironmentChain() const {
     return Address(FramePointer,
@@ -220,6 +220,7 @@ class FrameInfo {
 };
 
 class CompilerFrameInfo : public FrameInfo {
+  friend class BaselinePerfSpewer;
   JSScript* script;
   FixedList<StackValue> stack;
   size_t spIndex;

@@ -1,8 +1,6 @@
 // This test ensures HasStorageAccess API returns the right value under different
 // scenarios.
 
-/* import-globals-from antitracking_head.js */
-
 var settings = [
   // same-origin no-tracker
   {
@@ -18,8 +16,7 @@ var settings = [
   },
   // 3rd-party no-tracker with permission
   {
-    name:
-      "Test whether 3rd-party non-tracker frame has storage access when storage permission is granted before",
+    name: "Test whether 3rd-party non-tracker frame has storage access when storage permission is granted before",
     topPage: TEST_TOP_PAGE,
     thirdPartyPage: TEST_4TH_PARTY_PAGE,
     setup: () => {
@@ -41,8 +38,7 @@ var settings = [
   },
   // 3rd-party tracker with permission
   {
-    name:
-      "Test whether 3rd-party tracker frame has storage access when storage access permission is granted before",
+    name: "Test whether 3rd-party tracker frame has storage access when storage access permission is granted before",
     topPage: TEST_TOP_PAGE,
     thirdPartyPage: TEST_3RD_PARTY_PAGE,
     setup: () => {
@@ -149,7 +145,7 @@ var testCases = [
   },
 ];
 
-(function() {
+(function () {
   settings.forEach(setting => {
     if (setting.setup) {
       add_task(async _ => {
@@ -173,7 +169,12 @@ var testCases = [
         cookieBehavior: test.behavior,
         allowList: false,
         callback,
-        extraPrefs: null,
+        extraPrefs: [
+          [
+            "privacy.partition.always_partition_third_party_non_cookie_storage",
+            false,
+          ],
+        ],
         expectedBlockingNotifications: 0,
         runInPrivateWindow: false,
         iframeSandbox: null,

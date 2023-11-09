@@ -18,6 +18,8 @@ abuse-report-addon-authored-by = შემქმნელი <a data-l10n-name="
 abuse-report-learnmore =
     ზუსტად არ იცით რა უნდა მიუთითოთ?
     <a data-l10n-name="learnmore-link">იხილეთ ვრცლად გაფართოებებისა და თემების შესახებ საჩივრის გაგზავნაზე</a>
+abuse-report-learnmore-intro = ზუსტად არ იცით რა უნდა მიუთითოთ?
+abuse-report-learnmore-link = იხილეთ ვრცლად გაფართოებებისა და თემების შესახებ საჩივრის გაგზავნაზე
 abuse-report-submit-description = აღწერეთ საკითხი (არასავალდებულო)
 abuse-report-textarea =
     .placeholder = დაწვრილებითი ინფორმაცია გვეხმარება ხარვეზის გამორკვევაში. გთხოვთ, აღწეროთ რა დაბრკოლებას გადააწყდით. გმადლობთ, რომ გვეხმარებით ვებსივრცის სიჯანსაღის შენარჩუნებაში.

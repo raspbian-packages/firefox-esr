@@ -26,10 +26,6 @@ certmgr-people = Сізде келесі адамдарды анықтайтын
 certmgr-server = Бұл жазбалар сервер сертификатының қателері үшін ережеден тыс жағдайларды анықтайды
 certmgr-ca = Сізде келесі сертификаттарды растаушыларды анықтайтын сертификаттар файлы бар
 
-certmgr-edit-ca-cert =
-    .title = CA сертификатына сену баптауларын түзету
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = CA сертификатына сену баптауларын түзету
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Осы сертификат электронды пошта пайдаланушыларын анықтай алады.
-
-certmgr-delete-cert =
-    .title = Сертификатты өшіру
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Сертификатты өшіру
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Сервері
-
-certmgr-override-lifetime =
-    .label = Мерзімі
 
 certmgr-token-name =
     .label = Қауіпсіздік құрылғысы
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Сериялық нөмірі
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256 баспасы
 
 certmgr-view =
     .label = Қарап шығу…

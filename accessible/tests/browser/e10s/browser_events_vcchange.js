@@ -8,14 +8,14 @@ addAccessibleTask(
   `
   <p id="p1">abc</p>
   <input id="input1" value="input" />`,
-  async function(browser) {
+  async function (browser) {
     let onVCChanged = waitForEvent(
       EVENT_VIRTUALCURSOR_CHANGED,
       matchContentDoc
     );
     await invokeContentTask(browser, [], () => {
-      const { CommonUtils } = ChromeUtils.import(
-        "chrome://mochitests/content/browser/accessible/tests/browser/Common.jsm"
+      const { CommonUtils } = ChromeUtils.importESModule(
+        "chrome://mochitests/content/browser/accessible/tests/browser/Common.sys.mjs"
       );
       let vc = CommonUtils.getAccessible(
         content.document,
@@ -39,8 +39,8 @@ addAccessibleTask(
 
     onVCChanged = waitForEvent(EVENT_VIRTUALCURSOR_CHANGED, matchContentDoc);
     await invokeContentTask(browser, [], () => {
-      const { CommonUtils } = ChromeUtils.import(
-        "chrome://mochitests/content/browser/accessible/tests/browser/Common.jsm"
+      const { CommonUtils } = ChromeUtils.importESModule(
+        "chrome://mochitests/content/browser/accessible/tests/browser/Common.sys.mjs"
       );
       let vc = CommonUtils.getAccessible(
         content.document,
@@ -58,8 +58,8 @@ addAccessibleTask(
 
     onVCChanged = waitForEvent(EVENT_VIRTUALCURSOR_CHANGED, matchContentDoc);
     await invokeContentTask(browser, [], () => {
-      const { CommonUtils } = ChromeUtils.import(
-        "chrome://mochitests/content/browser/accessible/tests/browser/Common.jsm"
+      const { CommonUtils } = ChromeUtils.importESModule(
+        "chrome://mochitests/content/browser/accessible/tests/browser/Common.sys.mjs"
       );
       let vc = CommonUtils.getAccessible(
         content.document,

@@ -17,7 +17,7 @@
 //   call (profiler_get_backtrace()). It involves writing a stack trace and
 //   little else into a temporary ProfileBuffer, and wrapping that up in a
 //   ProfilerBacktrace that can be subsequently used in a marker. The sampling
-//   is done on-thread, and so Registers::SyncPopulate() is used to get the
+//   is done on-thread, and so REGISTERS_SYNC_POPULATE() is used to get the
 //   register values.
 //
 // - A "backtrace" sample is the simplest kind. It is done in response to an
@@ -55,7 +55,7 @@
 #include "mozilla/StaticPtr.h"
 #include "mozilla/ThreadLocal.h"
 #include "mozilla/TimeStamp.h"
-#include "mozilla/Tuple.h"
+
 #include "mozilla/UniquePtr.h"
 #include "mozilla/Vector.h"
 #include "prdtoa.h"
@@ -105,7 +105,7 @@
 // No stack-walking in baseprofiler on linux, android, bsd.
 // APIs now make it easier to capture backtraces from the Base Profiler, which
 // is currently not supported on these platform, and would lead to a MOZ_CRASH
-// in Registers::SyncPopulate(). `#if 0` added in bug 1658232, follow-up bugs
+// in REGISTERS_SYNC_POPULATE(). `#if 0` added in bug 1658232, follow-up bugs
 // should be referenced in meta bug 1557568.
 #if 0
 // Android builds use the ARM Exception Handling ABI to unwind.
@@ -233,7 +233,6 @@ static uint32_t AvailableFeatures() {
 #if !defined(HAVE_NATIVE_UNWIND)
   ProfilerFeature::ClearStackWalk(features);
 #endif
-  ProfilerFeature::ClearJSTracer(features);
 #if !defined(GP_OS_windows)
   ProfilerFeature::ClearNoTimerResolutionChange(features);
 #endif
@@ -243,7 +242,7 @@ static uint32_t AvailableFeatures() {
 
 // Default features common to all contexts (even if not available).
 static constexpr uint32_t DefaultFeatures() {
-  return ProfilerFeature::Java | ProfilerFeature::JS | ProfilerFeature::Leaf |
+  return ProfilerFeature::Java | ProfilerFeature::JS |
          ProfilerFeature::StackWalk | ProfilerFeature::CPUUtilization |
          ProfilerFeature::ProcessCPU;
 }
@@ -603,10 +602,12 @@ class ActivePS {
     return aFeatures;
   }
 
-  ActivePS(PSLockRef aLock, PowerOfTwo32 aCapacity, double aInterval,
-           uint32_t aFeatures, const char** aFilters, uint32_t aFilterCount,
+  ActivePS(PSLockRef aLock, const TimeStamp& aProfilingStartTime,
+           PowerOfTwo32 aCapacity, double aInterval, uint32_t aFeatures,
+           const char** aFilters, uint32_t aFilterCount,
            const Maybe<double>& aDuration)
-      : mGeneration(sNextGeneration++),
+      : mProfilingStartTime(aProfilingStartTime),
+        mGeneration(sNextGeneration++),
         mCapacity(aCapacity),
         mDuration(aDuration),
         mInterval(aInterval),
@@ -674,12 +675,13 @@ class ActivePS {
   }
 
  public:
-  static void Create(PSLockRef aLock, PowerOfTwo32 aCapacity, double aInterval,
+  static void Create(PSLockRef aLock, const TimeStamp& aProfilingStartTime,
+                     PowerOfTwo32 aCapacity, double aInterval,
                      uint32_t aFeatures, const char** aFilters,
                      uint32_t aFilterCount, const Maybe<double>& aDuration) {
     MOZ_ASSERT(!sInstance);
-    sInstance = new ActivePS(aLock, aCapacity, aInterval, aFeatures, aFilters,
-                             aFilterCount, aDuration);
+    sInstance = new ActivePS(aLock, aProfilingStartTime, aCapacity, aInterval,
+                             aFeatures, aFilters, aFilterCount, aDuration);
   }
 
   [[nodiscard]] static SamplerThread* Destroy(PSLockRef aLock) {
@@ -740,6 +742,8 @@ class ActivePS {
     MOZ_ASSERT(sInstance);
     return sInstance->ThreadSelected(aInfo->Name());
   }
+
+  PS_GET_LOCKLESS(TimeStamp, ProfilingStartTime)
 
   PS_GET(uint32_t, Generation)
 
@@ -981,6 +985,8 @@ class ActivePS {
   // The singleton instance.
   static ActivePS* sInstance;
 
+  const TimeStamp mProfilingStartTime;
+
   // We need to track activity generations. If we didn't we could have the
   // following scenario.
   //
@@ -1065,6 +1071,17 @@ uint32_t ActivePS::sNextGeneration = 0;
 
 namespace detail {
 
+TimeStamp GetProfilingStartTime() {
+  if (!CorePS::Exists()) {
+    return {};
+  }
+  PSAutoLock lock;
+  if (!ActivePS::Exists(lock)) {
+    return {};
+  }
+  return ActivePS::ProfilingStartTime();
+}
+
 [[nodiscard]] MFBT_API UniquePtr<ProfileBufferChunkManagerWithLocalLimit>
 ExtractBaseProfilerChunkManager() {
   PSAutoLock lock;
@@ -1107,6 +1124,12 @@ void RacyFeatures::SetSamplingUnpaused() {
 bool RacyFeatures::IsActiveWithFeature(uint32_t aFeature) {
   uint32_t af = sActiveAndFeatures;  // copy it first
   return (af & Active) && (af & aFeature);
+}
+
+/* static */
+bool RacyFeatures::IsActiveWithoutFeature(uint32_t aFeature) {
+  uint32_t af = sActiveAndFeatures;  // copy it first
+  return (af & Active) && !(af & aFeature);
 }
 
 /* static */
@@ -1223,16 +1246,11 @@ class Registers {
  public:
   Registers() : mPC{nullptr}, mSP{nullptr}, mFP{nullptr}, mLR{nullptr} {}
 
-#if defined(HAVE_NATIVE_UNWIND)
-  // Fills in mPC, mSP, mFP, mLR, and mContext for a synchronous sample.
-  void SyncPopulate();
-#endif
-
   void Clear() { memset(this, 0, sizeof(*this)); }
 
   // These fields are filled in by
   // Sampler::SuspendAndSampleAndResumeThread() for periodic and backtrace
-  // samples, and by SyncPopulate() for synchronous samples.
+  // samples, and by REGISTERS_SYNC_POPULATE for synchronous samples.
   Address mPC;  // Instruction pointer.
   Address mSP;  // Stack pointer.
   Address mFP;  // Frame pointer.
@@ -1455,9 +1473,9 @@ static void DoEHABIBacktrace(PSLockRef aLock,
 #ifdef USE_LUL_STACKWALK
 
 // See the comment at the callsite for why this function is necessary.
-#  if defined(MOZ_HAVE_ASAN_BLACKLIST)
-MOZ_ASAN_BLACKLIST static void ASAN_memcpy(void* aDst, const void* aSrc,
-                                           size_t aLen) {
+#  if defined(MOZ_HAVE_ASAN_IGNORE)
+MOZ_ASAN_IGNORE static void ASAN_memcpy(void* aDst, const void* aSrc,
+                                        size_t aLen) {
   // The obvious thing to do here is call memcpy(). However, although
   // ASAN_memcpy() is not instrumented by ASAN, memcpy() still is, and the
   // false positive still manifests! So we must implement memcpy() ourselves
@@ -1596,7 +1614,7 @@ static void DoLULBacktrace(PSLockRef aLock,
       //
       // This code is very much a custom stack unwind mechanism! So we use an
       // alternative memcpy() implementation that is ignored by ASAN.
-#  if defined(MOZ_HAVE_ASAN_BLACKLIST)
+#  if defined(MOZ_HAVE_ASAN_IGNORE)
       ASAN_memcpy(&stackImg.mContents[0], (void*)start, nToCopy);
 #  else
       memcpy(&stackImg.mContents[0], (void*)start, nToCopy);
@@ -1679,8 +1697,7 @@ static inline void DoSharedSample(
                 aRegs, nativeStack, collector);
 
     // We can't walk the whole native stack, but we can record the top frame.
-    if (ActivePS::FeatureLeaf(aLock) &&
-        aCaptureOptions == StackCaptureOptions::Full) {
+    if (aCaptureOptions == StackCaptureOptions::Full) {
       aBuffer.AddEntry(ProfileBufferEntry::NativeLeafAddr((void*)aRegs.mPC));
     }
   }
@@ -1746,6 +1763,7 @@ static void AddSharedLibraryInfoToStream(JSONWriter& aWriter,
   aWriter.StringProperty("debugName", aLib.GetDebugName());
   aWriter.StringProperty("debugPath", aLib.GetDebugPath());
   aWriter.StringProperty("breakpadId", aLib.GetBreakpadId());
+  aWriter.StringProperty("codeId", aLib.GetCodeId());
   aWriter.StringProperty("arch", aLib.GetArch());
   aWriter.EndObject();
 }
@@ -1800,9 +1818,8 @@ static void StreamCategories(SpliceableJSONWriter& aWriter) {
 
 static void StreamMarkerSchema(SpliceableJSONWriter& aWriter) {
   // Get an array view with all registered marker-type-specific functions.
-  Span<const base_profiler_markers_detail::Streaming::MarkerTypeFunctions>
-      markerTypeFunctionsArray =
-          base_profiler_markers_detail::Streaming::MarkerTypeFunctionsArray();
+  base_profiler_markers_detail::Streaming::LockedMarkerTypeFunctionsList
+      markerTypeFunctionsArray;
   // List of streamed marker names, this is used to spot duplicates.
   std::set<std::string> names;
   // Stream the display schema for each different one. (Duplications may come
@@ -1826,20 +1843,38 @@ static void StreamMetaJSCustomObject(PSLockRef aLock,
                                      bool aIsShuttingDown) {
   MOZ_RELEASE_ASSERT(CorePS::Exists() && ActivePS::Exists(aLock));
 
-  aWriter.IntProperty("version", 25);
+  aWriter.IntProperty("version", 27);
 
   // The "startTime" field holds the number of milliseconds since midnight
   // January 1, 1970 GMT. This grotty code computes (Now - (Now -
   // ProcessStartTime)) to convert CorePS::ProcessStartTime() into that form.
+  // Note: This is the only absolute time in the profile! All other timestamps
+  // are relative to this startTime.
   TimeDuration delta = TimeStamp::Now() - CorePS::ProcessStartTime();
   aWriter.DoubleProperty(
       "startTime", MicrosecondsSince1970() / 1000.0 - delta.ToMilliseconds());
 
-  // Write the shutdownTime field. Unlike startTime, shutdownTime is not an
-  // absolute time stamp: It's relative to startTime. This is consistent with
-  // all other (non-"startTime") times anywhere in the profile JSON.
+  aWriter.DoubleProperty("profilingStartTime", (ActivePS::ProfilingStartTime() -
+                                                CorePS::ProcessStartTime())
+                                                   .ToMilliseconds());
+
+  if (const TimeStamp contentEarliestTime =
+          ActivePS::Buffer(aLock)
+              .UnderlyingChunkedBuffer()
+              .GetEarliestChunkStartTimeStamp();
+      !contentEarliestTime.IsNull()) {
+    aWriter.DoubleProperty(
+        "contentEarliestTime",
+        (contentEarliestTime - CorePS::ProcessStartTime()).ToMilliseconds());
+  } else {
+    aWriter.NullProperty("contentEarliestTime");
+  }
+
+  const double profilingEndTime = profiler_time();
+  aWriter.DoubleProperty("profilingEndTime", profilingEndTime);
+
   if (aIsShuttingDown) {
-    aWriter.DoubleProperty("shutdownTime", profiler_time());
+    aWriter.DoubleProperty("shutdownTime", profilingEndTime);
   } else {
     aWriter.NullProperty("shutdownTime");
   }
@@ -2876,24 +2911,11 @@ UniquePtr<char[]> profiler_get_profile(double aSinceTime, bool aIsShuttingDown,
                                        bool aOnlyThreads) {
   LOG("profiler_get_profile");
 
-  SpliceableChunkedJSONWriter b;
+  SpliceableChunkedJSONWriter b{FailureLatchInfallibleSource::Singleton()};
   if (!WriteProfileToJSONWriter(b, aSinceTime, aIsShuttingDown, aOnlyThreads)) {
     return nullptr;
   }
   return b.ChunkedWriteFunc().CopyData();
-}
-
-void profiler_get_profile_json_into_lazily_allocated_buffer(
-    const std::function<char*(size_t)>& aAllocator, double aSinceTime,
-    bool aIsShuttingDown) {
-  LOG("profiler_get_profile_json_into_lazily_allocated_buffer");
-
-  SpliceableChunkedJSONWriter b;
-  if (!WriteProfileToJSONWriter(b, aSinceTime, aIsShuttingDown)) {
-    return;
-  }
-
-  b.ChunkedWriteFunc().CopyDataIntoLazilyAllocatedBuffer(aAllocator);
 }
 
 void profiler_get_start_params(int* aCapacity, Maybe<double>* aDuration,
@@ -2994,7 +3016,8 @@ static void locked_profiler_save_profile_to_file(PSLockRef aLock,
   std::ofstream stream;
   stream.open(aFilename);
   if (stream.is_open()) {
-    SpliceableJSONWriter w(MakeUnique<OStreamJSONWriteFunc>(stream));
+    OStreamJSONWriteFunc jw(stream);
+    SpliceableJSONWriter w(jw, FailureLatchInfallibleSource::Singleton());
     w.Start();
     {
       locked_profiler_stream_json_for_this_process(aLock, w, /* sinceTime */ 0,
@@ -3015,8 +3038,8 @@ static void locked_profiler_save_profile_to_file(PSLockRef aLock,
   }
 }
 
-void profiler_save_profile_to_file(const char* aFilename) {
-  LOG("profiler_save_profile_to_file(%s)", aFilename);
+void baseprofiler_save_profile_to_file(const char* aFilename) {
+  LOG("baseprofiler_save_profile_to_file(%s)", aFilename);
 
   MOZ_RELEASE_ASSERT(CorePS::Exists());
 
@@ -3068,6 +3091,8 @@ static void locked_profiler_start(PSLockRef aLock, PowerOfTwo32 aCapacity,
                                   double aInterval, uint32_t aFeatures,
                                   const char** aFilters, uint32_t aFilterCount,
                                   const Maybe<double>& aDuration) {
+  const TimeStamp profilingStartTime = TimeStamp::Now();
+
   if (LOG_TEST) {
     LOG("locked_profiler_start");
     LOG("- capacity  = %d", int(aCapacity.Value()));
@@ -3111,8 +3136,8 @@ static void locked_profiler_start(PSLockRef aLock, PowerOfTwo32 aCapacity,
   }
   double interval = aInterval > 0 ? aInterval : BASE_PROFILER_DEFAULT_INTERVAL;
 
-  ActivePS::Create(aLock, capacity, interval, aFeatures, aFilters, aFilterCount,
-                   duration);
+  ActivePS::Create(aLock, profilingStartTime, capacity, interval, aFeatures,
+                   aFilters, aFilterCount, duration);
 
   // Set up profiling for each registered thread, if appropriate.
   const Vector<UniquePtr<RegisteredThread>>& registeredThreads =
@@ -3393,6 +3418,13 @@ bool profiler_feature_active(uint32_t aFeature) {
   return RacyFeatures::IsActiveWithFeature(aFeature);
 }
 
+bool profiler_active_without_feature(uint32_t aFeature) {
+  // This function runs both on and off the main thread.
+
+  // This function is hot enough that we use RacyFeatures, not ActivePS.
+  return RacyFeatures::IsActiveWithoutFeature(aFeature);
+}
+
 void profiler_add_sampled_counter(BaseProfilerCount* aCounter) {
   DEBUG_LOG("profiler_add_sampled_counter(%s)", aCounter->mLabel);
   PSAutoLock lock;
@@ -3630,7 +3662,7 @@ bool profiler_capture_backtrace_into(ProfileChunkedBuffer& aChunkedBuffer,
 
   Registers regs;
 #if defined(HAVE_NATIVE_UNWIND)
-  regs.SyncPopulate();
+  REGISTERS_SYNC_POPULATE(regs);
 #else
   regs.Clear();
 #endif
@@ -3647,7 +3679,8 @@ UniquePtr<ProfileChunkedBuffer> profiler_capture_backtrace() {
                            PROFILER);
 
   // Quick is-active check before allocating a buffer.
-  if (!profiler_is_active()) {
+  // If NoMarkerStacks is set, we don't want to capture a backtrace.
+  if (!profiler_active_without_feature(ProfilerFeature::NoMarkerStacks)) {
     return nullptr;
   }
 
@@ -3755,9 +3788,7 @@ void profiler_suspend_and_sample_thread(BaseProfilerThreadId aThreadId,
           MergeStacks(aFeatures, isSynchronous, registeredThread, aRegs,
                       nativeStack, aCollector);
 
-          if (ProfilerFeature::HasLeaf(aFeatures)) {
-            aCollector.CollectNativeLeafAddr((void*)aRegs.mPC);
-          }
+          aCollector.CollectNativeLeafAddr((void*)aRegs.mPC);
         }
       };
 
@@ -3765,7 +3796,7 @@ void profiler_suspend_and_sample_thread(BaseProfilerThreadId aThreadId,
         // Sampling the current thread, do NOT suspend it!
         Registers regs;
 #if defined(HAVE_NATIVE_UNWIND)
-        regs.SyncPopulate();
+        REGISTERS_SYNC_POPULATE(regs);
 #else
         regs.Clear();
 #endif

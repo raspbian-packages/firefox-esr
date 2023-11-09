@@ -57,8 +57,6 @@ class nsMIMEInputStream : public nsIMIMEInputStream,
   NS_DECL_NSICLONEABLEINPUTSTREAM
 
  private:
-  void InitStreams();
-
   struct MOZ_STACK_CLASS ReadSegmentsState {
     nsCOMPtr<nsIInputStream> mThisStream;
     nsWriteSegmentFun mWriter{nullptr};
@@ -77,12 +75,10 @@ class nsMIMEInputStream : public nsIMIMEInputStream,
   nsTArray<HeaderEntry> mHeaders;
 
   nsCOMPtr<nsIInputStream> mStream;
-  bool mStartedReading{false};
+  mozilla::Atomic<bool, mozilla::Relaxed> mStartedReading{false};
 
-  mozilla::Mutex mMutex MOZ_UNANNOTATED{"nsMIMEInputStream::mMutex"};
-
-  // This is protected by mutex.
-  nsCOMPtr<nsIInputStreamCallback> mAsyncWaitCallback;
+  mozilla::Mutex mMutex{"nsMIMEInputStream::mMutex"};
+  nsCOMPtr<nsIInputStreamCallback> mAsyncWaitCallback MOZ_GUARDED_BY(mMutex);
 
   // This is protected by mutex.
   nsCOMPtr<nsIInputStreamLengthCallback> mAsyncInputStreamLengthCallback;
@@ -158,18 +154,10 @@ nsMIMEInputStream::GetData(nsIInputStream** aStream) {
   return NS_OK;
 }
 
-// set up the internal streams
-void nsMIMEInputStream::InitStreams() {
-  NS_ASSERTION(!mStartedReading,
-               "Don't call initStreams twice without rewinding");
-
-  mStartedReading = true;
-}
-
 #define INITSTREAMS                               \
   if (!mStartedReading) {                         \
     NS_ENSURE_TRUE(mStream, NS_ERROR_UNEXPECTED); \
-    InitStreams();                                \
+    mStartedReading = true;                       \
   }
 
 // Reset mStartedReading when Seek-ing to start
@@ -215,7 +203,7 @@ nsresult nsMIMEInputStream::ReadSegCb(nsIInputStream* aIn, void* aClosure,
 }
 
 /**
- * Forward everything else to the mStream after calling InitStreams()
+ * Forward everything else to the mStream after calling INITSTREAMS
  */
 
 // nsIInputStream
@@ -226,6 +214,10 @@ NS_IMETHODIMP nsMIMEInputStream::Close(void) {
 NS_IMETHODIMP nsMIMEInputStream::Available(uint64_t* _retval) {
   INITSTREAMS;
   return mStream->Available(_retval);
+}
+NS_IMETHODIMP nsMIMEInputStream::StreamStatus() {
+  INITSTREAMS;
+  return mStream->StreamStatus();
 }
 NS_IMETHODIMP nsMIMEInputStream::Read(char* buf, uint32_t count,
                                       uint32_t* _retval) {
@@ -257,7 +249,7 @@ nsMIMEInputStream::AsyncWait(nsIInputStreamCallback* aCallback, uint32_t aFlags,
 
   nsCOMPtr<nsIInputStreamCallback> callback = aCallback ? this : nullptr;
   {
-    MutexAutoLock lock(mMutex);
+    mozilla::MutexAutoLock lock(mMutex);
     if (NS_WARN_IF(mAsyncWaitCallback && aCallback &&
                    mAsyncWaitCallback != aCallback)) {
       return NS_ERROR_FAILURE;
@@ -277,7 +269,7 @@ nsMIMEInputStream::OnInputStreamReady(nsIAsyncInputStream* aStream) {
   nsCOMPtr<nsIInputStreamCallback> callback;
 
   {
-    MutexAutoLock lock(mMutex);
+    mozilla::MutexAutoLock lock(mMutex);
 
     // We have been canceled in the meanwhile.
     if (!mAsyncWaitCallback) {
@@ -413,7 +405,7 @@ nsMIMEInputStream::AsyncLengthWait(nsIInputStreamLengthCallback* aCallback,
 
   nsCOMPtr<nsIInputStreamLengthCallback> callback = aCallback ? this : nullptr;
   {
-    MutexAutoLock lock(mMutex);
+    mozilla::MutexAutoLock lock(mMutex);
     mAsyncInputStreamLengthCallback = aCallback;
   }
 
@@ -425,7 +417,7 @@ nsMIMEInputStream::OnInputStreamLengthReady(nsIAsyncInputStreamLength* aStream,
                                             int64_t aLength) {
   nsCOMPtr<nsIInputStreamLengthCallback> callback;
   {
-    MutexAutoLock lock(mMutex);
+    mozilla::MutexAutoLock lock(mMutex);
     // We have been canceled in the meanwhile.
     if (!mAsyncInputStreamLengthCallback) {
       return NS_OK;
@@ -501,7 +493,7 @@ nsMIMEInputStream::Clone(nsIInputStream** aResult) {
   }
 
   static_cast<nsMIMEInputStream*>(mimeStream.get())->mStartedReading =
-      mStartedReading;
+      static_cast<bool>(mStartedReading);
 
   mimeStream.forget(aResult);
   return NS_OK;

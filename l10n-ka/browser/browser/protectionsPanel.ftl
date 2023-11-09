@@ -77,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = შესავსე
 protections-panel-site-not-working-view-issue-list-payments = გადახდებზე
 protections-panel-site-not-working-view-issue-list-comments = გამოხმაურებებზე
 protections-panel-site-not-working-view-issue-list-videos = ვიდეოებზე
+protections-panel-site-not-working-view-issue-list-fonts = შრიფტები
 
 protections-panel-site-not-working-view-send-report = მოგვახსენეთ
 
@@ -100,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = მოხსენება დაზიანებულ საიტზე
 protections-panel-content-blocking-breakage-report-view-description = შიგთავსის შეზღუდვის შედეგად, შესაძლოა საიტებმა გამართულად ვერ იმუშაოს. ხარვეზების მოხსენებით, თქვენ დაგვეხმარებით, რომ { -brand-short-name } გავხადოთ უკეთესი ყველასთვის. შედეგად, Mozilla-ს გადაეგზავნება როგორც URL-ბმული, აგრეთვე თქვენი ბრაუზერის პარამეტრების მონაცემები. <label data-l10n-name="learn-more">ვრცლად</label>
+protections-panel-content-blocking-breakage-report-view-description2 = შიგთავსის შეზღუდვის შედეგად, შესაძლოა საიტებმა გამართულად ვერ იმუშაოს. ხარვეზების მოხსენებით, თქვენ დაგვეხმარებით, რომ { -brand-short-name } გავხადოთ უკეთესი ყველასთვის. შედეგად, { -vendor-short-name }-ს გადაეგზავნება როგორც URL-ბმული, აგრეთვე თქვენი ბრაუზერის პარამეტრების მონაცემები.
 protections-panel-content-blocking-breakage-report-view-collection-url = მისამართი
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = მისამართი
@@ -110,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = გაუქმება
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = მოხსენების გაგზავნა
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = ფუნთუშის მოთხოვნების შემცირება
+protections-panel-cookie-banner-handling-enabled = ჩართ. ამ საიტზე
+protections-panel-cookie-banner-handling-disabled = გამორთ. ამ საიტზე
+protections-panel-cookie-banner-handling-undetected = ეს საიტი ჯერ არაა მხარდაჭერილი
+
+protections-panel-cookie-banner-view-title =
+    .title = ფუნთუშის მოთხოვნების შემცირება
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = გამოირთოს ფუნთუშის მოთხოვნების შემცირება საიტზე { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = ჩაირთოს ფუნთუშის მოთხოვნების შემცირება ამ საიტზე?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } გაასუფთავებს ამ საიტის ფუნთუშებს და განაახლებს გვერდს. ყველა ფუნთუშის წაშლით შეიძლება გამოხვიდეთ ანგარიშებიდან და დაცარიელდეს საყიდლების კალათა.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } ეცდება თავადვე უარყოს ფუნთუშების ყველა მოთხოვნა მხარდაჭერილ საიტებზე.
+protections-panel-cookie-banner-view-cancel = გაუქმება
+protections-panel-cookie-banner-view-turn-off = გამორთვა
+protections-panel-cookie-banner-view-turn-on = ჩართვა

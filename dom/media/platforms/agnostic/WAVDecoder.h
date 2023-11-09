@@ -31,6 +31,7 @@ class WaveDataDecoder final : public MediaDataDecoder,
   nsCString GetDescriptionName() const override {
     return "wave audio decoder"_ns;
   }
+  nsCString GetCodecName() const override { return "wave"_ns; }
 
  private:
   ~WaveDataDecoder() = default;

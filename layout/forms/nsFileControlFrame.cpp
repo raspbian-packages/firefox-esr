@@ -21,12 +21,12 @@
 #include "mozilla/dom/HTMLButtonElement.h"
 #include "mozilla/dom/HTMLInputElement.h"
 #include "mozilla/dom/MutationEventBinding.h"
-#include "mozilla/EventStates.h"
-#include "mozilla/intl/Segmenter.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/PresShell.h"
 #include "mozilla/StaticPrefs_dom.h"
 #include "mozilla/TextEditor.h"
+#include "MiddleCroppingBlockFrame.h"
+#include "nsIFrame.h"
 #include "nsNodeInfoManager.h"
 #include "nsContentCreatorFunctions.h"
 #include "nsContentUtils.h"
@@ -59,134 +59,6 @@ void nsFileControlFrame::Init(nsIContent* aContent, nsContainerFrame* aParent,
   mMouseListener = new DnDListener(this);
 }
 
-bool nsFileControlFrame::CropTextToWidth(gfxContext& aRenderingContext,
-                                         const nsIFrame* aFrame, nscoord aWidth,
-                                         nsString& aText) {
-  if (aText.IsEmpty()) {
-    return false;
-  }
-
-  RefPtr<nsFontMetrics> fm =
-      nsLayoutUtils::GetFontMetricsForFrame(aFrame, 1.0f);
-
-  // see if the text will completely fit in the width given
-  if (const nscoord textWidth = nsLayoutUtils::AppUnitWidthOfStringBidi(
-          aText, aFrame, *fm, aRenderingContext);
-      textWidth <= aWidth) {
-    return false;
-  }
-
-  DrawTarget* drawTarget = aRenderingContext.GetDrawTarget();
-  const nsDependentString& kEllipsis = nsContentUtils::GetLocalizedEllipsis();
-
-  // see if the width is even smaller than the ellipsis
-  fm->SetTextRunRTL(false);
-  const nscoord ellipsisWidth =
-      nsLayoutUtils::AppUnitWidthOfString(kEllipsis, *fm, drawTarget);
-  if (ellipsisWidth >= aWidth) {
-    aText = kEllipsis;
-    return true;
-  }
-
-  // determine how much of the string will fit in the max width
-  nscoord totalWidth = ellipsisWidth;
-  const Span text(aText);
-  intl::GraphemeClusterBreakIteratorUtf16 leftIter(text);
-  intl::GraphemeClusterBreakReverseIteratorUtf16 rightIter(text);
-  uint32_t leftPos = 0;
-  uint32_t rightPos = aText.Length();
-  nsAutoString leftString, rightString;
-
-  while (leftPos < rightPos) {
-    Maybe<uint32_t> pos = leftIter.Next();
-    Span chars = text.FromTo(leftPos, *pos);
-    nscoord charWidth =
-        nsLayoutUtils::AppUnitWidthOfString(chars, *fm, drawTarget);
-    if (totalWidth + charWidth > aWidth) {
-      break;
-    }
-
-    leftString.Append(chars);
-    leftPos = *pos;
-    totalWidth += charWidth;
-
-    if (leftPos >= rightPos) {
-      break;
-    }
-
-    pos = rightIter.Next();
-    chars = text.FromTo(*pos, rightPos);
-    charWidth = nsLayoutUtils::AppUnitWidthOfString(chars, *fm, drawTarget);
-    if (totalWidth + charWidth > aWidth) {
-      break;
-    }
-
-    rightString.Insert(chars, 0);
-    rightPos = *pos;
-    totalWidth += charWidth;
-  }
-
-  aText = leftString + kEllipsis + rightString;
-  return true;
-}
-
-void nsFileControlFrame::Reflow(nsPresContext* aPresContext,
-                                ReflowOutput& aMetrics,
-                                const ReflowInput& aReflowInput,
-                                nsReflowStatus& aStatus) {
-  // Restore the uncropped filename.
-  nsAutoString filename;
-  HTMLInputElement::FromNode(mContent)->GetDisplayFileName(filename);
-
-  bool done = false;
-  while (true) {
-    UpdateDisplayedValue(filename, false);  // update the text node
-    AddStateBits(NS_BLOCK_NEEDS_BIDI_RESOLUTION);
-    LinesBegin()->MarkDirty();
-    nsBlockFrame::Reflow(aPresContext, aMetrics, aReflowInput, aStatus);
-    if (done) {
-      break;
-    }
-    nscoord lineISize = LinesBegin()->ISize();
-    const auto cbWM = aMetrics.GetWritingMode();
-    const auto wm = GetWritingMode();
-    nscoord iSize =
-        wm.IsOrthogonalTo(cbWM) ? aMetrics.BSize(cbWM) : aMetrics.ISize(cbWM);
-    auto bp = GetLogicalUsedBorderAndPadding(wm);
-    nscoord contentISize = iSize - bp.IStartEnd(wm);
-    if (lineISize > contentISize) {
-      // The filename overflows - crop it and reflow again (once).
-      // NOTE: the label frame might have bidi-continuations
-      auto* labelFrame = mTextContent->GetPrimaryFrame();
-      nscoord labelBP =
-          labelFrame->GetLogicalUsedBorderAndPadding(wm).IStartEnd(wm);
-      auto* lastLabelCont = labelFrame->LastContinuation();
-      if (lastLabelCont != labelFrame) {
-        labelBP +=
-            lastLabelCont->GetLogicalUsedBorderAndPadding(wm).IStartEnd(wm);
-      }
-      nscoord availableISizeForLabel = contentISize;
-      if (auto* buttonFrame = mBrowseFilesOrDirs->GetPrimaryFrame()) {
-        availableISizeForLabel -=
-            buttonFrame->ISize(wm) +
-            buttonFrame->GetLogicalUsedMargin(wm).IStartEnd(wm);
-      }
-      if (CropTextToWidth(*aReflowInput.mRenderingContext, labelFrame,
-                          availableISizeForLabel - labelBP, filename)) {
-        nsBlockFrame::DidReflow(aPresContext, &aReflowInput);
-        aStatus.Reset();
-        labelFrame->MarkSubtreeDirty();
-        labelFrame->AddStateBits(NS_BLOCK_NEEDS_BIDI_RESOLUTION);
-        mCachedMinISize = NS_INTRINSIC_ISIZE_UNKNOWN;
-        mCachedPrefISize = NS_INTRINSIC_ISIZE_UNKNOWN;
-        done = true;
-        continue;
-      }
-    }
-    break;
-  }
-}
-
 void nsFileControlFrame::DestroyFrom(nsIFrame* aDestructRoot,
                                      PostDestroyData& aPostDestroyData) {
   NS_ENSURE_TRUE_VOID(mContent);
@@ -204,10 +76,8 @@ void nsFileControlFrame::DestroyFrom(nsIFrame* aDestructRoot,
   nsBlockFrame::DestroyFrom(aDestructRoot, aPostDestroyData);
 }
 
-static already_AddRefed<Element> MakeAnonButton(Document* aDoc,
-                                                const char* labelKey,
-                                                HTMLInputElement* aInputElement,
-                                                const nsAString& aAccessKey) {
+static already_AddRefed<Element> MakeAnonButton(
+    Document* aDoc, const char* labelKey, HTMLInputElement* aInputElement) {
   RefPtr<Element> button = aDoc->CreateHTMLElement(nsGkAtoms::button);
   // NOTE: SetIsNativeAnonymousRoot() has to be called before setting any
   // attribute.
@@ -219,11 +89,10 @@ static already_AddRefed<Element> MakeAnonButton(Document* aDoc,
   nsContentUtils::GetMaybeLocalizedString(nsContentUtils::eFORMS_PROPERTIES,
                                           labelKey, aDoc, buttonTxt);
 
+  auto* nim = aDoc->NodeInfoManager();
   // Set the browse button text. It's a bit of a pain to do because we want to
   // make sure we are not notifying.
-  RefPtr<nsTextNode> textContent = new (button->NodeInfo()->NodeInfoManager())
-      nsTextNode(button->NodeInfo()->NodeInfoManager());
-
+  RefPtr textContent = new (nim) nsTextNode(nim);
   textContent->SetText(buttonTxt, false);
 
   IgnoredErrorResult error;
@@ -232,13 +101,7 @@ static already_AddRefed<Element> MakeAnonButton(Document* aDoc,
     return nullptr;
   }
 
-  // Make sure access key and tab order for the element actually redirect to the
-  // file picking button.
   auto* buttonElement = HTMLButtonElement::FromNode(button);
-  if (!aAccessKey.IsEmpty()) {
-    buttonElement->SetAccessKey(aAccessKey, IgnoreErrors());
-  }
-
   // We allow tabbing over the input itself, not the button.
   buttonElement->SetTabIndex(-1, IgnoreErrors());
   return button.forget();
@@ -247,17 +110,9 @@ static already_AddRefed<Element> MakeAnonButton(Document* aDoc,
 nsresult nsFileControlFrame::CreateAnonymousContent(
     nsTArray<ContentInfo>& aElements) {
   nsCOMPtr<Document> doc = mContent->GetComposedDoc();
+  RefPtr fileContent = HTMLInputElement::FromNode(mContent);
 
-  RefPtr<HTMLInputElement> fileContent =
-      HTMLInputElement::FromNodeOrNull(mContent);
-
-  // The access key is transferred to the "Choose files..." button only. In
-  // effect that access key allows access to the control via that button, then
-  // the user can tab between the two buttons.
-  nsAutoString accessKey;
-  fileContent->GetAccessKey(accessKey);
-
-  mBrowseFilesOrDirs = MakeAnonButton(doc, "Browse", fileContent, accessKey);
+  mBrowseFilesOrDirs = MakeAnonButton(doc, "Browse", fileContent);
   if (!mBrowseFilesOrDirs) {
     return NS_ERROR_OUT_OF_MEMORY;
   }
@@ -273,11 +128,6 @@ nsresult nsFileControlFrame::CreateAnonymousContent(
   RefPtr<nsTextNode> text =
       new (doc->NodeInfoManager()) nsTextNode(doc->NodeInfoManager());
   mTextContent->AppendChildTo(text, false, IgnoreErrors());
-
-  // Update the displayed text to reflect the current element's value.
-  nsAutoString value;
-  fileContent->GetDisplayFileName(value);
-  UpdateDisplayedValue(value, false);
 
   aElements.AppendElement(mTextContent);
 
@@ -302,6 +152,7 @@ void nsFileControlFrame::AppendAnonymousContentTo(
 }
 
 NS_QUERYFRAME_HEAD(nsFileControlFrame)
+  NS_QUERYFRAME_ENTRY(nsFileControlFrame)
   NS_QUERYFRAME_ENTRY(nsIAnonymousContentCreator)
   NS_QUERYFRAME_ENTRY(nsIFormControlFrame)
 NS_QUERYFRAME_TAIL_INHERITING(nsBlockFrame)
@@ -507,33 +358,8 @@ bool nsFileControlFrame::DnDListener::CanDropTheseFiles(
   return listLength <= 1 || aSupportsMultiple;
 }
 
-nscoord nsFileControlFrame::GetMinISize(gfxContext* aRenderingContext) {
-  nscoord result;
-  DISPLAY_MIN_INLINE_SIZE(this, result);
-
-  // Our min inline size is our pref inline size
-  result = GetPrefISize(aRenderingContext);
-  return result;
-}
-
-nscoord nsFileControlFrame::GetPrefISize(gfxContext* aRenderingContext) {
-  nscoord result;
-  DISPLAY_PREF_INLINE_SIZE(this, result);
-
-  // Make sure we measure with the uncropped filename.
-  if (mCachedPrefISize == NS_INTRINSIC_ISIZE_UNKNOWN) {
-    nsAutoString filename;
-    HTMLInputElement::FromNode(mContent)->GetDisplayFileName(filename);
-    UpdateDisplayedValue(filename, false);
-  }
-
-  result = nsBlockFrame::GetPrefISize(aRenderingContext);
-  return result;
-}
-
 void nsFileControlFrame::SyncDisabledState() {
-  EventStates eventStates = mContent->AsElement()->State();
-  if (eventStates.HasState(NS_EVENT_STATE_DISABLED)) {
+  if (mContent->AsElement()->State().HasState(ElementState::DISABLED)) {
     mBrowseFilesOrDirs->SetAttr(kNameSpaceID_None, nsGkAtoms::disabled, u""_ns,
                                 true);
   } else {
@@ -541,8 +367,8 @@ void nsFileControlFrame::SyncDisabledState() {
   }
 }
 
-void nsFileControlFrame::ContentStatesChanged(EventStates aStates) {
-  if (aStates.HasState(NS_EVENT_STATE_DISABLED)) {
+void nsFileControlFrame::ElementStateChanged(ElementState aStates) {
+  if (aStates.HasState(ElementState::DISABLED)) {
     nsContentUtils::AddScriptRunner(new SyncDisabledStateEvent(this));
   }
 }
@@ -553,36 +379,15 @@ nsresult nsFileControlFrame::GetFrameName(nsAString& aResult) const {
 }
 #endif
 
-void nsFileControlFrame::UpdateDisplayedValue(const nsAString& aValue,
-                                              bool aNotify) {
-  auto* text = Text::FromNode(mTextContent->GetFirstChild());
-  uint32_t oldLength = aNotify ? 0 : text->TextLength();
-  text->SetText(aValue, aNotify);
-  if (!aNotify) {
-    // We can't notify during Reflow so we need to tell the text frame
-    // about the text content change we just did.
-    if (auto* textFrame = static_cast<nsTextFrame*>(text->GetPrimaryFrame())) {
-      textFrame->NotifyNativeAnonymousTextnodeChange(oldLength);
-    }
-    nsBlockFrame* label = do_QueryFrame(mTextContent->GetPrimaryFrame());
-    if (label && label->LinesBegin() != label->LinesEnd()) {
-      label->AddStateBits(NS_BLOCK_NEEDS_BIDI_RESOLUTION);
-      label->LinesBegin()->MarkDirty();
-    }
-  }
-}
-
 nsresult nsFileControlFrame::SetFormProperty(nsAtom* aName,
                                              const nsAString& aValue) {
   if (nsGkAtoms::value == aName) {
-    UpdateDisplayedValue(aValue, true);
+    if (MiddleCroppingBlockFrame* f =
+            do_QueryFrame(mTextContent->GetPrimaryFrame())) {
+      f->UpdateDisplayedValueToUncroppedValue(true);
+    }
   }
   return NS_OK;
-}
-
-void nsFileControlFrame::BuildDisplayList(nsDisplayListBuilder* aBuilder,
-                                          const nsDisplayListSet& aLists) {
-  BuildDisplayListForInline(aBuilder, aLists);
 }
 
 #ifdef ACCESSIBILITY
@@ -591,7 +396,32 @@ a11y::AccType nsFileControlFrame::AccessibleType() {
 }
 #endif
 
-////////////////////////////////////////////////////////////
-// Mouse listener implementation
-
 NS_IMPL_ISUPPORTS(nsFileControlFrame::MouseListener, nsIDOMEventListener)
+
+class FileControlLabelFrame final : public MiddleCroppingBlockFrame {
+ public:
+  NS_DECL_QUERYFRAME
+  NS_DECL_FRAMEARENA_HELPERS(FileControlLabelFrame)
+
+  FileControlLabelFrame(ComputedStyle* aStyle, nsPresContext* aPresContext)
+      : MiddleCroppingBlockFrame(aStyle, aPresContext, kClassID) {}
+
+  HTMLInputElement& FileInput() const {
+    return *HTMLInputElement::FromNode(mContent->GetParent());
+  }
+
+  void GetUncroppedValue(nsAString& aValue) override {
+    return FileInput().GetDisplayFileName(aValue);
+  }
+};
+
+NS_QUERYFRAME_HEAD(FileControlLabelFrame)
+  NS_QUERYFRAME_ENTRY(FileControlLabelFrame)
+NS_QUERYFRAME_TAIL_INHERITING(MiddleCroppingBlockFrame)
+NS_IMPL_FRAMEARENA_HELPERS(FileControlLabelFrame)
+
+nsIFrame* NS_NewFileControlLabelFrame(PresShell* aPresShell,
+                                      ComputedStyle* aStyle) {
+  return new (aPresShell)
+      FileControlLabelFrame(aStyle, aPresShell->GetPresContext());
+}

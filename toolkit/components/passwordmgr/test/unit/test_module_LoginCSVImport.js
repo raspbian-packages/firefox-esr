@@ -8,16 +8,14 @@
 
 "use strict";
 
-const {
-  LoginCSVImport,
-  ImportFailedException,
-  ImportFailedErrorType,
-} = ChromeUtils.import("resource://gre/modules/LoginCSVImport.jsm");
-const { LoginExport } = ChromeUtils.import(
-  "resource://gre/modules/LoginExport.jsm"
+const { LoginCSVImport } = ChromeUtils.importESModule(
+  "resource://gre/modules/LoginCSVImport.sys.mjs"
 );
-const { TelemetryTestUtils: TTU } = ChromeUtils.import(
-  "resource://testing-common/TelemetryTestUtils.jsm"
+const { LoginExport } = ChromeUtils.importESModule(
+  "resource://gre/modules/LoginExport.sys.mjs"
+);
+const { TelemetryTestUtils: TTU } = ChromeUtils.importESModule(
+  "resource://testing-common/TelemetryTestUtils.sys.mjs"
 );
 
 // Enable the collection (during test) for all products so even products
@@ -253,9 +251,7 @@ add_task(async function test_import_from_firefox_various_latest() {
   await setupCsv([]);
   info("Populate the login list for export");
   let logins = LoginTestUtils.testData.loginList();
-  for (let loginInfo of logins) {
-    Services.logins.addLogin(loginInfo);
-  }
+  await Services.logins.addLogins(logins);
 
   let tmpFilePath = FileTestUtils.getTempFile("logins.csv").path;
   await LoginExport.exportAsCSV(tmpFilePath);

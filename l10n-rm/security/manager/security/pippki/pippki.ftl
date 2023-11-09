@@ -28,10 +28,6 @@ pippki-pw-change2empty-in-fips-mode = Ti es actualmain en il modus FIPS. FIPS pr
 
 ## Reset Primary Password dialog
 
-reset-primary-password-window =
-    .title = Redefinir il pled-clav universal
-    .style = width: 50em
-
 reset-primary-password-window2 =
     .title = Redefinir il pled-clav universal
     .style = min-width: 50em
@@ -43,10 +39,6 @@ pippki-reset-password-confirmation-title = Redefinir il pled-clav universal
 pippki-reset-password-confirmation-message = Tes pled-clav universal è vegnì redefinì.
 
 ## Downloading cert dialog
-
-download-cert-window =
-    .title = Telechargiar il certificat
-    .style = width: 46em
 
 download-cert-window2 =
     .title = Telechargiar il certificat
@@ -82,7 +74,8 @@ set-password-reminder = Impurtant: sche ti emblidas tes pled-clav da segirezza d
 
 ## Protected Auth dialog
 
-protected-auth-window =
-    .title = Autentificaziun da token protegida
-protected-auth-msg = T'autentifitgescha per plaschair tar il token. La metoda d'autentificaziun dependa dal tip da tes token.
-protected-auth-token = Token:
+## Protected authentication alert
+
+# Variables:
+# $tokenName (String) - The name of the token to authenticate to (for example, "OS Client Cert Token (Modern)")
+protected-auth-alert = T'autentifitgescha per plaschair tar il token «{ $tokenName }». Co quai funcziuna dependa dal token (per exempel cun agid dad in lectur d'improntas dal det u cun endatar in code cun agid dad ina tastatura).

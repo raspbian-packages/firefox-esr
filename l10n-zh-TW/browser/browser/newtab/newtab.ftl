@@ -21,12 +21,12 @@ newtab-search-box-search-button =
     .title = 搜尋
     .aria-label = 搜尋
 
-# Variables
-#  $engine (String): the name of the user's default search engine
+# Variables:
+#   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-text = 使用 { $engine } 搜尋或輸入網址
 newtab-search-box-handoff-text-no-engine = 搜尋或輸入網址
-# Variables
-#  $engine (String): the name of the user's default search engine
+# Variables:
+#   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-input =
     .placeholder = 使用 { $engine } 搜尋或輸入網址
     .title = 使用 { $engine } 搜尋或輸入網址
@@ -92,7 +92,7 @@ newtab-dismiss-button-tooltip =
 
 # This tooltip is for the context menu of Pocket cards or Topsites
 # Variables:
-#  $title (String): The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
 newtab-menu-content-tooltip =
     .title = 開啟選單
     .aria-label = 開啟 { $title } 的右鍵選單
@@ -161,18 +161,18 @@ newtab-label-download = 已下載
 
 # This string is used in the story cards to indicate sponsored content
 # Variables:
-#  $sponsorOrSource (String): This is the name of a company or their domain
+#   $sponsorOrSource (string) - The name of a company or their domain
 newtab-label-sponsored = { $sponsorOrSource } · 贊助
 
 # This string is used at the bottom of story cards to indicate sponsored content
 # Variables:
-#  $sponsor (String): This is the name of a sponsor
+#   $sponsor (string) - The name of a sponsor
 newtab-label-sponsored-by = 由 { $sponsor } 贊助
 
 # This string is used under the image of story cards to indicate source and time to read
 # Variables:
-#  $source (String): This is the name of a company or their domain
-#  $timeToRead (Number): This is the estimated number of minutes to read this story
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
 newtab-label-source-read-time = { $source } · { $timeToRead } 分鐘
 
 ## Section Menu: These strings are displayed in the section context menu and are
@@ -201,7 +201,7 @@ newtab-section-expand-section-label =
 newtab-section-header-topsites = 熱門網站
 newtab-section-header-recent-activity = 近期動態
 # Variables:
-#  $provider (String): Name of the corresponding content provider.
+#   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } 推薦
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
@@ -210,7 +210,7 @@ newtab-empty-section-highlights = 開始上網，我們就會把您在網路上�
 
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
-#  $provider (String): Name of the content provider for this section, e.g "Pocket".
+#   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = 所有文章都讀完啦！晚點再來，{ $provider } 將提供更多推薦故事。等不及了？選擇熱門主題，看看 Web 上各式精采資訊。
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
@@ -233,24 +233,17 @@ newtab-pocket-cta-button = 取得 { -pocket-brand-name }
 newtab-pocket-cta-text = 將您喜愛的故事儲存到 { -pocket-brand-name }，閱讀一篇篇好文章。
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } 是 { -brand-product-name } 產品家族的一部份
 
-# A save to Pocket button that shows over the card thumbnail on hover.
-newtab-pocket-save-to-pocket = 儲存至 { -pocket-brand-name }
-newtab-pocket-saved-to-pocket = 已儲存至 { -pocket-brand-name }
-
-# This is a button shown at the bottom of the Pocket section that loads more stories when clicked.
-newtab-pocket-load-more-stories-button = 載入更多文章
-
 ## Pocket Final Card Section.
 ## This is for the final card in the Pocket grid.
-
-newtab-pocket-last-card-title = 都讀完了！
-newtab-pocket-last-card-desc = 晚點再回來看看有沒有新文章。
-newtab-pocket-last-card-image =
-    .alt = 都讀完了！
 
 # A save to Pocket button that shows over the card thumbnail on hover.
 newtab-pocket-save = 儲存
 newtab-pocket-saved = 已儲存
+
+## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
+
+newtab-pocket-onboarding-discover = 探索網路精華內容
+newtab-pocket-onboarding-cta = { -pocket-brand-name } 為您探索不同的線上內容，將最豐富、最有啟發性、最可靠的內容帶來您的 { -brand-product-name } 瀏覽器。
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
@@ -262,6 +255,8 @@ newtab-error-fallback-refresh-link = 請重新整理頁面再試一次。
 
 newtab-custom-shortcuts-title = 捷徑
 newtab-custom-shortcuts-subtitle = 您儲存或造訪過的網站
+# Variables
+#   $num (number) - Number of rows to display
 newtab-custom-row-selector =
     { $num ->
        *[other] { $num } 行

@@ -18,22 +18,17 @@
 #endif
 
 #include "PDMFactory.h"
-#include "chrome/common/ipc_channel.h"
 #include "gfxConfig.h"
 #include "mozilla/Assertions.h"
 #include "mozilla/FOGIPC.h"
-#include "mozilla/HangDetails.h"
 #include "mozilla/Preferences.h"
-#include "mozilla/RemoteDecoderManagerChild.h"
 #include "mozilla/RemoteDecoderManagerParent.h"
-#include "mozilla/ScopeExit.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/dom/MemoryReportRequest.h"
 #include "mozilla/gfx/gfxVars.h"
 #include "mozilla/glean/GleanMetrics.h"
 #include "mozilla/ipc/CrashReporterClient.h"
 #include "mozilla/ipc/ProcessChild.h"
-#include "mozilla/StaticPrefs_media.h"
 
 #if defined(XP_LINUX) && defined(MOZ_SANDBOX)
 #  include "mozilla/Sandbox.h"
@@ -73,8 +68,8 @@ RDDParent* RDDParent::GetSingleton() {
   return sRDDParent;
 }
 
-bool RDDParent::Init(base::ProcessId aParentPid, const char* aParentBuildID,
-                     mozilla::ipc::ScopedPort aPort) {
+bool RDDParent::Init(mozilla::ipc::UntypedEndpoint&& aEndpoint,
+                     const char* aParentBuildID) {
   // Initialize the thread manager before starting IPC. Otherwise, messages
   // may be posted to the main thread and we won't be able to process them.
   if (NS_WARN_IF(NS_FAILED(nsThreadManager::get().Init()))) {
@@ -82,7 +77,7 @@ bool RDDParent::Init(base::ProcessId aParentPid, const char* aParentBuildID,
   }
 
   // Now it's safe to start IPC.
-  if (NS_WARN_IF(!Open(std::move(aPort), aParentPid))) {
+  if (NS_WARN_IF(!aEndpoint.Bind(this))) {
     return false;
   }
 
@@ -287,6 +282,13 @@ mozilla::ipc::IPCResult RDDParent::RecvTestTriggerMetrics(
     TestTriggerMetricsResolver&& aResolve) {
   mozilla::glean::test_only_ipc::a_counter.Add(nsIXULRuntime::PROCESS_TYPE_RDD);
   aResolve(true);
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult RDDParent::RecvTestTelemetryProbes() {
+  const uint32_t kExpectedUintValue = 42;
+  Telemetry::ScalarSet(Telemetry::ScalarID::TELEMETRY_TEST_RDD_ONLY_UINT,
+                       kExpectedUintValue);
   return IPC_OK();
 }
 

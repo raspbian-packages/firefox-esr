@@ -18,10 +18,12 @@ registerCleanupFunction(() => {
 
 const INITIAL_LOGS_NUMBER = 5;
 
-const { MESSAGE_TYPE } = require("devtools/client/webconsole/constants");
+const {
+  MESSAGE_TYPE,
+} = require("resource://devtools/client/webconsole/constants.js");
 const {
   WILL_NAVIGATE_TIME_SHIFT,
-} = require("devtools/server/actors/webconsole/listeners/document-events");
+} = require("resource://devtools/server/actors/webconsole/listeners/document-events.js");
 
 async function logAndAssertInitialMessages(hud) {
   await SpecialPowers.spawn(
@@ -35,7 +37,7 @@ async function logAndAssertInitialMessages(hud) {
   ok(true, "Messages showed up initially");
 }
 
-add_task(async function() {
+add_task(async function () {
   info("Testing that messages disappear on a refresh if logs aren't persisted");
   const hud = await openNewTabAndConsole(TEST_COM_URI);
 
@@ -52,7 +54,7 @@ add_task(async function() {
   await closeToolbox();
 });
 
-add_task(async function() {
+add_task(async function () {
   info(
     "Testing that messages disappear on a cross origin navigation if logs aren't persisted"
   );
@@ -67,7 +69,7 @@ add_task(async function() {
   await closeToolbox();
 });
 
-add_task(async function() {
+add_task(async function () {
   info("Testing that messages disappear on bfcache navigations");
   const firstLocation =
     "data:text/html,<!DOCTYPE html><script>console.log('first document load');window.onpageshow=()=>console.log('first document show');</script>";
@@ -178,7 +180,7 @@ add_task(async function() {
   await closeToolbox();
 });
 
-add_task(async function() {
+add_task(async function () {
   info("Testing that messages persist on a refresh if logs are persisted");
 
   const hud = await openNewTabAndConsole(TEST_COM_URI);
@@ -262,10 +264,9 @@ add_task(async function() {
 });
 
 function assertLastMessageIsNavigationMessage(hud, timeBeforeNavigation, url) {
-  const {
-    visibleMessages,
-    mutableMessagesById,
-  } = hud.ui.wrapper.getStore().getState().messages;
+  const { visibleMessages, mutableMessagesById } = hud.ui.wrapper
+    .getStore()
+    .getState().messages;
   const lastMessageId = visibleMessages.at(-1);
   const lastMessage = mutableMessagesById.get(lastMessageId);
 

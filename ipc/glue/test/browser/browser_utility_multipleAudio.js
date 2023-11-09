@@ -16,19 +16,29 @@ async function runTest(expectUtility) {
     });
   }
 
-  for (let src of [
-    "small-shot.ogg",
-    "small-shot.mp3",
-    "small-shot.m4a",
-    "small-shot.flac",
-  ]) {
+  const platform = Services.appinfo.OS;
+
+  for (let { src, expectations } of audioTestData()) {
+    if (!(platform in expectations)) {
+      info(`Skipping ${src} for ${platform}`);
+      continue;
+    }
+
+    const expectation = expectations[platform];
+
     info(`Add media tabs: ${src}`);
     let tabs = [await addMediaTab(src), await addMediaTab(src)];
     let playback = [];
 
     info("Play tabs");
     for (let tab of tabs) {
-      playback.push(play(tab, expectUtility));
+      playback.push(
+        play(
+          tab,
+          expectUtility ? expectation.process : "RDD",
+          expectation.decoder
+        )
+      );
     }
 
     info("Wait all playback");

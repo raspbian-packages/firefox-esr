@@ -46,6 +46,12 @@ options-inspector-draggable-properties-label = Alklaku kaj trenu por modifi valo
 options-inspector-draggable-properties-tooltip =
     .title = Alklaku kaj trenu por modifi valorojn pri grando en la vido de reguloj de la inspektilo.
 
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Uzi pli simplajn elstarigilojn per prefers-reduced-motion
+options-inspector-simplified-highlighters-tooltip =
+    .title = Tio ĉi aktivigas simpligitajn elstarigilojn, kiam prefers-reduced-motion estas aktiva. Por eviti lumpulsajn efektojn, tio ĉi desegnas liniojn anstataŭ plenigitajn rektangulojn ĉirkaŭ elstarigitaj elementoj.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Norma unuo de koloro
@@ -123,6 +129,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Ebligi foran senerarigon
 options-enable-remote-tooltip2 =
     .title = Ŝalto de tiu ĉi eblo prefero permesos la foran senerarigon de tiu ĉi nuna programo
+
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = Uzi la klavon F12 por malfermi aŭ fermi la ilojn por programistoj
+options-enable-f12-tooltip =
+    .title = Ŝalto de tiu ĉi elekteblo ligos la klavon F12 kun la malfermo aŭ fermo de la iloj por programistoj
 
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Aktivigi personecigitajn montrilojn

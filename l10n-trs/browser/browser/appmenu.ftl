@@ -15,12 +15,26 @@ appmenuitem-history =
     .label = Sa gini’iājt
 appmenuitem-downloads =
     .label = Nadunïnj
+appmenuitem-passwords =
+    .label = Nej da\'nga\' huìi
+appmenuitem-addons-and-themes =
+    .label = Nej sa nūtò’ nī nej têma
 appmenuitem-print =
     .label = Nari' ña du'ua
+appmenuitem-find-in-page =
+    .label = Nānà’huì’ riña pâgina…
 appmenuitem-zoom =
     .value = Soom
+appmenuitem-more-tools =
+    .label = Doj sa gā’hue gārasun’
 appmenuitem-help =
     .label = Sa ruguñu'unj un
+appmenuitem-exit2 =
+    .label =
+        { PLATFORM() ->
+            [linux] Dūnâj
+           *[other] Ña gāhui’
+        }
 
 ## Zoom and Fullscreen Controls
 
@@ -35,17 +49,22 @@ appmenuitem-fullscreen =
 
 # This is shown beneath the name of a device when that device has no open tabs
 appmenu-remote-tabs-notabs = Si na'nï' rakij ñanj
+
 # This is shown when Sync is configured but syncing tabs is disabled.
 appmenu-remote-tabs-tabsnotsyncing = Nachrūn si sinkronisasion rakïj ñaj da' ni'iaj nej rakïj ñaj asij riña a'ngo si agat.
+
 appmenu-remote-tabs-opensettings =
     .label = Nāgi\'hiô\'
+
 # This is shown when Sync is configured but this appears to be the only device attached to
 # the account. We also show links to download Firefox for android/ios.
 appmenu-remote-tabs-noclients = Ni'iaj rakïj ñaj nū riña a'ngo si aga' asij ñuna ànj
+
 appmenu-remote-tabs-connectdevice =
     .label = Ganachun' 'ngà a'ngo aga'a...
 appmenu-remote-tabs-welcome = Ni’iāj nej rakïj ñaj āsìj riña a'ngô nej si agâ’t.
 appmenu-remote-tabs-unverified = Da'ui' ma ganatsij ma si kuentat
+
 appmenuitem-fxa-toolbar-sync-now2 = Nāgi\'hiaj nūguàn\'àn hìaj
 appmenuitem-fxa-sign-in = Nutà' si yuguît riña { -brand-product-name }
 appmenuitem-fxa-manage-account = Si Kuendâ administrador
@@ -59,12 +78,14 @@ appmenu-fxa-sync-and-save-data2 = Nāgi’hiaj gūñān nī na’nïnj sa’t ne
 appmenu-fxa-signed-in-label = Gāyi\'ì sēsiûn
 appmenu-fxa-setup-sync =
     .label = Nāchrūn sa nāgi’hiaj gūñāan…
+
 appmenuitem-save-page =
     .label = Na'nïnj sà' Pâjina Gù'na…
 
 ## What's New panel in App menu.
 
 whatsnew-panel-header = Nù huin sa nakà hua
+
 # Checkbox displayed at the bottom of the What's New panel, allowing users to
 # enable/disable What's New notifications.
 whatsnew-panel-footer-checkbox =
@@ -78,13 +99,15 @@ whatsnew-panel-footer-checkbox =
 profiler-popup-button-idle =
     .label = Sa ri perfîl
     .tooltiptext = Gi'iaj grabândo 'ngō perfil nikāj rendimiênto
-profiler-popup-title =
-    .value = { -profiler-brand-name }
+
 profiler-popup-header-text = { -profiler-brand-name }
+
 profiler-popup-learn-more-button =
     .label = Gāhuin chrūn doj
+
 profiler-popup-settings =
     .value = Nāgi\'iô\'
+
 profiler-popup-discard-button =
     .label = Dunâj man
 
@@ -94,6 +117,11 @@ profiler-popup-discard-button =
 
 # Presets and their l10n IDs are defined in the file
 # devtools/client/performance-new/popup/background.jsm.js
+# Please take care that the same values are also defined in devtools' perftools.ftl.
+
+
+# Presets and their l10n IDs are defined in the file
+# devtools/client/performance-new/shared/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
 

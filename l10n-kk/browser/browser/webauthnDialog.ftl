@@ -4,10 +4,18 @@
 
 # Variables:
 #  $retriesLeft (Number): number of tries left
-webauthn-pin-invalid-prompt =
+webauthn-pin-invalid-long-prompt =
     { $retriesLeft ->
-        [0] PIN қате! Құрылғыңыз үшін дұрыс PIN кодын енгізіңіз.
-        [one] PIN қате! Құрылғыңыз үшін дұрыс PIN кодын енгізіңіз. Сізде { $retriesLeft } талап саны қалды.
-       *[other] PIN қате! Құрылғыңыз үшін дұрыс PIN кодын енгізіңіз. Сізде { $retriesLeft } талап саны қалды.
+        [one] PIN коды қате. Бұл құрылғыдағы тіркелгі деректеріне қатынау мүмкіндігін толығымен жоғалтуға дейін сізде { $retriesLeft } талап саны қалды.
+       *[other] PIN коды қате. Бұл құрылғыдағы тіркелгі деректеріне қатынау мүмкіндігін толығымен жоғалтуға дейін сізде { $retriesLeft } талап саны қалды.
     }
+webauthn-pin-invalid-short-prompt = Жарасыз PIN. Қайталап көріңіз.
 webauthn-pin-required-prompt = Құрылғыңыз үшін дұрыс PIN кодын енгізіңіз.
+# Variables:
+#  $retriesLeft (Number): number of tries left
+webauthn-uv-invalid-long-prompt =
+    { $retriesLeft ->
+        [one] Пайдаланушыны растау сәтсіз аяқталды. Сізде { $retriesLeft } талап саны қалды. Қайталап көріңіз.
+       *[other] Пайдаланушыны растау сәтсіз аяқталды. Сізде { $retriesLeft } талап саны қалды. Қайталап көріңіз.
+    }
+webauthn-uv-invalid-short-prompt = Пайдаланушыны растау сәтсіз аяқталды. Қайталап көріңіз.

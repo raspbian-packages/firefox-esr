@@ -13,7 +13,7 @@ about-unloads-intro = { -brand-short-name } dispón dunha funcionalidade que des
 # with title "Tab Unloading"
 about-unloads-learn-more = Consulte <a data-l10n-name="doc-link">Descarga de lapelas</a> para obter máis información sobre esta función e esta páxina.
 
-about-unloads-last-updated = Última actualización: { DATETIME($date, year: "numérico", month: "numérico", day: "numérico", hour: "numérico", minute: "numérico", second: "numérico", hour12: "falso") }
+about-unloads-last-updated = Last updated: { DATETIME($date, year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: "false") }
 about-unloads-button-unload = Descargar
     .title = Descargar a lapela que teña a prioridade máis alta
 about-unloads-no-unloadable-tab = Non hai lapelas que se poidan descargar.
@@ -30,7 +30,7 @@ about-unloads-column-memory = Memoria
 about-unloads-column-processes = Identificadores de procesos
     .title = identificadores dos procesos que albergan o contido das lapelas
 
-about-unloads-last-accessed = { DATETIME($date, year: "numérico", month: "numérico", day: "numérico", hour: "numérico", minute: "numérico", second: "numérico", hour12: "falso") }
+about-unloads-last-accessed = { DATETIME($date, year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric", hour12: "false") }
 about-unloads-memory-in-mb = { NUMBER($mem, maxFractionalUnits: 2) } MB
 about-unloads-memory-in-mb-tooltip =
     .title = { NUMBER($mem, maxFractionalUnits: 2) } MB

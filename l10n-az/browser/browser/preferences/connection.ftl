@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Bağlantı seçimləri
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Bağlantı seçimləri
     .style =
@@ -76,13 +68,14 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Bu seçim sizi etimadnamələri olan proksilərdə səssizcə təsdiqləyir. Əgər təsdiqləmədə xəta olsa sizə xəbər ediləcək.
 
+connection-proxy-autologin-checkbox =
+    .label = Parol yadda saxlanıbsa, autentifikasiya istəmə
+    .accesskey = i
+    .tooltiptext = Bu seçim sizi etimadnamələri olan proksilərdə səssizcə təsdiqləyir. Əgər təsdiqləmədə xəta olsa sizə xəbər ediləcək.
+
 connection-proxy-socks-remote-dns =
     .label = SOCKS v5 işlədərkən Proksi DNS
     .accesskey = d
-
-connection-dns-over-https =
-    .label = HTTPS üzərindən DNS-i aktivləşdir
-    .accesskey = H
 
 connection-dns-over-https-url-custom =
     .label = Fərdi

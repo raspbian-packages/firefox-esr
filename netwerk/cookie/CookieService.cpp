@@ -6,8 +6,10 @@
 
 #include "CookieCommons.h"
 #include "CookieLogging.h"
+#include "mozilla/AppShutdown.h"
 #include "mozilla/ClearOnShutdown.h"
 #include "mozilla/ContentBlockingNotifier.h"
+#include "mozilla/RefPtr.h"
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/nsMixedContentBlocker.h"
 #include "mozilla/dom/Promise.h"
@@ -47,6 +49,32 @@ uint32_t MakeCookieBehavior(uint32_t aCookieBehavior) {
     return nsICookieService::BEHAVIOR_REJECT_TRACKER;
   }
   return aCookieBehavior;
+}
+
+/*
+ Enables sanitizeOnShutdown cleaning prefs and disables the
+ network.cookie.lifetimePolicy
+*/
+void MigrateCookieLifetimePrefs() {
+  // Former network.cookie.lifetimePolicy values ACCEPT_SESSION/ACCEPT_NORMALLY
+  // are not available anymore 2 = ACCEPT_SESSION
+  if (mozilla::Preferences::GetInt("network.cookie.lifetimePolicy") != 2) {
+    return;
+  }
+  if (!mozilla::Preferences::GetBool("privacy.sanitize.sanitizeOnShutdown")) {
+    mozilla::Preferences::SetBool("privacy.sanitize.sanitizeOnShutdown", true);
+    // To avoid clearing categories that the user did not intend to clear
+    mozilla::Preferences::SetBool("privacy.clearOnShutdown.history", false);
+    mozilla::Preferences::SetBool("privacy.clearOnShutdown.formdata", false);
+    mozilla::Preferences::SetBool("privacy.clearOnShutdown.downloads", false);
+    mozilla::Preferences::SetBool("privacy.clearOnShutdown.sessions", false);
+    mozilla::Preferences::SetBool("privacy.clearOnShutdown.siteSettings",
+                                  false);
+  }
+  mozilla::Preferences::SetBool("privacy.clearOnShutdown.cookies", true);
+  mozilla::Preferences::SetBool("privacy.clearOnShutdown.cache", true);
+  mozilla::Preferences::SetBool("privacy.clearOnShutdown.offlineApps", true);
+  mozilla::Preferences::ClearUser("network.cookie.lifetimePolicy");
 }
 
 }  // anonymous namespace
@@ -188,6 +216,8 @@ already_AddRefed<CookieService> CookieService::GetSingleton() {
   // Release our members (e.g. nsIObserverService and nsIPrefBranch), since GC
   // cycles have already been completed and would result in serious leaks.
   // See bug 209571.
+  // TODO: Verify what is the earliest point in time during shutdown where
+  // we can deny the creation of the CookieService as a whole.
   gCookieService = new CookieService();
   if (gCookieService) {
     if (NS_SUCCEEDED(gCookieService->Init())) {
@@ -224,6 +254,9 @@ nsresult CookieService::Init() {
   // Init our default, and possibly private CookieStorages.
   InitCookieStorages();
 
+  // Migrate network.cookie.lifetimePolicy pref to sanitizeOnShutdown prefs
+  MigrateCookieLifetimePrefs();
+
   RegisterWeakMemoryReporter(this);
 
   nsCOMPtr<nsIObserverService> os = services::GetObserverService();
@@ -239,8 +272,10 @@ void CookieService::InitCookieStorages() {
   NS_ASSERTION(!mPersistentStorage, "already have a default CookieStorage");
   NS_ASSERTION(!mPrivateStorage, "already have a private CookieStorage");
 
-  // Create two new CookieStorages.
-  if (MOZ_UNLIKELY(StaticPrefs::network_cookie_noPersistentStorage())) {
+  // Create two new CookieStorages. If we are in or beyond our observed
+  // shutdown phase, just be non-persistent.
+  if (MOZ_UNLIKELY(StaticPrefs::network_cookie_noPersistentStorage() ||
+                   AppShutdown::IsInOrBeyond(ShutdownPhase::AppShutdown))) {
     mPersistentStorage = CookiePrivateStorage::Create();
   } else {
     mPersistentStorage = CookiePersistentStorage::Create();
@@ -327,7 +362,7 @@ CookieService::GetCookieStringFromDocument(Document* aDocument,
     return NS_OK;
   }
 
-  nsCOMPtr<nsIPrincipal> principal = aDocument->EffectiveStoragePrincipal();
+  nsCOMPtr<nsIPrincipal> principal = aDocument->EffectiveCookiePrincipal();
 
   if (!CookieCommons::IsSchemeSupported(principal)) {
     return NS_OK;
@@ -474,7 +509,7 @@ CookieService::GetCookieStringFromHttp(nsIURI* aHostURI, nsIChannel* aChannel,
       result.contains(ThirdPartyAnalysis::IsThirdPartySocialTrackingResource),
       result.contains(ThirdPartyAnalysis::IsStorageAccessPermissionGranted),
       rejectedReason, isSafeTopLevelNav, isSameSiteForeign,
-      hadCrossSiteRedirects, true, attrs, foundCookieList);
+      hadCrossSiteRedirects, true, false, attrs, foundCookieList);
 
   ComposeCookieString(foundCookieList, aCookieString);
 
@@ -754,7 +789,7 @@ CookieService::GetSessionCookies(nsTArray<RefPtr<nsICookie>>& aCookies) {
   mPersistentStorage->EnsureInitialized();
 
   // We expose only non-private cookies.
-  mPersistentStorage->GetCookies(aCookies);
+  mPersistentStorage->GetSessionCookies(aCookies);
 
   return NS_OK;
 }
@@ -763,7 +798,7 @@ NS_IMETHODIMP
 CookieService::Add(const nsACString& aHost, const nsACString& aPath,
                    const nsACString& aName, const nsACString& aValue,
                    bool aIsSecure, bool aIsHttpOnly, bool aIsSession,
-                   int64_t aExpiry, JS::HandleValue aOriginAttributes,
+                   int64_t aExpiry, JS::Handle<JS::Value> aOriginAttributes,
                    int32_t aSameSite, nsICookie::schemeType aSchemeMap,
                    JSContext* aCx) {
   OriginAttributes attrs;
@@ -848,7 +883,7 @@ nsresult CookieService::Remove(const nsACString& aHost,
 NS_IMETHODIMP
 CookieService::Remove(const nsACString& aHost, const nsACString& aName,
                       const nsACString& aPath,
-                      JS::HandleValue aOriginAttributes, JSContext* aCx) {
+                      JS::Handle<JS::Value> aOriginAttributes, JSContext* aCx) {
   OriginAttributes attrs;
 
   if (!aOriginAttributes.isObject() || !attrs.Init(aCx, aOriginAttributes)) {
@@ -894,6 +929,7 @@ void CookieService::GetCookiesForURI(
     bool aStorageAccessPermissionGranted, uint32_t aRejectedReason,
     bool aIsSafeTopLevelNav, bool aIsSameSiteForeign,
     bool aHadCrossSiteRedirects, bool aHttpBound,
+    bool aAllowSecureCookiesToInsecureOrigin,
     const OriginAttributes& aOriginAttrs, nsTArray<Cookie*>& aCookieList) {
   NS_ASSERTION(aHostURI, "null host!");
 
@@ -1010,8 +1046,12 @@ void CookieService::GetCookiesForURI(
       continue;
     }
 
-    // if the cookie is secure and the host scheme isn't, we can't send it
-    if (cookie->IsSecure() && !potentiallyTurstworthy) {
+    // if the cookie is secure and the host scheme isn't, we avoid sending
+    // cookie if possible. But for process synchronization purposes, we may want
+    // the content process to know about the cookie (without it's value). In
+    // which case we will wipe the value before sending
+    if (cookie->IsSecure() && !potentiallyTurstworthy &&
+        !aAllowSecureCookiesToInsecureOrigin) {
       continue;
     }
 
@@ -1063,13 +1103,27 @@ void CookieService::GetCookiesForURI(
         }
       }
 
+      // Lax-by-default cookies are processed even with an intermediate
+      // cross-site redirect (they are treated like aIsSameSiteForeign = false).
+      //
+      // This is outside of ProcessSameSiteCookieForForeignRequest to still
+      // collect the same telemetry.
+      if (blockCookie && aHadCrossSiteRedirects &&
+          cookie->IsDefaultSameSite() &&
+          StaticPrefs::
+              network_cookie_sameSite_laxByDefault_allowBoomerangRedirect()) {
+        blockCookie = false;
+      }
+
       if (blockCookie) {
-        CookieLogging::LogMessageToConsole(
-            crc, aHostURI, nsIScriptError::warningFlag,
-            CONSOLE_REJECTION_CATEGORY, "CookieBlockedCrossSiteRedirect"_ns,
-            AutoTArray<nsString, 1>{
-                NS_ConvertUTF8toUTF16(cookie->Name()),
-            });
+        if (aHadCrossSiteRedirects) {
+          CookieLogging::LogMessageToConsole(
+              crc, aHostURI, nsIScriptError::warningFlag,
+              CONSOLE_REJECTION_CATEGORY, "CookieBlockedCrossSiteRedirect"_ns,
+              AutoTArray<nsString, 1>{
+                  NS_ConvertUTF8toUTF16(cookie->Name()),
+              });
+        }
         continue;
       }
     }
@@ -1103,6 +1157,24 @@ void CookieService::GetCookiesForURI(
   // this is required per RFC2109.  if cookies match in length,
   // then sort by creation time (see bug 236772).
   aCookieList.Sort(CompareCookiesForSending());
+}
+
+static bool ContainsUnicodeChars(const nsCString& str) {
+  const auto* start = str.BeginReading();
+  const auto* end = str.EndReading();
+
+  return std::find_if(start, end, [](unsigned char c) { return c >= 0x80; }) !=
+         end;
+}
+
+static void RecordUnicodeTelemetry(const CookieStruct& cookieData) {
+  auto label = Telemetry::LABELS_NETWORK_COOKIE_UNICODE_BYTE::none;
+  if (ContainsUnicodeChars(cookieData.name())) {
+    label = Telemetry::LABELS_NETWORK_COOKIE_UNICODE_BYTE::unicodeName;
+  } else if (ContainsUnicodeChars(cookieData.value())) {
+    label = Telemetry::LABELS_NETWORK_COOKIE_UNICODE_BYTE::unicodeValue;
+  }
+  Telemetry::AccumulateCategorical(label);
 }
 
 // processes a single cookie, and returns true if there are more cookies
@@ -1175,6 +1247,8 @@ bool CookieService::CanSetCookie(
         "CookieOversize"_ns, params);
     return newCookie;
   }
+
+  RecordUnicodeTelemetry(aCookieData);
 
   if (!CookieCommons::CheckName(aCookieData)) {
     COOKIE_LOGFAILURE(SET_COOKIE, aHostURI, savedCookieHeader,
@@ -2064,8 +2138,8 @@ bool CookieService::GetExpiry(CookieStruct& aCookieData,
 NS_IMETHODIMP
 CookieService::CookieExists(const nsACString& aHost, const nsACString& aPath,
                             const nsACString& aName,
-                            JS::HandleValue aOriginAttributes, JSContext* aCx,
-                            bool* aFoundCookie) {
+                            JS::Handle<JS::Value> aOriginAttributes,
+                            JSContext* aCx, bool* aFoundCookie) {
   NS_ENSURE_ARG_POINTER(aCx);
   NS_ENSURE_ARG_POINTER(aFoundCookie);
 
@@ -2082,8 +2156,23 @@ CookieService::CookieExistsNative(const nsACString& aHost,
                                   const nsACString& aName,
                                   OriginAttributes* aOriginAttributes,
                                   bool* aFoundCookie) {
+  nsCOMPtr<nsICookie> cookie;
+  nsresult rv = GetCookieNative(aHost, aPath, aName, aOriginAttributes,
+                                getter_AddRefs(cookie));
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  *aFoundCookie = cookie != nullptr;
+
+  return NS_OK;
+}
+
+NS_IMETHODIMP_(nsresult)
+CookieService::GetCookieNative(const nsACString& aHost, const nsACString& aPath,
+                               const nsACString& aName,
+                               OriginAttributes* aOriginAttributes,
+                               nsICookie** aCookie) {
   NS_ENSURE_ARG_POINTER(aOriginAttributes);
-  NS_ENSURE_ARG_POINTER(aFoundCookie);
+  NS_ENSURE_ARG_POINTER(aCookie);
 
   if (!IsInitialized()) {
     return NS_ERROR_NOT_AVAILABLE;
@@ -2096,8 +2185,16 @@ CookieService::CookieExistsNative(const nsACString& aHost,
 
   CookieListIter iter{};
   CookieStorage* storage = PickStorage(*aOriginAttributes);
-  *aFoundCookie = storage->FindCookie(baseDomain, *aOriginAttributes, aHost,
-                                      aName, aPath, iter);
+  bool foundCookie = storage->FindCookie(baseDomain, *aOriginAttributes, aHost,
+                                         aName, aPath, iter);
+
+  if (foundCookie) {
+    RefPtr<Cookie> cookie = iter.Cookie();
+    NS_ENSURE_TRUE(cookie, NS_ERROR_NULL_POINTER);
+
+    cookie.forget(aCookie);
+  }
+
   return NS_OK;
 }
 
@@ -2130,7 +2227,7 @@ CookieService::CountCookiesFromHost(const nsACString& aHost,
 // the nsICookieManager interface.
 NS_IMETHODIMP
 CookieService::GetCookiesFromHost(const nsACString& aHost,
-                                  JS::HandleValue aOriginAttributes,
+                                  JS::Handle<JS::Value> aOriginAttributes,
                                   JSContext* aCx,
                                   nsTArray<RefPtr<nsICookie>>& aResult) {
   // first, normalize the hostname, and fail if it contains illegal characters.
@@ -2459,6 +2556,8 @@ bool CookieService::SetCookiesFromIPC(const nsACString& aBaseDomain,
     if (!CookieCommons::CheckNameAndValueSize(cookieData)) {
       return false;
     }
+
+    RecordUnicodeTelemetry(cookieData);
 
     if (!CookieCommons::CheckName(cookieData)) {
       return false;

@@ -55,6 +55,7 @@
 #include "mozilla/BasePrincipal.h"
 #include "mozilla/PresShell.h"
 #include "mozilla/SchedulerGroup.h"
+#include "mozilla/StaticPrefs_dom.h"
 #include "mozilla/StaticPrefs_javascript.h"
 #include "mozilla/StaticPtr.h"
 #include "mozilla/dom/BrowsingContext.h"
@@ -63,6 +64,7 @@
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/ErrorEvent.h"
 #include "mozilla/dom/FetchUtil.h"
+#include "mozilla/dom/RootedDictionary.h"
 #include "mozilla/dom/ScriptSettings.h"
 #include "mozilla/dom/SerializedStackHolder.h"
 #include "mozilla/CycleCollectedJSRuntime.h"
@@ -84,6 +86,9 @@
 #include "mozilla/EventStateManager.h"
 #include "mozilla/ProfilerLabels.h"
 #include "mozilla/ProfilerMarkers.h"
+#if defined(MOZ_MEMORY)
+#  include "mozmemory.h"
+#endif
 
 using namespace mozilla;
 using namespace mozilla::dom;
@@ -185,11 +190,10 @@ namespace xpc {
 //
 // Note that the returned stackObj and stackGlobal are _not_ wrapped into the
 // compartment of exceptionValue.
-void FindExceptionStackForConsoleReport(nsPIDOMWindowInner* win,
-                                        JS::HandleValue exceptionValue,
-                                        JS::HandleObject exceptionStack,
-                                        JS::MutableHandleObject stackObj,
-                                        JS::MutableHandleObject stackGlobal) {
+void FindExceptionStackForConsoleReport(
+    nsPIDOMWindowInner* win, JS::Handle<JS::Value> exceptionValue,
+    JS::Handle<JSObject*> exceptionStack, JS::MutableHandle<JSObject*> stackObj,
+    JS::MutableHandle<JSObject*> stackGlobal) {
   stackObj.set(nullptr);
   stackGlobal.set(nullptr);
 
@@ -210,7 +214,7 @@ void FindExceptionStackForConsoleReport(nsPIDOMWindowInner* win,
   }
 
   JS::RootingContext* rcx = RootingCx();
-  JS::RootedObject exceptionObject(rcx, &exceptionValue.toObject());
+  JS::Rooted<JSObject*> exceptionObject(rcx, &exceptionValue.toObject());
   if (JSObject* excStack = JS::ExceptionStackOrNull(exceptionObject)) {
     // At this point we know exceptionObject is a possibly-wrapped
     // js::ErrorObject that has excStack as stack. excStack might also be a CCW,
@@ -244,7 +248,7 @@ void FindExceptionStackForConsoleReport(nsPIDOMWindowInner* win,
   if (!stack) {
     return;
   }
-  JS::RootedValue value(rcx);
+  JS::Rooted<JS::Value> value(rcx);
   stack->GetNativeSavedFrame(&value);
   if (value.isObject()) {
     stackObj.set(&value.toObject());
@@ -434,8 +438,8 @@ class ScriptErrorEvent : public Runnable {
  private:
   nsCOMPtr<nsPIDOMWindowInner> mWindow;
   RefPtr<xpc::ErrorReport> mReport;
-  JS::PersistentRootedValue mError;
-  JS::PersistentRootedObject mErrorStack;
+  JS::PersistentRooted<JS::Value> mError;
+  JS::PersistentRooted<JSObject*> mErrorStack;
 
   static bool sHandlingScriptError;
 };
@@ -1561,6 +1565,13 @@ void nsJSContext::EndCycleCollectionCallback(
                           StaticPrefs::javascript_options_gc_delay()) -
                           std::min(ccNowDuration, kMaxICCDuration));
   }
+#if defined(MOZ_MEMORY)
+  else if (
+      StaticPrefs::
+          dom_memory_foreground_content_processes_have_larger_page_cache()) {
+    jemalloc_free_dirty_pages();
+  }
+#endif
 }
 
 /* static */
@@ -1584,9 +1595,15 @@ bool CCGCScheduler::CCRunnerFired(TimeStamp aDeadline) {
       case CCRunnerAction::None:
         break;
 
+      case CCRunnerAction::MinorGC:
+        JS::MaybeRunNurseryCollection(CycleCollectedJSRuntime::Get()->Runtime(),
+                                      step.mParam.mReason);
+        sScheduler.NoteMinorGCEnd();
+        break;
+
       case CCRunnerAction::ForgetSkippable:
         // 'Forget skippable' only, then end this invocation.
-        FireForgetSkippable(bool(step.mRemoveChildless), aDeadline);
+        FireForgetSkippable(bool(step.mParam.mRemoveChildless), aDeadline);
         break;
 
       case CCRunnerAction::CleanupContentUnbinder:
@@ -1601,7 +1618,7 @@ bool CCGCScheduler::CCRunnerFired(TimeStamp aDeadline) {
 
       case CCRunnerAction::CycleCollect:
         // Cycle collection slice.
-        nsJSContext::RunCycleCollectorSlice(step.mCCReason, aDeadline);
+        nsJSContext::RunCycleCollectorSlice(step.mParam.mCCReason, aDeadline);
         break;
 
       case CCRunnerAction::StopRunning:
@@ -1687,6 +1704,23 @@ void nsJSContext::PokeGC(JS::GCReason aReason, JSObject* aObj,
 }
 
 // static
+void nsJSContext::MaybePokeGC() {
+  if (sShuttingDown) {
+    return;
+  }
+
+  JSRuntime* rt = CycleCollectedJSRuntime::Get()->Runtime();
+  JS::GCReason reason = JS::WantEagerMinorGC(rt);
+  if (reason != JS::GCReason::NO_REASON) {
+    MOZ_ASSERT(reason == JS::GCReason::EAGER_NURSERY_COLLECTION);
+    sScheduler.PokeMinorGC(reason);
+  }
+
+  // Bug 1772638: For now, only do eager minor GCs. Eager major GCs regress some
+  // benchmarks. Hopefully that will be worked out and this will check for
+  // whether an eager major GC is needed.
+}
+
 void nsJSContext::DoLowMemoryGC() {
   if (sShuttingDown) {
     return;
@@ -1729,7 +1763,7 @@ static void DOMGCSliceCallback(JSContext* aCx, JS::GCProgress aProgress,
   switch (aProgress) {
     case JS::GC_CYCLE_BEGIN: {
       // Prevent cycle collections and shrinking during incremental GC.
-      sScheduler.NoteGCBegin();
+      sScheduler.NoteGCBegin(aDesc.reason_);
       sCurrentGCStartTime = TimeStamp::Now();
       break;
     }
@@ -1759,9 +1793,15 @@ static void DOMGCSliceCallback(JSContext* aCx, JS::GCProgress aProgress,
 
       nsJSContext::MaybePokeCC();
 
+#if defined(MOZ_MEMORY)
+      bool freeDirty = false;
+#endif
       if (aDesc.isZone_) {
         sScheduler.PokeFullGC();
       } else {
+#if defined(MOZ_MEMORY)
+        freeDirty = true;
+#endif
         sScheduler.SetNeedsFullGC(false);
         sScheduler.KillFullGCTimer();
       }
@@ -1769,11 +1809,23 @@ static void DOMGCSliceCallback(JSContext* aCx, JS::GCProgress aProgress,
       if (sScheduler.IsCCNeeded(TimeStamp::Now(),
                                 nsCycleCollector_suspectedCount()) !=
           CCReason::NO_REASON) {
+#if defined(MOZ_MEMORY)
+        // We're likely to free the dirty pages after CC.
+        freeDirty = false;
+#endif
         nsCycleCollector_dispatchDeferredDeletion();
       }
 
       Telemetry::Accumulate(Telemetry::GC_IN_PROGRESS_MS,
                             TimeUntilNow(sCurrentGCStartTime).ToMilliseconds());
+
+#if defined(MOZ_MEMORY)
+      if (freeDirty &&
+          StaticPrefs::
+              dom_memory_foreground_content_processes_have_larger_page_cache()) {
+        jemalloc_free_dirty_pages();
+      }
+#endif
       break;
     }
 
@@ -1781,8 +1833,8 @@ static void DOMGCSliceCallback(JSContext* aCx, JS::GCProgress aProgress,
       break;
 
     case JS::GC_SLICE_END:
-      sScheduler.NoteGCSliceEnd(aDesc.lastSliceEnd(aCx) -
-                                aDesc.lastSliceStart(aCx));
+      sScheduler.NoteGCSliceEnd(aDesc.lastSliceStart(aCx),
+                                aDesc.lastSliceEnd(aCx));
 
       if (sShuttingDown) {
         sScheduler.KillGCRunner();
@@ -1954,7 +2006,7 @@ static bool DispatchToEventLoop(void* closure,
   // simply NS_DispatchToMainThread. Failure during shutdown is expected and
   // properly handled by the JS engine.
 
-  nsCOMPtr<nsIEventTarget> mainTarget = GetMainThreadEventTarget();
+  nsCOMPtr<nsIEventTarget> mainTarget = GetMainThreadSerialEventTarget();
   if (!mainTarget) {
     return false;
   }
@@ -1964,7 +2016,7 @@ static bool DispatchToEventLoop(void* closure,
   return true;
 }
 
-static bool ConsumeStream(JSContext* aCx, JS::HandleObject aObj,
+static bool ConsumeStream(JSContext* aCx, JS::Handle<JSObject*> aObj,
                           JS::MimeType aMimeType,
                           JS::StreamConsumer* aConsumer) {
   return FetchUtil::StreamResponseToJS(aCx, aObj, aMimeType, aConsumer,
@@ -2018,13 +2070,18 @@ void nsJSContext::EnsureStatics() {
                                        "javascript.options.mem.gc_incremental",
                                        (void*)JSGC_INCREMENTAL_GC_ENABLED);
 
-  Preferences::RegisterCallbackAndCall(
-      SetMemoryGCSliceTimePrefChangedCallback,
-      "javascript.options.mem.gc_incremental_slice_ms");
-
   Preferences::RegisterCallbackAndCall(SetMemoryPrefChangedCallbackBool,
                                        "javascript.options.mem.gc_compacting",
                                        (void*)JSGC_COMPACTING_ENABLED);
+
+  Preferences::RegisterCallbackAndCall(
+      SetMemoryPrefChangedCallbackBool,
+      "javascript.options.mem.gc_parallel_marking",
+      (void*)JSGC_PARALLEL_MARKING_ENABLED);
+
+  Preferences::RegisterCallbackAndCall(
+      SetMemoryGCSliceTimePrefChangedCallback,
+      "javascript.options.mem.gc_incremental_slice_ms");
 
   Preferences::RegisterCallbackAndCall(
       SetMemoryPrefChangedCallbackBool,
@@ -2050,6 +2107,16 @@ void nsJSContext::EnsureStatics() {
       SetMemoryPrefChangedCallbackInt,
       "javascript.options.mem.gc_high_frequency_small_heap_growth",
       (void*)JSGC_HIGH_FREQUENCY_SMALL_HEAP_GROWTH);
+
+  Preferences::RegisterCallbackAndCall(
+      SetMemoryPrefChangedCallbackBool,
+      "javascript.options.mem.gc_balanced_heap_limits",
+      (void*)JSGC_BALANCED_HEAP_LIMITS_ENABLED);
+
+  Preferences::RegisterCallbackAndCall(
+      SetMemoryPrefChangedCallbackInt,
+      "javascript.options.mem.gc_heap_growth_factor",
+      (void*)JSGC_HEAP_GROWTH_FACTOR);
 
   Preferences::RegisterCallbackAndCall(
       SetMemoryPrefChangedCallbackInt,

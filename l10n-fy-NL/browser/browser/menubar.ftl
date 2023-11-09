@@ -220,8 +220,6 @@ menu-history-undo-menu =
     .label = Koartlyn sluten ljepblêden
 menu-history-undo-window-menu =
     .label = Koartlyn sluten skermen
-menu-history-reopen-all-tabs = Alle ljepblêden opnij iepenje
-menu-history-reopen-all-windows = Alle finsters opnij iepenje
 
 ## Bookmarks Menu
 
@@ -230,14 +228,13 @@ menu-bookmarks-menu =
     .accesskey = D
 menu-bookmarks-manage =
     .label = Blêdwizers beheare
-menu-bookmark-current-tab =
-    .label = Blêdwizer foar aktuele ljepblêd meitsje
-menu-bookmark-edit =
-    .label = Dizze blêdwizer bewurkje
 menu-bookmark-tab =
     .label = Blêdwizer foar aktuele ljepblêd meitsje…
 menu-edit-bookmark =
     .label = Dizze blêdwizer bewurkje…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Blêdwizers trochsykje
 menu-bookmarks-all-tabs =
     .label = Blêdwizer foar alle ljepblêden meitsje…
 menu-bookmarks-toolbar =
@@ -331,6 +328,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Probleemoplossingsmodus útskeakelje
     .accesskey = m
+menu-help-switch-device =
+    .label = Wikselje nei in nij apparaat
+    .accesskey = n
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

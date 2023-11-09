@@ -18,8 +18,11 @@
 #include "js/PropertyAndElement.h"  // JS_DefineProperty, JS_DefinePropertyById, JS_GetProperty, JS_GetPropertyById
 #include "js/Symbol.h"
 
+#include <string_view>
+
 using namespace mozilla;
 using namespace JS;
+using namespace xpc;
 
 /***************************************************************************/
 
@@ -86,8 +89,8 @@ static bool XPC_WN_Shared_ToString(JSContext* cx, unsigned argc, Value* vp) {
 
 static bool XPC_WN_Shared_ToSource(JSContext* cx, unsigned argc, Value* vp) {
   CallArgs args = CallArgsFromVp(argc, vp);
-  static const char empty[] = "({})";
-  JSString* str = JS_NewStringCopyN(cx, empty, sizeof(empty) - 1);
+  static constexpr std::string_view empty = "({})";
+  JSString* str = JS_NewStringCopyN(cx, empty.data(), empty.length());
   if (!str) {
     return false;
   }
@@ -611,7 +614,7 @@ void XPCWrappedNative::Trace(JSTracer* trc, JSObject* obj) {
   if (clazz->flags & JSCLASS_DOM_GLOBAL) {
     mozilla::dom::TraceProtoAndIfaceCache(trc, obj);
   }
-  MOZ_ASSERT(IS_WN_CLASS(clazz));
+  MOZ_ASSERT(clazz->isWrappedNative());
 
   XPCWrappedNative* wrapper = XPCWrappedNative::Get(obj);
   if (wrapper && wrapper->IsValid()) {
@@ -706,7 +709,7 @@ bool XPC_WN_MaybeResolvingDeletePropertyStub(JSContext* cx, HandleObject obj,
     JS_ReportErrorASCII(cx, "Permission denied to operate on object."); \
     return false;                                                       \
   }                                                                     \
-  if (!IS_WN_REFLECTOR(unwrapped)) {                                    \
+  if (!IsWrappedNativeReflector(unwrapped)) {                           \
     return Throw(NS_ERROR_XPC_BAD_OP_ON_WN_PROTO, cx);                  \
   }                                                                     \
   XPCWrappedNative* wrapper = XPCWrappedNative::Get(unwrapped);         \

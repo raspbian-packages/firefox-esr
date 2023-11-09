@@ -24,6 +24,7 @@
 
 #include "gc/Barrier.h"
 #include "gc/Zone.h"
+#include "js/Stack.h"  // JS::NativeStackLimit
 #include "js/TypeDecls.h"
 #include "vm/SharedMem.h"
 #include "wasm/WasmExprType.h"   // for ResultType
@@ -37,17 +38,26 @@ namespace js {
 class SharedArrayRawBuffer;
 class WasmBreakpointSite;
 
+class WasmStructObject;
+class WasmArrayObject;
+
+namespace gc {
+class StoreBuffer;
+}  // namespace gc
+
 namespace wasm {
 
 using mozilla::Atomic;
 
 class FuncImport;
-class WasmFrameIter;
-
 struct FuncImportInstanceData;
-struct TableInstanceData;
+class GlobalDesc;
 struct TableDesc;
+struct TableInstanceData;
 struct TagDesc;
+struct TagInstanceData;
+struct TypeDefInstanceData;
+class WasmFrameIter;
 
 // Instance represents a wasm instance and provides all the support for runtime
 // execution of code in the instance. Instances share various immutable data
@@ -93,14 +103,14 @@ class alignas(16) Instance {
   //   - Set by wasm::HandleThrow, unset by Instance::consumePendingException.
   //   - If the unwind target is a `try-delegate`, it is unset by the delegated
   //     try-catch block or function body block.
-  GCPtrObject pendingException_;
+  GCPtr<JSObject*> pendingException_;
   // The tag object of the pending exception.
-  GCPtrObject pendingExceptionTag_;
+  GCPtr<JSObject*> pendingExceptionTag_;
 
   // Usually equal to cx->stackLimitForJitCode(JS::StackForUntrustedScript),
   // but can be racily set to trigger immediate trap as an opportunity to
   // CheckForInterrupt without an additional branch.
-  Atomic<uintptr_t, mozilla::Relaxed> stackLimit_;
+  Atomic<JS::NativeStackLimit, mozilla::Relaxed> stackLimit_;
 
   // Set to 1 when wasm should call CheckForInterrupt.
   Atomic<uint32_t, mozilla::Relaxed> interrupt_;
@@ -142,14 +152,17 @@ class alignas(16) Instance {
   // Address of the JitRuntime's object prebarrier trampoline
   void* preBarrierCode_;
 
+  // Address of the store buffer for this instance
+  gc::StoreBuffer* storeBuffer_;
+
   // Weak pointer to WasmInstanceObject that owns this instance
-  WeakHeapPtrWasmInstanceObject object_;
+  WeakHeapPtr<WasmInstanceObject*> object_;
 
   // The wasm::Code for this instance
   const SharedCode code_;
 
   // The memory for this instance, if any
-  const GCPtrWasmMemoryObject memory_;
+  const GCPtr<WasmMemoryObject*> memory_;
 
   // The tables for this instance, if any
   const SharedTableVector tables_;
@@ -171,25 +184,23 @@ class alignas(16) Instance {
   // worthwhile.
   uint32_t* debugFilter_;
 
-#ifdef ENABLE_WASM_GC
-  // A flag to control whether a pass to trace types in global data is
-  // necessary or not. Purely an optimization
-  bool hasGcTypes_;
-#endif
+  // The exclusive maximum index of a global that has been initialized so far.
+  uint32_t maxInitializedGlobalsIndexPlus1_;
 
   // Pointer that should be freed (due to padding before the Instance).
   void* allocatedBase_;
 
-  // The globalArea must be the last field.  Globals for the module start here
+  // The data must be the last field.  Globals for the module start here
   // and are inline in this structure.  16-byte alignment is required for SIMD
   // data.
-  MOZ_ALIGNED_DECL(16, char globalArea_);
+  MOZ_ALIGNED_DECL(16, char data_);
 
   // Internal helpers:
-  const void** addressOfTypeId(const TypeIdDesc& typeId) const;
+  TypeDefInstanceData* typeDefInstanceData(uint32_t typeIndex) const;
+  const void* addressOfGlobalCell(const GlobalDesc& globalDesc) const;
   FuncImportInstanceData& funcImportInstanceData(const FuncImport& fi);
-  TableInstanceData& tableInstanceData(const TableDesc& td) const;
-  GCPtrWasmTagObject& tagInstanceData(const TagDesc& td) const;
+  TableInstanceData& tableInstanceData(uint32_t tableIndex) const;
+  TagInstanceData& tagInstanceData(uint32_t tagIndex) const;
 
   // Only WasmInstanceObject can call the private trace function.
   friend class js::WasmInstanceObject;
@@ -198,26 +209,25 @@ class alignas(16) Instance {
   bool callImport(JSContext* cx, uint32_t funcImportIndex, unsigned argc,
                   uint64_t* argv);
 
-  Instance(JSContext* cx, HandleWasmInstanceObject object, SharedCode code,
-           HandleWasmMemoryObject memory, SharedTableVector&& tables,
-           UniqueDebugState maybeDebug);
+  Instance(JSContext* cx, Handle<WasmInstanceObject*> object,
+           const SharedCode& code, Handle<WasmMemoryObject*> memory,
+           SharedTableVector&& tables, UniqueDebugState maybeDebug);
   ~Instance();
 
  public:
-  static Instance* create(JSContext* cx, HandleWasmInstanceObject object,
-                          SharedCode code, uint32_t globalDataLength,
-                          HandleWasmMemoryObject memory,
+  static Instance* create(JSContext* cx, Handle<WasmInstanceObject*> object,
+                          const SharedCode& code, uint32_t instanceDataLength,
+                          Handle<WasmMemoryObject*> memory,
                           SharedTableVector&& tables,
                           UniqueDebugState maybeDebug);
   static void destroy(Instance* instance);
 
-  bool init(JSContext* cx, const JSFunctionVector& funcImports,
+  bool init(JSContext* cx, const JSObjectVector& funcImports,
             const ValVector& globalImportValues,
             const WasmGlobalObjectVector& globalObjs,
             const WasmTagObjectVector& tagObjs,
             const DataSegmentVector& dataSegments,
             const ElemSegmentVector& elemSegments);
-  void trace(JSTracer* trc);
 
   // Trace any GC roots on the stack, for the frame associated with |wfi|,
   // whose next instruction to execute is |nextPC|.
@@ -281,8 +291,9 @@ class alignas(16) Instance {
   static constexpr size_t offsetOfDebugFilter() {
     return offsetof(Instance, debugFilter_);
   }
-  static constexpr size_t offsetOfGlobalArea() {
-    return offsetof(Instance, globalArea_);
+  static constexpr size_t offsetOfData() { return offsetof(Instance, data_); }
+  static constexpr size_t offsetInData(size_t offset) {
+    return offsetOfData() + offset;
   }
 
   JSContext* cx() const { return cx_; }
@@ -291,7 +302,7 @@ class alignas(16) Instance {
   JS::Realm* realm() const { return realm_; }
   bool debugEnabled() const { return !!maybeDebug_; }
   DebugState& debug() { return *maybeDebug_; }
-  uint8_t* globalData() const { return (uint8_t*)&globalArea_; }
+  uint8_t* data() const { return (uint8_t*)&data_; }
   const SharedTableVector& tables() const { return tables_; }
   SharedMem<uint8_t*> memoryBase() const;
   WasmMemoryObject* memory() const;
@@ -337,13 +348,12 @@ class alignas(16) Instance {
 
   // Constant expression support
 
+  void constantGlobalGet(uint32_t globalIndex, MutableHandleVal result);
   [[nodiscard]] bool constantRefFunc(uint32_t funcIndex,
                                      MutableHandleFuncRef result);
-  [[nodiscard]] bool constantRttCanon(JSContext* cx, uint32_t sourceTypeIndex,
-                                      MutableHandleRttValue result);
-  [[nodiscard]] bool constantRttSub(JSContext* cx, HandleRttValue parentRtt,
-                                    uint32_t sourceChildTypeIndex,
-                                    MutableHandleRttValue result);
+  WasmStructObject* constantStructNewDefault(JSContext* cx, uint32_t typeIndex);
+  WasmArrayObject* constantArrayNewDefault(JSContext* cx, uint32_t typeIndex,
+                                           uint32_t numElements);
 
   // Return the name associated with a given function index, or generate one
   // if none was given by the module.
@@ -421,6 +431,14 @@ class alignas(16) Instance {
                            uint32_t dstTableIndex, uint32_t srcTableIndex);
   static int32_t tableFill(Instance* instance, uint32_t start, void* value,
                            uint32_t len, uint32_t tableIndex);
+  static int32_t memDiscard_m32(Instance* instance, uint32_t byteOffset,
+                                uint32_t byteLen, uint8_t* memBase);
+  static int32_t memDiscardShared_m32(Instance* instance, uint32_t byteOffset,
+                                      uint32_t byteLen, uint8_t* memBase);
+  static int32_t memDiscard_m64(Instance* instance, uint64_t byteOffset,
+                                uint64_t byteLen, uint8_t* memBase);
+  static int32_t memDiscardShared_m64(Instance* instance, uint64_t byteOffset,
+                                      uint64_t byteLen, uint8_t* memBase);
   static void* tableGet(Instance* instance, uint32_t index,
                         uint32_t tableIndex);
   static uint32_t tableGrow(Instance* instance, void* initValue, uint32_t delta,
@@ -445,18 +463,33 @@ class alignas(16) Instance {
   static int32_t wake_m64(Instance* instance, uint64_t byteOffset,
                           int32_t count);
   static void* refFunc(Instance* instance, uint32_t funcIndex);
-  static void preBarrierFiltering(Instance* instance, gc::Cell** location);
   static void postBarrier(Instance* instance, gc::Cell** location);
   static void postBarrierPrecise(Instance* instance, JSObject** location,
                                  JSObject* prev);
-  static void postBarrierFiltering(Instance* instance, gc::Cell** location);
-  static void* structNew(Instance* instance, void* structDescr);
+  static void postBarrierPreciseWithOffset(Instance* instance, JSObject** base,
+                                           uint32_t offset, JSObject* prev);
   static void* exceptionNew(Instance* instance, JSObject* tag);
   static int32_t throwException(Instance* instance, JSObject* exn);
-  static void* arrayNew(Instance* instance, uint32_t length, void* arrayDescr);
-  static int32_t refTest(Instance* instance, void* refPtr, void* rttPtr);
-  static void* rttSub(Instance* instance, void* rttParentPtr,
-                      void* rttSubCanonPtr);
+  static void* structNew(Instance* instance, TypeDefInstanceData* typeDefData);
+  static void* structNewUninit(Instance* instance,
+                               TypeDefInstanceData* typeDefData);
+  static void* arrayNew(Instance* instance, uint32_t numElements,
+                        TypeDefInstanceData* typeDefData);
+  static void* arrayNewUninit(Instance* instance, uint32_t numElements,
+                              TypeDefInstanceData* typeDefData);
+  static void* arrayNewData(Instance* instance, uint32_t segByteOffset,
+                            uint32_t numElements,
+                            TypeDefInstanceData* typeDefData,
+                            uint32_t segIndex);
+  static void* arrayNewElem(Instance* instance, uint32_t segElemIndex,
+                            uint32_t numElements,
+                            TypeDefInstanceData* typeDefData,
+                            uint32_t segIndex);
+  static int32_t arrayCopy(Instance* instance, void* dstArray,
+                           uint32_t dstIndex, void* srcArray, uint32_t srcIndex,
+                           uint32_t numElements, uint32_t elementSize);
+  static int32_t refTest(Instance* instance, void* refPtr,
+                         const wasm::TypeDef* typeDef);
   static int32_t intrI8VecMul(Instance* instance, uint32_t dest, uint32_t src1,
                               uint32_t src2, uint32_t len, uint8_t* memBase);
 };
@@ -468,6 +501,10 @@ bool ResultsToJSValue(JSContext* cx, ResultType type, void* registerResultLoc,
 // Report an error to `cx` and mark it as a 'trap' so that it cannot be caught
 // by wasm exception handlers.
 void ReportTrapError(JSContext* cx, unsigned errorNumber);
+
+// Instance is not a GC thing itself but contains GC thing pointers. Ensure they
+// are traced appropriately.
+void TraceInstanceEdge(JSTracer* trc, Instance* instance, const char* name);
 
 }  // namespace wasm
 }  // namespace js

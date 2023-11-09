@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = დასინქრონების ჩა�
 
 fxa-menu-connect-another-device =
     .label = სხვა მოწყობილობის დაკავშირება…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] ჩანართის მოწყობილობაზე გაგზავნა
+           *[other] { $tabCount } ჩანართის მოწყობილობაზე გაგზავნა
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

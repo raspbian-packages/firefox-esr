@@ -21,14 +21,14 @@ excluded_tests = [
   "exports.wast",
   # false-positive windows-specific failure
   "memory_trap.wast",
-  # false-positive error on duplicate export name (names.wast:19)
-  "names.wast",
   # false-positive error on invalid UTF-8 custom section name (utf8-custom-section-id.wast:6)
   "utf8-custom-section-id.wast",
   # invalid table maximum length for web embeddings
   "table.wast",
   # fails after a bottom-type has been added to validation
   "unreached-invalid.wast",
+  # argument is not wasm value
+  "^select.wast",
 ]
 
 [[repos]]
@@ -72,4 +72,43 @@ name = "memory64"
 url = "https://github.com/mozilla-spidermonkey/memory64"
 branch = "test-cases"
 directive = "; skip-if: !wasmMemory64Enabled()"
+excluded_tests = []
+
+[[repos]]
+name = "function-references"
+url = "https://github.com/WebAssembly/function-references"
+branch = "main"
+parent = "spec"
+directive = "; --wasm-function-references; skip-if: !wasmFunctionReferencesEnabled()"
+excluded_tests = [
+  # return_call_ref not implemented
+  "return_call_ref.wast",
+  # table function elem subtyping
+  "ref_is_null.wast",
+  # cannot expose indexed reference type
+  "ref_null.wast",
+  # parameter subtyping
+  "type-equivalence.wast",
+  # NYI WasmValType.h:259
+  "table-sub.wast",
+  # unrelated
+  "tokens.wast",
+  # irrelevant
+  "simd_lane.wast",
+]
+
+[[repos]]
+name = "relaxed-simd"
+url = "https://github.com/WebAssembly/relaxed-simd"
+branch = "main"
+parent = "spec"
+directive = "; --wasm-relaxed-simd; skip-if: !wasmRelaxedSimdEnabled()"
+excluded_tests = []
+
+[[repos]]
+name = "extended-const"
+url = "https://github.com/WebAssembly/extended-const"
+branch = "main"
+parent = "spec"
+directive = "; --wasm-extended-const; skip-if: !wasmExtendedConstEnabled()"
 excluded_tests = []

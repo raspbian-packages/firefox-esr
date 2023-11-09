@@ -3,16 +3,18 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import os
 import datetime
 import functools
-import requests
 import logging
+import os
+
+import requests
 import taskcluster_urls as liburls
 from requests.packages.urllib3.util.retry import Retry
+
 from taskgraph.task import Task
-from taskgraph.util.memoize import memoize
 from taskgraph.util import yaml
+from taskgraph.util.memoize import memoize
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +23,7 @@ testing = False
 
 # Default rootUrl to use if none is given in the environment; this should point
 # to the production Taskcluster deployment used for CI.
-PRODUCTION_TASKCLUSTER_ROOT_URL = "https://taskcluster.net"
+PRODUCTION_TASKCLUSTER_ROOT_URL = None
 
 # the maximum number of parallel Taskcluster API calls to make
 CONCURRENCY = 50
@@ -29,11 +31,13 @@ CONCURRENCY = 50
 
 @memoize
 def get_root_url(use_proxy):
-    """Get the current TASKCLUSTER_ROOT_URL.  When running in a task, this must
-    come from $TASKCLUSTER_ROOT_URL; when run on the command line, we apply a
-    defualt that points to the production deployment of Taskcluster.  If use_proxy
-    is set, this attempts to get TASKCLUSTER_PROXY_URL instead, failing if it
-    is not set."""
+    """Get the current TASKCLUSTER_ROOT_URL.
+
+    When running in a task, this must come from $TASKCLUSTER_ROOT_URL; when run
+    on the command line, a default may be provided that points to the
+    production deployment of Taskcluster. If use_proxy is set, this attempts to
+    get TASKCLUSTER_PROXY_URL instead, failing if it is not set.
+    """
     if use_proxy:
         try:
             return liburls.normalize_root_url(os.environ["TASKCLUSTER_PROXY_URL"])
@@ -45,21 +49,27 @@ def get_root_url(use_proxy):
             else:
                 raise RuntimeError("taskcluster-proxy is not enabled for this task")
 
-    if "TASKCLUSTER_ROOT_URL" not in os.environ:
-        if "TASK_ID" in os.environ:
-            raise RuntimeError(
-                "$TASKCLUSTER_ROOT_URL must be set when running in a task"
+    if "TASKCLUSTER_ROOT_URL" in os.environ:
+        logger.debug(
+            "Running in Taskcluster instance {}{}".format(
+                os.environ["TASKCLUSTER_ROOT_URL"],
+                " with taskcluster-proxy"
+                if "TASKCLUSTER_PROXY_URL" in os.environ
+                else "",
             )
-        else:
-            logger.debug("Using default TASKCLUSTER_ROOT_URL (Firefox CI production)")
-            return liburls.normalize_root_url(PRODUCTION_TASKCLUSTER_ROOT_URL)
-    logger.debug(
-        "Running in Taskcluster instance {}{}".format(
-            os.environ["TASKCLUSTER_ROOT_URL"],
-            " with taskcluster-proxy" if "TASKCLUSTER_PROXY_URL" in os.environ else "",
         )
-    )
-    return liburls.normalize_root_url(os.environ["TASKCLUSTER_ROOT_URL"])
+        return liburls.normalize_root_url(os.environ["TASKCLUSTER_ROOT_URL"])
+
+    if "TASK_ID" in os.environ:
+        raise RuntimeError("$TASKCLUSTER_ROOT_URL must be set when running in a task")
+
+    if PRODUCTION_TASKCLUSTER_ROOT_URL is None:
+        raise RuntimeError(
+            "Could not detect Taskcluster instance, set $TASKCLUSTER_ROOT_URL"
+        )
+
+    logger.debug("Using default TASKCLUSTER_ROOT_URL")
+    return liburls.normalize_root_url(PRODUCTION_TASKCLUSTER_ROOT_URL)
 
 
 def requests_retry_session(
@@ -249,13 +259,44 @@ def cancel_task(task_id, use_proxy=False):
 
 
 def status_task(task_id, use_proxy=False):
-    """Gets the status of a task given a task_id. In testing mode, just logs that it would
-    have retrieved status."""
+    """Gets the status of a task given a task_id.
+
+    In testing mode, just logs that it would have retrieved status.
+
+    Args:
+        task_id (str): A task id.
+        use_proxy (bool): Whether to use taskcluster-proxy (default: False)
+
+    Returns:
+        dict: A dictionary object as defined here:
+          https://docs.taskcluster.net/docs/reference/platform/queue/api#status
+    """
     if testing:
         logger.info(f"Would have gotten status for {task_id}.")
     else:
         resp = _do_request(get_task_url(task_id, use_proxy) + "/status")
-        status = resp.json().get("status", {}).get("state") or "unknown"
+        status = resp.json().get("status", {})
+        return status
+
+
+def state_task(task_id, use_proxy=False):
+    """Gets the state of a task given a task_id.
+
+    In testing mode, just logs that it would have retrieved state. This is a subset of the
+    data returned by :func:`status_task`.
+
+    Args:
+        task_id (str): A task id.
+        use_proxy (bool): Whether to use taskcluster-proxy (default: False)
+
+    Returns:
+        str: The state of the task, one of
+          ``pending, running, completed, failed, exception, unknown``.
+    """
+    if testing:
+        logger.info(f"Would have gotten state for {task_id}.")
+    else:
+        status = status_task(task_id, use_proxy=use_proxy).get("state") or "unknown"
         return status
 
 

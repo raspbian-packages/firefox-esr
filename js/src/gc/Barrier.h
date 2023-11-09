@@ -7,13 +7,12 @@
 #ifndef gc_Barrier_h
 #define gc_Barrier_h
 
-#include "mozilla/DebugOnly.h"
-
 #include <type_traits>  // std::true_type
 
 #include "NamespaceImports.h"
 
 #include "gc/Cell.h"
+#include "gc/GCContext.h"
 #include "gc/StoreBuffer.h"
 #include "js/ComparisonOperators.h"     // JS::detail::DefineComparisonOps
 #include "js/experimental/TypedData.h"  // js::EnableIfABOVType
@@ -61,7 +60,7 @@
  *
  * PreBarriered  Provides a pre-barrier but not a post-barrier. Necessary when
  *               generational GC updates are handled manually, e.g. for hash
- *               table keys that don't use MovableCellHasher.
+ *               table keys that don't use StableCellHasher.
  *
  * HeapSlot      Provides pre and post-barriers, optimised for use in JSObject
  *               slots and elements.
@@ -79,7 +78,7 @@
  *               handles cycle collector concerns. Most external clients should
  *               use this.
  *
- * TenuredHeap   Like Heap but doesn't allow nursery pointers. Allows storing
+ * Heap::Tenured   Like Heap but doesn't allow nursery pointers. Allows storing
  *               flags in unused lower bits of the pointer.
  *
  * Which class to use?
@@ -105,7 +104,7 @@
  *   No, it's external =>
  *     Can your pointer refer to nursery objects?
  *       Yes => Use JS::Heap<T>
- *       Never => Use JS::TenuredHeap<T> (optimization)
+ *       Never => Use JS::Heap::Tenured<T> (optimization)
  *
  * If in doubt, use HeapPtr<T>.
  *
@@ -374,22 +373,19 @@ struct InternalBarrierMethods<Value> {
 
     // If the target needs an entry, add it.
     js::gc::StoreBuffer* sb;
-    if (next.isNurseryAllocatableGCThing() &&
-        (sb = next.toGCThing()->storeBuffer())) {
+    if (next.isGCThing() && (sb = next.toGCThing()->storeBuffer())) {
       // If we know that the prev has already inserted an entry, we can
       // skip doing the lookup to add the new entry. Note that we cannot
       // safely assert the presence of the entry because it may have been
       // added via a different store buffer.
-      if (prev.isNurseryAllocatableGCThing() &&
-          prev.toGCThing()->storeBuffer()) {
+      if (prev.isGCThing() && prev.toGCThing()->storeBuffer()) {
         return;
       }
       sb->putValue(vp);
       return;
     }
     // Remove the prev entry if the new value does not need it.
-    if (prev.isNurseryAllocatableGCThing() &&
-        (sb = prev.toGCThing()->storeBuffer())) {
+    if (prev.isGCThing() && (sb = prev.toGCThing()->storeBuffer())) {
       sb->unputValue(vp);
     }
   }
@@ -535,8 +531,7 @@ class PreBarriered : public WriteBarriered<T> {
  public:
   PreBarriered() : WriteBarriered<T>(JS::SafelyInitialized<T>::create()) {}
   /*
-   * Allow implicit construction for use in generic contexts, such as
-   * DebuggerWeakMap::markKeys.
+   * Allow implicit construction for use in generic contexts.
    */
   MOZ_IMPLICIT PreBarriered(const T& v) : WriteBarriered<T>(v) {}
 
@@ -978,6 +973,11 @@ class HeapSlot : public WriteBarriered<Value> {
 
   void destroy() { pre(); }
 
+  void setUndefinedUnchecked() {
+    pre();
+    value.setUndefined();
+  }
+
 #ifdef DEBUG
   bool preconditionForSet(NativeObject* owner, Kind kind, uint32_t slot) const;
   void assertPreconditionForPostWriteBarrier(NativeObject* obj, Kind kind,
@@ -999,7 +999,7 @@ class HeapSlot : public WriteBarriered<Value> {
 #ifdef DEBUG
     assertPreconditionForPostWriteBarrier(owner, kind, slot, target);
 #endif
-    if (this->value.isNurseryAllocatableGCThing()) {
+    if (this->value.isGCThing()) {
       gc::Cell* cell = this->value.toGCThing();
       if (cell->storeBuffer()) {
         cell->storeBuffer()->putSlot(owner, kind, slot, 1);
@@ -1103,64 +1103,86 @@ class MOZ_HEAP_CLASS ImmutableTenuredPtr {
   const T* address() { return &value; }
 };
 
+// Template to remove any barrier wrapper and get the underlying type.
+template <typename T>
+struct RemoveBarrier {
+  using Type = T;
+};
+template <typename T>
+struct RemoveBarrier<HeapPtr<T>> {
+  using Type = T;
+};
+template <typename T>
+struct RemoveBarrier<GCPtr<T>> {
+  using Type = T;
+};
+template <typename T>
+struct RemoveBarrier<PreBarriered<T>> {
+  using Type = T;
+};
+template <typename T>
+struct RemoveBarrier<WeakHeapPtr<T>> {
+  using Type = T;
+};
+
 #if MOZ_IS_GCC
-template struct JS_PUBLIC_API MovableCellHasher<JSObject*>;
+template struct JS_PUBLIC_API StableCellHasher<JSObject*>;
 #endif
 
 template <typename T>
-struct MovableCellHasher<PreBarriered<T>> {
+struct StableCellHasher<PreBarriered<T>> {
   using Key = PreBarriered<T>;
   using Lookup = T;
 
-  static bool hasHash(const Lookup& l) {
-    return MovableCellHasher<T>::hasHash(l);
+  static bool maybeGetHash(const Lookup& l, HashNumber* hashOut) {
+    return StableCellHasher<T>::maybeGetHash(l, hashOut);
   }
-  static bool ensureHash(const Lookup& l) {
-    return MovableCellHasher<T>::ensureHash(l);
+  static bool ensureHash(const Lookup& l, HashNumber* hashOut) {
+    return StableCellHasher<T>::ensureHash(l, hashOut);
   }
   static HashNumber hash(const Lookup& l) {
-    return MovableCellHasher<T>::hash(l);
+    return StableCellHasher<T>::hash(l);
   }
   static bool match(const Key& k, const Lookup& l) {
-    return MovableCellHasher<T>::match(k, l);
+    return StableCellHasher<T>::match(k, l);
   }
 };
 
 template <typename T>
-struct MovableCellHasher<HeapPtr<T>> {
+struct StableCellHasher<HeapPtr<T>> {
   using Key = HeapPtr<T>;
   using Lookup = T;
 
-  static bool hasHash(const Lookup& l) {
-    return MovableCellHasher<T>::hasHash(l);
+  static bool maybeGetHash(const Lookup& l, HashNumber* hashOut) {
+    return StableCellHasher<T>::maybeGetHash(l, hashOut);
   }
-  static bool ensureHash(const Lookup& l) {
-    return MovableCellHasher<T>::ensureHash(l);
+  static bool ensureHash(const Lookup& l, HashNumber* hashOut) {
+    return StableCellHasher<T>::ensureHash(l, hashOut);
   }
   static HashNumber hash(const Lookup& l) {
-    return MovableCellHasher<T>::hash(l);
+    return StableCellHasher<T>::hash(l);
   }
   static bool match(const Key& k, const Lookup& l) {
-    return MovableCellHasher<T>::match(k, l);
+    return StableCellHasher<T>::match(k, l);
   }
 };
 
 template <typename T>
-struct MovableCellHasher<WeakHeapPtr<T>> {
+struct StableCellHasher<WeakHeapPtr<T>> {
   using Key = WeakHeapPtr<T>;
   using Lookup = T;
 
-  static bool hasHash(const Lookup& l) {
-    return MovableCellHasher<T>::hasHash(l);
+  static bool maybeGetHash(const Lookup& l, HashNumber* hashOut) {
+    return StableCellHasher<T>::maybeGetHash(l, hashOut);
   }
-  static bool ensureHash(const Lookup& l) {
-    return MovableCellHasher<T>::ensureHash(l);
+  static bool ensureHash(const Lookup& l, HashNumber* hashOut) {
+    return StableCellHasher<T>::ensureHash(l, hashOut);
   }
   static HashNumber hash(const Lookup& l) {
-    return MovableCellHasher<T>::hash(l);
+    return StableCellHasher<T>::hash(l);
   }
   static bool match(const Key& k, const Lookup& l) {
-    return MovableCellHasher<T>::match(k.unbarrieredGet(), l);
+    return StableCellHasher<T>::match(k.unbarrieredGet(), l);
   }
 };
 
@@ -1231,66 +1253,5 @@ template <class T>
 struct DefaultHasher<js::UnsafeBarePtr<T>> : js::UnsafeBarePtrHasher<T> {};
 
 }  // namespace mozilla
-
-namespace js {
-
-class ArrayObject;
-class DebugEnvironmentProxy;
-class GlobalObject;
-class PropertyName;
-class Scope;
-class ScriptSourceObject;
-class Shape;
-class BaseShape;
-class GetterSetter;
-class PropMap;
-class WasmInstanceObject;
-class WasmTableObject;
-
-namespace jit {
-class JitCode;
-}  // namespace jit
-
-using PreBarrieredId = PreBarriered<jsid>;
-using PreBarrieredObject = PreBarriered<JSObject*>;
-using PreBarrieredValue = PreBarriered<Value>;
-
-using GCPtrNativeObject = GCPtr<NativeObject*>;
-using GCPtrArrayObject = GCPtr<ArrayObject*>;
-using GCPtrAtom = GCPtr<JSAtom*>;
-using GCPtrBigInt = GCPtr<BigInt*>;
-using GCPtrFunction = GCPtr<JSFunction*>;
-using GCPtrLinearString = GCPtr<JSLinearString*>;
-using GCPtrObject = GCPtr<JSObject*>;
-using GCPtrScript = GCPtr<JSScript*>;
-using GCPtrString = GCPtr<JSString*>;
-using GCPtrShape = GCPtr<Shape*>;
-using GCPtrGetterSetter = GCPtr<GetterSetter*>;
-using GCPtrPropMap = GCPtr<PropMap*>;
-using GCPtrValue = GCPtr<Value>;
-using GCPtrId = GCPtr<jsid>;
-
-using ImmutablePropertyNamePtr = ImmutableTenuredPtr<PropertyName*>;
-using ImmutableSymbolPtr = ImmutableTenuredPtr<JS::Symbol*>;
-
-using WeakHeapPtrAtom = WeakHeapPtr<JSAtom*>;
-using WeakHeapPtrDebugEnvironmentProxy = WeakHeapPtr<DebugEnvironmentProxy*>;
-using WeakHeapPtrGlobalObject = WeakHeapPtr<GlobalObject*>;
-using WeakHeapPtrObject = WeakHeapPtr<JSObject*>;
-using WeakHeapPtrScript = WeakHeapPtr<JSScript*>;
-using WeakHeapPtrScriptSourceObject = WeakHeapPtr<ScriptSourceObject*>;
-using WeakHeapPtrShape = WeakHeapPtr<Shape*>;
-using WeakHeapPtrJitCode = WeakHeapPtr<jit::JitCode*>;
-using WeakHeapPtrSymbol = WeakHeapPtr<JS::Symbol*>;
-using WeakHeapPtrWasmInstanceObject = WeakHeapPtr<WasmInstanceObject*>;
-using WeakHeapPtrWasmTableObject = WeakHeapPtr<WasmTableObject*>;
-
-using HeapPtrJitCode = HeapPtr<jit::JitCode*>;
-using HeapPtrNativeObject = HeapPtr<NativeObject*>;
-using HeapPtrObject = HeapPtr<JSObject*>;
-using HeapPtrRegExpShared = HeapPtr<RegExpShared*>;
-using HeapPtrValue = HeapPtr<Value>;
-
-} /* namespace js */
 
 #endif /* gc_Barrier_h */

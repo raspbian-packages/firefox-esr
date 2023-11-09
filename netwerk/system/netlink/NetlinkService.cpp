@@ -8,30 +8,27 @@
 #include <netinet/ether.h>
 #include <net/if.h>
 #include <poll.h>
+#include <unistd.h>
 #include <linux/rtnetlink.h>
 
 #include "nsThreadUtils.h"
-#include "nsServiceManagerUtils.h"
 #include "NetlinkService.h"
 #include "nsIThread.h"
 #include "nsString.h"
 #include "nsPrintfCString.h"
 #include "mozilla/Logging.h"
 #include "../../base/IPv6Utils.h"
+#include "../LinkServiceCommon.h"
 #include "../NetworkLinkServiceDefines.h"
 
 #include "mozilla/Base64.h"
-#include "mozilla/FileUtils.h"
 #include "mozilla/FunctionTypeTraits.h"
 #include "mozilla/ProfilerThreadSleep.h"
-#include "mozilla/Services.h"
-#include "mozilla/Sprintf.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/DebugOnly.h"
 
 #if defined(HAVE_RES_NINIT)
 #  include <netinet/in.h>
-#  include <arpa/nameser.h>
 #  include <resolv.h>
 #endif
 
@@ -1812,11 +1809,8 @@ void NetlinkService::CalculateNetworkID() {
   bool found6 = CalculateIDForFamily(AF_INET6, &sha1);
 
   if (found4 || found6) {
-    // This 'addition' could potentially be a fixed number from the
-    // profile or something.
-    nsAutoCString addition("local-rubbish");
     nsAutoCString output;
-    sha1.update(addition.get(), addition.Length());
+    SeedNetworkId(sha1);
     uint8_t digest[SHA1Sum::kHashSize];
     sha1.finish(digest);
     nsAutoCString newString(reinterpret_cast<char*>(digest),

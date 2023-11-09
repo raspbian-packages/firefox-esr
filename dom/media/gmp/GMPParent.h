@@ -6,6 +6,7 @@
 #ifndef GMPParent_h_
 #define GMPParent_h_
 
+#include "GMPNativeTypes.h"
 #include "GMPProcessParent.h"
 #include "GMPServiceParent.h"
 #include "GMPVideoDecoderParent.h"
@@ -20,6 +21,7 @@
 #include "nsString.h"
 #include "nsTArray.h"
 #include "nsIFile.h"
+#include "mozilla/Atomics.h"
 #include "mozilla/MozPromise.h"
 
 namespace mozilla::gmp {
@@ -30,24 +32,20 @@ class GMPCapability {
   GMPCapability(GMPCapability&& aOther)
       : mAPIName(std::move(aOther.mAPIName)),
         mAPITags(std::move(aOther.mAPITags)) {}
-  explicit GMPCapability(const nsCString& aAPIName) : mAPIName(aAPIName) {}
+  explicit GMPCapability(const nsACString& aAPIName) : mAPIName(aAPIName) {}
   explicit GMPCapability(const GMPCapability& aOther) = default;
   nsCString mAPIName;
   CopyableTArray<nsCString> mAPITags;
 
   static bool Supports(const nsTArray<GMPCapability>& aCapabilities,
-                       const nsCString& aAPI, const nsTArray<nsCString>& aTags);
+                       const nsACString& aAPI,
+                       const nsTArray<nsCString>& aTags);
 
   static bool Supports(const nsTArray<GMPCapability>& aCapabilities,
-                       const nsCString& aAPI, const nsCString& aTag);
+                       const nsACString& aAPI, const nsCString& aTag);
 };
 
-enum GMPState {
-  GMPStateNotLoaded,
-  GMPStateLoaded,
-  GMPStateUnloading,
-  GMPStateClosing
-};
+enum class GMPState : uint32_t { NotLoaded, Loaded, Unloading, Closing };
 
 class GMPContentParent;
 
@@ -57,7 +55,7 @@ class GMPParent final
   friend class PGMPParent;
 
  public:
-  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(GMPParent)
+  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(GMPParent, final)
 
   GMPParent();
 
@@ -108,6 +106,7 @@ class GMPParent final
   const nsCString& GetDisplayName() const;
   const nsCString& GetVersion() const;
   uint32_t GetPluginId() const;
+  GMPPluginType GetPluginType() const { return mPluginType; }
   nsString GetPluginBaseName() const;
 
   // Returns true if a plugin can be or is being used across multiple NodeIds.
@@ -143,6 +142,7 @@ class GMPParent final
 
  private:
   ~GMPParent();
+  void UpdatePluginType();
 
   RefPtr<GeckoMediaPluginServiceParent> mService;
   bool EnsureProcessLoaded();
@@ -194,7 +194,7 @@ class GMPParent final
                              uint32_t& aArchSet);
 #endif
 
-  GMPState mState;
+  Atomic<GMPState> mState;
   nsCOMPtr<nsIFile> mDirectory;  // plugin directory on disk
   nsString mName;  // base name of plugin on disk, UTF-16 because used for paths
   nsCString mDisplayName;  // name of plugin displayed to users
@@ -205,6 +205,7 @@ class GMPParent final
 #endif
   nsString mAdapter;
   const uint32_t mPluginId;
+  GMPPluginType mPluginType = GMPPluginType::Unknown;
   nsTArray<GMPCapability> mCapabilities;
   GMPProcessParent* mProcess;
   bool mDeleteProcessOnlyOnUnload;
@@ -226,12 +227,6 @@ class GMPParent final
   uint32_t mGMPContentChildCount;
 
   int mChildPid;
-
-  // We hold a self reference to ourself while the child process is alive.
-  // This ensures that if the GMPService tries to shut us down and drops
-  // its reference to us, we stay alive long enough for the child process
-  // to terminate gracefully.
-  bool mHoldingSelfRef;
 
 #ifdef ALLOW_GECKO_CHILD_PROCESS_ARCH
   // The child process architecture to use.

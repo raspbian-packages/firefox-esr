@@ -102,3 +102,8 @@ interface nsICryptoHash : nsISupports
      */
     ACString finish(in boolean aASCII);
 };
+
+%{C++
+nsresult NS_NewCryptoHash(uint32_t aHashType, nsICryptoHash** aOutHasher);
+nsresult NS_NewCryptoHash(const nsACString& aHashType, nsICryptoHash** aOutHasher);
+%}

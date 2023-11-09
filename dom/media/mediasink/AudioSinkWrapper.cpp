@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "AudioSinkWrapper.h"
+#include "AudioDeviceInfo.h"
 #include "AudioSink.h"
 #include "VideoUtils.h"
 #include "mozilla/Logging.h"
@@ -97,11 +98,13 @@ TimeUnit AudioSinkWrapper::GetPosition(TimeStamp* aTimeStamp) {
     pos = GetSystemClockPosition(t);
     LOGV("%p: Getting position from the system clock %lf", this,
          pos.ToSeconds());
-    if (mAudioQueue.GetSize() > 0 && IsMuted()) {
-      // audio track, but it's muted and won't be dequeued, discard packets that
-      // are behind the current media time, to keep the queue size under
-      // control.
-      DropAudioPacketsIfNeeded(pos);
+    if (IsMuted()) {
+      if (mAudioQueue.GetSize() > 0) {
+        // audio track, but it's muted and won't be dequeued, discard packets
+        // that are behind the current media time, to keep the queue size under
+        // control.
+        DropAudioPacketsIfNeeded(pos);
+      }
       // If muted, it's necessary to manually check if the audio has "ended",
       // meaning that all the audio packets have been consumed, to resolve the
       // ended promise.
@@ -152,7 +155,7 @@ void AudioSinkWrapper::DropAudioPacketsIfNeeded(
           "Dropping audio packets: media position: %lf, "
           "packet dropped: [%lf, %lf] (%u so far).\n",
           aMediaPosition.ToSeconds(), audio->mTime.ToSeconds(),
-          (audio->mTime + audio->mDuration).ToSeconds(), dropped);
+          (audio->GetEndTime()).ToSeconds(), dropped);
     }
     audio = mAudioQueue.PeekFront();
   }
@@ -349,7 +352,7 @@ nsresult AudioSinkWrapper::StartAudioSink(const TimeUnit& aStartTime,
           // update. The Start() call is very cheap on the other hand, we can
           // do it from the MDSM thread.
           nsresult rv = audioSink->InitializeAudioStream(
-              mParams, AudioSink::InitializationType::UNMUTING);
+              mParams, mAudioDevice, AudioSink::InitializationType::UNMUTING);
           mOwnerThread->Dispatch(NS_NewRunnableFunction(
               "StartAudioSink (Async part: start from MDSM thread)",
               [self = RefPtr<AudioSinkWrapper>(this),
@@ -387,6 +390,10 @@ nsresult AudioSinkWrapper::StartAudioSink(const TimeUnit& aStartTime,
                 TimeUnit switchTime = GetPosition();
                 DropAudioPacketsIfNeeded(switchTime);
                 mAudioSink.swap(audioSink);
+                if (mTreatUnderrunAsSilence) {
+                  mAudioSink->EnableTreatAudioUnderrunAsSilence(
+                      mTreatUnderrunAsSilence);
+                }
                 LOG("AudioSink async, start");
                 nsresult rv2 =
                     mAudioSink->Start(switchTime, mEndedPromiseHolder);
@@ -399,11 +406,14 @@ nsresult AudioSinkWrapper::StartAudioSink(const TimeUnit& aStartTime,
   } else {
     mAudioSink.reset(mCreator->Create());
     nsresult rv = mAudioSink->InitializeAudioStream(
-        mParams, AudioSink::InitializationType::INITIAL);
+        mParams, mAudioDevice, AudioSink::InitializationType::INITIAL);
     if (NS_FAILED(rv)) {
       mEndedPromiseHolder.RejectIfExists(rv, __func__);
       LOG("Sync AudioSinkWrapper initialization failed");
       return rv;
+    }
+    if (mTreatUnderrunAsSilence) {
+      mAudioSink->EnableTreatAudioUnderrunAsSilence(mTreatUnderrunAsSilence);
     }
     rv = mAudioSink->Start(aStartTime, mEndedPromiseHolder);
     if (NS_FAILED(rv)) {
@@ -470,6 +480,13 @@ void AudioSinkWrapper::GetDebugInfo(dom::MediaSinkDebugInfo& aInfo) {
   aInfo.mAudioSinkWrapper.mAudioEnded = mAudioEnded;
   if (mAudioSink) {
     mAudioSink->GetDebugInfo(aInfo);
+  }
+}
+
+void AudioSinkWrapper::EnableTreatAudioUnderrunAsSilence(bool aEnabled) {
+  mTreatUnderrunAsSilence = aEnabled;
+  if (mAudioSink) {
+    mAudioSink->EnableTreatAudioUnderrunAsSilence(aEnabled);
   }
 }
 

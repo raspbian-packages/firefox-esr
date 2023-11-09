@@ -38,9 +38,11 @@ menu-quit =
             [windows] S
            *[other] S
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Sulje { -brand-shorter-name }
+
 menu-about =
     .label = Tietoja: { -brand-shorter-name }
     .accesskey = T
@@ -219,8 +221,6 @@ menu-history-undo-menu =
     .label = Suljetut välilehdet
 menu-history-undo-window-menu =
     .label = Suljetut ikkunat
-menu-history-reopen-all-tabs = Avaa uudelleen kaikki välilehdet
-menu-history-reopen-all-windows = Avaa uudelleen kaikki ikkunat
 
 ## Bookmarks Menu
 
@@ -229,14 +229,13 @@ menu-bookmarks-menu =
     .accesskey = K
 menu-bookmarks-manage =
     .label = Järjestele kirjanmerkkejä
-menu-bookmark-current-tab =
-    .label = Lisää nykyinen välilehti kirjanmerkkeihin
-menu-bookmark-edit =
-    .label = Muokkaa kirjanmerkkiä
 menu-bookmark-tab =
     .label = Lisää nykyinen välilehti kirjanmerkkeihin…
 menu-edit-bookmark =
     .label = Muokkaa kirjanmerkkiä…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Etsi kirjanmerkeistä
 menu-bookmarks-all-tabs =
     .label = Lisää kaikki välilehdet kirjanmerkkeihin…
 menu-bookmarks-toolbar =
@@ -330,6 +329,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Poista vianmääritystila käytöstä
     .accesskey = P
+menu-help-switch-device =
+    .label = Uuteen laitteeseen vaihtaminen
+    .accesskey = N
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

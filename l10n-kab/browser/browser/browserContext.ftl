@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Creḍ asebter-a
-    .accesskey = c
-    .tooltiptext = Creḍ asebter-a
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Creḍ asebter
-    .accesskey = ḍ
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Ẓreg tacreḍt n usebter
-    .accesskey = ḍ
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Creḍ asebter-a
-    .accesskey = c
-    .tooltiptext = Creḍ asebter-a ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Ẓreg tacreḍṭ n usebter-a
-    .accesskey = c
-    .tooltiptext = Ẓreg tacreḍṭ-a n usebter
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Ẓreg tacreḍṭ n usebter-a
-    .accesskey = c
-    .tooltiptext = Ẓreg tacreḍṭ-a n usebter ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Creḍ asebter…
     .accesskey = ḍ
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Ldi aseɣwen deg usfaylu uslig amaynut
     .accesskey = L
-
-main-context-menu-bookmark-link =
-    .label = Creḍ aseɣwen
-    .accesskey = C
 
 main-context-menu-bookmark-link-2 =
     .label = Creḍ aseɣwen…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Azen ameslaw s yimayl…
     .accesskey = a
 
-main-context-menu-plugin-play =
-    .label = Rmed azegrir-a
-    .accesskey = z
-
-main-context-menu-plugin-hide =
-    .label = Ffer Azegrir-a
-    .accesskey = F
-
 main-context-menu-save-to-pocket =
     .label = Sekles asebter ɣer { -pocket-brand-name }
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = a
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Seqdec agelmus n yimayl { -relay-brand-short-name }
+    .accesskey = I
 
 main-context-menu-suggest-strong-password =
     .label = SuƔer awal uffir iǧehden…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Smiren akatar
     .accesskey = S
 
-main-context-menu-frame-bookmark =
-    .label = Creḍ akatar-a
-    .accesskey = c
-
 main-context-menu-frame-add-bookmark =
     .label = Creḍ akatar…
     .accesskey = ḍ
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Wali talɣut n ukatar-a
     .accesskey = l
-
-main-context-menu-print-selection =
-    .label = Siggez tafrant
-    .accesskey = r
 
 main-context-menu-print-selection-2 =
     .label = Siggez tafrant…

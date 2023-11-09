@@ -29,10 +29,6 @@ third-party-tag-background = Cefndir
     .title =
         Nid yw'r modiwl yn rhwystro'r rhaglen am ei fod wedi
         ei lwytho yn y cefndir.
-third-party-unsigned-icon =
-    .title = Nid yw'r modiwl hwn wedi'i lofnodi
-third-party-warning-icon =
-    .title = Chwalodd { -brand-short-name } yn y cod o'r modiwl hwn
 third-party-icon-unsigned =
     .title = Nid yw'r modiwl hwn wedi'i lofnodi
     .alt = Nid yw'r modiwl hwn wedi'i lofnodi
@@ -40,9 +36,12 @@ third-party-icon-warning =
     .title = Chwalodd { -brand-short-name } yn y cod o'r modiwl hwn
     .alt = Chwalodd { -brand-short-name } yn y cod o'r modiwl hwn
 third-party-status-loaded = Wedi llwytho
-third-party-status-blocked = Wedi'i rwystro
+third-party-status-blocked = Rhwystrwyd
 third-party-status-redirected = Wedi'i ailgyfeirio
 third-party-button-copy-to-clipboard = Copïo data bras i'r clipfwrdd
+third-party-loading-data =
+    .alt = Yn llwytho gwybodaeth system…
+    .title = Yn llwytho gwybodaeth system…
 third-party-button-reload = Ail-lwytho gyda manylion y system
     .title = Ail-lwytho gyda manylion y system
 third-party-button-open =
@@ -60,13 +59,26 @@ third-party-button-to-unblock-disabled =
     .aria-label =
         Wedi'i nodi fel wedi'i rwystro ar hyn o bryd, er bod y rhestr rhwystro wedi'i hanalluogi ar gyfer y rhediad hwn
         o { -brand-short-name }. Cliciwch i'w ddadrwystro.
+third-party-button-to-block-module = Rhwystro'r modiwl hwn
+    .title = Rhwystro'r modiwl hwn
+    .aria-label = Rhwystro'r modiwl hwn
+third-party-button-to-unblock-module = Dadrwystro'r modiwl hwn
+    .title = Wedi'i rwystro. Cliciwch i'w ddadrwystro.
+    .aria-label = Wedi'i rwystro. Cliciwch i'w ddadrwystro.
+third-party-button-to-unblock-module-disabled = Dadrwystro'r modiwl hwn (rhestr rhwystro wedi'i analluogi)
+    .title =
+        Wedi'i nodi fel wedi'i rwystro, er fod y rhestr rhwystro wedi ei analluogi ar gyfer y rhediad yma
+        o { -brand-short-name }. Cliciwch i'w ddadrwystro.
+    .aria-label =
+        Wedi'i nodi fel wedi'i rwystro, er fod y rhestr rhwystro wedi ei analluogi ar gyfer y rhediad yma
+        o { -brand-short-name }. Cliciwch i'w ddadrwystro.
 third-party-button-expand =
     .title = Dangos gwybodaeth fanwl
 third-party-button-collapse =
     .title = Cau gwybodaeth fanwl
-third-party-requires-restart = Rhaid i { -brand-short-name } ailgychwyn i newid pa fodiwlau trydydd parti sy'n cael eu rhwystro.
+third-party-blocking-requires-restart = I rwystro modiwl trydydd parti, rhaid i { -brand-short-name } ailgychwyn.
 third-party-should-restart-title = Ailgychwyn { -brand-short-name }
-third-party-should-restart-ok = Ailgychwynnwch { -brand-short-name } nawr
+third-party-restart-now = Ailgychwyn nawr
 third-party-restart-later = Ailgychwyn yn ddiweddarach
 third-party-blocked-by-builtin =
     .title = Wedi'i rwystro gan { -brand-short-name }

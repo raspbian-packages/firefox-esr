@@ -24,6 +24,7 @@ class nsIFrame;
 
 namespace mozilla {
 
+using Modifiers = uint16_t;
 struct StyleColorSchemeFlags;
 
 namespace dom {
@@ -75,8 +76,6 @@ class LookAndFeel {
 
     // position of scroll arrows in a scrollbar
     ScrollArrowStyle,
-    // is scroll thumb proportional or fixed?
-    ScrollSliderStyle,
 
     // each button can take one of four values:
     ScrollButtonLeftMouseButtonAction,
@@ -293,8 +292,24 @@ class LookAndFeel {
      * 0: no-preference
      * 1: reduce
      */
-
     PrefersReducedMotion,
+
+    /**
+     * Corresponding to prefers-reduced-transparency.
+     * https://drafts.csswg.org/mediaqueries-5/#prefers-reduced-transparency
+     * 0: no-preference
+     * 1: reduce
+     */
+    PrefersReducedTransparency,
+
+    /**
+     * Corresponding to inverted-colors.
+     * https://drafts.csswg.org/mediaqueries-5/#inverted
+     * 0: none
+     * 1: inverted
+     */
+    InvertedColors,
+
     /**
      * Corresponding to PointerCapabilities in ServoTypes.h
      * 0: None
@@ -309,20 +324,15 @@ class LookAndFeel {
      * 'Coarse | Fine | Hover'.
      */
     AllPointerCapabilities,
-    /** The vertical scrollbar width, in CSS pixels. */
-    SystemVerticalScrollbarWidth,
 
-    /** The horizontal scrollbar height, in CSS pixels. */
-    SystemHorizontalScrollbarHeight,
+    /** The scrollbar size, in CSS pixels. */
+    SystemScrollbarSize,
 
     /** A boolean value to determine whether a touch device is present */
     TouchDeviceSupportPresent,
 
     /** GTK titlebar radius */
     TitlebarRadius,
-
-    /** GTK menu radius */
-    GtkMenuRadius,
 
     /**
      * Corresponding to dynamic-range.
@@ -332,6 +342,9 @@ class LookAndFeel {
      */
     DynamicRange,
     VideoDynamicRange,
+
+    /** Whether XUL panel animations are enabled. */
+    PanelAnimations,
 
     /*
      * Not an ID; used to define the range of valid IDs.  Must be last.
@@ -343,6 +356,12 @@ class LookAndFeel {
   static bool UseOverlayScrollbars() {
     return GetInt(IntID::UseOverlayScrollbars);
   }
+
+  // Returns keyCode value of a modifier key which is used for accesskey.
+  // Returns 0 if the platform doesn't support access key.
+  static uint32_t GetMenuAccessKey();
+  // Modifier mask for the menu accesskey.
+  static Modifiers GetMenuAccessKeyModifiers();
 
   enum {
     eScrollArrow_None = 0,
@@ -368,8 +387,6 @@ class LookAndFeel {
         eScrollArrow_StartBackward | eScrollArrow_StartForward
   };
 
-  enum { eScrollThumbStyle_Normal, eScrollThumbStyle_Proportional };
-
   // When modifying this list, also modify nsXPLookAndFeel::sFloatPrefs
   // in widget/nsXPLookAndFeel.cpp.
   enum class FloatID {
@@ -392,6 +409,8 @@ class LookAndFeel {
 
   using FontID = mozilla::StyleSystemFont;
 
+  static bool WindowsNonNativeMenusEnabled();
+
   static ColorScheme SystemColorScheme() {
     return GetInt(IntID::SystemUsesDarkTheme) ? ColorScheme::Dark
                                               : ColorScheme::Light;
@@ -412,9 +431,11 @@ class LookAndFeel {
     return sContentColorScheme;
   }
 
-  static ColorScheme ColorSchemeForStyle(const dom::Document&,
-                                         const StyleColorSchemeFlags&);
-  static ColorScheme ColorSchemeForFrame(const nsIFrame*);
+  static ColorScheme ColorSchemeForStyle(
+      const dom::Document&, const StyleColorSchemeFlags&,
+      ColorSchemeMode = ColorSchemeMode::Used);
+  static ColorScheme ColorSchemeForFrame(
+      const nsIFrame*, ColorSchemeMode = ColorSchemeMode::Used);
 
   // Whether standins for native colors should be used (that is, colors faked,
   // taken from win7, mostly). This forces light appearance, effectively.
@@ -448,6 +469,21 @@ class LookAndFeel {
                        nscolor aDefault = NS_RGB(0, 0, 0)) {
     return GetColor(aId, aFrame).valueOr(aDefault);
   }
+
+  static float GetTextScaleFactor() {
+    float f = GetFloat(FloatID::TextScaleFactor, 1.0f);
+    if (MOZ_UNLIKELY(f <= 0.0f)) {
+      return 1.0f;
+    }
+    return f;
+  }
+
+  struct ZoomSettings {
+    float mFullZoom = 1.0f;
+    float mTextZoom = 1.0f;
+  };
+
+  static ZoomSettings SystemZoomSettings();
 
   /**
    * GetInt() and GetFloat() return a int or float value for aID.  The result

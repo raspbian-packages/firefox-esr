@@ -55,3 +55,6 @@ screenshots-private-window-error-details = Przepraszamy za utrudnienia. Pracujem
 
 screenshots-generic-error-title = { -screenshots-brand-name } wymknął się spod kontroli.
 screenshots-generic-error-details = Nie bardzo wiemy, co się wydarzyło. Chcesz spróbować ponownie lub wykonać zrzut innej strony?
+
+screenshots-too-large-error-title = Zrzut ekranu został przycięty, ponieważ był za duży
+screenshots-too-large-error-details = Spróbuj zaznaczyć obszar, który ma mniej niż 32 700 pikseli na najdłuższym boku lub mniej niż 124 900 000 pikseli łącznej powierzchni.

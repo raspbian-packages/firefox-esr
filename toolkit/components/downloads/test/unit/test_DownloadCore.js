@@ -9,14 +9,14 @@
 
 "use strict";
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "DownloadError",
-  "resource://gre/modules/DownloadCore.jsm"
-);
+ChromeUtils.defineESModuleGetters(this, {
+  DownloadError: "resource://gre/modules/DownloadCore.sys.mjs",
+});
 
 // Execution of common tests
 
+// This is used in common_test_Download.js
+// eslint-disable-next-line no-unused-vars
 var gUseLegacySaver = false;
 
 var scriptFile = do_get_file("common_test_Download.js");
@@ -41,7 +41,7 @@ add_task(async function test_error_target_downloadingToSameFile() {
   );
 
   Assert.ok(
-    await OS.File.exists(download.target.path),
+    await IOUtils.exists(download.target.path),
     "The file should not have been deleted."
   );
 });

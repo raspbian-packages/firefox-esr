@@ -38,9 +38,11 @@ menu-quit =
             [windows] K
            *[other] K
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Kilépés a { -brand-shorter-name }ból
+
 menu-about =
     .label = A { -brand-shorter-name } névjegye
     .accesskey = A
@@ -220,8 +222,6 @@ menu-history-undo-menu =
     .label = Nemrég bezárt lapok
 menu-history-undo-window-menu =
     .label = Nemrég bezárt ablakok
-menu-history-reopen-all-tabs = Összes lap újranyitása
-menu-history-reopen-all-windows = Összes ablak újranyitása
 
 ## Bookmarks Menu
 
@@ -230,14 +230,13 @@ menu-bookmarks-menu =
     .accesskey = K
 menu-bookmarks-manage =
     .label = Könyvjelzők kezelése
-menu-bookmark-current-tab =
-    .label = Jelenlegi lap könyvjelzőzése
-menu-bookmark-edit =
-    .label = Könyvjelző szerkesztése
 menu-bookmark-tab =
     .label = Jelenlegi lap könyvjelzőzése…
 menu-edit-bookmark =
     .label = Könyvjelző szerkesztése…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Könyvjelzők keresése
 menu-bookmarks-all-tabs =
     .label = Minden lap egy könyvjelzőbe…
 menu-bookmarks-toolbar =
@@ -331,6 +330,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Hibakeresési mód bekapcsolása
     .accesskey = b
+menu-help-switch-device =
+    .label = Váltás egy új eszközre
+    .accesskey = j
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

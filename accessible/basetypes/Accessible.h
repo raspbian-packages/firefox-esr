@@ -13,8 +13,11 @@
 #include "Units.h"
 
 class nsAtom;
+class nsStaticAtom;
 
 struct nsRoleMapEntry;
+
+class nsIURI;
 
 namespace mozilla {
 namespace a11y {
@@ -23,6 +26,8 @@ class AccAttributes;
 class AccGroupInfo;
 class HyperTextAccessibleBase;
 class LocalAccessible;
+class Relation;
+enum class RelationType;
 class RemoteAccessible;
 class TableAccessibleBase;
 class TableCellAccessibleBase;
@@ -37,12 +42,6 @@ enum ENameValueFlag {
    *  b) no name (was missed): name.IsVoid()
    */
   eNameOK,
-
-  /**
-   * Name was left empty by the author on purpose:
-   * name.IsEmpty() && !name.IsVoid().
-   */
-  eNoNameOnPurpose,
 
   /**
    * Name was computed from the subtree.
@@ -68,6 +67,78 @@ struct GroupPos {
   int32_t setSize;
 };
 
+/**
+ * Represent key binding associated with accessible (such as access key and
+ * global keyboard shortcuts).
+ */
+class KeyBinding {
+ public:
+  /**
+   * Modifier mask values.
+   */
+  static const uint32_t kShift = 1;
+  static const uint32_t kControl = 2;
+  static const uint32_t kAlt = 4;
+  static const uint32_t kMeta = 8;
+  static const uint32_t kOS = 16;
+
+  static uint32_t AccelModifier();
+
+  KeyBinding() : mKey(0), mModifierMask(0) {}
+  KeyBinding(uint32_t aKey, uint32_t aModifierMask)
+      : mKey(aKey), mModifierMask(aModifierMask) {}
+  explicit KeyBinding(uint64_t aSerialized) : mSerialized(aSerialized) {}
+
+  inline bool IsEmpty() const { return !mKey; }
+  inline uint32_t Key() const { return mKey; }
+  inline uint32_t ModifierMask() const { return mModifierMask; }
+
+  /**
+   * Serialize this KeyBinding to a uint64_t for use in the parent process
+   * cache. This is simpler than custom IPDL serialization for this simple case.
+   */
+  uint64_t Serialize() { return mSerialized; }
+
+  enum Format { ePlatformFormat, eAtkFormat };
+
+  /**
+   * Return formatted string for this key binding depending on the given format.
+   */
+  inline void ToString(nsAString& aValue,
+                       Format aFormat = ePlatformFormat) const {
+    aValue.Truncate();
+    AppendToString(aValue, aFormat);
+  }
+  inline void AppendToString(nsAString& aValue,
+                             Format aFormat = ePlatformFormat) const {
+    if (mKey) {
+      if (aFormat == ePlatformFormat) {
+        ToPlatformFormat(aValue);
+      } else {
+        ToAtkFormat(aValue);
+      }
+    }
+  }
+
+ private:
+  void ToPlatformFormat(nsAString& aValue) const;
+  void ToAtkFormat(nsAString& aValue) const;
+
+  union {
+    struct {
+      uint32_t mKey;
+      uint32_t mModifierMask;
+    };
+    uint64_t mSerialized;
+  };
+};
+
+/**
+ * The base type for an accessibility tree node. Methods and attributes in this
+ * class are available in both the content process and the parent process.
+ * Overrides for these methods live primarily in LocalAccessible and
+ * RemoteAccessibleBase.
+ */
 class Accessible {
  protected:
   Accessible();
@@ -134,6 +205,11 @@ class Accessible {
                                    EWhichChildAtPoint aWhichChild) = 0;
 
   /**
+   * Return the focused child if any.
+   */
+  virtual Accessible* FocusedChild();
+
+  /**
    * Return ARIA role map if any.
    */
   const nsRoleMapEntry* ARIARoleMap() const;
@@ -191,11 +267,22 @@ class Accessible {
   virtual double MinValue() const = 0;
   virtual double MaxValue() const = 0;
   virtual double Step() const = 0;
+  virtual bool SetCurValue(double aValue) = 0;
 
   /**
    * Return boundaries in screen coordinates in device pixels.
    */
   virtual LayoutDeviceIntRect Bounds() const = 0;
+
+  /**
+   * Return boundaries in screen coordinates in app units.
+   */
+  virtual nsRect BoundsInAppUnits() const = 0;
+
+  /**
+   * Return boundaries in screen coordinates in CSS pixels.
+   */
+  virtual nsIntRect BoundsInCSSPixels() const;
 
   /**
    * Returns text of accessible if accessible has text role otherwise empty
@@ -234,11 +321,46 @@ class Accessible {
 
   virtual already_AddRefed<nsAtom> DisplayStyle() const = 0;
 
-  virtual Maybe<float> Opacity() const = 0;
+  virtual float Opacity() const = 0;
+
+  /**
+   * Get the live region attributes (if any) for this single Accessible. This
+   * does not propagate attributes from ancestors. If any argument is null, that
+   * attribute is not fetched.
+   */
+  virtual void LiveRegionAttributes(nsAString* aLive, nsAString* aRelevant,
+                                    Maybe<bool>* aAtomic,
+                                    nsAString* aBusy) const = 0;
+
+  /**
+   * Get the aria-selected state. aria-selected not being specified is not
+   * always the same as aria-selected="false". If not specified, Nothing() will
+   * be returned.
+   */
+  virtual Maybe<bool> ARIASelected() const = 0;
 
   LayoutDeviceIntSize Size() const;
 
   LayoutDeviceIntPoint Position(uint32_t aCoordType);
+
+  virtual Maybe<int32_t> GetIntARIAAttr(nsAtom* aAttrName) const = 0;
+
+  /**
+   * Get the relation of the given type.
+   */
+  virtual Relation RelationByType(RelationType aType) const = 0;
+
+  /**
+   * Get the language associated with the accessible.
+   */
+  virtual void Language(nsAString& aLocale) = 0;
+
+  /**
+   * Get the role of this Accessible as an ARIA role token. This might have been
+   * set explicitly (e.g. role="button") or it might be implicit in native
+   * markup (e.g. <button> returns "button").
+   */
+  nsStaticAtom* ComputedARIARole() const;
 
   // Methods that interact with content.
 
@@ -256,9 +378,14 @@ class Accessible {
   virtual nsAtom* TagName() const = 0;
 
   /**
+   * Return input `type` attribute
+   */
+  virtual already_AddRefed<nsAtom> InputType() const = 0;
+
+  /**
    * Return a landmark role if applied.
    */
-  virtual nsAtom* LandmarkRole() const;
+  nsStaticAtom* LandmarkRole() const;
 
   /**
    * Return the id of the dom node this accessible represents.
@@ -291,6 +418,11 @@ class Accessible {
    * Invoke the accessible action.
    */
   virtual bool DoAction(uint8_t aIndex) const = 0;
+
+  /**
+   * Return access key, such as Alt+D.
+   */
+  virtual KeyBinding AccessKey() const = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // SelectAccessible
@@ -343,20 +475,20 @@ class Accessible {
 
   bool IsDoc() const { return HasGenericType(eDocument); }
 
-  bool IsTableRow() const { return HasGenericType(eTableRow); }
-
   /**
    * Note: The eTable* types defined in the ARIA map are used in
    * nsAccessibilityService::CreateAccessible to determine which ARIAGrid*
    * classes to use for accessible object creation. However, an invalid table
    * structure might cause these classes not to be used after all.
    *
-   * To make sure we're really dealing with a table cell, only check the
+   * To make sure we're really dealing with a table/row/cell, only check the
    * generic type defined by the class, not the type defined in the ARIA map.
    */
+  bool IsTableRow() const { return mGenericTypes & eTableRow; }
+
   bool IsTableCell() const { return mGenericTypes & eTableCell; }
 
-  bool IsTable() const { return HasGenericType(eTable); }
+  bool IsTable() const { return mGenericTypes & eTable; }
 
   bool IsHyperText() const { return HasGenericType(eHyperText); }
 
@@ -397,6 +529,8 @@ class Accessible {
 
   bool IsHTMLOptGroup() const { return mType == eHTMLOptGroupType; }
 
+  bool IsHTMLRadioButton() const { return mType == eHTMLRadioButtonType; }
+
   bool IsHTMLTable() const { return mType == eHTMLTableType; }
   bool IsHTMLTableRow() const { return mType == eHTMLTableRowType; }
 
@@ -409,8 +543,6 @@ class Accessible {
   bool IsMenuButton() const { return HasGenericType(eMenuButton); }
 
   bool IsMenuPopup() const { return mType == eMenuPopupType; }
-
-  bool IsProxy() const { return mType == eProxyType; }
 
   bool IsOuterDoc() const { return mType == eOuterDocType; }
 
@@ -442,7 +574,29 @@ class Accessible {
 
   bool IsDateTimeField() const { return mType == eHTMLDateTimeFieldType; }
 
+  bool IsSearchbox() const;
+
   virtual bool HasNumericValue() const = 0;
+
+  /**
+   * Return true if the link is valid (e. g. points to a valid URL).
+   */
+  bool IsLinkValid();
+
+  /**
+   * Return the number of anchors within the link.
+   */
+  uint32_t AnchorCount();
+
+  /**
+   * Returns an anchor URI at the given index.
+   */
+  virtual already_AddRefed<nsIURI> AnchorURIAt(uint32_t aAnchorIndex) const;
+
+  /**
+   * Returns an anchor accessible at the given index.
+   */
+  Accessible* AnchorAt(uint32_t aAnchorIndex) const;
 
   // Remote/Local types
 
@@ -462,7 +616,9 @@ class Accessible {
    * Provide a human readable description of the accessible,
    * including memory address, role, name, DOM tag and DOM ID.
    */
-  void DebugDescription(nsCString& aDesc);
+  void DebugDescription(nsCString& aDesc) const;
+
+  static void DebugPrint(const char* aPrefix, const Accessible* aAccessible);
 #endif
 
   /**
@@ -519,6 +675,12 @@ class Accessible {
    * not a primary action either.
    */
   virtual bool HasPrimaryAction() const = 0;
+
+  /**
+   * Apply states which are implied by other information common to both
+   * LocalAccessible and RemoteAccessible.
+   */
+  void ApplyImplicitState(uint64_t& aState) const;
 
  private:
   static const uint8_t kTypeBits = 6;

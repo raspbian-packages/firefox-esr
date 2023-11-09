@@ -1,5 +1,5 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
-/* vim: set ts=8 sts=2 et sw=2 tw=80: */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -44,6 +44,10 @@ namespace mozilla {
 class RemoteSpellcheckEngineChild;
 class ChildProfilerController;
 class BenchmarkStorageChild;
+
+namespace ipc {
+class UntypedEndpoint;
+}
 
 namespace loader {
 class PScriptCacheChild;
@@ -95,16 +99,15 @@ class ContentChild final : public PContentChild,
   };
 
   MOZ_CAN_RUN_SCRIPT_BOUNDARY nsresult ProvideWindowCommon(
-      BrowserChild* aTabOpener, nsIOpenWindowInfo* aOpenWindowInfo,
+      NotNull<BrowserChild*> aTabOpener, nsIOpenWindowInfo* aOpenWindowInfo,
       uint32_t aChromeFlags, bool aCalledFromJS, nsIURI* aURI,
       const nsAString& aName, const nsACString& aFeatures, bool aForceNoOpener,
       bool aForceNoReferrer, bool aIsPopupRequested,
       nsDocShellLoadState* aLoadState, bool* aWindowIsNew,
       BrowsingContext** aReturn);
 
-  void Init(base::ProcessId aParentPid, const char* aParentBuildID,
-            mozilla::ipc::ScopedPort aPort, uint64_t aChildID,
-            bool aIsForBrowser);
+  void Init(mozilla::ipc::UntypedEndpoint&& aEndpoint,
+            const char* aParentBuildID, uint64_t aChildID, bool aIsForBrowser);
 
   void InitXPCOM(XPCOMInitData&& aXPCOMInit,
                  const mozilla::dom::ipc::StructuredCloneData& aInitialData,
@@ -120,7 +123,8 @@ class ContentChild final : public PContentChild,
   const AppInfo& GetAppInfo() { return mAppInfo; }
 
   void SetProcessName(const nsACString& aName,
-                      const nsACString* aETLDplus1 = nullptr);
+                      const nsACString* aETLDplus1 = nullptr,
+                      const nsACString* aCurrentProfile = nullptr);
 
   void GetProcessName(nsACString& aName) const;
 
@@ -264,6 +268,9 @@ class ContentChild final : public PContentChild,
 
   mozilla::ipc::IPCResult RecvSetConnectivity(const bool& connectivity);
   mozilla::ipc::IPCResult RecvSetCaptivePortalState(const int32_t& state);
+  mozilla::ipc::IPCResult RecvSetTRRMode(
+      const nsIDNSService::ResolverMode& mode,
+      const nsIDNSService::ResolverMode& modeFromPref);
 
   mozilla::ipc::IPCResult RecvBidiKeyboardNotify(const bool& isLangRTL,
                                                  const bool& haveBidiKeyboards);
@@ -272,9 +279,6 @@ class ContentChild final : public PContentChild,
 
   mozilla::ipc::IPCResult RecvThemeChanged(FullLookAndFeel&&,
                                            widget::ThemeChangeKind);
-
-  mozilla::ipc::IPCResult RecvUpdateSystemParameters(
-      nsTArray<SystemParameterKVPair>&& aUpdates);
 
   // auto remove when alertfinished is received.
   nsresult AddRemoteAlertObserver(const nsString& aData,
@@ -334,14 +338,15 @@ class ContentChild final : public PContentChild,
   mozilla::ipc::IPCResult RecvUpdateRequestedLocales(
       nsTArray<nsCString>&& aRequestedLocales);
 
+  mozilla::ipc::IPCResult RecvSystemTimezoneChanged();
+
   mozilla::ipc::IPCResult RecvAddPermission(const IPC::Permission& permission);
 
   mozilla::ipc::IPCResult RecvRemoveAllPermissions();
 
   mozilla::ipc::IPCResult RecvFlushMemory(const nsString& reason);
 
-  mozilla::ipc::IPCResult RecvActivateA11y(const uint32_t& aMainChromeTid,
-                                           const uint32_t& aMsaaID);
+  mozilla::ipc::IPCResult RecvActivateA11y();
   mozilla::ipc::IPCResult RecvShutdownA11y();
 
   mozilla::ipc::IPCResult RecvApplicationForeground();
@@ -355,7 +360,8 @@ class ContentChild final : public PContentChild,
       const nsCString& UAName, const nsCString& ID, const nsCString& vendor,
       const nsCString& sourceURL, const nsCString& updateURL);
 
-  mozilla::ipc::IPCResult RecvRemoteType(const nsCString& aRemoteType);
+  mozilla::ipc::IPCResult RecvRemoteType(const nsCString& aRemoteType,
+                                         const nsCString& aProfile);
 
   void PreallocInit();
 
@@ -408,33 +414,33 @@ class ContentChild final : public PContentChild,
   mozilla::ipc::IPCResult RecvInvokeDragSession(
       const MaybeDiscarded<WindowContext>& aSourceWindowContext,
       const MaybeDiscarded<WindowContext>& aSourceTopWindowContext,
-      nsTArray<IPCDataTransfer>&& aTransfers, const uint32_t& aAction);
+      nsTArray<IPCTransferableData>&& aTransferables, const uint32_t& aAction);
 
   MOZ_CAN_RUN_SCRIPT_BOUNDARY
   mozilla::ipc::IPCResult RecvEndDragSession(
       const bool& aDoneDrag, const bool& aUserCancelled,
       const mozilla::LayoutDeviceIntPoint& aEndDragPoint,
-      const uint32_t& aKeyModifiers);
+      const uint32_t& aKeyModifiers, const uint32_t& aDropEffect);
 
   mozilla::ipc::IPCResult RecvPush(const nsCString& aScope,
-                                   const IPC::Principal& aPrincipal,
+                                   nsIPrincipal* aPrincipal,
                                    const nsString& aMessageId);
 
   mozilla::ipc::IPCResult RecvPushWithData(const nsCString& aScope,
-                                           const IPC::Principal& aPrincipal,
+                                           nsIPrincipal* aPrincipal,
                                            const nsString& aMessageId,
                                            nsTArray<uint8_t>&& aData);
 
-  mozilla::ipc::IPCResult RecvPushSubscriptionChange(
-      const nsCString& aScope, const IPC::Principal& aPrincipal);
+  mozilla::ipc::IPCResult RecvPushSubscriptionChange(const nsCString& aScope,
+                                                     nsIPrincipal* aPrincipal);
 
   mozilla::ipc::IPCResult RecvPushError(const nsCString& aScope,
-                                        const IPC::Principal& aPrincipal,
+                                        nsIPrincipal* aPrincipal,
                                         const nsString& aMessage,
                                         const uint32_t& aFlags);
 
   mozilla::ipc::IPCResult RecvNotifyPushSubscriptionModifiedObservers(
-      const nsCString& aScope, const IPC::Principal& aPrincipal);
+      const nsCString& aScope, nsIPrincipal* aPrincipal);
 
   mozilla::ipc::IPCResult RecvRefreshScreens(
       nsTArray<ScreenDetails>&& aScreens);
@@ -449,12 +455,6 @@ class ContentChild final : public PContentChild,
   nsString& GetIndexedDBPath();
 
   ContentParentId GetID() const { return mID; }
-
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
-  uint32_t GetChromeMainThreadId() const { return mMainChromeTid; }
-
-  uint32_t GetMsaaID() const { return mMsaaID; }
-#endif
 
   bool IsForBrowser() const { return mIsForBrowser; }
 
@@ -475,10 +475,8 @@ class ContentChild final : public PContentChild,
 #endif
 
   PContentPermissionRequestChild* AllocPContentPermissionRequestChild(
-      const nsTArray<PermissionRequest>& aRequests,
-      const IPC::Principal& aPrincipal,
-      const IPC::Principal& aTopLevelPrincipal,
-      const bool& aIsHandlingUserInput,
+      Span<const PermissionRequest> aRequests, nsIPrincipal* aPrincipal,
+      nsIPrincipal* aTopLevelPrincipal, const bool& aIsHandlingUserInput,
       const bool& aMaybeUnsafePermissionDelegate, const TabId& aTabId);
   bool DeallocPContentPermissionRequestChild(
       PContentPermissionRequestChild* actor);
@@ -495,8 +493,8 @@ class ContentChild final : public PContentChild,
       const nsID& aUUID, const GetFilesResponseResult& aResult);
 
   mozilla::ipc::IPCResult RecvBlobURLRegistration(
-      const nsCString& aURI, const IPCBlob& aBlob,
-      const IPC::Principal& aPrincipal, const Maybe<nsID>& aAgentClusterId);
+      const nsCString& aURI, const IPCBlob& aBlob, nsIPrincipal* aPrincipal,
+      const Maybe<nsID>& aAgentClusterId);
 
   mozilla::ipc::IPCResult RecvBlobURLUnregistration(const nsCString& aURI);
 
@@ -542,10 +540,6 @@ class ContentChild final : public PContentChild,
   mozilla::ipc::IPCResult RecvAddDynamicScalars(
       nsTArray<DynamicScalarDefinition>&& aDefs);
 
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
-  bool SendGetA11yContentId();
-#endif  // defined(XP_WIN) && defined(ACCESSIBILITY)
-
   // Get a reference to the font list passed from the chrome process,
   // for use during gfx initialization.
   SystemFontList& SystemFontList() { return mFontList; }
@@ -555,13 +549,13 @@ class ContentChild final : public PContentChild,
   }
 
   // PURLClassifierChild
-  PURLClassifierChild* AllocPURLClassifierChild(const Principal& aPrincipal,
+  PURLClassifierChild* AllocPURLClassifierChild(nsIPrincipal* aPrincipal,
                                                 bool* aSuccess);
   bool DeallocPURLClassifierChild(PURLClassifierChild* aActor);
 
   // PURLClassifierLocalChild
   PURLClassifierLocalChild* AllocPURLClassifierLocalChild(
-      nsIURI* aUri, const nsTArray<IPCURLClassifierFeature>& aFeatures);
+      nsIURI* aUri, Span<const IPCURLClassifierFeature> aFeatures);
   bool DeallocPURLClassifierLocalChild(PURLClassifierLocalChild* aActor);
 
   PLoginReputationChild* AllocPLoginReputationChild(nsIURI* aUri);
@@ -803,11 +797,11 @@ class ContentChild final : public PContentChild,
   hal::ProcessPriority GetProcessPriority() const { return mProcessPriority; }
 
  private:
+  void AddProfileToProcessName(const nsACString& aProfile);
   mozilla::ipc::IPCResult RecvFlushFOGData(FlushFOGDataResolver&& aResolver);
 
   mozilla::ipc::IPCResult RecvUpdateMediaCodecsSupported(
-      RemoteDecodeIn aLocation,
-      const PDMFactory::MediaCodecsSupported& aSupported);
+      RemoteDecodeIn aLocation, const media::MediaCodecsSupported& aSupported);
 
 #ifdef NIGHTLY_BUILD
   virtual void OnChannelReceivedMessage(const Message& aMsg) override;
@@ -842,19 +836,6 @@ class ContentChild final : public PContentChild,
    * channel to us.
    */
   ContentParentId mID;
-
-#if defined(XP_WIN) && defined(ACCESSIBILITY)
-  /**
-   * The thread ID of the main thread in the chrome process.
-   */
-  uint32_t mMainChromeTid;
-
-  /**
-   * This is an a11y-specific unique id for the content process that is
-   * generated by the chrome process.
-   */
-  uint32_t mMsaaID;
-#endif  // defined(XP_WIN) && defined(ACCESSIBILITY)
 
   AppInfo mAppInfo;
 

@@ -26,10 +26,6 @@ certmgr-people = A következő embereket lehet azonosítani a meglevő tanúsít
 certmgr-server = Ezek a bejegyzések kiszolgálói tanúsítványhiba kivételeket azonosítanak
 certmgr-ca = A következő hitelesítésszolgáltatókat lehet azonosítani a meglevő tanúsítványokkal
 
-certmgr-edit-ca-cert =
-    .title = Hitelesítésszolgáltató tanúsítványa megbízhatóságának beállítása
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Hitelesítésszolgáltató tanúsítványa megbízhatóságának beállítása
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Ez a tanúsítvány használható elektronikus levelek feladóinak azonosítására.
-
-certmgr-delete-cert =
-    .title = Tanúsítvány törlése
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Tanúsítvány törlése
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Kiszolgáló
-
-certmgr-override-lifetime =
-    .label = Élettartam
 
 certmgr-token-name =
     .label = Adatvédelmi eszköz
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Sorozatszám
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256-ujjlenyomat
 
 certmgr-view =
     .label = Megtekintés…

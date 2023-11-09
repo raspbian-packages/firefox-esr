@@ -13,6 +13,7 @@
 onboarding-welcome-header = Ansuf γer { -brand-short-name }
 onboarding-start-browsing-button-label = Bdu tunigin
 onboarding-not-now-button-label = Mačči tura
+mr1-onboarding-get-started-primary-button-label = Bdu
 
 ## Custom Return To AMO onboarding strings
 
@@ -28,6 +29,7 @@ return-to-amo-add-theme-label = Rnu asentel
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
 mr1-return-to-amo-subtitle = Ini azul i { -brand-short-name }
+mr1-return-to-amo-addon-title = Yettunefk-ak•am-d yiminig arurad uslig. Tura, tzemreḍ ad ternuḍ <b>{ $addon-name }</b> daɣen ad tafeḍ ugar akken { -brand-short-name }.
 mr1-return-to-amo-add-extension-label = Rnu { $addon-name }
 
 ## Multistage onboarding strings (about:welcome pages)
@@ -36,31 +38,10 @@ mr1-return-to-amo-add-extension-label = Rnu { $addon-name }
 # Variables:
 #   $current (Int) - Number of the current page
 #   $total (Int) - Total number of pages
-onboarding-welcome-steps-indicator =
-    .aria-label = Bdu: agdil { $current } seg { $total }
 
-# Aria-label to make the "steps" of multistage onboarding visible to screen readers.
-# Variables:
-#   $current (Int) - Number of the current page
-#   $total (Int) - Total number of pages
-
-onboarding-welcome-steps-indicator2 =
-    .aria-valuetext = Asesfar:takkayt { $current } n { $total }
 onboarding-welcome-steps-indicator-label =
     .aria-label = Asesfar:takkayt { $current } n { $total }
-# "Hero Text" displayed on left side of welcome screen.
-# The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
-# It also signals the passion users bring to Firefox, how they use
-# Firefox to pursue those passions, as well as the boldness in their
-# choice to use Firefox over a larger competitor browser.
-# An alternative title for localization is: "It starts here".
-# This text can be formatted to span multiple lines as needed.
-mr1-welcome-screen-hero-text = Syagi ara yebdu kullec
-# Caption for background image in about:welcome. "Soraya Osorio" is the name
-# of the person and shouldn't be translated.
-# In case your language needs to adapt the nouns to a gender, Soraya is a female name (she/her).
-# You can see the picture in about:welcome in Nightly 90.
-mr1-onboarding-welcome-image-caption = Soraya Osorio — Aseɣnaw n yiruka, tḥemmel aṭas Firefox
+
 # This button will open system settings to turn on prefers-reduced-motion
 mr1-onboarding-reduce-motion-button-label = Sens imrayen
 
@@ -68,74 +49,33 @@ mr1-onboarding-reduce-motion-button-label = Sens imrayen
 ## match the OS' application context menu item action where Windows uses "pin"
 ## and "taskbar" while macOS "keep" and "Dock" (proper noun).
 
-# Title used on welcome page when Firefox is not pinned
-mr1-onboarding-pin-header =
-    { PLATFORM() ->
-        [macos] Eǧǧ { -brand-short-name } deg Dock i usishel n unekcum
-       *[other] Senteḍ { -brand-short-name } ɣef ufeggag-inek·inem n twuriwin i usishen n unekcum
-    }
-# Primary button string used on welcome page when Firefox is not pinned.
-mr1-onboarding-pin-primary-button-label =
-    { PLATFORM() ->
-        [macos] Eǧǧ-it deg Dock
-       *[other] Senteḍ ɣer ufaggag n twuriwin
-    }
-
 ## Multistage MR1 onboarding strings (about:welcome pages)
 
-# This string will be used on welcome page primary button label
-# when Firefox is both pinned and default
-mr1-onboarding-get-started-primary-button-label = Bdu
-mr1-onboarding-welcome-header = Ansuf ɣer { -brand-short-name }
-mr1-onboarding-set-default-pin-primary-button-label = Err { -brand-short-name } d iminig-iw agejdan
-    .title = Isbadu { -brand-short-name } d iminig amezwer yerna isenteḍ-it ɣer ufaggag n twuriwin
-# This string will be used on welcome page primary button label
-# when Firefox is not default but already pinned
-mr1-onboarding-set-default-only-primary-button-label = Err { -brand-short-name } d iminig-iw amezwer
-mr1-onboarding-set-default-secondary-button-label = Mačči tura
+# String for the Firefox Accounts button
 mr1-onboarding-sign-in-button-label = Kcem
 
 ## Title, subtitle and primary button string used on set default onboarding screen
 ## when Firefox is not default browser
 
-mr1-onboarding-default-header = Err { -brand-short-name } d iminig-ik·im amezwer
-mr1-onboarding-default-subtitle = Err arured, taɣellist d tudert tabaḍnit ad ttustetben s wudem awurman.
-mr1-onboarding-default-primary-button-label = Err-it d iminig amezwer
-
 ## Multistage MR1 onboarding strings (about:welcome pages)
 
-mr1-onboarding-import-header = Awi kullec yid-k·m
-mr1-onboarding-import-subtitle = Kter awalen-ik·im uffiren, <br/>ticraḍ n yisebtar d wayen-nniḍen.
 # The primary import button label will depend on whether we can detect which browser was used to download Firefox.
 # Variables:
 #   $previous (Str) - Previous browser name, such as Edge, Chrome
 mr1-onboarding-import-primary-button-label-attribution = Kter seg { $previous }
-# This string will be used in cases where we can't detect the previous browser name.
-mr1-onboarding-import-primary-button-label-no-attribution = Kter seg yiminig wayeḍ
-mr1-onboarding-import-secondary-button-label = Mačči tura
-mr2-onboarding-colorway-header = Tudert ifeǧǧeǧen
-mr2-onboarding-colorway-subtitle = Tafrant n yiniten tamaynut i d-yettakken rruḥ. Llan deg yal akud.
-mr2-onboarding-colorway-primary-button-label = Sekles afran n yini
-mr2-onboarding-colorway-secondary-button-label = Mačči tura
-mr2-onboarding-colorway-label-soft = Leqqaq
-mr2-onboarding-colorway-label-balanced = Mnekni
-# "Bold" is used in the sense of bravery or courage, not in the sense of
-# emphasized text.
-mr2-onboarding-colorway-label-bold = Azuran
-# Automatic theme uses operating system color settings
-mr2-onboarding-theme-label-auto = Awurman
-# This string will be used for Default theme
-mr2-onboarding-theme-label-default = Amezwer
+
 mr1-onboarding-theme-header = Err-it d ayla-k·m
 mr1-onboarding-theme-subtitle = Err { -brand-short-name } d udmawan s usentel.
-mr1-onboarding-theme-primary-button-label = Sekles asentel
 mr1-onboarding-theme-secondary-button-label = Mačči tura
+
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Asentel n unagraw
+
 mr1-onboarding-theme-label-light = Aceɛlal
 mr1-onboarding-theme-label-dark = Aberkan
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+
 onboarding-theme-primary-button-label = Yemmed
 
 ## Please make sure to split the content of the title attribute into lines whose
@@ -148,61 +88,49 @@ mr1-onboarding-theme-tooltip-system =
     .title =
         Seqdec asentel n unagraw n wammud,
         i tqeffalin, umuɣen d yisfuyla.
+
 # Input description for system theme
 mr1-onboarding-theme-description-system =
     .aria-description =
         Seqdec asentel n unagraw n wammud,
         i tqeffalin, umuɣen d yisfuyla.
+
 # Tooltip displayed on hover of light theme
 mr1-onboarding-theme-tooltip-light =
     .title =
         Seqdec asentel aceεlal i tqeffalin,
         umuɣen d yisfuyla.
+
 # Input description for light theme
 mr1-onboarding-theme-description-light =
     .aria-description =
         Seqdec asentel aceεlal i tqeffalin,
         umuɣen d yisfuyla.
+
 # Tooltip displayed on hover of dark theme
 mr1-onboarding-theme-tooltip-dark =
     .title =
         Seqdec asentel aberkan i tqeffalin,
         umuɣen d yiwfuyla.
+
 # Input description for dark theme
 mr1-onboarding-theme-description-dark =
     .aria-description =
         Seqdec asentel aberkan i tqeffalin,
         umuɣen d yiwfuyla.
+
 # Tooltip displayed on hover of Alpenglow theme
 mr1-onboarding-theme-tooltip-alpenglow =
     .title =
         Seqdec asentel arurad, s yini aččuran i tqeffalin,
         umuɣen d yiwfuyla.
+
 # Input description for Alpenglow theme
 mr1-onboarding-theme-description-alpenglow =
     .aria-description =
         Seqdec asentel arurad, s yini aččuran i tqeffalin,
         umuɣen d yiwfuyla.
-# Tooltip displayed on hover of non-default colorway theme
-# variations e.g. soft, balanced, bold
-mr2-onboarding-theme-tooltip =
-    .title = Seqdec afran-a n yini.
-# Selector description for non-default colorway theme
-# variations e.g. soft, balanced, bold
-mr2-onboarding-theme-description =
-    .aria-description = Seqdec afran-a n yini.
-# Tooltip displayed on hover of colorway
-# Variables:
-#   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-tooltip =
-    .title = Snirem afran-a n yiniten { $colorwayName }.
-# Selector description for colorway
-# Variables:
-#   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-label = Snirem afran-a n yiniten { $colorwayName }.
-# Tooltip displayed on hover of default themes
-mr2-onboarding-default-theme-tooltip =
-    .title = Snirem isental imezwer.
+
 # Selector description for default themes
 mr2-onboarding-default-theme-label = Snirem isental imezwer.
 
@@ -230,13 +158,18 @@ mr2-onboarding-start-browsing-button-label = Bdu tunigin
 ##   $appLanguage (String) - The name of the language shipping in the browser build, e.g. "English (EN)"
 
 onboarding-live-language-header = Fren tutlayt-ik·im
+
 mr2022-onboarding-live-language-text = { -brand-short-name } yettmeslay tutlayt-ik·im
+
 mr2022-language-mismatch-subtitle = Tanemmirt i temɣiwent-nneɣ, { -brand-short-name } yettwasuqqel deg wugar n 90 tutlayin. Yettban anagraw-ik·im yesseqdac { $systemLanguage }, ma { -brand-short-name } isseqdac { $appLanguage }.
+
 onboarding-live-language-button-label-downloading = Asader n ukemmus n tutlayt i { $negotiatedLanguage }…
 onboarding-live-language-waiting-button = Awway n tutlayin yellan…
 onboarding-live-language-installing = Asebded n ukemmus n tutlayt i { $negotiatedLanguage }…
+
 mr2022-onboarding-live-language-switch-to = Uɣal ɣer { $negotiatedLanguage }
 mr2022-onboarding-live-language-continue-in = Kemmel deg { $appLanguage }
+
 onboarding-live-language-secondary-cancel-download = Sefsex
 onboarding-live-language-skip-button-label = Zgel
 
@@ -259,13 +192,24 @@ fx100-thank-you-pin-primary-button-label =
         [macos] Eǧǧ { -brand-short-name } deg Dock
        *[other] Senteḍ { -brand-short-name } deg ufeggag n tiwuriwin
     }
+
 fx100-upgrade-thanks-header = 100 tikkal tanemmirt
 # Message shown with a start-browsing button. Emphasis <em> should be for "you"
 # but "Thank" can be used instead if there's no "you" in the translation.
 fx100-upgrade-thank-you-body = D lqem-nneɣ wis 100 n { -brand-short-name }. <em>Tanemmirt</em> ɣef tallalt-ik·im i lebni n internet igerrzen, azedgan.
 # Message shown with either a pin-to-taskbar or set-default button.
 fx100-upgrade-thanks-keep-body = D lqem-nneɣ wis 100! Tanemmirt imi telliḍ d aεeggal deg tɣiwant-nneɣ. Eǧǧ { -brand-short-name } ɣef wafus i 100 i d-iteddun.
+
 mr2022-onboarding-secondary-skip-button-label = Zgel takkayt-a
+
+## MR2022 New User Easy Setup screen strings
+
+# Primary button string used on new user onboarding first screen showing multiple actions such as Set Default, Import from previous browser.
+mr2022-onboarding-easy-setup-primary-button-label = Sekles syen kemmel
+# Set Default action checkbox label used on new user onboarding first screen
+mr2022-onboarding-easy-setup-set-default-checkbox-label = Sbadu { -brand-short-name } d iminig amezwer
+# Import action checkbox label used on new user onboarding first screen
+mr2022-onboarding-easy-setup-import-checkbox-label = Kter seg yiminig yezrin
 
 ## MR2022 New User Pin Firefox screen strings
 
@@ -332,25 +276,38 @@ mr2022-onboarding-colorway-title = Fren ini ara ak·akem-yerren deg usugnen
 mr2022-onboarding-colorway-subtitle = Tuɣac tilelliyen zemrent ad beddlent idles.
 mr2022-onboarding-colorway-primary-button-label-continue = Sbadu syen kemmel
 mr2022-onboarding-existing-colorway-checkbox-label = Err { -firefox-home-brand-name } d asebter-ik·im agejdan s yiniten
+
 mr2022-onboarding-colorway-label-default = Amezwer
 mr2022-onboarding-colorway-tooltip-default2 =
     .title = Initen n imiranen { -brand-short-name }
 mr2022-onboarding-colorway-description-default = <b>Seqdec initen-inu imiranen n { -brand-short-name }.</b>
+
 mr2022-onboarding-colorway-label-playmaker = Playmaker
 mr2022-onboarding-colorway-tooltip-playmaker2 =
     .title = Playmaker (azewwaɣ)
 mr2022-onboarding-colorway-description-playmaker = <b>Kečč.Kemm d Playmaker.</b> Trennuḍ-d tugnatin i rrbaḥ, akken daɣen i tettɛawaneḍ yal win i ak·am-d-yezzin ad issali urar-is.
+
 mr2022-onboarding-colorway-label-expressionist = Anfalan
 mr2022-onboarding-colorway-description-expressionist = <b>Kečč·Kemm d Experssionist.</b> Tettwaliḍ amaḍal s tmuɣli-nniḍen, isnulfuyen-ik·im senkarayen-d iḥulfan n wiyaḍ.
+
 mr2022-onboarding-colorway-label-visionary = Visionary
 mr2022-onboarding-colorway-tooltip-visionary2 =
     .title = Visionary (azegzaw)
 mr2022-onboarding-colorway-description-visionary = <b>Kečč·Kemm d Visionary.</b> Tettcukkuteḍ aṭas deg tegnit-agi n tura, tettdeggireḍ wiyaḍ ad sugnen imal igerrzen ugar.
+
 mr2022-onboarding-colorway-label-activist = Ameɣnas
+mr2022-onboarding-colorway-tooltip-activist2 =
+    .title = Ameɣnas/Tameɣnast (anili)
 mr2022-onboarding-colorway-description-activist = <b>Kečč·Kemm d Ameqnas.</b> Tettaǧǧaḍ-d amaḍal igerrez ugar n wamek i t-id-tufiḍ, trennuḍ tgelluḍ s wiyaḍ ad amnen s waya.
+
 mr2022-onboarding-colorway-label-dreamer = Win·Tin yettargun
+mr2022-onboarding-colorway-tooltip-dreamer2 =
+    .title = Win/Tin yettargun (ajenjaṛ)
 mr2022-onboarding-colorway-description-dreamer = <b>Kečč·kemm d b·mmtirga.</b> Tumneḍ ssɛaya tetteg tissas, tettarra wiyaḍ sɛan tabɣest.
+
 mr2022-onboarding-colorway-label-innovator = Amesnulfu
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Amesnulfu/Tamesnulfut (aččini)
 mr2022-onboarding-colorway-description-innovator = <b>Kečč·kemm d t·amesnulfuṭ.</b> Tettwaliḍ tignatin deg yal adeg, tettḥazeḍ ula d tudert n wid i ak·am-d-yezzin.
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -394,3 +351,12 @@ onboarding-infrequent-import-primary-button = Kter ɣer { -brand-short-name }
 ## MR2022 Illustration alt tags
 ## Descriptive tags for illustrations used by screen readers and other assistive tech
 
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Aman yettmahalen s uselkim gar yitran  yijeǧǧigen
+mr2022-onboarding-default-image-alt =
+    .aria-label = Aman yeṭṭef alugu n { -brand-product-name }
+
+## Device migration onboarding
+
+onboarding-device-migration-title = Ansuf tikkelt niḍen!
+onboarding-device-migration-primary-button-label = Kcem

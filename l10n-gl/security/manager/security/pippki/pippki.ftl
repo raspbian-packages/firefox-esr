@@ -28,10 +28,6 @@ pippki-pw-change2empty-in-fips-mode = Actualmente está en modo FIPS. FIPS requi
 
 ## Reset Primary Password dialog
 
-reset-primary-password-window =
-    .title = Restablecer contrasinal principal
-    .style = width: 40em
-
 reset-primary-password-window2 =
     .title = Restablecer contrasinal principal
     .style = min-width: 40em
@@ -43,10 +39,6 @@ pippki-reset-password-confirmation-title = Restablecer contrasinal principal
 pippki-reset-password-confirmation-message = Restableceuse o seu contrasinal principal.
 
 ## Downloading cert dialog
-
-download-cert-window =
-    .title = Descargando certificado
-    .style = width: 46em
 
 download-cert-window2 =
     .title = Descargando certificado
@@ -82,7 +74,8 @@ set-password-reminder = Importante: Se esquece o contrasinal da copia de seguran
 
 ## Protected Auth dialog
 
-protected-auth-window =
-    .title = Autenticación protexida da chave electrónica
-protected-auth-msg = Autentíquese coa chave electrónica. O método de autenticación depende do tipo da súa chave electrónica.
-protected-auth-token = Chave electrónica:
+## Protected authentication alert
+
+# Variables:
+# $tokenName (String) - The name of the token to authenticate to (for example, "OS Client Cert Token (Modern)")
+protected-auth-alert = Verifique a súa identidade na ficha «{ $tokenName }». A forma de facelo depende da ficha (por exemplo, un lector de pegada ou introducir un código nun teclado).

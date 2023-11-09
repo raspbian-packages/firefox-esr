@@ -128,12 +128,13 @@ about-processes-frame-name-many = Underramar ({ $number }): { $shortUrl }
 ## Utility process actor names
 
 about-processes-utility-actor-unknown = Okänd aktör
-about-processes-utility-actor-audio-decoder = Ljudavkodare
-
 about-processes-utility-actor-audio-decoder-generic = Generisk ljudavkodare
 about-processes-utility-actor-audio-decoder-applemedia = Ljudavkodare för Apple Media
 about-processes-utility-actor-audio-decoder-wmf = Ljudavkodare för Windows Media Framework
 about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = JavaScript Oracle
+about-processes-utility-actor-windows-utils = Windows-verktyg
 
 ## Displaying CPU (percentage and total)
 ## Variables:

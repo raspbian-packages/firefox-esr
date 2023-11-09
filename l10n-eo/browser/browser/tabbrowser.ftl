@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Nova langeto
 tabbrowser-empty-private-tab-title = Nova privata langeto
+
 tabbrowser-menuitem-close-tab =
     .label = Fermi langeton
 tabbrowser-menuitem-close =
     .label = Fermi
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -121,6 +120,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ne montri ĉi tiun dialogon denove.
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Permesi ke sciigoj kiel tiu ĉi de { $domain } portu vin al sia langeto
+
 tabbrowser-customizemode-tab-title = Personecigi { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -139,3 +139,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Malsilentigi langetojn
     .accesskey = M
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Sono ludata
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Listigi ĉiujn { $tabCount } langetojn
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Silentigi langeton
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Malsilentigi langeton
+tabbrowser-manager-close-tab =
+    .tooltiptext = Fermi langeton

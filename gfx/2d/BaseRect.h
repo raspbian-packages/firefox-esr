@@ -14,10 +14,10 @@
 
 #include "mozilla/Assertions.h"
 #include "mozilla/FloatingPoint.h"
+#include "mozilla/gfx/ScaleFactors2D.h"
 #include "Types.h"
 
-namespace mozilla {
-namespace gfx {
+namespace mozilla::gfx {
 
 /**
  * Rectangles have two interpretations: a set of (zero-size) points,
@@ -66,10 +66,9 @@ struct BaseRect {
   bool IsFinite() const {
     using FloatType =
         std::conditional_t<std::is_same_v<T, float>, float, double>;
-    return (mozilla::IsFinite(FloatType(x)) &&
-            mozilla::IsFinite(FloatType(y)) &&
-            mozilla::IsFinite(FloatType(width)) &&
-            mozilla::IsFinite(FloatType(height)));
+    return (std::isfinite(FloatType(x)) && std::isfinite(FloatType(y)) &&
+            std::isfinite(FloatType(width)) &&
+            std::isfinite(FloatType(height)));
   }
 
   // Returns true if this rectangle contains the interior of aRect. Always
@@ -584,6 +583,11 @@ struct BaseRect {
     height = y1 - y0;
   }
 
+  // Scale 'this' by aScale.xScale and aScale.yScale without doing any rounding.
+  template <class Src, class Dst>
+  void Scale(const BaseScaleFactors2D<Src, Dst, T>& aScale) {
+    Scale(aScale.xScale, aScale.yScale);
+  }
   // Scale 'this' by aScale without doing any rounding.
   void Scale(T aScale) { Scale(aScale, aScale); }
   // Scale 'this' by aXScale and aYScale, without doing any rounding.
@@ -667,8 +671,9 @@ struct BaseRect {
    * edge of the rectangle.
    */
   [[nodiscard]] Point ClampPoint(const Point& aPoint) const {
-    return Point(std::max(x, std::min(XMost(), aPoint.x)),
-                 std::max(y, std::min(YMost(), aPoint.y)));
+    using Coord = decltype(aPoint.x);
+    return Point(std::max(Coord(x), std::min(Coord(XMost()), aPoint.x)),
+                 std::max(Coord(y), std::min(Coord(YMost()), aPoint.y)));
   }
 
   /**
@@ -733,7 +738,6 @@ struct BaseRect {
   }
 };
 
-}  // namespace gfx
-}  // namespace mozilla
+}  // namespace mozilla::gfx
 
 #endif /* MOZILLA_GFX_BASERECT_H_ */

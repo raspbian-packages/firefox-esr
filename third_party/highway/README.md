@@ -55,7 +55,8 @@ layouts, and aligned/padded allocations.
 
 Online demos using Compiler Explorer:
 
--   [generating code for multiple targets](https://gcc.godbolt.org/z/n6rx6xK5h) (recommended)
+-   [multiple targets with dynamic dispatch](https://gcc.godbolt.org/z/zP7MYe9Yf)
+    (recommended)
 -   [single target using -m flags](https://gcc.godbolt.org/z/rGnjMevKG)
 
 Projects using Highway: (to add yours, feel free to raise an issue or contact us
@@ -64,7 +65,7 @@ via the below email)
 *   [iresearch database index](https://github.com/iresearch-toolkit/iresearch/blob/e7638e7a4b99136ca41f82be6edccf01351a7223/core/utils/simd_utils.hpp)
 *   [JPEG XL image codec](https://github.com/libjxl/libjxl)
 *   [Grok JPEG 2000 image codec](https://github.com/GrokImageCompression/grok)
-*   [vectorized Quicksort](https://github.com/google/highway/tree/master/hwy/contrib/sort)
+*   [vectorized Quicksort](https://github.com/google/highway/tree/master/hwy/contrib/sort) ([paper](https://arxiv.org/abs/2205.05982))
 
 ## Current status
 
@@ -72,11 +73,13 @@ via the below email)
 
 Supported targets: scalar, S-SSE3, SSE4, AVX2, AVX-512, AVX3_DL (~Icelake,
 requires opt-in by defining `HWY_WANT_AVX3_DL`), NEON (ARMv7 and v8), SVE, SVE2,
-WASM SIMD.
+WASM SIMD, RISC-V V.
 
-SVE was initially tested using farm_sve (see acknowledgments). A subset of RVV
-is implemented and tested with LLVM and QEMU. Work is underway to add RVV ops
-which were not yet supported by GCC.
+`HWY_WASM_EMU256` is a 2x unrolled version of wasm128 and is enabled if
+`HWY_WANT_WASM2` is defined. This will remain supported until it is potentially
+superseded by a future version of WASM.
+
+SVE was initially tested using farm_sve (see acknowledgments).
 
 ### Versioning
 
@@ -85,24 +88,35 @@ incrementing MINOR after backward-compatible additions and PATCH after
 backward-compatible fixes. We recommend using releases (rather than the Git tip)
 because they are tested more extensively, see below.
 
-Version 0.11 is considered stable enough to use in other projects.
-Version 1.0 will signal an increased focus on backwards compatibility and will
-be reached after the RVV target is finished (planned for 2022H1).
+The current version 1.0 signals an increased focus on backwards compatibility.
+Applications using documented functionality will remain compatible with future
+updates that have the same major version number.
 
 ### Testing
 
 Continuous integration tests build with a recent version of Clang (running on
-x86 and QEMU for ARM) and MSVC from VS2015 (running on x86).
+native x86, or QEMU for RVV and ARM) and MSVC 2019 (v19.28, running on native
+x86).
 
-Before releases, we also test on x86 with Clang and GCC, and ARMv7/8 via
-GCC cross-compile and QEMU. See the
-[testing process](g3doc/release_testing_process.md) for details.
+Before releases, we also test on x86 with Clang and GCC, and ARMv7/8 via GCC
+cross-compile. See the [testing process](g3doc/release_testing_process.md) for
+details.
 
 ### Related modules
 
 The `contrib` directory contains SIMD-related utilities: an image class with
 aligned rows, a math library (16 functions already implemented, mostly
 trigonometry), and functions for computing dot products and sorting.
+
+### Other libraries
+
+If you only require x86 support, you may also use Agner Fog's
+[VCL vector class library](https://github.com/vectorclass). It includes many
+functions including a complete math library.
+
+If you have existing code using x86/NEON intrinsics, you may be interested in
+[SIMDe](https://github.com/simd-everywhere/simde), which emulates those
+intrinsics using other platforms' intrinsics or autovectorization.
 
 ## Installation
 
@@ -122,6 +136,9 @@ installing gtest separately:
 sudo apt install libgtest-dev
 ```
 
+Running cross-compiled tests requires support from the OS, which on Debian is
+provided by the `qemu-user-binfmt` package.
+
 To build Highway as a shared or static library (depending on BUILD_SHARED_LIBS),
 the standard CMake workflow can be used:
 
@@ -135,6 +152,10 @@ Or you can run `run_tests.sh` (`run_tests.bat` on Windows).
 
 Bazel is also supported for building, but it is not as widely used/tested.
 
+When building for Arm v7, a limitation of current compilers requires you to add
+`-DHWY_CMAKE_ARM7:BOOL=ON` to the CMake command line; see #834 and #1032. We
+understand that work is underway to remove this limitation.
+
 ## Quick start
 
 You can use the `benchmark` inside examples/ as a starting point.
@@ -143,26 +164,37 @@ A [quick-reference page](g3doc/quick_reference.md) briefly lists all operations
 and their parameters, and the [instruction_matrix](g3doc/instruction_matrix.pdf)
 indicates the number of instructions per operation.
 
+The [FAQ](g3doc/faq.md) answers questions about portability, API design and
+where to find more information.
+
 We recommend using full SIMD vectors whenever possible for maximum performance
 portability. To obtain them, pass a `ScalableTag<float>` (or equivalently
 `HWY_FULL(float)`) tag to functions such as `Zero/Set/Load`. There are two
 alternatives for use-cases requiring an upper bound on the lanes:
 
--   For up to a power of two `N`, specify `CappedTag<T, N>` (or
-    equivalently `HWY_CAPPED(T, N)`). This is useful for data structures such as
-    a narrow matrix. A loop is still required because vectors may actually have
-    fewer than `N` lanes.
+-   For up to `N` lanes, specify `CappedTag<T, N>` or the equivalent
+    `HWY_CAPPED(T, N)`. The actual number of lanes will be `N` rounded down to
+    the nearest power of two, such as 4 if `N` is 5, or 8 if `N` is 8. This is
+    useful for data structures such as a narrow matrix. A loop is still required
+    because vectors may actually have fewer than `N` lanes.
 
 -   For exactly a power of two `N` lanes, specify `FixedTag<T, N>`. The largest
     supported `N` depends on the target, but is guaranteed to be at least
     `16/sizeof(T)`.
 
-Functions using Highway must either be inside `namespace HWY_NAMESPACE {`
-(possibly nested in one or more other namespaces defined by the project), OR
-each op must be prefixed with `hn::`, e.g. `namespace hn = hwy::HWY_NAMESPACE;
-hn::LoadDup128()`. Additionally, each function using Highway must either be
-prefixed with `HWY_ATTR`, OR reside between `HWY_BEFORE_NAMESPACE()` and
-`HWY_AFTER_NAMESPACE()`.
+Due to ADL restrictions, user code calling Highway ops must either:
+*   Reside inside `namespace hwy { namespace HWY_NAMESPACE {`; or
+*   prefix each op with an alias such as `namespace hn = hwy::HWY_NAMESPACE;
+    hn::Add()`; or
+*   add using-declarations for each op used: `using hwy::HWY_NAMESPACE::Add;`.
+
+Additionally, each function that calls Highway ops (such as `Load`) must either
+be prefixed with `HWY_ATTR`, OR reside between `HWY_BEFORE_NAMESPACE()` and
+`HWY_AFTER_NAMESPACE()`. Lambda functions currently require `HWY_ATTR` before
+their opening brace.
+
+The entry points into code using Highway differ slightly depending on whether
+they use static or dynamic dispatch.
 
 *   For static dispatch, `HWY_TARGET` will be the best available target among
     `HWY_BASELINE_TARGETS`, i.e. those allowed for use by the compiler (see
@@ -178,6 +210,27 @@ prefixed with `HWY_ATTR`, OR reside between `HWY_BEFORE_NAMESPACE()` and
     module is automatically compiled for each target in `HWY_TARGETS` (see
     [quick-reference](g3doc/quick_reference.md)) if `HWY_TARGET_INCLUDE` is
     defined and `foreach_target.h` is included.
+
+When using dynamic dispatch, `foreach_target.h` is included from translation
+units (.cc files), not headers. Headers containing vector code shared between
+several translation units require a special include guard, for example the
+following taken from `examples/skeleton-inl.h`:
+
+```
+#if defined(HIGHWAY_HWY_EXAMPLES_SKELETON_INL_H_) == defined(HWY_TARGET_TOGGLE)
+#ifdef HIGHWAY_HWY_EXAMPLES_SKELETON_INL_H_
+#undef HIGHWAY_HWY_EXAMPLES_SKELETON_INL_H_
+#else
+#define HIGHWAY_HWY_EXAMPLES_SKELETON_INL_H_
+#endif
+
+#include "hwy/highway.h"
+// Your vector code
+#endif
+```
+
+By convention, we name such headers `-inl.h` because their contents (often
+function templates) are usually inlined.
 
 ## Compiler flags
 
@@ -222,12 +275,37 @@ Highway offers several ways to express loops where `N` need not divide `count`:
     this avoids the (potentially large) cost of predication or partial
     loads/stores on older targets, and does not duplicate code.
 
+*   Process whole vectors and include previously processed elements
+    in the last vector:
+    ```
+    for (size_t i = 0; i < count; i += N) LoopBody<false>(d, HWY_MIN(i, count - N), 0);
+    ```
+
+    This is the second preferred option provided that `count >= N`
+    and `LoopBody` is idempotent. Some elements might be processed twice, but
+    a single code path and full vectorization is usually worth it. Even if
+    `count < N`, it usually makes sense to pad inputs/outputs up to `N`.
+
+*   Use the `Transform*` functions in hwy/contrib/algo/transform-inl.h. This
+    takes care of the loop and remainder handling and you simply define a
+    generic lambda function (C++14) or functor which receives the current vector
+    from the input/output array, plus optionally vectors from up to two extra
+    input arrays, and returns the value to write to the input/output array.
+
+    Here is an example implementing the BLAS function SAXPY (`alpha * x + y`):
+
+    ```
+    Transform1(d, x, n, y, [](auto d, const auto v, const auto v1) HWY_ATTR {
+      return MulAdd(Set(d, alpha), v, v1);
+    });
+    ```
+
 *   Process whole vectors as above, followed by a scalar loop:
 
     ```
     size_t i = 0;
     for (; i + N <= count; i += N) LoopBody<false>(d, i, 0);
-    for (; i < count; ++i) LoopBody<false>(HWY_CAPPED(T, 1)(), i, 0);
+    for (; i < count; ++i) LoopBody<false>(CappedTag<T, 1>(), i, 0);
     ```
     The template parameter and second function arguments are again not needed.
 
@@ -247,10 +325,14 @@ Highway offers several ways to express loops where `N` need not divide `count`:
     }
     ```
     Now the template parameter and third function argument can be used inside
-    `LoopBody` to 'blend' the new partial vector with previous memory contents:
-    `Store(IfThenElse(FirstN(d, N), partial, prev_full), d, aligned_pointer);`.
+    `LoopBody` to non-atomically 'blend' the first `num_remaining` lanes of `v`
+    with the previous contents of memory at subsequent locations:
+    `BlendedStore(v, FirstN(d, num_remaining), d, pointer);`. Similarly,
+    `MaskedLoad(FirstN(d, num_remaining), d, pointer)` loads the first
+    `num_remaining` elements and returns zero in other lanes.
 
-    This is a good default when it is infeasible to ensure vectors are padded.
+    This is a good default when it is infeasible to ensure vectors are padded,
+    but is only safe `#if !HWY_MEM_OPS_MIGHT_FAULT`!
     In contrast to the scalar loop, only a single final iteration is needed.
     The increased code size from two loop bodies is expected to be worthwhile
     because it avoids the cost of masking in all but the final iteration.
@@ -260,6 +342,7 @@ Highway offers several ways to express loops where `N` need not divide `count`:
 *   [Highway introduction (slides)](g3doc/highway_intro.pdf)
 *   [Overview of instructions per operation on different architectures](g3doc/instruction_matrix.pdf)
 *   [Design philosophy and comparison](g3doc/design_philosophy.md)
+*   [Implementation details](g3doc/impl_details.md)
 
 ## Acknowledgments
 

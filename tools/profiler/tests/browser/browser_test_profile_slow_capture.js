@@ -14,7 +14,7 @@ add_task(async function browser_test_profile_slow_capture() {
 
   info("Open a tab with single_frame.html in it.");
   const url = BASE_URL + "single_frame.html";
-  await BrowserTestUtils.withNewTab(url, async function(contentBrowser) {
+  await BrowserTestUtils.withNewTab(url, async function (contentBrowser) {
     const contentPid = await SpecialPowers.spawn(contentBrowser, [], () => {
       return Services.appinfo.processID;
     });
@@ -24,7 +24,7 @@ add_task(async function browser_test_profile_slow_capture() {
     const activeTabID = win.gBrowser.selectedBrowser.browsingContext.browserId;
 
     info("Capture the profile data.");
-    const profile = await stopAndGetProfile();
+    const profile = await waitSamplingAndStopAndGetProfile();
 
     let pageFound = false;
     // We need to find the correct content process for that tab.
@@ -61,7 +61,7 @@ add_task(async function browser_test_profile_slow_capture() {
     for (let i = 0; i < 10; ++i) {
       await Services.profiler.waitOnePeriodicSampling();
     }
-    await stopAndGetProfile();
+    await stopNowAndGetProfile();
   });
 });
 
@@ -79,13 +79,13 @@ add_task(async function browser_test_profile_very_slow_capture() {
 
   info("Open a tab with single_frame.html in it.");
   const url = BASE_URL + "single_frame.html";
-  await BrowserTestUtils.withNewTab(url, async function(contentBrowser) {
+  await BrowserTestUtils.withNewTab(url, async function (contentBrowser) {
     const contentPid = await SpecialPowers.spawn(contentBrowser, [], () => {
       return Services.appinfo.processID;
     });
 
     info("Capture the profile data.");
-    const profile = await stopAndGetProfile();
+    const profile = await waitSamplingAndStopAndGetProfile();
 
     info("Check that the content process is missing.");
 
@@ -99,6 +99,6 @@ add_task(async function browser_test_profile_very_slow_capture() {
     for (let i = 0; i < 10; ++i) {
       await Services.profiler.waitOnePeriodicSampling();
     }
-    await stopAndGetProfile();
+    await stopNowAndGetProfile();
   });
 });

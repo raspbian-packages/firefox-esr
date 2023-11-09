@@ -1,10 +1,7 @@
 const { HttpServer } = ChromeUtils.import("resource://testing-common/httpd.js");
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 var httpserver = null;
 var geolocation = null;
-var success = false;
-var watchId = -1;
 
 function geoHandler(metadata, response) {
   var georesponse = {
@@ -20,7 +17,7 @@ function geoHandler(metadata, response) {
   response.setStatusLine("1.0", 200, "OK");
   response.setHeader("Cache-Control", "no-cache", false);
   response.setHeader("Content-Type", "aplication/x-javascript", false);
-  do_timeout(5000, function() {
+  do_timeout(5000, function () {
     response.write(position);
     response.finish();
   });

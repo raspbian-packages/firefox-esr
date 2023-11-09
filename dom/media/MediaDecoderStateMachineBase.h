@@ -11,6 +11,7 @@
 #include "MediaEventSource.h"
 #include "MediaInfo.h"
 #include "MediaMetadataManager.h"
+#include "MediaPromiseDefs.h"
 #include "ReaderProxy.h"
 #include "VideoFrameContainer.h"
 #include "mozilla/dom/MediaDebugInfoBinding.h"
@@ -22,6 +23,7 @@ class AudioDeviceInfo;
 namespace mozilla {
 
 class AbstractThread;
+class CDMProxy;
 class FrameStatistics;
 class MediaFormatReader;
 class TaskQueue;
@@ -132,6 +134,10 @@ class MediaDecoderStateMachineBase {
     return mOnNextFrameStatus;
   }
 
+  MediaEventProducer<VideoInfo, AudioInfo>& OnTrackInfoUpdatedEvent() {
+    return mReader->OnTrackInfoUpdatedEvent();
+  }
+
   MediaEventSource<void>& OnMediaNotSeekable() const;
 
   AbstractCanonical<media::NullableTimeUnit>* CanonicalDuration() {
@@ -150,6 +156,10 @@ class MediaDecoderStateMachineBase {
   void DispatchIsLiveStream(bool aIsLiveStream);
   void DispatchSetPlaybackRate(double aPlaybackRate);
 
+  virtual RefPtr<SetCDMPromise> SetCDMProxy(CDMProxy* aProxy);
+
+  virtual bool IsCDMProxySupported(CDMProxy* aProxy) = 0;
+
  protected:
   virtual ~MediaDecoderStateMachineBase() = default;
 
@@ -167,6 +177,7 @@ class MediaDecoderStateMachineBase {
   virtual void PreservesPitchChanged() = 0;
   virtual void PlayStateChanged() = 0;
   virtual void LoopingChanged() = 0;
+  virtual void UpdateSecondaryVideoContainer() = 0;
 
   // Init tasks which should be done on the task queue.
   virtual void InitializationTask(MediaDecoder* aDecoder);
@@ -225,6 +236,10 @@ class MediaDecoderStateMachineBase {
   // Whether to seek back to the start of the media resource
   // upon reaching the end.
   Mirror<bool> mLooping;
+
+  // Set if the decoder is sending video to a secondary container. While set we
+  // should not suspend the decoder.
+  Mirror<RefPtr<VideoFrameContainer>> mSecondaryVideoContainer;
 
   // Duration of the media. This is guaranteed to be non-null after we finish
   // decoding the first frame.

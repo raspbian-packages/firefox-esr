@@ -53,8 +53,7 @@ uint16_t TraversalRule::Match(Accessible* aAcc) {
     return result;
   }
 
-  auto opacity = aAcc->Opacity();
-  if (opacity && *opacity == 0.0f) {
+  if (aAcc->Opacity() == 0.0f) {
     return result | nsIAccessibleTraversalRule::FILTER_IGNORE_SUBTREE;
   }
 
@@ -248,12 +247,6 @@ uint16_t TraversalRule::DefaultMatch(Accessible* aAccessible) {
       break;
     case roles::GRID_CELL:
       if (IsSingleLineage(aAccessible) || IsFlatSubtree(aAccessible)) {
-        return nsIAccessibleTraversalRule::FILTER_MATCH |
-               nsIAccessibleTraversalRule::FILTER_IGNORE_SUBTREE;
-      }
-      break;
-    case roles::LISTITEM:
-      if (IsFlatSubtree(aAccessible) || IsSingleLineage(aAccessible)) {
         return nsIAccessibleTraversalRule::FILTER_MATCH |
                nsIAccessibleTraversalRule::FILTER_IGNORE_SUBTREE;
       }

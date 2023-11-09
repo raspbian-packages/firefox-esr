@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Νέα καρτέλα
 tabbrowser-empty-private-tab-title = Νέα ιδιωτική καρτέλα
+
 tabbrowser-menuitem-close-tab =
     .label = Κλείσιμο καρτέλας
 tabbrowser-menuitem-close =
     .label = Κλείσιμο
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } — { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -121,6 +120,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Να μην εμφανιστεί α�
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Να επιτρέπεται σε ειδοποιήσεις του { $domain } να σας μεταφέρουν στην καρτέλα τους
+
 tabbrowser-customizemode-tab-title = Προσαρμογή του { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -139,3 +139,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Αναίρεση σίγασης καρτελών
     .accesskey = ν
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Αναπαραγωγή ήχου
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Παράθεση και των { $tabCount } καρτελών
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Σίγαση καρτέλας
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Άρση σίγασης καρτέλας
+tabbrowser-manager-close-tab =
+    .tooltiptext = Κλείσιμο καρτέλας

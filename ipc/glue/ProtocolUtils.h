@@ -100,10 +100,6 @@ class NeckoParent;
 
 namespace ipc {
 
-#ifdef FUZZING
-class ProtocolFuzzerHelper;
-#endif
-
 // Scoped base::ProcessHandle to ensure base::CloseProcessHandle is called.
 struct ScopedProcessHandleTraits {
   typedef base::ProcessHandle type;
@@ -198,9 +194,8 @@ class IProtocol : public HasResultCodes {
   IProtocol* Lookup(int32_t aId);
   void Unregister(int32_t aId);
 
-  Shmem::SharedMemory* CreateSharedMemory(size_t aSize,
-                                          SharedMemory::SharedMemoryType aType,
-                                          bool aUnsafe, int32_t* aId);
+  Shmem::SharedMemory* CreateSharedMemory(size_t aSize, bool aUnsafe,
+                                          int32_t* aId);
   Shmem::SharedMemory* LookupSharedMemory(int32_t aId);
   bool IsTrackingSharedMemory(Shmem::SharedMemory* aSegment);
   bool DestroySharedMemory(Shmem& aShmem);
@@ -243,15 +238,12 @@ class IProtocol : public HasResultCodes {
                                    UniquePtr<Message>& aReply) = 0;
   virtual Result OnCallReceived(const Message& aMessage,
                                 UniquePtr<Message>& aReply) = 0;
-  bool AllocShmem(size_t aSize, Shmem::SharedMemory::SharedMemoryType aType,
-                  Shmem* aOutMem);
-  bool AllocUnsafeShmem(size_t aSize,
-                        Shmem::SharedMemory::SharedMemoryType aType,
-                        Shmem* aOutMem);
+  bool AllocShmem(size_t aSize, Shmem* aOutMem);
+  bool AllocUnsafeShmem(size_t aSize, Shmem* aOutMem);
   bool DeallocShmem(Shmem& aMem);
 
-  void FatalError(const char* const aErrorMsg) const;
-  virtual void HandleFatalError(const char* aErrorMsg) const;
+  void FatalError(const char* const aErrorMsg);
+  virtual void HandleFatalError(const char* aErrorMsg);
 
  protected:
   virtual ~IProtocol();
@@ -369,6 +361,8 @@ class IPCResult {
   bool mSuccess;
 };
 
+class UntypedEndpoint;
+
 template <class PFooSide>
 class Endpoint;
 
@@ -382,10 +376,6 @@ class ManagedEndpoint;
  * this protocol actor.
  */
 class IToplevelProtocol : public IProtocol {
-#ifdef FUZZING
-  friend class mozilla::ipc::ProtocolFuzzerHelper;
-#endif
-
   template <class PFooSide>
   friend class Endpoint;
 
@@ -395,6 +385,9 @@ class IToplevelProtocol : public IProtocol {
   ~IToplevelProtocol() = default;
 
  public:
+  // All top-level protocols are refcounted.
+  NS_INLINE_DECL_PURE_VIRTUAL_REFCOUNTING
+
   // Shadow methods on IProtocol which are implemented directly on toplevel
   // actors.
   int32_t Register(IProtocol* aRouted);
@@ -402,9 +395,8 @@ class IToplevelProtocol : public IProtocol {
   IProtocol* Lookup(int32_t aId);
   void Unregister(int32_t aId);
 
-  Shmem::SharedMemory* CreateSharedMemory(size_t aSize,
-                                          SharedMemory::SharedMemoryType aType,
-                                          bool aUnsafe, int32_t* aId);
+  Shmem::SharedMemory* CreateSharedMemory(size_t aSize, bool aUnsafe,
+                                          int32_t* aId);
   Shmem::SharedMemory* LookupSharedMemory(int32_t aId);
   bool IsTrackingSharedMemory(Shmem::SharedMemory* aSegment);
   bool DestroySharedMemory(Shmem& aShmem);
@@ -418,7 +410,9 @@ class IToplevelProtocol : public IProtocol {
   virtual void OnChannelError() = 0;
   virtual void ProcessingError(Result aError, const char* aMsgName) {}
 
-  bool Open(ScopedPort aPort, base::ProcessId aOtherPid);
+  bool Open(ScopedPort aPort, const nsID& aMessageChannelId,
+            base::ProcessId aOtherPid,
+            nsISerialEventTarget* aEventTarget = nullptr);
 
   bool Open(IToplevelProtocol* aTarget, nsISerialEventTarget* aEventTarget,
             mozilla::ipc::Side aSide = mozilla::ipc::UnknownSide);
@@ -439,6 +433,7 @@ class IToplevelProtocol : public IProtocol {
   void NotifyImpendingShutdown();
 
   void Close();
+  void CloseWithError();
 
   void SetReplyTimeoutMs(int32_t aTimeoutMs);
 
@@ -476,12 +471,6 @@ class IToplevelProtocol : public IProtocol {
 
   bool IsOnCxxStack() const;
 
-  /**
-   * Return true if windows messages can be handled while waiting for a reply
-   * to a sync IPDL message.
-   */
-  virtual bool HandleWindowsMessages(const Message& aMsg) const { return true; }
-
   virtual void ProcessRemoteNativeEventsInInterruptCall() {}
 
   virtual void OnChannelReceivedMessage(const Message& aMsg) {}
@@ -509,25 +498,19 @@ class IToplevelProtocol : public IProtocol {
 
 class IShmemAllocator {
  public:
-  virtual bool AllocShmem(size_t aSize,
-                          mozilla::ipc::SharedMemory::SharedMemoryType aShmType,
-                          mozilla::ipc::Shmem* aShmem) = 0;
-  virtual bool AllocUnsafeShmem(
-      size_t aSize, mozilla::ipc::SharedMemory::SharedMemoryType aShmType,
-      mozilla::ipc::Shmem* aShmem) = 0;
+  virtual bool AllocShmem(size_t aSize, mozilla::ipc::Shmem* aShmem) = 0;
+  virtual bool AllocUnsafeShmem(size_t aSize, mozilla::ipc::Shmem* aShmem) = 0;
   virtual bool DeallocShmem(mozilla::ipc::Shmem& aShmem) = 0;
 };
 
 #define FORWARD_SHMEM_ALLOCATOR_TO(aImplClass)                             \
-  virtual bool AllocShmem(                                                 \
-      size_t aSize, mozilla::ipc::SharedMemory::SharedMemoryType aShmType, \
-      mozilla::ipc::Shmem* aShmem) override {                              \
-    return aImplClass::AllocShmem(aSize, aShmType, aShmem);                \
+  virtual bool AllocShmem(size_t aSize, mozilla::ipc::Shmem* aShmem)       \
+      override {                                                           \
+    return aImplClass::AllocShmem(aSize, aShmem);                          \
   }                                                                        \
-  virtual bool AllocUnsafeShmem(                                           \
-      size_t aSize, mozilla::ipc::SharedMemory::SharedMemoryType aShmType, \
-      mozilla::ipc::Shmem* aShmem) override {                              \
-    return aImplClass::AllocUnsafeShmem(aSize, aShmType, aShmem);          \
+  virtual bool AllocUnsafeShmem(size_t aSize, mozilla::ipc::Shmem* aShmem) \
+      override {                                                           \
+    return aImplClass::AllocUnsafeShmem(aSize, aShmem);                    \
   }                                                                        \
   virtual bool DeallocShmem(mozilla::ipc::Shmem& aShmem) override {        \
     return aImplClass::DeallocShmem(aShmem);                               \

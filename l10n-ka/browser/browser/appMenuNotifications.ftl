@@ -25,7 +25,7 @@ appmenu-update-unsupported2 =
 appmenu-update-unsupported-message2 = თქვენი საოპერაციო სისტემა და უახლესი { -brand-shorter-name } შეუთავსებლებია.
 appmenu-update-restart2 =
     .label = განახლება ხელმისაწვდომია
-    .buttonlabel = თავიდან გაშვება გასაახლებლად
+    .buttonlabel = კვლავ გაშვება გასაახლებლად
     .buttonaccesskey = ვ
     .secondarybuttonlabel = აცილება
     .secondarybuttonaccesskey = ც
@@ -45,7 +45,7 @@ appmenu-addon-post-install-message3 = მართეთ თქვენი დ�
 appmenu-addon-post-install-incognito-checkbox =
     .label = დაშვება ამ გაფართოების, პირად ფანჯრებში
     .accesskey = დ
-    
+
 appmenu-new-tab-controlled-changes =
     .label = ახალი ჩანართის გვერდი შეიცვალა.
     .buttonlabel = ცვლილებების დატოვება

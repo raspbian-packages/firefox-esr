@@ -36,7 +36,7 @@ class MFTManager {
   // MP4Reader.
   virtual HRESULT Output(int64_t aStreamOffset, RefPtr<MediaData>& aOutput) = 0;
 
-  void Flush() {
+  virtual void Flush() {
     mDecoder->Flush();
     mSeekTargetThreshold.reset();
   }
@@ -57,6 +57,8 @@ class MFTManager {
   virtual TrackInfo::TrackType GetType() = 0;
 
   virtual nsCString GetDescriptionName() const = 0;
+
+  virtual nsCString GetCodecName() const = 0;
 
   virtual void SetSeekThreshold(const media::TimeUnit& aTime) {
     if (aTime.IsValid()) {
@@ -109,7 +111,11 @@ class WMFMediaDataDecoder final
   bool IsHardwareAccelerated(nsACString& aFailureReason) const override;
 
   nsCString GetDescriptionName() const override {
-    return mMFTManager ? mMFTManager->GetDescriptionName() : ""_ns;
+    return mMFTManager ? mMFTManager->GetDescriptionName() : "unknown"_ns;
+  }
+
+  nsCString GetCodecName() const override {
+    return mMFTManager ? mMFTManager->GetCodecName() : ""_ns;
   }
 
   ConversionRequired NeedsConversion() const override {

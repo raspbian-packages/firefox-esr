@@ -4,11 +4,21 @@
 
 # Variables:
 #  $retriesLeft (Number): number of tries left
-webauthn-pin-invalid-prompt =
+webauthn-pin-invalid-long-prompt =
     { $retriesLeft ->
-        [0] Неправильний PIN-код! Введіть правильний PIN-код для свого пристрою.
-        [one] Неправильний PIN-код! Введіть правильний PIN-код для свого пристрою. У вас залишилася { $retriesLeft } спроба.
-        [few] Неправильний PIN-код! Введіть правильний PIN-код для свого пристрою. У вас залишилося { $retriesLeft } спроби.
-       *[many] Неправильний PIN-код! Введіть правильний PIN-код для свого пристрою. У вас залишилося { $retriesLeft } спроб.
+        [one] Неправильний PIN-код. У вас залишилася { $retriesLeft } спроба, до остаточної втратити доступу до облікових даних на цьому пристрої.
+        [few] Неправильний PIN-код. У вас залишилося { $retriesLeft } спроби, до остаточної втратити доступу до облікових даних на цьому пристрої.
+       *[many] Неправильний PIN-код. У вас залишилося { $retriesLeft } спроб, до остаточної втратити доступу до облікових даних на цьому пристрої.
     }
+webauthn-pin-invalid-short-prompt = Неправильний PIN-код. Спробуйте ще раз.
 webauthn-pin-required-prompt = Введіть PIN-код свого пристрою.
+
+# Variables:
+#  $retriesLeft (Number): number of tries left
+webauthn-uv-invalid-long-prompt =
+    { $retriesLeft ->
+        [one] Не вдалося перевірити користувача. У вас залишилася { $retriesLeft } спроба.
+        [few] Не вдалося перевірити користувача. У вас залишилося { $retriesLeft } спроби.
+       *[many] Не вдалося перевірити користувача. У вас залишилося { $retriesLeft } спроб.
+    }
+webauthn-uv-invalid-short-prompt = Помилка перевірки користувача. Повторіть спробу.

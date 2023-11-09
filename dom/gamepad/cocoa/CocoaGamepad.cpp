@@ -12,6 +12,7 @@
 #include "mozilla/dom/GamepadRemapping.h"
 #include "mozilla/ipc/BackgroundParent.h"
 #include "mozilla/ArrayUtils.h"
+#include "mozilla/Sprintf.h"
 #include "mozilla/Tainting.h"
 #include "nsComponentManagerUtils.h"
 #include "nsITimer.h"
@@ -164,9 +165,24 @@ void Gamepad::init(IOHIDDeviceRef aDevice, bool aDefaultRemapper) {
                    IOHIDElementGetLogicalMin(element),
                    IOHIDElementGetLogicalMax(element)};
       axes.AppendElement(axis);
-    } else if ((usagePage == kSimUsagePage &&
-                (usage == kAcceleratorUsage || usage == kBrakeUsage)) ||
-               (usagePage == kButtonUsagePage) ||
+    } else if (usagePage == kSimUsagePage &&
+               (usage == kAcceleratorUsage || usage == kBrakeUsage)) {
+      if (IOHIDElementGetType(element) == kIOHIDElementTypeInput_Button) {
+        Button button(int(buttons.Length()), element,
+                      IOHIDElementGetLogicalMin(element),
+                      IOHIDElementGetLogicalMax(element));
+        buttons.AppendElement(button);
+      } else {
+        Axis axis = {aDefaultRemapper ? int(axes.Length())
+                                      : static_cast<int>(usage - kAxisUsageMin),
+                     element,
+                     usagePage,
+                     usage,
+                     IOHIDElementGetLogicalMin(element),
+                     IOHIDElementGetLogicalMax(element)};
+        axes.AppendElement(axis);
+      }
+    } else if ((usagePage == kButtonUsagePage) ||
                (usagePage == kConsumerPage &&
                 (usage == kHomeUsage || usage == kBackUsage))) {
       Button button(int(buttons.Length()), element,
@@ -301,7 +317,7 @@ void DarwinGamepadService::DeviceAdded(IOHIDDeviceRef device) {
   CFStringGetCString(productRef, product_name, sizeof(product_name),
                      kCFStringEncodingASCII);
   char buffer[256];
-  sprintf(buffer, "%x-%x-%s", vendorId, productId, product_name);
+  SprintfLiteral(buffer, "%x-%x-%s", vendorId, productId, product_name);
 
   bool defaultRemapper = false;
   RefPtr<GamepadRemapper> remapper =

@@ -64,3 +64,10 @@ about-private-browsing-pin-promo-link-text =
        *[other] Senteḍ ɣer ufaggag n twuriwin
     }
 about-private-browsing-pin-promo-title = Ulac inagan n tuqqqna neɣ azray i yettwaskelsen, srid seg tnarit-ik·im. Inig am wakken ulac win i ak·akem-id-yettmuqulen.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Dayen iɣarracen n yinagan n tuqqna!
+about-private-browsing-cookie-banners-promo-button = Senqes iɣarracen n yinagan n tuqqna

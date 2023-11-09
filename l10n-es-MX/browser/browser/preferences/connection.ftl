@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Configuración de conexión
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Configuración de conexión
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Esta opción te identifica silenciosamente con los proxys cuando has guardado credenciales para ellos. Serás requerido si la identificación falla.
 
+connection-proxy-autologin-checkbox =
+    .label = No pedir identificación si la contraseña está guardada
+    .accesskey = i
+    .tooltiptext = Esta opción te identifica silenciosamente con los proxys cuando has guardado credenciales para ellos. Serás requerido si la identificación falla.
+
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS cuando uses SOCKS v5
     .accesskey = D
-
-connection-dns-over-https =
-    .label = Habilitar DNS por HTTPS
-    .accesskey = H
-
-connection-dns-over-https-url-resolver = Usar Proveedor
-    .accesskey = P
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = 최근에 닫음
 firefoxview-closed-tabs-description2 = 이 창에서 닫은 페이지를 다시 엽니다.
 firefoxview-closed-tabs-placeholder-header = 최근에 닫은 탭 없음
 firefoxview-closed-tabs-placeholder-body = 이 창에서 탭을 닫으면 여기에서 가져올 수 있습니다.
+firefoxview-closed-tabs-placeholder-body2 = 탭을 닫으면 여기에서 가져올 수 있습니다.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = 마지막 활동
 firefoxview-tabs-list-tab-button =
     .title = 새 탭에서 { $targetURI } 열기
 firefoxview-try-colorways-button = 컬러웨이 체험
-firefoxview-no-current-colorway-collection = 새로운 컬러웨이 출시 예정
 firefoxview-change-colorway-button = 컬러웨이 변경
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,63 @@ firefoxview-collapse-button-show =
     .title = 목록 표시
 firefoxview-collapse-button-hide =
     .title = 목록 숨기기
+firefoxview-overview-nav = 최근 탐색
+    .title = 최근 탐색
+firefoxview-overview-header = 최근 탐색
+    .title = 최근 탐색
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = 기록
+    .title = 기록
+firefoxview-history-header = 기록
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = 열린 탭
+    .title = 열린 탭
+firefoxview-opentabs-header = 열린 탭
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = 최근에 닫은 탭
+    .title = 최근에 닫은 탭
+firefoxview-recently-closed-header = 최근에 닫은 탭
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = 다른 기기의 탭
+    .title = 다른 기기의 탭
+firefoxview-synced-tabs-header = 다른 기기의 탭
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = 모두 보기
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = 창 { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = 창 { $winID } (현재)
+firefoxview-opentabs-focus-tab =
+    .title = 이 탭으로 전환
+firefoxview-show-more = 자세히 보기
+firefoxview-show-less = 간단히 보기
+firefoxview-sort-history-by-date-label = 날짜순 정렬
+firefoxview-sort-history-by-site-label = 사이트순 정렬
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = 오늘 - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = 어제 - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = 모든 기록 보기
+firefoxview-view-more-browsing-history = 탐색 기록 더보기

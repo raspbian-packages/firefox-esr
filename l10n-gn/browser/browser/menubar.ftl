@@ -220,8 +220,6 @@ menu-history-undo-menu =
     .label = Tendayke oñembotyramóva
 menu-history-undo-window-menu =
     .label = Ovetã oñembotyramóva
-menu-history-reopen-all-tabs = Embojurujajey opaite tendayke
-menu-history-reopen-all-windows = Embojurujajey opaite ovetã
 
 ## Bookmarks Menu
 
@@ -230,14 +228,13 @@ menu-bookmarks-menu =
     .accesskey = B
 menu-bookmarks-manage =
     .label = Eñangareko Techaukaháre
-menu-bookmark-current-tab =
-    .label = Emongurusu tendayke ag̃agua
-menu-bookmark-edit =
-    .label = Ko techaukaha mbosako’i
 menu-bookmark-tab =
     .label = Embojuaju tendayke ag̃agua techaukaháre…
 menu-edit-bookmark =
     .label = Embosako’i ko techaukaha…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Eheka techaukaha
 menu-bookmarks-all-tabs =
     .label = Tendayke mbojoapy techaukaháre…
 menu-bookmarks-toolbar =
@@ -331,6 +328,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Eipe’a mba’éicha emyatyrõta apañuãi
     .accesskey = M
+menu-help-switch-device =
+    .label = Eva ambue mba’e’okápe
+    .accesskey = N
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

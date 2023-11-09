@@ -32,3 +32,13 @@ unified-extensions-context-menu-remove-extension =
     .label = Uzantıyı kaldır
 unified-extensions-context-menu-report-extension =
     .label = Uzantıyı rapor et
+unified-extensions-context-menu-move-widget-up =
+    .label = Yukarı taşı
+unified-extensions-context-menu-move-widget-down =
+    .label = Aşağı taşı
+
+## Notifications
+
+unified-extensions-mb-quarantined-domain-title = Bazı uzantılara izin verilmiyor
+unified-extensions-mb-quarantined-domain-message = Verilerinizi korumak amacıyla, bu sitede yalnızca { -vendor-short-name } onaylı bazı uzantılara izin verilir.
+unified-extensions-mb-quarantined-domain-message-2 = Verilerinizi korumak adına bazı uzantılar bu sitedeki verileri okuyamaz veya değiştiremez. { -vendor-short-name } tarafından kısıtlanan sitelere izin vermek için uzantının ayarlarını kullanabilirsiniz.

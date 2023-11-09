@@ -5,11 +5,6 @@
 
 about-logins-page-title = Donyo iyie ki Mung me donyo
 
-login-filter =
-    .placeholder = Yeny Donyo iyie
-
-create-login-button = Cwe Donyo iyie manyen
-
 fxaccounts-sign-in-text = Nong mung me donyo mamegi i nyonyo ni mukene
 fxaccounts-avatar-button =
     .title = Lo akaunt
@@ -34,6 +29,8 @@ about-logins-menu-menuitem-help = Kony
 
 login-list =
     .aria-label = Donyo iyie ma rwatte ki lok me yeny
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] donyo iyie { $count }
@@ -84,9 +81,15 @@ login-item-copied-password-button-text = Kiloko!
 login-item-save-changes-button = Gwok alokaloka
 login-item-save-new-button = Gwoki
 login-item-cancel-button = Juki
-login-item-time-changed = Yub me agiki: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Kicweyo: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Tic me agiki: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-used = Kitiyo kwede
 
 ## OS Authentication dialog
 
@@ -120,6 +123,9 @@ about-logins-confirm-remove-dialog-title = Kwany donyo iyie man?
 confirm-delete-dialog-message = Pe ki twero gonyo tic man.
 about-logins-confirm-remove-dialog-confirm-button = Kwany
 
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
         [1] Kwany
@@ -144,6 +150,8 @@ about-logins-confirm-remove-all-sync-dialog-title =
        *[other] Kwany donyo iyie { $count } weng ki i nyonyo weng?
     }
 
+##
+
 about-logins-confirm-export-dialog-message = Kibigwoko mung me donyo mamegi calo coc ma kwane (labolle, BadP@ssw0rd) pi meno ngat ma twero yabo pwail ma kicwalo woko ni twero neno gi.
 about-logins-confirm-export-dialog-confirm-button = Cwal woko...
 
@@ -154,7 +162,6 @@ confirm-discard-changes-dialog-message = Alokaloka weng ma pe kigwoko bi rweny w
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Cit i { $hostname }
-about-logins-breach-alert-learn-more-link = Nong ngec mapol
 
 ## Vulnerable Password notification
 

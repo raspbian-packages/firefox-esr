@@ -237,8 +237,27 @@ void WebrtcAudioConduit::OnControlConfigChange() {
   if (auto filteredExtensions = FilterExtensions(
           LocalDirection::kSend, mControl.mLocalSendRtpExtensions);
       filteredExtensions != mSendStreamConfig.rtp.extensions) {
-    mSendStreamConfig.rtp.extensions = std::move(filteredExtensions);
+    // At the very least, we need a reconfigure. Recreation needed if the
+    // extmap for any extension has changed, but not for adding/removing
+    // extensions.
     sendStreamReconfigureNeeded = true;
+
+    for (const auto& newExt : filteredExtensions) {
+      if (sendStreamRecreationNeeded) {
+        break;
+      }
+      for (const auto& oldExt : mSendStreamConfig.rtp.extensions) {
+        if (newExt.uri == oldExt.uri) {
+          if (newExt.id != oldExt.id) {
+            sendStreamRecreationNeeded = true;
+          }
+          // We're done handling newExt, one way or another
+          break;
+        }
+      }
+    }
+
+    mSendStreamConfig.rtp.extensions = std::move(filteredExtensions);
   }
 
   mControl.mSendCodec.Ref().apply([&](const auto& aConfig) {
@@ -312,12 +331,14 @@ void WebrtcAudioConduit::OnControlConfigChange() {
 
   if (mRecvStream && recvStreamReconfigureNeeded) {
     MOZ_ASSERT(!recvStreamRecreationNeeded);
-    mRecvStream->Reconfigure(mRecvStreamConfig);
+    mRecvStream->SetDecoderMap(mRecvStreamConfig.decoder_map);
   }
 
   if (mSendStream && sendStreamReconfigureNeeded) {
     MOZ_ASSERT(!sendStreamRecreationNeeded);
-    mSendStream->Reconfigure(mSendStreamConfig);
+    // TODO: Pass a callback here, so we can react to RTCErrors thrown by
+    // libwebrtc.
+    mSendStream->Reconfigure(mSendStreamConfig, nullptr);
   }
 
   if (!mControl.mReceiving) {
@@ -373,8 +394,8 @@ Maybe<Ssrc> WebrtcAudioConduit::GetRemoteSSRC() const {
              : Some(mRecvStreamConfig.rtp.remote_ssrc);
 }
 
-Maybe<webrtc::AudioReceiveStream::Stats> WebrtcAudioConduit::GetReceiverStats()
-    const {
+Maybe<webrtc::AudioReceiveStreamInterface::Stats>
+WebrtcAudioConduit::GetReceiverStats() const {
   MOZ_ASSERT(mCallThread->IsOnCurrentThread());
   if (!mRecvStream) {
     return Nothing();
@@ -391,7 +412,7 @@ Maybe<webrtc::AudioSendStream::Stats> WebrtcAudioConduit::GetSenderStats()
   return Some(mSendStream->GetStats());
 }
 
-Maybe<webrtc::Call::Stats> WebrtcAudioConduit::GetCallStats() const {
+Maybe<webrtc::CallBasicStats> WebrtcAudioConduit::GetCallStats() const {
   MOZ_ASSERT(mCallThread->IsOnCurrentThread());
   if (!mCall->Call()) {
     return Nothing();
@@ -402,6 +423,37 @@ Maybe<webrtc::Call::Stats> WebrtcAudioConduit::GetCallStats() const {
 void WebrtcAudioConduit::OnRtcpBye() { mRtcpByeEvent.Notify(); }
 
 void WebrtcAudioConduit::OnRtcpTimeout() { mRtcpTimeoutEvent.Notify(); }
+
+void WebrtcAudioConduit::SetTransportActive(bool aActive) {
+  MOZ_ASSERT(mStsThread->IsOnCurrentThread());
+  if (mTransportActive == aActive) {
+    return;
+  }
+
+  // If false, This stops us from sending
+  mTransportActive = aActive;
+
+  // We queue this because there might be notifications to these listeners
+  // pending, and we don't want to drop them by letting this jump ahead of
+  // those notifications. We move the listeners into the lambda in case the
+  // transport comes back up before we disconnect them. (The Connect calls
+  // happen in MediaPipeline)
+  // We retain a strong reference to ourself, because the listeners are holding
+  // a non-refcounted reference to us, and moving them into the lambda could
+  // conceivably allow them to outlive us.
+  if (!aActive) {
+    MOZ_ALWAYS_SUCCEEDS(mCallThread->Dispatch(NS_NewRunnableFunction(
+        __func__,
+        [self = RefPtr<WebrtcAudioConduit>(this),
+         recvRtpListener = std::move(mReceiverRtpEventListener),
+         recvRtcpListener = std::move(mReceiverRtcpEventListener),
+         sendRtcpListener = std::move(mSenderRtcpEventListener)]() mutable {
+          recvRtpListener.DisconnectIfExists();
+          recvRtcpListener.DisconnectIfExists();
+          sendRtcpListener.DisconnectIfExists();
+        })));
+  }
+}
 
 // AudioSessionConduit Implementation
 MediaConduitErrorCode WebrtcAudioConduit::SendAudioFrame(
@@ -470,7 +522,7 @@ MediaConduitErrorCode WebrtcAudioConduit::GetAudioFrame(
   // only way short of interfacing with a layer above (which mixes all streams,
   // which we don't want) or a layer below (which we try to avoid because it is
   // less stable).
-  auto info = static_cast<webrtc::internal::AudioReceiveStream*>(mRecvStream)
+  auto info = static_cast<webrtc::AudioReceiveStreamImpl*>(mRecvStream)
                   ->GetAudioFrameWithInfo(samplingFreqHz, frame);
 
   if (info == webrtc::AudioMixer::Source::AudioFrameInfo::kError) {
@@ -484,7 +536,7 @@ MediaConduitErrorCode WebrtcAudioConduit::GetAudioFrame(
 }
 
 // Transport Layer Callbacks
-void WebrtcAudioConduit::OnRtpReceived(MediaPacket&& aPacket,
+void WebrtcAudioConduit::OnRtpReceived(webrtc::RtpPacketReceived&& aPacket,
                                        webrtc::RTPHeader&& aHeader) {
   MOZ_ASSERT(mCallThread->IsOnCurrentThread());
 
@@ -495,20 +547,32 @@ void WebrtcAudioConduit::OnRtpReceived(MediaPacket&& aPacket,
   }
 
   CSFLogVerbose(LOGTAG, "%s: seq# %u, Len %zu, SSRC %u (0x%x) ", __FUNCTION__,
-                (uint16_t)ntohs(((uint16_t*)aPacket.data())[1]), aPacket.len(),
-                (uint32_t)ntohl(((uint32_t*)aPacket.data())[2]),
-                (uint32_t)ntohl(((uint32_t*)aPacket.data())[2]));
+                aPacket.SequenceNumber(), aPacket.size(), aPacket.Ssrc(),
+                aPacket.Ssrc());
 
-  DeliverPacket(rtc::CopyOnWriteBuffer(aPacket.data(), aPacket.len()),
-                PacketType::RTP);
+  mRtpPacketEvent.Notify();
+  if (mCall->Call()) {
+    mCall->Call()->Receiver()->DeliverRtpPacket(
+        webrtc::MediaType::AUDIO, std::move(aPacket),
+        [self = RefPtr<WebrtcAudioConduit>(this)](
+            const webrtc::RtpPacketReceived& packet) {
+          CSFLogVerbose(
+              LOGTAG,
+              "AudioConduit %p: failed demuxing packet, ssrc: %u seq: %u",
+              self.get(), packet.Ssrc(), packet.SequenceNumber());
+          return false;
+        });
+  }
 }
 
 void WebrtcAudioConduit::OnRtcpReceived(MediaPacket&& aPacket) {
   CSFLogDebug(LOGTAG, "%s", __FUNCTION__);
   MOZ_ASSERT(mCallThread->IsOnCurrentThread());
 
-  DeliverPacket(rtc::CopyOnWriteBuffer(aPacket.data(), aPacket.len()),
-                PacketType::RTCP);
+  if (mCall->Call()) {
+    mCall->Call()->Receiver()->DeliverRtcpPacket(
+        rtc::CopyOnWriteBuffer(aPacket.data(), aPacket.len()));
+  }
 }
 
 Maybe<uint16_t> WebrtcAudioConduit::RtpSendBaseSeqFor(uint32_t aSsrc) const {
@@ -744,7 +808,7 @@ RtpExtList WebrtcAudioConduit::FilterExtensions(LocalDirection aDirection,
     }
 
     // csrc-audio-level RTP header extension
-    if (extension.uri == webrtc::RtpExtension::kCsrcAudioLevelUri) {
+    if (extension.uri == webrtc::RtpExtension::kCsrcAudioLevelsUri) {
       if (isSend) {
         continue;
       }
@@ -854,25 +918,28 @@ void WebrtcAudioConduit::CreateRecvStream() {
   }
 
   mRecvStream = mCall->Call()->CreateAudioReceiveStream(mRecvStreamConfig);
+  // Ensure that we set the jitter buffer target on this stream.
+  mRecvStream->SetBaseMinimumPlayoutDelayMs(mJitterBufferTargetMs);
+}
+
+void WebrtcAudioConduit::SetJitterBufferTarget(DOMHighResTimeStamp aTargetMs) {
+  MOZ_RELEASE_ASSERT(aTargetMs <= std::numeric_limits<uint16_t>::max());
+  MOZ_RELEASE_ASSERT(aTargetMs >= 0);
+
+  MOZ_ALWAYS_SUCCEEDS(mCallThread->Dispatch(NS_NewRunnableFunction(
+      __func__,
+      [this, self = RefPtr<WebrtcAudioConduit>(this), targetMs = aTargetMs] {
+        mJitterBufferTargetMs = static_cast<uint16_t>(targetMs);
+        if (mRecvStream) {
+          mRecvStream->SetBaseMinimumPlayoutDelayMs(targetMs);
+        }
+      })));
 }
 
 void WebrtcAudioConduit::DeliverPacket(rtc::CopyOnWriteBuffer packet,
                                        PacketType type) {
-  MOZ_ASSERT(mCallThread->IsOnCurrentThread());
-
-  if (!mCall->Call()) {
-    return;
-  }
-
-  // Bug 1499796 - we need to get passed the time the packet was received
-  webrtc::PacketReceiver::DeliveryStatus status =
-      mCall->Call()->Receiver()->DeliverPacket(webrtc::MediaType::AUDIO,
-                                               std::move(packet), -1);
-
-  if (status != webrtc::PacketReceiver::DELIVERY_OK) {
-    CSFLogError(LOGTAG, "%s DeliverPacket Failed for %s packet, %d",
-                __FUNCTION__, type == PacketType::RTP ? "RTP" : "RTCP", status);
-  }
+  // Currently unused.
+  MOZ_ASSERT(false);
 }
 
 Maybe<int> WebrtcAudioConduit::ActiveSendPayloadType() const {

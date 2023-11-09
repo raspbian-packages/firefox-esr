@@ -21,20 +21,20 @@ newtab-search-box-search-button =
     .title = Chwilio
     .aria-label = Chwilio
 
-# Variables
-#  $engine (String): the name of the user's default search engine
+# Variables:
+#   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-text = Chwilio gyda { $engine } neu roi cyfeiriad
-newtab-search-box-handoff-text-no-engine = Chwilio neu roi cyfeiriad
-# Variables
-#  $engine (String): the name of the user's default search engine
+newtab-search-box-handoff-text-no-engine = Chwilio neu gyfeiriad gwe
+# Variables:
+#   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-input =
     .placeholder = Chwilio gyda { $engine } neu roi cyfeiriad
     .title = Chwilio gyda { $engine } neu roi cyfeiriad
     .aria-label = Chwilio gyda { $engine } neu roi cyfeiriad
 newtab-search-box-handoff-input-no-engine =
-    .placeholder = Chwilio neu roi cyfeiriad
-    .title = Chwilio neu roi cyfeiriad
-    .aria-label = Chwilio neu roi cyfeiriad
+    .placeholder = Chwilio neu gyfeiriad gwe
+    .title = Chwilio neu gyfeiriad gwe
+    .aria-label = Chwilio neu gyfeiriad gwe
 
 newtab-search-box-text = Chwilio'r we
 newtab-search-box-input =
@@ -72,7 +72,7 @@ newtab-topsites-add-button = Ychwanegu
 
 newtab-confirm-delete-history-p1 = Ydych chi'n siŵr eich bod chi am ddileu pob enghraifft o'r dudalen hon o'ch hanes?
 # "This action" refers to deleting a page from history.
-newtab-confirm-delete-history-p2 = Nid oes modd dadwneud hyn.
+newtab-confirm-delete-history-p2 = Nid oes modd dadwneud y weithred hon.
 
 ## Top Sites - Sponsored label
 
@@ -82,8 +82,8 @@ newtab-topsite-sponsored = Noddwyd
 
 # General tooltip for context menus.
 newtab-menu-section-tooltip =
-    .title = Agor y ddewislen
-    .aria-label = Agor y ddewislen
+    .title = Agor dewislen
+    .aria-label = Agor dewislen
 
 # Tooltip for dismiss button
 newtab-dismiss-button-tooltip =
@@ -92,9 +92,9 @@ newtab-dismiss-button-tooltip =
 
 # This tooltip is for the context menu of Pocket cards or Topsites
 # Variables:
-#  $title (String): The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
 newtab-menu-content-tooltip =
-    .title = Agor y ddewislen
+    .title = Agor dewislen
     .aria-label = Agor dewislen cynnwys { $title }
 # Tooltip on an empty topsite box to open the New Top Site dialog.
 newtab-menu-topsites-placeholder-tooltip =
@@ -104,7 +104,7 @@ newtab-menu-topsites-placeholder-tooltip =
 ## Context Menu: These strings are displayed in a context menu and are meant as a call to action for a given page.
 
 newtab-menu-edit-topsites = Golygu
-newtab-menu-open-new-window = Agor Ffenestr Newydd
+newtab-menu-open-new-window = Agor mewn Ffenestr Newydd
 newtab-menu-open-new-private-window = Agor mewn Ffenestr Preifat Newydd
 newtab-menu-dismiss = Cau
 newtab-menu-pin = Pinio
@@ -161,23 +161,23 @@ newtab-label-visited = Ymwelwyd
 newtab-label-bookmarked = Nod Tudalen
 newtab-label-removed-bookmark = Wedi Tynnu'r Nod Tudalen
 newtab-label-recommended = Trendio
-newtab-label-saved = Wedi ei gadw i { -pocket-brand-name }
+newtab-label-saved = Cadwyd i { -pocket-brand-name }
 newtab-label-download = Wedi eu Llwytho i Lawr
 
 # This string is used in the story cards to indicate sponsored content
 # Variables:
-#  $sponsorOrSource (String): This is the name of a company or their domain
+#   $sponsorOrSource (string) - The name of a company or their domain
 newtab-label-sponsored = Noddir gan { $sponsorOrSource }
 
 # This string is used at the bottom of story cards to indicate sponsored content
 # Variables:
-#  $sponsor (String): This is the name of a sponsor
+#   $sponsor (string) - The name of a sponsor
 newtab-label-sponsored-by = Noddir gan { $sponsor }
 
 # This string is used under the image of story cards to indicate source and time to read
 # Variables:
-#  $source (String): This is the name of a company or their domain
-#  $timeToRead (Number): This is the estimated number of minutes to read this story
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
 newtab-label-source-read-time = { $source } · { $timeToRead } mun
 
 ## Section Menu: These strings are displayed in the section context menu and are
@@ -185,7 +185,7 @@ newtab-label-source-read-time = { $source } · { $timeToRead } mun
 
 newtab-section-menu-remove-section = Tynnu'r Adran
 newtab-section-menu-collapse-section = Cau'r Adran
-newtab-section-menu-expand-section = Estyn yr Adran
+newtab-section-menu-expand-section = Ehangu'r Adran
 newtab-section-menu-manage-section = Rheoli'r Adran
 newtab-section-menu-manage-webext = Rheoli Estyniad
 newtab-section-menu-add-topsite = Ychwanegu Hoff Wefan
@@ -206,7 +206,7 @@ newtab-section-expand-section-label =
 newtab-section-header-topsites = Hoff Wefannau
 newtab-section-header-recent-activity = Gweithgaredd diweddar
 # Variables:
-#  $provider (String): Name of the corresponding content provider.
+#   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Argymhellwyd gan { $provider }
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
@@ -215,7 +215,7 @@ newtab-empty-section-highlights = Cychwynnwch bori ac fe ddangoswn rhai erthygla
 
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
-#  $provider (String): Name of the content provider for this section, e.g "Pocket".
+#   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Rydych wedi dal i fynDewch nôl rhywbryd eto am fwy o'r straeon pwysicaf gan { $provider }. Methu aros? Dewiswch bwnc poblogaidd i ganfod straeon da o ar draws y we.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
@@ -223,7 +223,7 @@ newtab-empty-section-topstories = Rydych wedi dal i fynDewch nôl rhywbryd eto a
 newtab-discovery-empty-section-topstories-header = Wedi dal i fyny!
 newtab-discovery-empty-section-topstories-content = Dewch nôl eto am ragor o straeon.
 newtab-discovery-empty-section-topstories-try-again-button = Ceisiwch eto
-newtab-discovery-empty-section-topstories-loading = Llwytho…
+newtab-discovery-empty-section-topstories-loading = Yn llwytho…
 # Displays when a layout in a section took too long to fetch articles.
 newtab-discovery-empty-section-topstories-timed-out = Wps! Bron a lwytho'r adran hon, ond nid yn llwyr.
 
@@ -238,24 +238,17 @@ newtab-pocket-cta-button = Defnyddio { -pocket-brand-name }
 newtab-pocket-cta-text = Cadw'r straeon rydych yn eu hoffi i { -pocket-brand-name } a bwydo'ch meddwl á deunydd diddorol.
 newtab-pocket-pocket-firefox-family = Mae { -pocket-brand-name } yn rhan o deulu { -brand-product-name }
 
-# A save to Pocket button that shows over the card thumbnail on hover.
-newtab-pocket-save-to-pocket = Cadw i { -pocket-brand-name }
-newtab-pocket-saved-to-pocket = Cadwyd i { -pocket-brand-name }
-
-# This is a button shown at the bottom of the Pocket section that loads more stories when clicked.
-newtab-pocket-load-more-stories-button = Llwytho rhagor o straeon
-
 ## Pocket Final Card Section.
 ## This is for the final card in the Pocket grid.
-
-newtab-pocket-last-card-title = Yn gyfredol nawr!
-newtab-pocket-last-card-desc = Dewch nôl eto am ragor o straeon.
-newtab-pocket-last-card-image =
-    .alt = Yn gyfredol nawr!
 
 # A save to Pocket button that shows over the card thumbnail on hover.
 newtab-pocket-save = Cadw
 newtab-pocket-saved = Wedi'u Cadw
+
+## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
+
+newtab-pocket-onboarding-discover = Darganfod y gorau o'r we
+newtab-pocket-onboarding-cta = Mae { -pocket-brand-name } yn archwilio ystod amrywiol o gyhoeddiadau i ddod â'r cynnwys mwyaf addysgiadol, ysbrydoledig a dibynadwy i'ch porwr { -brand-product-name }.
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
@@ -267,6 +260,8 @@ newtab-error-fallback-refresh-link = Adnewyddu'r dudalen i geisio eto.
 
 newtab-custom-shortcuts-title = Llwybrau Byr
 newtab-custom-shortcuts-subtitle = Gwefannau rydych yn eu cadw neu'n ymweld â nhw
+# Variables
+#   $num (number) - Number of rows to display
 newtab-custom-row-selector =
     { $num ->
         [zero] { $num } rhesi

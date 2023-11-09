@@ -28,8 +28,6 @@ To invoke browsertime, run
 All arguments are passed through to browsertime.
 """
 
-from __future__ import absolute_import, print_function, unicode_literals
-
 import argparse
 import collections
 import contextlib
@@ -43,12 +41,11 @@ import subprocess
 import sys
 import time
 
-from six import StringIO
-from mach.decorators import CommandArgument, Command
-from mozbuild.base import MachCommandBase, BinaryNotFoundException
-from mozbuild.util import mkdir
 import mozpack.path as mozpath
-
+from mach.decorators import Command, CommandArgument
+from mozbuild.base import BinaryNotFoundException, MachCommandBase
+from mozbuild.util import mkdir
+from six import StringIO
 
 AUTOMATION = "MOZ_AUTOMATION" in os.environ
 BROWSERTIME_ROOT = os.path.dirname(__file__)
@@ -83,9 +80,10 @@ def silence():
 
 
 def node_path(command_context):
-    from mozbuild.nodeutil import find_node_executable
-    from distutils.version import StrictVersion
     import platform
+    from distutils.version import StrictVersion
+
+    from mozbuild.nodeutil import find_node_executable
 
     state_dir = command_context._mach_context.state_dir
     cache_path = os.path.join(state_dir, "browsertime", "node-16")
@@ -176,25 +174,25 @@ host_fetches = {
     "darwin": {
         "ffmpeg": {
             "type": "static-url",
-            "url": "https://github.com/ncalexan/geckodriver/releases/download/v0.24.0-android/ffmpeg-4.1.1-macos64-static.zip",  # noqa
+            "url": "https://github.com/mozilla/perf-automation/releases/download/FFMPEG-v4.4.1/ffmpeg-macos.zip",  # noqa
             # An extension to `fetch` syntax.
-            "path": "ffmpeg-4.1.1-macos64-static",
+            "path": "ffmpeg-macos",
         },
     },
     "linux64": {
         "ffmpeg": {
             "type": "static-url",
-            "url": "https://github.com/ncalexan/geckodriver/releases/download/v0.24.0-android/ffmpeg-4.1.4-i686-static.tar.xz",  # noqa
+            "url": "https://github.com/mozilla/perf-automation/releases/download/FFMPEG-v4.4.1/ffmpeg-4.4.1-i686-static.tar.xz",  # noqa
             # An extension to `fetch` syntax.
-            "path": "ffmpeg-4.1.4-i686-static",
+            "path": "ffmpeg-4.4.1-i686-static",
         },
     },
     "win64": {
         "ffmpeg": {
             "type": "static-url",
-            "url": "https://github.com/ncalexan/geckodriver/releases/download/v0.24.0-android/ffmpeg-4.1.1-win64-static.zip",  # noqa
+            "url": "https://github.com/mozilla/perf-automation/releases/download/FFMPEG-v4.4.1/ffmpeg-4.4.1-full_build.zip",  # noqa
             # An extension to `fetch` syntax.
-            "path": "ffmpeg-4.1.1-win64-static",
+            "path": "ffmpeg-4.4.1-full_build",
         },
     },
 }
@@ -382,10 +380,7 @@ def node(command_context, args):
 def append_env(command_context, append_path=True):
     fetches = host_fetches[host_platform()]
 
-    # Ensure that bare `ffmpeg` and ImageMagick commands
-    # {`convert`,`compare`,`mogrify`} are found.  The `visualmetrics.py`
-    # script doesn't take these as configuration, so we do this (for now).
-    # We should update the script itself to accept this configuration.
+    # Ensure that `ffmpeg` is found and added to the environment
     path = os.environ.get("PATH", "").split(os.pathsep) if append_path else []
     path_to_ffmpeg = mozpath.join(
         state_path(command_context), fetches["ffmpeg"]["path"]
@@ -404,20 +399,6 @@ def append_env(command_context, append_path=True):
     # extension API.
     node_dir = os.path.dirname(node_path(command_context))
     path = [node_dir] + path
-
-    # On macOs, we can't install our own ImageMagick because the
-    # System Integrity Protection (SIP) won't let us set DYLD_LIBRARY_PATH
-    # unless we deactivate SIP with "csrutil disable".
-    # So we're asking the user to install it.
-    #
-    # if ImageMagick was installed via brew, we want to make sure we
-    # include the PATH
-    if host_platform() == "darwin":
-        for p in os.environ["PATH"].split(os.pathsep):
-            p = p.strip()
-            if not p or p in path:
-                continue
-            path.append(p)
 
     append_env = {
         "PATH": os.pathsep.join(path),
@@ -455,8 +436,7 @@ def activate_browsertime_virtualenv(command_context, *args, **kwargs):
     This function will also install Pillow and pyssim if needed.
     It will raise an error in case the install failed.
     """
-    # TODO: (Bug 1758990) Have packages be pulled from the Mozilla pypi mirror
-    # for consistency in user environments
+    # TODO: Remove `./mach browsertime` completely, as a follow up to Bug 1758990
     MachCommandBase.activate_virtualenv(command_context, *args, **kwargs)
 
     # installing Python deps on the fly
@@ -486,9 +466,7 @@ def check(command_context):
     args = ["--check"]
     status = command_context.run_process(
         [command_context.virtualenv_manager.python_path, visualmetrics_path()] + args,
-        # For --check, don't allow user's path to interfere with
-        # path testing except on Linux, where ImageMagick needs to
-        # be installed manually.
+        # For --check, don't allow user's path to interfere with path testing except on Linux
         append_env=append_env(
             command_context, append_path=host_platform().startswith("linux")
         ),

@@ -7,14 +7,15 @@
 #ifndef mozilla_ServoStyleSet_h
 #define mozilla_ServoStyleSet_h
 
+#include "mozilla/AlreadyAddRefed.h"
 #include "mozilla/AnonymousContentKey.h"
 #include "mozilla/AtomArray.h"
 #include "mozilla/EnumeratedArray.h"
-#include "mozilla/EventStates.h"
 #include "mozilla/Maybe.h"
 #include "mozilla/PostTraversalTask.h"
 #include "mozilla/ServoBindingTypes.h"
 #include "mozilla/ServoUtils.h"
+#include "mozilla/dom/RustTypes.h"
 #include "mozilla/UniquePtr.h"
 #include "MainThreadUtils.h"
 #include "nsCSSPseudoElements.h"
@@ -25,11 +26,19 @@
 #include "nsIMemoryReporter.h"
 #include "nsTArray.h"
 #include "nsIMemoryReporter.h"
+#include "nsSize.h"
 
 namespace mozilla {
-enum class MediaFeatureChangeReason : uint16_t;
-enum class StylePageOrientation : uint8_t;
+enum class MediaFeatureChangeReason : uint8_t;
+enum class StylePageSizeOrientation : uint8_t;
 enum class StyleRuleChangeKind : uint32_t;
+
+template <typename Integer, typename Number, typename LinearStops>
+struct StyleTimingFunction;
+struct StylePiecewiseLinearFunction;
+using StyleComputedTimingFunction =
+    StyleTimingFunction<int32_t, float, StylePiecewiseLinearFunction>;
+
 namespace css {
 class Rule;
 }  // namespace css
@@ -38,6 +47,9 @@ class CSSImportRule;
 class Element;
 class ShadowRoot;
 }  // namespace dom
+namespace gfx {
+class FontPaletteValueSet;
+}  // namespace gfx
 class StyleSheet;
 struct Keyframe;
 class ServoElementSnapshotTable;
@@ -50,7 +62,6 @@ class nsIContent;
 
 class nsPresContext;
 class nsWindowSizes;
-struct nsTimingFunction;
 struct TreeMatchContext;
 
 namespace mozilla {
@@ -125,7 +136,8 @@ class ServoStyleSet {
   void ImportRuleLoaded(dom::CSSImportRule&, StyleSheet&);
 
   // Runs style invalidation due to document state changes.
-  void InvalidateStyleForDocumentStateChanges(EventStates aStatesChanged);
+  void InvalidateStyleForDocumentStateChanges(
+      dom::DocumentState aStatesChanged);
 
   void RecordShadowStyleChange(dom::ShadowRoot&);
 
@@ -139,12 +151,14 @@ class ServoStyleSet {
   // The SourceSizeList parameter can be null, in which case it will return
   // 100vw.
   inline nscoord EvaluateSourceSizeList(
-      const RawServoSourceSizeList* aSourceSizeList) const;
+      const StyleSourceSizeList* aSourceSizeList) const;
 
   void AddSizeOfIncludingThis(nsWindowSizes& aSizes) const;
-  const RawServoStyleSet* RawSet() const { return mRawSet.get(); }
+  const StylePerDocumentStyleData* RawData() const { return mRawData.get(); }
 
   bool GetAuthorStyleDisabled() const { return mAuthorStyleDisabled; }
+
+  bool UsesFontMetrics() const;
 
   void SetAuthorStyleDisabled(bool aStyleDisabled);
 
@@ -208,6 +222,18 @@ class ServoStyleSet {
                                      IsProbe::Yes);
   }
 
+  /**
+   * @brief Get a style for a highlight pseudo element.
+   *
+   * The highlight is identified by its name `aHighlightName`.
+   *
+   * Returns null if there are no rules matching for the highlight pseudo
+   * element.
+   */
+  already_AddRefed<ComputedStyle> ProbeHighlightPseudoElementStyle(
+      const dom::Element& aOriginatingElement, const nsAtom* aHighlightName,
+      ComputedStyle* aParentStyle);
+
   // Resolves style for a (possibly-pseudo) Element without assuming that the
   // style has been resolved. If the element was unstyled and a new style
   // was resolved, it is not stored in the DOM. (That is, the element remains
@@ -222,9 +248,15 @@ class ServoStyleSet {
       PseudoStyleType, ComputedStyle* aParentStyle);
 
   // Get a ComputedStyle for an anonymous box. The pseudo type must be
-  // a non-inheriting anon box.
+  // a non-inheriting anon box, and must not be page-content.
+  // See ResolvePageContentStyle for resolving page-content style.
   already_AddRefed<ComputedStyle> ResolveNonInheritingAnonymousBoxStyle(
-      PseudoStyleType);
+      PseudoStyleType aType);
+
+  // Get a ComputedStyle for a pageContent box with the specified page-name.
+  // A page name that is null or the empty atom gets the global page style.
+  already_AddRefed<ComputedStyle> ResolvePageContentStyle(
+      const nsAtom* aPageName);
 
   already_AddRefed<ComputedStyle> ResolveXULTreePseudoStyle(
       dom::Element* aParentElement, nsCSSAnonBoxPseudoStaticAtom* aPseudoTag,
@@ -233,12 +265,21 @@ class ServoStyleSet {
   size_t SheetCount(Origin) const;
   StyleSheet* SheetAt(Origin, size_t aIndex) const;
 
-  // Gets the default orientation of unnamed CSS pages.
-  // This will return portrait or landscape both for a landscape/portrait
-  // value to page-size, as well as for an explicit size or paper name which
-  // is not square.
-  // If the value is auto or square, then returns nothing.
-  Maybe<StylePageOrientation> GetDefaultPageOrientation();
+  struct FirstPageSizeAndOrientation {
+    Maybe<StylePageSizeOrientation> orientation;
+    Maybe<nsSize> size;
+  };
+  // Gets the specified orientation and size used when the first page printed
+  // has the name |aFirstPageName|, based on the page-size property.
+  //
+  // If the specified size is just an orientation, then the size will be set to
+  // nothing and the orientation will be set accordingly.
+  // If the specified size is auto or square, then the orientation will be set
+  // to nothing.
+  // Otherwise, the size will and orientation is determined by the specified
+  // page size.
+  FirstPageSizeAndOrientation GetFirstPageSizeAndOrientation(
+      const nsAtom* aFirstPageName);
 
   void AppendAllNonDocumentAuthorSheets(nsTArray<StyleSheet*>& aArray) const;
 
@@ -338,7 +379,7 @@ class ServoStyleSet {
 
   bool GetKeyframesForName(const dom::Element&, const ComputedStyle&,
                            nsAtom* aName,
-                           const nsTimingFunction& aTimingFunction,
+                           const StyleComputedTimingFunction& aTimingFunction,
                            nsTArray<Keyframe>& aKeyframes);
 
   nsTArray<ComputedKeyframeValues> GetComputedKeyframeValuesFor(
@@ -346,18 +387,19 @@ class ServoStyleSet {
       PseudoStyleType aPseudoType, const ComputedStyle* aStyle);
 
   void GetAnimationValues(
-      RawServoDeclarationBlock* aDeclarations, dom::Element* aElement,
+      StyleLockedDeclarationBlock* aDeclarations, dom::Element* aElement,
       const mozilla::ComputedStyle* aStyle,
-      nsTArray<RefPtr<RawServoAnimationValue>>& aAnimationValues);
+      nsTArray<RefPtr<StyleAnimationValue>>& aAnimationValues);
 
   void AppendFontFaceRules(nsTArray<nsFontFaceRuleContainer>& aArray);
 
-  const RawServoCounterStyleRule* CounterStyleRuleForName(nsAtom* aName);
-
-  const RawServoScrollTimelineRule* ScrollTimelineRuleForName(nsAtom* aName);
+  const StyleLockedCounterStyleRule* CounterStyleRuleForName(nsAtom* aName);
 
   // Get all the currently-active font feature values set.
   already_AddRefed<gfxFontFeatureValueSet> BuildFontFeatureValueSet();
+
+  // Get the set of all currently-active font-palette-values.
+  already_AddRefed<gfx::FontPaletteValueSet> BuildFontPaletteValueSet();
 
   already_AddRefed<ComputedStyle> GetBaseContextForElement(
       dom::Element* aElement, const ComputedStyle* aStyle);
@@ -376,7 +418,7 @@ class ServoStyleSet {
   // Note: |aElement| should be the generated element if it is pseudo.
   already_AddRefed<ComputedStyle> ResolveServoStyleByAddingAnimation(
       dom::Element* aElement, const ComputedStyle* aStyle,
-      RawServoAnimationValue* aAnimationValue);
+      StyleAnimationValue* aAnimationValue);
   /**
    * Resolve style for a given declaration block with/without the parent style.
    * If the parent style is not specified, the document default computed values
@@ -384,10 +426,10 @@ class ServoStyleSet {
    */
   already_AddRefed<ComputedStyle> ResolveForDeclarations(
       const ComputedStyle* aParentOrNull,
-      const RawServoDeclarationBlock* aDeclarations);
+      const StyleLockedDeclarationBlock* aDeclarations);
 
-  already_AddRefed<RawServoAnimationValue> ComputeAnimationValue(
-      dom::Element* aElement, RawServoDeclarationBlock* aDeclaration,
+  already_AddRefed<StyleAnimationValue> ComputeAnimationValue(
+      dom::Element* aElement, StyleLockedDeclarationBlock* aDeclaration,
       const mozilla::ComputedStyle* aStyle);
 
   void AppendTask(PostTraversalTask aTask) {
@@ -421,6 +463,26 @@ class ServoStyleSet {
                                     nsAtom* aAttribute) const;
 
   /**
+   * Returns true if a modification to an attribute with the specified local
+   * name might require us to restyle the element's siblings.
+   */
+  bool MightHaveNthOfAttributeDependency(const dom::Element&,
+                                         nsAtom* aAttribute) const;
+
+  /**
+   * Returns true if a modification to a class might require us to restyle the
+   * element's siblings.
+   */
+  bool MightHaveNthOfClassDependency(const dom::Element&);
+
+  /**
+   * Returns true if a modification to an ID might require us to restyle the
+   * element's siblings.
+   */
+  bool MightHaveNthOfIDDependency(const dom::Element&, nsAtom* aOldID,
+                                  nsAtom* aNewID) const;
+
+  /**
    * Returns true if a change in event state on an element might require
    * us to restyle the element.
    *
@@ -428,13 +490,19 @@ class ServoStyleSet {
    * the changed state isn't depended upon by any pseudo-class selectors
    * in a style sheet.
    */
-  bool HasStateDependency(const dom::Element&, EventStates) const;
+  bool HasStateDependency(const dom::Element&, dom::ElementState) const;
+
+  /**
+   * Returns true if a change in event state on an element might require
+   * us to restyle the element's siblings.
+   */
+  bool HasNthOfStateDependency(const dom::Element&, dom::ElementState) const;
 
   /**
    * Returns true if a change in document state might require us to restyle the
    * document.
    */
-  bool HasDocumentStateDependency(EventStates aState) const;
+  bool HasDocumentStateDependency(dom::DocumentState) const;
 
   /**
    * Get a new ComputedStyle that uses the same rules as the given ComputedStyle
@@ -555,7 +623,7 @@ class ServoStyleSet {
   // The owner document of this style set. Never null, and always outlives the
   // StyleSet.
   dom::Document* mDocument;
-  UniquePtr<RawServoStyleSet> mRawSet;
+  UniquePtr<StylePerDocumentStyleData> mRawData;
 
   // Map from raw Servo style rule to Gecko's wrapper object.
   // Constructed lazily when requested by devtools.

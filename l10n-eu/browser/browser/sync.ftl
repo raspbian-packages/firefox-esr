@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = Gaitu sinkronizazioa
 
 fxa-menu-connect-another-device =
     .label = Konektatu beste gailu bat…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Bidali fitxa gailura
+           *[other] Bidali { $tabCount } fitxa gailura
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

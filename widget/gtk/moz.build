@@ -23,15 +23,18 @@ if CONFIG["COMPILE_ENVIRONMENT"]:
     DIRS += ["mozgtk"]
 
 if CONFIG["MOZ_WAYLAND"]:
-    DIRS += ["wayland", "mozwayland"]
+    DIRS += ["wayland", "mozwayland", "vaapitest"]
 
 EXPORTS += [
     "MozContainer.h",
     "nsGTKToolkit.h",
+    "nsGtkUtils.h",
     "nsImageToPixbuf.h",
 ]
 
 EXPORTS.mozilla += [
+    "GfxInfo.h",
+    "GfxInfoUtils.h",
     "GRefPtr.h",
     "GUniquePtr.h",
     "WidgetUtilsGtk.h",
@@ -82,11 +85,6 @@ SOURCES += [
     "WaylandVsyncSource.cpp",  # conflicts with X11 headers
 ]
 
-if CONFIG["ACCESSIBILITY"]:
-    UNIFIED_SOURCES += [
-        "maiRedundantObjectFactory.c",
-    ]
-
 if CONFIG["MOZ_WAYLAND"]:
     UNIFIED_SOURCES += [
         "DMABufLibWrapper.cpp",
@@ -94,7 +92,6 @@ if CONFIG["MOZ_WAYLAND"]:
         "MozContainerWayland.cpp",
         "nsClipboardWayland.cpp",
         "nsWaylandDisplay.cpp",
-        "VAAPIUtils.cpp",
         "WaylandBuffer.cpp",
         "WindowSurfaceWaylandMultiBuffer.cpp",
     ]
@@ -103,14 +100,7 @@ if CONFIG["MOZ_WAYLAND"]:
         "DMABufSurface.h",
         "MozContainerWayland.h",
         "nsWaylandDisplay.h",
-        "VAAPIUtils.h",
         "WaylandBuffer.h",
-    ]
-    LOCAL_INCLUDES += [
-        "/media/mozva",
-    ]
-    USE_LIBS += [
-        "mozva",
     ]
 
 if CONFIG["MOZ_X11"] or CONFIG["MOZ_WAYLAND"]:
@@ -187,6 +177,5 @@ if CONFIG["MOZ_ENABLE_DBUS"]:
         "AsyncDBus.cpp",
     ]
     CXXFLAGS += CONFIG["MOZ_DBUS_GLIB_CFLAGS"]
-CXXFLAGS += ["-Werror=switch"]
 
-REQUIRES_UNIFIED_BUILD = True
+CXXFLAGS += ["-Werror=switch"]

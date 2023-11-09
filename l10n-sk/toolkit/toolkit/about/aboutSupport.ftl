@@ -175,6 +175,15 @@ media-codec-support-info = Informácie o podpore kodekov
 # List all the entries of the database.
 media-capabilities-enumerate = Vypísanie databázy
 
+## Codec support table
+
+media-codec-support-sw-decoding = Softvérové dekódovanie
+media-codec-support-hw-decoding = Hardvérové dekódovanie
+media-codec-support-codec-name = Názov kodeku
+media-codec-support-supported = Podporované
+media-codec-support-unsupported = Nepodporované
+media-codec-support-error = Informácie o podpore kodeku nie sú k dispozícii. Skúste to znova po prehratí mediálneho súboru.
+
 ##
 
 intl-title = Internacionalizácia a lokalizácia
@@ -293,6 +302,8 @@ webgl2-renderer = Ovládač pre zobrazovanie WebGL 2
 webgl2-version = Verzia ovládača WebGL 2
 webgl2-driver-extensions = Rozšírenia ovládača WebGL 2
 webgl2-extensions = Rozšírenia WebGL 2
+webgpu-default-adapter = Predvolený adaptér WebGPU
+webgpu-fallback-adapter = Záložný adaptér WebGPU
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Zablokované kvôli známym problémom: <a data-l10n-name="bug-link">bug { $bugNumber }</a>

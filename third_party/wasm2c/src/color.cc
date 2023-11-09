@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-#include "src/color.h"
+#include "wabt/color.h"
 
 #include <cstdlib>
 
-#include "src/common.h"
+#include "wabt/common.h"
 
 #if _WIN32
+#if HAVE_WIN32_VT100
 #include <io.h>
 #include <windows.h>
+#endif
 #elif HAVE_UNISTD_H
 #include <unistd.h>
 #endif

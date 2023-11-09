@@ -3,26 +3,25 @@
  * See pwmgr_common.js for the content process companion.
  */
 
+/* eslint-env mozilla/chrome-script */
+
 "use strict";
 
-// assert is available to chrome scripts loaded via SpecialPowers.loadChromeScript.
-/* global assert */
-/* eslint-env mozilla/frame-script */
-
-var { AppConstants } = ChromeUtils.import(
-  "resource://gre/modules/AppConstants.jsm"
+var { AppConstants } = ChromeUtils.importESModule(
+  "resource://gre/modules/AppConstants.sys.mjs"
 );
-var { LoginHelper } = ChromeUtils.import(
-  "resource://gre/modules/LoginHelper.jsm"
+var { LoginHelper } = ChromeUtils.importESModule(
+  "resource://gre/modules/LoginHelper.sys.mjs"
 );
-var { LoginManagerParent } = ChromeUtils.import(
-  "resource://gre/modules/LoginManagerParent.jsm"
+var { LoginManagerParent } = ChromeUtils.importESModule(
+  "resource://gre/modules/LoginManagerParent.sys.mjs"
 );
-const { LoginTestUtils } = ChromeUtils.import(
-  "resource://testing-common/LoginTestUtils.jsm"
+const { LoginTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/LoginTestUtils.sys.mjs"
 );
 if (LoginHelper.relatedRealmsEnabled) {
-  let rsPromise = LoginTestUtils.remoteSettings.setupWebsitesWithSharedCredentials();
+  let rsPromise =
+    LoginTestUtils.remoteSettings.setupWebsitesWithSharedCredentials();
   async () => {
     await rsPromise;
   };
@@ -35,7 +34,6 @@ if (LoginHelper.improvedPasswordRulesEnabled) {
     await rsPromise;
   };
 }
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 /**
  * Init with a common login
@@ -43,7 +41,7 @@ var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
  * the test can start checking filled-in values. Tests that check observer
  * notifications might be confused by this.
  */
-function commonInit(selfFilling, testDependsOnDeprecatedLogin) {
+async function commonInit(selfFilling, testDependsOnDeprecatedLogin) {
   var pwmgr = Services.logins;
   assert.ok(pwmgr != null, "Access LoginManager");
 
@@ -72,7 +70,7 @@ function commonInit(selfFilling, testDependsOnDeprecatedLogin) {
       "uname",
       "pword"
     );
-    pwmgr.addLogin(login);
+    await pwmgr.addLoginAsync(login);
   }
 
   // Last sanity check
@@ -148,19 +146,22 @@ addMessageListener("cleanup", () => {
 
 addMessageListener(
   "setupParent",
-  ({ selfFilling = false, testDependsOnDeprecatedLogin = false } = {}) => {
-    commonInit(selfFilling, testDependsOnDeprecatedLogin);
+  async ({
+    selfFilling = false,
+    testDependsOnDeprecatedLogin = false,
+  } = {}) => {
+    await commonInit(selfFilling, testDependsOnDeprecatedLogin);
     sendAsyncMessage("doneSetup");
   }
 );
 
-addMessageListener("loadRecipes", async function(recipes) {
+addMessageListener("loadRecipes", async function (recipes) {
   var recipeParent = await LoginManagerParent.recipeParentPromise;
   await recipeParent.load(recipes);
   sendAsyncMessage("loadedRecipes", recipes);
 });
 
-addMessageListener("resetRecipes", async function() {
+addMessageListener("resetRecipes", async function () {
   let recipeParent = await LoginManagerParent.recipeParentPromise;
   await recipeParent.reset();
   sendAsyncMessage("recipesReset");

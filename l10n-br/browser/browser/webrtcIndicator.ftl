@@ -3,17 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-# Note: This is currently placed under browser/base/content so that we can
-# get the strings to appear without having our localization community need
-# to go through and translate everything. Once these strings are ready for
-# translation, we'll move it to the locales folder.
-
-
 ## These strings are used so that the window has a title in tools that
 ## enumerate/look for window titles. It is not normally visible anywhere.
 
-# This string is used so that the window has a title in tools that enumerate/look for window
-# titles. It is not normally visible anywhere.
 webrtc-indicator-title = { -brand-short-name } - Merker ar rannañ
 webrtc-indicator-window =
     .title = { -brand-short-name } - Merker ar rannañ
@@ -59,9 +51,6 @@ webrtc-minimize =
 ## device sharing state in the OS notification area. We do not use these strings
 ## on macOS, as global menu bar items do not have native tooltips.
 
-# This string will display as a tooltip on supported systems where we show
-# device sharing state in the OS notification area. We do not use these strings
-# on macOS, as global menu bar items do not have native tooltips.
 webrtc-camera-system-menu =
     .label = Emaoc'h o rannañ ho kamera. Klikit evit reoliñ ar rannañ.
 webrtc-microphone-system-menu =
@@ -205,6 +194,9 @@ webrtc-action-block =
 webrtc-action-always-block =
     .label = Stankañ bepred
     .accesskey = b
+webrtc-action-not-now =
+    .label = Diwezhatoc'h
+    .accesskey = N
 
 ##
 

@@ -84,8 +84,8 @@ class SVGElement : public SVGElementBase  // nsIContent
   virtual ~SVGElement();
 
  public:
-  virtual nsresult Clone(mozilla::dom::NodeInfo*,
-                         nsINode** aResult) const MOZ_MUST_OVERRIDE override;
+  nsresult Clone(mozilla::dom::NodeInfo*,
+                 nsINode** aResult) const MOZ_MUST_OVERRIDE override;
 
   // From Element
   nsresult CopyInnerTo(mozilla::dom::Element* aDest);
@@ -102,7 +102,7 @@ class SVGElement : public SVGElementBase  // nsIContent
 
   void SetNonce(const nsAString& aNonce) {
     SetProperty(nsGkAtoms::nonce, new nsString(aNonce),
-                nsINode::DeleteProperty<nsString>);
+                nsINode::DeleteProperty<nsString>, /* aTransfer = */ true);
   }
   void RemoveNonce() { RemoveProperty(nsGkAtoms::nonce); }
   void GetNonce(nsAString& aNonce) const {
@@ -114,34 +114,18 @@ class SVGElement : public SVGElementBase  // nsIContent
 
   // nsIContent interface methods
 
-  virtual nsresult BindToTree(BindContext&, nsINode& aParent) override;
+  nsresult BindToTree(BindContext&, nsINode& aParent) override;
 
-  virtual nsChangeHint GetAttributeChangeHint(const nsAtom* aAttribute,
-                                              int32_t aModType) const override;
-
-  virtual bool IsNodeOfType(uint32_t aFlags) const override;
-  virtual bool IsSVGGraphicsElement() const { return false; }
+  nsChangeHint GetAttributeChangeHint(const nsAtom* aAttribute,
+                                      int32_t aModType) const override;
 
   /**
    * We override the default to unschedule computation of Servo declaration
    * blocks when adopted across documents.
    */
-  virtual void NodeInfoChanged(Document* aOldDoc) override;
+  void NodeInfoChanged(Document* aOldDoc) override;
 
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
-
-  static const MappedAttributeEntry sFillStrokeMap[];
-  static const MappedAttributeEntry sGraphicsMap[];
-  static const MappedAttributeEntry sTextContentElementsMap[];
-  static const MappedAttributeEntry sFontSpecificationMap[];
-  static const MappedAttributeEntry sGradientStopMap[];
-  static const MappedAttributeEntry sViewportsMap[];
-  static const MappedAttributeEntry sMarkersMap[];
-  static const MappedAttributeEntry sColorMap[];
-  static const MappedAttributeEntry sFiltersMap[];
-  static const MappedAttributeEntry sFEFloodMap[];
-  static const MappedAttributeEntry sLightingEffectsMap[];
-  static const MappedAttributeEntry sMaskMap[];
 
   NS_IMPL_FROMNODE(SVGElement, kNameSpaceID_SVG)
 
@@ -350,26 +334,32 @@ class SVGElement : public SVGElementBase  // nsIContent
   void UpdateContentDeclarationBlock();
   const mozilla::DeclarationBlock* GetContentDeclarationBlock() const;
 
+  bool Autofocus() const { return GetBoolAttr(nsGkAtoms::autofocus); }
+  void SetAutofocus(bool aAutofocus, ErrorResult& aRv) {
+    if (aAutofocus) {
+      SetAttr(nsGkAtoms::autofocus, u""_ns, aRv);
+    } else {
+      UnsetAttr(nsGkAtoms::autofocus, aRv);
+    }
+  }
+
  protected:
-  virtual JSObject* WrapNode(JSContext* cx,
-                             JS::Handle<JSObject*> aGivenProto) override;
+  JSObject* WrapNode(JSContext* cx, JS::Handle<JSObject*> aGivenProto) override;
 
   // We define BeforeSetAttr here and mark it final to ensure it is NOT used
   // by SVG elements.
   // This is because we're not currently passing the correct value for aValue to
   // BeforeSetAttr since it would involve allocating extra SVG value types.
   // See the comment in SVGElement::WillChangeValue.
-  nsresult BeforeSetAttr(int32_t aNamespaceID, nsAtom* aName,
-                         const nsAttrValueOrString* aValue, bool aNotify) final;
-  virtual nsresult AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
-                                const nsAttrValue* aValue,
-                                const nsAttrValue* aOldValue,
-                                nsIPrincipal* aSubjectPrincipal,
-                                bool aNotify) override;
-  virtual bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
-                              const nsAString& aValue,
-                              nsIPrincipal* aMaybeScriptedPrincipal,
-                              nsAttrValue& aResult) override;
+  void BeforeSetAttr(int32_t aNamespaceID, nsAtom* aName,
+                     const nsAttrValue* aValue, bool aNotify) final;
+  void AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
+                    const nsAttrValue* aValue, const nsAttrValue* aOldValue,
+                    nsIPrincipal* aSubjectPrincipal, bool aNotify) override;
+  bool ParseAttribute(int32_t aNamespaceID, nsAtom* aAttribute,
+                      const nsAString& aValue,
+                      nsIPrincipal* aMaybeScriptedPrincipal,
+                      nsAttrValue& aResult) override;
   static nsresult ReportAttributeParseFailure(Document* aDocument,
                                               nsAtom* aAttribute,
                                               const nsAString& aValue);

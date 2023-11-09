@@ -30,10 +30,6 @@ third-party-tag-background = Háttér
     .title =
         Ez a modul nem blokkolja az alkalmazást, mert a háttérben lett
         betöltve.
-third-party-unsigned-icon =
-    .title = Ez a modul nincs aláírva
-third-party-warning-icon =
-    .title = A { -brand-short-name } összeomlott a modul kódjában
 third-party-icon-unsigned =
     .title = Ez a modul nincs aláírva
     .alt = Ez a modul nincs aláírva
@@ -44,6 +40,9 @@ third-party-status-loaded = Betöltött
 third-party-status-blocked = Blokkolt
 third-party-status-redirected = Átirányított
 third-party-button-copy-to-clipboard = Nyers adatok másolása a vágólapra
+third-party-loading-data =
+    .alt = Rendszer-információk betöltése…
+    .title = Rendszer-információk betöltése…
 third-party-button-reload = Újratöltés rendszer-információkkal
     .title = Újratöltés rendszer-információkkal
 third-party-button-open =
@@ -61,13 +60,22 @@ third-party-button-to-unblock-disabled =
     .aria-label =
         Jelenleg tiltottként van megjelölve, bár a tiltólista le van tiltva a { -brand-short-name }
         jelenlegi futásánál. Kattintson a feloldásához.
+third-party-button-to-block-module = Ezen modul blokkolása
+    .title = Ezen modul blokkolása
+    .aria-label = Ezen modul blokkolása
+third-party-button-to-unblock-module = Ezen modul blokkolásának feloldása
+    .title = Jelenleg blokkolva. Kattintson a feloldásához
+    .aria-label = Jelenleg blokkolva. Kattintson a feloldásához
+third-party-button-to-unblock-module-disabled = Ezen modul blokkolásának feloldása (a tiltólista ki van kapcsolva)
+    .title = Jelenleg blokkoltnak van jelölve, de a tiltólista ki van kapcsolva ennél a { -brand-short-name } jelenlegi futásánál. Kattintson ide a feloldásához.
+    .aria-label = Jelenleg blokkoltnak van jelölve, de a tiltólista ki van kapcsolva ennél a { -brand-short-name } jelenlegi futásánál. Kattintson ide a feloldásához.
 third-party-button-expand =
     .title = Részletes információk megjelenítése
 third-party-button-collapse =
     .title = Részletes információk összecsukása
-third-party-requires-restart = A { -brand-short-name } újraindítása szükséges ahhoz, hogy módosítsa, mely harmadik féltől származó modulok legyenek tiltva.
+third-party-blocking-requires-restart = Harmadik féltől származó modul blokkolásához a { -brand-short-name } újraindítása szükséges.
 third-party-should-restart-title = A { -brand-short-name } újraindítása
-third-party-should-restart-ok = A { -brand-short-name } újraindítása most
+third-party-restart-now = Újraindítás most
 third-party-restart-later = Újraindítás később
 third-party-blocked-by-builtin =
     .title = A { -brand-short-name } letiltotta

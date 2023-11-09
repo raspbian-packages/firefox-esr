@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Njedawno začinjene
 firefoxview-closed-tabs-description2 = Wočińće strony znowa, kotrež sće w tutym woknje začinił.
 firefoxview-closed-tabs-placeholder-header = Žane runje začinjene rajtarki
 firefoxview-closed-tabs-placeholder-body = Hdyž w tutym woknje rajtark začinjeće, móžeće jón wottud wuwołać.
+firefoxview-closed-tabs-placeholder-body2 = Hdyž rajtark začinjeće, móžeće jón wottud wuwołać.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -81,3 +82,63 @@ firefoxview-collapse-button-show =
     .title = Lisćinu pokazać
 firefoxview-collapse-button-hide =
     .title = Lisćinu schować
+firefoxview-overview-nav = Njedawno wopytane
+    .title = Njedawno wopytane
+firefoxview-overview-header = Njedawno wopytane
+    .title = Njedawno wopytane
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Historija
+    .title = Historija
+firefoxview-history-header = Historija
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Wočinjene rajtarki
+    .title = Wočinjene rajtarki
+firefoxview-opentabs-header = Wočinjene rajtarki
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Runje začinjene rajtarki
+    .title = Runje začinjene rajtarki
+firefoxview-recently-closed-header = Runje začinjene rajtarki
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Rajtarki z druhich gratow
+    .title = Rajtarki z druhich gratow
+firefoxview-synced-tabs-header = Rajtarki z druhich gratow
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Wšě pokazać
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Wokno { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Wokno { $winID } (aktualne)
+firefoxview-opentabs-focus-tab =
+    .title = K tutomu rajtarkej přeńć
+firefoxview-show-more = Wjace pokazać
+firefoxview-show-less = Mjenje pokazać
+firefoxview-sort-history-by-date-label = Po datumje sortěrować
+firefoxview-sort-history-by-site-label = Po sydle sortěrować
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Dźensa – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Wčera – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Wšu historiju pokazać
+firefoxview-view-more-browsing-history = Dalšu přehladowansku historiju pokazać

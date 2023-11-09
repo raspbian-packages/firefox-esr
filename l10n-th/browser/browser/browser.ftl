@@ -5,46 +5,15 @@
 
 ## The main browser window's title
 
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
 #
 # default - "Mozilla Firefox"
 # private - "Mozilla Firefox (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } (การเรียกดูแบบส่วนตัว)
-    .data-content-title-default = { $content-title } - { -brand-full-name }
-    .data-content-title-private = { $content-title } - { -brand-full-name } (การเรียกดูแบบส่วนตัว)
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
-#
-# "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox — (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
-#
-# Also note the other subtle difference here: we use a `-` to separate the
-# brand name from `(Private Browsing)`, which does not happen on other OSes.
-#
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window-mac =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } - (การเรียกดูแบบส่วนตัว)
-    .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } - (การเรียกดูแบบส่วนตัว)
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
-#
-# default - "Mozilla Firefox"
-# private - "Mozilla Firefox (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
 # Variables:
 #  $content-title (String): the title of the web content.
 browser-main-window-window-titles =
@@ -52,14 +21,17 @@ browser-main-window-window-titles =
     .data-title-private = การเรียกดูแบบส่วนตัวของ { -brand-full-name }
     .data-content-title-default = { $content-title } — { -brand-full-name }
     .data-content-title-private = { $content-title } — การเรียกดูแบบส่วนตัวของ { -brand-full-name }
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
 #
 # "default" - "Mozilla Firefox"
 # "private" - "Mozilla Firefox — (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -109,16 +81,12 @@ urlbar-xr-notification-anchor =
     .tooltiptext = เปิดแผงสิทธิอนุญาตความจริงเสมือน
 urlbar-storage-access-anchor =
     .tooltiptext = เปิดแผงสิทธิอนุญาตกิจกรรมการเรียกดู
-urlbar-translate-notification-anchor =
-    .tooltiptext = แปลหน้านี้
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = จัดการการแบ่งปันหน้าต่างหรือหน้าจอของคุณกับไซต์
 urlbar-indexed-db-notification-anchor =
     .tooltiptext = เปิดแผงข้อความที่เก็บข้อมูลออฟไลน์
 urlbar-password-notification-anchor =
     .tooltiptext = เปิดแผงข้อความบันทึกรหัสผ่าน
-urlbar-translated-notification-anchor =
-    .tooltiptext = จัดการการแปลหน้า
 urlbar-plugins-notification-anchor =
     .tooltiptext = จัดการการใช้ปลั๊กอิน
 urlbar-web-rtc-share-devices-notification-anchor =
@@ -144,6 +112,11 @@ urlbar-tip-icon-description =
     .alt = เคล็ดลับ:
 urlbar-result-menu-button =
     .title = เปิดเมนู
+urlbar-result-menu-button-feedback = ข้อคิดเห็น
+    .title = เปิดเมนู
+urlbar-result-menu-learn-more =
+    .label = เรียนรู้เพิ่มเติม
+    .accesskey = ร
 urlbar-result-menu-remove-from-history =
     .label = เอาออกจากประวัติ
     .accesskey = อ
@@ -208,10 +181,6 @@ urlbar-star-add-bookmark =
 
 ## Page Action Context Menu
 
-page-action-manage-extension =
-    .label = จัดการส่วนขยาย…
-page-action-remove-extension =
-    .label = เอาส่วนขยายออก
 page-action-manage-extension2 =
     .label = จัดการส่วนขยาย…
     .accesskey = E
@@ -402,7 +371,7 @@ identity-clear-site-data =
 identity-connection-not-secure-security-view = คุณไม่ได้เชื่อมต่ออย่างปลอดภัยไปยังไซต์นี้
 identity-connection-verified = คุณได้เชื่อมต่ออย่างปลอดภัยไปยังไซต์นี้
 identity-ev-owner-label = ออกใบรับรองให้กับ:
-identity-description-custom-root = Mozilla ไม่รู้จักผู้ออกใบรับรองนี้ ซึ่งอาจถูกเพิ่มจากระบบปฏิบัติการของคุณหรือโดยผู้ดูแลระบบ <label data-l10n-name="link">เรียนรู้เพิ่มเติม</label>
+identity-description-custom-root2 = Mozilla ไม่รู้จักผู้ออกใบรับรองนี้ ซึ่งอาจถูกเพิ่มจากระบบปฏิบัติการของคุณหรือโดยผู้ดูแลระบบ
 identity-remove-cert-exception =
     .label = เอาข้อยกเว้นออก
     .accesskey = อ
@@ -410,14 +379,12 @@ identity-description-insecure = การเชื่อมต่อของค
 identity-description-insecure-login-forms = การเข้าสู่ระบบที่คุณป้อนบนหน้านี้ไม่ปลอดภัยและอาจถูกบุกรุกได้
 identity-description-weak-cipher-intro = การเชื่อมต่อของคุณไปยังเว็บไซต์นี้ใช้การเข้ารหัสที่อ่อนแอและไม่เป็นส่วนตัว
 identity-description-weak-cipher-risk = ผู้คนอื่น ๆ สามารถดูข้อมูลของคุณหรือเปลี่ยนแปลงลักษณะการทำงานของเว็บไซต์
-identity-description-active-blocked = { -brand-short-name } ได้ปิดกั้นบางส่วนของหน้านี้ที่ไม่ปลอดภัย <label data-l10n-name="link">เรียนรู้เพิ่มเติม</label>
+identity-description-active-blocked2 = { -brand-short-name } ได้ปิดกั้นบางส่วนของหน้านี้ที่ไม่ปลอดภัย
 identity-description-passive-loaded = การเชื่อมต่อของคุณไม่เป็นส่วนตัวและข้อมูลที่คุณแบ่งปันกับเว็บไซต์คนอื่นสามารถดูได้
-identity-description-passive-loaded-insecure = เว็บไซต์นี้มีเนื้อหาที่ไม่ปลอดภัย (อย่างเช่น ภาพ) <label data-l10n-name="link">เรียนรู้เพิ่มเติม</label>
-identity-description-passive-loaded-mixed = ถึงแม้ว่า { -brand-short-name } ได้ปิดกั้นเนื้อหาบางส่วน แต่ก็ยังคงมีเนื้อหาในหน้าที่ไม่ปลอดภัย (อย่างเช่น ภาพ) <label data-l10n-name="link">เรียนรู้เพิ่มเติม</label>
+identity-description-passive-loaded-insecure2 = เว็บไซต์นี้มีเนื้อหาที่ไม่ปลอดภัย (อย่างเช่น ภาพ)
+identity-description-passive-loaded-mixed2 = ถึงแม้ว่า { -brand-short-name } ได้ปิดกั้นเนื้อหาบางส่วน แต่ก็ยังคงมีเนื้อหาในหน้าที่ไม่ปลอดภัย (อย่างเช่น ภาพ)
 identity-description-active-loaded = เว็บไซต์นี้ประกอบด้วยเนื้อหาที่เชื่อถือไม่ได้ (เช่น สคริปต์) และการเชื่อมต่อไปยังไซต์ก็ไม่เป็นส่วนตัว
 identity-description-active-loaded-insecure = ข้อมูลที่คุณแบ่งปันกับไซต์นี้สามารถดูได้โดยผู้อื่น (เช่น รหัสผ่าน, ข้อความ, บัตรเครดิต ฯลฯ)
-identity-learn-more =
-    .value = เรียนรู้เพิ่มเติม
 identity-disable-mixed-content-blocking =
     .label = ปิดใช้งานการป้องกันในตอนนี้
     .accesskey = ป
@@ -494,13 +461,6 @@ popup-select-window-or-screen =
     .label = หน้าต่างหรือหน้าจอ:
     .accesskey = ห
 popup-all-windows-shared = หน้าต่างที่ปรากฏอยู่ทั้งหมดบนหน้าจอของคุณจะถูกแบ่งปัน
-popup-screen-sharing-block =
-    .label = ปิดกั้น
-    .accesskey = ป
-popup-screen-sharing-always-block =
-    .label = ปิดกั้นเสมอ
-    .accesskey = ส
-popup-mute-notifications-checkbox = ปิดเสียงการแจ้งเตือนเว็บไซต์ขณะแบ่งปัน
 
 ## WebRTC window or screen share tab switch warning
 
@@ -513,7 +473,6 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
-enable-devtools-popup-description = หากต้องการใช้ทางลัด F12 ให้เปิด DevTools ก่อนผ่านเมนู Web Developer
 enable-devtools-popup-description2 = หากต้องการใช้ทางลัด F12 ให้เปิด DevTools ก่อนผ่านเมนู เครื่องมือสำหรับเบราว์เซอร์
 
 ## URL Bar
@@ -656,6 +615,20 @@ reader-view-enter-button =
 reader-view-close-button =
     .aria-label = ปิดมุมมองผู้อ่าน
 
+## Picture-in-Picture urlbar button
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+picture-in-picture-urlbar-button-open =
+    .tooltiptext = เปิดการแสดงภาพซ้อนภาพ ({ $shortcut })
+picture-in-picture-urlbar-button-close =
+    .tooltiptext = ปิดการแสดงภาพซ้อนภาพ ({ $shortcut })
+picture-in-picture-panel-header = ภาพที่เล่นควบคู่
+picture-in-picture-panel-headline = เว็บไซต์นี้ไม่แนะนำภาพที่เล่นควบคู่
+picture-in-picture-panel-body = วิดีโออาจไม่แสดงตามที่นักพัฒนาคาดไว้ในขณะที่เปิดใช้งานการแสดงภาพซ้อนภาพ
+picture-in-picture-enable-toggle =
+    .label = เปิดใช้งานต่อไป
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -672,19 +645,6 @@ fullscreen-exit-mac-button = ออกจากภาพเต็มหน้า
 pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> ได้ควบคุมตัวชี้ของคุณ กด Esc เพื่อดึงการควบคุมคืน
 pointerlock-warning-no-domain = เอกสารชิ้นนี้ได้ควบคุมตัวชี้ของคุณ กด Esc เพื่อดึงการควบคุมคืน
 
-## Subframe crash notification
-
-crashed-subframe-message = <strong>เนื้อหาบางส่วนของหน้านี้ขัดข้อง</strong> หากต้องการแจ้งให้ { -brand-product-name } ทราบเกี่ยวกับปัญหานี้เพื่อให้ได้รับการแก้ไขเร็วขึ้น โปรดส่งรายงาน
-# The string for crashed-subframe-title.title should match crashed-subframe-message,
-# but without any markup.
-crashed-subframe-title =
-    .title = เนื้อหาบางส่วนของหน้านี้ขัดข้อง หากต้องการแจ้งให้ { -brand-product-name } ทราบเกี่ยวกับปัญหานี้เพื่อให้ได้รับการแก้ไขเร็วขึ้น โปรดส่งรายงาน
-crashed-subframe-learnmore-link =
-    .value = เรียนรู้เพิ่มเติม
-crashed-subframe-submit =
-    .label = ส่งรายงาน
-    .accesskey = ส
-
 ## Bookmarks panels, menus and toolbar
 
 bookmarks-manage-bookmarks =
@@ -700,6 +660,11 @@ bookmarks-other-bookmarks-menu =
     .label = ที่คั่นหน้าอื่น ๆ
 bookmarks-mobile-bookmarks-menu =
     .label = ที่คั่นหน้าในมือถือ
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
@@ -724,12 +689,13 @@ bookmarks-tools-menu-button-visibility =
             [true] เอาเมนูที่คั่นหน้าออกจากแถบเครื่องมือ
            *[other] เพิ่มเมนูที่คั่นหน้าไปยังแถบเครื่องมือ
         }
+
+##
+
 bookmarks-search =
     .label = ค้นหาที่คั่นหน้า
 bookmarks-tools =
     .label = เครื่องมือที่คั่นหน้า
-bookmarks-bookmark-edit-panel =
-    .label = แก้ไขที่คั่นหน้านี้
 bookmarks-subview-edit-bookmark =
     .label = แก้ไขที่คั่นหน้านี้…
 # The aria-label is a spoken label that should not include the word "toolbar" or
@@ -745,9 +711,6 @@ bookmarks-toolbar-placeholder =
     .title = รายการแถบเครื่องมือที่คั่นหน้า
 bookmarks-toolbar-placeholder-button =
     .label = รายการแถบเครื่องมือที่คั่นหน้า
-# "Bookmark" is a verb, as in "Add current tab to bookmarks".
-bookmarks-current-tab =
-    .label = เพิ่มที่คั่นหน้าแท็บปัจจุบัน
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-subview-bookmark-tab =
     .label = เพิ่มที่คั่นหน้าสำหรับแท็บปัจจุบัน…
@@ -774,11 +737,6 @@ repair-text-encoding-button =
 ## Customize Toolbar Buttons
 
 # Variables:
-#  $shortcut (String): keyboard shortcut to open the add-ons manager
-toolbar-addons-themes-button =
-    .label = ส่วนเสริมและชุดรูปแบบ
-    .tooltiptext = จัดการส่วนเสริมและชุดรูปแบบของคุณ ({ $shortcut })
-# Variables:
 #  $shortcut (String): keyboard shortcut to open settings (only on macOS)
 toolbar-settings-button =
     .label = การตั้งค่า
@@ -793,6 +751,9 @@ toolbar-overflow-customize-button =
 toolbar-button-email-link =
     .label = ส่งลิงก์ทางอีเมล
     .tooltiptext = ส่งลิงก์ที่ไปยังหน้านี้ทางอีเมล
+toolbar-button-logins =
+    .label = รหัสผ่าน
+    .tooltiptext = ดูและจัดการรหัสผ่านที่บันทึกไว้ของคุณ
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
@@ -824,13 +785,6 @@ eme-notifications-drm-content-playing-dismiss-accesskey = ด
 
 panel-save-update-username = ชื่อผู้ใช้
 panel-save-update-password = รหัสผ่าน
-
-## Add-on removal warning
-
-# Variables:
-#  $name (String): The name of the addon that will be removed.
-addon-removal-title = ต้องการเอา { $name } ออกหรือไม่?
-addon-removal-abuse-report-checkbox = รายงานส่วนขยายนี้ไปยัง { -vendor-short-name }
 
 ##
 
@@ -899,8 +853,6 @@ navbar-library =
     .tooltiptext = ดูประวัติ, ที่คั่นหน้าที่บันทึกไว้ และอื่น ๆ
 navbar-search =
     .title = ค้นหา
-navbar-accessibility-indicator =
-    .tooltiptext = คุณลักษณะการช่วยการเข้าถึงถูกเปิดใช้งานอยู่
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
@@ -942,6 +894,15 @@ unified-extensions-button-permissions-needed =
         ส่วนขยาย
         ต้องการสิทธิอนุญาต
 
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = ส่วนขยาย
+    .tooltiptext =
+        ส่วนขยาย
+        ไม่ได้อนุญาตส่วนขยายบางตัว
+
 ## Autorefresh blocker
 
 refresh-blocked-refresh-label = { -brand-short-name } ได้ป้องกันไม่ให้หน้านี้โหลดใหม่โดยอัตโนมัติ
@@ -952,9 +913,39 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-relay = { -relay-brand-name } ปกปิดที่อยู่อีเมลที่แท้จริงของคุณเพื่อช่วยปกป้องคุณจากการรั่วไหลของข้อมูลและสแปม
-firefox-relay-offer-how-we-integrate = เมื่อดำเนินการต่อ คุณจะสามารถสร้างตัวปกปิดอีเมล { -relay-brand-short-name } ใหม่ได้โดยตรงจากตัวจัดการรหัสผ่าน { -brand-shorter-name } ของคุณ
+firefox-relay-offer-why-to-use-relay = ตัวปกปิดที่ปลอดภัยและใช้ง่ายของเราช่วยปกป้องข้อมูลประจำตัวของคุณและป้องกันสแปมด้วยการซ่อนที่อยู่อีเมลของคุณ
 # Variables:
-#  $sitename (String): name of the site where user enters their Relay mask
 #  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-does = เราจะส่งต่ออีเมลทั้งหมดจาก <strong>{ $sitename }</strong> ไปยัง <strong>{ $useremail }</strong>
+firefox-relay-offer-what-relay-provides = อีเมลทั้งหมดที่ส่งไปยังตัวปกปิดอีเมลของคุณจะถูกส่งต่อไปยัง <strong>{ $useremail }</strong> (นอกจากคุณจะตัดสินใจปิดกั้นอีเมลเหล่านั้น)
+firefox-relay-offer-legal-notice = การคลิก “ใช้ตัวปกปิดอีเมล” ถือว่าคุณยอมรับ<label data-l10n-name="tos-url">เงื่อนไขการใช้บริการ</label>และ<label data-l10n-name="privacy-url">ข้อกำหนดความเป็นส่วนตัว</label>
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = (ไม่ได้รับการยืนยัน)
+popup-notification-xpinstall-prompt-learn-more = เรียนรู้เพิ่มเติมเกี่ยวกับการติดตั้งส่วนเสริมอย่างปลอดภัย
+
+## Pop-up warning
+
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message = { -brand-short-name } ได้ป้องกันไม่ให้ไซต์นี้เปิด { $popupCount } หน้าต่างป๊อปอัป
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message = { -brand-short-name } ได้ป้องกันไม่ให้ไซต์นี้เปิดมากกว่า { $popupCount } หน้าต่างป๊อปอัป
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] ตัวเลือก
+           *[other] การตั้งค่า
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] ต
+           *[other] ค
+        }
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = แสดง “{ $popupURI }”

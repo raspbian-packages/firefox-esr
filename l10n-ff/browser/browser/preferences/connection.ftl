@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Teelte Seŋorde
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Teelte Seŋorde
     .style =
@@ -76,13 +68,14 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Ndee suɓre maa goongɗitin-ma e muumre to proksiiji so a danndii innitorɗe maa e majje. Maa naamne so goongɗitinol woorii.
 
+connection-proxy-autologin-checkbox =
+    .label = Hoto naamno goongɗitinol so finnde ena danndaa
+    .accesskey = i
+    .tooltiptext = Ndee suɓre maa goongɗitin-ma e muumre to proksiiji so a danndii innitorɗe maa e majje. Maa naamne so goongɗitinol woorii.
+
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS so SOCKS v5 huutoraama
     .accesskey = d
-
-connection-dns-over-https =
-    .label = Hurmitin DS dow TTPS
-    .accesskey = b
 
 connection-dns-over-https-url-custom =
     .label = Neɗɗinaa

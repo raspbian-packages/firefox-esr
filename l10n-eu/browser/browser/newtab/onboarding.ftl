@@ -13,6 +13,7 @@
 onboarding-welcome-header = Ongi etorri { -brand-short-name }(e)ra
 onboarding-start-browsing-button-label = Hasi nabigatzen
 onboarding-not-now-button-label = Orain ez
+mr1-onboarding-get-started-primary-button-label = Hasi erabiltzen
 
 ## Custom Return To AMO onboarding strings
 
@@ -33,103 +34,24 @@ mr1-return-to-amo-add-extension-label = Gehitu { $addon-name }
 
 ## Multistage onboarding strings (about:welcome pages)
 
-# Aria-label to make the "steps" of multistage onboarding visible to screen readers.
-# Variables:
-#   $current (Int) - Number of the current page
-#   $total (Int) - Total number of pages
-onboarding-welcome-steps-indicator =
-    .aria-label = Hasi erabiltzen: { $total } / { $current }. pantaila
 
 # Aria-label to make the "steps" of multistage onboarding visible to screen readers.
 # Variables:
 #   $current (Int) - Number of the current page
 #   $total (Int) - Total number of pages
 
-onboarding-welcome-steps-indicator2 =
-    .aria-valuetext = Aurrerapena: { $total } / { $current }
 onboarding-welcome-steps-indicator-label =
     .aria-label = Aurrerapena: { $total } / { $current }
-# "Hero Text" displayed on left side of welcome screen.
-# The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
-# It also signals the passion users bring to Firefox, how they use
-# Firefox to pursue those passions, as well as the boldness in their
-# choice to use Firefox over a larger competitor browser.
-# An alternative title for localization is: "It starts here".
-# This text can be formatted to span multiple lines as needed.
-mr1-welcome-screen-hero-text = Dena hemen hasten da
-# Caption for background image in about:welcome. "Soraya Osorio" is the name
-# of the person and shouldn't be translated.
-# In case your language needs to adapt the nouns to a gender, Soraya is a female name (she/her).
-# You can see the picture in about:welcome in Nightly 90.
-mr1-onboarding-welcome-image-caption = Soraya Osorio — altzarien diseinatzailea, Firefox fana
 # This button will open system settings to turn on prefers-reduced-motion
 mr1-onboarding-reduce-motion-button-label = Desgaitu animazioak
-
-## Title and primary button strings differ between platforms as they
-## match the OS' application context menu item action where Windows uses "pin"
-## and "taskbar" while macOS "keep" and "Dock" (proper noun).
-
-# Title used on welcome page when Firefox is not pinned
-mr1-onboarding-pin-header =
-    { PLATFORM() ->
-        [macos] Mantendu { -brand-short-name } zure Dock-ean sarbide errazerako
-       *[other] Mantendu { -brand-short-name } zure ataza-barran sarbide errazerako
-    }
-# Primary button string used on welcome page when Firefox is not pinned.
-mr1-onboarding-pin-primary-button-label =
-    { PLATFORM() ->
-        [macos] Mantedu Dock-ean
-       *[other] Ainguratu ataza-barran
-    }
-
-## Multistage MR1 onboarding strings (about:welcome pages)
-
-# This string will be used on welcome page primary button label
-# when Firefox is both pinned and default
-mr1-onboarding-get-started-primary-button-label = Hasi erabiltzen
-mr1-onboarding-welcome-header = Ongi etorri { -brand-short-name }(e)ra
-mr1-onboarding-set-default-pin-primary-button-label = Egin { -brand-short-name } nire nabigatzaile nagusia
-    .title = { -brand-short-name } nabigatzaile lehenetsi gisa ezarri eta ataza-barran ainguratzen du
-# This string will be used on welcome page primary button label
-# when Firefox is not default but already pinned
-mr1-onboarding-set-default-only-primary-button-label = Egin { -brand-short-name } nire nabigatzaile lehenetsia
-mr1-onboarding-set-default-secondary-button-label = Une honetan ez
+# String for the Firefox Accounts button
 mr1-onboarding-sign-in-button-label = Hasi saioa
-
-## Title, subtitle and primary button string used on set default onboarding screen
-## when Firefox is not default browser
-
-mr1-onboarding-default-header = Egizu { -brand-short-name } zure lehenetsia
-mr1-onboarding-default-subtitle = Jarri abiadura, segurtasuna eta pribatutasuna pilotu automatikoan.
-mr1-onboarding-default-primary-button-label = Egin nabigatzaile lehenetsia
-
-## Multistage MR1 onboarding strings (about:welcome pages)
-
-mr1-onboarding-import-header = Eraman guztia aldean
-mr1-onboarding-import-subtitle = Inportatu zure pasahitzak, <br/>laster-markak eta gehiago.
 # The primary import button label will depend on whether we can detect which browser was used to download Firefox.
 # Variables:
 #   $previous (Str) - Previous browser name, such as Edge, Chrome
 mr1-onboarding-import-primary-button-label-attribution = Inportatu { $previous } nabigatzailetik
-# This string will be used in cases where we can't detect the previous browser name.
-mr1-onboarding-import-primary-button-label-no-attribution = Inportatu aurreko nabigatzailetik
-mr1-onboarding-import-secondary-button-label = Une honetan ez
-mr2-onboarding-colorway-header = Bizitza koloretan
-mr2-onboarding-colorway-subtitle = Kolore-konbinazio bizi berriak. Denbora mugatuz erabilgarri.
-mr2-onboarding-colorway-primary-button-label = Gorde kolore-konbinazioa
-mr2-onboarding-colorway-secondary-button-label = Orain ez
-mr2-onboarding-colorway-label-soft = Leuna
-mr2-onboarding-colorway-label-balanced = Orekatua
-# "Bold" is used in the sense of bravery or courage, not in the sense of
-# emphasized text.
-mr2-onboarding-colorway-label-bold = Bizia
-# Automatic theme uses operating system color settings
-mr2-onboarding-theme-label-auto = Automatikoa
-# This string will be used for Default theme
-mr2-onboarding-theme-label-default = Lehenetsia
 mr1-onboarding-theme-header = Moldatu zure erara
 mr1-onboarding-theme-subtitle = Pertsonalizatu { -brand-short-name } itxura batekin.
-mr1-onboarding-theme-primary-button-label = Gorde itxura
 mr1-onboarding-theme-secondary-button-label = Une honetan ez
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Sistemaren itxura
@@ -184,26 +106,6 @@ mr1-onboarding-theme-description-alpenglow =
     .aria-description =
         Erabili itxura koloretsu eta dinamikoa botoi,
         menu eta leihoentzat.
-# Tooltip displayed on hover of non-default colorway theme
-# variations e.g. soft, balanced, bold
-mr2-onboarding-theme-tooltip =
-    .title = Erabili kolore-konbinazio hau.
-# Selector description for non-default colorway theme
-# variations e.g. soft, balanced, bold
-mr2-onboarding-theme-description =
-    .aria-description = Erabili kolore-konbinazio hau.
-# Tooltip displayed on hover of colorway
-# Variables:
-#   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-tooltip =
-    .title = Arakatu { $colorwayName } kolore-konbinazioak.
-# Selector description for colorway
-# Variables:
-#   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-label = Arakatu { $colorwayName } kolore-konbinazioak.
-# Tooltip displayed on hover of default themes
-mr2-onboarding-default-theme-tooltip =
-    .title = Arakatu itxura lehenetsiak.
 # Selector description for default themes
 mr2-onboarding-default-theme-label = Arakatu itxura lehenetsiak.
 
@@ -212,14 +114,6 @@ mr2-onboarding-default-theme-label = Arakatu itxura lehenetsiak.
 mr2-onboarding-thank-you-header = Eskerrik asko gu aukeratzeagatik
 mr2-onboarding-thank-you-text = Irabazi-asmorik gabeko erakunde batek babestutako nabigatzaile independentea da { -brand-short-name }. Elkarrekin weba seguruagoa, osasuntsuagoa eta pribatuagoa ari gara egiten.
 mr2-onboarding-start-browsing-button-label = Hasi nabigatzen
-
-## Multistage live language reloading onboarding strings (about:welcome pages)
-##
-## The following language names are generated by the browser's Intl.DisplayNames API.
-##
-## Variables:
-##   $negotiatedLanguage (String) - The name of the langpack's language, e.g. "Español (ES)"
-
 
 ## Multistage live language reloading onboarding strings (about:welcome pages)
 ##
@@ -267,6 +161,15 @@ fx100-upgrade-thank-you-body = { -brand-short-name }(e)n gure 100. bertsioa da! 
 # Message shown with either a pin-to-taskbar or set-default button.
 fx100-upgrade-thanks-keep-body = Gure 100. bertsioa da! Eskerrik asko gure komunitatearen parte izateagatik. Mantendu { -brand-short-name } klik bakarrera hurrengo 100etan ere bai.
 mr2022-onboarding-secondary-skip-button-label = Saltatu urrats hau
+
+## MR2022 New User Easy Setup screen strings
+
+# Primary button string used on new user onboarding first screen showing multiple actions such as Set Default, Import from previous browser.
+mr2022-onboarding-easy-setup-primary-button-label = Gorde eta jarraitu
+# Set Default action checkbox label used on new user onboarding first screen
+mr2022-onboarding-easy-setup-set-default-checkbox-label = Ezarri { -brand-short-name } nabigatzaile lehenetsi gisa
+# Import action checkbox label used on new user onboarding first screen
+mr2022-onboarding-easy-setup-import-checkbox-label = Inportatu aurreko nabigatzailetik
 
 ## MR2022 New User Pin Firefox screen strings
 
@@ -420,3 +323,8 @@ mr2022-onboarding-gratitude-image-alt =
     .aria-label = Ilunabarraren ikuspegia leiho-ertzean azeri bat eta etxeko landare bat dituen leihotik barrena
 mr2022-onboarding-colorways-image-alt =
     .aria-label = Eskuko esprai batek collage koloretsua margotzen du: begi berdea, zapata laranja, saskibaloi gorria, entzungailu moreak, bihotz urdina eta koroa horia
+
+## Device migration onboarding
+
+onboarding-device-migration-title = Ongi etorri!
+onboarding-device-migration-primary-button-label = Hasi saioa

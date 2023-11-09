@@ -63,7 +63,6 @@ protections-panel-not-found-label = Njenamakany
 ##
 
 protections-panel-settings-label = Škitne nastajenja
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Přehlad škitow
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formulary
 protections-panel-site-not-working-view-issue-list-payments = Płaćenja
 protections-panel-site-not-working-view-issue-list-comments = Komentary
 protections-panel-site-not-working-view-issue-list-videos = Wideja
+protections-panel-site-not-working-view-issue-list-fonts = Pisma
 
 protections-panel-site-not-working-view-send-report = Rozprawu pósłać
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Wobškodźene sydło zdźělić
 protections-panel-content-blocking-breakage-report-view-description = Blokowanje wěstych přesćěhowakow móže problemy z někotrymi websydłami zawinować. Hdyž problemy zdźěliće, pomhaće { -brand-short-name } za kóždeho polěpšić. Pósćele so Mozilla URL a informacije wo wašich nastajenjach wobhladowaka. <label data-l10n-name="learn-more">Dalše informacije</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Blokowanje wěstych přesćěhowakow móže problemy z někotrymi websydłami zawinować. Hdyž problemy zdźěliće, pomhaće { -brand-short-name } za kóždeho polěpšić. Pósćele so { -vendor-short-name } URL a informacije wo wašich nastajenjach wobhladowaka.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Přetorhnyć
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Rozprawu pósłać
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Redukowanje plackowych chorhojow
+protections-panel-cookie-banner-handling-enabled = Za tute sydło zmóžnjeny
+protections-panel-cookie-banner-handling-disabled = Za tute sydło znjemóžnjeny
+protections-panel-cookie-banner-handling-undetected = Sydło so tuchwilu njepodpěruje
+
+protections-panel-cookie-banner-view-title =
+    .title = Redukowanje plackowych chorhojow
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Redukowanje plackowych chorhojow za { $host } znjemóžnić?
+protections-panel-cookie-banner-view-turn-on-for-site = Redukowanje plackowych chorhojow za tute sydło zmóžnić?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } placki sydła zhaša a budźe stronu aktualizować. Zhašenje wšěch plackow móže was přizjewić abo nakupowanske wozyčki wuprózdnić.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } pospytuje wšě plackowe naprašowanja na podpěranych sydłach awtomatisce wotpokazać.
+protections-panel-cookie-banner-view-cancel = Přetorhnyć
+protections-panel-cookie-banner-view-turn-off = Znjemóžnić
+protections-panel-cookie-banner-view-turn-on = Zmóžnić

@@ -28,7 +28,6 @@ MouseEvent::MouseEvent(EventTarget* aOwner, nsPresContext* aPresContext,
     mEventIsInternal = false;
   } else {
     mEventIsInternal = true;
-    mEvent->mTime = PR_Now();
     mEvent->mRefPoint = LayoutDeviceIntPoint(0, 0);
     mouseEvent->mInputSource = MouseEvent_Binding::MOZ_SOURCE_UNKNOWN;
   }
@@ -215,20 +214,15 @@ already_AddRefed<EventTarget> MouseEvent::GetRelatedTarget() {
   return EnsureWebAccessibleRelatedTarget(relatedTarget);
 }
 
-void MouseEvent::GetRegion(nsAString& aRegion) {
-  SetDOMStringToNull(aRegion);
-  WidgetMouseEventBase* mouseEventBase = mEvent->AsMouseEventBase();
-  if (mouseEventBase) {
-    aRegion = mouseEventBase->mRegion;
-  }
-}
+void MouseEvent::GetRegion(nsAString& aRegion) { SetDOMStringToNull(aRegion); }
 
 CSSIntPoint MouseEvent::ScreenPoint(CallerType aCallerType) const {
   if (mEvent->mFlags.mIsPositionless) {
     return {};
   }
 
-  if (nsContentUtils::ResistFingerprinting(aCallerType)) {
+  if (nsContentUtils::ShouldResistFingerprinting(aCallerType, GetParentObject(),
+                                                 RFPTarget::Unknown)) {
     // Sanitize to something sort of like client cooords, but not quite
     // (defaulting to (0,0) instead of our pre-specified client coords).
     return Event::GetClientCoords(mPresContext, mEvent, mEvent->mRefPoint,

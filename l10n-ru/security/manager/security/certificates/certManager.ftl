@@ -26,10 +26,6 @@ certmgr-people = У вас хранятся сертификаты, служащ
 certmgr-server = В этих записях перечислены исключения для ошибок серверных сертификатов
 certmgr-ca = У вас хранятся сертификаты, служащие для идентификации следующих центров сертификации
 
-certmgr-edit-ca-cert =
-    .title = Изменение степени доверия сертификату CA
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Изменение степени доверия сертификату CA
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Этот сертификат может служить для идентификации пользователей электронной почты.
-
-certmgr-delete-cert =
-    .title = Удаление сертификата
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Удаление сертификата
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Сервер
-
-certmgr-override-lifetime =
-    .label = Срок действия
 
 certmgr-token-name =
     .label = Устройство защиты
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Серийный номер
+
+certmgr-fingerprint-sha-256 =
+    .label = Отпечаток SHA-256
 
 certmgr-view =
     .label = Просмотреть…

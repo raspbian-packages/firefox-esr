@@ -55,3 +55,6 @@ screenshots-private-window-error-details = Perstgisa las malempernaivladads. Nus
 
 screenshots-generic-error-title = Oh dieu! { -screenshots-brand-name } ha il singlut.
 screenshots-generic-error-details = Nus na savain betg tge ch'è gist capità. Vuls empruvar anc ina giada, forsa cun in'autra pagina?
+
+screenshots-too-large-error-title = Tes maletg dal visur è vegnì retaglià perquai ch'el era memia grond
+screenshots-too-large-error-details = Emprova da tscherner ina zona che n'ha nagina vart che surpassa 32'700 pixels. Ultra da quai sto la surfatscha esser pli pitschna che 124'900'000 pixels.

@@ -12,7 +12,7 @@ crashed-subframe-message = <strong>Mae rhan o'r dudalen hon wedi chwalu.</strong
 crashed-subframe-title =
     .title = <strong>Mae rhan o'r dudalen hon wedi chwalu.</strong> Er mwyn rhoi gwybod i { -brand-product-name } am y mater hwn a'i drwsio'n gynt, cyflwynwch adroddiad.
 crashed-subframe-learnmore-link =
-    .value = Dysgu Rhagor
+    .value = Dysgu rhagor
 crashed-subframe-submit =
     .label = Cyflwyno Adroddiad
     .accesskey = A
@@ -31,7 +31,7 @@ pending-crash-reports-message =
        *[other] Mae gennych { $reportCount } adroddiad chwalu sydd heb eu cyflwyno
     }
 pending-crash-reports-view-all =
-    .label = Gweld
+    .label = Golwg
 pending-crash-reports-send =
     .label = Anfon
 pending-crash-reports-always-send =

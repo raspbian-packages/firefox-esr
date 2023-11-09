@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Ferbiningsynstellingen
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Ferbiningsynstellingen
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Dizze opsje autentisearret jo automatisysk by proxies as jo derfaor bewarre gegevens hawwe. Jo sille frege wurde as autentikaasje mislearret.
 
+connection-proxy-autologin-checkbox =
+    .label = Freegje net om autentikaasje as wachtwurd bewarre is
+    .accesskey = i
+    .tooltiptext = Dizze opsje autentisearret jo automatisysk by proxies as jo derfaor bewarre gegevens hawwe. Jo sille frege wurde as autentikaasje mislearret.
+
 connection-proxy-socks-remote-dns =
     .label = DNS fia proxy by gebrûk fan SOCKS v5
     .accesskey = d
-
-connection-dns-over-https =
-    .label = DNS oer HTTPS ynskeakelje
-    .accesskey = D
-
-connection-dns-over-https-url-resolver = Provider brûke
-    .accesskey = P
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

@@ -54,7 +54,7 @@ class AudioPacketizationCallback {
                            uint32_t timestamp,
                            const uint8_t* payload_data,
                            size_t payload_len_bytes) {
-    RTC_NOTREACHED() << "This method must be overridden, or not used.";
+    RTC_DCHECK_NOTREACHED() << "This method must be overridden, or not used.";
     return -1;
   }
 };
@@ -83,9 +83,9 @@ class AudioCodingModule {
   //   Sender
   //
 
-  // |modifier| is called exactly once with one argument: a pointer to the
+  // `modifier` is called exactly once with one argument: a pointer to the
   // unique_ptr that holds the current encoder (which is null if there is no
-  // current encoder). For the duration of the call, |modifier| has exclusive
+  // current encoder). For the duration of the call, `modifier` has exclusive
   // access to the unique_ptr; it may call the encoder, steal the encoder and
   // replace it with another encoder or with nullptr, etc.
   virtual void ModifyEncoder(
@@ -176,17 +176,6 @@ class AudioCodingModule {
       const std::map<int, SdpAudioFormat>& codecs) = 0;
 
   ///////////////////////////////////////////////////////////////////////////
-  // int ReceiveSampleRate()
-  //
-  // Mozilla extension.
-  // Return the sample-rate of the inbound audio stream.
-  //
-  // Return value:
-  // 0 if no audio has been received, the sample-rate of the inbound audio
-  // otherwise.
-  virtual int ReceiveSampleRate() const = 0;
-
-  ///////////////////////////////////////////////////////////////////////////
   // int32_t IncomingPacket()
   // Call this function to insert a parsed RTP packet into ACM.
   //
@@ -201,7 +190,7 @@ class AudioCodingModule {
   //    0 if payload is successfully pushed in.
   //
   virtual int32_t IncomingPacket(const uint8_t* incoming_payload,
-                                 const size_t payload_len_bytes,
+                                 size_t payload_len_bytes,
                                  const RTPHeader& rtp_header) = 0;
 
   ///////////////////////////////////////////////////////////////////////////
@@ -248,6 +237,8 @@ class AudioCodingModule {
       NetworkStatistics* network_statistics) = 0;
 
   virtual ANAStats GetANAStats() const = 0;
+
+  virtual int GetTargetBitrate() const = 0;
 };
 
 }  // namespace webrtc

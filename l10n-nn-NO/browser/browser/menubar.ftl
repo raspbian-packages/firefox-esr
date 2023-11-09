@@ -219,8 +219,6 @@ menu-history-undo-menu =
     .label = Nyleg attlatne faner
 menu-history-undo-window-menu =
     .label = Nyleg attlatne vindauge
-menu-history-reopen-all-tabs = Opne alle faner på nytt
-menu-history-reopen-all-windows = Opne alle vindauge på nytt
 
 ## Bookmarks Menu
 
@@ -229,14 +227,13 @@ menu-bookmarks-menu =
     .accesskey = B
 menu-bookmarks-manage =
     .label = Handsam bokmerke
-menu-bookmark-current-tab =
-    .label = Bokmerk gjeldande fane
-menu-bookmark-edit =
-    .label = Rediger dette bokmerket
 menu-bookmark-tab =
     .label = Bokmerk gjeldande fane…
 menu-edit-bookmark =
     .label = Rediger dette bokmerket…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Søk i bokmerke
 menu-bookmarks-all-tabs =
     .label = Bokmerk alle faner…
 menu-bookmarks-toolbar =
@@ -330,6 +327,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Slå av feilsøkingsmodus
     .accesskey = S
+menu-help-switch-device =
+    .label = Byter til ei ny eining
+    .accesskey = B
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

@@ -23,8 +23,6 @@ firefoxview-just-now-timestamp = Hozir
 firefoxview-tabpickup-header = Varaqni tanlash
 firefoxview-tabpickup-description = Boshqa qurilmalardagi sahifalarni ochish
 
-firefoxview-tabpickup-recenttabs-description = Oxirgi varaqlar roʻyxati shu yerda chiqadi
-
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = { $percentValue }% yakunlandi
@@ -69,10 +67,6 @@ firefoxview-mobile-confirmation-description = Endi siz planshet yoki telefoningi
 
 firefoxview-closed-tabs-title = Yaqinda yopilgan
 
-firefoxview-closed-tabs-description = Ushbu qurilmada yopilgan varaqlarni qayta oching.
-
-firefoxview-closed-tabs-placeholder = <strong>Yaqinda yopilgan varaqlar yoʻq</strong><br/>Yopilgan varaqni yoʻqotishdan qoʻrqmang. Siz uni har doim shu yerda koʻrasiz.
-
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Oxirgi faol
 
@@ -82,7 +76,6 @@ firefoxview-tabs-list-tab-button =
     .title = { $targetURI } havolasini yangi varaqda oching
 
 firefoxview-try-colorways-button = Colorways ishlatish
-firefoxview-no-current-colorway-collection = Yangi colorways bilan tanishing
 firefoxview-change-colorway-button = Colorway funksiyasini oʻzgartirish
 
 # Variables:
@@ -90,10 +83,28 @@ firefoxview-change-colorway-button = Colorway funksiyasini oʻzgartirish
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
 
-firefoxview-synced-tabs-placeholder = <strong>Hali hech narsa koʻrinmayapti</strong><br/>Keyingi safar boshqa qurilmada { -brand-product-name } sahifasini ochganingizda, moʻjizadek ular oʻsha yerda paydo boʻladi.
-
 firefoxview-collapse-button-show =
     .title = Roʻyxatni koʻrsatish
 
 firefoxview-collapse-button-hide =
     .title = Roʻyxatni yashirish
+
+## History in this context refers to browser history
+
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+
+##
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+##
+

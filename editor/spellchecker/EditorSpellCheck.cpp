@@ -6,38 +6,39 @@
 
 #include "EditorSpellCheck.h"
 
+#include "EditorBase.h"            // for EditorBase
+#include "HTMLEditor.h"            // for HTMLEditor
+#include "TextServicesDocument.h"  // for TextServicesDocument
+
 #include "mozilla/Attributes.h"   // for final
-#include "mozilla/EditorBase.h"   // for EditorBase
-#include "mozilla/HTMLEditor.h"   // for HTMLEditor
 #include "mozilla/dom/Element.h"  // for Element
 #include "mozilla/dom/Promise.h"
 #include "mozilla/dom/Selection.h"
 #include "mozilla/dom/StaticRange.h"
-#include "mozilla/intl/Locale.h"           // for mozilla::intl::Locale
-#include "mozilla/intl/LocaleService.h"    // for retrieving app locale
-#include "mozilla/intl/OSPreferences.h"    // for mozilla::intl::OSPreferences
-#include "mozilla/Logging.h"               // for mozilla::LazyLogModule
-#include "mozilla/mozalloc.h"              // for operator delete, etc
-#include "mozilla/mozSpellChecker.h"       // for mozSpellChecker
-#include "mozilla/Preferences.h"           // for Preferences
-#include "mozilla/TextServicesDocument.h"  // for TextServicesDocument
-#include "nsAString.h"                     // for nsAString::IsEmpty, etc
-#include "nsComponentManagerUtils.h"       // for do_CreateInstance
-#include "nsDebug.h"                       // for NS_ENSURE_TRUE, etc
-#include "nsDependentSubstring.h"          // for Substring
-#include "nsError.h"                       // for NS_ERROR_NOT_INITIALIZED, etc
-#include "nsIContent.h"                    // for nsIContent
-#include "nsIContentPrefService2.h"        // for nsIContentPrefService2, etc
-#include "mozilla/dom/Document.h"          // for Document
-#include "nsIEditor.h"                     // for nsIEditor
+#include "mozilla/intl/Locale.h"         // for mozilla::intl::Locale
+#include "mozilla/intl/LocaleService.h"  // for retrieving app locale
+#include "mozilla/intl/OSPreferences.h"  // for mozilla::intl::OSPreferences
+#include "mozilla/Logging.h"             // for mozilla::LazyLogModule
+#include "mozilla/mozalloc.h"            // for operator delete, etc
+#include "mozilla/mozSpellChecker.h"     // for mozSpellChecker
+#include "mozilla/Preferences.h"         // for Preferences
+
+#include "nsAString.h"                // for nsAString::IsEmpty, etc
+#include "nsComponentManagerUtils.h"  // for do_CreateInstance
+#include "nsDebug.h"                  // for NS_ENSURE_TRUE, etc
+#include "nsDependentSubstring.h"     // for Substring
+#include "nsError.h"                  // for NS_ERROR_NOT_INITIALIZED, etc
+#include "nsIContent.h"               // for nsIContent
+#include "nsIContentPrefService2.h"   // for nsIContentPrefService2, etc
+#include "mozilla/dom/Document.h"     // for Document
+#include "nsIEditor.h"                // for nsIEditor
 #include "nsILoadContext.h"
-#include "nsISupportsBase.h"   // for nsISupports
+#include "nsISupports.h"       // for nsISupports
 #include "nsISupportsUtils.h"  // for NS_ADDREF
 #include "nsIURI.h"            // for nsIURI
 #include "nsThreadUtils.h"     // for GetMainThreadSerialEventTarget
 #include "nsVariant.h"         // for nsIWritableVariant, etc
 #include "nsLiteralString.h"   // for NS_LITERAL_STRING, etc
-#include "nsMemory.h"          // for nsMemory
 #include "nsRange.h"
 #include "nsReadableUtils.h"        // for ToNewUnicode, EmptyString, etc
 #include "nsServiceManagerUtils.h"  // for do_GetService
@@ -659,13 +660,14 @@ EditorSpellCheck::SetCurrentDictionaries(
       // Since the mail editor can only influence the language selection by the
       // html lang attribute, set the content-language document to persist
       // multi language selections.
-      nsCOMPtr<nsIContent> rootContent;
+      // XXX Why doesn't here use the document of the editor directly?
+      nsCOMPtr<nsIContent> anonymousDivOrEditingHost;
       if (HTMLEditor* htmlEditor = mEditor->GetAsHTMLEditor()) {
-        rootContent = htmlEditor->GetActiveEditingHost();
+        anonymousDivOrEditingHost = htmlEditor->ComputeEditingHost();
       } else {
-        rootContent = mEditor->GetRoot();
+        anonymousDivOrEditingHost = mEditor->GetRoot();
       }
-      RefPtr<Document> ownerDoc = rootContent->OwnerDoc();
+      RefPtr<Document> ownerDoc = anonymousDivOrEditingHost->OwnerDoc();
       Document* parentDoc = ownerDoc->GetInProcessParentDocument();
       if (parentDoc) {
         parentDoc->SetHeaderData(
@@ -733,43 +735,42 @@ EditorSpellCheck::UpdateCurrentDictionary(
   nsresult rv;
 
   RefPtr<EditorSpellCheck> kungFuDeathGrip = this;
-  uint32_t flags = 0;
-  mEditor->GetFlags(&flags);
 
   // Get language with html5 algorithm
-  nsCOMPtr<nsIContent> rootContent;
-  if (HTMLEditor* htmlEditor = mEditor->GetAsHTMLEditor()) {
-    if (flags & nsIEditor::eEditorMailMask) {
-      // Always determine the root content for a mail editor,
-      // even if not focused, to enable further processing below.
-      rootContent = htmlEditor->GetActiveEditingHost();
-    } else {
-      rootContent = htmlEditor->GetFocusedContent();
+  const RefPtr<Element> rootEditableElement =
+      [](const EditorBase& aEditorBase) -> Element* {
+    if (!aEditorBase.IsHTMLEditor()) {
+      return aEditorBase.GetRoot();
     }
-  } else {
-    rootContent = mEditor->GetRoot();
-  }
-
-  if (!rootContent) {
-    return NS_ERROR_FAILURE;
-  }
-
-  // Try to get topmost document's document element for embedded mail editor.
-  if (flags & nsIEditor::eEditorMailMask) {
-    RefPtr<Document> ownerDoc = rootContent->OwnerDoc();
-    Document* parentDoc = ownerDoc->GetInProcessParentDocument();
-    if (parentDoc) {
-      rootContent = parentDoc->GetDocumentElement();
-      if (!rootContent) {
-        return NS_ERROR_FAILURE;
+    if (aEditorBase.IsMailEditor()) {
+      // Shouldn't run spellcheck in a mail editor without focus
+      // (bug 1507543)
+      // XXX Why doesn't here use the document of the editor directly?
+      Element* const editingHost =
+          aEditorBase.AsHTMLEditor()->ComputeEditingHost();
+      if (!editingHost) {
+        return nullptr;
       }
+      // Try to get topmost document's document element for embedded mail
+      // editor (bug 967494)
+      Document* parentDoc =
+          editingHost->OwnerDoc()->GetInProcessParentDocument();
+      if (!parentDoc) {
+        return editingHost;
+      }
+      return parentDoc->GetDocumentElement();
     }
+    return aEditorBase.AsHTMLEditor()->GetFocusedElement();
+  }(*mEditor);
+
+  if (!rootEditableElement) {
+    return NS_ERROR_FAILURE;
   }
 
   RefPtr<DictionaryFetcher> fetcher =
       new DictionaryFetcher(this, aCallback, mDictionaryFetcherGroup);
-  rootContent->GetLang(fetcher->mRootContentLang);
-  RefPtr<Document> doc = rootContent->GetComposedDoc();
+  rootEditableElement->GetLang(fetcher->mRootContentLang);
+  RefPtr<Document> doc = rootEditableElement->GetComposedDoc();
   NS_ENSURE_STATE(doc);
   doc->GetContentLanguage(fetcher->mRootDocContentLang);
 
@@ -1025,7 +1026,7 @@ void EditorSpellCheck::SetFallbackDictionary(DictionaryFetcher* aFetcher) {
         mozilla::intl::Locale appLoc;
         auto result =
             mozilla::intl::LocaleParser::TryParse(appLocaleStr, appLoc);
-        if (result.isOk() && loc.Canonicalize().isOk() &&
+        if (result.isOk() && appLoc.Canonicalize().isOk() &&
             loc.Language().Span() == appLoc.Language().Span()) {
           if (BuildDictionaryList(appLocaleStr, dictList,
                                   DICT_COMPARE_CASE_INSENSITIVE, tryDictList)) {
@@ -1042,7 +1043,7 @@ void EditorSpellCheck::SetFallbackDictionary(DictionaryFetcher* aFetcher) {
         mozilla::intl::Locale sysLoc;
         auto result =
             mozilla::intl::LocaleParser::TryParse(sysLocaleStr, sysLoc);
-        if (result.isOk() && loc.Canonicalize().isOk() &&
+        if (result.isOk() && sysLoc.Canonicalize().isOk() &&
             loc.Language().Span() == sysLoc.Language().Span()) {
           if (BuildDictionaryList(sysLocaleStr, dictList,
                                   DICT_COMPARE_CASE_INSENSITIVE, tryDictList)) {

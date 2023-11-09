@@ -13,9 +13,9 @@
 #include "vm/BuiltinObjectKind.h"
 #include "vm/BytecodeUtil.h"
 #include "vm/CheckIsObjectKind.h"   // CheckIsObjectKind
+#include "vm/CompletionKind.h"      // CompletionKind
 #include "vm/FunctionPrefixKind.h"  // FunctionPrefixKind
 #include "vm/GeneratorResumeKind.h"
-#include "vm/StringType.h"
 
 namespace js {
 
@@ -159,7 +159,7 @@ class BytecodeLocation {
   }
 
   // Add an offset.
-  BytecodeLocation operator+(const BytecodeLocationOffset& offset) {
+  BytecodeLocation operator+(const BytecodeLocationOffset& offset) const {
     return BytecodeLocation(*this, rawBytecode_ + offset.rawOffset());
   }
 
@@ -216,7 +216,7 @@ class BytecodeLocation {
   }
 
   bool resultIsPopped() const {
-    MOZ_ASSERT(StackDefs(rawBytecode_) == 1);
+    MOZ_ASSERT(StackDefs(getOp()) == 1);
     return BytecodeIsPopped(rawBytecode_);
   }
 
@@ -297,6 +297,11 @@ class BytecodeLocation {
   BuiltinObjectKind getBuiltinObjectKind() const {
     MOZ_ASSERT(is(JSOp::BuiltinObject));
     return BuiltinObjectKind(GET_UINT8(rawBytecode_));
+  }
+
+  CompletionKind getCompletionKind() const {
+    MOZ_ASSERT(is(JSOp::CloseIter));
+    return CompletionKind(GET_UINT8(rawBytecode_));
   }
 
   uint32_t getNewArrayLength() const {

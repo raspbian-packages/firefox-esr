@@ -39,6 +39,8 @@ LAllocation LIRGeneratorARM64::useByteOpRegisterOrNonDoubleConstant(
   return useRegisterOrNonDoubleConstant(mir);
 }
 
+LDefinition LIRGeneratorARM64::tempByteOpRegister() { return temp(); }
+
 LDefinition LIRGeneratorARM64::tempToUnbox() { return temp(); }
 
 void LIRGenerator::visitBox(MBox* box) {
@@ -572,6 +574,7 @@ void LIRGenerator::visitWasmNeg(MWasmNeg* ins) {
 void LIRGeneratorARM64::lowerUDiv(MDiv* div) {
   LAllocation lhs = useRegister(div->lhs());
   if (div->rhs()->isConstant()) {
+    // NOTE: the result of toInt32 is coerced to uint32_t.
     uint32_t rhs = div->rhs()->toConstant()->toInt32();
     int32_t shift = mozilla::FloorLog2(rhs);
 
@@ -1019,13 +1022,13 @@ void LIRGenerator::visitWasmTernarySimd128(MWasmTernarySimd128* ins) {
       break;
     }
     case wasm::SimdOp::F32x4RelaxedFma:
-    case wasm::SimdOp::F32x4RelaxedFms:
+    case wasm::SimdOp::F32x4RelaxedFnma:
     case wasm::SimdOp::F64x2RelaxedFma:
-    case wasm::SimdOp::F64x2RelaxedFms: {
-      auto* lir = new (alloc())
-          LWasmTernarySimd128(ins->simdOp(), useRegisterAtStart(ins->v0()),
-                              useRegister(ins->v1()), useRegister(ins->v2()));
-      defineReuseInput(lir, ins, LWasmTernarySimd128::V0);
+    case wasm::SimdOp::F64x2RelaxedFnma: {
+      auto* lir = new (alloc()) LWasmTernarySimd128(
+          ins->simdOp(), useRegister(ins->v0()), useRegister(ins->v1()),
+          useRegisterAtStart(ins->v2()));
+      defineReuseInput(lir, ins, LWasmTernarySimd128::V2);
       break;
     }
     case wasm::SimdOp::I32x4DotI8x16I7x16AddS: {
@@ -1085,6 +1088,8 @@ bool MWasmTernarySimd128::specializeBitselectConstantMaskAsShuffle(
   return false;
 }
 bool MWasmTernarySimd128::canRelaxBitselect() { return false; }
+
+bool MWasmBinarySimd128::canPmaddubsw() { return false; }
 #endif
 
 bool MWasmBinarySimd128::specializeForConstantRhs() {
@@ -1327,10 +1332,10 @@ void LIRGenerator::visitWasmUnarySimd128(MWasmUnarySimd128* ins) {
     case wasm::SimdOp::I32x4ExtaddPairwiseI16x8S:
     case wasm::SimdOp::I32x4ExtaddPairwiseI16x8U:
     case wasm::SimdOp::I8x16Popcnt:
-    case wasm::SimdOp::I32x4RelaxedTruncSSatF32x4:
-    case wasm::SimdOp::I32x4RelaxedTruncUSatF32x4:
-    case wasm::SimdOp::I32x4RelaxedTruncSatF64x2SZero:
-    case wasm::SimdOp::I32x4RelaxedTruncSatF64x2UZero:
+    case wasm::SimdOp::I32x4RelaxedTruncF32x4S:
+    case wasm::SimdOp::I32x4RelaxedTruncF32x4U:
+    case wasm::SimdOp::I32x4RelaxedTruncF64x2SZero:
+    case wasm::SimdOp::I32x4RelaxedTruncF64x2UZero:
       break;
     case wasm::SimdOp::I32x4TruncSatF64x2SZero:
     case wasm::SimdOp::I32x4TruncSatF64x2UZero:

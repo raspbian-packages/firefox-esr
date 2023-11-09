@@ -83,8 +83,6 @@ perftools-thread-renderer =
     .title = Коли увімкнено WebRender, потік, який виконує виклики OpenGL
 perftools-thread-render-backend =
     .title = Потік WebRender RenderBackend
-perftools-thread-paint-worker =
-    .title = Коли увімкнено розфарбування off-main-thread, потік, на якому відбувається фарбування
 perftools-thread-timer =
     .title = Таймери обробки потоків (setTimeout, setInterval, nsITimer)
 perftools-thread-style-thread =
@@ -134,8 +132,13 @@ perftools-onboarding-close-button =
 # devtools/client/performance-new/popup/background.jsm.js
 # The same labels and descriptions are also defined in appmenu.ftl.
 
+
+# Presets and their l10n IDs are defined in the file
+# devtools/client/performance-new/shared/background.jsm.js
+# The same labels and descriptions are also defined in appmenu.ftl.
+
 perftools-presets-web-developer-label = Веброзробник
-perftools-presets-web-developer-description = Рекомендовані попередні налаштування для зневадження більшості застосунків. З низькими споживанням ресурсів.
+perftools-presets-web-developer-description = Рекомендовані попередні налаштування для налагодження більшості вебзастосунків. З низьким споживанням ресурсів.
 
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = Рекомендовані налаштування для профілювання { -brand-shorter-name }.

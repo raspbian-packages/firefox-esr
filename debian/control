@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Maintainers of Mozilla-related packages <team+pkg-mozilla@tracker.debian.org>
 Uploaders: Mike Hommey <glandium@debian.org>
 Build-Depends: autotools-dev,
-               debhelper (>= 9.20160114),
+               debhelper-compat (= 12),
                libx11-dev,
                libx11-xcb-dev,
                libxt-dev,
@@ -18,8 +18,8 @@ Build-Depends: autotools-dev,
                python3 (>= 3.6),
                dpkg-dev,
                libnspr4-dev (>= 2:4.32~),
-               libnss3-dev (>= 2:3.79.1~),
-               libvpx-dev (>= 1.8.0),
+               libnss3-dev (>= 2:3.89~),
+               libvpx-dev (>= 1.10.0),
                libdbus-glib-1-dev,
                libffi-dev,
                libevent-dev,
@@ -27,16 +27,16 @@ Build-Depends: autotools-dev,
                libasound2-dev,
                yasm,
                nasm (>= 2.14) [amd64 i386],
-               rustc (>= 1.59),
-               cargo (>= 0.57),
-               llvm-dev,
-               libclang-dev,
-               clang,
-               libc++-dev-wasm32,
-               libclang-rt-dev-wasm32,
-               lld,
-               cbindgen (>= 0.23.0),
-               nodejs (>= 10),
+               rustc (>= 1.63),
+               cargo (>= 0.66),
+               llvm-14-dev,
+               libclang-14-dev,
+               clang-14,
+               libc++-14-dev-wasm32,
+               libclang-rt-14-dev-wasm32,
+               lld-14,
+               cbindgen (>= 0.24.3),
+               nodejs (>= 12.22.1),
                zip,
                unzip,
                locales,
@@ -52,8 +52,8 @@ Build-Conflicts: graphicsmagick-imagemagick-compat,
                  libhildonmime-dev,
                  libosso-dev
 Standards-Version: 3.9.8.0
-Vcs-Git: https://salsa.debian.org/mozilla-team/firefox.git -b esr102/master
-Vcs-Browser: https://salsa.debian.org/mozilla-team/firefox/commits/esr102/master
+Vcs-Git: https://salsa.debian.org/mozilla-team/firefox.git -b esr115/master
+Vcs-Browser: https://salsa.debian.org/mozilla-team/firefox/commits/esr115/master
 
 Package: firefox-esr
 Architecture: any
@@ -63,8 +63,8 @@ Depends: ${shlibs:Depends},
          procps,
          debianutils (>= 1.16),
          libnspr4 (>= 2:4.32~),
-         libnss3 (>= 2:3.79.1~)
-Recommends: libavcodec59 | libavcodec-extra59 | libavcodec58 | libavcodec-extra58 | libavcodec57 | libavcodec-extra57 | libavcodec56 | libavcodec-extra56 | libavcodec55 | libavcodec-extra55 | libavcodec54 | libavcodec-extra54 | libavcodec53 | libavcodec-extra53
+         libnss3 (>= 2:3.89~)
+Recommends: libavcodec60 | libavcodec-extra60 | libavcodec59 | libavcodec-extra59 | libavcodec58 | libavcodec-extra58 | libavcodec57 | libavcodec-extra57 | libavcodec56 | libavcodec-extra56 | libavcodec55 | libavcodec-extra55 | libavcodec54 | libavcodec-extra54 | libavcodec53 | libavcodec-extra53
 Suggests: fonts-stix | otf-stix,
           fonts-lmodern,
           libgssapi-krb5-2 | libkrb53,
@@ -80,7 +80,7 @@ Description: Mozilla Firefox web browser - Extended Support Release (ESR)
 Package: firefox-esr-l10n-all
 Architecture: all
 Section: metapackages
-Depends: ${misc:Depends}, firefox-esr-l10n-ach, firefox-esr-l10n-af, firefox-esr-l10n-an, firefox-esr-l10n-ar, firefox-esr-l10n-ast, firefox-esr-l10n-az, firefox-esr-l10n-be, firefox-esr-l10n-bg, firefox-esr-l10n-bn, firefox-esr-l10n-br, firefox-esr-l10n-bs, firefox-esr-l10n-ca, firefox-esr-l10n-ca-valencia, firefox-esr-l10n-cak, firefox-esr-l10n-cs, firefox-esr-l10n-cy, firefox-esr-l10n-da, firefox-esr-l10n-de, firefox-esr-l10n-dsb, firefox-esr-l10n-el, firefox-esr-l10n-en-ca, firefox-esr-l10n-en-gb, firefox-esr-l10n-eo, firefox-esr-l10n-es-ar, firefox-esr-l10n-es-cl, firefox-esr-l10n-es-es, firefox-esr-l10n-es-mx, firefox-esr-l10n-et, firefox-esr-l10n-eu, firefox-esr-l10n-fa, firefox-esr-l10n-ff, firefox-esr-l10n-fi, firefox-esr-l10n-fr, firefox-esr-l10n-fy-nl, firefox-esr-l10n-ga-ie, firefox-esr-l10n-gd, firefox-esr-l10n-gl, firefox-esr-l10n-gn, firefox-esr-l10n-gu-in, firefox-esr-l10n-he, firefox-esr-l10n-hi-in, firefox-esr-l10n-hr, firefox-esr-l10n-hsb, firefox-esr-l10n-hu, firefox-esr-l10n-hy-am, firefox-esr-l10n-ia, firefox-esr-l10n-id, firefox-esr-l10n-is, firefox-esr-l10n-it, firefox-esr-l10n-ja, firefox-esr-l10n-ka, firefox-esr-l10n-kab, firefox-esr-l10n-kk, firefox-esr-l10n-km, firefox-esr-l10n-kn, firefox-esr-l10n-ko, firefox-esr-l10n-lij, firefox-esr-l10n-lt, firefox-esr-l10n-lv, firefox-esr-l10n-mk, firefox-esr-l10n-mr, firefox-esr-l10n-ms, firefox-esr-l10n-my, firefox-esr-l10n-nb-no, firefox-esr-l10n-ne-np, firefox-esr-l10n-nl, firefox-esr-l10n-nn-no, firefox-esr-l10n-oc, firefox-esr-l10n-pa-in, firefox-esr-l10n-pl, firefox-esr-l10n-pt-br, firefox-esr-l10n-pt-pt, firefox-esr-l10n-rm, firefox-esr-l10n-ro, firefox-esr-l10n-ru, firefox-esr-l10n-sco, firefox-esr-l10n-si, firefox-esr-l10n-sk, firefox-esr-l10n-sl, firefox-esr-l10n-son, firefox-esr-l10n-sq, firefox-esr-l10n-sr, firefox-esr-l10n-sv-se, firefox-esr-l10n-szl, firefox-esr-l10n-ta, firefox-esr-l10n-te, firefox-esr-l10n-th, firefox-esr-l10n-tl, firefox-esr-l10n-tr, firefox-esr-l10n-trs, firefox-esr-l10n-uk, firefox-esr-l10n-ur, firefox-esr-l10n-uz, firefox-esr-l10n-vi, firefox-esr-l10n-xh, firefox-esr-l10n-zh-cn, firefox-esr-l10n-zh-tw
+Depends: ${misc:Depends}, firefox-esr-l10n-ach, firefox-esr-l10n-af, firefox-esr-l10n-an, firefox-esr-l10n-ar, firefox-esr-l10n-ast, firefox-esr-l10n-az, firefox-esr-l10n-be, firefox-esr-l10n-bg, firefox-esr-l10n-bn, firefox-esr-l10n-br, firefox-esr-l10n-bs, firefox-esr-l10n-ca, firefox-esr-l10n-ca-valencia, firefox-esr-l10n-cak, firefox-esr-l10n-cs, firefox-esr-l10n-cy, firefox-esr-l10n-da, firefox-esr-l10n-de, firefox-esr-l10n-dsb, firefox-esr-l10n-el, firefox-esr-l10n-en-ca, firefox-esr-l10n-en-gb, firefox-esr-l10n-eo, firefox-esr-l10n-es-ar, firefox-esr-l10n-es-cl, firefox-esr-l10n-es-es, firefox-esr-l10n-es-mx, firefox-esr-l10n-et, firefox-esr-l10n-eu, firefox-esr-l10n-fa, firefox-esr-l10n-ff, firefox-esr-l10n-fi, firefox-esr-l10n-fr, firefox-esr-l10n-fur, firefox-esr-l10n-fy-nl, firefox-esr-l10n-ga-ie, firefox-esr-l10n-gd, firefox-esr-l10n-gl, firefox-esr-l10n-gn, firefox-esr-l10n-gu-in, firefox-esr-l10n-he, firefox-esr-l10n-hi-in, firefox-esr-l10n-hr, firefox-esr-l10n-hsb, firefox-esr-l10n-hu, firefox-esr-l10n-hy-am, firefox-esr-l10n-ia, firefox-esr-l10n-id, firefox-esr-l10n-is, firefox-esr-l10n-it, firefox-esr-l10n-ja, firefox-esr-l10n-ka, firefox-esr-l10n-kab, firefox-esr-l10n-kk, firefox-esr-l10n-km, firefox-esr-l10n-kn, firefox-esr-l10n-ko, firefox-esr-l10n-lij, firefox-esr-l10n-lt, firefox-esr-l10n-lv, firefox-esr-l10n-mk, firefox-esr-l10n-mr, firefox-esr-l10n-ms, firefox-esr-l10n-my, firefox-esr-l10n-nb-no, firefox-esr-l10n-ne-np, firefox-esr-l10n-nl, firefox-esr-l10n-nn-no, firefox-esr-l10n-oc, firefox-esr-l10n-pa-in, firefox-esr-l10n-pl, firefox-esr-l10n-pt-br, firefox-esr-l10n-pt-pt, firefox-esr-l10n-rm, firefox-esr-l10n-ro, firefox-esr-l10n-ru, firefox-esr-l10n-sc, firefox-esr-l10n-sco, firefox-esr-l10n-si, firefox-esr-l10n-sk, firefox-esr-l10n-sl, firefox-esr-l10n-son, firefox-esr-l10n-sq, firefox-esr-l10n-sr, firefox-esr-l10n-sv-se, firefox-esr-l10n-szl, firefox-esr-l10n-ta, firefox-esr-l10n-te, firefox-esr-l10n-tg, firefox-esr-l10n-th, firefox-esr-l10n-tl, firefox-esr-l10n-tr, firefox-esr-l10n-trs, firefox-esr-l10n-uk, firefox-esr-l10n-ur, firefox-esr-l10n-uz, firefox-esr-l10n-vi, firefox-esr-l10n-xh, firefox-esr-l10n-zh-cn, firefox-esr-l10n-zh-tw
 Description: All language packages for Firefox ESR (meta)
  Firefox ESR is a powerful, extensible web browser with support for modern
  web application technologies.
@@ -476,6 +476,17 @@ Description: French language package for Firefox ESR
  web application technologies.
  .
  This package contains the localization of Firefox ESR in French.
+
+Package: firefox-esr-l10n-fur
+Architecture: all
+Section: localization
+Depends: ${misc:Depends},
+         firefox-esr (>= ${source:Version}), firefox-esr (<< ${source:Version}.1~)
+Description: Friulian language package for Firefox ESR
+ Firefox ESR is a powerful, extensible web browser with support for modern
+ web application technologies.
+ .
+ This package contains the localization of Firefox ESR in Friulian.
 
 Package: firefox-esr-l10n-fy-nl
 Architecture: all
@@ -965,6 +976,17 @@ Description: Russian language package for Firefox ESR
  .
  This package contains the localization of Firefox ESR in Russian.
 
+Package: firefox-esr-l10n-sc
+Architecture: all
+Section: localization
+Depends: ${misc:Depends},
+         firefox-esr (>= ${source:Version}), firefox-esr (<< ${source:Version}.1~)
+Description: Sardinian language package for Firefox ESR
+ Firefox ESR is a powerful, extensible web browser with support for modern
+ web application technologies.
+ .
+ This package contains the localization of Firefox ESR in Sardinian.
+
 Package: firefox-esr-l10n-sco
 Architecture: all
 Section: localization
@@ -1092,6 +1114,17 @@ Description: Telugu language package for Firefox ESR
  web application technologies.
  .
  This package contains the localization of Firefox ESR in Telugu.
+
+Package: firefox-esr-l10n-tg
+Architecture: all
+Section: localization
+Depends: ${misc:Depends},
+         firefox-esr (>= ${source:Version}), firefox-esr (<< ${source:Version}.1~)
+Description: Tajik language package for Firefox ESR
+ Firefox ESR is a powerful, extensible web browser with support for modern
+ web application technologies.
+ .
+ This package contains the localization of Firefox ESR in Tajik.
 
 Package: firefox-esr-l10n-th
 Architecture: all

@@ -3,19 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = புதிய கீற்று
+
 tabbrowser-menuitem-close-tab =
     .label = கீற்றை மூடவும்
 tabbrowser-menuitem-close =
     .label = மூடு
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
 
 ## Tooltips for tab audio control
 ## Variables:
@@ -61,3 +59,13 @@ tabbrowser-context-mute-tab =
 tabbrowser-context-unmute-tab =
     .label = ஒலிக்கச் செய்
     .accesskey = m
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = { $tabCount } இன் கீற்றுகளை பட்டியலிடு
+
+## Tab manager menu buttons
+

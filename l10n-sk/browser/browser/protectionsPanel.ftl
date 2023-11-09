@@ -77,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formulármi
 protections-panel-site-not-working-view-issue-list-payments = Platbami
 protections-panel-site-not-working-view-issue-list-comments = Komentármi
 protections-panel-site-not-working-view-issue-list-videos = Videami
+protections-panel-site-not-working-view-issue-list-fonts = Písmami
 
 protections-panel-site-not-working-view-send-report = Odoslať hlásenie
 
@@ -100,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Nahlásiť nefunkčnú stránku
 protections-panel-content-blocking-breakage-report-view-description = Blokovanie obsahu môže spôsobovať problémy s webovými stránkami. Ich nahlásením významne pomôžete aplikácii { -brand-short-name } sa neustále zlepšovať. S vašim hlásením sa Mozille odošle URL adresa stránky a informácie o vašom nastavení blokovania obsahu. <label data-l10n-name="learn-more">Ďalšie informácie</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Blokovanie obsahu môže spôsobovať problémy s webovými stránkami. Ich nahlásením významne pomôžete aplikácii { -brand-short-name } sa neustále zlepšovať. S vašim hlásením sa Mozille odošle URL adresa stránky a informácie o vašom nastavení blokovania obsahu.
 protections-panel-content-blocking-breakage-report-view-collection-url = Adresa URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = Adresa URL
@@ -110,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Zrušiť
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Odoslať hlásenie
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Zníženie počtu bannerov k súborom cookie
+protections-panel-cookie-banner-handling-enabled = Zapnuté pre túto stránku
+protections-panel-cookie-banner-handling-disabled = Vypnuté pre túto stránku
+protections-panel-cookie-banner-handling-undetected = Stránka momentálne nie je podporovaná
+
+protections-panel-cookie-banner-view-title =
+    .title = Zníženie počtu bannerov k súborom cookie
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Vypnúť znižovanie počtu bannerov k súborom cookie pre { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Zapnúť znižovanie počtu bannerov k súborom cookie pre túto stránku?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } vymaže súbory cookie tohto webu a obnoví stránku. Vymazanie všetkých súborov cookie vás môže odhlásiť zo stránky alebo vyprázdniť nákupné košíky.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } sa pokúša automaticky odmietnuť všetky žiadosti o súbory cookie na podporovaných stránkach.
+protections-panel-cookie-banner-view-cancel = Zrušiť
+protections-panel-cookie-banner-view-turn-off = Vypnúť
+protections-panel-cookie-banner-view-turn-on = Zapnúť

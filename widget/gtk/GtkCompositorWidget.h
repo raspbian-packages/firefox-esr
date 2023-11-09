@@ -99,7 +99,7 @@ class GtkCompositorWidget : public CompositorWidget,
 
  private:
 #if defined(MOZ_WAYLAND)
-  bool ConfigureWaylandBackend(RefPtr<nsWindow> aWindow);
+  bool ConfigureWaylandBackend();
 #endif
 #if defined(MOZ_X11)
   bool ConfigureX11Backend(Window aXWindow, bool aShaped);
@@ -128,7 +128,7 @@ class GtkCompositorWidget : public CompositorWidget,
 #ifdef MOZ_WAYLAND
   RefPtr<mozilla::layers::NativeLayerRootWayland> mNativeLayerRoot;
 #endif
-  Atomic<bool> mIsRenderingSuspended;
+  Atomic<bool> mIsRenderingSuspended{true};
 };
 
 }  // namespace widget

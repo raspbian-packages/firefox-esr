@@ -39,9 +39,6 @@ describe("Personality Provider", () => {
       },
     });
     globals.set("RemoteSettings", RemoteSettingsStub);
-    globals.set("Utils", {
-      SERVER_URL: "bogus://foo",
-    });
 
     instance = new PersonalityProvider();
     instance.interestConfig = {

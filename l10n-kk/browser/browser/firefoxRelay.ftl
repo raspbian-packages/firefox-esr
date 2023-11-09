@@ -17,13 +17,15 @@ firefox-relay-must-login-to-fxa = { -relay-brand-name } пайдалану үш�
 firefox-relay-get-unlimited-masks =
     .label = Маскаларды басқару
     .accesskey = М
-firefox-relay-opt-in-title = Электрондық пошта адресіңізді қорғаңыз
-firefox-relay-opt-in-subtitle = { -relay-brand-name } қосу
-firefox-relay-generate-mask-title = Электрондық пошта адресіңізді қорғаңыз
-firefox-relay-generate-mask-subtitle = { -relay-brand-short-name } маскасын жасау
-firefox-relay-opt-in-confirmation-enable =
-    .label = Жалғастыру
-    .accesskey = с
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Электрондық пошта адресіңізді қорғаңыз:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = { -relay-brand-name }эл. пошта маскасын қолдану
+firefox-relay-use-mask-title = { -relay-brand-name }эл. пошта маскасын қолдану
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = Эл. пошта маскасын қолдану
+    .accesskey = у
 firefox-relay-opt-in-confirmation-disable =
     .label = Бұны маған қайта көрсетпеу
     .accesskey = Б

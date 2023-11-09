@@ -6,13 +6,10 @@
 
 #include "vm/Scope.h"
 
-#include "mozilla/OperatorNewExtensions.h"  // mozilla::KnownNotNull
-#include "mozilla/ScopeExit.h"
-
-#include <memory>
 #include <new>
 
-#include "builtin/ModuleObject.h"
+#include "jsnum.h"
+
 #include "frontend/CompilationStencil.h"  // ScopeStencilRef, CompilationStencil, CompilationState, CompilationAtomCache
 #include "frontend/ParserAtom.h"  // frontend::ParserAtomsTable, frontend::ParserAtom
 #include "frontend/ScriptIndex.h"  // ScriptIndex
@@ -27,7 +24,7 @@
 
 #include "gc/GCContext-inl.h"
 #include "gc/ObjectKind-inl.h"
-#include "vm/Shape-inl.h"
+#include "gc/TraceMethods-inl.h"
 #include "wasm/WasmInstance-inl.h"
 
 using namespace js;
@@ -96,8 +93,9 @@ const char* js::ScopeKindString(ScopeKind kind) {
   MOZ_CRASH("Bad ScopeKind");
 }
 
-Shape* js::EmptyEnvironmentShape(JSContext* cx, const JSClass* cls,
-                                 uint32_t numSlots, ObjectFlags objectFlags) {
+SharedShape* js::EmptyEnvironmentShape(JSContext* cx, const JSClass* cls,
+                                       uint32_t numSlots,
+                                       ObjectFlags objectFlags) {
   // Put as many slots into the object header as possible.
   uint32_t numFixed = gc::GetGCKindSlots(gc::GetGCObjectKind(numSlots));
   return SharedShape::getInitialShape(
@@ -124,9 +122,9 @@ static bool AddToEnvironmentMap(JSContext* cx, const JSClass* clasp,
                                                  propFlags, slot, objectFlags);
 }
 
-Shape* js::CreateEnvironmentShape(JSContext* cx, BindingIter& bi,
-                                  const JSClass* cls, uint32_t numSlots,
-                                  ObjectFlags objectFlags) {
+SharedShape* js::CreateEnvironmentShape(JSContext* cx, BindingIter& bi,
+                                        const JSClass* cls, uint32_t numSlots,
+                                        ObjectFlags objectFlags) {
   Rooted<SharedPropMap*> map(cx);
   uint32_t mapLength = 0;
 
@@ -156,8 +154,7 @@ inline size_t SizeOfAllocatedData(DataT* data) {
 }
 
 template <typename ConcreteScope>
-static void MarkParserScopeData(JSContext* cx,
-                                typename ConcreteScope::ParserData* data,
+static void MarkParserScopeData(typename ConcreteScope::ParserData* data,
                                 frontend::CompilationState& compilationState) {
   auto names = GetScopeDataTrailingNames(data);
   for (auto& binding : names) {
@@ -193,13 +190,13 @@ static void PrepareScopeData(ParserBindingIter& bi,
 
 template <typename ConcreteScope>
 static typename ConcreteScope::ParserData* NewEmptyParserScopeData(
-    JSContext* cx, LifoAlloc& alloc, uint32_t length = 0) {
+    FrontendContext* fc, LifoAlloc& alloc, uint32_t length = 0) {
   using Data = typename ConcreteScope::ParserData;
 
   size_t dataSize = SizeOfScopeData<Data>(length);
   void* raw = alloc.alloc(dataSize);
   if (!raw) {
-    js::ReportOutOfMemory(cx);
+    js::ReportOutOfMemory(fc);
     return nullptr;
   }
 
@@ -269,19 +266,16 @@ static UniquePtr<typename ConcreteScope::RuntimeData> LiftParserScopeData(
 }
 
 /* static */
-Scope* Scope::create(JSContext* cx, ScopeKind kind, HandleScope enclosing,
-                     HandleShape envShape) {
-  Scope* scope = Allocate<Scope>(cx);
-  if (scope) {
-    new (scope) Scope(kind, enclosing, envShape);
-  }
-  return scope;
+Scope* Scope::create(JSContext* cx, ScopeKind kind, Handle<Scope*> enclosing,
+                     Handle<SharedShape*> envShape) {
+  return cx->newCell<Scope>(kind, enclosing, envShape);
 }
 
 template <typename ConcreteScope>
 /* static */
 ConcreteScope* Scope::create(
-    JSContext* cx, ScopeKind kind, HandleScope enclosing, HandleShape envShape,
+    JSContext* cx, ScopeKind kind, Handle<Scope*> enclosing,
+    Handle<SharedShape*> envShape,
     MutableHandle<UniquePtr<typename ConcreteScope::RuntimeData>> data) {
   Scope* scope = create(cx, kind, enclosing, envShape);
   if (!scope) {
@@ -558,7 +552,7 @@ void LexicalScope::prepareForScopeCreation(ScopeKind kind,
 }
 
 /* static */
-Shape* LexicalScope::getEmptyExtensibleEnvironmentShape(JSContext* cx) {
+SharedShape* LexicalScope::getEmptyExtensibleEnvironmentShape(JSContext* cx) {
   const JSClass* cls = &LexicalEnvironmentObject::class_;
   return EmptyEnvironmentShape(cx, cls, JSSLOT_FREE(cls), ObjectFlags());
 }
@@ -602,8 +596,7 @@ JSScript* FunctionScope::script() const {
 }
 
 /* static */
-bool FunctionScope::isSpecialName(JSContext* cx,
-                                  frontend::TaggedParserAtomIndex name) {
+bool FunctionScope::isSpecialName(frontend::TaggedParserAtomIndex name) {
   return name == frontend::TaggedParserAtomIndex::WellKnown::arguments() ||
          name == frontend::TaggedParserAtomIndex::WellKnown::dotThis() ||
          name == frontend::TaggedParserAtomIndex::WellKnown::dotNewTarget() ||
@@ -650,7 +643,7 @@ GlobalScope* GlobalScope::createWithData(
 }
 
 /* static */
-WithScope* WithScope::create(JSContext* cx, HandleScope enclosing) {
+WithScope* WithScope::create(JSContext* cx, Handle<Scope*> enclosing) {
   Scope* scope = Scope::create(cx, ScopeKind::With, enclosing, nullptr);
   return static_cast<WithScope*>(scope);
 }
@@ -708,7 +701,7 @@ static JSAtom* GenerateWasmName(JSContext* cx,
   if (!sb.append(prefix)) {
     return nullptr;
   }
-  if (!NumberValueToStringBuffer(cx, Int32Value(index), sb)) {
+  if (!NumberValueToStringBuffer(NumberValue(index), sb)) {
     return nullptr;
   }
 
@@ -750,6 +743,7 @@ WasmInstanceScope* WasmInstanceScope::create(JSContext* cx,
     return nullptr;
   }
 
+  Rooted<WasmInstanceObject*> rootedInstance(cx, instance);
   if (instance->instance().memory()) {
     JSAtom* wasmName = GenerateWasmName(cx, "memory", /* index = */ 0);
     if (!wasmName) {
@@ -770,10 +764,10 @@ WasmInstanceScope* WasmInstanceScope::create(JSContext* cx,
 
   MOZ_ASSERT(data->length == namesCount);
 
-  data->instance.init(instance);
+  data->instance.init(rootedInstance);
   data->slotInfo.globalsStart = globalsStart;
 
-  RootedScope enclosing(cx, &cx->global()->emptyGlobalScope());
+  Rooted<Scope*> enclosing(cx, &cx->global()->emptyGlobalScope());
   return Scope::create<WasmInstanceScope>(cx, ScopeKind::WasmInstance,
                                           enclosing,
                                           /* envShape = */ nullptr, &data);
@@ -781,7 +775,7 @@ WasmInstanceScope* WasmInstanceScope::create(JSContext* cx,
 
 /* static */
 WasmFunctionScope* WasmFunctionScope::create(JSContext* cx,
-                                             HandleScope enclosing,
+                                             Handle<Scope*> enclosing,
                                              uint32_t funcIndex) {
   MOZ_ASSERT(enclosing->is<WasmInstanceScope>());
 
@@ -1267,8 +1261,9 @@ template void BaseAbstractBindingIter<JSAtom>::init(
 template void BaseAbstractBindingIter<frontend::TaggedParserAtomIndex>::init(
     WasmFunctionScope::AbstractData<frontend::TaggedParserAtomIndex>&);
 
-PositionalFormalParameterIter::PositionalFormalParameterIter(Scope* scope)
-    : BindingIter(scope) {
+AbstractPositionalFormalParameterIter<
+    JSAtom>::AbstractPositionalFormalParameterIter(Scope* scope)
+    : Base(scope) {
   // Reinit with flags = 0, i.e., iterate over all positional parameters.
   if (scope->is<FunctionScope>()) {
     init(scope->as<FunctionScope>().data(), /* flags = */ 0);
@@ -1276,11 +1271,12 @@ PositionalFormalParameterIter::PositionalFormalParameterIter(Scope* scope)
   settle();
 }
 
-PositionalFormalParameterIter::PositionalFormalParameterIter(JSScript* script)
-    : PositionalFormalParameterIter(script->bodyScope()) {}
+AbstractPositionalFormalParameterIter<
+    JSAtom>::AbstractPositionalFormalParameterIter(JSScript* script)
+    : AbstractPositionalFormalParameterIter(script->bodyScope()) {}
 
 void js::DumpBindings(JSContext* cx, Scope* scopeArg) {
-  RootedScope scope(cx, scopeArg);
+  Rooted<Scope*> scope(cx, scopeArg);
   for (Rooted<BindingIter> bi(cx, BindingIter(scope)); bi; bi++) {
     UniqueChars bytes = AtomToPrintableString(cx, bi.name());
     if (!bytes) {
@@ -1374,16 +1370,16 @@ JS::ubi::Node::Size JS::ubi::Concrete<Scope>::size(
 
 template <typename... Args>
 /* static */ bool ScopeStencil::appendScopeStencilAndData(
-    JSContext* cx, CompilationState& compilationState,
+    FrontendContext* fc, CompilationState& compilationState,
     BaseParserScopeData* data, ScopeIndex* indexOut, Args&&... args) {
   *indexOut = ScopeIndex(compilationState.scopeData.length());
   if (uint32_t(*indexOut) >= TaggedScriptThingIndex::IndexLimit) {
-    ReportAllocationOverflow(cx);
+    ReportAllocationOverflow(fc);
     return false;
   }
 
   if (!compilationState.scopeData.emplaceBack(std::forward<Args>(args)...)) {
-    js::ReportOutOfMemory(cx);
+    js::ReportOutOfMemory(fc);
     return false;
   }
   if (!compilationState.scopeNames.append(data)) {
@@ -1391,7 +1387,7 @@ template <typename... Args>
     MOZ_ASSERT(compilationState.scopeData.length() ==
                compilationState.scopeNames.length());
 
-    js::ReportOutOfMemory(cx);
+    js::ReportOutOfMemory(fc);
     return false;
   }
 
@@ -1400,7 +1396,7 @@ template <typename... Args>
 
 /* static */
 bool ScopeStencil::createForFunctionScope(
-    JSContext* cx, frontend::CompilationState& compilationState,
+    FrontendContext* fc, frontend::CompilationState& compilationState,
     FunctionScope::ParserData* data, bool hasParameterExprs,
     bool needsEnvironment, ScriptIndex functionIndex, bool isArrow,
     mozilla::Maybe<ScopeIndex> enclosing, ScopeIndex* index) {
@@ -1409,9 +1405,9 @@ bool ScopeStencil::createForFunctionScope(
   MOZ_ASSERT(matchScopeKind<ScopeType>(kind));
 
   if (data) {
-    MarkParserScopeData<ScopeType>(cx, data, compilationState);
+    MarkParserScopeData<ScopeType>(data, compilationState);
   } else {
-    data = NewEmptyParserScopeData<ScopeType>(cx, compilationState.alloc);
+    data = NewEmptyParserScopeData<ScopeType>(fc, compilationState.alloc);
     if (!data) {
       return false;
     }
@@ -1422,23 +1418,23 @@ bool ScopeStencil::createForFunctionScope(
   FunctionScope::prepareForScopeCreation(data, hasParameterExprs,
                                          needsEnvironment, &envShape);
 
-  return appendScopeStencilAndData(cx, compilationState, data, index, kind,
+  return appendScopeStencilAndData(fc, compilationState, data, index, kind,
                                    enclosing, firstFrameSlot, envShape,
                                    mozilla::Some(functionIndex), isArrow);
 }
 
 /* static */
 bool ScopeStencil::createForLexicalScope(
-    JSContext* cx, frontend::CompilationState& compilationState, ScopeKind kind,
-    LexicalScope::ParserData* data, uint32_t firstFrameSlot,
+    FrontendContext* fc, frontend::CompilationState& compilationState,
+    ScopeKind kind, LexicalScope::ParserData* data, uint32_t firstFrameSlot,
     mozilla::Maybe<ScopeIndex> enclosing, ScopeIndex* index) {
   using ScopeType = LexicalScope;
   MOZ_ASSERT(matchScopeKind<ScopeType>(kind));
 
   if (data) {
-    MarkParserScopeData<ScopeType>(cx, data, compilationState);
+    MarkParserScopeData<ScopeType>(data, compilationState);
   } else {
-    data = NewEmptyParserScopeData<ScopeType>(cx, compilationState.alloc);
+    data = NewEmptyParserScopeData<ScopeType>(fc, compilationState.alloc);
     if (!data) {
       return false;
     }
@@ -1447,22 +1443,22 @@ bool ScopeStencil::createForLexicalScope(
   mozilla::Maybe<uint32_t> envShape;
   ScopeType::prepareForScopeCreation(kind, firstFrameSlot, data, &envShape);
 
-  return appendScopeStencilAndData(cx, compilationState, data, index, kind,
+  return appendScopeStencilAndData(fc, compilationState, data, index, kind,
                                    enclosing, firstFrameSlot, envShape);
 }
 
 /* static */
 bool ScopeStencil::createForClassBodyScope(
-    JSContext* cx, frontend::CompilationState& compilationState, ScopeKind kind,
-    ClassBodyScope::ParserData* data, uint32_t firstFrameSlot,
+    FrontendContext* fc, frontend::CompilationState& compilationState,
+    ScopeKind kind, ClassBodyScope::ParserData* data, uint32_t firstFrameSlot,
     mozilla::Maybe<ScopeIndex> enclosing, ScopeIndex* index) {
   using ScopeType = ClassBodyScope;
   MOZ_ASSERT(matchScopeKind<ScopeType>(kind));
 
   if (data) {
-    MarkParserScopeData<ScopeType>(cx, data, compilationState);
+    MarkParserScopeData<ScopeType>(data, compilationState);
   } else {
-    data = NewEmptyParserScopeData<ScopeType>(cx, compilationState.alloc);
+    data = NewEmptyParserScopeData<ScopeType>(fc, compilationState.alloc);
     if (!data) {
       return false;
     }
@@ -1471,21 +1467,22 @@ bool ScopeStencil::createForClassBodyScope(
   mozilla::Maybe<uint32_t> envShape;
   ScopeType::prepareForScopeCreation(kind, firstFrameSlot, data, &envShape);
 
-  return appendScopeStencilAndData(cx, compilationState, data, index, kind,
+  return appendScopeStencilAndData(fc, compilationState, data, index, kind,
                                    enclosing, firstFrameSlot, envShape);
 }
 
 bool ScopeStencil::createForVarScope(
-    JSContext* cx, frontend::CompilationState& compilationState, ScopeKind kind,
-    VarScope::ParserData* data, uint32_t firstFrameSlot, bool needsEnvironment,
-    mozilla::Maybe<ScopeIndex> enclosing, ScopeIndex* index) {
+    FrontendContext* fc, frontend::CompilationState& compilationState,
+    ScopeKind kind, VarScope::ParserData* data, uint32_t firstFrameSlot,
+    bool needsEnvironment, mozilla::Maybe<ScopeIndex> enclosing,
+    ScopeIndex* index) {
   using ScopeType = VarScope;
   MOZ_ASSERT(matchScopeKind<ScopeType>(kind));
 
   if (data) {
-    MarkParserScopeData<ScopeType>(cx, data, compilationState);
+    MarkParserScopeData<ScopeType>(data, compilationState);
   } else {
-    data = NewEmptyParserScopeData<ScopeType>(cx, compilationState.alloc);
+    data = NewEmptyParserScopeData<ScopeType>(fc, compilationState.alloc);
     if (!data) {
       return false;
     }
@@ -1495,21 +1492,21 @@ bool ScopeStencil::createForVarScope(
   VarScope::prepareForScopeCreation(kind, data, firstFrameSlot,
                                     needsEnvironment, &envShape);
 
-  return appendScopeStencilAndData(cx, compilationState, data, index, kind,
+  return appendScopeStencilAndData(fc, compilationState, data, index, kind,
                                    enclosing, firstFrameSlot, envShape);
 }
 
 /* static */
 bool ScopeStencil::createForGlobalScope(
-    JSContext* cx, frontend::CompilationState& compilationState, ScopeKind kind,
-    GlobalScope::ParserData* data, ScopeIndex* index) {
+    FrontendContext* fc, frontend::CompilationState& compilationState,
+    ScopeKind kind, GlobalScope::ParserData* data, ScopeIndex* index) {
   using ScopeType = GlobalScope;
   MOZ_ASSERT(matchScopeKind<ScopeType>(kind));
 
   if (data) {
-    MarkParserScopeData<ScopeType>(cx, data, compilationState);
+    MarkParserScopeData<ScopeType>(data, compilationState);
   } else {
-    data = NewEmptyParserScopeData<ScopeType>(cx, compilationState.alloc);
+    data = NewEmptyParserScopeData<ScopeType>(fc, compilationState.alloc);
     if (!data) {
       return false;
     }
@@ -1524,22 +1521,22 @@ bool ScopeStencil::createForGlobalScope(
 
   mozilla::Maybe<ScopeIndex> enclosing;
 
-  return appendScopeStencilAndData(cx, compilationState, data, index, kind,
+  return appendScopeStencilAndData(fc, compilationState, data, index, kind,
                                    enclosing, firstFrameSlot, envShape);
 }
 
 /* static */
 bool ScopeStencil::createForEvalScope(
-    JSContext* cx, frontend::CompilationState& compilationState, ScopeKind kind,
-    EvalScope::ParserData* data, mozilla::Maybe<ScopeIndex> enclosing,
-    ScopeIndex* index) {
+    FrontendContext* fc, frontend::CompilationState& compilationState,
+    ScopeKind kind, EvalScope::ParserData* data,
+    mozilla::Maybe<ScopeIndex> enclosing, ScopeIndex* index) {
   using ScopeType = EvalScope;
   MOZ_ASSERT(matchScopeKind<ScopeType>(kind));
 
   if (data) {
-    MarkParserScopeData<ScopeType>(cx, data, compilationState);
+    MarkParserScopeData<ScopeType>(data, compilationState);
   } else {
-    data = NewEmptyParserScopeData<ScopeType>(cx, compilationState.alloc);
+    data = NewEmptyParserScopeData<ScopeType>(fc, compilationState.alloc);
     if (!data) {
       return false;
     }
@@ -1549,13 +1546,13 @@ bool ScopeStencil::createForEvalScope(
   mozilla::Maybe<uint32_t> envShape;
   EvalScope::prepareForScopeCreation(kind, data, &envShape);
 
-  return appendScopeStencilAndData(cx, compilationState, data, index, kind,
+  return appendScopeStencilAndData(fc, compilationState, data, index, kind,
                                    enclosing, firstFrameSlot, envShape);
 }
 
 /* static */
 bool ScopeStencil::createForModuleScope(
-    JSContext* cx, frontend::CompilationState& compilationState,
+    FrontendContext* fc, frontend::CompilationState& compilationState,
     ModuleScope::ParserData* data, mozilla::Maybe<ScopeIndex> enclosing,
     ScopeIndex* index) {
   auto kind = ScopeKind::Module;
@@ -1563,9 +1560,9 @@ bool ScopeStencil::createForModuleScope(
   MOZ_ASSERT(matchScopeKind<ScopeType>(kind));
 
   if (data) {
-    MarkParserScopeData<ScopeType>(cx, data, compilationState);
+    MarkParserScopeData<ScopeType>(data, compilationState);
   } else {
-    data = NewEmptyParserScopeData<ScopeType>(cx, compilationState.alloc);
+    data = NewEmptyParserScopeData<ScopeType>(fc, compilationState.alloc);
     if (!data) {
       return false;
     }
@@ -1579,14 +1576,14 @@ bool ScopeStencil::createForModuleScope(
   mozilla::Maybe<uint32_t> envShape;
   ModuleScope::prepareForScopeCreation(data, &envShape);
 
-  return appendScopeStencilAndData(cx, compilationState, data, index, kind,
+  return appendScopeStencilAndData(fc, compilationState, data, index, kind,
                                    enclosing, firstFrameSlot, envShape);
 }
 
 template <typename SpecificEnvironmentT>
-bool ScopeStencil::createSpecificShape(JSContext* cx, ScopeKind kind,
-                                       BaseScopeData* scopeData,
-                                       MutableHandleShape shape) const {
+bool ScopeStencil::createSpecificShape(
+    JSContext* cx, ScopeKind kind, BaseScopeData* scopeData,
+    MutableHandle<SharedShape*> shape) const {
   const JSClass* cls = &SpecificEnvironmentT::class_;
   constexpr ObjectFlags objectFlags = SpecificEnvironmentT::OBJECT_FLAGS;
 
@@ -1606,7 +1603,7 @@ bool ScopeStencil::createSpecificShape(JSContext* cx, ScopeKind kind,
 }
 
 /* static */
-bool ScopeStencil::createForWithScope(JSContext* cx,
+bool ScopeStencil::createForWithScope(FrontendContext* fc,
                                       CompilationState& compilationState,
                                       mozilla::Maybe<ScopeIndex> enclosing,
                                       ScopeIndex* index) {
@@ -1616,7 +1613,7 @@ bool ScopeStencil::createForWithScope(JSContext* cx,
   uint32_t firstFrameSlot = 0;
   mozilla::Maybe<uint32_t> envShape;
 
-  return appendScopeStencilAndData(cx, compilationState, nullptr, index, kind,
+  return appendScopeStencilAndData(fc, compilationState, nullptr, index, kind,
                                    enclosing, firstFrameSlot, envShape);
 }
 
@@ -1661,16 +1658,16 @@ ScopeStencil::createSpecificScopeData<ModuleScope>(
 // WithScope does not use binding data.
 template <>
 Scope* ScopeStencil::createSpecificScope<WithScope, std::nullptr_t>(
-    JSContext* cx, CompilationAtomCache& atomCache, HandleScope enclosingScope,
-    BaseParserScopeData* baseData) const {
+    JSContext* cx, CompilationAtomCache& atomCache,
+    Handle<Scope*> enclosingScope, BaseParserScopeData* baseData) const {
   return Scope::create(cx, ScopeKind::With, enclosingScope, nullptr);
 }
 
 // GlobalScope has bindings but no environment shape.
 template <>
 Scope* ScopeStencil::createSpecificScope<GlobalScope, std::nullptr_t>(
-    JSContext* cx, CompilationAtomCache& atomCache, HandleScope enclosingScope,
-    BaseParserScopeData* baseData) const {
+    JSContext* cx, CompilationAtomCache& atomCache,
+    Handle<Scope*> enclosingScope, BaseParserScopeData* baseData) const {
   Rooted<UniquePtr<GlobalScope::RuntimeData>> rootedData(
       cx, createSpecificScopeData<GlobalScope>(cx, atomCache, baseData));
   if (!rootedData) {
@@ -1687,7 +1684,7 @@ Scope* ScopeStencil::createSpecificScope<GlobalScope, std::nullptr_t>(
 template <typename SpecificScopeT, typename SpecificEnvironmentT>
 Scope* ScopeStencil::createSpecificScope(JSContext* cx,
                                          CompilationAtomCache& atomCache,
-                                         HandleScope enclosingScope,
+                                         Handle<Scope*> enclosingScope,
                                          BaseParserScopeData* baseData) const {
   Rooted<UniquePtr<typename SpecificScopeT::RuntimeData>> rootedData(
       cx, createSpecificScopeData<SpecificScopeT>(cx, atomCache, baseData));
@@ -1695,7 +1692,7 @@ Scope* ScopeStencil::createSpecificScope(JSContext* cx,
     return nullptr;
   }
 
-  RootedShape shape(cx);
+  Rooted<SharedShape*> shape(cx);
   if (!createSpecificShape<SpecificEnvironmentT>(
           cx, kind(), rootedData.get().get(), &shape)) {
     return nullptr;
@@ -1707,25 +1704,25 @@ Scope* ScopeStencil::createSpecificScope(JSContext* cx,
 }
 
 template Scope* ScopeStencil::createSpecificScope<FunctionScope, CallObject>(
-    JSContext* cx, CompilationAtomCache& atomCache, HandleScope enclosingScope,
-    BaseParserScopeData* baseData) const;
+    JSContext* cx, CompilationAtomCache& atomCache,
+    Handle<Scope*> enclosingScope, BaseParserScopeData* baseData) const;
 template Scope*
 ScopeStencil::createSpecificScope<LexicalScope, BlockLexicalEnvironmentObject>(
-    JSContext* cx, CompilationAtomCache& atomCache, HandleScope enclosingScope,
-    BaseParserScopeData* baseData) const;
+    JSContext* cx, CompilationAtomCache& atomCache,
+    Handle<Scope*> enclosingScope, BaseParserScopeData* baseData) const;
 template Scope* ScopeStencil::createSpecificScope<
     ClassBodyScope, BlockLexicalEnvironmentObject>(
-    JSContext* cx, CompilationAtomCache& atomCache, HandleScope enclosingScope,
-    BaseParserScopeData* baseData) const;
+    JSContext* cx, CompilationAtomCache& atomCache,
+    Handle<Scope*> enclosingScope, BaseParserScopeData* baseData) const;
 template Scope*
 ScopeStencil::createSpecificScope<EvalScope, VarEnvironmentObject>(
-    JSContext* cx, CompilationAtomCache& atomCache, HandleScope enclosingScope,
-    BaseParserScopeData* baseData) const;
+    JSContext* cx, CompilationAtomCache& atomCache,
+    Handle<Scope*> enclosingScope, BaseParserScopeData* baseData) const;
 template Scope*
 ScopeStencil::createSpecificScope<VarScope, VarEnvironmentObject>(
-    JSContext* cx, CompilationAtomCache& atomCache, HandleScope enclosingScope,
-    BaseParserScopeData* baseData) const;
+    JSContext* cx, CompilationAtomCache& atomCache,
+    Handle<Scope*> enclosingScope, BaseParserScopeData* baseData) const;
 template Scope*
 ScopeStencil::createSpecificScope<ModuleScope, ModuleEnvironmentObject>(
-    JSContext* cx, CompilationAtomCache& atomCache, HandleScope enclosingScope,
-    BaseParserScopeData* baseData) const;
+    JSContext* cx, CompilationAtomCache& atomCache,
+    Handle<Scope*> enclosingScope, BaseParserScopeData* baseData) const;

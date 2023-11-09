@@ -57,8 +57,8 @@ that the columns of a `matKx2<f32>` need only be [aligned as required
 for `vec2<f32>`][ilov], which is [eight-byte alignment][8bb].
 
 To compensate for this, any time a `matKx2<f32>` appears in a WGSL
-`uniform` variable, whether directly as the variable's type or as a
-struct member, we actually emit `K` separate `float2` members, and
+`uniform` variable, whether directly as the variable's type or as part
+of a struct/array, we actually emit `K` separate `float2` members, and
 assemble/disassemble the matrix from its columns (in WGSL; rows in
 HLSL) upon load and store.
 
@@ -92,14 +92,10 @@ float3x2 GetMatmOnBaz(Baz obj) {
 We also emit an analogous `Set` function, as well as functions for
 accessing individual columns by dynamic index.
 
-At present, we do not generate correct HLSL when `matCx2<f32>` us used
-directly as the type of a WGSL `uniform` global ([#1837]).
-
 [hlsl]: https://docs.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl
 [ilov]: https://gpuweb.github.io/gpuweb/wgsl/#internal-value-layout
 [16bb]: https://github.com/microsoft/DirectXShaderCompiler/wiki/Buffer-Packing#constant-buffer-packing
 [8bb]: https://gpuweb.github.io/gpuweb/wgsl/#alignment-and-size
-[#1837]: https://github.com/gfx-rs/naga/issues/1837
 */
 
 mod conv;
@@ -111,7 +107,7 @@ mod writer;
 use std::fmt::Error as FmtError;
 use thiserror::Error;
 
-use crate::proc;
+use crate::{back, proc};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "serialize", derive(serde::Serialize))]
@@ -193,6 +189,10 @@ pub struct Options {
     /// Add special constants to `SV_VertexIndex` and `SV_InstanceIndex`,
     /// to make them work like in Vulkan/Metal, with help of the host.
     pub special_constants_binding: Option<BindTarget>,
+    /// Bind target of the push constant buffer
+    pub push_constants_target: Option<BindTarget>,
+    /// Should workgroup variables be zero initialized (by polyfilling)?
+    pub zero_initialize_workgroup_memory: bool,
 }
 
 impl Default for Options {
@@ -202,6 +202,8 @@ impl Default for Options {
             binding_map: BindingMap::default(),
             fake_missing_bindings: true,
             special_constants_binding: None,
+            push_constants_target: None,
+            zero_initialize_workgroup_memory: true,
         }
     }
 }
@@ -253,6 +255,7 @@ struct Wrapped {
     image_queries: crate::FastHashSet<help::WrappedImageQuery>,
     constructors: crate::FastHashSet<help::WrappedConstructor>,
     struct_matrix_access: crate::FastHashSet<help::WrappedStructMatrixAccess>,
+    mat_cx2s: crate::FastHashSet<help::WrappedMatCx2>,
 }
 
 impl Wrapped {
@@ -261,6 +264,7 @@ impl Wrapped {
         self.image_queries.clear();
         self.constructors.clear();
         self.struct_matrix_access.clear();
+        self.mat_cx2s.clear();
     }
 }
 
@@ -275,5 +279,24 @@ pub struct Writer<'a, W> {
     /// Set of expressions that have associated temporary variables
     named_expressions: crate::NamedExpressions,
     wrapped: Wrapped,
+
+    /// A reference to some part of a global variable, lowered to a series of
+    /// byte offset calculations.
+    ///
+    /// See the [`storage`] module for background on why we need this.
+    ///
+    /// Each [`SubAccess`] in the vector is a lowering of some [`Access`] or
+    /// [`AccessIndex`] expression to the level of byte strides and offsets. See
+    /// [`SubAccess`] for details.
+    ///
+    /// This field is a member of [`Writer`] solely to allow re-use of
+    /// the `Vec`'s dynamic allocation. The value is no longer needed
+    /// once HLSL for the access has been generated.
+    ///
+    /// [`Storage`]: crate::AddressSpace::Storage
+    /// [`SubAccess`]: storage::SubAccess
+    /// [`Access`]: crate::Expression::Access
+    /// [`AccessIndex`]: crate::Expression::AccessIndex
     temp_access_chain: Vec<storage::SubAccess>,
+    need_bake_expressions: back::NeedBakeExpressions,
 }

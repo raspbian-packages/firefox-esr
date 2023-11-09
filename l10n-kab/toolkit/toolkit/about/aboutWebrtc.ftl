@@ -13,6 +13,9 @@ about-webrtc-document-title = Isefka igensanen WebRTC
 # translated. This string is used as a title for a file save dialog box.
 about-webrtc-save-page-dialog-title = kles about:webrtc daw
 
+## These labels are for a disclosure which contains the information for closed PeerConnection sections
+
+
 ## AEC is an abbreviation for Acoustic Echo Cancellation.
 
 about-webrtc-aec-logging-msg-label = Asniɣmes AEC
@@ -20,10 +23,16 @@ about-webrtc-aec-logging-off-state-label = Senker asniɣmes AEC
 about-webrtc-aec-logging-on-state-label = Seḥbes asniɣmes AEC
 about-webrtc-aec-logging-on-state-msg = Asniɣmes AEC irmed (meslay kra n tesdatin d unmeɣṛu-inek sakin rken asekles)
 
+about-webrtc-aec-logging-toggled-on-state-msg = Asniɣmes AEC irmed (meslay kra n tesdatin d unmeɣṛu-inek sakin rken asekles)
+# Variables:
+#  $path (String) - The path to which the aec log file is saved.
+about-webrtc-aec-logging-toggled-off-state-msg = Ifuyla n usniɣmes yettwaṭfen ad ttwafen di: { $path }
+
+##
+
 # The autorefresh checkbox causes the page to autorefresh its content when checked
 about-webrtc-auto-refresh-label = Asmiren awurman
 
-##
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
 # an abbreviation for Identifier. This string should not normally be translated
@@ -62,8 +71,6 @@ about-webrtc-ice-pair-bytes-sent = Iṭamḍanen iţwaceggɛen:
 about-webrtc-ice-pair-bytes-received = Itamḍanen iţwaremsen:
 about-webrtc-ice-component-id = ID n usuddis
 
-## "Avg." is an abbreviation for Average. These are used as data labels.
-
 ## These adjectives are used to label a line of statistics collected for a peer
 ## connection. The data represents either the local or remote end of the
 ## connection.
@@ -95,6 +102,11 @@ about-webrtc-log-show-msg = sken azray
 about-webrtc-log-hide-msg = ffer azray
     .title = sit akken ad tesnefliḍ tigezmi-agi
 
+about-webrtc-log-section-show-msg = Sken azray
+    .title = Sit akken ad tesnefliḍ tigezmi-agi
+about-webrtc-log-section-hide-msg = Ffer azray
+    .title = Sit akken ad tesnefliḍ tigezmi-agi
+
 ## These are used to display a header for a PeerConnection.
 ## Variables:
 ##  $browser-id (Number) - A numeric id identifying the browser tab for the PeerConnection.
@@ -104,6 +116,11 @@ about-webrtc-log-hide-msg = ffer azray
 
 about-webrtc-connection-open = [ { $browser-id } | { $id } ] { $url } { $now }
 about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (imdel) { $now }
+
+## These are used to indicate what direction media is flowing.
+## Variables:
+##  $codecs - a list of media codecs
+
 
 ##
 
@@ -116,11 +133,19 @@ about-webrtc-raw-cand-show-msg = sken-d izirigen imazwaren
     .title = sit akken ad tesnefliḍ tigezmi-agi
 about-webrtc-raw-cand-hide-msg = ffer izirigen imazwaren
     .title = sit akken ad tesnefliḍ tigezmi-agi
+about-webrtc-raw-cand-section-show-msg = Sken-d izirigen imazwaren
+    .title = Sit akken ad tesnefliḍ tigezmi-agi
+about-webrtc-raw-cand-section-hide-msg = Ffer izirigen imazwaren
+    .title = Sit akken ad tesnefliḍ tigezmi-agi
 about-webrtc-priority = Tazwart
 about-webrtc-fold-show-msg = Sken aglam leqqayen
     .title = sit akken ad tesnefliḍ tigezmi-agi
 about-webrtc-fold-hide-msg = Ffer aglam leqqayen
     .title = sit akken ad tesnefliḍ tigezmi-agi
+about-webrtc-fold-default-show-msg = Sken aglam leqqayen
+    .title = Sit akken ad tesnefliḍ tigezmi-agi
+about-webrtc-fold-default-hide-msg = Ffer aglam leqqayen
+    .title = Sit akken ad tesnefliḍ tigezmi-agi
 about-webrtc-dropped-frames-label = Ikataren yettwakksen:
 about-webrtc-discarded-packets-label = Ikemmusen yettwanfen:
 about-webrtc-decoder-label = Akestengal
@@ -142,6 +167,12 @@ about-webrtc-last-frame-timestamp = Azemzakud i urmas n ukatar aneggaru
 about-webrtc-local-receive-ssrc = SSRC n urmas adigan
 # This is an SSRC on the remote side of the connection that is sending RTP
 about-webrtc-remote-send-ssrc = Tuzzna tanmeggagt SSRC
+
+## These are displayed on the button that shows or hides the
+## PeerConnection configuration disclosure
+
+about-webrtc-pc-configuration-show-msg = Sken tawila
+about-webrtc-pc-configuration-hide-msg = Ffer tawila
 
 ##
 
@@ -193,6 +224,10 @@ about-webrtc-save-page-msg = asebter yettwakles di: { $path }
 about-webrtc-debug-mode-off-state-msg = afaylu n lǧeṛṛa yella deg tansa-a : { $path }
 about-webrtc-debug-mode-on-state-msg = askar n tseɣtit irmed, afaylu n lǧeṛṛa yella deg tansa-yagi: { $path }
 about-webrtc-aec-logging-off-state-msg = ifuyla n usniɣmes yettwaṭfen ad ttwafen di: { $path }
+
+about-webrtc-save-page-complete-msg = Asebter yettwakles di: { $path }
+about-webrtc-debug-mode-toggled-off-state-msg = Afaylu n lǧeṛṛa yella deg tansa-a : { $path }
+about-webrtc-debug-mode-toggled-on-state-msg = Askar n tseɣtit irmed, afaylu n lǧeṛṛa yella deg tansa-yagi: { $path }
 
 ##
 
@@ -270,6 +305,16 @@ about-webrtc-sdp-set-at-timestamp-remote = Sbadu SDP anmeggag ɣer wazemzakud { 
 #  $timestamp (Number) - The Unix Epoch time at which the SDP was set.
 #  $relative-timestamp (Number) - The timestamp relative to the timestamp of the earliest received SDP.
 about-webrtc-sdp-set-timestamp = Azemzakud { NUMBER($timestamp, useGrouping: "false") } (+ { $relative-timestamp } ms)
+
+## These are displayed on the button that shows or hides the SDP information disclosure
+
+about-webrtc-show-msg-sdp = Sken SDP
+about-webrtc-hide-msg-sdp = Ffer SDP
+
+## These are displayed on the button that shows or hides the Media Context information disclosure.
+## The Media Context is the set of preferences and detected capabilities that informs
+## the negotiated CODEC settings.
+
 
 ##
 

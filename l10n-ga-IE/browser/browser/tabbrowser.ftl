@@ -3,19 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = Cluaisín Nua
+
 tabbrowser-menuitem-close-tab =
     .label = Dún Cluaisín
 tabbrowser-menuitem-close =
     .label = Dún
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
 
 ## Tooltips for tab audio control
 ## Variables:
@@ -52,3 +50,19 @@ tabbrowser-context-mute-tab =
 tabbrowser-context-unmute-tab =
     .label = Díbhalbhaigh an Cluaisín
     .accesskey = b
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label =
+        { $tabCount ->
+            [two] Liostaigh an dá Chluaisín
+            [few] Liostaigh na { $tabCount } Chluaisín
+            [many] Liostaigh na { $tabCount } gCluaisín
+           *[other] Liostaigh na { $tabCount } Cluaisín
+        }
+
+## Tab manager menu buttons
+

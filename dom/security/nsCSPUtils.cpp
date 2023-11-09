@@ -201,8 +201,8 @@ void CSP_LogMessage(const nsAString& aMessage, const nsAString& aSourceName,
 
   // Prepending CSP to the outgoing console message
   nsString cspMsg;
-  cspMsg.AppendLiteral(u"Content Security Policy: ");
-  cspMsg.Append(aMessage);
+  CSP_GetLocalizedStr("CSPMessagePrefix",
+                      AutoTArray<nsString, 1>{nsString(aMessage)}, cspMsg);
 
   // Currently 'aSourceLine' is not logged to the console, because similar
   // information is already included within the source link of the message.
@@ -210,10 +210,9 @@ void CSP_LogMessage(const nsAString& aMessage, const nsAString& aSourceName,
   // information contained within 'aSourceLine' can be really useful for devs.
   // E.g. 'aSourceLine' might be: 'onclick attribute on DIV element'.
   // In such cases we append 'aSourceLine' directly to the error message.
-  if (!aSourceLine.IsEmpty()) {
-    cspMsg.AppendLiteral(u" Source: ");
+  if (!aSourceLine.IsEmpty() && aLineNumber == 0) {
+    cspMsg.AppendLiteral(u"\nSource: ");
     cspMsg.Append(aSourceLine);
-    cspMsg.AppendLiteral(u".");
   }
 
   // Since we are leveraging csp errors as the category names which
@@ -230,7 +229,7 @@ void CSP_LogMessage(const nsAString& aMessage, const nsAString& aSourceName,
                                  aInnerWindowID);
   } else {
     rv = error->Init(cspMsg, aSourceName, aSourceLine, aLineNumber,
-                     aColumnNumber, aFlags, category.get(), aFromPrivateWindow,
+                     aColumnNumber, aFlags, category, aFromPrivateWindow,
                      true /* from chrome context */);
   }
   if (NS_FAILED(rv)) {
@@ -255,9 +254,11 @@ void CSP_LogLocalizedStr(const char* aName, const nsTArray<nsString>& aParams,
 }
 
 /* ===== Helpers ============================ */
+// This implements
+// https://w3c.github.io/webappsec-csp/#effective-directive-for-a-request.
+// However the spec doesn't currently cover all request destinations, which
+// we roughly represent using nsContentPolicyType.
 CSPDirective CSP_ContentTypeToDirective(nsContentPolicyType aType) {
-  // We need to know if this is a worker so child-src  can handle that case
-  // correctly.
   switch (aType) {
     case nsIContentPolicy::TYPE_IMAGE:
     case nsIContentPolicy::TYPE_IMAGESET:
@@ -278,12 +279,16 @@ CSPDirective CSP_ContentTypeToDirective(nsContentPolicyType aType) {
     case nsIContentPolicy::TYPE_INTERNAL_PAINTWORKLET:
     case nsIContentPolicy::TYPE_INTERNAL_CHROMEUTILS_COMPILED_SCRIPT:
     case nsIContentPolicy::TYPE_INTERNAL_FRAME_MESSAGEMANAGER_SCRIPT:
-      return nsIContentSecurityPolicy::SCRIPT_SRC_DIRECTIVE;
+      // (https://github.com/w3c/webappsec-csp/issues/554)
+      // Some of these types are not explicitly defined in the spec.
+      //
+      // Chrome seems to use script-src-elem for worklet!
+      return nsIContentSecurityPolicy::SCRIPT_SRC_ELEM_DIRECTIVE;
 
     case nsIContentPolicy::TYPE_STYLESHEET:
     case nsIContentPolicy::TYPE_INTERNAL_STYLESHEET:
     case nsIContentPolicy::TYPE_INTERNAL_STYLESHEET_PRELOAD:
-      return nsIContentSecurityPolicy::STYLE_SRC_DIRECTIVE;
+      return nsIContentSecurityPolicy::STYLE_SRC_ELEM_DIRECTIVE;
 
     case nsIContentPolicy::TYPE_FONT:
     case nsIContentPolicy::TYPE_INTERNAL_FONT_PRELOAD:
@@ -299,6 +304,7 @@ CSPDirective CSP_ContentTypeToDirective(nsContentPolicyType aType) {
       return nsIContentSecurityPolicy::WEB_MANIFEST_SRC_DIRECTIVE;
 
     case nsIContentPolicy::TYPE_INTERNAL_WORKER:
+    case nsIContentPolicy::TYPE_INTERNAL_WORKER_STATIC_MODULE:
     case nsIContentPolicy::TYPE_INTERNAL_SHARED_WORKER:
     case nsIContentPolicy::TYPE_INTERNAL_SERVICE_WORKER:
       return nsIContentSecurityPolicy::WORKER_SRC_DIRECTIVE;
@@ -316,6 +322,8 @@ CSPDirective CSP_ContentTypeToDirective(nsContentPolicyType aType) {
     case nsIContentPolicy::TYPE_INTERNAL_XMLHTTPREQUEST:
     case nsIContentPolicy::TYPE_INTERNAL_EVENTSOURCE:
     case nsIContentPolicy::TYPE_INTERNAL_FETCH_PRELOAD:
+    case nsIContentPolicy::TYPE_WEB_IDENTITY:
+    case nsIContentPolicy::TYPE_WEB_TRANSPORT:
       return nsIContentSecurityPolicy::CONNECT_SRC_DIRECTIVE;
 
     case nsIContentPolicy::TYPE_OBJECT:
@@ -347,6 +355,7 @@ CSPDirective CSP_ContentTypeToDirective(nsContentPolicyType aType) {
     // Fall through to error for all other directives
     // Note that we should never end up here for navigate-to
     case nsIContentPolicy::TYPE_INVALID:
+    case nsIContentPolicy::TYPE_END:
       MOZ_ASSERT(false, "Can not map nsContentPolicyType to CSPDirective");
       // Do not add default: so that compilers can catch the missing case.
   }
@@ -868,7 +877,7 @@ bool nsCSPKeywordSrc::allows(enum CSPKeyword aKeyword,
        "%s",
        CSP_EnumToUTF8Keyword(aKeyword),
        NS_ConvertUTF16toUTF8(aHashOrNonce).get(),
-       mInvalidated ? "yes" : "false"));
+       mInvalidated ? "true" : "false"));
 
   if (mInvalidated) {
     // only 'self', 'report-sample' and 'unsafe-inline' are keywords that can be
@@ -965,6 +974,18 @@ nsCSPHashSrc::nsCSPHashSrc(const nsAString& aAlgo, const nsAString& aHash)
   // Only the algo should be rewritten to lowercase, the hash must remain the
   // same.
   ToLowerCase(mAlgorithm);
+  // Normalize the base64url encoding to base64 encoding:
+  char16_t* cur = mHash.BeginWriting();
+  char16_t* end = mHash.EndWriting();
+
+  for (; cur < end; ++cur) {
+    if (char16_t('-') == *cur) {
+      *cur = char16_t('+');
+    }
+    if (char16_t('_') == *cur) {
+      *cur = char16_t('/');
+    }
+  }
 }
 
 nsCSPHashSrc::~nsCSPHashSrc() = default;
@@ -985,12 +1006,9 @@ bool nsCSPHashSrc::allows(enum CSPKeyword aKeyword,
   // Convert aHashOrNonce to UTF-8
   NS_ConvertUTF16toUTF8 utf8_hash(aHashOrNonce);
 
-  nsresult rv;
   nsCOMPtr<nsICryptoHash> hasher;
-  hasher = do_CreateInstance("@mozilla.org/security/hash;1", &rv);
-  NS_ENSURE_SUCCESS(rv, false);
-
-  rv = hasher->InitWithString(NS_ConvertUTF16toUTF8(mAlgorithm));
+  nsresult rv = NS_NewCryptoHash(NS_ConvertUTF16toUTF8(mAlgorithm),
+                                 getter_AddRefs(hasher));
   NS_ENSURE_SUCCESS(rv, false);
 
   rv = hasher->Update((uint8_t*)utf8_hash.get(), utf8_hash.Length());
@@ -1105,14 +1123,19 @@ void nsCSPDirective::toString(nsAString& outStr) const {
 void nsCSPDirective::toDomCSPStruct(mozilla::dom::CSP& outCSP) const {
   mozilla::dom::Sequence<nsString> srcs;
   nsString src;
+  if (NS_WARN_IF(!srcs.SetCapacity(mSrcs.Length(), mozilla::fallible))) {
+    MOZ_ASSERT(false,
+               "Not enough memory for 'sources' sequence in "
+               "nsCSPDirective::toDomCSPStruct().");
+    return;
+  }
   for (uint32_t i = 0; i < mSrcs.Length(); i++) {
     src.Truncate();
     mSrcs[i]->toString(src);
     if (!srcs.AppendElement(src, mozilla::fallible)) {
-      // XXX(Bug 1632090) Instead of extending the array 1-by-1 (which might
-      // involve multiple reallocations) and potentially crashing here,
-      // SetCapacity could be called outside the loop once.
-      mozalloc_handle_oom(0);
+      MOZ_ASSERT(false,
+                 "Failed to append to 'sources' sequence in "
+                 "nsCSPDirective::toDomCSPStruct().");
     }
   }
 
@@ -1213,6 +1236,16 @@ void nsCSPDirective::toDomCSPStruct(mozilla::dom::CSP& outCSP) const {
       outCSP.mWorker_src.Value() = std::move(srcs);
       return;
 
+    case nsIContentSecurityPolicy::SCRIPT_SRC_ELEM_DIRECTIVE:
+      outCSP.mScript_src_elem.Construct();
+      outCSP.mScript_src_elem.Value() = std::move(srcs);
+      return;
+
+    case nsIContentSecurityPolicy::SCRIPT_SRC_ATTR_DIRECTIVE:
+      outCSP.mScript_src_attr.Construct();
+      outCSP.mScript_src_attr.Value() = std::move(srcs);
+      return;
+
     default:
       NS_ASSERTION(false, "cannot find directive to convert CSP to JSON");
   }
@@ -1280,7 +1313,7 @@ bool nsCSPChildSrcDirective::equals(CSPDirective aDirective) const {
 /* =============== nsCSPScriptSrcDirective ============= */
 
 nsCSPScriptSrcDirective::nsCSPScriptSrcDirective(CSPDirective aDirective)
-    : nsCSPDirective(aDirective), mRestrictWorkers(false) {}
+    : nsCSPDirective(aDirective) {}
 
 nsCSPScriptSrcDirective::~nsCSPScriptSrcDirective() = default;
 
@@ -1288,7 +1321,30 @@ bool nsCSPScriptSrcDirective::equals(CSPDirective aDirective) const {
   if (aDirective == nsIContentSecurityPolicy::WORKER_SRC_DIRECTIVE) {
     return mRestrictWorkers;
   }
-  return (mDirective == aDirective);
+  if (aDirective == nsIContentSecurityPolicy::SCRIPT_SRC_ELEM_DIRECTIVE) {
+    return mRestrictScriptElem;
+  }
+  if (aDirective == nsIContentSecurityPolicy::SCRIPT_SRC_ATTR_DIRECTIVE) {
+    return mRestrictScriptAttr;
+  }
+  return mDirective == aDirective;
+}
+
+/* =============== nsCSPStyleSrcDirective ============= */
+
+nsCSPStyleSrcDirective::nsCSPStyleSrcDirective(CSPDirective aDirective)
+    : nsCSPDirective(aDirective) {}
+
+nsCSPStyleSrcDirective::~nsCSPStyleSrcDirective() = default;
+
+bool nsCSPStyleSrcDirective::equals(CSPDirective aDirective) const {
+  if (aDirective == nsIContentSecurityPolicy::STYLE_SRC_ELEM_DIRECTIVE) {
+    return mRestrictStyleElem;
+  }
+  if (aDirective == nsIContentSecurityPolicy::STYLE_SRC_ATTR_DIRECTIVE) {
+    return mRestrictStyleAttr;
+  }
+  return mDirective == aDirective;
 }
 
 /* =============== nsBlockAllMixedContentDirective ============= */
@@ -1412,16 +1468,6 @@ bool nsCSPPolicy::allows(CSPDirective aDirective, enum CSPKeyword aKeyword,
       }
       return false;
     }
-  }
-
-  // {nonce,hash}-source should not consult default-src:
-  //   * return false if default-src is specified
-  //   * but allow the load if default-src is *not* specified (Bug 1198422)
-  if (aKeyword == CSP_NONCE || aKeyword == CSP_HASH) {
-    if (!defaultDir) {
-      return true;
-    }
-    return false;
   }
 
   // If the above loop runs through, we haven't found a matching directive.

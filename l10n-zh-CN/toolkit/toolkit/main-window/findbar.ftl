@@ -33,7 +33,7 @@ findbar-match-diacritics =
     .tooltiptext = 区分重音字母和它们的基本字母（如：在搜索“resume”时，不会匹配到“résumé”）
 
 findbar-entire-word =
-    .label = 匹配词句
+    .label = 全词匹配
     .accesskey = w
     .tooltiptext = 仅匹配由符号分隔开的整个词或句
 

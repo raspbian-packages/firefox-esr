@@ -22,6 +22,7 @@
 // including only the needed headers instead of this one, to reduce compilation
 // dependencies.
 #include "BaseProfiler.h"
+#include "ProfileAdditionalInformation.h"
 #include "mozilla/ProfilerCounts.h"
 #include "mozilla/ProfilerLabels.h"
 #include "mozilla/ProfilerMarkers.h"
@@ -29,6 +30,8 @@
 #include "mozilla/ProfilerThreadSleep.h"
 #include "mozilla/ProfilerThreadState.h"
 #include "mozilla/ProgressLogger.h"
+#include "mozilla/Result.h"
+#include "mozilla/ResultVariant.h"
 
 #ifndef MOZ_GECKO_PROFILER
 
@@ -80,7 +83,7 @@ static inline void profiler_set_process_name(
     const nsACString& aProcessName, const nsACString* aETLDplus1 = nullptr) {}
 
 static inline void profiler_received_exit_profile(
-    const nsCString& aExitProfile) {}
+    const nsACString& aExitProfile) {}
 
 static inline void profiler_register_page(uint64_t aTabID,
                                           uint64_t aInnerWindowID,
@@ -128,6 +131,14 @@ class SpliceableJSONWriter;
 }  // namespace baseprofiler
 }  // namespace mozilla
 class nsIURI;
+
+enum class ProfilerError {
+  IsInactive,
+  JsonGenerationFailed,
+};
+
+template <typename T>
+using ProfilerResult = mozilla::Result<T, ProfilerError>;
 
 //---------------------------------------------------------------------------
 // Give information to the profiler
@@ -359,7 +370,7 @@ void profiler_set_process_name(const nsACString& aProcessName,
                                const nsACString* aETLDplus1 = nullptr);
 
 // Record an exit profile from a child process.
-void profiler_received_exit_profile(const nsCString& aExitProfile);
+void profiler_received_exit_profile(const nsACString& aExitProfile);
 
 // Get the profile encoded as a JSON string. A no-op (returning nullptr) if the
 // profiler is inactive.
@@ -369,8 +380,9 @@ mozilla::UniquePtr<char[]> profiler_get_profile(double aSinceTime = 0,
                                                 bool aIsShuttingDown = false);
 
 // Write the profile for this process (excluding subprocesses) into aWriter.
-// Returns false if the profiler is inactive.
-bool profiler_stream_json_for_this_process(
+// Returns a failed result if the profiler is inactive.
+ProfilerResult<mozilla::ProfileGenerationAdditionalInformation>
+profiler_stream_json_for_this_process(
     mozilla::baseprofiler::SpliceableJSONWriter& aWriter, double aSinceTime = 0,
     bool aIsShuttingDown = false,
     ProfilerCodeAddressService* aService = nullptr,

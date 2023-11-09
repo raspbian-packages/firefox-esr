@@ -27,7 +27,6 @@
 
 #include "mozilla/a11y/PDocAccessibleChild.h"
 #include "mozilla/jni/GeckoBundleUtils.h"
-#include "mozilla/StaticPrefs_accessibility.h"
 #include "mozilla/a11y/DocAccessibleParent.h"
 
 // icu TRUE conflicting with java::sdk::Boolean::TRUE()
@@ -62,32 +61,6 @@ nsresult AccessibleWrap::HandleAccEvent(AccEvent* aEvent) {
       static_cast<DocAccessibleWrap*>(accessible->Document());
   if (doc) {
     switch (aEvent->GetEventType()) {
-      case nsIAccessibleEvent::EVENT_FOCUS: {
-        if (DocAccessibleWrap* topContentDoc =
-                doc->GetTopLevelContentDoc(accessible)) {
-          topContentDoc->CacheFocusPath(accessible);
-        }
-        break;
-      }
-      case nsIAccessibleEvent::EVENT_VIRTUALCURSOR_CHANGED: {
-        AccVCChangeEvent* vcEvent = downcast_accEvent(aEvent);
-        auto newPosition =
-            static_cast<AccessibleWrap*>(vcEvent->NewAccessible());
-        if (newPosition) {
-          if (DocAccessibleWrap* topContentDoc =
-                  doc->GetTopLevelContentDoc(accessible)) {
-            topContentDoc->CacheFocusPath(newPosition);
-          }
-        }
-        break;
-      }
-      case nsIAccessibleEvent::EVENT_REORDER: {
-        if (DocAccessibleWrap* topContentDoc =
-                doc->GetTopLevelContentDoc(accessible)) {
-          topContentDoc->CacheViewport(true);
-        }
-        break;
-      }
       case nsIAccessibleEvent::EVENT_TEXT_CARET_MOVED: {
         if (accessible != aEvent->Document() && !aEvent->IsFromUserInput()) {
           AccCaretMoveEvent* caretEvent = downcast_accEvent(aEvent);
@@ -227,9 +200,7 @@ nsresult AccessibleWrap::HandleAccEvent(AccEvent* aEvent) {
       break;
     }
     case nsIAccessibleEvent::EVENT_REORDER: {
-      if (StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-        sessionAcc->SendWindowContentChangedEvent();
-      }
+      sessionAcc->SendWindowContentChangedEvent();
       break;
     }
     default:
@@ -265,7 +236,18 @@ bool AccessibleWrap::DoAction(uint8_t aIndex) const {
 Accessible* AccessibleWrap::DoPivot(Accessible* aAccessible,
                                     int32_t aGranularity, bool aForward,
                                     bool aInclusive) {
-  a11y::Pivot pivot(nullptr);
+  Accessible* pivotRoot = nullptr;
+  if (aAccessible->IsRemote()) {
+    // If this is a remote accessible provide the top level
+    // remote doc as the pivot root for thread safety reasons.
+    DocAccessibleParent* doc = aAccessible->AsRemote()->Document();
+    while (doc && !doc->IsTopLevel()) {
+      doc = doc->ParentDoc();
+    }
+    MOZ_ASSERT(doc, "Failed to get top level DocAccessibleParent");
+    pivotRoot = doc;
+  }
+  a11y::Pivot pivot(pivotRoot);
   // Depending on the start accessible, the pivot rule will either traverse
   // local or remote accessibles exclusively.
   TraversalRule rule(aGranularity, aAccessible->IsLocal());
@@ -579,8 +561,8 @@ void AccessibleWrap::SetVirtualViewID(Accessible* aAccessible,
 }
 
 int32_t AccessibleWrap::GetAndroidClass(role aRole) {
-#define ROLE(geckoRole, stringRole, atkRole, macRole, macSubrole, msaaRole, \
-             ia2Role, androidClass, nameRule)                               \
+#define ROLE(geckoRole, stringRole, ariaRole, atkRole, macRole, macSubrole, \
+             msaaRole, ia2Role, androidClass, nameRule)                     \
   case roles::geckoRole:                                                    \
     return androidClass;
 
@@ -651,7 +633,8 @@ bool AccessibleWrap::HandleLiveRegionEvent(AccEvent* aEvent) {
     return false;
   }
 
-  RefPtr<AccAttributes> attributes = Attributes();
+  RefPtr<AccAttributes> attributes = new AccAttributes();
+  nsAccUtils::SetLiveContainerAttributes(attributes, this);
   nsString live;
   if (!attributes->GetAttribute(nsGkAtoms::containerLive, live)) {
     return false;
@@ -671,8 +654,8 @@ bool AccessibleWrap::HandleLiveRegionEvent(AccEvent* aEvent) {
          parent = parent->LocalParent()) {
       dom::Element* element = parent->Elm();
       if (element &&
-          element->AttrValueIs(kNameSpaceID_None, nsGkAtoms::aria_atomic,
-                               nsGkAtoms::_true, eCaseMatters)) {
+          nsAccUtils::ARIAAttrValueIs(element, nsGkAtoms::aria_atomic,
+                                      nsGkAtoms::_true, eCaseMatters)) {
         atomicAncestor = parent;
         break;
       }

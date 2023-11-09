@@ -4,11 +4,13 @@
 
 "use strict";
 
-const { AboutProtectionsParent } = ChromeUtils.import(
-  "resource:///actors/AboutProtectionsParent.jsm"
+const { AboutProtectionsParent } = ChromeUtils.importESModule(
+  "resource:///actors/AboutProtectionsParent.sys.mjs"
 );
 
-let { Region } = ChromeUtils.import("resource://gre/modules/Region.jsm");
+let { Region } = ChromeUtils.importESModule(
+  "resource://gre/modules/Region.sys.mjs"
+);
 
 const initialHomeRegion = Region._home;
 const initialCurrentRegion = Region._current;
@@ -17,7 +19,7 @@ async function checkVPNCardVisibility(tab, shouldBeHidden, subscribed = false) {
   await SpecialPowers.spawn(
     tab.linkedBrowser,
     [{ _shouldBeHidden: shouldBeHidden, _subscribed: subscribed }],
-    async function({ _shouldBeHidden, _subscribed }) {
+    async function ({ _shouldBeHidden, _subscribed }) {
       await ContentTaskUtils.waitForCondition(() => {
         const vpnCard = content.document.querySelector(".vpn-card");
         const subscribedStateCorrect =
@@ -38,7 +40,7 @@ async function checkVPNPromoBannerVisibility(tab, shouldBeHidden) {
   await SpecialPowers.spawn(
     tab.linkedBrowser,
     [{ _shouldBeHidden: shouldBeHidden }],
-    async function({ _shouldBeHidden }) {
+    async function ({ _shouldBeHidden }) {
       await ContentTaskUtils.waitForCondition(() => {
         const vpnBanner = content.document.querySelector(".vpn-banner");
         return ContentTaskUtils.is_hidden(vpnBanner) === _shouldBeHidden;
@@ -64,7 +66,7 @@ async function revertRegions() {
   setHomeRegion(initialHomeRegion);
 }
 
-add_setup(async function() {
+add_setup(async function () {
   await SpecialPowers.pushPrefEnv({
     set: [
       ["browser.contentblocking.report.monitor.enabled", false],
@@ -109,7 +111,7 @@ add_task(async function testVPNCardVisibility() {
   AboutProtectionsParent.setTestOverride(getVPNOverrides(false));
   setCurrentRegion("ls");
   await promiseSetHomeRegion("ls");
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNCardVisibility(tab, true);
 
   info(
@@ -117,7 +119,7 @@ add_task(async function testVPNCardVisibility() {
   );
   AboutProtectionsParent.setTestOverride(getVPNOverrides(false));
   setCurrentRegion("sy");
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNCardVisibility(tab, true);
 
   info(
@@ -125,7 +127,7 @@ add_task(async function testVPNCardVisibility() {
   );
   AboutProtectionsParent.setTestOverride(getVPNOverrides(true));
   setCurrentRegion("us");
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNCardVisibility(tab, false, true);
 
   info(
@@ -134,7 +136,7 @@ add_task(async function testVPNCardVisibility() {
   await SpecialPowers.pushPrefEnv({
     set: [["browser.vpn_promo.enabled", false]],
   });
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNCardVisibility(tab, true);
 
   await BrowserTestUtils.removeTab(tab);
@@ -164,7 +166,7 @@ add_task(async function testVPNPromoBanner() {
 
   info("Check that vpn banner is shown if user's region is supported");
   setCurrentRegion("us");
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNPromoBannerVisibility(tab, false);
 
   is(
@@ -176,7 +178,7 @@ add_task(async function testVPNPromoBanner() {
     "After showing the banner once, the pref to hide the VPN banner is flipped"
   );
   info("The banner does not show when the pref to hide it is flipped");
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNPromoBannerVisibility(tab, true);
 
   // VPN Banner flips this pref each time it shows, flip back between each instruction.
@@ -190,7 +192,7 @@ add_task(async function testVPNPromoBanner() {
   AboutProtectionsParent.setTestOverride(getVPNOverrides(false));
   setCurrentRegion("ls");
   await setHomeRegion("ls'");
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNPromoBannerVisibility(tab, true);
 
   info(
@@ -198,7 +200,7 @@ add_task(async function testVPNPromoBanner() {
   );
   AboutProtectionsParent.setTestOverride(getVPNOverrides(false));
   setCurrentRegion("sy");
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNPromoBannerVisibility(tab, true);
 
   info(
@@ -210,7 +212,7 @@ add_task(async function testVPNPromoBanner() {
       ["browser.contentblocking.report.hide_vpn_banner", false],
     ],
   });
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNPromoBannerVisibility(tab, true);
 
   await SpecialPowers.pushPrefEnv({
@@ -223,7 +225,7 @@ add_task(async function testVPNPromoBanner() {
   info("If user is subscribed to VPN already the promo banner should not show");
   AboutProtectionsParent.setTestOverride(getVPNOverrides(true));
   setCurrentRegion("us");
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNPromoBannerVisibility(tab, true);
 
   await BrowserTestUtils.removeTab(tab);
@@ -256,9 +258,9 @@ add_task(async function testVPNDoesNotShowChina() {
     "set home location to China, even though user is currently in the US, expect vpn card to be hidden"
   );
   await promiseSetHomeRegion("CN");
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNPromoBannerVisibility(tab, true);
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNCardVisibility(tab, true);
 
   // VPN Banner flips this pref each time it shows, flip back between each instruction.
@@ -270,9 +272,9 @@ add_task(async function testVPNDoesNotShowChina() {
   AboutProtectionsParent.setTestOverride(getVPNOverrides(false));
   await promiseSetHomeRegion("US");
   setCurrentRegion("CN");
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNPromoBannerVisibility(tab, true);
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
   await checkVPNCardVisibility(tab, true);
 
   await BrowserTestUtils.removeTab(tab);

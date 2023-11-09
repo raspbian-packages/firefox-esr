@@ -9,25 +9,21 @@
 
 const RESTRICT_TOKEN_OPENPAGE = "%";
 
-const { PlacesTestUtils } = ChromeUtils.import(
-  "resource://testing-common/PlacesTestUtils.jsm"
+const { PlacesTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/PlacesTestUtils.sys.mjs"
 );
 
-const { PlacesUtils } = ChromeUtils.import(
-  "resource://gre/modules/PlacesUtils.jsm"
+const { UrlbarProviderOpenTabs } = ChromeUtils.importESModule(
+  "resource:///modules/UrlbarProviderOpenTabs.sys.mjs"
 );
 
-const { UrlbarProviderOpenTabs } = ChromeUtils.import(
-  "resource:///modules/UrlbarProviderOpenTabs.jsm"
-);
-
-const { UrlbarTestUtils } = ChromeUtils.import(
-  "resource://testing-common/UrlbarTestUtils.jsm"
+const { UrlbarTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/UrlbarTestUtils.sys.mjs"
 );
 
 var stateBackup = ss.getBrowserState();
 
-add_setup(async function() {
+add_setup(async function () {
   await SpecialPowers.pushPrefEnv({
     set: [
       // Set the pref to true so we know exactly how many tabs should be restoring at
@@ -79,7 +75,7 @@ add_task(async function test_unrestored_tabs_listed() {
   };
 
   const tabsForEnsure = new Set();
-  state.windows[0].tabs.forEach(function(tab) {
+  state.windows[0].tabs.forEach(function (tab) {
     tabsForEnsure.add(tab.entries[0].url);
   });
 

@@ -1,19 +1,20 @@
 /* Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
+);
 
 function BlaEngine() {
   SyncEngine.call(this, "Bla", Service);
 }
 BlaEngine.prototype = {
-  __proto__: SyncEngine.prototype,
-
   removed: false,
   async removeClientData() {
     this.removed = true;
   },
 };
+Object.setPrototypeOf(BlaEngine.prototype, SyncEngine.prototype);
 
 add_task(async function setup() {
   await Service.engineManager.register(BlaEngine);

@@ -17,6 +17,7 @@
 #include "mozilla/LoadContext.h"
 #include "mozilla/LoadInfo.h"
 #include "mozilla/Monitor.h"
+#include "mozilla/StaticPrefs_browser.h"
 #include "mozilla/StaticPrefs_network.h"
 #include "mozilla/StaticPrefs_privacy.h"
 #include "mozilla/StoragePrincipalHelper.h"
@@ -26,6 +27,7 @@
 #include "nsCategoryCache.h"
 #include "nsComponentManagerUtils.h"
 #include "nsContentUtils.h"
+#include "nsEscape.h"
 #include "nsFileStreams.h"
 #include "nsHashKeys.h"
 #include "nsHttp.h"
@@ -68,7 +70,6 @@
 #include "nsIURIWithSpecialOrigin.h"
 #include "nsIViewSourceChannel.h"
 #include "nsInterfaceRequestorAgg.h"
-#include "plstr.h"
 #include "nsINestedURI.h"
 #include "mozilla/dom/nsCSPUtils.h"
 #include "mozilla/dom/nsHTTPSOnlyUtils.h"
@@ -336,7 +337,8 @@ void AssertLoadingPrincipalAndClientInfoMatch(
       (aType == nsIContentPolicy::TYPE_INTERNAL_WORKER ||
        aType == nsIContentPolicy::TYPE_INTERNAL_SHARED_WORKER ||
        aType == nsIContentPolicy::TYPE_INTERNAL_SERVICE_WORKER ||
-       aType == nsIContentPolicy::TYPE_INTERNAL_WORKER_IMPORT_SCRIPTS)) {
+       aType == nsIContentPolicy::TYPE_INTERNAL_WORKER_IMPORT_SCRIPTS ||
+       aType == nsIContentPolicy::TYPE_INTERNAL_WORKER_STATIC_MODULE)) {
     return;
   }
 
@@ -379,7 +381,8 @@ nsresult NS_NewChannel(nsIChannel** outChannel, nsIURI* aUri,
                        nsIInterfaceRequestor* aCallbacks /* = nullptr */,
                        nsLoadFlags aLoadFlags /* = nsIRequest::LOAD_NORMAL */,
                        nsIIOService* aIoService /* = nullptr */,
-                       uint32_t aSandboxFlags /* = 0 */) {
+                       uint32_t aSandboxFlags /* = 0 */,
+                       bool aSkipCheckForBrokenURLOrZeroSized /* = false */) {
   return NS_NewChannelInternal(
       outChannel, aUri,
       nullptr,  // aLoadingNode,
@@ -387,7 +390,8 @@ nsresult NS_NewChannel(nsIChannel** outChannel, nsIURI* aUri,
       nullptr,  // aTriggeringPrincipal
       Maybe<ClientInfo>(), Maybe<ServiceWorkerDescriptor>(), aSecurityFlags,
       aContentPolicyType, aCookieJarSettings, aPerformanceStorage, aLoadGroup,
-      aCallbacks, aLoadFlags, aIoService, aSandboxFlags);
+      aCallbacks, aLoadFlags, aIoService, aSandboxFlags,
+      aSkipCheckForBrokenURLOrZeroSized);
 }
 
 nsresult NS_NewChannel(nsIChannel** outChannel, nsIURI* aUri,
@@ -402,21 +406,22 @@ nsresult NS_NewChannel(nsIChannel** outChannel, nsIURI* aUri,
                        nsIInterfaceRequestor* aCallbacks /* = nullptr */,
                        nsLoadFlags aLoadFlags /* = nsIRequest::LOAD_NORMAL */,
                        nsIIOService* aIoService /* = nullptr */,
-                       uint32_t aSandboxFlags /* = 0 */) {
+                       uint32_t aSandboxFlags /* = 0 */,
+                       bool aSkipCheckForBrokenURLOrZeroSized /* = false */) {
   AssertLoadingPrincipalAndClientInfoMatch(
       aLoadingPrincipal, aLoadingClientInfo, aContentPolicyType);
 
   Maybe<ClientInfo> loadingClientInfo;
   loadingClientInfo.emplace(aLoadingClientInfo);
 
-  return NS_NewChannelInternal(outChannel, aUri,
-                               nullptr,  // aLoadingNode,
-                               aLoadingPrincipal,
-                               nullptr,  // aTriggeringPrincipal
-                               loadingClientInfo, aController, aSecurityFlags,
-                               aContentPolicyType, aCookieJarSettings,
-                               aPerformanceStorage, aLoadGroup, aCallbacks,
-                               aLoadFlags, aIoService, aSandboxFlags);
+  return NS_NewChannelInternal(
+      outChannel, aUri,
+      nullptr,  // aLoadingNode,
+      aLoadingPrincipal,
+      nullptr,  // aTriggeringPrincipal
+      loadingClientInfo, aController, aSecurityFlags, aContentPolicyType,
+      aCookieJarSettings, aPerformanceStorage, aLoadGroup, aCallbacks,
+      aLoadFlags, aIoService, aSandboxFlags, aSkipCheckForBrokenURLOrZeroSized);
 }
 
 nsresult NS_NewChannelInternal(
@@ -430,8 +435,8 @@ nsresult NS_NewChannelInternal(
     nsILoadGroup* aLoadGroup /* = nullptr */,
     nsIInterfaceRequestor* aCallbacks /* = nullptr */,
     nsLoadFlags aLoadFlags /* = nsIRequest::LOAD_NORMAL */,
-    nsIIOService* aIoService /* = nullptr */,
-    uint32_t aSandboxFlags /* = 0 */) {
+    nsIIOService* aIoService /* = nullptr */, uint32_t aSandboxFlags /* = 0 */,
+    bool aSkipCheckForBrokenURLOrZeroSized /* = false */) {
   NS_ENSURE_ARG_POINTER(outChannel);
 
   nsCOMPtr<nsIIOService> grip;
@@ -442,7 +447,8 @@ nsresult NS_NewChannelInternal(
   rv = aIoService->NewChannelFromURIWithClientAndController(
       aUri, aLoadingNode, aLoadingPrincipal, aTriggeringPrincipal,
       aLoadingClientInfo, aController, aSecurityFlags, aContentPolicyType,
-      aSandboxFlags, getter_AddRefs(channel));
+      aSandboxFlags, aSkipCheckForBrokenURLOrZeroSized,
+      getter_AddRefs(channel));
   if (NS_FAILED(rv)) {
     return rv;
   }
@@ -564,7 +570,8 @@ nsresult NS_NewChannel(nsIChannel** outChannel, nsIURI* aUri,
                        nsIInterfaceRequestor* aCallbacks /* = nullptr */,
                        nsLoadFlags aLoadFlags /* = nsIRequest::LOAD_NORMAL */,
                        nsIIOService* aIoService /* = nullptr */,
-                       uint32_t aSandboxFlags /* = 0 */) {
+                       uint32_t aSandboxFlags /* = 0 */,
+                       bool aSkipCheckForBrokenURLOrZeroSized /* = false */) {
   NS_ASSERTION(aLoadingNode, "Can not create channel without a loading Node!");
   return NS_NewChannelInternal(
       outChannel, aUri, aLoadingNode, aLoadingNode->NodePrincipal(),
@@ -572,7 +579,7 @@ nsresult NS_NewChannel(nsIChannel** outChannel, nsIURI* aUri,
       Maybe<ClientInfo>(), Maybe<ServiceWorkerDescriptor>(), aSecurityFlags,
       aContentPolicyType, aLoadingNode->OwnerDoc()->CookieJarSettings(),
       aPerformanceStorage, aLoadGroup, aCallbacks, aLoadFlags, aIoService,
-      aSandboxFlags);
+      aSandboxFlags, aSkipCheckForBrokenURLOrZeroSized);
 }
 
 nsresult NS_GetIsDocumentChannel(nsIChannel* aChannel, bool* aIsDocument) {
@@ -661,9 +668,11 @@ int32_t NS_GetDefaultPort(const char* scheme,
                           nsIIOService* ioService /* = nullptr */) {
   nsresult rv;
 
-  // Getting the default port through the protocol handler has a lot of XPCOM
-  // overhead involved.  We optimize the protocols that matter for Web pages
-  // (HTTP and HTTPS) by hardcoding their default ports here.
+  // Getting the default port through the protocol handler previously had a lot
+  // of XPCOM overhead involved.  We optimize the protocols that matter for Web
+  // pages (HTTP and HTTPS) by hardcoding their default ports here.
+  //
+  // XXX: This might not be necessary for performance anymore.
   if (strncmp(scheme, "http", 4) == 0) {
     if (scheme[4] == 's' && scheme[5] == '\0') {
       return 443;
@@ -677,11 +686,8 @@ int32_t NS_GetDefaultPort(const char* scheme,
   net_EnsureIOService(&ioService, grip);
   if (!ioService) return -1;
 
-  nsCOMPtr<nsIProtocolHandler> handler;
-  rv = ioService->GetProtocolHandler(scheme, getter_AddRefs(handler));
-  if (NS_FAILED(rv)) return -1;
   int32_t port;
-  rv = handler->GetDefaultPort(&port);
+  rv = ioService->GetDefaultPort(scheme, &port);
   return NS_SUCCEEDED(rv) ? port : -1;
 }
 
@@ -851,7 +857,7 @@ nsresult NS_NewInputStreamPump(
     nsIInputStreamPump** aResult, already_AddRefed<nsIInputStream> aStream,
     uint32_t aSegsize /* = 0 */, uint32_t aSegcount /* = 0 */,
     bool aCloseWhenDone /* = false */,
-    nsIEventTarget* aMainThreadTarget /* = nullptr */) {
+    nsISerialEventTarget* aMainThreadTarget /* = nullptr */) {
   nsCOMPtr<nsIInputStream> stream = std::move(aStream);
 
   nsresult rv;
@@ -1036,15 +1042,12 @@ nsresult NS_NewStreamLoader(
 
 nsresult NS_NewSyncStreamListener(nsIStreamListener** result,
                                   nsIInputStream** stream) {
-  nsCOMPtr<nsISyncStreamListener> listener = nsSyncStreamListener::Create();
-  if (listener) {
-    nsresult rv = listener->GetInputStream(stream);
-    if (NS_SUCCEEDED(rv)) {
-      listener.forget(result);
-    }
-    return rv;
+  nsCOMPtr<nsISyncStreamListener> listener = new nsSyncStreamListener();
+  nsresult rv = listener->GetInputStream(stream);
+  if (NS_SUCCEEDED(rv)) {
+    listener.forget(result);
   }
-  return NS_ERROR_FAILURE;
+  return rv;
 }
 
 nsresult NS_ImplementChannelOpen(nsIChannel* channel, nsIInputStream** result) {
@@ -1054,7 +1057,7 @@ nsresult NS_ImplementChannelOpen(nsIChannel* channel, nsIInputStream** result) {
                                          getter_AddRefs(stream));
   NS_ENSURE_SUCCESS(rv, rv);
 
-  rv = NS_MaybeOpenChannelUsingAsyncOpen(channel, listener);
+  rv = channel->AsyncOpen(listener);
   NS_ENSURE_SUCCESS(rv, rv);
 
   uint64_t n;
@@ -1295,11 +1298,12 @@ nsresult NS_NewSafeLocalFileOutputStream(nsIOutputStream** result,
   return rv;
 }
 
-nsresult NS_NewLocalFileStream(nsIFileStream** result, nsIFile* file,
-                               int32_t ioFlags /* = -1 */,
-                               int32_t perm /* = -1 */,
-                               int32_t behaviorFlags /* = 0 */) {
-  nsCOMPtr<nsIFileStream> stream = new nsFileStream();
+nsresult NS_NewLocalFileRandomAccessStream(nsIRandomAccessStream** result,
+                                           nsIFile* file,
+                                           int32_t ioFlags /* = -1 */,
+                                           int32_t perm /* = -1 */,
+                                           int32_t behaviorFlags /* = 0 */) {
+  nsCOMPtr<nsIFileRandomAccessStream> stream = new nsFileRandomAccessStream();
   nsresult rv = stream->Init(file, ioFlags, perm, behaviorFlags);
   if (NS_SUCCEEDED(rv)) {
     stream.forget(result);
@@ -1307,12 +1311,13 @@ nsresult NS_NewLocalFileStream(nsIFileStream** result, nsIFile* file,
   return rv;
 }
 
-mozilla::Result<nsCOMPtr<nsIFileStream>, nsresult> NS_NewLocalFileStream(
-    nsIFile* file, int32_t ioFlags /* = -1 */, int32_t perm /* = -1 */,
-    int32_t behaviorFlags /* = 0 */) {
-  nsCOMPtr<nsIFileStream> stream;
-  const nsresult rv = NS_NewLocalFileStream(getter_AddRefs(stream), file,
-                                            ioFlags, perm, behaviorFlags);
+mozilla::Result<nsCOMPtr<nsIRandomAccessStream>, nsresult>
+NS_NewLocalFileRandomAccessStream(nsIFile* file, int32_t ioFlags /* = -1 */,
+                                  int32_t perm /* = -1 */,
+                                  int32_t behaviorFlags /* = 0 */) {
+  nsCOMPtr<nsIRandomAccessStream> stream;
+  const nsresult rv = NS_NewLocalFileRandomAccessStream(
+      getter_AddRefs(stream), file, ioFlags, perm, behaviorFlags);
   if (NS_SUCCEEDED(rv)) {
     return stream;
   }
@@ -1882,8 +1887,7 @@ nsresult NS_NewURI(nsIURI** aURI, const nsACString& aSpec,
 
   if (scheme.EqualsLiteral("moz-safe-about") ||
       scheme.EqualsLiteral("page-icon") || scheme.EqualsLiteral("moz") ||
-      scheme.EqualsLiteral("moz-anno") ||
-      scheme.EqualsLiteral("moz-fonttable")) {
+      scheme.EqualsLiteral("moz-anno")) {
     return NS_MutateURI(new nsSimpleURI::Mutator())
         .SetSpec(aSpec)
         .Finalize(aURI);
@@ -1915,7 +1919,7 @@ nsresult NS_NewURI(nsIURI** aURI, const nsACString& aSpec,
     return handler->NewURI(aSpec, aCharset, aBaseURI, aURI);
   }
 
-  if (scheme.EqualsLiteral("indexeddb")) {
+  if (scheme.EqualsLiteral("indexeddb") || scheme.EqualsLiteral("uuid")) {
     return NS_MutateURI(new nsStandardURL::Mutator())
         .Apply(&nsIStandardURLMutator::Init, nsIStandardURL::URLTYPE_AUTHORITY,
                0, aSpec, aCharset, aBaseURI, nullptr)
@@ -2577,6 +2581,33 @@ bool NS_IsHSTSUpgradeRedirect(nsIChannel* aOldChannel, nsIChannel* aNewChannel,
   return NS_SUCCEEDED(upgradedURI->Equals(newURI, &res)) && res;
 }
 
+bool NS_ShouldRemoveAuthHeaderOnRedirect(nsIChannel* aOldChannel,
+                                         nsIChannel* aNewChannel,
+                                         uint32_t aFlags) {
+  // we need to strip Authentication headers for external cross-origin redirects
+  // Howerver, we should NOT strip auth headers for
+  // - internal redirects/HSTS upgrades
+  // - same origin redirects
+  // Ref: https://fetch.spec.whatwg.org/#http-redirect-fetch
+  if ((aFlags & (nsIChannelEventSink::REDIRECT_STS_UPGRADE |
+                 nsIChannelEventSink::REDIRECT_INTERNAL))) {
+    // this is an internal redirect do not strip auth header
+    return false;
+  }
+  nsCOMPtr<nsIURI> oldUri;
+  MOZ_ALWAYS_SUCCEEDS(
+      NS_GetFinalChannelURI(aOldChannel, getter_AddRefs(oldUri)));
+
+  nsCOMPtr<nsIURI> newUri;
+  MOZ_ALWAYS_SUCCEEDS(
+      NS_GetFinalChannelURI(aNewChannel, getter_AddRefs(newUri)));
+
+  nsresult rv = nsContentUtils::GetSecurityManager()->CheckSameOriginURI(
+      newUri, oldUri, false, false);
+
+  return NS_FAILED(rv);
+}
+
 nsresult NS_LinkRedirectChannels(uint64_t channelId,
                                  nsIParentChannel* parentChannel,
                                  nsIChannel** _result) {
@@ -2587,20 +2618,9 @@ nsresult NS_LinkRedirectChannels(uint64_t channelId,
   return registrar->LinkChannels(channelId, parentChannel, _result);
 }
 
-nsresult NS_MaybeOpenChannelUsingOpen(nsIChannel* aChannel,
-                                      nsIInputStream** aStream) {
-  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
-  return aChannel->Open(aStream);
-}
-
-nsresult NS_MaybeOpenChannelUsingAsyncOpen(nsIChannel* aChannel,
-                                           nsIStreamListener* aListener) {
-  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
-  return aChannel->AsyncOpen(aListener);
-}
-
 nsILoadInfo::CrossOriginEmbedderPolicy
-NS_GetCrossOriginEmbedderPolicyFromHeader(const nsACString& aHeader) {
+NS_GetCrossOriginEmbedderPolicyFromHeader(
+    const nsACString& aHeader, bool aIsOriginTrialCoepCredentiallessEnabled) {
   nsCOMPtr<nsISFVService> sfv = GetSFVService();
 
   nsCOMPtr<nsISFVItem> item;
@@ -2626,9 +2646,15 @@ NS_GetCrossOriginEmbedderPolicyFromHeader(const nsACString& aHeader) {
     return nsILoadInfo::EMBEDDER_POLICY_NULL;
   }
 
-  return embedderPolicy.EqualsLiteral("require-corp")
-             ? nsILoadInfo::EMBEDDER_POLICY_REQUIRE_CORP
-             : nsILoadInfo::EMBEDDER_POLICY_NULL;
+  if (embedderPolicy.EqualsLiteral("require-corp")) {
+    return nsILoadInfo::EMBEDDER_POLICY_REQUIRE_CORP;
+  } else if (embedderPolicy.EqualsLiteral("credentialless") &&
+             IsCoepCredentiallessEnabled(
+                 aIsOriginTrialCoepCredentiallessEnabled)) {
+    return nsILoadInfo::EMBEDDER_POLICY_CREDENTIALLESS;
+  }
+
+  return nsILoadInfo::EMBEDDER_POLICY_NULL;
 }
 
 /** Given the first (disposition) token from a Content-Disposition header,
@@ -2859,25 +2885,12 @@ bool NS_IsSrcdocChannel(nsIChannel* aChannel) {
 }
 
 // helper function for NS_ShouldSecureUpgrade for checking HSTS
-bool handleResultFunc(bool aAllowSTS, bool aIsStsHost, uint32_t aHstsSource) {
+bool handleResultFunc(bool aAllowSTS, bool aIsStsHost) {
   if (aIsStsHost) {
     LOG(("nsHttpChannel::Connect() STS permissions found\n"));
     if (aAllowSTS) {
       Telemetry::AccumulateCategorical(
           Telemetry::LABELS_HTTP_SCHEME_UPGRADE_TYPE::STS);
-      switch (aHstsSource) {
-        case nsISiteSecurityService::SOURCE_PRELOAD_LIST:
-          Telemetry::Accumulate(Telemetry::HSTS_UPGRADE_SOURCE, 0);
-          break;
-        case nsISiteSecurityService::SOURCE_ORGANIC_REQUEST:
-          Telemetry::Accumulate(Telemetry::HSTS_UPGRADE_SOURCE, 1);
-          break;
-        case nsISiteSecurityService::SOURCE_UNKNOWN:
-        default:
-          // record this as an organic request
-          Telemetry::Accumulate(Telemetry::HSTS_UPGRADE_SOURCE, 1);
-          break;
-      }
       return true;
     }
     Telemetry::AccumulateCategorical(
@@ -2950,9 +2963,16 @@ static bool ShouldSecureUpgradeNoHSTS(nsIURI* aURI, nsILoadInfo* aLoadInfo) {
     return true;
   }
 
-  // 4. Https-Only / -First
-  if (nsHTTPSOnlyUtils::ShouldUpgradeRequest(aURI, aLoadInfo) ||
-      nsHTTPSOnlyUtils::ShouldUpgradeHttpsFirstRequest(aURI, aLoadInfo)) {
+  // 4. Https-Only
+  if (nsHTTPSOnlyUtils::ShouldUpgradeRequest(aURI, aLoadInfo)) {
+    Telemetry::AccumulateCategorical(
+        Telemetry::LABELS_HTTP_SCHEME_UPGRADE_TYPE::HTTPSOnly);
+    return true;
+  }
+  // 4.a Https-First
+  if (nsHTTPSOnlyUtils::ShouldUpgradeHttpsFirstRequest(aURI, aLoadInfo)) {
+    Telemetry::AccumulateCategorical(
+        Telemetry::LABELS_HTTP_SCHEME_UPGRADE_TYPE::HTTPSFirst);
     return true;
   }
   return false;
@@ -3008,7 +3028,6 @@ nsresult NS_ShouldSecureUpgrade(
   NS_ENSURE_TRUE(sss, NS_ERROR_OUT_OF_MEMORY);
 
   bool isStsHost = false;
-  uint32_t hstsSource = 0;
   // Calling |IsSecureURI| before the storage is ready to read will
   // block the main thread. Once the storage is ready, we can call it
   // from main thread.
@@ -3042,15 +3061,13 @@ nsresult NS_ShouldSecureUpgrade(
              callbackWrapper{std::move(callbackWrapper)},
              allowSTS{std::move(aAllowSTS)}]() mutable {
               bool isStsHost = false;
-              uint32_t hstsSource = 0;
-              nsresult rv = service->IsSecureURI(uri, originAttributes, nullptr,
-                                                 &hstsSource, &isStsHost);
+              nsresult rv =
+                  service->IsSecureURI(uri, originAttributes, &isStsHost);
 
               // Successfully get the result from |IsSecureURI| implies that
               // the storage is ready to read.
               storageReady = NS_SUCCEEDED(rv);
-              bool shouldUpgrade =
-                  handleResultFunc(allowSTS, isStsHost, hstsSource);
+              bool shouldUpgrade = handleResultFunc(allowSTS, isStsHost);
               // Check if request should be upgraded.
               NS_DispatchToMainThread(NS_NewRunnableFunction(
                   "net::NS_ShouldSecureUpgrade::ResultCallback",
@@ -3064,15 +3081,14 @@ nsresult NS_ShouldSecureUpgrade(
     return rv;
   }
 
-  nsresult rv = sss->IsSecureURI(aURI, aOriginAttributes, nullptr, &hstsSource,
-                                 &isStsHost);
+  nsresult rv = sss->IsSecureURI(aURI, aOriginAttributes, &isStsHost);
 
   // if the SSS check fails, it's likely because this load is on a
   // malformed URI or something else in the setup is wrong, so any error
   // should be reported.
   NS_ENSURE_SUCCESS(rv, rv);
 
-  aShouldUpgrade = handleResultFunc(aAllowSTS, isStsHost, hstsSource);
+  aShouldUpgrade = handleResultFunc(aAllowSTS, isStsHost);
   if (!aShouldUpgrade) {
     // Check for CSP upgrade-insecure-requests, Mixed content auto upgrading
     // and Https-Only / -First.
@@ -3403,6 +3419,21 @@ void LinkHeader::Reset() {
   mCrossOrigin.SetIsVoid(true);
 }
 
+nsresult LinkHeader::NewResolveHref(nsIURI** aOutURI, nsIURI* aBaseURI) const {
+  if (mAnchor.IsEmpty()) {
+    // use the base uri
+    return NS_NewURI(aOutURI, mHref, nullptr, aBaseURI);
+  }
+
+  // compute the anchored URI
+  nsCOMPtr<nsIURI> anchoredURI;
+  nsresult rv =
+      NS_NewURI(getter_AddRefs(anchoredURI), mAnchor, nullptr, aBaseURI);
+  NS_ENSURE_SUCCESS(rv, rv);
+
+  return NS_NewURI(aOutURI, mHref, nullptr, anchoredURI);
+}
+
 bool LinkHeader::operator==(const LinkHeader& rhs) const {
   return mHref == rhs.mHref && mRel == rhs.mRel && mTitle == rhs.mTitle &&
          mIntegrity == rhs.mIntegrity && mSrcset == rhs.mSrcset &&
@@ -3724,6 +3755,24 @@ nsContentPolicyType AsValueToContentPolicy(const nsAttrValue& aValue) {
   return nsIContentPolicy::TYPE_INVALID;
 }
 
+// TODO: implement this using nsAttrValue's destination enums when support for
+// the new destinations is added; see this diff for a possible start:
+// https://phabricator.services.mozilla.com/D172368?vs=705114&id=708720
+bool IsScriptLikeOrInvalid(const nsAString& aAs) {
+  return !(
+      aAs.LowerCaseEqualsASCII("fetch") || aAs.LowerCaseEqualsASCII("audio") ||
+      aAs.LowerCaseEqualsASCII("document") ||
+      aAs.LowerCaseEqualsASCII("embed") || aAs.LowerCaseEqualsASCII("font") ||
+      aAs.LowerCaseEqualsASCII("frame") || aAs.LowerCaseEqualsASCII("iframe") ||
+      aAs.LowerCaseEqualsASCII("image") ||
+      aAs.LowerCaseEqualsASCII("manifest") ||
+      aAs.LowerCaseEqualsASCII("object") ||
+      aAs.LowerCaseEqualsASCII("report") || aAs.LowerCaseEqualsASCII("style") ||
+      aAs.LowerCaseEqualsASCII("track") || aAs.LowerCaseEqualsASCII("video") ||
+      aAs.LowerCaseEqualsASCII("webidentity") ||
+      aAs.LowerCaseEqualsASCII("xslt"));
+}
+
 bool CheckPreloadAttrs(const nsAttrValue& aAs, const nsAString& aType,
                        const nsAString& aMedia,
                        mozilla::dom::Document* aDocument) {
@@ -3792,11 +3841,8 @@ void WarnIgnoredPreload(const mozilla::dom::Document& aDoc, nsIURI& aURI) {
                                   "PreloadIgnoredInvalidAttr", params);
 }
 
-}  // namespace net
-}  // namespace mozilla
-
-nsresult NS_HasRootDomain(const nsACString& aInput, const nsACString& aHost,
-                          bool* aResult) {
+nsresult HasRootDomain(const nsACString& aInput, const nsACString& aHost,
+                       bool* aResult) {
   if (NS_WARN_IF(!aResult)) {
     return NS_ERROR_FAILURE;
   }
@@ -3810,7 +3856,7 @@ nsresult NS_HasRootDomain(const nsACString& aInput, const nsACString& aHost,
   }
 
   // If aHost is not found, we know we do not have it as a root domain.
-  int32_t index = nsAutoCString(aInput).Find(aHost.BeginReading());
+  int32_t index = nsAutoCString(aInput).Find(aHost);
   if (index == kNotFound) {
     return NS_OK;
   }
@@ -3857,8 +3903,34 @@ void CheckForBrokenChromeURL(nsILoadInfo* aLoadInfo, nsIURI* aURI) {
     return;
   }
 
+  if (aLoadInfo) {
+    bool shouldSkipCheckForBrokenURLOrZeroSized;
+    MOZ_ALWAYS_SUCCEEDS(aLoadInfo->GetShouldSkipCheckForBrokenURLOrZeroSized(
+        &shouldSkipCheckForBrokenURLOrZeroSized));
+    if (shouldSkipCheckForBrokenURLOrZeroSized) {
+      return;
+    }
+  }
+
   nsCString spec;
   aURI->GetSpec(spec);
+
+#ifdef ANDROID
+  // Various toolkit files use this and are shipped on android, but
+  // info-pages.css and aboutLicense.css are not - bug 1808987
+  if (StringEndsWith(spec, "info-pages.css"_ns) ||
+      StringEndsWith(spec, "aboutLicense.css"_ns) ||
+      // Error page CSS is also missing: bug 1810039
+      StringEndsWith(spec, "aboutNetError.css"_ns) ||
+      StringEndsWith(spec, "aboutHttpsOnlyError.css"_ns) ||
+      StringEndsWith(spec, "error-pages.css"_ns) ||
+      // popup.css is used in a single mochitest: bug 1810577
+      StringEndsWith(spec, "/popup.css"_ns) ||
+      // Used by an extension installation test - bug 1809650
+      StringBeginsWith(spec, "resource://android/assets/web_extensions/"_ns)) {
+    return;
+  }
+#endif
 
   // DTD files from gre may not exist when requested by tests.
   if (StringBeginsWith(spec, "resource://gre/res/dtd/"_ns)) {
@@ -3884,3 +3956,12 @@ void CheckForBrokenChromeURL(nsILoadInfo* aLoadInfo, nsIURI* aURI) {
     printf_stderr("Missing chrome or resource URL: %s\n", spec.get());
   }
 }
+
+bool IsCoepCredentiallessEnabled(bool aIsOriginTrialCoepCredentiallessEnabled) {
+  return StaticPrefs::
+             browser_tabs_remote_coep_credentialless_DoNotUseDirectly() ||
+         aIsOriginTrialCoepCredentiallessEnabled;
+}
+
+}  // namespace net
+}  // namespace mozilla

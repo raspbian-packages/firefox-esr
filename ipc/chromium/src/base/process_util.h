@@ -33,10 +33,13 @@
 #include "base/process.h"
 
 #include "mozilla/UniquePtr.h"
+#include "mozilla/Result.h"
+#include "mozilla/ResultVariant.h"
+
+#include "mozilla/ipc/LaunchError.h"
 
 #if defined(MOZ_ENABLE_FORKSERVER)
 #  include "nsStringFwd.h"
-#  include "mozilla/Tuple.h"
 #  include "mozilla/ipc/FileDescriptorShuffle.h"
 
 namespace mozilla {
@@ -53,6 +56,11 @@ struct kinfo_proc;
 class CommandLine;
 
 namespace base {
+
+using mozilla::Err;
+using mozilla::Ok;
+using mozilla::Result;
+using mozilla::ipc::LaunchError;
 
 enum ProcessArchitecture {
   PROCESS_ARCH_INVALID = 0x0,
@@ -106,6 +114,13 @@ void CloseSuperfluousFds(void* aCtx, bool (*aShouldPreserve)(void*, int));
 
 typedef std::vector<std::pair<int, int> > file_handle_mapping_vector;
 typedef std::map<std::string, std::string> environment_map;
+
+// Deleter for the array of strings allocated within BuildEnvironmentArray.
+struct FreeEnvVarsArray {
+  void operator()(char** array);
+};
+
+typedef mozilla::UniquePtr<char*[], FreeEnvVarsArray> EnvironmentArray;
 #endif
 
 struct LaunchOptions {
@@ -116,6 +131,10 @@ struct LaunchOptions {
 #if defined(OS_WIN)
   bool start_hidden = false;
 
+  // Start as an independent process rather than a process that is closed by the
+  // parent job. This will pass the flag CREATE_BREAKAWAY_FROM_JOB.
+  bool start_independent = false;
+
   // Environment variables to be applied in addition to the current
   // process's environment, replacing them where necessary.
   EnvironmentMap env_map;
@@ -124,6 +143,16 @@ struct LaunchOptions {
 #endif
 #if defined(OS_POSIX)
   environment_map env_map;
+
+  // If non-null, specifies the entire environment to use for the
+  // child process, instead of inheriting from the parent; env_map is
+  // ignored in that case.  Note that the strings are allocated using
+  // malloc (e.g., with strdup), but the array of pointers is
+  // allocated with new[] and is terminated with a null pointer.
+  EnvironmentArray full_env;
+
+  // If non-empty, set the child process's current working directory.
+  std::string workdir;
 
   // A mapping of (src fd -> dest fd) to propagate into the child
   // process.  All other fds will be closed, except std{in,out,err}.
@@ -145,12 +174,18 @@ struct LaunchOptions {
   mozilla::UniquePtr<ForkDelegate> fork_delegate = nullptr;
 #endif
 
-#if defined(OS_MACOSX) && defined(__aarch64__)
+#ifdef OS_MACOSX
+  // On macOS 10.14+, disclaims responsibility for the child process
+  // with respect to privacy/security permission prompts and
+  // decisions.  Ignored if not supported by the OS.
+  bool disclaim = false;
+#  ifdef __aarch64__
   // The architecture to launch when launching a "universal" binary.
   // Note: the implementation only supports launching x64 child
   // processes from arm64 parent processes.
   uint32_t arch = PROCESS_ARCH_INVALID;
-#endif
+#  endif  // __aarch64__
+#endif    // OS_MACOSX
 };
 
 #if defined(OS_WIN)
@@ -165,8 +200,9 @@ struct LaunchOptions {
 // stored there on a successful launch.
 // NOTE: In this case, the caller is responsible for closing the handle so
 //       that it doesn't leak!
-bool LaunchApp(const std::wstring& cmdline, const LaunchOptions& options,
-               ProcessHandle* process_handle);
+Result<Ok, LaunchError> LaunchApp(const std::wstring& cmdline,
+                                  const LaunchOptions& options,
+                                  ProcessHandle* process_handle);
 
 #elif defined(OS_POSIX)
 // Runs the application specified in argv[0] with the command line argv.
@@ -176,15 +212,9 @@ bool LaunchApp(const std::wstring& cmdline, const LaunchOptions& options,
 //
 // Note that the first argument in argv must point to the filename,
 // and must be fully specified (i.e., this will not search $PATH).
-bool LaunchApp(const std::vector<std::string>& argv,
-               const LaunchOptions& options, ProcessHandle* process_handle);
-
-// Deleter for the array of strings allocated within BuildEnvironmentArray.
-struct FreeEnvVarsArray {
-  void operator()(char** array);
-};
-
-typedef mozilla::UniquePtr<char*[], FreeEnvVarsArray> EnvironmentArray;
+Result<Ok, LaunchError> LaunchApp(const std::vector<std::string>& argv,
+                                  const LaunchOptions& options,
+                                  ProcessHandle* process_handle);
 
 // Merge an environment map with the current environment.
 // Existing variables are overwritten by env_vars_to_set.
@@ -242,22 +272,30 @@ void RegisterForkServerNoCloseFD(int aFd);
 
 // Executes the application specified by cl. This function delegates to one
 // of the above two platform-specific functions.
-bool LaunchApp(const CommandLine& cl, const LaunchOptions&,
-               ProcessHandle* process_handle);
+Result<Ok, LaunchError> LaunchApp(const CommandLine& cl, const LaunchOptions&,
+                                  ProcessHandle* process_handle);
 
 // Attempts to kill the process identified by the given process
 // entry structure, giving it the specified exit code.
 // Returns true if this is successful, false otherwise.
 bool KillProcess(ProcessHandle process, int exit_code);
 
-// Get the termination status (exit code) of the process and return true if the
-// status indicates the process crashed. |child_exited| is set to true iff the
-// child process has terminated. (|child_exited| may be NULL.)
+#ifdef OS_POSIX
+// Returns whether the given process has exited.  If it returns true,
+// the process status has been consumed and `IsProcessDead` should not
+// be called again on the same process (like `waitpid`).
 //
-// On Windows, it is an error to call this if the process hasn't terminated
-// yet. On POSIX, |child_exited| is set correctly since we detect terminate in
-// a different manner on POSIX.
-bool DidProcessCrash(bool* child_exited, ProcessHandle handle);
+// In various error cases (e.g., the process doesn't exist or isn't a
+// child of this process) it will also return true to indicate that
+// the caller should give up and not try again.
+//
+// If the `blocking` parameter is set to true, this function will try
+// to block the calling thread indefinitely until the process exits.
+// This may not be possible (if the child is also being debugged by
+// the parent process, e.g. due to the crash reporter), in which case
+// it will return false and the caller will need to wait and retry.
+bool IsProcessDead(ProcessHandle handle, bool blocking = false);
+#endif
 
 }  // namespace base
 
@@ -286,8 +324,8 @@ class EnvironmentLog {
 };
 
 #if defined(MOZ_ENABLE_FORKSERVER)
-typedef Tuple<nsCString, nsCString> EnvVar;
-typedef Tuple<mozilla::ipc::FileDescriptor, int> FdMapping;
+typedef std::tuple<nsCString, nsCString> EnvVar;
+typedef std::tuple<mozilla::ipc::FileDescriptor, int> FdMapping;
 #endif
 
 }  // namespace mozilla

@@ -7,7 +7,6 @@
 /* API for getting a stack trace of the C/C++ stack on the current thread */
 
 #include "mozilla/ArrayUtils.h"
-#include "mozilla/Assertions.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/StackWalk.h"
 #ifdef XP_WIN
@@ -864,7 +863,7 @@ const uintptr_t kPointerMask =
 const uintptr_t kPointerMask = ~uintptr_t(0);
 #  endif
 
-MOZ_ASAN_BLACKLIST
+MOZ_ASAN_IGNORE
 static void DoFramePointerStackWalk(MozWalkStackCallback aCallback,
                                     const void* aFirstFramePC,
                                     uint32_t aMaxFrames, void* aClosure,
@@ -883,7 +882,8 @@ static void DoFramePointerStackWalk(MozWalkStackCallback aCallback,
   // code is not using frame pointers when returning, it might actually
   // recover just fine.
   static const uintptr_t kMaxStackSize = 8 * 1024 * 1024;
-  if (uintptr_t(aBp) < uintptr_t(aStackEnd) - std::min(kMaxStackSize, uintptr_t(aStackEnd)) ||
+  if (uintptr_t(aBp) < uintptr_t(aStackEnd) -
+                           std::min(kMaxStackSize, uintptr_t(aStackEnd)) ||
       aBp >= aStackEnd || (uintptr_t(aBp) & 3)) {
     return;
   }

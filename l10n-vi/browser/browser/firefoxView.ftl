@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Đã đóng gần đây
 firefoxview-closed-tabs-description2 = Mở lại các trang bạn đã đóng trong cửa sổ này.
 firefoxview-closed-tabs-placeholder-header = Không có thẻ nào đã đóng gần đây
 firefoxview-closed-tabs-placeholder-body = Khi bạn đóng một thẻ trong cửa sổ này, bạn có thể lấy nó từ đây.
+firefoxview-closed-tabs-placeholder-body2 = Khi bạn đóng một thẻ, bạn có thể tìm thấy nó từ đây.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Hoạt động lần cuối
 firefoxview-tabs-list-tab-button =
     .title = Mở { $targetURI } trong một thẻ mới
 firefoxview-try-colorways-button = Thử đường màu
-firefoxview-no-current-colorway-collection = Các đường màu mới đang được triển khai
 firefoxview-change-colorway-button = Thay đổi đường màu
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Hiển thị danh sách
 firefoxview-collapse-button-hide =
     .title = Ẩn danh sách
+firefoxview-overview-nav = Duyệt web gần đây
+    .title = Duyệt web gần đây
+firefoxview-overview-header = Duyệt web gần đây
+    .title = Duyệt web gần đây
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Lịch sử
+    .title = Lịch sử
+firefoxview-history-header = Lịch sử
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Các thẻ đang mở
+    .title = Các thẻ đang mở
+firefoxview-opentabs-header = Các thẻ đang mở
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Thẻ mới đóng gần đây
+    .title = Thẻ mới đóng gần đây
+firefoxview-recently-closed-header = Thẻ mới đóng gần đây
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Thẻ từ thiết bị khác
+    .title = Thẻ từ thiết bị khác
+firefoxview-synced-tabs-header = Thẻ từ thiết bị khác
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Xem tất cả
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Cửa sổ { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Cửa sổ { $winID } (Hiện tại)
+firefoxview-opentabs-focus-tab =
+    .title = Chuyển sang thẻ này
+firefoxview-show-more = Hiện thêm
+firefoxview-show-less = Hiện ít hơn
+firefoxview-sort-history-by-date-label = Sắp xếp theo ngày
+firefoxview-sort-history-by-site-label = Sắp xếp theo trang web
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Hôm nay - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Hôm qua - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Xem tất cả lịch sử

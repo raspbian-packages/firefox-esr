@@ -46,6 +46,12 @@ options-inspector-draggable-properties-label = Kliknięcie i przeciągnięcie, 
 options-inspector-draggable-properties-tooltip =
     .title = Umożliwia zmianę rozmiaru przez kliknięcie i przeciągnięcie w widoku reguł inspektora.
 
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Prostsze wyróżnianie przy włączonej opcji preferowania zmniejszonego ruchu
+options-inspector-simplified-highlighters-tooltip =
+    .title = Włącza uproszczone wyróżnianie, kiedy włączona jest opcja preferowania zmniejszonego ruchu. Wyświetla linie zamiast wypełnionych prostokątów wokół wyróżnionych elementów, aby uniknąć migania.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Domyślny model przestrzeni barw
@@ -124,6 +130,11 @@ options-enable-remote-label = Debugowanie zdalne
 options-enable-remote-tooltip2 =
     .title = Włączenie tej opcji umożliwi zdalne debugowanie tej instancji przeglądarki
 
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = Otwieranie i zamykanie narzędzi dla programistów klawiszem F12
+options-enable-f12-tooltip =
+    .title = Włączenie tej opcji umożliwi otwieranie i zamykanie narzędzi dla programistów klawiszem F12
+
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Niestandardowe formatery
 options-enable-custom-formatters-tooltip =
@@ -141,4 +152,3 @@ options-source-maps-tooltip =
 
 # The message shown for settings that trigger page reload
 options-context-triggers-page-refresh = * Tylko bieżąca sesja, przeładowuje stronę
-

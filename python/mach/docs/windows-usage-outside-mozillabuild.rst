@@ -30,7 +30,7 @@ environment. Windows Terminal should work as well, for those on the "cutting edg
     distribution provided by the environment's package manager. Otherwise you'll likely run into
     compatibility issues:
 
-    * Cygin/MSYS Python will run into compatibility issues with Mach due to its unexpected Unix-y
+    * Cygwin/MSYS Python will run into compatibility issues with Mach due to its unexpected Unix-y
       conventions despite Mach assuming it's on a "Windows" platform. Additionally, there may
       be performance issues.
     * MinGW Python will encounter issues building native packages because they'll expect the
@@ -117,3 +117,8 @@ Success!
 
 At this point, you should be able to invoke Mach and manage your version control system outside
 of MozillaBuild.
+
+.. tip::
+
+  `See here <https://crisal.io/words/2022/11/22/msys2-firefox-development.html>`__ for a detailed guide on
+  installing and customizing a development environment with MSYS2, zsh, and Windows Terminal.

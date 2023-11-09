@@ -13,6 +13,24 @@ accessibility-keyboard-header = কীবোর্ড
 
 ## Text entries that are used as text alternative for icons that depict accessibility isses.
 
+
+## These strings are used in the overlay displayed when running an audit in the accessibility panel
+
+accessibility-progress-initializing = আরম্ভ হচ্ছে…
+    .aria-valuetext = আরম্ভ হচ্ছে…
+
+# This string is displayed in the audit progress bar in the accessibility panel.
+# Variables:
+#   $nodeCount (Integer) - The number of nodes for which the audit was run so far.
+accessibility-progress-progressbar =
+    { $nodeCount ->
+        [one] নোড { $nodeCount } চেক করা হচ্ছে
+       *[other] নোড { $nodeCount } চেক করা হচ্ছে
+    }
+
+accessibility-progress-finishing = শেষ হচ্ছে…
+    .aria-valuetext = শেষ হচ্ছে…
+
 ## Text entries that are used as text alternative for icons that depict accessibility issues.
 
 accessibility-warning =

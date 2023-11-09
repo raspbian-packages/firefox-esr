@@ -252,6 +252,8 @@ OpKind wasm::Classify(OpBytes op) {
       return OpKind::Call;
     case Op::CallIndirect:
       return OpKind::CallIndirect;
+    case Op::CallRef:
+      WASM_FUNCTION_REFERENCES_OP(OpKind::CallRef);
     case Op::Return:
     case Op::Limit:
       // Accept Limit, for use in decoding the end of a function after the body.
@@ -288,6 +290,8 @@ OpKind wasm::Classify(OpBytes op) {
       WASM_FUNCTION_REFERENCES_OP(OpKind::RefAsNonNull);
     case Op::BrOnNull:
       WASM_FUNCTION_REFERENCES_OP(OpKind::BrOnNull);
+    case Op::BrOnNonNull:
+      WASM_FUNCTION_REFERENCES_OP(OpKind::BrOnNonNull);
     case Op::RefEq:
       WASM_GC_OP(OpKind::Comparison);
     case Op::GcPrefix: {
@@ -295,45 +299,73 @@ OpKind wasm::Classify(OpBytes op) {
         case GcOp::Limit:
           // Reject Limit for GcPrefix encoding
           break;
-        case GcOp::StructNewWithRtt:
-          WASM_GC_OP(OpKind::StructNewWithRtt);
-        case GcOp::StructNewDefaultWithRtt:
-          WASM_GC_OP(OpKind::StructNewDefaultWithRtt);
+        case GcOp::StructNew:
+          WASM_GC_OP(OpKind::StructNew);
+        case GcOp::StructNewDefault:
+          WASM_GC_OP(OpKind::StructNewDefault);
         case GcOp::StructGet:
         case GcOp::StructGetS:
         case GcOp::StructGetU:
           WASM_GC_OP(OpKind::StructGet);
         case GcOp::StructSet:
           WASM_GC_OP(OpKind::StructSet);
-        case GcOp::ArrayNewWithRtt:
-          WASM_GC_OP(OpKind::ArrayNewWithRtt);
-        case GcOp::ArrayNewDefaultWithRtt:
-          WASM_GC_OP(OpKind::ArrayNewDefaultWithRtt);
+        case GcOp::ArrayNew:
+          WASM_GC_OP(OpKind::ArrayNew);
+        case GcOp::ArrayNewFixed:
+          WASM_GC_OP(OpKind::ArrayNewFixed);
+        case GcOp::ArrayNewDefault:
+          WASM_GC_OP(OpKind::ArrayNewDefault);
+        case GcOp::ArrayNewData:
+        case GcOp::ArrayInitFromElemStaticV5:
+        case GcOp::ArrayNewElem:
+          WASM_GC_OP(OpKind::ArrayNewData);
         case GcOp::ArrayGet:
         case GcOp::ArrayGetS:
         case GcOp::ArrayGetU:
           WASM_GC_OP(OpKind::ArrayGet);
         case GcOp::ArraySet:
           WASM_GC_OP(OpKind::ArraySet);
+        case GcOp::ArrayLenWithTypeIndex:
         case GcOp::ArrayLen:
           WASM_GC_OP(OpKind::ArrayLen);
-        case GcOp::RttCanon:
-          WASM_GC_OP(OpKind::RttCanon);
-        case GcOp::RttSub:
-          WASM_GC_OP(OpKind::RttSub);
+        case GcOp::ArrayCopy:
+          WASM_GC_OP(OpKind::ArrayCopy);
+        case GcOp::RefTestV5:
+          WASM_GC_OP(OpKind::RefTestV5);
+        case GcOp::RefCastV5:
+          WASM_GC_OP(OpKind::RefCastV5);
         case GcOp::RefTest:
+        case GcOp::RefTestNull:
           WASM_GC_OP(OpKind::RefTest);
         case GcOp::RefCast:
+        case GcOp::RefCastNull:
           WASM_GC_OP(OpKind::RefCast);
         case GcOp::BrOnCast:
           WASM_GC_OP(OpKind::BrOnCast);
+        case GcOp::BrOnCastV5:
+        case GcOp::BrOnCastHeapV5:
+        case GcOp::BrOnCastHeapNullV5:
+          WASM_GC_OP(OpKind::BrOnCastV5);
+        case GcOp::BrOnCastFailV5:
+        case GcOp::BrOnCastFailHeapV5:
+        case GcOp::BrOnCastFailHeapNullV5:
+          WASM_GC_OP(OpKind::BrOnCastFailV5);
+        case GcOp::RefAsStructV5:
+          WASM_GC_OP(OpKind::Conversion);
+        case GcOp::BrOnNonStructV5:
+          WASM_GC_OP(OpKind::BrOnNonStructV5);
+        case GcOp::ExternInternalize:
+          WASM_GC_OP(OpKind::RefConversion);
+        case GcOp::ExternExternalize:
+          WASM_GC_OP(OpKind::RefConversion);
       }
       break;
     }
     case Op::SimdPrefix: {
       switch (SimdOp(op.b1)) {
+        case SimdOp::MozPMADDUBSW:
         case SimdOp::Limit:
-          // Reject Limit for SimdPrefix encoding
+          // Reject Limit and reserved codes for SimdPrefix encoding
           break;
         case SimdOp::I8x16ExtractLaneS:
         case SimdOp::I8x16ExtractLaneU:
@@ -545,10 +577,10 @@ OpKind wasm::Classify(OpBytes op) {
         case SimdOp::I16x8ExtaddPairwiseI8x16U:
         case SimdOp::I32x4ExtaddPairwiseI16x8S:
         case SimdOp::I32x4ExtaddPairwiseI16x8U:
-        case SimdOp::I32x4RelaxedTruncSSatF32x4:
-        case SimdOp::I32x4RelaxedTruncUSatF32x4:
-        case SimdOp::I32x4RelaxedTruncSatF64x2SZero:
-        case SimdOp::I32x4RelaxedTruncSatF64x2UZero:
+        case SimdOp::I32x4RelaxedTruncF32x4S:
+        case SimdOp::I32x4RelaxedTruncF32x4U:
+        case SimdOp::I32x4RelaxedTruncF64x2SZero:
+        case SimdOp::I32x4RelaxedTruncF64x2UZero:
           WASM_SIMD_OP(OpKind::Unary);
         case SimdOp::I8x16Shl:
         case SimdOp::I8x16ShrS:
@@ -596,21 +628,15 @@ OpKind wasm::Classify(OpBytes op) {
         case SimdOp::V128Store64Lane:
           WASM_SIMD_OP(OpKind::StoreLane);
         case SimdOp::F32x4RelaxedFma:
-        case SimdOp::F32x4RelaxedFms:
+        case SimdOp::F32x4RelaxedFnma:
         case SimdOp::F64x2RelaxedFma:
-        case SimdOp::F64x2RelaxedFms:
+        case SimdOp::F64x2RelaxedFnma:
         case SimdOp::I8x16RelaxedLaneSelect:
         case SimdOp::I16x8RelaxedLaneSelect:
         case SimdOp::I32x4RelaxedLaneSelect:
         case SimdOp::I64x2RelaxedLaneSelect:
         case SimdOp::I32x4DotI8x16I7x16AddS:
           WASM_SIMD_OP(OpKind::Ternary);
-#  ifdef ENABLE_WASM_SIMD_WORMHOLE
-        case SimdOp::MozWHSELFTEST:
-        case SimdOp::MozWHPMADDUBSW:
-        case SimdOp::MozWHPMADDWD:
-          MOZ_CRASH("Should not be seen");
-#  endif
       }
       break;
     }
@@ -641,6 +667,8 @@ OpKind wasm::Classify(OpBytes op) {
           return OpKind::MemOrTableInit;
         case MiscOp::TableFill:
           return OpKind::TableFill;
+        case MiscOp::MemoryDiscard:
+          return OpKind::MemDiscard;
         case MiscOp::TableGrow:
           return OpKind::TableGrow;
         case MiscOp::TableSize:
@@ -749,9 +777,12 @@ OpKind wasm::Classify(OpBytes op) {
         case MozOp::F64Pow:
         case MozOp::F64Atan2:
           return OpKind::Binary;
-        case MozOp::F64Sin:
-        case MozOp::F64Cos:
-        case MozOp::F64Tan:
+        case MozOp::F64SinNative:
+        case MozOp::F64SinFdlibm:
+        case MozOp::F64CosNative:
+        case MozOp::F64CosFdlibm:
+        case MozOp::F64TanNative:
+        case MozOp::F64TanFdlibm:
         case MozOp::F64Asin:
         case MozOp::F64Acos:
         case MozOp::F64Atan:
@@ -788,4 +819,45 @@ OpKind wasm::Classify(OpBytes op) {
 #  undef WASM_GC_OP
 #  undef WASM_REF_OP
 
-#endif
+#endif  // DEBUG
+
+bool UnsetLocalsState::init(const ValTypeVector& locals, size_t numParams) {
+  MOZ_ASSERT(setLocalsStack_.empty());
+
+  // Find the first and total count of non-defaultable locals.
+  size_t firstNonDefaultable = UINT32_MAX;
+  size_t countNonDefaultable = 0;
+  for (size_t i = numParams; i < locals.length(); i++) {
+    if (!locals[i].isDefaultable()) {
+      firstNonDefaultable = std::min(i, firstNonDefaultable);
+      countNonDefaultable++;
+    }
+  }
+  firstNonDefaultLocal_ = firstNonDefaultable;
+  if (countNonDefaultable == 0) {
+    // No locals to track, saving CPU cycles.
+    MOZ_ASSERT(firstNonDefaultable == UINT32_MAX);
+    return true;
+  }
+
+  // setLocalsStack_ cannot be deeper than amount of non-defaultable locals.
+  if (!setLocalsStack_.reserve(countNonDefaultable)) {
+    return false;
+  }
+
+  // Allocate a bitmap for locals starting at the first non-defaultable local.
+  size_t bitmapSize =
+      ((locals.length() - firstNonDefaultable) + (WordBits - 1)) / WordBits;
+  if (!unsetLocals_.resize(bitmapSize)) {
+    return false;
+  }
+  memset(unsetLocals_.begin(), 0, bitmapSize * WordSize);
+  for (size_t i = firstNonDefaultable; i < locals.length(); i++) {
+    if (!locals[i].isDefaultable()) {
+      size_t localUnsetIndex = i - firstNonDefaultable;
+      unsetLocals_[localUnsetIndex / WordBits] |=
+          1 << (localUnsetIndex % WordBits);
+    }
+  }
+  return true;
+}

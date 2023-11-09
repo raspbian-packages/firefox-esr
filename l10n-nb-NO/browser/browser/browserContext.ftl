@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Bokmerk denne siden
-    .accesskey = m
-    .tooltiptext = Bokmerk denne siden
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Bokmerk side
-    .accesskey = m
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Rediger bokmerke
-    .accesskey = m
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Bokmerk denne siden
-    .accesskey = m
-    .tooltiptext = Bokmerk denne siden ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Rediger dette bokmerket
-    .accesskey = m
-    .tooltiptext = Rediger dette bokmerket
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Rediger dette bokmerket
-    .accesskey = m
-    .tooltiptext = Rediger dette bokmerket ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Bokmerk side …
     .accesskey = m
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Åpne lenke i nytt privat vindu
     .accesskey = p
-
-main-context-menu-bookmark-link =
-    .label = Bokmerk lenke
-    .accesskey = B
 
 main-context-menu-bookmark-link-2 =
     .label = Bokmerk lenke …
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Send lyd …
     .accesskey = n
 
-main-context-menu-plugin-play =
-    .label = Aktiver dette programtillegget
-    .accesskey = A
-
-main-context-menu-plugin-hide =
-    .label = Skjul dette programtillegget
-    .accesskey = S
-
 main-context-menu-save-to-pocket =
     .label = Lagre side til { -pocket-brand-name }
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = B
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Bruk { -relay-brand-short-name } e-postalias
+    .accesskey = e
 
 main-context-menu-suggest-strong-password =
     .label = Foreslå sterkt passord …
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Oppdater ramme
     .accesskey = O
 
-main-context-menu-frame-bookmark =
-    .label = Bokmerk denne rammen
-    .accesskey = B
-
 main-context-menu-frame-add-bookmark =
     .label = Bokmerke ramme …
     .accesskey = m
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Vis rammeinfo
     .accesskey = V
-
-main-context-menu-print-selection =
-    .label = Skriv ut utvalg
-    .accesskey = r
 
 main-context-menu-print-selection-2 =
     .label = Skriv ut utvalg …

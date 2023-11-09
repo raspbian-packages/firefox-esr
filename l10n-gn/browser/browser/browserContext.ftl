@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Kuatiarogue mbojoapy
-    .accesskey = m
-    .tooltiptext = Kuatiarogue mbojoapy
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Kuatiarogue rechaukaha
-    .accesskey = m
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Techaukaha mbosako’i
-    .accesskey = m
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Kuatiarogue mbojoapy
-    .accesskey = m
-    .tooltiptext = Kuatiarogue ({ $shortcut }) mbojoapy
-
-main-context-menu-bookmark-change =
-    .aria-label = Ko techaukaha mbosako’i
-    .accesskey = m
-    .tooltiptext = Ko techaukaha mbosako’i
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Ko techaukaha mbosako’i
-    .accesskey = m
-    .tooltiptext = Ko techaukaha mbosako’i ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Embojuaju kuatiarogue rechaukaháre…
     .accesskey = m
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Ovetã ñemi pyahu joajuhápe jeike
     .accesskey = P
-
-main-context-menu-bookmark-link =
-    .label = Embojuapy joajuha techaukaháre
-    .accesskey = B
 
 main-context-menu-bookmark-link-2 =
     .label = Embojuaju joajuha techaukaháre…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Mba’epu mondo…
     .accesskey = a
 
-main-context-menu-plugin-play =
-    .label = Mba’ejoajurã myendy
-    .accesskey = c
-
-main-context-menu-plugin-hide =
-    .label = Mba’ejoajurã moñemi
-    .accesskey = H
-
 main-context-menu-save-to-pocket =
     .label = Eñongatu kuatiarogue { -pocket-brand-name }-pe
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = o
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Eipuru { -relay-brand-short-name } Email Mask
+    .accesskey = E
 
 main-context-menu-suggest-strong-password =
     .label = Tojepuru ñe’ẽñemi hekorosãva…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Kora myenyhẽjey
     .accesskey = R
 
-main-context-menu-frame-bookmark =
-    .label = Ko ovetã’i techaukaháre mbojoapy
-    .accesskey = m
-
 main-context-menu-frame-add-bookmark =
     .label = Embojuaju kora techaukaháre…
     .accesskey = m
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Kora marandu jehecha
     .accesskey = I
-
-main-context-menu-print-selection =
-    .label = Embokuatia jeporavopy
-    .accesskey = r
 
 main-context-menu-print-selection-2 =
     .label = Embokuatia jeporavopy…

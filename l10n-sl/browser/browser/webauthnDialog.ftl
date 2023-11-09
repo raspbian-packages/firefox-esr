@@ -4,12 +4,23 @@
 
 # Variables:
 #  $retriesLeft (Number): number of tries left
-webauthn-pin-invalid-prompt =
+webauthn-pin-invalid-long-prompt =
     { $retriesLeft ->
-        [0] Napačna koda PIN! Vnesite pravilno kodo svoje naprave.
-        [one] Napačna koda PIN! Vnesite pravilno kodo svoje naprave. Imate še { $retriesLeft } poskus.
-        [two] Napačna koda PIN! Vnesite pravilno kodo svoje naprave. Imate še { $retriesLeft } poskusa.
-        [few] Napačna koda PIN! Vnesite pravilno kodo svoje naprave. Imate še { $retriesLeft } poskuse.
-       *[other] Napačna koda PIN! Vnesite pravilno kodo svoje naprave. Imate še { $retriesLeft } poskusov.
+        [one] Napačna koda. Ostaja vam { $retriesLeft } poskus, preden trajno izgubite dostop do poverilnic na tej napravi.
+        [two] Napačna koda. Ostajata vam { $retriesLeft } poskusa, preden trajno izgubite dostop do poverilnic na tej napravi.
+        [few] Napačna koda. Ostajajo vam { $retriesLeft } poskusi, preden trajno izgubite dostop do poverilnic na tej napravi.
+       *[other] Napačna koda. Ostaja vam { $retriesLeft } poskusov, preden trajno izgubite dostop do poverilnic na tej napravi.
     }
-webauthn-pin-required-prompt = Vnesite kodo PIN svoje naprave.
+webauthn-pin-invalid-short-prompt = Napačen PIN. Poskusite znova.
+webauthn-pin-required-prompt = Vnesite PIN svoje naprave.
+
+# Variables:
+#  $retriesLeft (Number): number of tries left
+webauthn-uv-invalid-long-prompt =
+    { $retriesLeft ->
+        [one] Preverjanje uporabnika ni uspelo. Imate še { $retriesLeft } poskus. Poskusite znova.
+        [two] Preverjanje uporabnika ni uspelo. Imate še { $retriesLeft } poskusa. Poskusite znova.
+        [few] Preverjanje uporabnika ni uspelo. Imate še { $retriesLeft } poskuse. Poskusite znova.
+       *[other] Preverjanje uporabnika ni uspelo. Imate še { $retriesLeft } poskusov. Poskusite znova.
+    }
+webauthn-uv-invalid-short-prompt = Preverjanje uporabnika ni uspelo. Poskusite znova.

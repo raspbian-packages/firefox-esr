@@ -12,8 +12,6 @@
 ## These strings are used so that the window has a title in tools that
 ## enumerate/look for window titles. It is not normally visible anywhere.
 
-# This string is used so that the window has a title in tools that enumerate/look for window
-# titles. It is not normally visible anywhere.
 webrtc-indicator-title = { -brand-short-name } – Taisbeanair co-roinnidh
 webrtc-indicator-window =
     .title = { -brand-short-name } – Taisbeanair co-roinnidh
@@ -32,6 +30,7 @@ webrtc-item-browser = taba
 
 # This is used for the website origin for the sharing menu if no readable origin could be deduced from the URL.
 webrtc-sharing-menuitem-unknown-host = Chan eil fhios cò às a thàinig e
+
 # Variables:
 #   $origin (String): The website origin (e.g. www.mozilla.org)
 #   $itemList (String): A formatted list of items (e.g. "camera, microphone and tab audio")
@@ -40,6 +39,7 @@ webrtc-sharing-menuitem =
 webrtc-sharing-menu =
     .label = Tabaichean a tha a' co-roinneadh uidheaman
     .accesskey = b
+
 webrtc-sharing-window = Tha thu a’ co-roinneadh uinneag aplacaid eile.
 webrtc-sharing-browser-window = Tha thu a’ co-roinneadh { -brand-short-name }.
 webrtc-sharing-screen = Tha thu a’ co-roinneadh na sgrìn agad air fad.
@@ -59,9 +59,6 @@ webrtc-minimize =
 ## device sharing state in the OS notification area. We do not use these strings
 ## on macOS, as global menu bar items do not have native tooltips.
 
-# This string will display as a tooltip on supported systems where we show
-# device sharing state in the OS notification area. We do not use these strings
-# on macOS, as global menu bar items do not have native tooltips.
 webrtc-camera-system-menu =
     .label = Tha thu a’ co-roinneadh a’ chamara agad. Dèan briogadh airson an co-roinneadh a stiùireadh.
 webrtc-microphone-system-menu =
@@ -96,6 +93,7 @@ webrtc-indicator-menuitem-control-sharing =
     .label = Stiùireadh a' cho-roinnidh
 webrtc-indicator-menuitem-control-sharing-on =
     .label = A’ co-roinnidh smachd air “{ $streamTitle }”
+
 webrtc-indicator-menuitem-sharing-camera-with =
     .label = A’ co-roinneadh a’ chamara le “{ $streamTitle }”
 webrtc-indicator-menuitem-sharing-camera-with-n-tabs =
@@ -106,6 +104,7 @@ webrtc-indicator-menuitem-sharing-camera-with-n-tabs =
             [few] A' co-roinneadh a' chamara le { $tabCount } tabaichean
            *[other] A' co-roinneadh a' chamara le { $tabCount } taba
         }
+
 webrtc-indicator-menuitem-sharing-microphone-with =
     .label = A’ co-roinneadh a’ mhicreofoin le “{ $streamTitle }”
 webrtc-indicator-menuitem-sharing-microphone-with-n-tabs =
@@ -116,6 +115,7 @@ webrtc-indicator-menuitem-sharing-microphone-with-n-tabs =
             [few] A' co-roinneadh a' mhicreofoin le { $tabCount } tabaichean
            *[other] A' co-roinneadh a' mhicreofoin le { $tabCount } taba
         }
+
 webrtc-indicator-menuitem-sharing-application-with =
     .label = A’ co-roinneadh aplacaid le “{ $streamTitle }”
 webrtc-indicator-menuitem-sharing-application-with-n-tabs =
@@ -126,6 +126,7 @@ webrtc-indicator-menuitem-sharing-application-with-n-tabs =
             [few] A' co-roinneadh aplacaid le { $tabCount } tabaichean
            *[other] A' co-roinneadh aplacaid le { $tabCount } taba
         }
+
 webrtc-indicator-menuitem-sharing-screen-with =
     .label = A’ co-roinneadh na sgrìn le “{ $streamTitle }”
 webrtc-indicator-menuitem-sharing-screen-with-n-tabs =
@@ -136,6 +137,7 @@ webrtc-indicator-menuitem-sharing-screen-with-n-tabs =
             [few] A' co-roinneadh na sgrìn le { $tabCount } tabaichean
            *[other] A' co-roinneadh na sgrìn le { $tabCount } taba
         }
+
 webrtc-indicator-menuitem-sharing-window-with =
     .label = A’ co-roinneadh uinneag le “{ $streamTitle }”
 webrtc-indicator-menuitem-sharing-window-with-n-tabs =
@@ -146,6 +148,7 @@ webrtc-indicator-menuitem-sharing-window-with-n-tabs =
             [few] Tòisich air co-roinneadh uinneag le { $tabCount } tabaichean
            *[other] Tòisich air co-roinneadh uinneag le { $tabCount } taba
         }
+
 webrtc-indicator-menuitem-sharing-browser-with =
     .label = A’ co-roinneadh taba le “{ $streamTitle }”
 # This message is shown when the contents of a tab is shared during a WebRTC
@@ -178,8 +181,8 @@ webrtc-allow-share-screen-and-audio-capture = An doir thu cead dha { $origin } �
 ##   $origin (String): the first party origin.
 ##   $thirdParty (String): the third party origin.
 
+webrtc-allow-share-audio-capture-unsafe-delegation = A bheil thu airson cead a thoirt dha { $origin } cead a thoirt dha { $thirdParty } èisteachd ri fuaim an taba seo?
 webrtc-allow-share-camera-unsafe-delegation = An doir thu cead dha { $origin } gun doir e inntrigeadh dhan chamara dha { $thirdParty }?
-webrtc-allow-share-microphone-unsafe-delegations = An doir thu cead dha { $origin } gun doir e inntrigeadh dhan mhicreofon dha { $thirdParty }?
 webrtc-allow-share-microphone-unsafe-delegation = An doir thu cead dha { $origin } gun doir e inntrigeadh dhan mhicreofon dha { $thirdParty }?
 webrtc-allow-share-screen-unsafe-delegation = An doir thu cead dha { $origin } gun leig e le { $thirdParty } an sgrìn agad fhaicinn?
 # "Speakers" is used in a general sense that might include headphones or
@@ -194,6 +197,7 @@ webrtc-allow-share-screen-and-audio-capture-unsafe-delegation = An doir thu cead
 
 webrtc-share-screen-warning = Na co-roinn sgrìnichean ach le làraichean sa bheil earbsa agad. Ma nì thu co-roinneadh air làrach a tha ri foill, dh’fhaoidte gun goid iad dàta prìobhaideach ort is tu ri brabhsadh orra.
 webrtc-share-browser-warning = Na co-roinn { -brand-short-name } ach le làraichean sa bheil earbsa agad. Ma nì thu co-roinneadh air làrach a tha ri foill, dh’fhaoidte gun goid iad dàta prìobhaideach ort is tu ri brabhsadh orra.
+
 webrtc-share-screen-learn-more = Barrachd fiosrachaidh
 webrtc-pick-window-or-screen = Tagh uinneag no sgrìn
 webrtc-share-entire-screen = An sgrìn air fad
@@ -223,11 +227,15 @@ webrtc-action-block =
 webrtc-action-always-block =
     .label = Bac an-còmhnaidh
     .accesskey = m
+webrtc-action-not-now =
+    .label = Chan ann an-dràsta
+    .accesskey = C
 
 ##
 
 webrtc-remember-allow-checkbox = Cuimhnich an co-dhùnadh seo
 webrtc-mute-notifications-checkbox = Mùch brathan làraichean fhad ’s a bhios tu ri co-roinneadh
+
 webrtc-reason-for-no-permanent-allow-screen = Chan urrainn dha { -brand-short-name } inntrigeadh buan dhan sgrìn agad a cheadachadh.
 webrtc-reason-for-no-permanent-allow-audio = Chan urrainn dha { -brand-short-name } inntrigeadh buan a cheadachadh dha fuaime an taba agad gun a bhith a’ faighneachd dè an taba a tha ri cho-roinneadh.
 webrtc-reason-for-no-permanent-allow-insecure = Chan eil an ceangal agad ris an làrach seo tèarainte. Cha cheadaich { -brand-short-name } inntrigeadh ach rè an t-seisein seo gus do dhìon.

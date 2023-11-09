@@ -537,7 +537,14 @@ class Preferences final : public nsIPrefService,
 extern Atomic<bool, Relaxed> sOmitBlocklistedPrefValues;
 extern Atomic<bool, Relaxed> sCrashOnBlocklistedPref;
 
-bool ShouldSanitizePreference(const char* aPref, bool aIsDestWebContentProcess);
+bool IsPreferenceSanitized(const char* aPref);
+
+const char kFissionEnforceBlockList[] =
+    "fission.enforceBlocklistedPrefsInSubprocesses";
+const char kFissionOmitBlockListValues[] =
+    "fission.omitBlocklistedPrefsInSubprocesses";
+
+void OnFissionBlocklistPrefChange(const char* aPref, void* aData);
 
 }  // namespace mozilla
 

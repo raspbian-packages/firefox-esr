@@ -3,18 +3,20 @@
 
 "use strict";
 
-const { AddonManager } = ChromeUtils.import(
-  "resource://gre/modules/AddonManager.jsm"
+const { AddonManager } = ChromeUtils.importESModule(
+  "resource://gre/modules/AddonManager.sys.mjs"
 );
-const { CHANGE_INSTALLED } = ChromeUtils.import(
-  "resource://services-sync/addonsreconciler.js"
+const { CHANGE_INSTALLED } = ChromeUtils.importESModule(
+  "resource://services-sync/addonsreconciler.sys.mjs"
 );
-const { AddonsEngine } = ChromeUtils.import(
-  "resource://services-sync/engines/addons.js"
+const { AddonsEngine } = ChromeUtils.importESModule(
+  "resource://services-sync/engines/addons.sys.mjs"
 );
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
-const { Preferences } = ChromeUtils.import(
-  "resource://gre/modules/Preferences.jsm"
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
+);
+const { Preferences } = ChromeUtils.importESModule(
+  "resource://gre/modules/Preferences.sys.mjs"
 );
 
 const prefs = new Preferences();
@@ -36,7 +38,7 @@ const XPI = AddonTestUtils.createTempWebExtensionFile({
   manifest: {
     name: "Test 1",
     description: "Test Description",
-    applications: { gecko: { id: ADDON_ID } },
+    browser_specific_settings: { gecko: { id: ADDON_ID } },
   },
 });
 
@@ -119,7 +121,7 @@ add_task(async function test_get_changed_ids() {
   let timerPrecision = Preferences.get("privacy.reduceTimerPrecision");
   Preferences.set("privacy.reduceTimerPrecision", false);
 
-  registerCleanupFunction(function() {
+  registerCleanupFunction(function () {
     Preferences.set("privacy.reduceTimerPrecision", timerPrecision);
   });
 

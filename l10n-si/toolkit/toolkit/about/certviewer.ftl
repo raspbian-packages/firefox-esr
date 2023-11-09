@@ -26,14 +26,17 @@ certificate-viewer-id = හැඳු.
 certificate-viewer-key-id = යතුරෙහි හැඳු.
 certificate-viewer-key-size = යතුරෙහි ප්‍රමාණය
 certificate-viewer-location = ස්ථානය
+certificate-viewer-logid = සටහනේ හැඳු.
 certificate-viewer-method = ක්‍රමය
 certificate-viewer-modulus = ඒකක
 certificate-viewer-name = නම
 certificate-viewer-not-after = පසු නොවේ
 certificate-viewer-not-before = පෙර නොවේ
 certificate-viewer-organization = සංවිධානය
+certificate-viewer-organizational-unit = ආයතනික ඒකකය
 certificate-viewer-policy = ප්‍රතිපත්තිය
 certificate-viewer-protocol = කෙටුම්පත
+certificate-viewer-public-value = ප්‍රසිද්ධ අගය
 certificate-viewer-purposes = අරමුණු
 certificate-viewer-required = අවශ්‍යයි
 certificate-viewer-unsupported = &lt;සහාය නොදක්වයි&gt;
@@ -76,6 +79,9 @@ certificate-viewer-download-pem = PEM (සහතිකය)
 certificate-viewer-download-pem-chain = PEM (දාමය)
     .download = { $fileName }-chain.pem
 
+# The title attribute for Critical Extension icon
+certificate-viewer-critical-extension =
+    .title = මෙම දිගුව අවදානම් යැයි සලකුණු කර ඇත, එනම් අනුග්‍රාහකයන්ට එය නොතේරෙන්නේ නම් සහතිකය ප්‍රතික්‍ෂේප කළ යුතුම බවයි.
 certificate-viewer-export = නිර්යාතය
     .download = { $fileName }.pem
 

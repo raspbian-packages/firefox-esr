@@ -24,7 +24,11 @@ neterror-pref-reset-button = Aisig na roghainnean bunaiteach
 neterror-return-to-previous-page-button = Air ais
 neterror-return-to-previous-page-recommended-button = Air ais (Mholamaid seo)
 neterror-try-again-button = Feuch ris a-rithist
+neterror-add-exception-button = Lean air adhart air an làrach seo an-còmhnaidh
+neterror-settings-button = Atharraich na roghainnean DNS
 neterror-view-certificate-link = Seall an teisteanas
+neterror-trr-continue-this-time = Lean air adhart an turas seo
+neterror-disable-native-feedback-warning = Lean air adhart an-còmhnaidh
 
 ##
 
@@ -48,6 +52,31 @@ neterror-dns-not-found-hint-header = <strong>Mas e an seòladh ceart a chuir thu
 neterror-dns-not-found-hint-try-again = Feuchainn ris an ceann greis
 neterror-dns-not-found-hint-check-network = Sùil a thoirt air a’ cheangal agad ris an lìonra
 neterror-dns-not-found-hint-firewall = Sùil a thoirt a bheil cead-inntrigidh aig { -brand-short-name } dhan lìon (dh’fhaoidte gu bheil ceangal agad ach air cùlaibh cachaileith-theine)
+
+## TRR-only specific messages
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+neterror-dns-not-found-trr-only-reason = Chan urrainn dha { -brand-short-name } d’ iarrtas airson seòladh na làraich seo a dhìon leis an fhuasglaiche DNS earbsach againn. Seo dhut na h-adhbharan:
+neterror-dns-not-found-trr-third-party-warning2 = ’S urrainn dhut leantainn air adhart leis an fhuasglaiche DNS bhunaiteach agad. Ge-tà, dh’fhaoidte gum faic treas-phàrtaidh na làraichean-lìn air an tadhail thu.
+
+neterror-dns-not-found-trr-only-could-not-connect = Cha b’ urrainn dha { -brand-short-name } ceangal ri { $trrDomain }.
+neterror-dns-not-found-trr-only-timeout = Thug an ceangal ri { $trrDomain } na b’ fhaide na bha dùil
+neterror-dns-not-found-trr-offline = Chan eil ceangal agad ris an eadar-lìon.
+neterror-dns-not-found-trr-unknown-host2 = Cha d’fhuair { $trrDomain } lorg air an làrach-lìn seo.
+neterror-dns-not-found-trr-server-problem = Bha duilgheadas ann le { $trrDomain }.
+neterror-dns-not-found-trr-unknown-problem = Duilgheadas ris nach robh dùil.
+
+## Native fallback specific messages
+## Variables:
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+neterror-dns-not-found-native-fallback-reason = Chan urrainn dha { -brand-short-name } d’ iarrtas airson seòladh na làraich seo a dhìon leis an fhuasglaiche DNS earbsach againn. Seo dhut na h-adhbharan:
+neterror-dns-not-found-native-fallback-heuristic = Chaidh DNS air HTTPS a chur à comas air an lìonra agad.
+neterror-dns-not-found-native-fallback-not-confirmed2 = Cha b’ urrainn dha { -brand-short-name } ceangal ri { $trrDomain }.
+
+##
 
 neterror-file-not-found-filename = Dèan cinnteach nach eile litrichean mòra no beaga san àite chearr no mearachdan litreachaidh eile.
 neterror-file-not-found-moved = Saoil an deach am faidhle a ghluasad, a sguabadh às no gun deach ainm ùr a chur air?

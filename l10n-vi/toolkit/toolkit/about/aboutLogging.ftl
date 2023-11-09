@@ -2,28 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
--profiler-brand-name = Firefox Profiler
-
-##
-
 # This is the title of the page
 about-logging-title = Giới thiệu về ghi nhật ký
 about-logging-page-title = Trình quản lý ghi nhật ký
 about-logging-current-log-file = Tập tin nhật ký hiện tại:
-about-logging-current-log-modules = Mô-đun nhật ký hiện tại:
 about-logging-new-log-file = Tập tin nhật ký mới:
 about-logging-currently-enabled-log-modules = Các mô-đun nhật ký hiện được bật:
 about-logging-log-tutorial = Xem <a data-l10n-name="logging">nhật ký HTTP</a> để biết hướng dẫn về cách sử dụng công cụ này.
@@ -49,8 +31,16 @@ about-logging-logging-preset-selector-text = Ghi nhật ký đặt trước:
 
 about-logging-preset-networking-label = Kết nối mạng
 about-logging-preset-networking-description = Ghi nhật ký các mô-đun để chẩn đoán các sự cố mạng
+about-logging-preset-networking-cookie-label = Cookie
+about-logging-preset-networking-cookie-description = Ghi nhật ký của các module để chẩn đoán các vấn đề về cookie
+about-logging-preset-networking-websocket-label = WebSockets
+about-logging-preset-networking-websocket-description = Ghi nhật ký của các module để chẩn đoán các sự cố WebSocket
+about-logging-preset-networking-http3-label = HTTP/3
+about-logging-preset-networking-http3-description = Ghi nhật ký của các module để chẩn đoán các sự cố HTTP/3 và QUIC
 about-logging-preset-media-playback-label = Trình phát phương tiện
 about-logging-preset-media-playback-description = Ghi nhật ký mô-đun để chẩn đoán sự cố trình phát phương tiện (không phải sự cố về cuộc gọi trực tuyến)
+about-logging-preset-webrtc-label = WebRTC
+about-logging-preset-webrtc-description = Ghi nhật ký của các module để chẩn đoán cuộc gọi WebRTC
 about-logging-preset-custom-label = Tùy chọn
 about-logging-preset-custom-description = Ghi nhật ký mô-đun được chọn theo cách thủ công
 # Error handling

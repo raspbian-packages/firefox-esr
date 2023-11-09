@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-webpage-languages-window =
-    .title = Gosodiadau Iaith Tudalen Gwe
-    .style = width: 40em
-
 webpage-languages-window2 =
     .title = Gosodiadau Iaith Tudalen Gwe
     .style = min-width: 40em
@@ -53,10 +49,6 @@ languages-code-format =
 languages-active-code-format =
     .value = { languages-code-format.label }
 
-browser-languages-window =
-    .title = { -brand-short-name } Gosodiadau Iaith
-    .style = width: 40em
-
 browser-languages-window2 =
     .title = { -brand-short-name } Gosodiadau Iaith
     .style = min-width: 40em
@@ -72,8 +64,8 @@ browser-languages-downloading =
     .label = Llwytho i lawr…
 
 browser-languages-select-language =
-    .label = Dewis iaith i'w gosod…
-    .placeholder = Dewis iaith i'w gosod…
+    .label = Dewis iaith i'w hychwanegu…
+    .placeholder = Dewis iaith i'w hychwanegu…
 
 browser-languages-installed-label = Ieithoedd wedi eu gosod
 browser-languages-available-label = Ieithoedd ar gael

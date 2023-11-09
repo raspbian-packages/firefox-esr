@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Бұл бетті бетбелгілерге қосу
-    .accesskey = е
-    .tooltiptext = Бұл бетті бетбелгілерге қосу
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Бетті бетбелгілерге қосу
-    .accesskey = б
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Бетбелгіні түзету
-    .accesskey = б
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Бұл бетті бетбелгілерге қосу
-    .accesskey = е
-    .tooltiptext = Бұл бетті бетбелгілерге қосу ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Бетбелгіні түзету
-    .accesskey = е
-    .tooltiptext = Бұл бетбелгіні түзету
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Бетбелгіні түзету
-    .accesskey = е
-    .tooltiptext = Бұл бетбелгіні түзету ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Бетті бетбелгілерге қосу…
     .accesskey = л
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Сілтемені жаңа жекелік терезесінде ашу
     .accesskey = к
-
-main-context-menu-bookmark-link =
-    .label = Сілтемені бетбелгілерге қосу
-    .accesskey = б
 
 main-context-menu-bookmark-link-2 =
     .label = Сілтемені бетбелгілерге қосу…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Аудионы эл. поштамен жіберу…
     .accesskey = А
 
-main-context-menu-plugin-play =
-    .label = Бұл плагинді белсендіру
-    .accesskey = с
-
-main-context-menu-plugin-hide =
-    .label = Бұл плагинді жасыру
-    .accesskey = ы
-
 main-context-menu-save-to-pocket =
     .label = Бетті { -pocket-brand-name }-ке сақтау
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = о
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = { -relay-brand-short-name } эл. пошта маскасын қолдану
+    .accesskey = о
 
 main-context-menu-suggest-strong-password =
     .label = Мықты парольді ұсыну…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Фреймді жаңарту
     .accesskey = ж
 
-main-context-menu-frame-bookmark =
-    .label = Осы фреймді бетбелгілерге қосу
-    .accesskey = г
-
 main-context-menu-frame-add-bookmark =
     .label = Фреймді бетбелгілерге қосу…
     .accesskey = м
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Фрейм туралы ақпарат
     .accesskey = Ф
-
-main-context-menu-print-selection =
-    .label = Таңдалғанды баспаға шығару
-    .accesskey = р
 
 main-context-menu-print-selection-2 =
     .label = Таңдалғанды баспаға шығару…

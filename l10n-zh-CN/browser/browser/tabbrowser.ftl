@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = 新标签页
 tabbrowser-empty-private-tab-title = 新建隐私标签页
+
 tabbrowser-menuitem-close-tab =
     .label = 关闭标签页
 tabbrowser-menuitem-close =
     .label = 关闭
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } — { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -80,7 +79,7 @@ tabbrowser-confirm-open-multiple-tabs-title = 确认打开
 #   $tabCount (Number): The number of tabs that will be opened.
 tabbrowser-confirm-open-multiple-tabs-message =
     { $tabCount ->
-       *[other] 您将要打开 { $tabCount } 个标签页。一并载入太多页面可能会减慢 { -brand-short-name } 的运行。您确定要一并打开吗？
+       *[other] 您将要打开 { $tabCount } 个标签页。一并加载太多页面可能会减慢 { -brand-short-name } 的运行。您确定要一并打开吗？
     }
 tabbrowser-confirm-open-multiple-tabs-button = 打开标签页
 tabbrowser-confirm-open-multiple-tabs-checkbox = 打开多个标签页可能致使 { -brand-short-name } 缓慢前提醒我
@@ -97,6 +96,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = 不再显示此对话框。
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = 允许来自 { $domain } 的此类通知，将您带往该网站标签页
+
 tabbrowser-customizemode-tab-title = 定制 { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -115,3 +115,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = 取消静音标签页
     .accesskey = m
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = 音频播放中
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = 列出全部 { $tabCount } 个标签页
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = 静音标签页
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = 取消静音标签页
+tabbrowser-manager-close-tab =
+    .tooltiptext = 关闭标签页

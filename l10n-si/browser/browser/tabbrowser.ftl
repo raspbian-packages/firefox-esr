@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = නව පටිත්ත
 tabbrowser-empty-private-tab-title = නව පෞද්. පටිත්ත
+
 tabbrowser-menuitem-close-tab =
     .label = පටිත්ත වසන්න
 tabbrowser-menuitem-close =
     .label = වසන්න
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -89,3 +88,11 @@ tabbrowser-context-mute-tab =
 tabbrowser-context-unmute-tab =
     .label = පටිත්ත නොනිහඬ
     .accesskey = m
+
+## Ctrl-Tab dialog
+
+
+## Tab manager menu buttons
+
+tabbrowser-manager-close-tab =
+    .tooltiptext = පටිත්ත වසන්න

@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = 새 탭
 tabbrowser-empty-private-tab-title = 새 사생활 보호 탭
+
 tabbrowser-menuitem-close-tab =
     .label = 탭 닫기
 tabbrowser-menuitem-close =
     .label = 닫기
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -60,8 +59,8 @@ tabbrowser-confirm-close-tabs-checkbox = 여러 탭을 닫기 전에 확인
 tabbrowser-confirm-close-windows-title = 창 { $windowCount }개를 닫으시겠습니까?
 tabbrowser-confirm-close-windows-button =
     { PLATFORM() ->
-        [windows] 닫고 종료
-       *[other] 닫고 종료
+        [windows] 닫기 및 종료
+       *[other] 닫기 및 종료
     }
 
 ## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
@@ -97,6 +96,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = 이 대화 상자를 다시 표시�
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = { $domain }의 이와 같은 알림이 해당 사이트의 탭으로 전환하도록 허용
+
 tabbrowser-customizemode-tab-title = { -brand-short-name } 사용자 지정
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -115,3 +115,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = 탭 음소거 해제
     .accesskey = m
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = 오디오 재생
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = 전체 탭 { $tabCount }개 목록
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = 탭 음소거
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = 탭 음소거 해제
+tabbrowser-manager-close-tab =
+    .tooltiptext = 탭 닫기

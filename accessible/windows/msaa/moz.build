@@ -25,7 +25,6 @@ UNIFIED_SOURCES += [
     "CompatibilityUIA.cpp",
     "DocAccessibleWrap.cpp",
     "EnumVariant.cpp",
-    "GeckoCustom.cpp",
     "HyperTextAccessibleWrap.cpp",
     "IUnknownImpl.cpp",
     "MsaaAccessible.cpp",
@@ -36,7 +35,6 @@ UNIFIED_SOURCES += [
     "nsWinUtils.cpp",
     "Platform.cpp",
     "RootAccessibleWrap.cpp",
-    "XULMenuAccessibleWrap.cpp",
 ]
 
 SOURCES += [
@@ -77,5 +75,3 @@ if CONFIG["CC_TYPE"] == "clang-cl":
 include("/ipc/chromium/chromium-config.mozbuild")
 
 FINAL_LIBRARY = "xul"
-
-REQUIRES_UNIFIED_BUILD = True

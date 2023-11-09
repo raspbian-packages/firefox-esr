@@ -19,6 +19,7 @@ const TEST_ADDRESS_1 = {
   country: "US",
   tel: "+16172535702",
   email: "timbl@w3.org",
+  "unknown-1": "an unknown field from another client",
 };
 
 const TEST_ADDRESS_2 = {
@@ -62,7 +63,7 @@ const TEST_ADDRESS_WITH_EMPTY_COMPUTED_FIELD = {
 
 const TEST_ADDRESS_WITH_INVALID_FIELD = {
   "street-address": "Another Address",
-  invalidField: "INVALID",
+  email: { email: "invalidemail" },
 };
 
 const TEST_ADDRESS_EMPTY_AFTER_NORMALIZE = {
@@ -81,18 +82,21 @@ const MERGE_TESTCASES = [
       "given-name": "Timothy",
       "street-address": "331 E. Evelyn Avenue",
       tel: "+16509030800",
+      "unknown-1": "an unknown field from another client",
     },
     addressToMerge: {
       "given-name": "Timothy",
       "street-address": "331 E. Evelyn Avenue",
       tel: "+16509030800",
       country: "US",
+      "unknown-1": "an unknown field from another client",
     },
     expectedAddress: {
       "given-name": "Timothy",
       "street-address": "331 E. Evelyn Avenue",
       tel: "+16509030800",
       country: "US",
+      "unknown-1": "an unknown field from another client",
     },
   },
   {
@@ -348,11 +352,9 @@ const MERGE_TESTCASES = [
   },
 ];
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "Preferences",
-  "resource://gre/modules/Preferences.jsm"
-);
+ChromeUtils.defineESModuleGetters(this, {
+  Preferences: "resource://gre/modules/Preferences.sys.mjs",
+});
 
 let do_check_record_matches = (recordWithMeta, record) => {
   for (let key in record) {
@@ -472,7 +474,7 @@ add_task(async function test_add() {
 
   await Assert.rejects(
     profileStorage.addresses.add(TEST_ADDRESS_WITH_INVALID_FIELD),
-    /"invalidField" is not a valid field\./
+    /"email" contains invalid data type: object/
   );
 
   await Assert.rejects(
@@ -493,7 +495,7 @@ add_task(async function test_update() {
   let timerPrecision = Preferences.get("privacy.reduceTimerPrecision");
   Preferences.set("privacy.reduceTimerPrecision", false);
 
-  registerCleanupFunction(function() {
+  registerCleanupFunction(function () {
     Preferences.set("privacy.reduceTimerPrecision", timerPrecision);
   });
 
@@ -504,7 +506,10 @@ add_task(async function test_update() {
 
   let addresses = await profileStorage.addresses.getAll();
   let guid = addresses[1].guid;
-  let timeLastModified = addresses[1].timeLastModified;
+  // We need to cheat a little due to race conditions of Date.now() when
+  // we're running these tests, so we subtract one and test accordingly
+  // in the times Date.now() returns the same timestamp
+  let timeLastModified = addresses[1].timeLastModified - 1;
 
   let onChanged = TestUtils.topicObserved(
     "formautofill-storage-changed",
@@ -525,7 +530,7 @@ add_task(async function test_update() {
   let address = await profileStorage.addresses.get(guid, { rawData: true });
 
   Assert.equal(address.country, undefined);
-  Assert.notEqual(address.timeLastModified, timeLastModified);
+  Assert.ok(address.timeLastModified > timeLastModified);
   do_check_record_matches(address, TEST_ADDRESS_3);
   Assert.equal(getSyncChangeCounter(profileStorage.addresses, guid), 1);
 
@@ -557,6 +562,7 @@ add_task(async function test_update() {
   address = profileStorage.addresses._data[0];
   Assert.equal(address.name, TEST_ADDRESS_WITH_EMPTY_FIELD.name);
   Assert.equal(address["street-address"], undefined);
+  Assert.equal(address[("unknown-1", "an unknown field from another client")]);
 
   // Empty computed fields shouldn't cause any problem.
   await profileStorage.addresses.update(
@@ -581,7 +587,7 @@ add_task(async function test_update() {
 
   await Assert.rejects(
     profileStorage.addresses.update(guid, TEST_ADDRESS_WITH_INVALID_FIELD),
-    /"invalidField" is not a valid field\./
+    /"email" contains invalid data type: object/
   );
 
   await Assert.rejects(
@@ -683,7 +689,10 @@ MERGE_TESTCASES.forEach(testcase => {
     ]);
     let addresses = await profileStorage.addresses.getAll();
     let guid = addresses[0].guid;
-    let timeLastModified = addresses[0].timeLastModified;
+    // We need to cheat a little due to race conditions of Date.now() when
+    // we're running these tests, so we subtract one and test accordingly
+    // in the times Date.now() returns the same timestamp
+    let timeLastModified = addresses[0].timeLastModified - 1;
 
     // Merge address and verify the guid in notifyObservers subject
     let onMerged = TestUtils.topicObserved(
@@ -713,12 +722,13 @@ MERGE_TESTCASES.forEach(testcase => {
     Assert.equal(addresses.length, 1);
     do_check_record_matches(addresses[0], testcase.expectedAddress);
     if (testcase.noNeedToUpdate) {
-      Assert.equal(addresses[0].timeLastModified, timeLastModified);
+      // see timeLastModified for why we check -1
+      Assert.equal(addresses[0].timeLastModified - 1, timeLastModified);
 
       // No need to bump the change counter if the data is unchanged.
       Assert.equal(getSyncChangeCounter(profileStorage.addresses, guid), 1);
     } else {
-      Assert.notEqual(addresses[0].timeLastModified, timeLastModified);
+      Assert.ok(addresses[0].timeLastModified > timeLastModified);
 
       // Record merging should bump the change counter.
       Assert.equal(getSyncChangeCounter(profileStorage.addresses, guid), 2);

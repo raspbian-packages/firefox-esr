@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-videocontrols-scrubber =
-    .aria-label = 위치
 # This label is used by screenreaders and other assistive technology to indicate
 # to users how much of the video has been loaded from the network. It will be
 # followed by the percentage of the video that has loaded (e.g. "Loading: 13%").
@@ -36,21 +34,7 @@ videocontrols-picture-in-picture-label = 화면 속 화면
 
 # This string is used as the label for a variation of the Picture-in-Picture video
 # toggle button when the mouse is hovering over the video.
-videocontrols-picture-in-picture-toggle-label = 화면 속 화면에서 보기
-
-# This string is used as part of a variation of the Picture-in-Picture video toggle
-# button. When using this variation, this string appears below the toggle when the
-# mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer = { -brand-short-name }에서 다른 작업을 수행하는 동안 전경에서 동영상을 재생합니다
-
-# This string is used as the label for a variation of the Picture-in-Picture video
-# toggle button when the mouse is hovering over the video.
 videocontrols-picture-in-picture-toggle-label2 = 이 동영상을 창 분리
-
-# This string is used as part of a variation of the Picture-in-Picture video toggle
-# button. When using this variation, this string appears below the toggle when the
-# mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer2 = 더 많은 화면이 더 재미있습니다. 탐색하는 동안에 화면 속 화면으로 이 동영상을 재생하세요.
 
 videocontrols-picture-in-picture-explainer3 = 더 많은 화면이 더 재미있습니다. 다른 일을 하는 동안 이 동영상을 재생하세요.
 
@@ -75,3 +59,13 @@ videocontrols-status-picture-in-picture = 이 동영상은 화면 속 화면 모
 # duration video, $position would be "5:00" and the string which is
 # surrounded by <span> would be deleted, result string would be "5:00".
 videocontrols-position-and-duration-labels = { $position }<span data-l10n-name="position-duration-format"> / { $duration }</span>
+
+# This is a plain text version of the videocontrols-position-and-duration-labels
+# string, used by screenreaders.
+#
+# Variables:
+#   $position (String): The current media position
+#   $duration (String): The total video duration
+videocontrols-scrubber-position-and-duration =
+    .aria-label = 위치
+    .aria-valuetext = { $position } / { $duration }

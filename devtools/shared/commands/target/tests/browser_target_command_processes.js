@@ -8,9 +8,9 @@
 const TEST_URL =
   "data:text/html;charset=utf-8," + encodeURIComponent(`<div id="test"></div>`);
 
-add_task(async function() {
+add_task(async function () {
   // Enabled fission's pref as the TargetCommand is almost disabled without it
-  await pushPref("devtools.browsertoolbox.fission", true);
+  await pushPref("devtools.browsertoolbox.scope", "everything");
   // Disable the preloaded process as it gets created lazily and may interfere
   // with process count assertions
   await pushPref("dom.ipc.processPrelaunch.enabled", false);
@@ -26,15 +26,13 @@ add_task(async function() {
   targetCommand.destroy();
   // Wait for all the targets to be fully attached so we don't have pending requests.
   await Promise.all(
-    targetCommand
-      .getAllTargets(targetCommand.ALL_TYPES)
-      .map(t => t.attachAndInitThread(targetCommand))
+    targetCommand.getAllTargets(targetCommand.ALL_TYPES).map(t => t.initialized)
   );
 
   await commands.destroy();
 });
 
-add_task(async function() {
+add_task(async function () {
   const commands = await CommandsFactory.forMainProcess();
   const targetCommand = commands.targetCommand;
   await targetCommand.startListening();
@@ -69,9 +67,7 @@ add_task(async function() {
   targetCommand.destroy();
   // Wait for all the targets to be fully attached so we don't have pending requests.
   await Promise.all(
-    targetCommand
-      .getAllTargets(targetCommand.ALL_TYPES)
-      .map(t => t.attachAndInitThread(targetCommand))
+    targetCommand.getAllTargets(targetCommand.ALL_TYPES).map(t => t.initialized)
   );
 
   await commands.destroy();

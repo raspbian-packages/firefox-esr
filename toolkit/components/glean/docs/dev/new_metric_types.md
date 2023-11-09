@@ -115,16 +115,6 @@ This work is done by the `rust.py` and `rust(_pings).jinja2` extensions to `glea
 You shouldn't have to edit these files for new metric types,
 as the original modifications to `glean_parser` for this type should already be generating correct code.
 
-### Dealing with Clippy
-
-[Clippy](https://github.com/rust-lang/rust-clippy)
-cannot find the generated Rust metrics maps in `__glean_metric_maps`
-(see [bug 1674728](https://bugzilla.mozilla.org/show_bug.cgi?id=1674728)).
-This means any new metric type that is generating structures via `glean_parser`
-extensions requires you to add a copy of the new map to the clippy-only
-`__glean_metric_maps` at the bottom of
-[the non-generated `metrics.rs`](https://searchfox.org/mozilla-central/source/toolkit/components/glean/api/src/metrics.rs).
-
 ### Rust Tests
 
 You should be able to smoke test the basic functionality in Rust unit tests.
@@ -209,7 +199,10 @@ Two languages means two test suites.
   [`gtest/TestFog.cpp`](https://hg.mozilla.org/mozilla-central/file/tip/toolkit/components/glean/tests/gtest/TestFog.cpp).
     - For more details, peruse the [testing docs](testing.md).
 - **JS Tests (xpcshell)** - Add a small test case to
-  [`xpcshell/test_Glean.js`](https://hg.mozilla.org/mozilla-central/file/tip/toolkit/components/glean/tests/xpcshell/test_Glean.js).
+  [`xpcshell/test_Glean.js`](https://hg.mozilla.org/mozilla-central/file/tip/toolkit/components/glean/tests/xpcshell/test_Glean.js)
+  and
+  [`xpcshell/test_JOG.js`](https://hg.mozilla.org/mozilla-central/file/tip/toolkit/components/glean/tests/xpcshell/test_JOG.js).
+  If your metric type has supported IPC operations, also add cases to the `IPC` variants of these test files.
     - For more details, peruse the [testing docs](testing.md).
 
 ### 7. API Documentation

@@ -6,8 +6,8 @@
 
 const URL = "http://example.com";
 
-const { LoginTestUtils } = ChromeUtils.import(
-  "resource://testing-common/LoginTestUtils.jsm"
+const { LoginTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/LoginTestUtils.sys.mjs"
 );
 
 add_task(async function test_principal_downloads() {
@@ -20,7 +20,7 @@ add_task(async function test_principal_downloads() {
     usernameField: "field_username",
     passwordField: "field_password",
   });
-  Services.logins.addLogin(loginInfo);
+  await Services.logins.addLoginAsync(loginInfo);
 
   Assert.equal(countLogins(URL), 1);
 
@@ -57,7 +57,7 @@ add_task(async function test_all() {
     usernameField: "field_username",
     passwordField: "field_password",
   });
-  Services.logins.addLogin(loginInfo);
+  await Services.logins.addLoginAsync(loginInfo);
 
   Assert.equal(countLogins(URL), 1);
 

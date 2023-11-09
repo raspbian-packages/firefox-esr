@@ -68,7 +68,7 @@ void WebTask::RunAbortAlgorithm() {
       mPromise->MaybeReject(NS_ERROR_UNEXPECTED);
     } else {
       JSContext* cx = jsapi.cx();
-      JS::RootedValue reason(cx);
+      JS::Rooted<JS::Value> reason(cx);
       Signal()->GetReason(cx, &reason);
       mPromise->MaybeReject(reason);
     }
@@ -102,19 +102,23 @@ bool WebTask::Run() {
 
   error.WouldReportJSException();
 
+#ifdef DEBUG
   Promise::PromiseState promiseState = mPromise->State();
 
   // If the state is Rejected, it means the above Call triggers the
   // RunAbortAlgorithm method and rejected the promise
   MOZ_ASSERT_IF(promiseState != Promise::PromiseState::Pending,
                 promiseState == Promise::PromiseState::Rejected);
+#endif
 
-  if (promiseState == Promise::PromiseState::Pending) {
-    if (error.Failed()) {
+  if (error.Failed()) {
+    if (!error.IsUncatchableException()) {
       mPromise->MaybeReject(std::move(error));
     } else {
-      mPromise->MaybeResolve(returnVal);
+      error.SuppressException();
     }
+  } else {
+    mPromise->MaybeResolve(returnVal);
   }
 
   MOZ_ASSERT(!isInList());
@@ -124,9 +128,6 @@ bool WebTask::Run() {
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(WebTaskScheduler, mParent,
                                       mStaticPriorityTaskQueues,
                                       mDynamicPriorityTaskQueues)
-
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(WebTaskScheduler, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(WebTaskScheduler, Release)
 
 /* static */
 already_AddRefed<WebTaskSchedulerMainThread>
@@ -187,7 +188,7 @@ already_AddRefed<Promise> WebTaskScheduler::PostTask(
       }
 
       JSContext* cx = jsapi.cx();
-      JS::RootedValue reason(cx);
+      JS::Rooted<JS::Value> reason(cx);
       signalValue.GetReason(cx, &reason);
       promise->MaybeReject(reason);
       return promise.forget();
@@ -211,6 +212,9 @@ already_AddRefed<Promise> WebTaskScheduler::PostTask(
   }
 
   if (!QueueTask(task)) {
+    MOZ_ASSERT(task->isInList());
+    task->remove();
+
     promise->MaybeRejectWithNotSupportedError("Unable to queue the task");
     return promise.forget();
   }

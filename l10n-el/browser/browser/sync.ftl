@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = Ενεργοποίηση συγχρονισμο�
 
 fxa-menu-connect-another-device =
     .label = Σύνδεση άλλης συσκευής…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Αποστολή καρτέλας σε συσκευή
+           *[other] Αποστολή { $tabCount } καρτελών σε συσκευή
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

@@ -12,19 +12,18 @@
 
 using namespace mozilla;
 
-NS_IMPL_ISUPPORTS(nsClipboard, nsIClipboard)
+NS_IMPL_ISUPPORTS_INHERITED0(nsClipboard, ClipboardSetDataHelper)
 
 /* The Android clipboard only supports text and doesn't support mime types
- * so we assume all clipboard data is text/unicode for now. Documentation
+ * so we assume all clipboard data is text/plain for now. Documentation
  * indicates that support for other data types is planned for future
  * releases.
  */
 
-nsClipboard::nsClipboard() {}
-
 NS_IMETHODIMP
-nsClipboard::SetData(nsITransferable* aTransferable, nsIClipboardOwner* anOwner,
-                     int32_t aWhichClipboard) {
+nsClipboard::SetNativeClipboardData(nsITransferable* aTransferable,
+                                    nsIClipboardOwner* aOwner,
+                                    int32_t aWhichClipboard) {
   if (aWhichClipboard != kGlobalClipboard) return NS_ERROR_NOT_IMPLEMENTED;
 
   if (!jni::IsAvailable()) {
@@ -38,10 +37,10 @@ nsClipboard::SetData(nsITransferable* aTransferable, nsIClipboardOwner* anOwner,
   nsAutoString text;
 
   for (auto& flavorStr : flavors) {
-    if (flavorStr.EqualsLiteral(kUnicodeMime)) {
+    if (flavorStr.EqualsLiteral(kTextMime)) {
       nsCOMPtr<nsISupports> item;
       nsresult rv =
-          aTransferable->GetTransferData(kUnicodeMime, getter_AddRefs(item));
+          aTransferable->GetTransferData(kTextMime, getter_AddRefs(item));
       if (NS_WARN_IF(NS_FAILED(rv))) {
         continue;
       }
@@ -89,7 +88,7 @@ nsClipboard::GetData(nsITransferable* aTransferable, int32_t aWhichClipboard) {
   aTransferable->FlavorsTransferableCanImport(flavors);
 
   for (auto& flavorStr : flavors) {
-    if (flavorStr.EqualsLiteral(kUnicodeMime) ||
+    if (flavorStr.EqualsLiteral(kTextMime) ||
         flavorStr.EqualsLiteral(kHTMLMime)) {
       auto text = java::Clipboard::GetData(
           java::GeckoAppShell::GetApplicationContext(), flavorStr);
@@ -112,6 +111,16 @@ nsClipboard::GetData(nsITransferable* aTransferable, int32_t aWhichClipboard) {
   }
 
   return NS_ERROR_FAILURE;
+}
+
+RefPtr<GenericPromise> nsClipboard::AsyncGetData(nsITransferable* aTransferable,
+                                                 int32_t aWhichClipboard) {
+  nsresult rv = GetData(aTransferable, aWhichClipboard);
+  if (NS_FAILED(rv)) {
+    return GenericPromise::CreateAndReject(rv, __func__);
+  }
+
+  return GenericPromise::CreateAndResolve(true, __func__);
 }
 
 NS_IMETHODIMP
@@ -150,14 +159,24 @@ nsClipboard::HasDataMatchingFlavors(const nsTArray<nsCString>& aFlavorList,
   return NS_OK;
 }
 
-NS_IMETHODIMP
-nsClipboard::SupportsSelectionClipboard(bool* aIsSupported) {
-  *aIsSupported = false;
-  return NS_OK;
+RefPtr<DataFlavorsPromise> nsClipboard::AsyncHasDataMatchingFlavors(
+    const nsTArray<nsCString>& aFlavorList, int32_t aWhichClipboard) {
+  nsTArray<nsCString> results;
+  for (const auto& flavor : aFlavorList) {
+    bool hasMatchingFlavor = false;
+    nsresult rv = HasDataMatchingFlavors(AutoTArray<nsCString, 1>{flavor},
+                                         aWhichClipboard, &hasMatchingFlavor);
+    if (NS_SUCCEEDED(rv) && hasMatchingFlavor) {
+      results.AppendElement(flavor);
+    }
+  }
+
+  return DataFlavorsPromise::CreateAndResolve(std::move(results), __func__);
 }
 
 NS_IMETHODIMP
-nsClipboard::SupportsFindClipboard(bool* _retval) {
-  *_retval = false;
+nsClipboard::IsClipboardTypeSupported(int32_t aWhichClipboard, bool* _retval) {
+  NS_ENSURE_ARG_POINTER(_retval);
+  *_retval = kGlobalClipboard == aWhichClipboard;
   return NS_OK;
 }

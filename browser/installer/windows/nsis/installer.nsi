@@ -3,6 +3,8 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # Required Plugins:
+# AccessControl
+#   https://nsis.sourceforge.io/AccessControl_plug-in
 # AppAssocReg
 #   http://nsis.sourceforge.net/Application_Association_Registration_plug-in
 # ApplicationID
@@ -41,6 +43,7 @@ Var AddStartMenuSC
 Var AddTaskbarSC
 Var AddQuickLaunchSC
 Var AddDesktopSC
+Var AddPrivateBrowsingSC
 Var InstallMaintenanceService
 Var InstallOptionalExtensions
 Var ExtensionRecommender
@@ -105,9 +108,10 @@ VIAddVersionKey "OriginalFilename" "setup.exe"
 !insertmacro ChangeMUIHeaderImage
 !insertmacro ChangeMUISidebarImage
 !insertmacro CheckForFilesInUse
-!insertmacro CleanUpdateDirectories
+!insertmacro CleanMaintenanceServiceLogs
 !insertmacro CopyFilesFromDir
 !insertmacro CopyPostSigningData
+!insertmacro CopyProvenanceData
 !insertmacro CreateRegKey
 !insertmacro GetFirstInstallPath
 !insertmacro GetLongPath
@@ -307,8 +311,8 @@ Section "-InstallStartCleanup"
   ; setup the application model id registration value
   ${InitHashAppModelId} "$INSTDIR" "Software\Mozilla\${AppName}\TaskBarIDs"
 
-  ; Remove the updates directory
-  ${CleanUpdateDirectories} "Mozilla\Firefox" "Mozilla\updates"
+  ; Clean up old maintenance service logs
+  ${CleanMaintenanceServiceLogs} "Mozilla\Firefox"
 
   ${RemoveDeprecatedFiles}
   ${RemovePrecompleteEntries} "false"
@@ -369,16 +373,6 @@ Section "-Application" APP_IDX
 
   ClearErrors
 
-  ${RegisterDLL} "$INSTDIR\AccessibleHandler.dll"
-  ${If} ${Errors}
-    ${LogMsg} "** ERROR Registering: $INSTDIR\AccessibleHandler.dll **"
-  ${Else}
-    ${LogUninstall} "DLLReg: \AccessibleHandler.dll"
-    ${LogMsg} "Registered: $INSTDIR\AccessibleHandler.dll"
-  ${EndIf}
-
-  ClearErrors
-
   ; Record the Windows Error Reporting module
   WriteRegDWORD HKLM "SOFTWARE\Microsoft\Windows\Windows Error Reporting\RuntimeExceptionHelperModules" "$INSTDIR\mozwer.dll" 0
   ${If} ${Errors}
@@ -389,10 +383,31 @@ Section "-Application" APP_IDX
 
   ClearErrors
 
+  ${If} ${AtLeastWin10}
+    ; Apply LPAC permissions to install directory.
+    ${LogHeader} "File access permissions"
+    Push "Marker"
+    AccessControl::GrantOnFile \
+      "$INSTDIR" "(${LpacFirefoxInstallFilesSid})" "GenericRead + GenericExecute"
+    Pop $TmpVal ; get "Marker" or error msg
+    ${If} $TmpVal == "Marker"
+      ${LogMsg} "Granted access for LPAC to $INSTDIR"
+    ${Else}
+      ${LogMsg} "** Error granting access for LPAC to $INSTDIR : $TmpVal **"
+      Pop $TmpVal ; get "Marker"
+    ${EndIf}
+
+    ClearErrors
+  ${EndIf}
+
   ; Default for creating Start Menu shortcut
   ; (1 = create, 0 = don't create)
   ${If} $AddStartMenuSC == ""
     StrCpy $AddStartMenuSC "1"
+  ${EndIf}
+
+  ${If} $AddPrivateBrowsingSC == ""
+    StrCpy $AddPrivateBrowsingSC "1"
   ${EndIf}
 
   ; Default for creating Quick Launch shortcut (1 = create, 0 = don't create)
@@ -408,6 +423,11 @@ Section "-Application" APP_IDX
   ; Default for creating Desktop shortcut (1 = create, 0 = don't create)
   ${If} $AddDesktopSC == ""
     StrCpy $AddDesktopSC "1"
+  ${EndIf}
+
+  ; Default for adding a Taskbar pin (1 = pin, 0 = don't pin)
+  ${If} $AddTaskbarSC == ""
+    StrCpy $AddTaskbarSC "1"
   ${EndIf}
 
   ${LogHeader} "Adding Registry Entries"
@@ -535,6 +555,10 @@ Section "-Application" APP_IDX
   WriteRegDWORD HKCU ${MOZ_LAUNCHER_SUBKEY} "$INSTDIR\${FileMainEXE}|Telemetry" 1
 !endif
 
+  ${If} ${AtLeastWin10}
+    ${WriteToastNotificationRegistration} $TmpVal
+  ${EndIf}
+
   ; Create shortcuts
   ${LogHeader} "Adding Shortcuts"
 
@@ -609,6 +633,14 @@ Section "-Application" APP_IDX
         ${LogMsg} "** ERROR Adding Shortcut: $SMPROGRAMS\${BrandShortName}.lnk"
       ${EndIf}
     ${EndIf}
+  ${EndIf}
+
+  ; This is always added if it doesn't already exist to ensure that Windows'
+  ; native "Pin to Taskbar" functionality can find an appropriate shortcut.
+  ; See https://bugzilla.mozilla.org/show_bug.cgi?id=1762994 for additional
+  ; background.
+  ${If} $AddPrivateBrowsingSC == 1
+    ${AddPrivateBrowsingShortcut}
   ${EndIf}
 
   ; Update lastwritetime of the Start Menu shortcut to clear the tile cache.
@@ -744,6 +776,11 @@ Section "-Application" APP_IDX
   WriteRegDWORD HKCU "Software\Mozilla\${AppName}\Installer\$AppUserModelID" \
                      "DidRegisterDefaultBrowserAgent" $RegisterDefaultAgent
 !endif
+
+; Return value is saved to an unused variable to prevent the the error flag
+; from being set.
+Var /GLOBAL UnusedExecCatchReturn
+ExecWait '"$INSTDIR\${FileMainEXE}" --backgroundtask install' $UnusedExecCatchReturn
 SectionEnd
 
 ; Cleanup operations to perform at the end of the installation.
@@ -752,7 +789,7 @@ Section "-InstallEndCleanup"
   DetailPrint "$(STATUS_CLEANUP)"
   SetDetailsPrint none
 
-  ; Maybe copy the post-signing data?
+  ; Maybe copy the post-signing data and provenance data
   StrCpy $PostSigningData ""
   ${GetParameters} $0
   ClearErrors
@@ -766,6 +803,7 @@ Section "-InstallEndCleanup"
       ; We're being run standalone, copy the data.
       ${CopyPostSigningData}
       Pop $PostSigningData
+      ${CopyProvenanceData}
     ${EndIf}
   ${EndIf}
 
@@ -798,6 +836,11 @@ Section "-InstallEndCleanup"
       ${EndIf}
 
       ${LogHeader} "Setting as the default browser"
+      ; AddTaskbarSC is needed by MigrateTaskBarShortcut, which is called by
+      ; SetAsDefaultAppUserHKCU. If this is called via ExecCodeSegment,
+      ; MigrateTaskBarShortcut will not see the value of AddTaskbarSC, so we
+      ; send it via a register instead.
+      StrCpy $R0 $AddTaskbarSC
       ClearErrors
       ${GetParameters} $0
       ${GetOptions} "$0" "/UAC:" $0
@@ -819,7 +862,7 @@ Section "-InstallEndCleanup"
   ${EndUnless}
 
   ; Adds a pinned Task Bar shortcut (see MigrateTaskBarShortcut for details).
-  ${MigrateTaskBarShortcut}
+  ${MigrateTaskBarShortcut} "$AddTaskbarSC"
 
   ; Add the Firewall entries during install
   Call AddFirewallEntries
@@ -1446,11 +1489,7 @@ Function leaveShortcuts
   ${EndIf}
   ${MUI_INSTALLOPTIONS_READ} $AddDesktopSC "shortcuts.ini" "Field 2" "State"
   ${MUI_INSTALLOPTIONS_READ} $AddStartMenuSC "shortcuts.ini" "Field 3" "State"
-
-  ; Don't install the quick launch shortcut on Windows 7
-  ${Unless} ${AtLeastWin7}
-    ${MUI_INSTALLOPTIONS_READ} $AddQuickLaunchSC "shortcuts.ini" "Field 4" "State"
-  ${EndUnless}
+  ${MUI_INSTALLOPTIONS_READ} $AddTaskbarSC "shortcuts.ini" "Field 4" "State"
 
   ${If} $InstallType == ${INSTALLTYPE_CUSTOM}
     Call CheckExistingInstall
@@ -1898,13 +1937,7 @@ Function .onInit
   WriteINIStr "$PLUGINSDIR\options.ini" "Field 5" Top    "67"
   WriteINIStr "$PLUGINSDIR\options.ini" "Field 5" Bottom "87"
 
-  ; Setup the shortcuts.ini file for the Custom Shortcuts Page
-  ; Don't offer to install the quick launch shortcut on Windows 7
-  ${If} ${AtLeastWin7}
-    WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Settings" NumFields "3"
-  ${Else}
-    WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Settings" NumFields "4"
-  ${EndIf}
+  WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Settings" NumFields "4"
 
   WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 1" Type   "label"
   WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 1" Text   "$(CREATE_ICONS_DESC)"
@@ -1930,16 +1963,13 @@ Function .onInit
   WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 3" Bottom "50"
   WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 3" State  "1"
 
-  ; Don't offer to install the quick launch shortcut on Windows 7
-  ${Unless} ${AtLeastWin7}
-    WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Type   "checkbox"
-    WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Text   "$(ICONS_QUICKLAUNCH)"
-    WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Left   "0"
-    WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Right  "-1"
-    WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Top    "60"
-    WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Bottom "70"
-    WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" State  "1"
-  ${EndUnless}
+  WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Type   "checkbox"
+  WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Text   "$(ICONS_TASKBAR)"
+  WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Left   "0"
+  WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Right  "-1"
+  WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Top    "60"
+  WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" Bottom "70"
+  WriteINIStr "$PLUGINSDIR\shortcuts.ini" "Field 4" State  "1"
 
   ; Setup the components.ini file for the Components Page
   WriteINIStr "$PLUGINSDIR\components.ini" "Settings" NumFields "2"

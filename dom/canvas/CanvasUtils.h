@@ -21,6 +21,7 @@ namespace mozilla {
 namespace dom {
 class Document;
 class HTMLCanvasElement;
+class OffscreenCanvas;
 }  // namespace dom
 
 namespace CanvasUtils {
@@ -48,6 +49,10 @@ void DoDrawImageSecurityCheck(dom::HTMLCanvasElement* aCanvasElement,
                               nsIPrincipal* aPrincipal, bool forceWriteOnly,
                               bool CORSUsed);
 
+void DoDrawImageSecurityCheck(dom::OffscreenCanvas* aOffscreenCanvas,
+                              nsIPrincipal* aPrincipal, bool forceWriteOnly,
+                              bool CORSUsed);
+
 // Check if the context is chrome or has the permission to drawWindow
 bool HasDrawWindowPrivilege(JSContext* aCx, JSObject* aObj);
 
@@ -65,7 +70,7 @@ bool CoerceDouble(const JS::Value& v, double* d);
 
 /* Float validation stuff */
 #define VALIDATE(_f) \
-  if (!IsFinite(_f)) return false
+  if (!std::isfinite(_f)) return false
 
 inline bool FloatValidate(double f1) {
   VALIDATE(f1);

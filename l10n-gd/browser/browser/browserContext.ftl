@@ -96,43 +96,43 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Cruthaich comharra-lìn dhan duilleag seo
+main-context-menu-bookmark-page =
+    .aria-label = Dèan comharra-lìn dhen duilleag…
     .accesskey = m
-    .tooltiptext = Cruthaich comharra-lìn dhan duilleag seo
+    .tooltiptext = Dèan comharra-lìn dhen duilleag
 
 # This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
+# Cannot be shown at the same time as main-context-menu-edit-bookmark-mac,
 # so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Dèan comharra-lìn dhen duilleag
+main-context-menu-bookmark-page-mac =
+    .label = Dèan comharra-lìn dhen duilleag…
     .accesskey = m
 
 # This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
+# Cannot be shown at the same time as main-context-menu-bookmark-page-mac,
 # so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Deasaich an comharra-lìn
+main-context-menu-edit-bookmark-mac =
+    .label = Deasaich an comharra-lìn…
     .accesskey = m
 
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Cruthaich comharra-lìn dhan duilleag seo
+main-context-menu-bookmark-page-with-shortcut =
+    .aria-label = Dèan comharra-lìn dhen duilleag…
     .accesskey = m
-    .tooltiptext = Cruthaich comharra-lìn dhan duilleag seo ({ $shortcut })
+    .tooltiptext = Dèan comharra-lìn dhen duilleag ({ $shortcut })
 
-main-context-menu-bookmark-change =
-    .aria-label = Deasaich an comharra-lìn seo
+main-context-menu-edit-bookmark =
+    .aria-label = Deasaich an comharra-lìn…
     .accesskey = m
-    .tooltiptext = Deasaich an comharra-lìn seo
+    .tooltiptext = Deasaich an comharra-lìn
 
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Deasaich an comharra-lìn seo
+main-context-menu-edit-bookmark-with-shortcut =
+    .aria-label = Deasaich an comharra-lìn…
     .accesskey = m
-    .tooltiptext = Deasaich an comharra-lìn seo ({ $shortcut })
+    .tooltiptext = Deasaich an comharra-lìn ({ $shortcut })
 
 main-context-menu-open-link =
     .label = Fosgail ceangal
@@ -154,9 +154,9 @@ main-context-menu-open-link-new-private-window =
     .label = Fosgail an ceangal ann an uinneag phrìobhaideach ùr
     .accesskey = p
 
-main-context-menu-bookmark-link =
-    .label = Cruthaich comharra-lìn dhan cheangal
-    .accesskey = g
+main-context-menu-bookmark-link-2 =
+    .label = Dèan comharra-lìn dhen cheangal…
+    .accesskey = D
 
 main-context-menu-save-link =
     .label = Sàbhail an ceangal mar…
@@ -296,6 +296,10 @@ main-context-menu-image-set-image-as-background =
     .label = Suidhich an dealbh mar chùlaibh an deasga…
     .accesskey = S
 
+main-context-menu-image-copy-text =
+    .label = Dèan lethbhreac dhen teacsa san dealbh
+    .accesskey = t
+
 main-context-menu-image-info =
     .label = Seall fiosrachadh an deilbh
     .accesskey = f
@@ -324,14 +328,6 @@ main-context-menu-audio-email =
     .label = Cuir an fhuaim air a' phost-d…
     .accesskey = u
 
-main-context-menu-plugin-play =
-    .label = Gnìomhaich am plugan seo
-    .accesskey = c
-
-main-context-menu-plugin-hide =
-    .label = Falaich am plugan seo
-    .accesskey = h
-
 main-context-menu-save-to-pocket =
     .label = Sàbhail an duilleag ann am { -pocket-brand-name }
     .accesskey = k
@@ -353,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = C
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Cleachd masg puist-d { -relay-brand-short-name }
+    .accesskey = e
 
 main-context-menu-suggest-strong-password =
     .label = Mol facal-faire làidir…
@@ -390,8 +390,8 @@ main-context-menu-frame-reload =
     .label = Ath-luchdaich am frèam
     .accesskey = r
 
-main-context-menu-frame-bookmark =
-    .label = Cruthaich comharra-lìn dhan fhrèam seo
+main-context-menu-frame-add-bookmark =
+    .label = Dèan comharra-lìn dhen fhrèam…
     .accesskey = m
 
 main-context-menu-frame-save-as =
@@ -410,9 +410,9 @@ main-context-menu-frame-view-info =
     .label = Seall fiosrachadh an fhrèama
     .accesskey = i
 
-main-context-menu-print-selection =
-    .label = Clò-bhuail na thagh thu
-    .accesskey = C
+main-context-menu-print-selection-2 =
+    .label = Clò-bhuail na thagh thu…
+    .accesskey = h
 
 main-context-menu-view-selection-source =
     .label = Seall bun-tùs na thagh thu

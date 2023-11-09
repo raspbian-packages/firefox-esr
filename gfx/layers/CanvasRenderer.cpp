@@ -14,6 +14,10 @@
 #include "PersistentBufferProvider.h"
 #include "WebGLTypes.h"
 
+#ifdef MOZ_WAYLAND
+#  include "mozilla/widget/DMABufSurface.h"
+#endif
+
 namespace mozilla {
 namespace layers {
 
@@ -68,28 +72,6 @@ std::shared_ptr<BorrowedSourceSurface> CanvasRenderer::BorrowSnapshot(
   return std::make_shared<BorrowedSourceSurface>(provider, ss);
 }
 
-bool CanvasRenderer::CopySnapshotTo(gfx::DrawTarget* aDT,
-                                    bool aRequireAlphaPremult) {
-  auto* const context = mData.GetContext();
-  if (!context) return false;
-
-  if (RefPtr<PersistentBufferProvider> provider =
-          context->GetBufferProvider()) {
-    // If we can copy the snapshot directly to the DT, try that first.
-    if (provider->CopySnapshotTo(aDT)) {
-      return true;
-    }
-  }
-
-  // Otherwise, we have to borrow a snapshot before we can copy it to the DT.
-  auto borrowed = BorrowSnapshot(aRequireAlphaPremult);
-  if (!borrowed) {
-    return false;
-  }
-  aDT->CopySurface(borrowed->mSurf, borrowed->mSurf->GetRect(), {0, 0});
-  return true;
-}
-
 void CanvasRenderer::FirePreTransactionCallback() const {
   if (!mData.mDoPaintCallbacks) return;
   const auto context = mData.GetContext();
@@ -123,20 +105,22 @@ TextureType TexTypeForWebgl(KnowsCompositor* const knowsCompositor) {
     if (knowsCompositor->SupportsD3D11()) {
       return TextureType::D3D11;
     }
-    return TextureType::Unknown;
   }
   if (kIsMacOS) {
     return TextureType::MacIOSurface;
   }
+
+#ifdef MOZ_WAYLAND
   if (kIsWayland) {
-    if (knowsCompositor->UsingSoftwareWebRender()) {
-      return TextureType::Unknown;
+    if (!knowsCompositor->UsingSoftwareWebRender() &&
+        widget::DMABufDevice::IsDMABufWebGLEnabled()) {
+      return TextureType::DMABUF;
     }
-    return TextureType::DMABUF;
   }
+#endif
 
   if (kIsAndroid) {
-    if (gfx::gfxVars::UseAHardwareBufferSharedSurface()) {
+    if (gfx::gfxVars::UseAHardwareBufferSharedSurfaceWebglOop()) {
       return TextureType::AndroidHardwareBuffer;
     }
     if (StaticPrefs::webgl_enable_surface_texture()) {

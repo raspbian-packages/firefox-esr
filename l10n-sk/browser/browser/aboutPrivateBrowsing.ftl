@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] Pripnúť na panel úloh
     }
 about-private-browsing-pin-promo-title = Žiadne uložené súbory cookie alebo história prehliadania z vášho počítača. Prehliadajte tak, aby sa nikto nepozeral.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Bannery k súborom cookie sú preč!
+about-private-browsing-cookie-banners-promo-button = Znižovať počet bannerov k súborom cookie
+about-private-browsing-cookie-banners-promo-message = Nechajte { -brand-short-name } automaticky odpovedať na žiadosti o súhlas s používaním súborov cookie za vás, aby ste sa mohli vrátiť k prehliadaniu bez rozptyľovania. { -brand-short-name } odmietne všetky požiadavky, kde je to možné.

@@ -5,13 +5,13 @@
 Transform the signing task into an actual task description.
 """
 
+from taskgraph.transforms.base import TransformSequence
+from taskgraph.util.treeherder import join_symbol
 
-from gecko_taskgraph.transforms.base import TransformSequence
 from gecko_taskgraph.util.attributes import copy_attributes_from_dependent_job
 from gecko_taskgraph.util.signed_artifacts import (
     generate_specifications_of_artifacts_to_sign,
 )
-from gecko_taskgraph.util.treeherder import join_symbol
 
 transforms = TransformSequence()
 
@@ -19,7 +19,6 @@ transforms = TransformSequence()
 @transforms.add
 def make_signing_description(config, jobs):
     for job in jobs:
-
         dep_job = job["primary-dependency"]
         job["depname"] = dep_job.label
 
@@ -55,13 +54,16 @@ def define_upstream_artifacts(config, jobs):
 
         upstream_artifacts = []
         for spec in locale_specifications:
-            task_type = "l10n"
-            if "notarization" in upstream_artifact_task.kind:
-                task_type = "scriptworker"
+            upstream_task_type = "l10n"
+            if upstream_artifact_task.kind.endswith(
+                ("-mac-notarization", "-mac-signing")
+            ):
+                # Upstream is mac signing or notarization
+                upstream_task_type = "scriptworker"
             upstream_artifacts.append(
                 {
                     "taskId": {"task-reference": f"<{upstream_artifact_task.kind}>"},
-                    "taskType": task_type,
+                    "taskType": upstream_task_type,
                     # Set paths based on artifacts in the specs (above) one per
                     # locale present in the chunk this is signing stuff for.
                     # Pass paths through set and sorted() so we get a list back

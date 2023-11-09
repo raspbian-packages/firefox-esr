@@ -5,23 +5,23 @@ ChromeUtils.defineModuleGetter(
   "ObjectUtils",
   "resource://gre/modules/ObjectUtils.jsm"
 );
-ChromeUtils.defineModuleGetter(
-  this,
-  "PlacesTestUtils",
-  "resource://testing-common/PlacesTestUtils.jsm"
-);
+ChromeUtils.defineESModuleGetters(this, {
+  PlacesTestUtils: "resource://testing-common/PlacesTestUtils.sys.mjs",
+});
 ChromeUtils.defineModuleGetter(
   this,
   "QueryCache",
   "resource://activity-stream/lib/ASRouterTargeting.jsm"
 );
 // eslint-disable-next-line no-unused-vars
-const { FxAccounts } = ChromeUtils.import(
-  "resource://gre/modules/FxAccounts.jsm"
+const { FxAccounts } = ChromeUtils.importESModule(
+  "resource://gre/modules/FxAccounts.sys.mjs"
 );
 // We import sinon here to make it available across all mochitest test files
 // eslint-disable-next-line no-unused-vars
-const { sinon } = ChromeUtils.import("resource://testing-common/Sinon.jsm");
+const { sinon } = ChromeUtils.importESModule(
+  "resource://testing-common/Sinon.sys.mjs"
+);
 // Set the content pref to make it available across tests
 const ABOUT_WELCOME_OVERRIDE_CONTENT_PREF = "browser.aboutwelcome.screens";
 // Test differently for windows 7 as theme screens are removed.
@@ -131,11 +131,10 @@ async function onButtonClick(browser, elementId) {
     browser,
     { elementId },
     async ({ elementId: buttonId }) => {
-      await ContentTaskUtils.waitForCondition(
+      let button = await ContentTaskUtils.waitForCondition(
         () => content.document.querySelector(buttonId),
         buttonId
       );
-      let button = content.document.querySelector(buttonId);
       button.click();
     }
   );
@@ -188,6 +187,24 @@ async function setAboutWelcomePref(value) {
 }
 
 // eslint-disable-next-line no-unused-vars
+async function openMRAboutWelcome() {
+  await setAboutWelcomePref(true); // NB: Calls pushPrefs
+  let tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    "about:welcome",
+    true
+  );
+
+  return {
+    browser: tab.linkedBrowser,
+    cleanup: async () => {
+      BrowserTestUtils.removeTab(tab);
+      await popPrefs(); // for setAboutWelcomePref()
+    },
+  };
+}
+
+// eslint-disable-next-line no-unused-vars
 async function clearHistoryAndBookmarks() {
   await PlacesUtils.bookmarks.eraseEverything();
   await PlacesUtils.history.clear();
@@ -217,7 +234,7 @@ async function waitForPreloaded(browser) {
 // eslint-disable-next-line no-unused-vars
 async function waitForUrlLoad(url) {
   let browser = gBrowser.selectedBrowser;
-  BrowserTestUtils.loadURI(browser, url);
+  BrowserTestUtils.loadURIString(browser, url);
   await BrowserTestUtils.browserLoaded(browser, false, url);
 }
 

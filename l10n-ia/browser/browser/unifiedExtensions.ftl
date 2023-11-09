@@ -32,3 +32,13 @@ unified-extensions-context-menu-remove-extension =
     .label = Remover extension
 unified-extensions-context-menu-report-extension =
     .label = Signalar extension
+unified-extensions-context-menu-move-widget-up =
+    .label = Mover in alto
+unified-extensions-context-menu-move-widget-down =
+    .label = Mover in basso
+
+## Notifications
+
+unified-extensions-mb-quarantined-domain-title = Alcun extensiones non es permittite
+unified-extensions-mb-quarantined-domain-message = Solo alcun extensiones surveliate per { -vendor-short-name } es permittite in iste sito pro proteger tu datos.
+unified-extensions-mb-quarantined-domain-message-2 = Pro proteger tu datos, alcun extensiones non pote leger o cambiar datos in iste sito. Usar le parametros de extension pro permitter los sur sitos limitate per { -vendor-short-name }.

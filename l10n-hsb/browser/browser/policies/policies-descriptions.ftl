@@ -42,6 +42,9 @@ policy-CertificatesDescription = Certifikaty přidać abo zatwarjene certifikaty
 
 policy-Cookies = Websydłam dowolić abo zakazać, placki składować.
 
+# Containers in this context is referring to container tabs in Firefox.
+policy-Containers = Prawidła nastupajo kontejnery postajić
+
 policy-DisabledCiphers = Šifry znjemóžnić.
 
 policy-DefaultDownloadDirectory = Nastajće standardny sćehnjenski zapis.
@@ -71,7 +74,7 @@ policy-DisablePrimaryPasswordCreation = Jeli to trjechi, njeda so hłowne hesło
 
 policy-DisablePasswordReveal = Njedowolić, zo so hesła w składowanych přizjewjenjach pokazuja
 
-policy-DisablePocket = Funkciju składowanja webstronow do Pocket znjemóžnić.
+policy-DisablePocket2 = Funkciju składowanja webstronow do { -pocket-brand-name } znjemóžnić.
 
 policy-DisablePrivateBrowsing = Priwatny modus znjemóžnić.
 
@@ -88,6 +91,8 @@ policy-DisableSetAsDesktopBackground = Menijowy přikaz Jako desktopowy pozadk z
 policy-DisableSystemAddonUpdate = Wobhladowak při instalowanju a aktualizowanju systemowych přidatkow haćić.
 
 policy-DisableTelemetry = Telemetriju znjemóžnić.
+
+policy-DisableThirdPartyModuleBlocking = Zadźěwajće tomu, zo wužiwar module třećich poskićowarjow blokuje, kotrež so do procesa { -brand-short-name } injicěruja.
 
 policy-DisplayBookmarksToolbar = Lajstu zapołožkow po standardźe pokazać.
 
@@ -116,11 +121,7 @@ policy-ExtensionSettings = Wšě aspekty instalacije rozšěrjenjow rjadować.
 
 policy-ExtensionUpdate = Awtomatiske aktualizacije rozšěrjenjow zmóžnić abo znjemóžnić.
 
-policy-FirefoxHome = Firefox Home konfigurować.
-
 policy-FirefoxHome2 = { -firefox-home-brand-name } konfigurować.
-
-policy-FlashPlugin = Wužiwanje tykača Flash dowolić abo zakazać.
 
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Wunuzujće direktnu nawigaciju do intranetneho sydła, město toho zo byšće pytał, hdyž jednotliwe słowne zapiski do adresoweho pola zapodawaće.
 
@@ -194,8 +195,8 @@ policy-SearchEngines = Nastajenja pytawow konfigurować. Tute prawidło je jeno�
 
 policy-SearchSuggestEnabled = Pytanske namjety zmóžnić abo znjemóžnić.
 
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Module PKCS #11 instalować.
+# For more information, see https://wikipedia.org/wiki/PKCS_11
+policy-SecurityDevices2 = Přidajće abo zhašejće module PKCS #11.
 
 policy-ShowHomeButton = Tłóčatko startoweje strony na symbolowej lajsće pokazać.
 

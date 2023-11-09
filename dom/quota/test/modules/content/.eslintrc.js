@@ -6,14 +6,14 @@
 "use strict";
 
 module.exports = {
-  extends: ["plugin:mozilla/mochitest-test"],
-
   overrides: [
     {
       files: [
         "Assert.js",
         "ModuleLoader.js",
         "StorageUtils.js",
+        "Utils.js",
+        "UtilsParent.js",
         "WorkerDriver.js",
       ],
       parserOptions: {

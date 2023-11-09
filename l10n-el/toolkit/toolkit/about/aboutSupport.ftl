@@ -175,6 +175,15 @@ media-codec-support-info = Πληροφορίες υποστήριξης codec
 # List all the entries of the database.
 media-capabilities-enumerate = Απαρίθμηση βάσης δεδομένων
 
+## Codec support table
+
+media-codec-support-sw-decoding = Αποκωδικοποίηση λογισμικού
+media-codec-support-hw-decoding = Αποκωδικοποίηση υλικού
+media-codec-support-codec-name = Όνομα κωδικοποιητή
+media-codec-support-supported = Υποστηρίζεται
+media-codec-support-unsupported = Δεν υποστηρίζεται
+media-codec-support-error = Οι πληροφορίες υποστήριξης κωδικοποίησης δεν είναι διαθέσιμες. Δοκιμάστε ξανά μετά την αναπαραγωγή ενός αρχείου πολυμέσων.
+
 ##
 
 intl-title = Διεθνοποίηση και μετάφραση
@@ -288,6 +297,8 @@ webgl2-renderer = Πρόγραμμα οδήγησης απεικόνισης Web
 webgl2-version = Έκδοση προγράμματος οδήγησης WebGL 2
 webgl2-driver-extensions = Επεκτάσεις προγράμματος οδήγησης WebGL 2
 webgl2-extensions = Επεκτάσεις WebGL 2
+webgpu-default-adapter = Προεπιλεγμένος προσαρμογέας WebGPU
+webgpu-fallback-adapter = Εφεδρικός προσαρμογέας WebGPU
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Αποκλείστηκε λόγω γνωστών ζητημάτων: <a data-l10n-name="bug-link">σφάλμα { $bugNumber }</a>

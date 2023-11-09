@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Anbefalet udvidelse
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Hvorfor får jeg vist dette?
+
 cfr-doorhanger-extension-cancel-button = Ikke nu
     .accesskey = I
+
 cfr-doorhanger-extension-ok-button = Tilføj nu
     .accesskey = T
+
 cfr-doorhanger-extension-manage-settings-button = Håndter indstillinger for anbefalinger
     .accesskey = H
+
 cfr-doorhanger-extension-never-show-recommendation = Vis ikke denne anbefaling
     .accesskey = V
+
 cfr-doorhanger-extension-learn-more-link = Læs mere
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = af { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Anbefaling
 cfr-doorhanger-extension-notification2 = Anbefaling
     .tooltiptext = Anbefalet udvidelse
     .a11y-announcement = Anbefalet udvidelse tilgængelig
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Anbefaling
@@ -57,29 +65,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } brugere
     }
 
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = Slut med cookie-bannere!
-cfr-cookie-banner-handling-body = Giv { -brand-short-name } tilladelse til automatisk at afvise alle forespørgsler om cookie-bannere, når det er muligt. Ellers bliver alle cookies accepteret for at afvise endnu flere bannere.
-cfr-cookie-banner-accept-button = Afvis forespørgsler
-    .accesskey = A
-cfr-cookie-banner-reject-button = Ikke nu
-    .accesskey = n
-cfr-cookie-banner-handling-header-variant-1 = Se færre pop op-beskeder om cookies
-cfr-cookie-banner-handling-body-variant-1 = Lad { -brand-short-name } svare på pop op-beskeder om cookies automatisk, så du kan bruge nettet uden at blive forstyrret. { -brand-short-name } vil afvise alle forespørgsler, når det er muligt - og acceptere alle forespørgsler, når det ikke er muligt.
-cfr-cookie-banner-accept-button-variant-1 = Afvis pop op-beskeder
-    .accesskey = A
-cfr-cookie-banner-reject-button-variant-1 = Nej tak
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-2 = Reduktion af cookie-bannere
-cfr-cookie-banner-handling-body-variant-2 = Vil du give { -brand-short-name } tilladelse til at afvise et websteds forespørgsel om cookie-samtykke, når det er muligt - og at acceptere adgang til cookies, når det ikke er muligt?
-cfr-cookie-banner-accept-button-variant-2 = Tillad
-    .accesskey = T
-cfr-cookie-banner-reject-button-variant-2 = Ikke nu
-    .accesskey = n
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Synkroniser dine bogmærker overalt.
@@ -100,9 +85,11 @@ cfr-protections-panel-link-text = Læs mere
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Ny funktion:
+
 cfr-whatsnew-button =
     .label = Nyheder
     .tooltiptext = Nyheder
+
 cfr-whatsnew-release-notes-link-text = Læs udgivelsesnoterne
 
 ## Enhanced Tracking Protection Milestones
@@ -130,13 +117,6 @@ cfr-doorhanger-doh-secondary-button = Deaktiver
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = Dit privatliv er vigtigt. { -brand-short-name } isolerer nu websteder fra hinanden, så det er sværere for hackere at stjæle dine adgangskoder, oplysninger om dine betalingskort og andre følsomme oplysninger.
-cfr-doorhanger-fission-header = Websteds-isolering
-cfr-doorhanger-fission-primary-button = Ok, forstået
-    .accesskey = O
-cfr-doorhanger-fission-secondary-button = Læs mere
-    .accesskey = L
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Videoer på dette websted afspilles måske ikke korrekt i denne version af { -brand-short-name }. Opdater { -brand-short-name } nu for fuld understøttelse af video.
@@ -145,11 +125,6 @@ cfr-doorhanger-video-support-primary-button = Opdater nu
     .accesskey = O
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Læs mere
-    .title = Fold ud for at læse mere om funktionen
-spotlight-learn-more-expanded = Læs mere
-    .title = Luk
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -166,18 +141,6 @@ spotlight-public-wifi-vpn-link = Ikke nu
     .accesskey = k
 
 ## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Vær blandt de første til at teste
-    vores hidtil stærkeste privatlivs-beskyttelse
-spotlight-total-cookie-protection-body = Komplet Cookiebeskyttelse forhindrer sporingsmekanismer i at følge dig rundt på nettet.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } bygger et hegn rundt om cookies, sådan at de kun gælder det websted, du besøger. På dén måde kan sporingsmekanismer ikke følge dig. Hvis du tester denne tidlige version, så hjælper du med til at forbedre funktionen - og du hjælper os med at gøre internettet bedre for alle.
-spotlight-total-cookie-protection-primary-button = Slå Komplet Cookiebeskyttelse til
-spotlight-total-cookie-protection-secondary-button = Ikke nu
 
 ## Emotive Continuous Onboarding
 
@@ -207,11 +170,13 @@ spotlight-pin-secondary-button = Ikke nu
 
 mr2022-background-update-toast-title = Den nye { -brand-short-name }. Mere privat. Færre sporings-mekanismer. Ingen kompromisser.
 mr2022-background-update-toast-text = Prøv den nyeste { -brand-short-name }, opgraderet med vores hidtil stærkeste beskyttelse mod sporing.
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
 mr2022-background-update-toast-primary-button-label = Åbn { -brand-shorter-name } nu
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -230,6 +195,7 @@ firefoxview-cfr-body-v2 = Få nyligt lukkede faneblade tilbage og skift hurtigt 
 ## Firefox View Spotlight
 
 firefoxview-spotlight-promo-title = Prøv { -firefoxview-brand-name }
+
 # “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
 firefoxview-spotlight-promo-subtitle = Vil du se et åbent faneblad på din telefon? Hent det. Har du brug for en side, du besøgte tidligere? Find den i { -firefoxview-brand-name }.
 firefoxview-spotlight-promo-primarybutton = Se, hvordan det fungerer
@@ -239,6 +205,7 @@ firefoxview-spotlight-promo-secondarybutton = Spring over
 
 colorways-cfr-primarybutton = Vælg farvekombination
     .accesskey = V
+
 # "shades" refers to the different color options available to users in colorways.
 colorways-cfr-body = Sæt farve på din browser med eksklusive { -brand-short-name }-farvetemaer inspireret af stemmer, der ændrer kulturen.
 colorways-cfr-header-28days = Farvekombinationerne "Uafhængige stemmer" udløber den 16. januar
@@ -248,24 +215,11 @@ colorways-cfr-header-today = Farvekombinationerne "Uafhængige stemmer" udløber
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = Slut med cookie-bannere!
-cfr-cookiebanner-body = Tillad { -brand-short-name } at afvise alle forespørgsler om cookie-bannere automatisk, når det er muligt.
-cfr-cookiebanner-accept-button = Afvis bannere
+cfr-cbh-header = Tillad { -brand-short-name } at afvise cookie-bannere?
+cfr-cbh-body = { -brand-short-name } kan automatisk afvise mange cookie-banner-anmodninger.
+cfr-cbh-confirm-button = Afvis cookie-bannere
     .accesskey = A
-cfr-cookiebanner-reject-button = Ikke nu
-    .accesskey = n
-cfr-cookiebanner-header-variant-1 = Se færre pop op-beskeder om cookies
-cfr-cookiebanner-body-variant-1 = Lad { -brand-short-name } automatisk svare på pop op-beskeder om cookies for dig, så du kan bruge nettet uden forstyrrelser. { -brand-short-name } vil afvise alle forespørgsler, når det er muligt.
-cfr-cookiebanner-accept-button-variant-1 = Afvis pop op-beskeder
-    .accesskey = p
-cfr-cookiebanner-reject-button-variant-1 = Nej tak
-    .accesskey = N
-cfr-cookiebanner-header-variant-2 = Reduktion af cookie-bannere
-cfr-cookiebanner-body-variant-2 = Reducer antallet af cookie-bannere, der vises, ved at tillade { -brand-short-name } at afvise websteders forespørgsler om cookie-samtykke, når det er muligt.
-cfr-cookiebanner-accept-button-variant-2 = Tillad
-    .accesskey = T
-cfr-cookiebanner-reject-button-variant-2 = Ikke nu
+cfr-cbh-dismiss-button = Ikke nu
     .accesskey = n
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
@@ -273,3 +227,31 @@ cfr-cookiebanner-reject-button-variant-2 = Ikke nu
 july-jam-headline = Vi beskytter dig
 july-jam-body = Hver måned blokerer { -brand-short-name } i gennemsnit mere end 3000 sporings-tjenester per bruger, så du kan få sikker og hurtig adgang til internettet.
 july-jam-set-default-primary = Åbn mine links med { -brand-short-name }
+fox-doodle-pin-headline = Velkommen tilbage
+
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = Her er en hurtig påmindelse om, at du kan have din uafhængige favorit-browser et enkelt klik borte.
+fox-doodle-pin-primary = Åbn mine links med { -brand-short-name }
+fox-doodle-pin-secondary = Ikke nu
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>PDF-filer åbnes nu i { -brand-short-name }.</strong> Rediger eller udfyld formularer direkte i browseren. Søg efter "PDF" i indstillinger, hvis du vil ændre dette.
+set-default-pdf-handler-primary = Forstået
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = Skal du snart have en ny enhed?
+fxa-sync-cfr-body = Sørg for at have dine seneste bogmærker, adgangskoder og faneblade med dig, hver gang du åbner en ny { -brand-product-name }-browser.
+fxa-sync-cfr-primary = Læs mere
+    .accesskey = L
+fxa-sync-cfr-secondary = Påmind mig senere
+    .accesskey = P
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = Bruger du en ældre enhed?
+device-migration-fxa-spotlight-body = Tag en sikkerhedskopi af dine data for at sikre, at du ikke mister vigtige oplysninger som bogmærker og adgangskoder - især hvis du skifter til en ny enhed.
+device-migration-fxa-spotlight-primary-button = Sådan sikkerhedskopierer du dine data
+device-migration-fxa-spotlight-link = Påmind mig senere

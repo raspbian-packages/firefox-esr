@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Πρόσφατα κλεισμένες
 firefoxview-closed-tabs-description2 = Ανοίξτε ξανά τις σελίδες που κλείσατε σε αυτό το παράθυρο.
 firefoxview-closed-tabs-placeholder-header = Καμία πρόσφατα κλεισμένη καρτέλα
 firefoxview-closed-tabs-placeholder-body = Όταν κλείσετε μια καρτέλα σε αυτό το παράθυρο, μπορείτε να τη βρείτε εδώ.
+firefoxview-closed-tabs-placeholder-body2 = Όταν κλείσετε μια καρτέλα, μπορείτε να τη βρείτε εδώ.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -81,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Εμφάνιση λίστας
 firefoxview-collapse-button-hide =
     .title = Απόκρυψη λίστας
+firefoxview-overview-nav = Πρόσφατη περιήγηση
+    .title = Πρόσφατη περιήγηση
+firefoxview-overview-header = Πρόσφατη περιήγηση
+    .title = Πρόσφατη περιήγηση
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Ιστορικό
+    .title = Ιστορικό
+firefoxview-history-header = Ιστορικό
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Ανοικτές καρτέλες
+    .title = Ανοικτές καρτέλες
+firefoxview-opentabs-header = Ανοικτές καρτέλες
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Πρόσφατα κλεισμένες καρτέλες
+    .title = Πρόσφατα κλεισμένες καρτέλες
+firefoxview-recently-closed-header = Πρόσφατα κλεισμένες καρτέλες
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Καρτέλες από άλλες συσκευές
+    .title = Καρτέλες από άλλες συσκευές
+firefoxview-synced-tabs-header = Καρτέλες από άλλες συσκευές
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Προβολή όλων
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Παράθυρο { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Παράθυρο { $winID } (Τρέχον)
+firefoxview-opentabs-focus-tab =
+    .title = Εναλλαγή σε αυτήν την καρτέλα
+firefoxview-show-more = Εμφάνιση περισσότερων
+firefoxview-show-less = Εμφάνιση λιγότερων
+firefoxview-sort-history-by-date-label = Ταξινόμηση κατά ημερομηνία
+firefoxview-sort-history-by-site-label = Ταξινόμηση κατά ιστότοπο
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Σήμερα - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Χθες - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Εμφάνιση πλήρους ιστορικού

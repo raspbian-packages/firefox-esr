@@ -28,7 +28,7 @@ class PCacheStorageParent;
 // Factory methods for use in ipc/glue methods.  Implemented in individual actor
 // cpp files.
 
-PCacheChild* AllocPCacheChild();
+already_AddRefed<PCacheChild> AllocPCacheChild();
 
 void DeallocPCacheChild(PCacheChild* aActor);
 
@@ -38,7 +38,7 @@ already_AddRefed<PCacheStreamControlChild> AllocPCacheStreamControlChild();
 
 void DeallocPCacheStreamControlParent(PCacheStreamControlParent* aActor);
 
-PCacheStorageParent* AllocPCacheStorageParent(
+already_AddRefed<PCacheStorageParent> AllocPCacheStorageParent(
     mozilla::ipc::PBackgroundParent* aManagingActor, Namespace aNamespace,
     const mozilla::ipc::PrincipalInfo& aPrincipalInfo);
 

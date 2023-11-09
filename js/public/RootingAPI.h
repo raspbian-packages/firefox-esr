@@ -23,9 +23,10 @@
 #include "js/GCPolicyAPI.h"
 #include "js/GCTypeMacros.h"  // JS_FOR_EACH_PUBLIC_{,TAGGED_}GC_POINTER_TYPE
 #include "js/HashTable.h"
-#include "js/HeapAPI.h"
+#include "js/HeapAPI.h"  // StackKindCount
 #include "js/ProfilingStack.h"
 #include "js/Realm.h"
+#include "js/Stack.h"  // JS::NativeStackLimit
 #include "js/TypeDecls.h"
 #include "js/UniquePtr.h"
 
@@ -846,12 +847,12 @@ struct BarrierMethods<JS::BigInt*>
 // aggregate Lookup kinds embed a JSObject* that is frequently null and do not
 // null test before dispatching to the hasher.
 template <typename T>
-struct JS_PUBLIC_API MovableCellHasher {
+struct JS_PUBLIC_API StableCellHasher {
   using Key = T;
   using Lookup = T;
 
-  static bool hasHash(const Lookup& l);
-  static bool ensureHash(const Lookup& l);
+  static bool maybeGetHash(const Lookup& l, mozilla::HashNumber* hashOut);
+  static bool ensureHash(const Lookup& l, HashNumber* hashOut);
   static HashNumber hash(const Lookup& l);
   static bool match(const Key& k, const Lookup& l);
   // The rekey hash policy method is not provided since you dont't need to
@@ -859,21 +860,21 @@ struct JS_PUBLIC_API MovableCellHasher {
 };
 
 template <typename T>
-struct JS_PUBLIC_API MovableCellHasher<JS::Heap<T>> {
+struct JS_PUBLIC_API StableCellHasher<JS::Heap<T>> {
   using Key = JS::Heap<T>;
   using Lookup = T;
 
-  static bool hasHash(const Lookup& l) {
-    return MovableCellHasher<T>::hasHash(l);
+  static bool maybeGetHash(const Lookup& l, HashNumber* hashOut) {
+    return StableCellHasher<T>::maybeGetHash(l, hashOut);
   }
-  static bool ensureHash(const Lookup& l) {
-    return MovableCellHasher<T>::ensureHash(l);
+  static bool ensureHash(const Lookup& l, HashNumber* hashOut) {
+    return StableCellHasher<T>::ensureHash(l, hashOut);
   }
   static HashNumber hash(const Lookup& l) {
-    return MovableCellHasher<T>::hash(l);
+    return StableCellHasher<T>::hash(l);
   }
   static bool match(const Key& k, const Lookup& l) {
-    return MovableCellHasher<T>::match(k.unbarrieredGet(), l);
+    return StableCellHasher<T>::match(k.unbarrieredGet(), l);
   }
 };
 
@@ -882,14 +883,16 @@ struct JS_PUBLIC_API MovableCellHasher<JS::Heap<T>> {
 namespace mozilla {
 
 template <typename T>
-struct FallibleHashMethods<js::MovableCellHasher<T>> {
+struct FallibleHashMethods<js::StableCellHasher<T>> {
   template <typename Lookup>
-  static bool hasHash(Lookup&& l) {
-    return js::MovableCellHasher<T>::hasHash(std::forward<Lookup>(l));
+  static bool maybeGetHash(Lookup&& l, HashNumber* hashOut) {
+    return js::StableCellHasher<T>::maybeGetHash(std::forward<Lookup>(l),
+                                                 hashOut);
   }
   template <typename Lookup>
-  static bool ensureHash(Lookup&& l) {
-    return js::MovableCellHasher<T>::ensureHash(std::forward<Lookup>(l));
+  static bool ensureHash(Lookup&& l, HashNumber* hashOut) {
+    return js::StableCellHasher<T>::ensureHash(std::forward<Lookup>(l),
+                                               hashOut);
   }
 };
 
@@ -1028,14 +1031,14 @@ class RootingContext {
 
  public:
   /* Limit pointer for checking native stack consumption. */
-  uintptr_t nativeStackLimit[StackKindCount];
+  JS::NativeStackLimit nativeStackLimit[StackKindCount];
 
 #ifdef __wasi__
   // For WASI we can't catch call-stack overflows with stack-pointer checks, so
   // we count recursion depth with RAII based AutoCheckRecursionLimit.
   uint32_t wasiRecursionDepth = 0u;
 
-  static constexpr uint32_t wasiRecursionDepthLimit = 100u;
+  static constexpr uint32_t wasiRecursionDepthLimit = 350u;
 #endif  // __wasi__
 
   static const RootingContext* get(const JSContext* cx) {
@@ -1569,6 +1572,27 @@ void CallTraceCallbackOnNonHeap(T* v, const TraceCallbacks& aCallbacks,
 }
 
 } /* namespace gc */
+
+template <typename Wrapper, typename T1, typename T2>
+class WrappedPtrOperations<std::pair<T1, T2>, Wrapper> {
+  const std::pair<T1, T2>& pair() const {
+    return static_cast<const Wrapper*>(this)->get();
+  }
+
+ public:
+  const T1& first() const { return pair().first; }
+  const T2& second() const { return pair().second; }
+};
+
+template <typename Wrapper, typename T1, typename T2>
+class MutableWrappedPtrOperations<std::pair<T1, T2>, Wrapper>
+    : public WrappedPtrOperations<std::pair<T1, T2>, Wrapper> {
+  std::pair<T1, T2>& pair() { return static_cast<Wrapper*>(this)->get(); }
+
+ public:
+  T1& first() { return pair().first; }
+  T2& second() { return pair().second; }
+};
 
 } /* namespace js */
 

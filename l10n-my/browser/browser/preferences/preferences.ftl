@@ -51,6 +51,17 @@ restart-later = နောက်မှ ပြန်ဖွင့်ပါ
 ## Variables:
 ##   $name (String): name of the extension
 
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -114,9 +125,16 @@ browser-containers-settings =
     .accesskey = i
 
 containers-disable-alert-title = ကွန်တိန်နာတပ်ဗ်အားလုံးကို ပိတ်ပါမည်လား။
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc = ယခု ကွန်တိန်နာတပ်ဗ်များ အသုံးပြုခြင်းကို ပိတ်မည်ဆိုပါက ကွန်တိန်နာတပ်ဗ် { $tabCount } ခုသည် ပိတ်သွားပါလိမ့်မည်။ ထိုသို့ အသုံးပြုခြင်းကို ပိတ်မည်မှာ သေချာပါသလား။
 
 containers-disable-alert-ok-button = ကွန်တိန်နာတပ်ဗ် { $tabCount } ခုကို ပိတ်ရန်
+
+##
+
 containers-disable-alert-cancel-button = ဆက်လက်ဖွင့်ထားသည်
 
 containers-remove-alert-title = ယခုကွန်တိုင်နာအား ဖယ်ပါ
@@ -387,11 +405,6 @@ home-restore-defaults =
     .label = မူလအတိုင်း ပြန်ထားပါ
     .accesskey = R
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Firefox အဖွင့်စာမျက်နှာ (မူသေ)
-
 home-mode-choice-custom =
     .label = စိတ်ကြိုက် URL များ...
 
@@ -422,6 +435,10 @@ choose-bookmark =
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 home-prefs-recommended-by-header =
     .label = { $provider } က အကြံပြုထားသည်
@@ -469,6 +486,7 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = ရှာဖွေရေးအကြံပြုချက်များကို လိပ်စာဘားတန်းရလဒ်ထဲတွင် ပြသပါ
     .accesskey = i
+
 
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
@@ -518,6 +536,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = ဝဘ်ကို သင့်နဲ့အတူ ခေါ်ဆောင်သွားပါ
 
 # This message contains two links and two icon images.
@@ -532,14 +554,22 @@ sync-mobile-promo = ထိုစနစ်အတွက် မီးမြေခ�
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = ပရိုဖိုင်းရုပ်ပုံကို ပြောင်းလဲရန်
 
 sync-manage-account = အကောင့်ကို စီမံရန်
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } ​ကို အတည်မပြုရသေးပါ။
 sync-signedin-login-failure = ပြန်လည်ချိတ်ဆက်ရန် အကောင့်ဖြင့် ဝင်ရောက်ပါ { $email }
+
+##
 
 sync-resend-verification =
     .label = အတည်ပြုချက်ကို ပြန်လည်ပေးပို့ပါ
@@ -611,6 +641,16 @@ sync-device-name-save =
     .accesskey = v
 
 sync-connect-another-device = အခြားကိရိယာကို ချိတ်ပါ။
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = အတည်ပြုချက်ပေးပို့ပြီး
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = အတည်ပြုခြင်းဆိုင်ရာ လင့်ခ်တစ်ခုကို { $email } သို့ ပို့လိုက်သည်။
+sync-verification-not-sent-title = အတည်ပြုချက်ကို မပေးပို့နိုင်ပါ
+sync-verification-not-sent-body = ဒီအချိန်တွင် အတည်ပြုရန်ချောစာကို ကျွန်ုပ်တို့ မပို့နိုင်သေးပါ။ ကျေးဇူးပြု၍ နောင်တွင် ထပ်မံ ဆောင်ရွက်ကြည့်ပါ။
 
 ## Privacy Section
 
@@ -719,6 +759,9 @@ sitedata-settings =
     .label = အချက်အလက်ကို စီမံပါ...
     .accesskey = M
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-header = လိပ်စာဘား
@@ -755,9 +798,10 @@ enhanced-tracking-protection-setting-custom =
 
 content-blocking-all-cookies = ကွတ်ကီးအားလုံး
 content-blocking-unvisited-cookies = မလည်ပတ်သောဆိုက်များမှ ကွတ်ကီးများ
-content-blocking-all-third-party-cookies = သက်ဗ်ပါတီ ကွတ်ကီးများအားလုံး
 content-blocking-cryptominers = Cryptominers
 content-blocking-fingerprinters = လက်ဗွေများ
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-warning-title = ကြိုတင်အသိပေးသည်!
 
@@ -893,6 +937,9 @@ certs-devices =
     .accesskey = D
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

@@ -40,18 +40,19 @@ class HTMLDialogElement final : public nsGenericHTMLElement {
   void UnbindFromTree(bool aNullParent = true) override;
 
   void Close(const mozilla::dom::Optional<nsAString>& aReturnValue);
-  void Show();
+  void Show(ErrorResult& aError);
   void ShowModal(ErrorResult& aError);
 
   bool IsInTopLayer() const;
   void QueueCancelDialog();
   void RunCancelDialogSteps();
 
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY void FocusDialog();
+
   nsString mReturnValue;
 
  protected:
   virtual ~HTMLDialogElement();
-  MOZ_CAN_RUN_SCRIPT_BOUNDARY void FocusDialog();
   JSObject* WrapNode(JSContext* aCx,
                      JS::Handle<JSObject*> aGivenProto) override;
 

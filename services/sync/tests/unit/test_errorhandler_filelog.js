@@ -1,12 +1,16 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
+// `Service` is used as a global in head_helpers.js.
+// eslint-disable-next-line no-unused-vars
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
+);
 const { logManager } = ChromeUtils.import(
   "resource://gre/modules/FxAccountsCommon.js"
 );
-const { FileUtils } = ChromeUtils.import(
-  "resource://gre/modules/FileUtils.jsm"
+const { FileUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/FileUtils.sys.mjs"
 );
 
 const logsdir = FileUtils.getDir("ProfD", ["weave", "logs"], true);
@@ -73,7 +77,7 @@ function readFile(file, callback) {
       uri: NetUtil.newURI(file),
       loadUsingSystemPrincipal: true,
     },
-    function(inputStream, statusCode, request) {
+    function (inputStream, statusCode, request) {
       let data = NetUtil.readInputStreamToString(
         inputStream,
         inputStream.available()
@@ -102,7 +106,7 @@ add_test(function test_logOnSuccess_true() {
     Assert.ok(!entries.hasMoreElements());
 
     // Ensure the log message was actually written to file.
-    readFile(logfile, function(error, data) {
+    readFile(logfile, function (error, data) {
       Assert.ok(Components.isSuccessCode(error));
       Assert.notEqual(data.indexOf(MESSAGE), -1);
 
@@ -161,7 +165,7 @@ add_test(function test_sync_error_logOnError_true() {
     Assert.ok(!entries.hasMoreElements());
 
     // Ensure the log message was actually written to file.
-    readFile(logfile, function(error, data) {
+    readFile(logfile, function (error, data) {
       Assert.ok(Components.isSuccessCode(error));
       Assert.notEqual(data.indexOf(MESSAGE), -1);
 
@@ -220,7 +224,7 @@ add_test(function test_login_error_logOnError_true() {
     Assert.ok(!entries.hasMoreElements());
 
     // Ensure the log message was actually written to file.
-    readFile(logfile, function(error, data) {
+    readFile(logfile, function (error, data) {
       Assert.ok(Components.isSuccessCode(error));
       Assert.notEqual(data.indexOf(MESSAGE), -1);
 
@@ -285,7 +289,7 @@ add_test(function test_newFailed_errorLog() {
     Assert.ok(!entries.hasMoreElements());
 
     // Ensure the log message was actually written to file.
-    readFile(logfile, function(error, data) {
+    readFile(logfile, function (error, data) {
       Assert.ok(Components.isSuccessCode(error));
       Assert.notEqual(data.indexOf(MESSAGE), -1);
 
@@ -329,7 +333,7 @@ add_test(function test_errorLog_dumpAddons() {
     Assert.ok(!entries.hasMoreElements());
 
     // Ensure we logged some addon list (which is probably empty)
-    readFile(logfile, function(error, data) {
+    readFile(logfile, function (error, data) {
       Assert.ok(Components.isSuccessCode(error));
       Assert.notEqual(data.indexOf("Addons installed"), -1);
 
@@ -351,7 +355,7 @@ add_test(function test_errorLog_dumpAddons() {
 });
 
 // Check that error log files are deleted above an age threshold.
-add_test(function test_logErrorCleanup_age() {
+add_test(async function test_logErrorCleanup_age() {
   _("Beginning test_logErrorCleanup_age.");
   let maxAge = CLEANUP_DELAY / 1000;
   let oldLogs = [];
@@ -362,10 +366,12 @@ add_test(function test_logErrorCleanup_age() {
   Svc.Prefs.set("log.appender.file.maxErrorAge", maxAge);
 
   _("Making some files.");
+  const logsDir = PathUtils.join(PathUtils.profileDir, "weave", "logs");
+  await IOUtils.makeDirectory(logsDir);
   for (let i = 0; i < numLogs; i++) {
     let now = Date.now();
     let filename = "error-sync-" + now + "" + i + ".txt";
-    let newLog = FileUtils.getFile("ProfD", ["weave", "logs", filename]);
+    let newLog = new FileUtils.File(PathUtils.join(logsDir, filename));
     let foStream = FileUtils.openFileOutputStream(newLog);
     foStream.write(errString, errString.length);
     foStream.close();
@@ -386,7 +392,7 @@ add_test(function test_logErrorCleanup_age() {
       Assert.ok(entries.hasMoreElements());
       let logfile = entries.getNext().QueryInterface(Ci.nsIFile);
       Assert.ok(
-        oldLogs.every(function(e) {
+        oldLogs.every(function (e) {
           return e != logfile.leafName;
         })
       );

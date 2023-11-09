@@ -8,7 +8,7 @@ add_task(async function test() {
     }`
   );
   if (!OSKeyStoreTestUtils.canTestOSKeyStoreLogin()) {
-    ok(
+    Assert.ok(
       true,
       `skipping test since oskeystore cannot be automated in this environment`
     );
@@ -22,14 +22,14 @@ add_task(async function test() {
     url: "about:logins",
   });
 
-  registerCleanupFunction(function() {
+  registerCleanupFunction(function () {
     Services.logins.removeAllUserFacingLogins();
     BrowserTestUtils.removeTab(gBrowser.selectedTab);
   });
 
   // Show OS auth dialog when Reveal Password checkbox is checked if not on a new login
   let osAuthDialogShown = OSKeyStoreTestUtils.waitForOSKeyStoreLogin(false);
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
@@ -38,18 +38,18 @@ add_task(async function test() {
   });
   await osAuthDialogShown;
   info("OS auth dialog shown and canceled");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
     );
-    ok(
+    Assert.ok(
       !revealCheckbox.checked,
       "reveal checkbox should be unchecked if OS auth dialog canceled"
     );
   });
   osAuthDialogShown = OSKeyStoreTestUtils.waitForOSKeyStoreLogin(true);
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
@@ -58,21 +58,24 @@ add_task(async function test() {
   });
   await osAuthDialogShown;
   info("OS auth dialog shown and authenticated");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
     );
-    ok(
+    Assert.ok(
       revealCheckbox.checked,
       "reveal checkbox should be checked if OS auth dialog authenticated"
     );
   });
 
   info("'Edit' shouldn't show the prompt since the user has authenticated now");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
-    ok(!loginItem.dataset.editing, "Not in edit mode before clicking 'Edit'");
+    Assert.ok(
+      !loginItem.dataset.editing,
+      "Not in edit mode before clicking 'Edit'"
+    );
     let editButton = loginItem.shadowRoot.querySelector(".edit-button");
     editButton.click();
 
@@ -80,7 +83,7 @@ add_task(async function test() {
       () => loginItem.dataset.editing,
       "waiting for 'edit' mode"
     );
-    ok(loginItem.dataset.editing, "In edit mode");
+    Assert.ok(loginItem.dataset.editing, "In edit mode");
   });
 
   info("Test that the OS auth prompt is shown after about:logins is reopened");
@@ -92,7 +95,7 @@ add_task(async function test() {
 
   // Show OS auth dialog since the page has been reloaded.
   osAuthDialogShown = OSKeyStoreTestUtils.waitForOSKeyStoreLogin(false);
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
@@ -104,7 +107,7 @@ add_task(async function test() {
 
   // Show OS auth dialog since the previous attempt was canceled
   osAuthDialogShown = OSKeyStoreTestUtils.waitForOSKeyStoreLogin(true);
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
@@ -120,7 +123,7 @@ add_task(async function test() {
   osAuthDialogShown = forceAuthTimeoutAndWaitForOSKeyStoreLogin({
     loginResult: true,
   });
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
     let revealCheckbox = loginItem.shadowRoot.querySelector(
       ".reveal-password-checkbox"
@@ -144,9 +147,12 @@ add_task(async function test() {
   });
 
   info("'Edit' shouldn't show the prompt since the feature has been disabled");
-  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function() {
+  await SpecialPowers.spawn(gBrowser.selectedBrowser, [], async function () {
     let loginItem = content.document.querySelector("login-item");
-    ok(!loginItem.dataset.editing, "Not in edit mode before clicking 'Edit'");
+    Assert.ok(
+      !loginItem.dataset.editing,
+      "Not in edit mode before clicking 'Edit'"
+    );
     let editButton = loginItem.shadowRoot.querySelector(".edit-button");
     editButton.click();
 
@@ -154,6 +160,6 @@ add_task(async function test() {
       () => loginItem.dataset.editing,
       "waiting for 'edit' mode"
     );
-    ok(loginItem.dataset.editing, "In edit mode");
+    Assert.ok(loginItem.dataset.editing, "In edit mode");
   });
 });

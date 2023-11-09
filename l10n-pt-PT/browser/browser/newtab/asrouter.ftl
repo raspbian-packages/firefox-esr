@@ -28,11 +28,13 @@ cfr-doorhanger-extension-author = por { $name }
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Recomendação
+# .a11y-announcement is extracted in JS and announced via A11y.announce.
 cfr-doorhanger-extension-notification2 = Recomendação
     .tooltiptext = Recomendação de extensão
     .a11y-announcement = Recomendação de extensão disponível
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
+# .a11y-announcement is extracted in JS and announced via A11y.announce.
 cfr-doorhanger-feature-notification = Recomendação
     .tooltiptext = Recomendação de funcionalidade
     .a11y-announcement = Recomendação de funcionalidade disponível
@@ -56,25 +58,6 @@ cfr-doorhanger-extension-total-users =
         [one] { $total } utilizador
        *[other] { $total } utilizadores
     }
-
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = Desapareçam faixas de cookies!
-cfr-cookie-banner-handling-body = Permitir que o { -brand-short-name } rejeite automaticamente todos os pedidos de banner de cookies, quando possível. Caso contrário, todos os cookies serão aceites para rejeitar ainda mais banners.
-cfr-cookie-banner-accept-button = Rejeitar Pedidos
-    .accesskey = R
-cfr-cookie-banner-reject-button = Agora não
-    .accesskey = A
-cfr-cookie-banner-handling-header-variant-1 = Ver menos pop-ups de cookies
-cfr-cookie-banner-reject-button-variant-1 = Não, obrigado
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-2 = Redução de Faixas de Cookies
-cfr-cookie-banner-accept-button-variant-2 = Permitir
-    .accesskey = P
-cfr-cookie-banner-reject-button-variant-2 = Agora não
-    .accesskey = n
 
 ## Firefox Accounts Message
 
@@ -125,28 +108,12 @@ cfr-doorhanger-doh-primary-button-2 = OK
 cfr-doorhanger-doh-secondary-button = Desativar
     .accesskey = D
 
-## Fission Experiment Message
-
-cfr-doorhanger-fission-body-approved = A sua privacidade é importante. O { -brand-short-name } agora isola os sites uns dos outros, o que torna mais difícil que os piratas roubem palavras-passe, números de cartão de crédito e outras informações sensíveis.
-cfr-doorhanger-fission-header = Isolamento de sites
-cfr-doorhanger-fission-primary-button = OK, percebi
-    .accesskey = O
-cfr-doorhanger-fission-secondary-button = Saber mais
-    .accesskey = b
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Os vídeos neste site podem não ser reproduzidos corretamente nesta versão do { -brand-short-name }. Para uma maior compatibilidade vídeo, atualize agora o { -brand-short-name }.
 cfr-doorhanger-video-support-header = Atualizar o { -brand-short-name } para reproduzir o vídeo
 cfr-doorhanger-video-support-primary-button = Atualizar agora
     .accesskey = u
-
-## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Saber mais
-    .title = Expanda para saber mais sobre a funcionalidade
-spotlight-learn-more-expanded = Saber mais
-    .title = Fechar
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -161,20 +128,6 @@ spotlight-public-wifi-vpn-primary-button = Mantenha a sua privacidade com a { -m
     .accesskey = M
 spotlight-public-wifi-vpn-link = Agora não
     .accesskey = n
-
-## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Teste a nossa mais poderosa
-    experiência de privacidade de sempre
-spotlight-total-cookie-protection-body = A Proteção total de cookies impede que os rastreadores utilizem cookies para o perseguir na Internet.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = O { -brand-short-name } isola as cookies, limitando o acesso aos mesmos ao site em que está, de modo a que os rastreadores não os possam utilizar para o monitorizar. Com este acesso antecipado, estará a ajudar a otimizar esta funcionalidade para que possamos continuar a construir uma Internet melhor para todos.
-spotlight-total-cookie-protection-primary-button = Ativar a Proteção total de cookies
-spotlight-total-cookie-protection-secondary-button = Agora não
 
 ## Emotive Continuous Onboarding
 
@@ -245,13 +198,42 @@ colorways-cfr-header-today = Os estilos de cor de Independent Voices expiram hoj
 
 ## Cookie Banner Handling CFR
 
-cfr-cookiebanner-reject-button = Agora não
+cfr-cbh-header = Permitir que o { -brand-short-name } rejeite faixas de cookies?
+cfr-cbh-body = O { -brand-short-name } pode rejeitar automaticamente muitos pedidos de faixas de cookies.
+cfr-cbh-confirm-button = Rejeitar faixas de cookies
+    .accesskey = R
+cfr-cbh-dismiss-button = Agora não
     .accesskey = n
-cfr-cookiebanner-header-variant-1 = Ver menos pop-ups de cookies
-cfr-cookiebanner-reject-button-variant-1 = Não, obrigado
-    .accesskey = N
-cfr-cookiebanner-header-variant-2 = Redução de Faixas de Cookies
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
 july-jam-headline = Estamos consigo
+july-jam-body = Todos os meses o { -brand-short-name } bloqueia uma média de mais de 3.000 rastreadores por utilizador, permitindo que possa ter um acesso rápido e seguro à melhor Internet.
+july-jam-set-default-primary = Abrir as minhas ligações com o { -brand-short-name }
+fox-doodle-pin-headline = Bem-vindo(a) de volta
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = Eis uma nota rápida para lembrar que pode manter o seu navegador indie favorito apenas a um clique de distância.
+fox-doodle-pin-primary = Abrir as minhas ligações com o { -brand-short-name }
+fox-doodle-pin-secondary = Agora não
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>Os seus PDFs agora abrem no { -brand-short-name }.</strong> Edite ou assine formulários diretamente no seu navegador. Para alterar, procure “PDF” nas configurações.
+set-default-pdf-handler-primary = Percebi
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = Novo dispositivo no seu futuro?
+fxa-sync-cfr-body = Certifique-se que os seus marcadores, palavras-passe e separadores mais recentes estejam consigo sempre que abrir um novo navegador { -brand-product-name }.
+fxa-sync-cfr-primary = Saber mais
+    .accesskey = b
+fxa-sync-cfr-secondary = Lembrar mais tarde
+    .accesskey = t
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = A utilizar um dispositivo mais antigo?
+device-migration-fxa-spotlight-body = Faça uma cópia dos seus dados para garantir que não perde informações importantes, tais como marcadores e palavras-passe — especialmente se mudar para um novo dispositivo.
+device-migration-fxa-spotlight-primary-button = Como fazer uma cópia dos meus dados
+device-migration-fxa-spotlight-link = Lembrar mais tarde

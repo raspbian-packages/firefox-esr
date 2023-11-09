@@ -4,10 +4,19 @@
 
 # Variables:
 #  $retriesLeft (Number): number of tries left
-webauthn-pin-invalid-prompt =
+webauthn-pin-invalid-long-prompt =
     { $retriesLeft ->
-        [0] Hibás PIN! Adja meg az eszközének megfelelő PIN-kódot.
-        [one] Hibás PIN! Adja meg az eszközének megfelelő PIN-kódot. Még { $retriesLeft } próbálkozása van hátra.
-       *[other] Hibás PIN! Adja meg az eszközének megfelelő PIN-kódot. Még { $retriesLeft } próbálkozása van hátra.
+        [one] Helytelen PIN-kód. Még { $retriesLeft } próbálkozása van hátra, mielőtt véglegesen elveszíti a hitelesítő adatait ezen az eszközön.
+       *[other] Helytelen PIN-kód. Még { $retriesLeft } próbálkozása van hátra, mielőtt véglegesen elveszíti a hitelesítő adatait ezen az eszközön.
     }
+webauthn-pin-invalid-short-prompt = Helytelen PIN-kód. Próbálja meg újra.
 webauthn-pin-required-prompt = Adja meg az eszköze PIN-kódját.
+
+# Variables:
+#  $retriesLeft (Number): number of tries left
+webauthn-uv-invalid-long-prompt =
+    { $retriesLeft ->
+        [one] A felhasználó ellenőrzése sikertelen. Még { $retriesLeft } próbálkozása van hátra. Próbálja újra.
+       *[other] A felhasználó ellenőrzése sikertelen. Még { $retriesLeft } próbálkozása van hátra. Próbálja újra.
+    }
+webauthn-uv-invalid-short-prompt = A felhasználó ellenőrzése sikertelen. Próbálja újra.

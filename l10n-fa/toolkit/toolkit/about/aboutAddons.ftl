@@ -8,14 +8,16 @@ search-header =
     .placeholder = جست‌ و جو addons.mozilla.org
     .searchbuttonlabel = جست و جو
 
-search-header-shortcut =
-    .key = f
+## Variables
+##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
 
 list-empty-get-extensions-message = دریافت برنامه‌های افزودنی و تم‌ها در <a data-l10n-name="get-extensions">{ $domain }</a>
 
 list-empty-get-dictionaries-message = دریافت لغتنامه‌ها در <a data-l10n-name="get-extensions">{ $domain }</a>
 
 list-empty-get-language-packs-message = دریافت بسته‌های زبانی در <a data-l10n-name="get-extensions">{ $domain }</a>
+
+##
 
 list-empty-installed =
     .value = هیچ افزودنی‌ای از این نوع نصب نشده است
@@ -238,6 +240,7 @@ shortcuts-input =
     .placeholder = یک میانبر وارد کنید
 
 shortcuts-browserAction2 = فعال‌سازی دکمهٔ نوار ابزار
+shortcuts-pageAction = فعال‌سازی کنش صفحه
 shortcuts-sidebarAction = تغییر حالت نوار کناری
 
 shortcuts-modifier-mac = شامل Ctrl ،Alt یا ⌘
@@ -259,6 +262,8 @@ shortcuts-duplicate-warning-message = { $shortcut } به عنوان میانبر
 #   $addon (string) - Name of the add-on
 shortcuts-exists = از قبل توسط { $addon } استفاده می‌شود
 
+# Variables:
+#   $numberToShow (number) - Number of other elements available to show
 shortcuts-card-expand-button =
     { $numberToShow ->
        *[other] نمایش { $numberToShow } مورد بیشتر
@@ -271,6 +276,17 @@ header-back-button =
 
 ## Recommended add-ons page
 
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro =
+    افرونه‌ها و زمینه‌ها مانند کاره‌هایی برای مروگرتان هستند، و به شما اجازهٔ حفاظت از گذر‌واژه‌ها،
+    بارگیری ویدیوها، پیدا کردن معاملات، مسدود کردن تبلیغات مزاحم، تغییر ظاهر مرورگر و موارد
+    فراوان دیگری را می‌دهد. این برنامه‌های نرم‌افزاری کوچک اغلب به وسیلهٔ سوم‌شخص توسعه
+    داده شده‌‌اند. در این‌جا مجموعه‌ای <a data-l10n-name="learn-more-trigger">توصیه شده</a>
+    توسط { -brand-product-name } برای استثناهای امنیتی، کارایی و عملکرد وجود دارد.
+
+# Notice to make user aware that the recommendations are personalized.
+discopane-notice-recommendations = برخی از این توصیه‌ها شخصی‌سازی شده‌اند. آن‌ها بر اساس دیگر افزونه‌هایی که نصب کردید،‌ ترجیحات نمایه و آمار استفاده می‌باشند.
 discopane-notice-learn-more = بیشتر بدانید
 
 privacy-policy = سیاست حریم خصوصی
@@ -321,8 +337,6 @@ extension-enabled-heading = فعال شد
 extension-disabled-heading = غیرفعال شد
 
 theme-enabled-heading = فعال شد
-theme-disabled-heading = غیرفعال شد
-theme-monochromatic-heading = رنگ‌بندی‌ها
 
 plugin-enabled-heading = فعال شد
 plugin-disabled-heading = غیرفعال شد
@@ -387,9 +401,15 @@ addon-detail-private-browsing-help = در صورت اجازه، این افزو�
 addon-detail-private-browsing-allow = اجازه دادن
 addon-detail-private-browsing-disallow = اجازه نده
 
+## "sites with restrictions" (internally called "quarantined") are special domains
+## where add-ons are normally blocked for security reasons.
+
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
 
+addon-badge-recommended2 =
+    .title = { -brand-product-name } تنها افزونه‌هایی را توصیه میکند، که با استانداردهای ما برای امنیت و کارایی مطابقت دارند
+    .aria-label = { addon-badge-recommended2.title }
 
 ##
 
@@ -431,8 +451,13 @@ addon-page-options-button =
 ## Variables:
 ##   $name (String): name of the add-on.
 
+
+## Detail notifications
+## Variables:
+##   $name (string) - Name of the add-on.
+
 # Variables:
-#   $version (String): application version.
+#   $version (string) - Application version.
 details-notification-incompatible = { $name } با نسخهٔ { $version } از { -brand-short-name } ناسازگار است.
 
 details-notification-unsigned-and-disabled = { $name } برای استفاده در { -brand-short-name } تایید نشده و به همین دلیل غیرفعال شد.

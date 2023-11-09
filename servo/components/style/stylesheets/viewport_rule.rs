@@ -9,7 +9,6 @@
 
 use crate::context::QuirksMode;
 use crate::error_reporting::ContextualParseError;
-use crate::font_metrics::get_metrics_provider_for_product;
 use crate::media_queries::Device;
 use crate::parser::{Parse, ParserContext};
 use crate::properties::StyleBuilder;
@@ -17,6 +16,7 @@ use crate::rule_cache::RuleCacheConditions;
 use crate::shared_lock::{SharedRwLockReadGuard, StylesheetGuards, ToCssWithGuard};
 use crate::str::CssStringWriter;
 use crate::stylesheets::cascading_at_rule::DescriptorDeclaration;
+use crate::stylesheets::container_rule::ContainerSizeQuery;
 use crate::stylesheets::{Origin, StylesheetInDocument};
 use crate::values::computed::{Context, ToComputedValue};
 use crate::values::generics::length::LengthPercentageOrAuto;
@@ -24,12 +24,13 @@ use crate::values::generics::NonNegative;
 use crate::values::specified::{self, NoCalcLength};
 use crate::values::specified::{NonNegativeLengthPercentageOrAuto, ViewportPercentageLength};
 use app_units::Au;
-use cssparser::CowRcStr;
-use cssparser::{parse_important, AtRuleParser, DeclarationListParser, DeclarationParser, Parser};
+use cssparser::{
+    parse_important, AtRuleParser, CowRcStr, DeclarationParser, Parser, QualifiedRuleParser,
+    RuleBodyItemParser, RuleBodyParser,
+};
 use euclid::Size2D;
 use selectors::parser::SelectorParseErrorKind;
 use std::borrow::Cow;
-use std::cell::RefCell;
 use std::fmt::{self, Write};
 use std::iter::Enumerate;
 use std::str::Chars;
@@ -117,7 +118,7 @@ macro_rules! declare_viewport_descriptor_inner {
                         },
                     )*
                 }
-                dest.write_str(";")
+                dest.write_char(';')
             }
         }
     };
@@ -240,9 +241,17 @@ fn parse_shorthand<'i, 't>(
     }
 }
 
+type ViewportDeclarations = Vec<ViewportDescriptorDeclaration>;
+
 impl<'a, 'b, 'i> AtRuleParser<'i> for ViewportRuleParser<'a, 'b> {
     type Prelude = ();
-    type AtRule = Vec<ViewportDescriptorDeclaration>;
+    type AtRule = ViewportDeclarations;
+    type Error = StyleParseErrorKind<'i>;
+}
+
+impl<'a, 'b, 'i> QualifiedRuleParser<'i> for ViewportRuleParser<'a, 'b> {
+    type Prelude = ();
+    type QualifiedRule = ViewportDeclarations;
     type Error = StyleParseErrorKind<'i>;
 }
 
@@ -309,6 +318,17 @@ impl<'a, 'b, 'i> DeclarationParser<'i> for ViewportRuleParser<'a, 'b> {
     }
 }
 
+impl<'a, 'b, 'i> RuleBodyItemParser<'i, ViewportDeclarations, StyleParseErrorKind<'i>>
+    for ViewportRuleParser<'a, 'b>
+{
+    fn parse_declarations(&self) -> bool {
+        true
+    }
+    fn parse_qualified(&self) -> bool {
+        false
+    }
+}
+
 /// A `@viewport` rule.
 #[derive(Clone, Debug, PartialEq, ToShmem)]
 #[cfg_attr(feature = "servo", derive(MallocSizeOf))]
@@ -338,10 +358,10 @@ impl ViewportRule {
         context: &ParserContext,
         input: &mut Parser<'i, 't>,
     ) -> Result<Self, ParseError<'i>> {
-        let parser = ViewportRuleParser { context };
+        let mut parser = ViewportRuleParser { context };
 
         let mut cascade = Cascade::new();
-        let mut parser = DeclarationListParser::new(input, parser);
+        let mut parser = RuleBodyParser::new(input, &mut parser);
         while let Some(result) = parser.next() {
             match result {
                 Ok(declarations) => {
@@ -456,9 +476,7 @@ impl ViewportRule {
 
         let declarations: Vec<_> = declarations.into_iter().filter_map(|entry| entry).collect();
         if !declarations.is_empty() {
-            Some(ViewportRule {
-                declarations: declarations,
-            })
+            Some(ViewportRule { declarations })
         } else {
             None
         }
@@ -513,7 +531,7 @@ impl ToCssWithGuard for ViewportRule {
         let mut iter = self.declarations.iter();
         iter.next().unwrap().to_css(&mut CssWriter::new(dest))?;
         for declaration in iter {
-            dest.write_str(" ")?;
+            dest.write_char(' ')?;
             declaration.to_css(&mut CssWriter::new(dest))?;
         }
         dest.write_str(" }")
@@ -673,22 +691,15 @@ impl MaybeNew for ViewportConstraints {
         // DEVICE-ADAPT § 6.2.3 Resolve non-auto lengths to pixel lengths
         let initial_viewport = device.au_viewport_size();
 
-        let provider = get_metrics_provider_for_product();
-
         let mut conditions = RuleCacheConditions::default();
-        let context = Context {
+        let context = Context::new(
             // Note: DEVICE-ADAPT § 5. states that relative length values are
             // resolved against initial values
-            builder: StyleBuilder::for_inheritance(device, None, None),
-            font_metrics_provider: &provider,
-            cached_system_font: None,
-            in_media_query: false,
+            StyleBuilder::for_inheritance(device, None, None),
             quirks_mode,
-            container_info: None,
-            for_smil_animation: false,
-            for_non_inherited_property: None,
-            rule_cache_conditions: RefCell::new(&mut conditions),
-        };
+            &mut conditions,
+            ContainerSizeQuery::none(),
+        );
 
         // DEVICE-ADAPT § 9.3 Resolving 'extend-to-zoom'
         let extend_width;
@@ -792,8 +803,8 @@ impl MaybeNew for ViewportConstraints {
             min_zoom: min_zoom.map(PinchZoomFactor::new),
             max_zoom: max_zoom.map(PinchZoomFactor::new),
 
-            user_zoom: user_zoom,
-            orientation: orientation,
+            user_zoom,
+            orientation,
         })
     }
 }

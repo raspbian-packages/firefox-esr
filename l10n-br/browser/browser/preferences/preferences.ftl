@@ -71,7 +71,7 @@ restart-later = Adloc'hañ diwezhatoc'h
 ## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
 ##
 ## Variables:
-##   $name (String): name of the extension
+##   $name (string) - Name of the extension
 
 # This string is shown to notify the user that the password manager setting
 # is being controlled by an extension
@@ -120,7 +120,7 @@ confirm-on-close-multiple-tabs =
     .accesskey = K
 # This string is used for the confirm before quitting preference.
 # Variables:
-#   $quitKey (String) - the quit keyboard shortcut, and formatted
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
 #                       in the same manner as it would appear,
 #                       for example, in the File menu.
 confirm-on-quit-with-key =
@@ -143,6 +143,10 @@ browser-containers-settings =
     .label = Arventennoù…
     .accesskey = v
 containers-disable-alert-title = Serriñ an holl ivinelloù endalc'her?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] Ma ziweredekait an ivinelloù endalc'her bremañ e vo serret { $tabCount } ivinell endalc'her. Sur oc'h e fell deoc'h diweredekaat an ivinelloù endalc'her?
@@ -159,10 +163,13 @@ containers-disable-alert-ok-button =
         [many] Serriñ { $tabCount } a ivinelloù endalc'her
        *[other] Serriñ { $tabCount } ivinell endalc'her
     }
+
+##
+
 containers-disable-alert-cancel-button = Leuskel gweredekaet
 containers-remove-alert-title = Lemel an endalc'had kuit?
 # Variables:
-#   $count (Number) - Number of tabs that will be closed.
+#   $count (number) - Number of tabs that will be closed.
 containers-remove-alert-msg =
     { $count ->
         [one] Ma tilamit an endalc'her bremañ e vo serret { $count } ivinell endalc'her. Sur oc'h e fell deoc'h dilemel an endalc'her?
@@ -177,6 +184,8 @@ containers-remove-cancel-button = Chom hep dilemel an Endalc'her-mañ
 ## General Section - Language & Appearance
 
 language-and-appearance-header = Yezh ha neuz
+preferences-web-appearance-choice-light = Sklaer
+preferences-web-appearance-choice-dark = Teñval
 default-font = Nodrezh dre ziouer
     .accesskey = N
 default-font-size = Ment
@@ -188,6 +197,8 @@ advanced-fonts =
 preferences-zoom-header = Zoum
 preferences-default-zoom = Zoum dre ziouer
     .accesskey = Z
+# Variables:
+#   $percentage (number) - Zoom percentage value
 preferences-default-zoom-value =
     .label = { $percentage }%
 preferences-zoom-text-only =
@@ -280,15 +291,15 @@ applications-manage-app =
 applications-always-ask =
     .label = Goulenn bewech
 # Variables:
-#   $type-description (String) - Description of the type (e.g "Portable Document Format")
-#   $type (String) - the MIME type (e.g application/binary)
+#   $type-description (string) - Description of the type (e.g "Portable Document Format")
+#   $type (string) - The MIME type (e.g application/binary)
 applications-type-description-with-type = { $type-description } ({ $type })
 # Variables:
-#   $extension (String) - file extension (e.g .TXT)
-#   $type (String) - the MIME type (e.g application/binary)
+#   $extension (string) - File extension (e.g .TXT)
+#   $type (string) - The MIME type (e.g application/binary)
 applications-file-ending-with-type = { applications-file-ending } ({ $type })
 # Variables:
-#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+#   $plugin-name (string) - Name of a plugin (e.g Adobe Flash)
 applications-use-plugin-in =
     .label = Arverañ { $plugin-name } (e { -brand-short-name })
 applications-open-inapp =
@@ -324,6 +335,8 @@ play-drm-content =
 play-drm-content-learn-more = Gouzout hiroc'h
 update-application-title = Hizivadurioù evit { -brand-short-name }:
 update-application-description = Derc'hel { -brand-short-name } hizivaet evit an digonusted, stabilded ha diogelroez gwellañ.
+# Variables:
+# $version (string) - Firefox version
 update-application-version = Handelv { $version } <a data-l10n-name="learn-more">Petra nevez</a>
 update-history =
     .label = Diskouez roll istor an hizivadurioù…
@@ -347,7 +360,7 @@ update-application-use-service =
     .accesskey = v
 update-setting-write-failure-title2 = Fazi en ur enrollañ an arventennoù hizivaat
 # Variables:
-#   $path (String) - Path to the configuration file
+#   $path (string) - Path to the configuration file
 # The newlines between the main text and the line containing the path is
 # intentional so the path is easier to identify.
 update-setting-write-failure-message2 =
@@ -377,7 +390,7 @@ performance-limit-content-process-option = Bevenn endalc'had an araezad
 performance-limit-content-process-enabled-desc = Endalc'had araezad ouzhpenn a c'hall gwellaat an digonusted gent meur a ivinell, met arverañ a raio muioc'h a vemor.
 performance-limit-content-process-blocked-desc = Evit kemmañ an niver a araezad endalc'had eo ret ober gant { -brand-short-name }. <a data-l10n-name="learn-more">Deskit penaos gwiriekaat statud al lies araezad</a>
 # Variables:
-#   $num - default value of the `dom.ipc.processCount` pref.
+#   $num (number) - Default value of the `dom.ipc.processCount` pref.
 performance-default-content-process-count =
     .label = { $num } (dre ziouer)
 
@@ -436,10 +449,6 @@ home-newtabs-mode-label = Ivinelloù nevez
 home-restore-defaults =
     .label = Assav an arventennoù dre ziouer
     .accesskey = A
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Pennbajenn Firefox (Dre ziouer)
 home-mode-choice-custom =
     .label = URLoù personelaet...
 home-mode-choice-blank =
@@ -463,8 +472,6 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Endalc'had Degemer Firefox
-home-prefs-content-description = Dibabit peseurt endalc'had a fell deoc'h kaout war ho skramm Firefox Degemer.
 home-prefs-search-header =
     .label = Klask web
 home-prefs-shortcuts-header =
@@ -474,7 +481,7 @@ home-prefs-shortcuts-by-option-sponsored =
     .label = Berradennoù paeroniet
 
 ## Variables:
-##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 home-prefs-recommended-by-header =
     .label = Erbedet gant { $provider }
@@ -503,6 +510,8 @@ home-prefs-recent-activity-description = Un dibab a lec’hiennoù ha danvez nev
 home-prefs-snippets-header =
     .label = Notennigoù
 home-prefs-snippets-description-new = Tunioù ha nevezinti gant { -vendor-short-name } ha { -brand-product-name }
+# Variables:
+#   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
     .label =
         { $num ->
@@ -565,7 +574,7 @@ search-find-more-link = Klask luskerioù klask all
 # ('Duplicate' is an adjective)
 search-keyword-warning-title = Arredaoliñ ur ger alc'hwez
 # Variables:
-#   $name (String) - Name of a search engine.
+#   $name (string) - Name of a search engine.
 search-keyword-warning-engine = Dibabet hoc'h eus ur ger alc'hwez war arver evit bremañ gant "{ $name }". Mar plij, diuzit unan all.
 search-keyword-warning-bookmark = Dibabet hoc'h eus ur ger alc'hwez war arver evit bremañ gant ur sined. Mar plij, diuzit unan all.
 
@@ -585,7 +594,7 @@ containers-settings-button =
 containers-remove-button =
     .label = Lemel kuit
 
-## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Kemerit ho web ganeoc'h
@@ -603,7 +612,7 @@ sync-signedout-account-signin3 =
 # to your language, but should not be changed or translated.
 sync-mobile-promo = Pellgargañ Firefox evit <img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> pe <img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a> evit goubredañ gant ho trevnad hezoug.
 
-## Firefox Account - Signed in
+## Firefox account - Signed in
 
 sync-profile-picture =
     .tooltiptext = Kemmañ ar skeudenn aelad
@@ -612,8 +621,15 @@ sync-sign-out =
     .accesskey = g
 sync-manage-account = Ardeiñ ar gont
     .accesskey = A
+
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } n'eo ket gwiriet.
 sync-signedin-login-failure = En em zilesait evit adkennaskañ { $email }
+
+##
+
 sync-resend-verification =
     .label = Adkas ar gwiriadur
     .accesskey = g
@@ -636,10 +652,14 @@ prefs-sync-now =
     .labelnotsyncing = Goubredañ bremañ
     .accesskeynotsyncing = G
     .labelsyncing = O c'houbredañ...
+prefs-sync-now-button =
+    .label = Goubredañ bremañ
+    .accesskey = G
+prefs-syncing-button =
+    .label = O c'houbredañ...
 
 ## The list of things currently syncing.
 
-sync-currently-syncing-heading = Emaoc'h o c'houbredañ an elfennoù-mañ:
 sync-currently-syncing-bookmarks = Sinedoù
 sync-currently-syncing-history = Roll istor
 sync-currently-syncing-tabs = Ivinelloù digor
@@ -654,13 +674,6 @@ sync-change-options =
 
 ## The "Choose what to sync" dialog.
 
-sync-choose-what-to-sync-dialog =
-    .title = Dibabit petra goubredañ
-    .style = width: 36em; min-height: 35em;
-    .buttonlabelaccept = Enrollañ ar c'hemmoù
-    .buttonaccesskeyaccept = E
-    .buttonlabelextra2 = Digennaskañ...
-    .buttonaccesskeyextra2 = D
 sync-choose-what-to-sync-dialog3 =
     .title = Dibabit petra goubredañ
     .style = min-width: 36em;
@@ -712,6 +725,16 @@ sync-device-name-save =
     .label = Enrollañ
     .accesskey = E
 sync-connect-another-device = Kennaskit un trevnad all
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Kaset eo bet ar gemennadenn gwiriañ
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = Kaset ez eus bet un ere gwiriañ da { $email }
+sync-verification-not-sent-title = Dic'houest da gas ar gemennadenn gwiriañ
+sync-verification-not-sent-body = N'haller ket kas ur postel gwiriañ evit ar mare, klaskit en-dro diwezhatoc'h.
 
 ## Privacy Section
 
@@ -824,8 +847,8 @@ history-clear-button =
 sitedata-header = Toupinoù ha roadennoù lec'hienn
 sitedata-total-size-calculating = O jediñ ment roadennoù ha krubuilh al lec'hienn…
 # Variables:
-#   $value (Number) - Value of the unit (for example: 4.6, 500)
-#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
 sitedata-total-size = Ho toupinoù, roadennoù lec'hienn ha krubuilh kadavet a zo oc'h arverañ { $value } { $unit } war ho kantenn.
 sitedata-learn-more = Gouzout hiroc'h
 sitedata-delete-on-close =
@@ -850,8 +873,6 @@ sitedata-option-block-cross-site-cookies =
     .label = Toupinoù heuliañ etrelec’hienn, ha difuiñ an toupinoù etrelec'hienn all
 sitedata-option-block-unvisited =
     .label = Toupinoù al lec'hiennoù n'int ket bet gweladennet
-sitedata-option-block-all-third-party =
-    .label = Holl doupinoù an tredeoù (gallout a ra mirout lec'hiennoù ’zo da vont en-dro en un doare dereat)
 sitedata-option-block-all =
     .label = An holl doupinoù (terriñ a raio mont-en-dro lec'hiennoù ’zo)
 sitedata-clear =
@@ -863,6 +884,9 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Merañ an nemedennoù…
     .accesskey = M
+
+## Privacy Section - Cookie Banner Handling
+
 
 ## Privacy Section - Address Bar
 
@@ -917,7 +941,6 @@ content-blocking-etp-strict-desc = Gwarez kreñvoc'h, met gallout a ra lakaat le
 content-blocking-etp-custom-desc = Dibabit pe heulier pe skript herzel.
 content-blocking-etp-blocking-desc = { -brand-short-name } a stank an toupinoù dindan:
 content-blocking-private-windows = Heulierien er prenestroù prevez
-content-blocking-cross-site-cookies-in-all-windows = Toupinoù etrelec’hienn en holl brenestroù (toupinoù heuliañ en o zouez)
 content-blocking-cross-site-tracking-cookies = Toupinoù heuliañ etre-lec'hienn
 content-blocking-all-cross-site-cookies-private-windows = Toupinoù etrelec’hienn er prenestroù prevez
 content-blocking-cross-site-tracking-cookies-plus-isolate = Toupinoù heuliañ etrelec’hienn, ha difuiñ an toupinoù a chom
@@ -925,14 +948,11 @@ content-blocking-social-media-trackers = Heulierien media kevredadel
 content-blocking-all-cookies = An holl doupinoù
 content-blocking-unvisited-cookies = Toupinoù al lec'hiennoù n'int ket bet gweladennet
 content-blocking-all-windows-tracking-content = Endalc'had heuliañ en holl brenestroù
-content-blocking-all-third-party-cookies = Holl doupinoù an tredeoù
 content-blocking-cryptominers = Kriptogleuzerien
 content-blocking-fingerprinters = Dinoerien roudoù niverel
-# "Test pilot" is used as a verb. Possible alternatives:
-# "Be the first to try", "Join an early experiment".
-content-blocking-etp-standard-tcp-rollout-checkbox =
-    .label = Amprouit hor c'heweriuster galloudusañ betek en
-    .accesskey = A
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
+
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = Ar gwarez toupinoù klok a endalc'h toupinoù al lec'hienn m'emaoc'h warni, evel-se n’hall ket an heulierien ober ganto evit heuliañ ac'hanoc'h etre al lec'hiennoù.
 content-blocking-etp-standard-tcp-rollout-learn-more = Gouzout hiroc'h
@@ -1091,6 +1111,9 @@ httpsonly-radio-enabled-pbm =
     .label = Gweredekaat HTTPS-hepken er prenestroù prevez hepken
 httpsonly-radio-disabled =
     .label = Na weredekaat ar mod HTTPS-hepken
+
+## DoH Section
+
 
 ## The following strings are used in the Download section of settings
 

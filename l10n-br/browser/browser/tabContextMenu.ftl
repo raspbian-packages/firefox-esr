@@ -2,6 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+tab-context-new-tab =
+    .label = Ivinell nevez
+    .accesskey = w
 reload-tab =
     .label = Adkargañ an ivinell
     .accesskey = A
@@ -20,6 +23,8 @@ duplicate-tab =
 duplicate-tabs =
     .label = Eilañ an ivinelloù
     .accesskey = E
+# The following string is displayed on a menuitem that will close the tabs from the end of the tabstrip to the currently targeted tab (excluding the currently targeted and any other selected tabs).
+# In left-to-right languages this should use "Right" and in right-to-left languages this should use "Left".
 close-tabs-to-the-end =
     .label = Serriñ an ivinelloù war an tu dehou
     .accesskey = i
@@ -44,9 +49,6 @@ unpin-selected-tabs =
 bookmark-selected-tabs =
     .label = Ouzhpennañ an ivinelloù er sinedoù…
     .accesskey = i
-bookmark-tab =
-    .label = Ouzhpennañ an ivinell er sinedoù
-    .accesskey = s
 move-to-start =
     .label = Dilec'hiañ etrezek ar penn-kentañ
     .accesskey = p
@@ -74,7 +76,6 @@ tab-context-move-tabs =
            *[other] Dilec'hiañ an ivinelloù
         }
     .accesskey = D
-
 tab-context-send-tabs-to-device =
     .label =
         { $tabCount ->

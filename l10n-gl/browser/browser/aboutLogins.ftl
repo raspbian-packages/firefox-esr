@@ -5,10 +5,12 @@
 
 about-logins-page-title = Identificacións e contrasinais
 
-login-filter =
-    .placeholder = Buscar sesións
+about-logins-login-filter =
+    .placeholder = Buscar nas credenciais
+    .key = F
 
-create-login-button = Crear novo inicio de sesión
+create-new-login-button =
+    .title = Crear unha nova credencial
 
 fxaccounts-sign-in-text = Obteña os seus contrasinais doutros dispositivos seus
 fxaccounts-sign-in-sync-button = Inicie sesión para sincronizar
@@ -35,10 +37,20 @@ about-logins-menu-menuitem-help = Axuda
 
 login-list =
     .aria-label = Inicios de sesión que coinciden coa consulta de busca
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } sesión
        *[other] { $count } sesións
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count } de { $total } credencial
+       *[other] { $count } de { $total } credenciais
     }
 login-list-sort-label-text = Ordenar por:
 login-list-name-option = Nome (A-Z)
@@ -73,6 +85,8 @@ about-logins-login-intro-heading-logged-in = Non se atoparon outras sesións sin
 login-intro-description = Se gardou os seus inicios de sesión en { -brand-product-name } noutro dispositivo, velaquí como conseguilos:
 login-intro-instructions-fxa = Cree ou inicie sesión no seu { -fxaccount-brand-name } no dispositivo onde se gardan os seus inicios de sesión.
 login-intro-instructions-fxa-settings = Vaia a Configuración > Sincronizar > Activar a sincronización… Seleccione a caixa de verificación Inicios de sesión e contrasinais.
+login-intro-instructions-fxa-passwords-help = Visite a <a data-l10n-name="passwords-help-link">asistencia sobre contrasinais</a> para máis axuda.
+about-logins-intro-browser-only-import = Se as súas credenciais están gardadas noutro navegador, pode <a data-l10n-name="import-link">importalas en { -brand-product-name }</a>
 about-logins-intro-import2 = Se os seus inicios de sesión están gardados fóra de { -brand-product-name }, pode <a data-l10n-name="import-browser-link">importalos desde outro navegador</a> ou <a data-l10n-name="import-file-link">dun ficheiro</a>
 
 ## Login
@@ -97,9 +111,17 @@ login-item-copied-password-button-text = Copiouse!
 login-item-save-changes-button = Gardar cambios
 login-item-save-new-button = Gardar
 login-item-cancel-button = Cancelar
-login-item-time-changed = Última modificación: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Creado: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Última utilización: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = Data de creación
+login-item-timeline-action-updated = Actualizado
+login-item-timeline-action-used = Usado
 
 ## OS Authentication dialog
 
@@ -150,6 +172,9 @@ about-logins-confirm-remove-dialog-title = Eliminar esta identificación?
 confirm-delete-dialog-message = Non é posíbel desfacer esta acción.
 about-logins-confirm-remove-dialog-confirm-button = Eliminar
 
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
         [1] Retirar
@@ -188,6 +213,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] Isto elimina todos os inicios de sesión que gardou en { -brand-short-name } en todos os dispositivos sincronizados co seu { -fxaccount-brand-name }. Isto tamén elimina as alertas de ataques que aparecen aquí. Non poderá desfacer esta acción.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Exportar inicios de sesión e contrasinais
 about-logins-confirm-export-dialog-message = Os seus contrasinais gardaranse como texto lexible (por exemplo, ConTR@sinaLmaL0) para que calquera que poida abrir o ficheiro exportado poida velos.
 about-logins-confirm-export-dialog-confirm-button = Exportar…
@@ -207,7 +234,6 @@ about-logins-breach-alert-date = Este comoromiso produciuse o { DATETIME($date, 
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Vaia a { $hostname }
-about-logins-breach-alert-learn-more-link = Máis información
 
 ## Vulnerable Password notification
 
@@ -304,7 +330,7 @@ about-logins-import-dialog-error-file-permission-description = { -brand-short-na
 about-logins-import-dialog-error-unable-to-read-title = Foi imposíbel procesar o ficheiro
 about-logins-import-dialog-error-unable-to-read-description = Asegúrese de que seleccionou un ficheiro CSV ou TSV.
 about-logins-import-dialog-error-no-logins-imported = Non se importaron identificadores
-about-logins-import-dialog-error-learn-more = Saber máis
+about-logins-import-dialog-error-learn-more = Máis información
 about-logins-import-dialog-error-try-import-again = Tente importar de novo…
 about-logins-import-dialog-error-cancel = Cancelar
 

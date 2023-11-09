@@ -28,10 +28,6 @@ pippki-pw-change2empty-in-fips-mode = Sćo tuchylu we FIPS-modusu. FIPS pomina s
 
 ## Reset Primary Password dialog
 
-reset-primary-password-window =
-    .title = Głowne gronidło slědk stajiś
-    .style = width: 40em
-
 reset-primary-password-window2 =
     .title = Głowne gronidło slědk stajiś
     .style = min-width: 40em
@@ -43,10 +39,6 @@ pippki-reset-password-confirmation-title = Głowne gronidło slědk stajiś
 pippki-reset-password-confirmation-message = Wašo głowne gronidło jo se slědk stajiło.
 
 ## Downloading cert dialog
-
-download-cert-window =
-    .title = Ześěgnjenje certifikata
-    .style = width: 46em
 
 download-cert-window2 =
     .title = Ześěgnjenje certifikata
@@ -82,7 +74,8 @@ set-password-reminder = Wažny: Jolic zabydnjośo swóje gronidło za zawěsćen
 
 ## Protected Auth dialog
 
-protected-auth-window =
-    .title = Pśez token šćitana awtentifikacija
-protected-auth-msg = Pšosym awtentificěrujśo token. Awtentifikaciska metoda wótwisujo wót typa wašogo tokena.
-protected-auth-token = Token:
+## Protected authentication alert
+
+# Variables:
+# $tokenName (String) - The name of the token to authenticate to (for example, "OS Client Cert Token (Modern)")
+protected-auth-alert = Pšosym awtentificěrujśo se pla tokena “{ $tokenName }”. Kak musyśo to cyniś, wótwisujo wót tokena (na pśikład pśez wužywanje cytaka palcowych wótśišćow abo pśez zapódawanje koda z tastaturu).

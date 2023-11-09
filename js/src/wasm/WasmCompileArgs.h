@@ -73,10 +73,8 @@ class Tiers {
 // available under prefs.)
 
 struct FeatureOptions {
-  FeatureOptions() : simdWormhole(false), intrinsics(false) {}
+  FeatureOptions() : intrinsics(false) {}
 
-  // May be set if javascript.options.wasm_simd_wormhole==true.
-  bool simdWormhole;
   // Enables intrinsic opcodes, only set in WasmIntrinsic.cpp.
   bool intrinsics;
 };
@@ -90,7 +88,7 @@ struct FeatureArgs {
         JS_FOR_WASM_FEATURES(WASM_FEATURE, WASM_FEATURE, WASM_FEATURE)
 #undef WASM_FEATURE
             sharedMemory(Shareable::False),
-        simdWormhole(false),
+        simd(false),
         intrinsics(false) {
   }
   FeatureArgs(const FeatureArgs&) = default;
@@ -104,14 +102,14 @@ struct FeatureArgs {
 #undef WASM_FEATURE
 
   Shareable sharedMemory;
-  bool simdWormhole;
+  bool simd;
   bool intrinsics;
 };
 
 // Describes the JS scripted caller of a request to compile a wasm module.
 
 struct ScriptedCaller {
-  UniqueChars filename;
+  UniqueChars filename;  // UTF-8 encoded
   bool filenameIsURL;
   unsigned line;
 
@@ -137,33 +135,37 @@ struct CompileArgs : ShareableBase<CompileArgs> {
 
   bool baselineEnabled;
   bool ionEnabled;
-  bool craneliftEnabled;
   bool debugEnabled;
   bool forceTiering;
 
   FeatureArgs features;
 
-  // CompileArgs has three constructors:
+  // CompileArgs has several constructors:
   //
-  // - two through a factory function `build`, which checks that flags are
-  // consistent with each other, and optionally reports any errors.
+  // - two through factory functions `build`/`buildAndReport`, which checks
+  //   that flags are consistent with each other, and optionally reports any
+  //   errors.
+  // - the 'buildForAsmJS' one, which uses the appropriate configuration for
+  //   legacy asm.js code.
   // - one that gives complete access to underlying fields.
   //
-  // You should use the first one in general, unless you have a very good
-  // reason (i.e. no JSContext around and you know which flags have been used).
+  // You should use the factory functions in general, unless you have a very
+  // good reason (i.e. no JSContext around and you know which flags have been
+  // used).
 
   static SharedCompileArgs build(JSContext* cx, ScriptedCaller&& scriptedCaller,
                                  const FeatureOptions& options,
                                  CompileArgsError* error);
+  static SharedCompileArgs buildForAsmJS(ScriptedCaller&& scriptedCaller);
   static SharedCompileArgs buildAndReport(JSContext* cx,
                                           ScriptedCaller&& scriptedCaller,
-                                          const FeatureOptions& options);
+                                          const FeatureOptions& options,
+                                          bool reportOOM = false);
 
   explicit CompileArgs(ScriptedCaller&& scriptedCaller)
       : scriptedCaller(std::move(scriptedCaller)),
         baselineEnabled(false),
         ionEnabled(false),
-        craneliftEnabled(false),
         debugEnabled(false),
         forceTiering(false) {}
 };
@@ -192,7 +194,6 @@ struct CompilerEnvironment {
     struct {
       CompileMode mode_;
       Tier tier_;
-      OptimizedBackend optimizedBackend_;
       DebugEnabled debug_;
     };
   };
@@ -205,9 +206,7 @@ struct CompilerEnvironment {
   // Save the provided values for mode, tier, and debug, and the initial value
   // for gc/refTypes. A subsequent computeParameters() will compute the
   // final value of gc/refTypes.
-  CompilerEnvironment(CompileMode mode, Tier tier,
-                      OptimizedBackend optimizedBackend,
-                      DebugEnabled debugEnabled);
+  CompilerEnvironment(CompileMode mode, Tier tier, DebugEnabled debugEnabled);
 
   // Compute any remaining compilation parameters.
   void computeParameters(Decoder& d);
@@ -225,10 +224,6 @@ struct CompilerEnvironment {
   Tier tier() const {
     MOZ_ASSERT(isComputed());
     return tier_;
-  }
-  OptimizedBackend optimizedBackend() const {
-    MOZ_ASSERT(isComputed());
-    return optimizedBackend_;
   }
   DebugEnabled debug() const {
     MOZ_ASSERT(isComputed());

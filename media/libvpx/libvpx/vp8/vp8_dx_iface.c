@@ -275,7 +275,7 @@ static vpx_codec_err_t vp8_decode(vpx_codec_alg_priv_t *ctx,
                                   void *user_priv, long deadline) {
   volatile vpx_codec_err_t res;
   volatile unsigned int resolution_change = 0;
-  unsigned int w, h;
+  volatile unsigned int w, h;
 
   if (!ctx->fragments.enabled && (data == NULL && data_sz == 0)) {
     return 0;
@@ -310,6 +310,7 @@ static vpx_codec_err_t vp8_decode(vpx_codec_alg_priv_t *ctx,
     VP8D_COMP *pbi = ctx->yv12_frame_buffers.pbi[0];
     VP8_COMMON *const pc = &pbi->common;
     if (setjmp(pbi->common.error.jmp)) {
+      pbi->common.error.setjmp = 0;
       vp8_remove_decoder_instances(fb);
       vp8_zero(fb->pbi);
       vpx_clear_system_state();
@@ -371,8 +372,6 @@ static vpx_codec_err_t vp8_decode(vpx_codec_alg_priv_t *ctx,
       pc->Width = ctx->si.w;
       pc->Height = ctx->si.h;
       {
-        int prev_mb_rows = pc->mb_rows;
-
         if (setjmp(pbi->common.error.jmp)) {
           pbi->common.error.setjmp = 0;
           /* on failure clear the cached resolution to ensure a full
@@ -397,6 +396,12 @@ static vpx_codec_err_t vp8_decode(vpx_codec_alg_priv_t *ctx,
           vpx_internal_error(&pc->error, VPX_CODEC_CORRUPT_FRAME,
                              "Invalid frame height");
         }
+
+#if CONFIG_MULTITHREAD
+        if (vpx_atomic_load_acquire(&pbi->b_multithreaded_rd)) {
+          vp8mt_de_alloc_temp_buffers(pbi, pc->mb_rows);
+        }
+#endif
 
         if (vp8_alloc_frame_buffers(pc, pc->Width, pc->Height)) {
           vpx_internal_error(&pc->error, VPX_CODEC_MEM_ERROR,
@@ -442,10 +447,8 @@ static vpx_codec_err_t vp8_decode(vpx_codec_alg_priv_t *ctx,
 
 #if CONFIG_MULTITHREAD
         if (vpx_atomic_load_acquire(&pbi->b_multithreaded_rd)) {
-          vp8mt_alloc_temp_buffers(pbi, pc->Width, prev_mb_rows);
+          vp8mt_alloc_temp_buffers(pbi, pc->Width, 0);
         }
-#else
-        (void)prev_mb_rows;
 #endif
       }
 
@@ -492,6 +495,7 @@ static vpx_codec_err_t vp8_decode(vpx_codec_alg_priv_t *ctx,
 
     /* get ready for the next series of fragments */
     ctx->fragments.count = 0;
+    pbi->common.error.setjmp = 0;
   }
 
   return res;

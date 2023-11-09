@@ -77,9 +77,8 @@ uint64_t ImageAccessible::NativeState() const {
   if (!(mImageRequestStatus & imgIRequest::STATUS_SIZE_AVAILABLE)) {
     nsIFrame* frame = GetFrame();
     MOZ_ASSERT(!frame || frame->AccessibleType() == eImageType ||
-               frame->AccessibleType() == a11y::eHTMLImageMapType ||
-               frame->IsImageBoxFrame());
-    if (frame && !(frame->GetStateBits() & IMAGE_SIZECONSTRAINED)) {
+               frame->AccessibleType() == a11y::eHTMLImageMapType);
+    if (frame && !frame->HasAnyStateBits(IMAGE_SIZECONSTRAINED)) {
       // The size of this image hasn't been constrained and we haven't loaded
       // enough of the image to know its size yet. This means it currently
       // has 0 width and height.
@@ -91,18 +90,13 @@ uint64_t ImageAccessible::NativeState() const {
 }
 
 ENameValueFlag ImageAccessible::NativeName(nsString& aName) const {
-  bool hasAltAttrib =
-      mContent->AsElement()->GetAttr(kNameSpaceID_None, nsGkAtoms::alt, aName);
+  mContent->AsElement()->GetAttr(kNameSpaceID_None, nsGkAtoms::alt, aName);
   if (!aName.IsEmpty()) return eNameOK;
 
   ENameValueFlag nameFlag = LocalAccessible::NativeName(aName);
   if (!aName.IsEmpty()) return nameFlag;
 
-  // No accessible name but empty 'alt' attribute is present. If further name
-  // computation algorithm doesn't provide non empty name then it means
-  // an empty 'alt' attribute was used to indicate a decorative image (see
-  // LocalAccessible::Name() method for details).
-  return hasAltAttrib ? eNoNameOnPurpose : eNameOK;
+  return eNameOK;
 }
 
 role ImageAccessible::NativeRole() const { return roles::GRAPHIC; }
@@ -165,7 +159,8 @@ bool ImageAccessible::DoAction(uint8_t aIndex) const {
 
 LayoutDeviceIntPoint ImageAccessible::Position(uint32_t aCoordType) {
   LayoutDeviceIntPoint point = Bounds().TopLeft();
-  nsAccUtils::ConvertScreenCoordsTo(&point.x, &point.y, aCoordType, this);
+  nsAccUtils::ConvertScreenCoordsTo(&point.x.value, &point.y.value, aCoordType,
+                                    this);
   return point;
 }
 
@@ -247,7 +242,7 @@ void ImageAccessible::Notify(imgIRequest* aRequest, int32_t aType,
 
   if ((status ^ mImageRequestStatus) & imgIRequest::STATUS_SIZE_AVAILABLE) {
     nsIFrame* frame = GetFrame();
-    if (frame && !(frame->GetStateBits() & IMAGE_SIZECONSTRAINED)) {
+    if (frame && !frame->HasAnyStateBits(IMAGE_SIZECONSTRAINED)) {
       RefPtr<AccEvent> event = new AccStateChangeEvent(
           this, states::INVISIBLE,
           !(status & imgIRequest::STATUS_SIZE_AVAILABLE));

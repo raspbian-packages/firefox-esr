@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Uusi välilehti
 tabbrowser-empty-private-tab-title = Uusi yksityinen välilehti
+
 tabbrowser-menuitem-close-tab =
     .label = Sulje välilehti
 tabbrowser-menuitem-close =
     .label = Sulje
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } — { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -121,6 +120,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Älä näytä tätä ikkunaa uudesta
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Salli, että tällaiset ilmoitukset sivustolta { $domain } vievät sinut heidän välilehteen
+
 tabbrowser-customizemode-tab-title = Muokkaa { -brand-short-name }-selainta
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -139,3 +139,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Palauta ääni välilehtiin
     .accesskey = ä
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Toistaa ääntä
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Näytä kaikki { $tabCount } välilehteä
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Vaimenna välilehti
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Palauta ääni
+tabbrowser-manager-close-tab =
+    .tooltiptext = Sulje välilehti

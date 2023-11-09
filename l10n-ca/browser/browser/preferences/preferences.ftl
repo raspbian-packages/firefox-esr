@@ -71,7 +71,7 @@ restart-later = Reinicia més tard
 ## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
 ##
 ## Variables:
-##   $name (String): name of the extension
+##   $name (string) - Name of the extension
 
 # This string is shown to notify the user that the password manager setting
 # is being controlled by an extension
@@ -120,6 +120,11 @@ startup-restore-warn-on-quit =
     .label = Avisa en sortir del navegador
 disable-extension =
     .label = Inhabilita l'extensió
+preferences-data-migration-header = Importa les dades del navegador
+preferences-data-migration-description = Importa les adreces d'interès, les contrasenyes, l'historial i les dades d'emplenament automàtic al { -brand-short-name }.
+preferences-data-migration-button =
+    .label = Importa les dades
+    .accesskey = m
 tabs-group-header = Pestanyes
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab canvia de pestanya en ordre d'ús recent
@@ -132,7 +137,7 @@ confirm-on-close-multiple-tabs =
     .accesskey = m
 # This string is used for the confirm before quitting preference.
 # Variables:
-#   $quitKey (String) - the quit keyboard shortcut, and formatted
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
 #                       in the same manner as it would appear,
 #                       for example, in the File menu.
 confirm-on-quit-with-key =
@@ -155,6 +160,10 @@ browser-containers-settings =
     .label = Paràmetres…
     .accesskey = t
 containers-disable-alert-title = Voleu tancar totes les pestanyes de contenidor?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] Si desactiveu les pestanyes de contenidor ara, es tancarà { $tabCount } pestanya de contenidor. Segur que voleu desactivar les pestanyes de contenidor?
@@ -165,10 +174,13 @@ containers-disable-alert-ok-button =
         [one] Tanca { $tabCount } pestanya de contenidor
        *[other] Tanca { $tabCount } pestanyes de contenidor
     }
+
+##
+
 containers-disable-alert-cancel-button = Mantén activades
 containers-remove-alert-title = Voleu eliminar aquest contenidor?
 # Variables:
-#   $count (Number) - Number of tabs that will be closed.
+#   $count (number) - Number of tabs that will be closed.
 containers-remove-alert-msg =
     { $count ->
         [one] Si elimineu aquest contenidor ara, es tancarà { $count } pestanya de contenidor. Segur que voleu eliminar aquest contenidor?
@@ -182,23 +194,15 @@ containers-remove-cancel-button = No eliminis aquest contenidor
 language-and-appearance-header = Llengua i aparença
 preferences-web-appearance-header = Aparença dels llocs web
 preferences-web-appearance-description = Alguns llocs web adapten l'esquema de colors d'acord amb les vostres preferències. Trieu quin esquema de colors voleu per aquests llocs.
-preferences-web-appearance-choice-browser = Tema del { -brand-short-name }
-preferences-web-appearance-choice-system = Tema del sistema
 preferences-web-appearance-choice-auto = Automàtic
 preferences-web-appearance-choice-light = Clar
 preferences-web-appearance-choice-dark = Fosc
-preferences-web-appearance-choice-tooltip-browser =
-    .title = Fa que el fons i el contingut dels llocs web coincideixin amb del tema del { -brand-short-name }.
-preferences-web-appearance-choice-tooltip-system =
-    .title = Fa que el fons i el contingut dels llocs web coincideixin amb del tema del del sistema.
+preferences-web-appearance-choice-tooltip-auto =
+    .title = Canvia automàticament els fons i el contingut dels llocs web en funció dels vostres paràmetres del sistema i del tema del { -brand-short-name }.
 preferences-web-appearance-choice-tooltip-light =
     .title = Usa un aspecte clar per al fons i el contingut dels llocs web.
 preferences-web-appearance-choice-tooltip-dark =
     .title = Usa un aspecte fosc per al fons i el contingut dels llocs web.
-preferences-web-appearance-choice-input-browser =
-    .aria-description = { preferences-web-appearance-choice-tooltip-browser.title }
-preferences-web-appearance-choice-input-system =
-    .aria-description = { preferences-web-appearance-choice-tooltip-system.title }
 preferences-web-appearance-choice-input-auto =
     .aria-description = { preferences-web-appearance-choice-tooltip-auto.title }
 preferences-web-appearance-choice-input-light =
@@ -228,6 +232,8 @@ advanced-fonts =
 preferences-zoom-header = Zoom
 preferences-default-zoom = Zoom per defecte
     .accesskey = Z
+# Variables:
+#   $percentage (number) - Zoom percentage value
 preferences-default-zoom-value =
     .label = { $percentage }%
 preferences-zoom-text-only =
@@ -320,15 +326,15 @@ applications-manage-app =
 applications-always-ask =
     .label = Demana-m'ho sempre
 # Variables:
-#   $type-description (String) - Description of the type (e.g "Portable Document Format")
-#   $type (String) - the MIME type (e.g application/binary)
+#   $type-description (string) - Description of the type (e.g "Portable Document Format")
+#   $type (string) - The MIME type (e.g application/binary)
 applications-type-description-with-type = { $type-description } ({ $type })
 # Variables:
-#   $extension (String) - file extension (e.g .TXT)
-#   $type (String) - the MIME type (e.g application/binary)
+#   $extension (string) - File extension (e.g .TXT)
+#   $type (string) - The MIME type (e.g application/binary)
 applications-file-ending-with-type = { applications-file-ending } ({ $type })
 # Variables:
-#   $plugin-name (String) - Name of a plugin (e.g Adobe Flash)
+#   $plugin-name (string) - Name of a plugin (e.g Adobe Flash)
 applications-use-plugin-in =
     .label = Utilitza { $plugin-name } (en el { -brand-short-name })
 applications-open-inapp =
@@ -371,6 +377,8 @@ play-drm-content =
 play-drm-content-learn-more = Més informació
 update-application-title = Actualitzacions del { -brand-short-name }
 update-application-description = Manteniu el { -brand-short-name } actualitzat per obtenir el millor rendiment, estabilitat i seguretat.
+# Variables:
+# $version (string) - Firefox version
 update-application-version = Versió { $version } <a data-l10n-name="learn-more">Novetats</a>
 update-history =
     .label = Mostra l'historial d'actualitzacions…
@@ -397,7 +405,7 @@ update-application-suppress-prompts =
     .accesskey = n
 update-setting-write-failure-title2 = Error en desar els paràmetres d'actualització
 # Variables:
-#   $path (String) - Path to the configuration file
+#   $path (string) - Path to the configuration file
 # The newlines between the main text and the line containing the path is
 # intentional so the path is easier to identify.
 update-setting-write-failure-message2 =
@@ -427,7 +435,7 @@ performance-limit-content-process-option = Límit de processos de contingut
 performance-limit-content-process-enabled-desc = Més processos de contingut poden millorar el rendiment quan utilitzeu diverses pestanyes, però també utilitzaran més memòria.
 performance-limit-content-process-blocked-desc = El nombre de processos de contingut només es pot modificar amb el { -brand-short-name } multiprocés. <a data-l10n-name="learn-more">Més informació sobre com comprovar si el multiprocés està activat.</a>
 # Variables:
-#   $num - default value of the `dom.ipc.processCount` pref.
+#   $num (number) - Default value of the `dom.ipc.processCount` pref.
 performance-default-content-process-count =
     .label = { $num } (per defecte)
 
@@ -489,10 +497,6 @@ home-newtabs-mode-label = Pestanyes noves
 home-restore-defaults =
     .label = Restaura els valors per defecte
     .accesskey = R
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Inici del Firefox (per defecte)
 home-mode-choice-default-fx =
     .label = { -firefox-home-brand-name } (Per defecte)
 home-mode-choice-custom =
@@ -518,8 +522,6 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Contingut d'inici del Firefox
-home-prefs-content-description = Trieu el contingut que voleu a la pantalla d'inici del Firefox.
 home-prefs-content-header2 = Contingut de l'{ -firefox-home-brand-name }
 home-prefs-content-description2 = Trieu el contingut que voleu en la pantalla d'{ -firefox-home-brand-name }.
 home-prefs-search-header =
@@ -531,7 +533,7 @@ home-prefs-shortcuts-by-option-sponsored =
     .label = Dreceres patrocinades
 
 ## Variables:
-##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 home-prefs-recommended-by-header =
     .label = Recomanat per { $provider }
@@ -562,6 +564,8 @@ home-prefs-recent-activity-description = Una selecció de continguts i llocs rec
 home-prefs-snippets-header =
     .label = Retalls
 home-prefs-snippets-description-new = Consells i novetats de { -vendor-short-name } i del { -brand-product-name }
+# Variables:
+#   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
     .label =
         { $num ->
@@ -590,6 +594,11 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Mostra suggeriments de cerca als resultats de la barra d'adreces
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar
+# when using the current default search engine.
+search-show-search-term-option =
+    .label = Mostra els termes de cerca en lloc de l'URL a la pàgina de resultats del motor de cerca per defecte
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -621,7 +630,7 @@ search-find-more-link = Afegiu més motors de cerca
 # ('Duplicate' is an adjective)
 search-keyword-warning-title = Duplica la paraula clau
 # Variables:
-#   $name (String) - Name of a search engine.
+#   $name (string) - Name of a search engine.
 search-keyword-warning-engine = Heu triat una paraula clau que ja utilitza «{ $name }». Seleccioneu-ne una altra.
 search-keyword-warning-bookmark = Heu triat una paraula clau que ja utilitza una adreça d'interès. Seleccioneu-ne una altra.
 
@@ -641,7 +650,7 @@ containers-settings-button =
 containers-remove-button =
     .label = Elimina
 
-## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = El vostre web a tot arreu
@@ -659,7 +668,7 @@ sync-signedout-account-signin3 =
 # to your language, but should not be changed or translated.
 sync-mobile-promo = Baixeu el Firefox per a l'<img data-l10n-name="android-icon"/> <a data-l10n-name="android-link">Android</a> o per a l'<img data-l10n-name="ios-icon"/> <a data-l10n-name="ios-link">iOS</a> per sincronitzar amb el vostre dispositiu mòbil.
 
-## Firefox Account - Signed in
+## Firefox account - Signed in
 
 sync-profile-picture =
     .tooltiptext = Canvia la imatge de perfil
@@ -668,8 +677,15 @@ sync-sign-out =
     .accesskey = T
 sync-manage-account = Gestiona el compte
     .accesskey = a
+
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } no està verificat.
 sync-signedin-login-failure = Inicieu la sessió per tornar-vos a connectar { $email }
+
+##
+
 sync-resend-verification =
     .label = Torna a enviar la verificació
     .accesskey = v
@@ -692,10 +708,15 @@ prefs-sync-now =
     .labelnotsyncing = Sincronitza ara
     .accesskeynotsyncing = S
     .labelsyncing = S'està sincronitzant…
+prefs-sync-now-button =
+    .label = Sincronitza ara
+    .accesskey = S
+prefs-syncing-button =
+    .label = S'està sincronitzant…
 
 ## The list of things currently syncing.
 
-sync-currently-syncing-heading = Actualment se sincronitzen aquests elements:
+sync-syncing-across-devices-heading = Actualment, sincronitzeu aquests elements en tots els vostres dispositius connectats:
 sync-currently-syncing-bookmarks = Adreces d'interès
 sync-currently-syncing-history = Historial
 sync-currently-syncing-tabs = Pestanyes obertes
@@ -710,13 +731,6 @@ sync-change-options =
 
 ## The "Choose what to sync" dialog.
 
-sync-choose-what-to-sync-dialog =
-    .title = Trieu què voleu sincronitzar
-    .style = width: 36em; min-height: 35em;
-    .buttonlabelaccept = Desa els canvis
-    .buttonaccesskeyaccept = c
-    .buttonlabelextra2 = Desconnecta…
-    .buttonaccesskeyextra2 = D
 sync-choose-what-to-sync-dialog3 =
     .title = Trieu què voleu sincronitzar
     .style = min-width: 36em;
@@ -724,6 +738,7 @@ sync-choose-what-to-sync-dialog3 =
     .buttonaccesskeyaccept = c
     .buttonlabelextra2 = Desconnecta…
     .buttonaccesskeyextra2 = D
+sync-choose-dialog-subtitle = Els canvis a la llista d'elements a sincronitzar s'aplicaran a tots els dispositius connectats.
 sync-engine-bookmarks =
     .label = Adreces d'interès
     .accesskey = d
@@ -769,6 +784,16 @@ sync-device-name-save =
     .accesskey = D
 sync-connect-another-device = Connecta un altre dispositiu
 
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = S'ha enviat la verificació
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = S'ha enviat un enllaç de verificació a { $email }.
+sync-verification-not-sent-title = No s'ha pogut enviar la verificació
+sync-verification-not-sent-body = Ara mateix no es pot enviar un correu de verificació, torneu-ho a provar més tard.
+
 ## Privacy Section
 
 privacy-header = Privadesa del navegador
@@ -792,6 +817,8 @@ forms-breach-alerts =
     .label = Mostra alertes sobre contrasenyes per als llocs web relacionats amb filtracions de dades
     .accesskey = b
 forms-breach-alerts-learn-more-link = Més informació
+preferences-relay-integration-checkbox =
+    .label = Suggereix màscares de correu electrònic del { -relay-brand-name } per a protegir l'adreça electrònica
 relay-integration-learn-more-link = Més informació
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
@@ -881,8 +908,8 @@ history-clear-button =
 sitedata-header = Galetes i dades dels llocs
 sitedata-total-size-calculating = S'està calculant la mida de les dades dels llocs i de la memòria cau…
 # Variables:
-#   $value (Number) - Value of the unit (for example: 4.6, 500)
-#   $unit (String) - Name of the unit (for example: "bytes", "KB")
+#   $value (number) - Value of the unit (for example: 4.6, 500)
+#   $unit (string) - Name of the unit (for example: "bytes", "KB")
 sitedata-total-size = Les galetes, les dades dels llocs i la memòria cau actualment ocupen { $value } { $unit } d'espai de disc.
 sitedata-learn-more = Més informació
 sitedata-delete-on-close =
@@ -907,8 +934,8 @@ sitedata-option-block-cross-site-cookies =
     .label = Galetes de seguiment entre llocs, i aïlla les altres galetes entre llocs
 sitedata-option-block-unvisited =
     .label = Galetes de llocs web no visitats
-sitedata-option-block-all-third-party =
-    .label = Totes les galetes de tercers (pot fer que alguns llocs web no funcionin)
+sitedata-option-block-all-cross-site-cookies =
+    .label = Totes les galetes entre llocs (pot fer que alguns llocs web no funcionin)
 sitedata-option-block-all =
     .label = Totes les galetes (farà que alguns llocs web no funcionin)
 sitedata-clear =
@@ -920,6 +947,14 @@ sitedata-settings =
 sitedata-cookies-exceptions =
     .label = Gestiona les excepcions…
     .accesskey = x
+
+## Privacy Section - Cookie Banner Handling
+
+cookie-banner-handling-header = Reducció de bàners de galetes
+cookie-banner-handling-description = El { -brand-short-name } intenta rebutjar automàticament les sol·licituds de bàners de galetes de tots els llocs compatibles.
+cookie-banner-learn-more = Més informació
+forms-handle-cookie-banners =
+    .label = Reduïu els bàners de galetes
 
 ## Privacy Section - Address Bar
 
@@ -978,7 +1013,6 @@ content-blocking-etp-strict-desc = Més protecció, però pot fer que alguns llo
 content-blocking-etp-custom-desc = Trieu quins elements de seguiment i scripts cal blocar.
 content-blocking-etp-blocking-desc = El { -brand-short-name } bloca el següent:
 content-blocking-private-windows = Contingut que fa seguiment en finestres privades
-content-blocking-cross-site-cookies-in-all-windows = Galetes entre llocs en totes les finestres (inclou galetes de seguiment)
 content-blocking-cross-site-cookies-in-all-windows2 = Galetes entre llocs en totes les finestres
 content-blocking-cross-site-tracking-cookies = Galetes de seguiment entre llocs
 content-blocking-all-cross-site-cookies-private-windows = Galetes entre llocs en finestres privades
@@ -987,20 +1021,16 @@ content-blocking-social-media-trackers = Elements de seguiment de xarxes socials
 content-blocking-all-cookies = Totes les galetes
 content-blocking-unvisited-cookies = Galetes de llocs no visitats
 content-blocking-all-windows-tracking-content = Contingut que fa seguiment en totes les finestres
-content-blocking-all-third-party-cookies = Totes les galetes de tercers
+content-blocking-all-cross-site-cookies = Totes les galetes entre llocs
 content-blocking-cryptominers = Miners de criptomonedes
 content-blocking-fingerprinters = Generadors d'empremtes digitals
-# "Test pilot" is used as a verb. Possible alternatives:
-# "Be the first to try", "Join an early experiment".
-content-blocking-etp-standard-tcp-rollout-checkbox =
-    .label = Sigueu dels primers de provar les funcions de privadesa més potents que existeixen
-    .accesskey = S
 
 # The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 # "Contains" here means "isolates", "limits".
 content-blocking-etp-standard-tcp-rollout-description = La protecció total de galetes aïlla les galetes del lloc on us trobeu, de manera que els elements de seguiment no les poden utilitzar per a seguir-vos d'un lloc a l'altre.
 content-blocking-etp-standard-tcp-rollout-learn-more = Més informació
+content-blocking-etp-standard-tcp-title = Inclou la Protecció total de galetes, la nostra funció de privadesa més potent fins ara
 content-blocking-warning-title = Atenció!
 content-blocking-and-isolating-etp-warning-description-2 = Aquest paràmetre pot fer que alguns llocs web no mostrin part del contingut o que no funcionin correctament. Si sembla que un lloc no funciona bé, podeu provar de desactivar la protecció contra el seguiment perquè aquest lloc carregui tot el contingut.
 content-blocking-warning-learn-how = Vegeu com fer-ho
@@ -1058,6 +1088,11 @@ permissions-microphone = Micròfon
 permissions-microphone-settings =
     .label = Paràmetres…
     .accesskey = t
+# Short form for "the act of choosing sound output devices and redirecting audio to the chosen devices".
+permissions-speaker = Selecció d'altaveu
+permissions-speaker-settings =
+    .label = Paràmetres…
+    .accesskey = P
 permissions-notification = Notificacions
 permissions-notification-settings =
     .label = Paràmetres…
@@ -1108,6 +1143,10 @@ addon-recommendations-link = Més informació
 collection-health-report-disabled = L'informe de dades està desactivat en la configuració d'aquesta versió
 collection-backlogged-crash-reports-with-link = Permet que el { -brand-short-name } enviï els informes de fallada pendents automàticament <a data-l10n-name="crash-reports-link">Més informació</a>
     .accesskey = f
+privacy-segmentation-section-header = Noves funcions que milloren la navegació
+privacy-segmentation-section-description = Quan us oferim funcions que utilitzen les vostres dades per oferir-vos una experiència més personal:
+privacy-segmentation-radio-off =
+    .label = Utilitza les recomanacions del { -brand-product-name }
 privacy-segmentation-radio-on =
     .label = Mostra informació detallada
 
@@ -1158,6 +1197,63 @@ httpsonly-radio-enabled-pbm =
     .label = Activa el mode només HTTPS únicament en les finestres privades
 httpsonly-radio-disabled =
     .label = No activis el mode només HTTPS
+
+## DoH Section
+
+preferences-doh-header = DNS sobre HTTPS
+preferences-doh-description = El sistema de noms de domini (DNS) sobre HTTPS envia la vostra sol·licitud d'un nom de domini mitjançant una connexió xifrada, creant un DNS segur i dificultant que els altres vegin a quin lloc web esteu a punt d'accedir.
+# Variables:
+#   $status (string) - The status of the DoH connection
+preferences-doh-status = Estat: { $status }
+# Variables:
+#   $name (string) - The name of the DNS over HTTPS resolver. If a custom resolver is used, the name will be the domain of the URL.
+preferences-doh-resolver = Proveïdor: { $name }
+# This is displayed instead of $name in preferences-doh-resolver
+# when the DoH URL is not a valid URL
+preferences-doh-bad-url = L'URL no és vàlid
+preferences-doh-steering-status = Mitjançant un proveïdor local
+preferences-doh-status-active = Actiu
+preferences-doh-status-disabled = Desactivat
+# Variables:
+#   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
+preferences-doh-status-not-active = Inactiu ({ $reason })
+preferences-doh-group-message = Activa el DNS segur mitjançant:
+preferences-doh-expand-section =
+    .tooltiptext = Més informació
+preferences-doh-setting-default =
+    .label = Protecció per defecte
+    .accesskey = P
+preferences-doh-default-desc = El { -brand-short-name } decideix quan cal utilitzar el DNS segur per a protegir la vostra privadesa.
+preferences-doh-default-detailed-desc-1 = Utilitza el DNS segur en les regions on estigui disponible
+preferences-doh-default-detailed-desc-2 = Utilitza el vostre sistema de resolució de DNS per defecte si hi ha algun problema amb el proveïdor de DNS segur
+preferences-doh-default-detailed-desc-3 = Utilitza un proveïdor local, si és possible
+preferences-doh-default-detailed-desc-4 = Desactiva quan la VPN, el control parental o les polítiques empresarials estiguin activats
+preferences-doh-default-detailed-desc-5 = Desactiva quan una xarxa digui al { -brand-short-name } que no utilitzi el DNS segur
+preferences-doh-setting-enabled =
+    .label = Protecció ampliada
+    .accesskey = P
+preferences-doh-enabled-desc = Controleu quan voleu utilitzar el DNS segur i trieu el vostre proveïdor.
+preferences-doh-enabled-detailed-desc-1 = Utilitza el proveïdor que trieu
+preferences-doh-enabled-detailed-desc-2 = Utilitza el vostre sistema de resolució de DNS per defecte només si hi ha algun problema amb el DNS segur
+preferences-doh-setting-strict =
+    .label = Protecció màxima
+    .accesskey = m
+preferences-doh-strict-desc = El { -brand-short-name } sempre utilitzarà el DNS segur. Si cal utilitzar el DNS del vostre sistema, veureu un avís de risc de seguretat.
+preferences-doh-strict-detailed-desc-1 = Utilitza només el proveïdor que trieu
+preferences-doh-strict-detailed-desc-2 = Sempre avisa si el DNS segur no està disponible
+preferences-doh-strict-detailed-desc-3 = Si el DNS segur no està disponible, els llocs no es carregaran ni funcionaran correctament
+preferences-doh-setting-off =
+    .label = Desactivat
+    .accesskey = D
+preferences-doh-off-desc = Utilitza el vostre sistema de resolució de DNS per defecte
+preferences-doh-checkbox-warn =
+    .label = Avisa si un tercer impedeix activament utilitzar el DNS segur
+    .accesskey = v
+preferences-doh-select-resolver = Trieu el proveïdor:
+preferences-doh-exceptions-description = El { -brand-short-name } no utilitzarà el DNS segur en aquests llocs
+preferences-doh-manage-exceptions =
+    .label = Gestiona les excepcions…
+    .accesskey = x
 
 ## The following strings are used in the Download section of settings
 

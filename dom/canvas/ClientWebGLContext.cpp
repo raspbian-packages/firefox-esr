@@ -8,7 +8,6 @@
 #include <bitset>
 
 #include "ClientWebGLExtensions.h"
-#include "Layers.h"
 #include "gfxCrashReporterUtils.h"
 #include "HostWebGLContext.h"
 #include "js/PropertyAndElement.h"  // JS_DefineElement
@@ -28,7 +27,6 @@
 #include "mozilla/layers/TextureClientSharedSurface.h"
 #include "mozilla/layers/WebRenderUserData.h"
 #include "mozilla/layers/WebRenderCanvasRenderer.h"
-#include "mozilla/Preferences.h"
 #include "mozilla/ResultVariant.h"
 #include "mozilla/ScopeExit.h"
 #include "mozilla/StaticPrefs_webgl.h"
@@ -372,6 +370,8 @@ void ClientWebGLContext::Event_webglcontextrestored() const {
     return;
   }
 
+  mResetLayer = true;
+
   (void)DispatchEvent(u"webglcontextrestored"_ns);
 }
 
@@ -422,8 +422,9 @@ void ClientWebGLContext::Run(Args&&... args) const {
 
   const auto id = IdByMethod<MethodType, method>();
 
-  const auto size = webgl::SerializedSize(id, args...);
-  const auto maybeDest = child->AllocPendingCmdBytes(size);
+  const auto info = webgl::SerializationInfo(id, args...);
+  const auto maybeDest = child->AllocPendingCmdBytes(info.requiredByteCount,
+                                                     info.alignmentOverhead);
   if (!maybeDest) {
     JsWarning("Failed to allocate internal command buffer.");
     OnContextLoss(webgl::ContextLossReason::None);
@@ -458,27 +459,61 @@ layers::TextureType ClientWebGLContext::GetTexTypeForSwapChain() const {
 }
 
 void ClientWebGLContext::Present(WebGLFramebufferJS* const xrFb,
-                                 const bool webvr) {
+                                 const bool webvr,
+                                 const webgl::SwapChainOptions& options) {
   const auto texType = GetTexTypeForSwapChain();
-  Present(xrFb, texType, webvr);
+  Present(xrFb, texType, webvr, options);
+}
+
+// Fill in remote texture ids to SwapChainOptions if async present is enabled.
+webgl::SwapChainOptions ClientWebGLContext::PrepareAsyncSwapChainOptions(
+    WebGLFramebufferJS* fb, bool webvr,
+    const webgl::SwapChainOptions& options) {
+  // Currently remote texture ids should only be set internally.
+  MOZ_ASSERT(!options.remoteTextureOwnerId.IsValid() &&
+             !options.remoteTextureId.IsValid());
+  auto& ownerId = fb ? fb->mRemoteTextureOwnerId : mRemoteTextureOwnerId;
+  auto& textureId = fb ? fb->mLastRemoteTextureId : mLastRemoteTextureId;
+  // Async present only works when out-of-process. It is not supported in WebVR.
+  // Allow it if it is either forced or if the pref is set.
+  if (!IsContextLost() && !mNotLost->inProcess && !webvr &&
+      (options.forceAsyncPresent ||
+       StaticPrefs::webgl_out_of_process_async_present())) {
+    if (!ownerId) {
+      ownerId = Some(layers::RemoteTextureOwnerId::GetNext());
+    }
+    textureId = Some(layers::RemoteTextureId::GetNext());
+    webgl::SwapChainOptions asyncOptions = options;
+    asyncOptions.remoteTextureOwnerId = *ownerId;
+    asyncOptions.remoteTextureId = *textureId;
+    return asyncOptions;
+  }
+  // Clear the current remote texture id so that we disable async.
+  textureId = Nothing();
+  return options;
 }
 
 void ClientWebGLContext::Present(WebGLFramebufferJS* const xrFb,
                                  const layers::TextureType type,
-                                 const bool webvr) {
+                                 const bool webvr,
+                                 const webgl::SwapChainOptions& options) {
   if (!mIsCanvasDirty && !xrFb) return;
   if (!xrFb) {
     mIsCanvasDirty = false;
   }
   CancelAutoFlush();
-  Run<RPROC(Present)>(xrFb ? xrFb->mId : 0, type, webvr);
+  webgl::SwapChainOptions asyncOptions =
+      PrepareAsyncSwapChainOptions(xrFb, webvr, options);
+  Run<RPROC(Present)>(xrFb ? xrFb->mId : 0, type, webvr, asyncOptions);
 }
 
 void ClientWebGLContext::CopyToSwapChain(
     WebGLFramebufferJS* const fb, const webgl::SwapChainOptions& options) {
   CancelAutoFlush();
   const auto texType = GetTexTypeForSwapChain();
-  Run<RPROC(CopyToSwapChain)>(fb ? fb->mId : 0, texType, options);
+  webgl::SwapChainOptions asyncOptions =
+      PrepareAsyncSwapChainOptions(fb, false, options);
+  Run<RPROC(CopyToSwapChain)>(fb ? fb->mId : 0, texType, asyncOptions);
 }
 
 void ClientWebGLContext::EndOfFrame() {
@@ -498,8 +533,26 @@ Maybe<layers::SurfaceDescriptor> ClientWebGLContext::GetFrontBuffer(
 
   const auto& child = mNotLost->outOfProcess;
   child->FlushPendingCmds();
+
   Maybe<layers::SurfaceDescriptor> ret;
+
+  // If valid remote texture data was set for async present, then use it.
+  const auto& ownerId = fb ? fb->mRemoteTextureOwnerId : mRemoteTextureOwnerId;
+  const auto& textureId = fb ? fb->mLastRemoteTextureId : mLastRemoteTextureId;
+  auto& needsSync = fb ? fb->mNeedsRemoteTextureSync : mNeedsRemoteTextureSync;
+  if (ownerId && textureId) {
+    if (XRE_IsParentProcess() ||
+        gfx::gfxVars::WebglOopAsyncPresentForceSync() || needsSync) {
+      needsSync = false;
+      // Request the front buffer from IPDL to cause a sync, even though we
+      // will continue to use the remote texture descriptor after.
+      (void)child->SendGetFrontBuffer(fb ? fb->mId : 0, vr, &ret);
+    }
+    return Some(layers::SurfaceDescriptorRemoteTexture(*textureId, *ownerId));
+  }
+
   if (!child->SendGetFrontBuffer(fb ? fb->mId : 0, vr, &ret)) return {};
+
   return ret;
 }
 
@@ -517,7 +570,7 @@ bool ClientWebGLContext::UpdateWebRenderCanvasData(
     nsDisplayListBuilder* aBuilder, WebRenderCanvasData* aCanvasData) {
   CanvasRenderer* renderer = aCanvasData->GetCanvasRenderer();
 
-  if (!mResetLayer && renderer) {
+  if (!IsContextLost() && !mResetLayer && renderer) {
     return true;
   }
 
@@ -542,6 +595,7 @@ bool ClientWebGLContext::UpdateWebRenderCanvasData(
 
   MOZ_ASSERT(renderer);
   mResetLayer = false;
+  mNeedsRemoteTextureSync = true;
 
   return true;
 }
@@ -704,6 +758,11 @@ ClientWebGLContext::SetDimensions(const int32_t signedWidth,
   return NS_OK;
 }
 
+void ClientWebGLContext::ResetBitmap() {
+  const auto size = DrawingBufferSize();
+  Run<RPROC(Resize)>(size);  // No-change resize still clears/resets everything.
+}
+
 static bool IsWebglOutOfProcessEnabled() {
   if (StaticPrefs::webgl_out_of_process_force()) {
     return true;
@@ -715,11 +774,6 @@ static bool IsWebglOutOfProcessEnabled() {
     return StaticPrefs::webgl_out_of_process_worker();
   }
   return StaticPrefs::webgl_out_of_process();
-}
-
-static inline bool StartsWith(const std::string& haystack,
-                              const std::string& needle) {
-  return haystack.find(needle) == 0;
 }
 
 bool ClientWebGLContext::CreateHostContext(const uvec2& requestedSize) {
@@ -768,8 +822,7 @@ bool ClientWebGLContext::CreateHostContext(const uvec2& requestedSize) {
     ScopedGfxFeatureReporter reporter("IpcWebGL");
 
     auto* const cm = gfx::CanvasManagerChild::Get();
-    MOZ_ASSERT(cm);
-    if (!cm) {
+    if (NS_WARN_IF(!cm)) {
       return Err("!CanvasManagerChild::Get()");
     }
 
@@ -822,7 +875,7 @@ bool ClientWebGLContext::CreateHostContext(const uvec2& requestedSize) {
   {
     webgl::TypedQuad initVal;
     const float fData[4] = {0, 0, 0, 1};
-    memcpy(initVal.data, fData, sizeof(initVal.data));
+    memcpy(initVal.data.data(), fData, initVal.data.size());
     state.mGenericVertexAttribs.resize(limits.maxVertexAttribs, initVal);
   }
 
@@ -919,12 +972,10 @@ ClientWebGLContext::SetContextOptions(JSContext* cx,
   if (attributes.mAntialias.WasPassed()) {
     newOpts.antialias = attributes.mAntialias.Value();
   }
-
+  newOpts.ignoreColorSpace = true;
   if (attributes.mColorSpace.WasPassed()) {
-    newOpts.colorSpace = attributes.mColorSpace.Value();
-  }
-  if (StaticPrefs::gfx_color_management_native_srgb()) {
     newOpts.ignoreColorSpace = false;
+    newOpts.colorSpace = attributes.mColorSpace.Value();
   }
 
   // Don't do antialiasing if we've disabled MSAA.
@@ -1187,8 +1238,10 @@ RefPtr<gfx::DataSourceSurface> ClientWebGLContext::BackBufferSnapshot() {
   return surf;
 }
 
-UniquePtr<uint8_t[]> ClientWebGLContext::GetImageBuffer(int32_t* out_format) {
+UniquePtr<uint8_t[]> ClientWebGLContext::GetImageBuffer(
+    int32_t* out_format, gfx::IntSize* out_imageSize) {
   *out_format = 0;
+  *out_imageSize = {};
 
   // Use GetSurfaceSnapshot() to make sure that appropriate y-flip gets applied
   gfxAlphaType any;
@@ -1198,6 +1251,13 @@ UniquePtr<uint8_t[]> ClientWebGLContext::GetImageBuffer(int32_t* out_format) {
   RefPtr<gfx::DataSourceSurface> dataSurface = snapshot->GetDataSurface();
 
   const auto& premultAlpha = mNotLost->info.options.premultipliedAlpha;
+  *out_imageSize = dataSurface->GetSize();
+
+  if (ShouldResistFingerprinting(RFPTarget::CanvasRandomization)) {
+    return gfxUtils::GetImageBufferWithRandomNoise(
+        dataSurface, premultAlpha, GetCookieJarSettings(), out_format);
+  }
+
   return gfxUtils::GetImageBuffer(dataSurface, premultAlpha, out_format);
 }
 
@@ -1212,6 +1272,13 @@ ClientWebGLContext::GetInputStream(const char* mimeType,
 
   RefPtr<gfx::DataSourceSurface> dataSurface = snapshot->GetDataSurface();
   const auto& premultAlpha = mNotLost->info.options.premultipliedAlpha;
+
+  if (ShouldResistFingerprinting(RFPTarget::CanvasRandomization)) {
+    return gfxUtils::GetInputStreamWithRandomNoise(
+        dataSurface, premultAlpha, mimeType, encoderOptions,
+        GetCookieJarSettings(), out_stream);
+  }
+
   return gfxUtils::GetInputStream(dataSurface, premultAlpha, mimeType,
                                   encoderOptions, out_stream);
 }
@@ -2014,6 +2081,11 @@ void ClientWebGLContext::GetParameter(JSContext* cx, GLenum pname,
       retval.set(JS::NumberValue(state.mPixelUnpackState.colorspaceConversion));
       return;
 
+    case dom::WEBGL_provoking_vertex_Binding::PROVOKING_VERTEX_WEBGL:
+      if (!IsExtensionEnabled(WebGLExtensionID::WEBGL_provoking_vertex)) break;
+      retval.set(JS::NumberValue(UnderlyingValue(state.mProvokingVertex)));
+      return;
+
     // -
     // Array returns
 
@@ -2170,30 +2242,20 @@ void ClientWebGLContext::GetParameter(JSContext* cx, GLenum pname,
   // -
 
   if (!debug) {
-    const auto GetPref = [&](const char* const name) {
-      Maybe<std::string> ret;
-      nsCString overrideVal;
-      const auto res = Preferences::GetCString(name, overrideVal);
-      if (NS_SUCCEEDED(res) && overrideVal.Length() > 0) {
-        ret = Some(ToString(overrideVal));
-      }
-      return ret;
-    };
-
     const auto GetUnmaskedRenderer = [&]() {
-      auto ret = GetPref("webgl.override-unmasked-renderer");
-      if (!ret) {
-        ret = GetString(LOCAL_GL_RENDERER);
+      const auto prefLock = StaticPrefs::webgl_override_unmasked_renderer();
+      if (!prefLock->IsEmpty()) {
+        return Some(ToString(*prefLock));
       }
-      return ret;
+      return GetString(LOCAL_GL_RENDERER);
     };
 
     const auto GetUnmaskedVendor = [&]() {
-      auto ret = GetPref("webgl.override-unmasked-vendor");
-      if (!ret) {
-        ret = GetString(LOCAL_GL_VENDOR);
+      const auto prefLock = StaticPrefs::webgl_override_unmasked_vendor();
+      if (!prefLock->IsEmpty()) {
+        return Some(ToString(*prefLock));
       }
-      return ret;
+      return GetString(LOCAL_GL_VENDOR);
     };
 
     // -
@@ -2207,7 +2269,7 @@ void ClientWebGLContext::GetParameter(JSContext* cx, GLenum pname,
 
       case LOCAL_GL_RENDERER: {
         bool allowRenderer = StaticPrefs::webgl_enable_renderer_query();
-        if (nsContentUtils::ShouldResistFingerprinting()) {
+        if (ShouldResistFingerprinting()) {
           allowRenderer = false;
         }
         if (allowRenderer) {
@@ -2588,15 +2650,16 @@ void ClientWebGLContext::GetUniform(JSContext* const cx,
   if (!prog.ValidateUsable(*this, "prog")) return;
   if (!loc.ValidateUsable(*this, "loc")) return;
 
-  const auto& activeLinkResult = GetActiveLinkResult();
-  if (!activeLinkResult) {
-    EnqueueError(LOCAL_GL_INVALID_OPERATION, "No active linked Program.");
+  const auto& progLinkResult = GetLinkResult(prog);
+  if (!progLinkResult.success) {
+    EnqueueError(LOCAL_GL_INVALID_OPERATION, "Program is not linked.");
     return;
   }
-  const auto& reqLinkInfo = loc.mParent.lock();
-  if (reqLinkInfo.get() != activeLinkResult) {
-    EnqueueError(LOCAL_GL_INVALID_OPERATION,
-                 "UniformLocation is not from the current active Program.");
+  const auto& uniformLinkResult = loc.mParent.lock();
+  if (uniformLinkResult.get() != &progLinkResult) {
+    EnqueueError(
+        LOCAL_GL_INVALID_OPERATION,
+        "UniformLocation is not from the most recent linking of Program.");
     return;
   }
 
@@ -2800,7 +2863,7 @@ void ClientWebGLContext::ClearBufferTv(const GLenum buffer,
   webgl::TypedQuad data;
   data.type = type;
 
-  auto dataSize = sizeof(data.data);
+  auto dataSize = data.data.size();
   switch (buffer) {
     case LOCAL_GL_COLOR:
       break;
@@ -2824,7 +2887,7 @@ void ClientWebGLContext::ClearBufferTv(const GLenum buffer,
     return;
   }
 
-  memcpy(data.data, view.begin().get() + byteOffset.value(), dataSize);
+  memcpy(data.data.data(), view.begin().get() + byteOffset.value(), dataSize);
   Run<RPROC(ClearBufferTv)>(buffer, drawBuffer, data);
 
   AfterDrawCall();
@@ -3362,15 +3425,26 @@ void ClientWebGLContext::BufferData(GLenum target,
   Run<RPROC(BufferData)>(target, RawBuffer<>(range), usage);
 }
 
-void ClientWebGLContext::RawBufferData(GLenum target,
-                                       const Range<const uint8_t>& srcData,
-                                       GLenum usage) {
+void ClientWebGLContext::RawBufferData(GLenum target, const uint8_t* srcBytes,
+                                       size_t srcLen, GLenum usage) {
   const FuncScope funcScope(*this, "bufferData");
 
-  Run<RPROC(BufferData)>(target, RawBuffer<>(srcData), usage);
+  const auto srcBuffer =
+      srcBytes ? RawBuffer<>({srcBytes, srcLen}) : RawBuffer<>(srcLen);
+  Run<RPROC(BufferData)>(target, srcBuffer, usage);
 }
 
 ////
+
+void ClientWebGLContext::RawBufferSubData(GLenum target,
+                                          WebGLsizeiptr dstByteOffset,
+                                          const uint8_t* srcBytes,
+                                          size_t srcLen, bool unsynchronized) {
+  const FuncScope funcScope(*this, "bufferSubData");
+
+  Run<RPROC(BufferSubData)>(target, dstByteOffset,
+                            RawBuffer<>({srcBytes, srcLen}), unsynchronized);
+}
 
 void ClientWebGLContext::BufferSubData(GLenum target,
                                        WebGLsizeiptr dstByteOffset,
@@ -3378,7 +3452,8 @@ void ClientWebGLContext::BufferSubData(GLenum target,
   const FuncScope funcScope(*this, "bufferSubData");
   src.ComputeState();
   const auto range = Range<const uint8_t>{src.Data(), src.Length()};
-  Run<RPROC(BufferSubData)>(target, dstByteOffset, RawBuffer<>(range));
+  Run<RPROC(BufferSubData)>(target, dstByteOffset, RawBuffer<>(range),
+                            /* unsynchronized */ false);
 }
 
 void ClientWebGLContext::BufferSubData(GLenum target,
@@ -3394,7 +3469,8 @@ void ClientWebGLContext::BufferSubData(GLenum target,
     return;
   }
   const auto range = Range<const uint8_t>{bytes, byteLen};
-  Run<RPROC(BufferSubData)>(target, dstByteOffset, RawBuffer<>(range));
+  Run<RPROC(BufferSubData)>(target, dstByteOffset, RawBuffer<>(range),
+                            /* unsynchronized */ false);
 }
 
 void ClientWebGLContext::CopyBufferSubData(GLenum readTarget,
@@ -4261,6 +4337,8 @@ void ClientWebGLContext::TexImage(uint8_t funcDims, GLenum imageTarget,
   // -
 
   mozilla::ipc::Shmem* pShmem = nullptr;
+  // Image to release after WebGLContext::TexImage().
+  RefPtr<layers::Image> keepAliveImage;
 
   if (desc->sd) {
     const auto& sd = *(desc->sd);
@@ -4292,9 +4370,24 @@ void ClientWebGLContext::TexImage(uint8_t funcDims, GLenum imageTarget,
       if (sdType == layers::SurfaceDescriptor::TSurfaceDescriptorD3D10) {
         const auto& sdD3D = sd.get_SurfaceDescriptorD3D10();
         const auto& inProcess = mNotLost->inProcess;
+        MOZ_ASSERT(desc->image);
+        keepAliveImage = desc->image;
+
         if (sdD3D.gpuProcessTextureId().isSome() && inProcess) {
           return Some(
               std::string{"gpuProcessTextureId works only in GPU process."});
+        }
+      }
+
+      switch (respecFormat) {
+        case LOCAL_GL_SRGB:
+        case LOCAL_GL_SRGB8:
+        case LOCAL_GL_SRGB_ALPHA:
+        case LOCAL_GL_SRGB8_ALPHA8: {
+          const nsPrintfCString msg(
+              "srgb-encoded formats (like %s) are not supported.",
+              EnumString(respecFormat).c_str());
+          return Some(ToString(msg));
         }
       }
 
@@ -4327,6 +4420,8 @@ void ClientWebGLContext::TexImage(uint8_t funcDims, GLenum imageTarget,
   desc->Shrink(pi);
 
   // -
+
+  std::shared_ptr<webgl::RaiiShmem> tempShmem;
 
   const bool doInlineUpload = !desc->sd;
   // Why always de-inline SDs here?
@@ -4361,30 +4456,68 @@ void ClientWebGLContext::TexImage(uint8_t funcDims, GLenum imageTarget,
     // transport.
     if (pShmem) {
       MOZ_ASSERT(desc->sd);
-      const auto byteCount = pShmem->Size<uint8_t>();
-      const auto* const src = pShmem->get<uint8_t>();
-      const auto shmemType =
-          mozilla::ipc::SharedMemory::SharedMemoryType::TYPE_BASIC;
-      mozilla::ipc::Shmem shmemForResend;
-      if (!child->AllocShmem(byteCount, shmemType, &shmemForResend)) {
+      const auto srcBytes = ShmemRange<uint8_t>(*pShmem);
+      tempShmem = std::make_shared<webgl::RaiiShmem>();
+
+      // We need Unsafe because we want to dictate when to destroy it from the
+      // client side.
+      *tempShmem = webgl::RaiiShmem::AllocUnsafe(child, srcBytes.length());
+      if (!*tempShmem) {
         NS_WARNING("AllocShmem failed in TexImage");
         return;
       }
-      auto* const dst = shmemForResend.get<uint8_t>();
-      memcpy(dst, src, byteCount);
-      *pShmem = shmemForResend;
+      const auto dstBytes = ShmemRange<uint8_t>(tempShmem->Shmem());
+      Memcpy(&dstBytes, srcBytes.begin());
+
+      *pShmem = tempShmem->Shmem();
+      // Not Extract, because we free tempShmem manually below, after the remote
+      // side has finished executing SendTexImage.
     }
 
     (void)child->SendTexImage(static_cast<uint32_t>(level), respecFormat,
                               CastUvec3(offset), pi, std::move(*desc));
+
+    if (tempShmem || keepAliveImage) {
+      const auto eventTarget = GetCurrentSerialEventTarget();
+      MOZ_ASSERT(eventTarget);
+      child->SendPing()->Then(eventTarget, __func__,
+                              [tempShmem, keepAliveImage]() {
+                                // Cleans up when (our copy of)
+                                // sendableShmem/image goes out of scope.
+                              });
+    }
   }
 }
 
-void ClientWebGLContext::RawTexImage(
-    uint32_t level, GLenum respecFormat, uvec3 offset,
-    const webgl::PackingInfo& pi, const webgl::TexUnpackBlobDesc& desc) const {
+void ClientWebGLContext::RawTexImage(uint32_t level, GLenum respecFormat,
+                                     uvec3 offset, const webgl::PackingInfo& pi,
+                                     webgl::TexUnpackBlobDesc&& desc) const {
   const FuncScope funcScope(*this, "tex(Sub)Image[23]D");
   if (IsContextLost()) return;
+  if (desc.sd) {
+    // Shmems are stored in Buffer surface descriptors. We need to ensure first
+    // that all queued commands are flushed and then send the Shmem over IPDL.
+    const auto& sd = *(desc.sd);
+    if (sd.type() == layers::SurfaceDescriptor::TSurfaceDescriptorBuffer &&
+        sd.get_SurfaceDescriptorBuffer().data().type() ==
+            layers::MemoryOrShmem::TShmem) {
+      const auto& inProcess = mNotLost->inProcess;
+      if (inProcess) {
+        inProcess->TexImage(level, respecFormat, offset, pi, desc);
+      } else {
+        const auto& child = mNotLost->outOfProcess;
+        child->FlushPendingCmds();
+        (void)child->SendTexImage(level, respecFormat, offset, pi,
+                                  std::move(desc));
+      }
+    } else {
+      NS_WARNING(
+          "RawTexImage with SurfaceDescriptor only supports "
+          "SurfaceDescriptorBuffer with Shmem");
+    }
+    return;
+  }
+
   Run<RPROC(TexImage)>(level, respecFormat, offset, pi, desc);
 }
 
@@ -4540,21 +4673,23 @@ void ClientWebGLContext::GetVertexAttrib(JSContext* cx, GLuint index,
 
   switch (pname) {
     case LOCAL_GL_CURRENT_VERTEX_ATTRIB: {
-      JS::RootedObject obj(cx);
+      JS::Rooted<JSObject*> obj(cx);
 
       const auto& attrib = genericAttribs[index];
       switch (attrib.type) {
         case webgl::AttribBaseType::Float:
           obj = dom::Float32Array::Create(
-              cx, this, 4, reinterpret_cast<const float*>(attrib.data));
+              cx, this, 4, reinterpret_cast<const float*>(attrib.data.data()));
           break;
         case webgl::AttribBaseType::Int:
           obj = dom::Int32Array::Create(
-              cx, this, 4, reinterpret_cast<const int32_t*>(attrib.data));
+              cx, this, 4,
+              reinterpret_cast<const int32_t*>(attrib.data.data()));
           break;
         case webgl::AttribBaseType::Uint:
           obj = dom::Uint32Array::Create(
-              cx, this, 4, reinterpret_cast<const uint32_t*>(attrib.data));
+              cx, this, 4,
+              reinterpret_cast<const uint32_t*>(attrib.data.data()));
           break;
         case webgl::AttribBaseType::Boolean:
           MOZ_CRASH("impossible");
@@ -4682,9 +4817,11 @@ void ClientWebGLContext::UniformData(const GLenum funcElemType,
 
   // -
 
-  const auto ptr = bytes.begin().get() + (elemOffset * sizeof(float));
-  const auto range = Range<const uint8_t>{ptr, availCount * sizeof(float)};
-  Run<RPROC(UniformData)>(locId, transpose, RawBuffer<>(range));
+  const auto begin =
+      reinterpret_cast<const webgl::UniformDataVal*>(bytes.begin().get()) +
+      elemOffset;
+  const auto range = Range{begin, availCount};
+  Run<RPROC(UniformData)>(locId, transpose, RawBuffer{range});
 }
 
 // -
@@ -4748,7 +4885,7 @@ void ClientWebGLContext::VertexAttrib4Tv(GLuint index, webgl::AttribBaseType t,
 
   auto& attrib = list[index];
   attrib.type = t;
-  memcpy(attrib.data, src.begin().get(), sizeof(attrib.data));
+  memcpy(attrib.data.data(), src.begin().get(), attrib.data.size());
 
   Run<RPROC(VertexAttrib4T)>(index, attrib);
 }
@@ -4917,10 +5054,10 @@ bool ClientWebGLContext::DoReadPixels(const webgl::ReadPixelsDesc& desc,
   if (!child->SendReadPixels(desc, dest.length(), &res)) {
     res = {};
   }
-  if (!res.byteStride) return false;
+  if (!res.byteStride || !res.shmem) return false;
   const auto& byteStride = res.byteStride;
   const auto& subrect = res.subrect;
-  const webgl::RaiiShmem shmem{child, res.shmem};
+  const webgl::RaiiShmem shmem{child, res.shmem.ref()};
   if (!shmem) {
     EnqueueError(LOCAL_GL_OUT_OF_MEMORY, "Failed to map in back buffer.");
     return false;
@@ -4928,11 +5065,12 @@ bool ClientWebGLContext::DoReadPixels(const webgl::ReadPixelsDesc& desc,
 
   const auto& shmemBytes = shmem.ByteRange();
 
-  uint8_t bpp;
-  if (!GetBytesPerPixel(desc.pi, &bpp)) {
-    MOZ_ASSERT(false);
+  const auto pii = webgl::PackingInfoInfo::For(desc.pi);
+  if (!pii) {
+    gfxCriticalError() << "ReadPixels: Bad " << desc.pi;
     return false;
   }
+  const auto bpp = pii->BytesPerPixel();
 
   const auto& packing = desc.packState;
   auto packRect = *uvec2::From(subrect.x, subrect.y);
@@ -4958,6 +5096,30 @@ bool ClientWebGLContext::DoReadPixels(const webgl::ReadPixelsDesc& desc,
   }
 
   return true;
+}
+
+bool ClientWebGLContext::DoReadPixels(const webgl::ReadPixelsDesc& desc,
+                                      const mozilla::ipc::Shmem& shmem) const {
+  const auto notLost =
+      mNotLost;  // Hold a strong-ref to prevent LoseContext=>UAF.
+  if (!notLost) return false;
+  const auto& inProcess = notLost->inProcess;
+  if (inProcess) {
+    const auto& shmemBytes = shmem.Range<uint8_t>();
+    inProcess->ReadPixelsInto(desc, shmemBytes);
+    return true;
+  }
+  const auto& child = notLost->outOfProcess;
+  child->FlushPendingCmds();
+  webgl::ReadPixelsResultIpc res = {};
+  // We assume the input is an unsafe shmem which won't be consumed by this
+  // request. Since SendReadPixels expects a Shmem rvalue, we must create a copy
+  // to provide it that can be consumed instead of the original descriptor.
+  mozilla::ipc::Shmem dest = shmem;
+  if (!child->SendReadPixels(desc, dest, &res)) {
+    res = {};
+  }
+  return res.byteStride > 0;
 }
 
 bool ClientWebGLContext::ReadPixels_SharedPrecheck(
@@ -5303,11 +5465,16 @@ GLenum ClientWebGLContext::ClientWaitSync(WebGLSyncJS& sync,
   const bool canBeAvailable =
       (sync.mCanBeAvailable || StaticPrefs::webgl_allow_immediate_queries());
   if (!canBeAvailable) {
-    if (!sync.mHasWarnedNotAvailable) {
-      EnqueueWarning(
-          "ClientWaitSync must return TIMEOUT_EXPIRED until control has"
-          " returned to the user agent's main loop. (only warns once)");
-      sync.mHasWarnedNotAvailable = true;
+    constexpr uint8_t WARN_AT = 100;
+    if (sync.mNumQueriesBeforeFirstFrameBoundary <= WARN_AT) {
+      sync.mNumQueriesBeforeFirstFrameBoundary += 1;
+      if (sync.mNumQueriesBeforeFirstFrameBoundary == WARN_AT) {
+        EnqueueWarning(
+            "ClientWaitSync must return TIMEOUT_EXPIRED until control has"
+            " returned to the user agent's main loop, but was polled %hhu "
+            "times. Are you spin-locking? (only warns once)",
+            sync.mNumQueriesBeforeFirstFrameBoundary);
+      }
     }
     return LOCAL_GL_TIMEOUT_EXPIRED;
   }
@@ -5524,24 +5691,26 @@ void ClientWebGLContext::RequestExtension(const WebGLExtensionID ext) const {
 
 // -
 
-static bool IsExtensionForbiddenForCaller(const WebGLExtensionID ext,
-                                          const dom::CallerType callerType) {
-  if (callerType == dom::CallerType::System) return false;
+bool ClientWebGLContext::IsExtensionForbiddenForCaller(
+    const WebGLExtensionID ext, const dom::CallerType callerType) const {
+  if (callerType == dom::CallerType::System) {
+    return false;
+  }
 
-  if (StaticPrefs::webgl_enable_privileged_extensions()) return false;
+  if (StaticPrefs::webgl_enable_privileged_extensions()) {
+    return false;
+  }
 
-  const bool resistFingerprinting =
-      nsContentUtils::ShouldResistFingerprinting();
   switch (ext) {
     case WebGLExtensionID::MOZ_debug:
       return true;
 
     case WebGLExtensionID::WEBGL_debug_renderer_info:
-      return resistFingerprinting ||
+      return ShouldResistFingerprinting() ||
              !StaticPrefs::webgl_enable_debug_renderer_info();
 
     case WebGLExtensionID::WEBGL_debug_shaders:
-      return resistFingerprinting;
+      return ShouldResistFingerprinting();
 
     default:
       return false;
@@ -5550,7 +5719,10 @@ static bool IsExtensionForbiddenForCaller(const WebGLExtensionID ext,
 
 bool ClientWebGLContext::IsSupported(const WebGLExtensionID ext,
                                      const dom::CallerType callerType) const {
-  if (IsExtensionForbiddenForCaller(ext, callerType)) return false;
+  if (IsExtensionForbiddenForCaller(ext, callerType)) {
+    return false;
+  }
+
   const auto& limits = Limits();
   return limits.supportedExtensions[ext];
 }
@@ -5585,20 +5757,19 @@ void ClientWebGLContext::GetSupportedProfilesASTC(
   }
 }
 
-// -
+void ClientWebGLContext::ProvokingVertex(const GLenum rawMode) const {
+  const FuncScope funcScope(*this, "provokingVertex");
+  if (IsContextLost()) return;
 
-bool ClientWebGLContext::ShouldResistFingerprinting() const {
-  if (mCanvasElement) {
-    // If we're constructed from a canvas element.
-    return mCanvasElement->OwnerDoc()->ShouldResistFingerprinting();
-  }
-  if (mOffscreenCanvas) {
-    // If we're constructed from an offscreen canvas
-    return mOffscreenCanvas->ShouldResistFingerprinting();
-  }
-  // Last resort, just check the global preference
-  return nsContentUtils::ShouldResistFingerprinting();
+  const auto mode = webgl::AsEnumCase<webgl::ProvokingVertex>(rawMode);
+  if (!mode) return;
+
+  Run<RPROC(ProvokingVertex)>(*mode);
+
+  funcScope.mKeepNotLostOrNull->state.mProvokingVertex = *mode;
 }
+
+// -
 
 uint32_t ClientWebGLContext::GetPrincipalHashValue() const {
   if (mCanvasElement) {
@@ -5607,7 +5778,10 @@ uint32_t ClientWebGLContext::GetPrincipalHashValue() const {
   if (mOffscreenCanvas) {
     nsIGlobalObject* global = mOffscreenCanvas->GetOwnerGlobal();
     if (global) {
-      return global->GetPrincipalHashValue();
+      nsIPrincipal* principal = global->PrincipalOrNull();
+      if (principal) {
+        return principal->GetHashValue();
+      }
     }
   }
   return 0;
@@ -5843,8 +6017,9 @@ void ClientWebGLContext::GetActiveUniformBlockParameter(
 
       case LOCAL_GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES: {
         const auto& indices = block.activeUniformIndices;
-        JS::RootedObject obj(cx, dom::Uint32Array::Create(
-                                     cx, this, indices.size(), indices.data()));
+        JS::Rooted<JSObject*> obj(
+            cx,
+            dom::Uint32Array::Create(cx, this, indices.size(), indices.data()));
         if (!obj) {
           rv = NS_ERROR_OUT_OF_MEMORY;
         }
@@ -5889,7 +6064,7 @@ void ClientWebGLContext::GetActiveUniforms(
     }
     const auto& uniform = list[index];
 
-    JS::RootedValue value(cx);
+    JS::Rooted<JS::Value> value(cx);
     switch (pname) {
       case LOCAL_GL_UNIFORM_TYPE:
         value = JS::NumberValue(uniform.elemType);
@@ -6024,23 +6199,21 @@ void ClientWebGLContext::GetUniformIndices(
   const auto& res = GetLinkResult(prog);
   auto ret = nsTArray<GLuint>(uniformNames.Length());
 
-  std::unordered_map<std::string, size_t> retIdByName;
-  retIdByName.reserve(ret.Length());
+  for (const auto& queriedNameU16 : uniformNames) {
+    const auto queriedName = ToString(NS_ConvertUTF16toUTF8(queriedNameU16));
+    const auto impliedProperArrayQueriedName = queriedName + "[0]";
 
-  for (const auto i : IntegerRange(uniformNames.Length())) {
-    const auto& name = uniformNames[i];
-    auto nameU8 = ToString(NS_ConvertUTF16toUTF8(name));
-    retIdByName.insert({std::move(nameU8), i});
-    ret.AppendElement(LOCAL_GL_INVALID_INDEX);
-  }
-
-  GLuint i = 0;
-  for (const auto& cur : res.active.activeUniforms) {
-    const auto maybeRetId = MaybeFind(retIdByName, cur.name);
-    if (maybeRetId) {
-      ret[*maybeRetId] = i;
+    GLuint activeId = LOCAL_GL_INVALID_INDEX;
+    for (const auto i : IntegerRange(res.active.activeUniforms.size())) {
+      // O(N^2) ok for small N.
+      const auto& activeInfoForI = res.active.activeUniforms[i];
+      if (queriedName == activeInfoForI.name ||
+          impliedProperArrayQueriedName == activeInfoForI.name) {
+        activeId = i;
+        break;
+      }
     }
-    i += 1;
+    ret.AppendElement(activeId);
   }
 
   retval.SetValue(std::move(ret));
@@ -6693,24 +6866,5 @@ NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_WEAK_PTR(
     mCanvasElement, mOffscreenCanvas)
 
 // -----------------------------
-
-#define _(X)                                                 \
-  NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(WebGL##X##JS, AddRef) \
-  NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(WebGL##X##JS, Release)
-
-_(Buffer)
-_(Framebuffer)
-_(Program)
-_(Query)
-_(Renderbuffer)
-_(Sampler)
-_(Shader)
-_(Sync)
-_(Texture)
-_(TransformFeedback)
-_(UniformLocation)
-_(VertexArray)
-
-#undef _
 
 }  // namespace mozilla

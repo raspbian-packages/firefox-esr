@@ -16,7 +16,6 @@ styleeditor-save-button = ذخیره
     .accesskey = ذ
 styleeditor-options-button =
     .tooltiptext = گزینه‌های ویرایشگر سبک
-styleeditor-media-rules = قواعد @media
 styleeditor-editor-textbox =
     .data-placeholder = نوع CSS اینجا.
 styleeditor-no-stylesheet = این صفحه هیچ برگ شیوه‌ای ندارد.
@@ -32,3 +31,12 @@ styleeditor-find-again =
 styleeditor-go-to-line =
     .label = برو به خط…
     .accesskey = ب
+
+# This string is shown in the style sheets list
+# Variables:
+#   $ruleCount (Integer) - The number of rules in the stylesheet.
+styleeditor-stylesheet-rule-count =
+    { $ruleCount ->
+        [one] { $ruleCount } قاعده.
+       *[other] { $ruleCount } قاعده.
+    }

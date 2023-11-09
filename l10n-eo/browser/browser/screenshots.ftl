@@ -55,3 +55,6 @@ screenshots-private-window-error-details = Bonvolu pardoni la ĝenon. Ni prilabo
 
 screenshots-generic-error-title = Ŭoo! { -screenshots-brand-name } tute frenezis.
 screenshots-generic-error-details = Ni ne tro certas, kio ĵus okazis. Ĉu vi povus klopodi denove aŭ fari ekrankopion de alia paĝo?
+
+screenshots-too-large-error-title = Via ekrankopio estis pritondita ĉar ĝi estis tro granda
+screenshots-too-large-error-details = Provu elekti areon pli etan ol 32,700 en ĝia pli longa flanko aŭ kun malpli ol 124,900,000 bilderoj entute.

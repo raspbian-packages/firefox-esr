@@ -13,7 +13,6 @@
 #include "GMPUtils.h"  // For SplitAt. TODO: Move SplitAt to a central place.
 #include "IMFYCbCrImage.h"
 #include "ImageContainer.h"
-#include "Layers.h"
 #include "MediaInfo.h"
 #include "MediaTelemetryConstants.h"
 #include "VideoUtils.h"
@@ -125,11 +124,11 @@ LayersBackend GetCompositorBackendType(
 WMFVideoMFTManager::WMFVideoMFTManager(
     const VideoInfo& aConfig, layers::KnowsCompositor* aKnowsCompositor,
     layers::ImageContainer* aImageContainer, float aFramerate,
-    const CreateDecoderParams::OptionSet& aOptions, bool aDXVAEnabled)
+    const CreateDecoderParams::OptionSet& aOptions, bool aDXVAEnabled,
+    Maybe<TrackingId> aTrackingId)
     : mVideoInfo(aConfig),
       mImageSize(aConfig.mImage),
-      mStreamType(
-          WMFDecoderModule::GetStreamTypeFromMimeType(aConfig.mMimeType)),
+      mStreamType(GetStreamTypeFromMimeType(aConfig.mMimeType)),
       mSoftwareImageSize(aConfig.mImage),
       mSoftwarePictureSize(aConfig.mImage),
       mVideoStride(0),
@@ -142,7 +141,8 @@ WMFVideoMFTManager::WMFVideoMFTManager(
                        CreateDecoderParams::Option::HardwareDecoderNotAllowed)),
       mZeroCopyNV12Texture(false),
       mFramerate(aFramerate),
-      mLowLatency(aOptions.contains(CreateDecoderParams::Option::LowLatency))
+      mLowLatency(aOptions.contains(CreateDecoderParams::Option::LowLatency)),
+      mTrackingId(std::move(aTrackingId))
 // mVideoStride, mVideoWidth, mVideoHeight, mUseHwAccel are initialized in
 // Init().
 {
@@ -162,7 +162,7 @@ WMFVideoMFTManager::~WMFVideoMFTManager() {
 
 /* static */
 const GUID& WMFVideoMFTManager::GetMediaSubtypeGUID() {
-  MOZ_ASSERT(WMFDecoderModule::StreamTypeIsVideo(mStreamType));
+  MOZ_ASSERT(StreamTypeIsVideo(mStreamType));
   switch (mStreamType) {
     case WMFStreamType::H264:
       return MFVideoFormat_H264;
@@ -234,7 +234,7 @@ bool WMFVideoMFTManager::InitializeDXVA() {
 }
 
 MediaResult WMFVideoMFTManager::ValidateVideoInfo() {
-  NS_ENSURE_TRUE(WMFDecoderModule::StreamTypeIsVideo(mStreamType),
+  NS_ENSURE_TRUE(StreamTypeIsVideo(mStreamType),
                  MediaResult(NS_ERROR_DOM_MEDIA_FATAL_ERR,
                              RESULT_DETAIL("Invalid stream type")));
   switch (mStreamType) {
@@ -336,7 +336,7 @@ MediaResult WMFVideoMFTManager::InitInternal() {
       }
     }
 
-    if (gfxVars::HwDecodedVideoZeroCopy() && mKnowsCompositor &&
+    if (gfx::gfxVars::HwDecodedVideoZeroCopy() && mKnowsCompositor &&
         mKnowsCompositor->UsingHardwareWebRender() && mDXVA2Manager &&
         mDXVA2Manager->SupportsZeroCopyNV12Texture()) {
       mZeroCopyNV12Texture = true;
@@ -549,6 +549,32 @@ WMFVideoMFTManager::Input(MediaRawData* aSample) {
     return E_FAIL;
   }
 
+  mTrackingId.apply([&](const auto& aId) {
+    MediaInfoFlag flag = MediaInfoFlag::None;
+    flag |= (aSample->mKeyframe ? MediaInfoFlag::KeyFrame
+                                : MediaInfoFlag::NonKeyFrame);
+    flag |= (mUseHwAccel ? MediaInfoFlag::HardwareDecoding
+                         : MediaInfoFlag::SoftwareDecoding);
+    switch (mStreamType) {
+      case WMFStreamType::H264:
+        flag |= MediaInfoFlag::VIDEO_H264;
+        break;
+      case WMFStreamType::VP8:
+        flag |= MediaInfoFlag::VIDEO_VP8;
+        break;
+      case WMFStreamType::VP9:
+        flag |= MediaInfoFlag::VIDEO_VP9;
+        break;
+      case WMFStreamType::AV1:
+        flag |= MediaInfoFlag::VIDEO_AV1;
+        break;
+      default:
+        break;
+    };
+    mPerformanceRecorder.Start(aSample->mTime.ToMicroseconds(),
+                               "WMFVideoDecoder"_ns, aId, flag);
+  });
+
   RefPtr<IMFSample> inputSample;
   HRESULT hr = mDecoder->CreateInputSample(
       aSample->Data(), uint32_t(aSample->Size()),
@@ -752,6 +778,22 @@ WMFVideoMFTManager::CreateBasicVideoFrame(IMFSample* aSample,
       mVideoInfo.mDisplay, aStreamOffset, pts, duration, image.forget(), false,
       TimeUnit::FromMicroseconds(-1));
 
+  mPerformanceRecorder.Record(pts.ToMicroseconds(), [&](DecodeStage& aStage) {
+    aStage.SetColorDepth(b.mColorDepth);
+    aStage.SetColorRange(b.mColorRange);
+    aStage.SetYUVColorSpace(b.mYUVColorSpace);
+    if (subType == MFVideoFormat_NV12) {
+      aStage.SetImageFormat(DecodeStage::NV12);
+    } else if (subType == MFVideoFormat_YV12) {
+      aStage.SetImageFormat(DecodeStage::YV12);
+    } else if (subType == MFVideoFormat_P010) {
+      aStage.SetImageFormat(DecodeStage::P010);
+    } else if (subType == MFVideoFormat_P016) {
+      aStage.SetImageFormat(DecodeStage::P016);
+    }
+    aStage.SetResolution(videoWidth, videoHeight);
+  });
+
   v.forget(aOutVideoData);
   return S_OK;
 }
@@ -781,6 +823,8 @@ WMFVideoMFTManager::CreateD3DVideoFrame(IMFSample* aSample,
   }
   NS_ENSURE_TRUE(image, E_FAIL);
 
+  gfx::IntSize size = image->GetSize();
+
   TimeUnit pts = GetSampleTime(aSample);
   NS_ENSURE_TRUE(pts.IsValid(), E_FAIL);
   TimeUnit duration = GetSampleDurationOrLastKnownDuration(aSample);
@@ -791,6 +835,24 @@ WMFVideoMFTManager::CreateD3DVideoFrame(IMFSample* aSample,
 
   NS_ENSURE_TRUE(v, E_FAIL);
   v.forget(aOutVideoData);
+
+  mPerformanceRecorder.Record(pts.ToMicroseconds(), [&](DecodeStage& aStage) {
+    aStage.SetColorDepth(mVideoInfo.mColorDepth);
+    aStage.SetColorRange(mColorRange);
+    aStage.SetYUVColorSpace(mColorSpace.refOr(
+        DefaultColorSpace({mImageSize.width, mImageSize.height})));
+    const GUID& subType = mDecoder->GetOutputMediaSubType();
+    if (subType == MFVideoFormat_NV12) {
+      aStage.SetImageFormat(DecodeStage::NV12);
+    } else if (subType == MFVideoFormat_YV12) {
+      aStage.SetImageFormat(DecodeStage::YV12);
+    } else if (subType == MFVideoFormat_P010) {
+      aStage.SetImageFormat(DecodeStage::P010);
+    } else if (subType == MFVideoFormat_P016) {
+      aStage.SetImageFormat(DecodeStage::P016);
+    }
+    aStage.SetResolution(size.width, size.height);
+  });
 
   return S_OK;
 }
@@ -950,6 +1012,11 @@ WMFVideoMFTManager::Output(int64_t aStreamOffset, RefPtr<MediaData>& aOutData) {
   return S_OK;
 }
 
+void WMFVideoMFTManager::Flush() {
+  MFTManager::Flush();
+  mPerformanceRecorder.Record(std::numeric_limits<int64_t>::max());
+}
+
 void WMFVideoMFTManager::Shutdown() {
   if (mDXVA2Manager) {
     mDXVA2Manager->BeforeShutdownVideoMFTDecoder();
@@ -1008,8 +1075,22 @@ nsCString WMFVideoMFTManager::GetDescriptionName() const {
   }();
 
   return nsPrintfCString("wmf %s codec %s video decoder - %s, %s",
-                         WMFDecoderModule::StreamTypeToString(mStreamType),
+                         StreamTypeToString(mStreamType),
                          hw ? "hardware" : "software", dxvaName, formatName);
+}
+nsCString WMFVideoMFTManager::GetCodecName() const {
+  switch (mStreamType) {
+    case WMFStreamType::H264:
+      return "h264"_ns;
+    case WMFStreamType::VP8:
+      return "vp8"_ns;
+    case WMFStreamType::VP9:
+      return "vp9"_ns;
+    case WMFStreamType::AV1:
+      return "av1"_ns;
+    default:
+      return "unknown"_ns;
+  };
 }
 
 }  // namespace mozilla

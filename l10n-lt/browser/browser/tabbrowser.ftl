@@ -3,19 +3,18 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = Nauja kortelė
+
 tabbrowser-menuitem-close-tab =
     .label = Užverti kortelę
 tabbrowser-menuitem-close =
     .label = Užverti
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } – { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -134,6 +133,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Šio dialogo daugiau neberodyti.
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Leisti tokiems pranešimams iš { $domain } perkelti jus į jų kortelę
+
 tabbrowser-customizemode-tab-title = Tvarkyti „{ -brand-short-name }“
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -152,3 +152,17 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Įjungti garsą
     .accesskey = g
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label =
+        { $tabCount ->
+            [few] Parodyti visas { $tabCount } korteles
+           *[other] Parodyti visas { $tabCount } kortelių
+        }
+
+## Tab manager menu buttons
+

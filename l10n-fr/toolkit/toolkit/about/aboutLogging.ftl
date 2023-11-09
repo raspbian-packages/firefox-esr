@@ -2,28 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
--profiler-brand-name = Firefox Profiler
-
-##
-
 # This is the title of the page
 about-logging-title = À propos de la journalisation
 about-logging-page-title = Gestionnaire de journalisation
 about-logging-current-log-file = Fichier de journalisation actuel :
-about-logging-current-log-modules = Modules de journalisation actuels :
 about-logging-new-log-file = Nouveau fichier journal :
 about-logging-currently-enabled-log-modules = Modules de journalisation actuellement activés :
 about-logging-log-tutorial = Consultez <a data-l10n-name="logging">HTTP Logging</a> pour obtenir des informations sur l’utilisation de cet outil.
@@ -44,15 +26,25 @@ about-logging-logging-to-profiler = Sortie vers le { -profiler-brand-name }
 about-logging-no-log-modules = Aucun
 about-logging-no-log-file = Aucun
 about-logging-logging-preset-selector-text = Réglage de journalisation :
+about-logging-with-profiler-stacks-checkbox = Activer les traces d’appels pour les messages du journal.
 
 ## Logging presets
 
 about-logging-preset-networking-label = Réseau
 about-logging-preset-networking-description = Modules de journalisation pour diagnostiquer les problèmes de réseau
+about-logging-preset-networking-cookie-label = Cookies
+about-logging-preset-networking-cookie-description = Modules de journalisation pour diagnostiquer les problèmes de cookies
+about-logging-preset-networking-websocket-label = WebSocket
+about-logging-preset-networking-websocket-description = Modules de journalisation pour diagnostiquer les problèmes de WebSocket
+about-logging-preset-networking-http3-label = HTTP/3
+about-logging-preset-networking-http3-description = Modules de journalisation pour diagnostiquer les problèmes d’HTTP/3 et QUIC
 about-logging-preset-media-playback-label = Lecture multimédia
 about-logging-preset-media-playback-description = Modules de journalisation pour diagnostiquer les problèmes de lecture multimédia (mais non ceux de visioconférence)
+about-logging-preset-webrtc-label = WebRTC
+about-logging-preset-webrtc-description = Modules de journalisation pour diagnostiquer les appels WebRTC
 about-logging-preset-custom-label = Personnalisé
 about-logging-preset-custom-description = Modules de journalisation sélectionnés manuellement
+
 # Error handling
 about-logging-error = Erreur :
 
@@ -66,4 +58,5 @@ about-logging-unknown-profiler-preset = Réglage du profileur « { $v } » inc
 about-logging-unknown-option = Option « { $k } » pour about:logging inconnue
 about-logging-configuration-url-ignored = URL de configuration ignorée
 about-logging-file-and-profiler-override = Impossible de forcer la sortie du fichier et de remplacer les options du profileur en même temps
+
 about-logging-configured-via-url = Option configurée par URL

@@ -48,6 +48,10 @@ inactive-css-not-table = <strong>{ $property }</strong> non ten efecto neste ele
 
 inactive-scroll-padding-when-not-scroll-container = <strong>{ $property }</strong> non ten efecto sobre este elemento xa que non se despraza.
 
+inactive-css-border-image = <strong>{ $property }</strong> non afecta a este elemento porque non se pode aplicar a elementos internos de táboas nos que <strong>border-collapse</strong> está definido como <strong>collapse</strong> no elemento táboa contedor.
+
+inactive-css-ruby-element = <strong>{ $property }</strong> non afecta a este elemento porque é un elemento de rubi. O seu tamaño ven determinado polo tamaño de letra do texto rubi.
+
 ## In the Rule View when a CSS property cannot be successfully applied we display
 ## an icon. When this icon is hovered this message is displayed to explain how
 ## the problem can be solved.
@@ -85,6 +89,10 @@ inactive-css-not-for-internal-table-elements-except-table-cells-fix = Tente axus
 inactive-css-not-table-fix = Probe a engadir <strong>display:table</strong> ou <strong>display:inline-table</strong>. { learn-more }
 
 inactive-scroll-padding-when-not-scroll-container-fix = Probe a engadir<strong>overflow:auto</strong>,<strong>overflow:scroll</strong>, ou <strong>overflow:hidden</strong>.{ learn-more }
+
+inactive-css-border-image-fix = No elemento de táboa contedor, retira a propiedade ou cambia o valor de <strong>border-collapse</strong> por un distinto de <strong>collapse</strong>. { learn-more }
+
+inactive-css-ruby-element-fix = Proba a cambiar o <strong>font-size</strong> do texto rubi. { learn-more }
 
 ## In the Rule View when a CSS property may have compatibility issues with other browsers
 ## we display an icon. When this icon is hovered this message is displayed to explain why

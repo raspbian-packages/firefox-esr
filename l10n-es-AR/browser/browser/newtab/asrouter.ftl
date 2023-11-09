@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Función recomendada
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Por qué estoy viendo esto
+
 cfr-doorhanger-extension-cancel-button = Ahora no
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Agregar ahora
     .accesskey = A
+
 cfr-doorhanger-extension-manage-settings-button = Administrar opciones de recomendaciones
     .accesskey = m
+
 cfr-doorhanger-extension-never-show-recommendation = No mostrarme esta recomendación
     .accesskey = s
+
 cfr-doorhanger-extension-learn-more-link = Conocer más
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = por { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Recomendación
 cfr-doorhanger-extension-notification2 = Recomendación
     .tooltiptext = Recomendación de complementos
     .a11y-announcement = Recomendación de complementos disponible
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Recomendación
@@ -57,29 +65,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } usuarios
     }
 
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = ¡Los mensajes de cookies se fueron!
-cfr-cookie-banner-handling-body = Permitir que { -brand-short-name } rechace automáticamente todas las solicitudes de mensajes de cookies, cuando sea posible. De lo contrario, se aceptarán todas las cookies para descartar aún más mensajes.
-cfr-cookie-banner-accept-button = Descartar solicitudes
-    .accesskey = D
-cfr-cookie-banner-reject-button = Ahora no
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-1 = Ver menos ventanas emergentes de cookies
-cfr-cookie-banner-handling-body-variant-1 = Dejar que { -brand-short-name } responda automáticamente las ventanas emergentes de cookies para que pueda volver a navegar sin distracciones. { -brand-short-name } rechazará todas las solicitudes si es posible, o si no, las aceptará todas.
-cfr-cookie-banner-accept-button-variant-1 = Descartar ventanas emergentes
-    .accesskey = D
-cfr-cookie-banner-reject-button-variant-1 = No, gracias
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-2 = Reducción de mensajes de cookies
-cfr-cookie-banner-handling-body-variant-2 = ¿Permitir que { -brand-short-name } rechace la solicitud de consentimiento de cookies de un sitio si es posible o acepte el acceso a cookies cuando no sea posible?
-cfr-cookie-banner-accept-button-variant-2 = Permitir
-    .accesskey = e
-cfr-cookie-banner-reject-button-variant-2 = Ahora no
-    .accesskey = N
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Sincronice sus marcadores esté donde esté.
@@ -100,9 +85,11 @@ cfr-protections-panel-link-text = Conocer más
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nueva función:
+
 cfr-whatsnew-button =
     .label = Novedades
     .tooltiptext = Novedades
+
 cfr-whatsnew-release-notes-link-text = Leer las notas de la versión
 
 ## Enhanced Tracking Protection Milestones
@@ -131,13 +118,6 @@ cfr-doorhanger-doh-secondary-button = Deshabilitar
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = Su privacidad importa. { -brand-short-name } ahora aísla, sitios web unos de otros, lo que hace que sea más difícil que los piratas informáticos roban contraseñas, números de tarjetas de crédito y otra información confidencial.
-cfr-doorhanger-fission-header = Aislamiento del sitio
-cfr-doorhanger-fission-primary-button = ¡Listo, entendido!
-    .accesskey = O
-cfr-doorhanger-fission-secondary-button = Conocer más
-    .accesskey = o
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Es posible que los videos de este sitio no se reproduzcan correctamente en esta versión de { -brand-short-name }. Para obtener la compatibilidad completa de video, actualice { -brand-short-name } ahora.
@@ -146,11 +126,6 @@ cfr-doorhanger-video-support-primary-button = Actualizar ahora
     .accesskey = U
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Conocer más
-    .title = Expandir para conocer más sobre está característica
-spotlight-learn-more-expanded = Conocer más
-    .title = Cerrar
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -167,18 +142,6 @@ spotlight-public-wifi-vpn-link = No ahora
     .accesskey = N
 
 ## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Probá nuestra experiencia de
-    privacidad más poderosa de la historia
-spotlight-total-cookie-protection-body = Total Cookie Protection evita que los rastreadores usen cookies para espiarlo en la web.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } encierra las cookies con una cerca y las limita al sitio que las creó para que los rastreadores no puedan usarlas para seguirlo. Con el acceso anticipado, ayudará a optimizar esta función para que podamos seguir construyendo una Web mejor para todos.
-spotlight-total-cookie-protection-primary-button = Habilitar Total Cookie Protection
-spotlight-total-cookie-protection-secondary-button = No ahora
 
 ## Emotive Continuous Onboarding
 
@@ -208,11 +171,13 @@ spotlight-pin-secondary-button = No ahora
 
 mr2022-background-update-toast-title = Nuevo { -brand-short-name }. Mas privado. Menos rastreadores. Sin compromisos.
 mr2022-background-update-toast-text = Pruebe el { -brand-short-name } más nuevo ahora, actualizado con nuestra protección contra rastreo más sólida hasta el momento.
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
 mr2022-background-update-toast-primary-button-label = Abrir { -brand-shorter-name } ya mismo
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -231,6 +196,7 @@ firefoxview-cfr-body-v2 = Recupere las pestañas cerradas recientemente y salte 
 ## Firefox View Spotlight
 
 firefoxview-spotlight-promo-title = Salude a { -firefoxview-brand-name }
+
 # “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
 firefoxview-spotlight-promo-subtitle = ¿Quiere esa pestaña abierta en su teléfono? Tómela. ¿Necesita ese sitio que acaba de visitar? Volvió con { -firefoxview-brand-name }.
 firefoxview-spotlight-promo-primarybutton = Vea como funciona
@@ -240,6 +206,7 @@ firefoxview-spotlight-promo-secondarybutton = Omitir
 
 colorways-cfr-primarybutton = Elegir combinación de colores
     .accesskey = C
+
 # "shades" refers to the different color options available to users in colorways.
 colorways-cfr-body = Coloree su navegador con los tonos exclusivos de { -brand-short-name } inspirados en voces que cambiaron la cultura.
 colorways-cfr-header-28days = Las combinaciones de colores de Independent Voices dejarán de estar disponibles el 16 de enero
@@ -249,24 +216,11 @@ colorways-cfr-header-today = Las combinaciones de colores de Independent Voices 
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = ¡Los mensajes de cookies se fueron!
-cfr-cookiebanner-body = Permitir que { -brand-short-name } rechace automáticamente todos los mensajes de pedidos de cookies cuando sea posible.
-cfr-cookiebanner-accept-button = Descartar mensajes
-    .accesskey = D
-cfr-cookiebanner-reject-button = No ahora
-    .accesskey = N
-cfr-cookiebanner-header-variant-1 = Ver menos ventanas emergentes de cookies
-cfr-cookiebanner-body-variant-1 = Dejar que { -brand-short-name } responda automáticamente las ventanas emergentes de cookies para que pueda volver a navegar sin distracciones. { -brand-short-name } rechazará todas las solicitudes si es posible.
-cfr-cookiebanner-accept-button-variant-1 = Descartar ventanas emergentes
-    .accesskey = D
-cfr-cookiebanner-reject-button-variant-1 = No, gracias
-    .accesskey = N
-cfr-cookiebanner-header-variant-2 = Reducción de mensajes de cookies
-cfr-cookiebanner-body-variant-2 = Reducir la cantidad de mensajes de cookies que se ven permitiendo que { -brand-short-name } rechace el pedido de consentimiento de cookies de un sitio web si es posible.
-cfr-cookiebanner-accept-button-variant-2 = Permitir
-    .accesskey = e
-cfr-cookiebanner-reject-button-variant-2 = No ahora
+cfr-cbh-header = ¿Permitir que { -brand-short-name } rechace mensajes de cookies?
+cfr-cbh-body = { -brand-short-name } puede rechazar automáticamente muchos pedidos de mensajes de cookies.
+cfr-cbh-confirm-button = Rechazar mensajes de cookies
+    .accesskey = R
+cfr-cbh-dismiss-button = No ahora
     .accesskey = N
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
@@ -274,3 +228,31 @@ cfr-cookiebanner-reject-button-variant-2 = No ahora
 july-jam-headline = Lo tenemos cubierto
 july-jam-body = Cada mes, { -brand-short-name } bloquea un promedio de más de 3000 rastreadores por usuario, lo que le brinda un acceso rápido y seguro a Internet.
 july-jam-set-default-primary = Abrir mis enlaces con { -brand-short-name }
+fox-doodle-pin-headline = Bienvenido de vuelta
+
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = Aquí hay un recordatorio rápido de que puede mantener su navegador independiente favorito a un solo clic de distancia.
+fox-doodle-pin-primary = Abrir mis enlaces con { -brand-short-name }
+fox-doodle-pin-secondary = Ahora no
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>Los PDFs ahora se abren en { -brand-short-name }.</strong> Se pueden editar o firmar formularios directamente en el navegador. Para cambiarlo, busque "PDF" en la configuración.
+set-default-pdf-handler-primary = Entendido
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = ¿Piensa tener un nuevo dispositivo en su futuro?
+fxa-sync-cfr-body = Asegúrese de que los últimos marcadores, contraseñas y pestañas estén ahí cada vez que abra un nuevo navegador { -brand-product-name }.
+fxa-sync-cfr-primary = Conocer más
+    .accesskey = r
+fxa-sync-cfr-secondary = Recordarme más tarde
+    .accesskey = R
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = ¿Usando un dispositivo más viejo?
+device-migration-fxa-spotlight-body = Haga una copia de seguridad de sus datos para asegurarse de no perder información importante como marcadores y contraseñas — especialmente si cambia a un nuevo dispositivo.
+device-migration-fxa-spotlight-primary-button = Cómo hacer una copia de seguridad de mis datos
+device-migration-fxa-spotlight-link = Recordarme más tarde

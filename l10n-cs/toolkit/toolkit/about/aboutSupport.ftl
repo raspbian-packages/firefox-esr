@@ -4,14 +4,16 @@
 
 page-title = Technické informace
 page-subtitle =
-    Tato stránka obsahuje technické informace, které mohou být užitečné, pokud se snažíte
-    vyřešit nějaký složitější problém s aplikací. Odpovědi na často kladené otázky ohledně
-    { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "gen") }
-        [feminine] { -brand-short-name(case: "gen") }
-        [neuter] { -brand-short-name(case: "gen") }
-       *[other] aplikace { -brand-short-name }
-    } naleznete na <a data-l10n-name="support-link">webových stránkách podpory</a>.
+    { -brand-short-name.case-status ->
+        [with-cases]
+            Tato stránka obsahuje technické informace, které mohou být užitečné, pokud se snažíte
+            vyřešit nějaký složitější problém s aplikací. Odpovědi na často kladené otázky ohledně
+            { -brand-short-name(case: "gen") } naleznete na <a data-l10n-name="support-link">webových stránkách podpory</a>.
+       *[no-cases]
+            Tato stránka obsahuje technické informace, které mohou být užitečné, pokud se snažíte
+            vyřešit nějaký složitější problém s aplikací. Odpovědi na často kladené otázky ohledně
+            aplikace { -brand-short-name } naleznete na <a data-l10n-name="support-link">webových stránkách podpory</a>.
+    }
 crashes-title = Hlášení pádů
 crashes-id = ID hlášení
 crashes-send-date = Odeslaná
@@ -30,11 +32,9 @@ security-software-antivirus = Antivir
 security-software-antispyware = Antispyware
 security-software-firewall = Firewall
 features-title =
-    Funkce { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "gen") }
-        [feminine] { -brand-short-name(case: "gen") }
-        [neuter] { -brand-short-name(case: "gen") }
-       *[other] aplikace { -brand-short-name }
+    { -brand-short-name.case-status ->
+        [with-cases] Funkce { -brand-short-name(case: "gen") }
+       *[no-cases] Funkce aplikace { -brand-short-name }
     }
 features-name = Název
 features-version = Verze
@@ -100,12 +100,10 @@ modified-prefs-name = Název
 modified-prefs-value = Hodnota
 user-js-title = Předvolby user.js
 user-js-description =
-    Složka s profilem obsahuje <a data-l10n-name="user-js-link">soubor user.js</a>, který obsahuje předvolby, které nebyly vytvořeny { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "ins") }
-        [feminine] { -brand-short-name(case: "ins") }
-        [neuter] { -brand-short-name(case: "ins") }
-       *[other] aplikací { -brand-short-name }
-    }.
+    { -brand-short-name.case-status ->
+        [with-cases] Složka s profilem obsahuje <a data-l10n-name="user-js-link">soubor user.js</a>, který obsahuje předvolby, které nebyly vytvořeny { -brand-short-name(case: "ins") }.
+       *[no-cases] Složka s profilem obsahuje <a data-l10n-name="user-js-link">soubor user.js</a>, který obsahuje předvolby, které nebyly vytvořeny aplikací { -brand-short-name }.
+    }
 locked-key-prefs-title = Důležité uzamčené předvolby
 locked-prefs-name = Název
 locked-prefs-value = Hodnota
@@ -157,12 +155,10 @@ restart-in-troubleshoot-mode-label = Režim řešení potíží…
 clear-startup-cache-title = Zkuste vymazat mezipaměť spouštění
 clear-startup-cache-label = Vymazat mezipaměť spouštění…
 startup-cache-dialog-title2 =
-    Chcete restartovat { -brand-shorter-name.gender ->
-        [masculine] { -brand-short-name(case: "acc") }
-        [feminine] { -brand-short-name(case: "acc") }
-        [neuter] { -brand-short-name(case: "acc") }
-       *[other] aplikaci { -brand-short-name }
-    } a vymazat mezipaměť spouštění?
+    { -brand-shorter-name.case-status ->
+        [with-cases] Chcete restartovat { -brand-short-name(case: "acc") } a vymazat mezipaměť spouštění?
+       *[no-cases] Chcete restartovat aplikaci { -brand-short-name } a vymazat mezipaměť spouštění?
+    }
 startup-cache-dialog-body2 = Vaše nastavení i nainstalována rozšíření nebudou nijak ovlivněna.
 restart-button-label = Restartovat
 
@@ -188,6 +184,15 @@ media-capabilities-title = Podpora médií
 media-codec-support-info = Informace o podpoře kodeků
 # List all the entries of the database.
 media-capabilities-enumerate = Vypsat databázi
+
+## Codec support table
+
+media-codec-support-sw-decoding = Softwarové dekódování
+media-codec-support-hw-decoding = Hardwarové dekódování
+media-codec-support-codec-name = Název kodeku
+media-codec-support-supported = Podporované
+media-codec-support-unsupported = Nepodporováné
+media-codec-support-error = Informace o podpoře kodeků není k dispozici. Zkuste to znovu po přehrání mediálního souboru.
 
 ##
 
@@ -307,6 +312,8 @@ webgl2-renderer = Zobrazování WebGL2
 webgl2-version = Verze ovladače WebGL 2
 webgl2-driver-extensions = Rozšíření ovladače WebGL 2
 webgl2-extensions = Rozšíření WebGL 2
+webgpu-default-adapter = Výchozí adaptér WebGPU
+webgpu-fallback-adapter = Záložní adaptér WebGPU
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Zablokováno kvůli známým problémům: <a data-l10n-name="bug-link">bug { $bugNumber }</a>

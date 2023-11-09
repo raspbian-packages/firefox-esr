@@ -41,6 +41,17 @@ restart-later = Tunandi taaga nd'a too kayna
 ##   $name (String): name of the extension
 
 
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
+
 ## Preferences UI Search Results
 
 search-results-header = Ceeci duurawey
@@ -81,6 +92,10 @@ browser-containers-settings =
     .accesskey = n
 
 containers-disable-alert-title = Sun kanjey kul daabu?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] Nda war na sun kanjey wii sohõ, { $tabCount } sun kanjoo ga daaba. Alhakiika kaŋ war ga baa ka sun kanjey wii?
@@ -92,6 +107,9 @@ containers-disable-alert-ok-button =
         [one] { $tabCount } sun kanjoo daabu
        *[other] { $tabCount } sun kanjey daabu
     }
+
+##
+
 containers-disable-alert-cancel-button = Naŋ diray ga
 
 containers-remove-alert-title = Sunoo woo kaa?
@@ -317,6 +335,10 @@ choose-bookmark =
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
 
 
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+
+
 ##
 
 
@@ -327,6 +349,7 @@ search-engine-default-header = Tilasu ceecijinay
 search-suggestions-option =
     .label = Ceeci honnandiyaney noo
     .accesskey = C
+
 
 search-suggestions-cant-show = Ceeci honnandiyaney ši cebe gorodoo zuu hunyaney ra zama war na { -brand-short-name } hanse a ma ši honga taariki kul.
 
@@ -364,6 +387,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = War internetoo kanbe war bande
 
 # This message contains two links and two icon images.
@@ -378,11 +405,19 @@ sync-mobile-promo = Firefox zumandi <img data-l10n-name="android-icon"/> <a data
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Alhaali bii barmay
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } mana korosandi.
 sync-signedin-login-failure = War maa hantum ka ciya koyne { $email }
+
+##
 
 sync-sign-in =
     .label = Huru
@@ -419,6 +454,16 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Gaabu
     .accesskey = b
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Tabatandiyan sanbandi
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = Tabatandiyan dobu sanbandi { $email } do.
+sync-verification-not-sent-title = Mana hin ka tabatandiyan sanba
+sync-verification-not-sent-body = Ir mana hin ka tabatandiyan bataga sanba sohõda, wa ceeci koyne waati foo.
 
 ## Privacy Section
 
@@ -485,6 +530,9 @@ history-clear-on-close-settings =
 ## Privacy Section - Site Data
 
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-locbar-bookmarks-option =
@@ -504,6 +552,9 @@ addressbar-suggestions-settings = Ibaa&ey barmay ceecijinay honnandiyaney se
 
 
 ##
+
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 
 ## Privacy Section - Tracking
@@ -552,6 +603,9 @@ certs-enable-ocsp =
     .accesskey = H
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

@@ -5,10 +5,12 @@
 
 about-logins-page-title = Clàraidhean a-steach ⁊ faclan-faire
 
-login-filter =
+about-logins-login-filter =
     .placeholder = Lorg sna clàraidhean a-steach
+    .key = F
 
-create-login-button = Cruthaich clàradh a-steach ùr
+create-new-login-button =
+    .title = Cruthaich clàradh a-steach ùr
 
 fxaccounts-sign-in-text = Faigh cothrom air na faclan-faire agad air uidheaman eile
 fxaccounts-sign-in-sync-button = Clàraich a-steach a shioncronachadh
@@ -35,12 +37,24 @@ about-logins-menu-menuitem-help = Cobhair
 
 login-list =
     .aria-label = Clàraidhean a-steach a fhreagras air na lorg thu
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } chlàradh a-steach
         [two] { $count } chlàradh a-steach
         [few] { $count } clàraidhean a-steach
        *[other] { $count } clàradh a-steach
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count } à { $total } chlàradh a-steach
+        [two] { $count } à { $total } chlàradh a-steach
+        [few] { $count } à { $total } clàraidhean a-steach
+       *[other] { $count } à { $total } clàradh a-steach
     }
 login-list-sort-label-text = Seòrsaich a-rèir:
 login-list-name-option = Ainm (A-Z)
@@ -101,9 +115,17 @@ login-item-copied-password-button-text = Lethbhreac air a dhèanamh!
 login-item-save-changes-button = Sàbhail na h-atharraichean
 login-item-save-new-button = Sàbhail
 login-item-cancel-button = Sguir dheth
-login-item-time-changed = An t-atharrachadh mu dheireadh: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Air a chruthachadh: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Cleachdadh mu dheireadh: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = Air a chruthachadh
+login-item-timeline-action-updated = Air ùrachadh
+login-item-timeline-action-used = Air a chleachdadh
 
 ## OS Authentication dialog
 
@@ -153,6 +175,9 @@ confirmation-dialog-dismiss-button =
 about-logins-confirm-remove-dialog-title = A bheil thu airson an clàradh a-steach seo a thoirt air falbh?
 confirm-delete-dialog-message = Cha ghabh seo a neo-dhèanamh.
 about-logins-confirm-remove-dialog-confirm-button = Thoir air falbh
+
+## Variables
+##   $count (number) - Number of items
 
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
@@ -204,6 +229,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] Bheir seo air falbh gach clàradh a-steach a shàbhail thu gu { -brand-short-name } air gach uidheam a chaidh a shioncronachadh dhan { -fxaccount-brand-name } agad. Bheir seo air falbh caismeachd sam bith air brisidhean a-steach a nochd an-seo cuideachd. Chan urrainn dhut seo a neo-dhèanamh.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Às-phortaich na clàraidhean a-steach agus faclan-faire agad
 about-logins-confirm-export-dialog-message = Thèid na faclan-faire agad a shàbhaladh ’nan teacsa a ghabhas leughadh (m.e. BadP@ssw0rd) agus chì duine sam bith iad as urrainn dhan fhaidhle air às-phortadh fhosgladh.
 about-logins-confirm-export-dialog-confirm-button = Às-phortaich…
@@ -223,7 +250,6 @@ about-logins-breach-alert-date = Thachair am briseadh a-steach air { DATETIME($d
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Tadhail air { $hostname }
-about-logins-breach-alert-learn-more-link = Barrachd fiosrachaidh
 
 ## Vulnerable Password notification
 

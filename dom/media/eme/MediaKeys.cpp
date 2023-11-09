@@ -9,7 +9,7 @@
 #include "ChromiumCDMProxy.h"
 #include "GMPCrashHelper.h"
 #include "mozilla/EMEUtils.h"
-#include "mozilla/JSONWriter.h"
+#include "mozilla/JSONStringWriteFuncs.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/dom/DOMException.h"
 #include "mozilla/dom/Document.h"
@@ -35,6 +35,9 @@
 #endif
 #ifdef XP_WIN
 #  include "mozilla/WindowsVersion.h"
+#endif
+#ifdef MOZ_WMF_CDM
+#  include "mozilla/WMFCDMProxy.h"
 #endif
 
 namespace mozilla::dom {
@@ -158,7 +161,7 @@ void MediaKeys::OnInnerWindowDestroy() {
   // Don't call shutdown directly because (at time of writing) mProxy can
   // spin the event loop when it's shutdown. This can change the world state
   // in the middle of window destruction, which we do not want.
-  GetMainThreadEventTarget()->Dispatch(
+  GetMainThreadSerialEventTarget()->Dispatch(
       NewRunnableMethod("MediaKeys::Shutdown", this, &MediaKeys::Shutdown));
 }
 
@@ -435,6 +438,11 @@ already_AddRefed<CDMProxy> MediaKeys::CreateCDMProxy() {
         mConfig.mPersistentState == MediaKeysRequirement::Required);
   } else
 #endif
+#ifdef MOZ_WMF_CDM
+      if (IsPlayReadyKeySystemAndSupported(mKeySystem)) {
+    proxy = new WMFCDMProxy(this, mKeySystem, mConfig);
+  } else
+#endif
   {
     proxy = new ChromiumCDMProxy(
         this, mKeySystem, new MediaKeysGMPCrashHelper(this),
@@ -588,7 +596,7 @@ already_AddRefed<DetailedPromise> MediaKeys::Init(ErrorResult& aRv) {
   AddRef();
   mProxy->Init(mCreatePromiseId, NS_ConvertUTF8toUTF16(origin),
                NS_ConvertUTF8toUTF16(topLevelOrigin),
-               KeySystemToGMPName(mKeySystem));
+               KeySystemToProxyName(mKeySystem));
 
   ConnectInnerWindow();
 
@@ -715,14 +723,6 @@ void MediaKeys::Unbind() {
   mElement = nullptr;
 }
 
-struct StringWriteFunc : public JSONWriteFunc {
-  nsString& mString;
-  explicit StringWriteFunc(nsString& aString) : mString(aString) {}
-  void Write(const Span<const char>& aStr) override {
-    mString.Append(NS_ConvertUTF8toUTF16(aStr.data(), aStr.size()));
-  }
-};
-
 void MediaKeys::CheckIsElementCapturePossible() {
   MOZ_ASSERT(NS_IsMainThread());
   EME_LOG("MediaKeys[%p]::IsElementCapturePossible()", this);
@@ -760,11 +760,13 @@ void MediaKeys::CheckIsElementCapturePossible() {
 
   if (mCaptureCheckRequestJson.IsEmpty()) {
     // Lazily populate the JSON the first time we need it.
-    JSONWriter jw{MakeUnique<StringWriteFunc>(mCaptureCheckRequestJson)};
+    JSONStringWriteFunc<nsAutoCString> json;
+    JSONWriter jw{json};
     jw.Start();
     jw.StringProperty("status", "is-capture-possible");
     jw.StringProperty("keySystem", NS_ConvertUTF16toUTF8(mKeySystem));
     jw.End();
+    mCaptureCheckRequestJson = NS_ConvertUTF8toUTF16(json.StringCRef());
   }
 
   MOZ_DIAGNOSTIC_ASSERT(!mCaptureCheckRequestJson.IsEmpty());

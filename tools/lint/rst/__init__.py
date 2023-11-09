@@ -6,9 +6,9 @@ import os
 import re
 import subprocess
 
+from mozfile import which
 from mozlint import result
 from mozlint.pathutils import expand_exclusions
-from mozfile import which
 
 # Error Levels
 # (0, 'debug')
@@ -81,10 +81,13 @@ def lint(files, config, **lintargs):
     paths = list(paths)
     chunk_size = 50
     binary = get_rstcheck_binary()
-    rstcheck_options = "--ignore-language=cpp,json"
+    rstcheck_options = [
+        "--ignore-language=cpp,json",
+        "--ignore-roles=searchfox",
+    ]
 
     while paths:
-        cmdargs = [which("python"), binary, rstcheck_options] + paths[:chunk_size]
+        cmdargs = [which("python"), binary] + rstcheck_options + paths[:chunk_size]
         log.debug("Command: {}".format(" ".join(cmdargs)))
 
         proc = subprocess.Popen(

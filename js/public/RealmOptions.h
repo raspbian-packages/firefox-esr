@@ -172,16 +172,6 @@ class JS_PUBLIC_API RealmCreationOptions {
   bool getCoopAndCoepEnabled() const;
   RealmCreationOptions& setCoopAndCoepEnabled(bool flag);
 
-  bool getStreamsEnabled() const { return streams_; }
-  RealmCreationOptions& setStreamsEnabled(bool flag) {
-#ifndef MOZ_DOM_STREAMS
-    streams_ = flag;
-#else
-    MOZ_ASSERT(!streams_);
-#endif
-    return *this;
-  }
-
   WeakRefSpecifier getWeakRefsEnabled() const { return weakRefs_; }
   RealmCreationOptions& setWeakRefsEnabled(WeakRefSpecifier spec) {
     weakRefs_ = spec;
@@ -208,13 +198,39 @@ class JS_PUBLIC_API RealmCreationOptions {
     return *this;
   }
 
+  bool getShadowRealmsEnabled() const { return shadowRealms_; }
+  RealmCreationOptions& setShadowRealmsEnabled(bool flag) {
+    shadowRealms_ = flag;
+    return *this;
+  }
+
 #ifdef NIGHTLY_BUILD
   bool getArrayGroupingEnabled() const { return arrayGrouping_; }
   RealmCreationOptions& setArrayGroupingEnabled(bool flag) {
     arrayGrouping_ = flag;
     return *this;
   }
+
+  bool getWellFormedUnicodeStringsEnabled() const {
+    return wellFormedUnicodeStrings_;
+  }
+  RealmCreationOptions& setWellFormedUnicodeStringsEnabled(bool flag) {
+    wellFormedUnicodeStrings_ = flag;
+    return *this;
+  }
 #endif
+
+  bool getArrayFromAsyncEnabled() const { return arrayFromAsync_; }
+  RealmCreationOptions& setArrayFromAsyncEnabled(bool flag) {
+    arrayFromAsync_ = flag;
+    return *this;
+  }
+
+  bool getChangeArrayByCopyEnabled() const { return changeArrayByCopy_; }
+  RealmCreationOptions& setChangeArrayByCopyEnabled(bool flag) {
+    changeArrayByCopy_ = flag;
+    return *this;
+  }
 
 #ifdef ENABLE_NEW_SET_METHODS
   bool getNewSetMethodsEnabled() const { return newSetMethods_; }
@@ -263,13 +279,17 @@ class JS_PUBLIC_API RealmCreationOptions {
   bool sharedMemoryAndAtomics_ = false;
   bool defineSharedArrayBufferConstructor_ = true;
   bool coopAndCoep_ = false;
-  bool streams_ = false;
   bool toSource_ = false;
   bool propertyErrorMessageFix_ = false;
   bool iteratorHelpers_ = false;
+  bool shadowRealms_ = false;
 #ifdef NIGHTLY_BUILD
-  bool arrayGrouping_ = true;
+  bool arrayGrouping_ = false;
+  // Pref for String.prototype.{is,to}WellFormed() methods.
+  bool wellFormedUnicodeStrings_ = false;
 #endif
+  bool arrayFromAsync_ = true;
+  bool changeArrayByCopy_ = false;
 #ifdef ENABLE_NEW_SET_METHODS
   bool newSetMethods_ = false;
 #endif
@@ -296,6 +316,14 @@ class JS_PUBLIC_API RealmBehaviors {
   bool clampAndJitterTime() const { return clampAndJitterTime_; }
   RealmBehaviors& setClampAndJitterTime(bool flag) {
     clampAndJitterTime_ = flag;
+    return *this;
+  }
+
+  bool shouldResistFingerprinting() const {
+    return shouldResistFingerprinting_;
+  }
+  RealmBehaviors& setShouldResistFingerprinting(bool flag) {
+    shouldResistFingerprinting_ = flag;
     return *this;
   }
 
@@ -334,6 +362,7 @@ class JS_PUBLIC_API RealmBehaviors {
  private:
   bool discardSource_ = false;
   bool clampAndJitterTime_ = true;
+  bool shouldResistFingerprinting_ = false;
   bool isNonLive_ = false;
 };
 

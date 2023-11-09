@@ -18,6 +18,8 @@ abuse-report-addon-authored-by = av <a data-l10n-name="author-name">{ $author-na
 abuse-report-learnmore =
     Är du osäker på vilket problem du vill välja?
     <a data-l10n-name="learnmore-link">Läs mer om rapportering av tillägg och teman</a>
+abuse-report-learnmore-intro = Är du osäker på vilket problem du vill välja?
+abuse-report-learnmore-link = Läs mer om rapportering av tillägg och teman
 abuse-report-submit-description = Beskriv problemet (valfritt)
 abuse-report-textarea =
     .placeholder = Det är lättare för oss att ta itu med ett problem om vi har detaljer. Beskriv vad du upplever. Tack för att du har hjälpt oss att hålla nätet hälsosamt.

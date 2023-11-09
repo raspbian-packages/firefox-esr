@@ -8,8 +8,8 @@
 // See verbose logging from FxAccounts.jsm
 Services.prefs.setCharPref("identity.fxaccounts.loglevel", "Trace");
 
-const { FxAccounts } = ChromeUtils.import(
-  "resource://gre/modules/FxAccounts.jsm"
+const { FxAccounts } = ChromeUtils.importESModule(
+  "resource://gre/modules/FxAccounts.sys.mjs"
 );
 const { FXA_PWDMGR_HOST, FXA_PWDMGR_REALM } = ChromeUtils.import(
   "resource://gre/modules/FxAccountsCommon.js"
@@ -17,8 +17,8 @@ const { FXA_PWDMGR_HOST, FXA_PWDMGR_REALM } = ChromeUtils.import(
 
 // Use a backstage pass to get at our LoginManagerStorage object, so we can
 // mock the prototype.
-var { LoginManagerStorage } = ChromeUtils.import(
-  "resource://gre/modules/FxAccountsStorage.jsm"
+var { LoginManagerStorage } = ChromeUtils.importESModule(
+  "resource://gre/modules/FxAccountsStorage.sys.mjs"
 );
 var isLoggedIn = true;
 LoginManagerStorage.prototype.__defineGetter__("_isLoggedIn", () => isLoggedIn);
@@ -35,7 +35,7 @@ function getLoginMgrData() {
     null,
     FXA_PWDMGR_REALM
   );
-  if (logins.length == 0) {
+  if (!logins.length) {
     return null;
   }
   Assert.equal(logins.length, 1, "only 1 login available");
@@ -92,7 +92,7 @@ add_task(async function test_simple() {
   // This should have stored stuff in both the .json file in the profile
   // dir, and the login dir.
   let path = PathUtils.join(PathUtils.profileDir, "signedInUser.json");
-  let data = await CommonUtils.readJSON(path);
+  let data = await IOUtils.readJSON(path);
 
   Assert.strictEqual(
     data.accountData.email,
@@ -190,7 +190,7 @@ add_task(async function test_MPLocked() {
   // This should have stored stuff in the .json, and the login manager stuff
   // will not exist.
   let path = PathUtils.join(PathUtils.profileDir, "signedInUser.json");
-  let data = await CommonUtils.readJSON(path);
+  let data = await IOUtils.readJSON(path);
 
   Assert.strictEqual(
     data.accountData.email,
@@ -305,7 +305,7 @@ add_task(async function test_uidMigration() {
     "", // aUsernameField
     ""
   ); // aPasswordField
-  Services.logins.addLogin(login);
+  await Services.logins.addLoginAsync(login);
 
   // ensure we read it.
   let storage = new LoginManagerStorage();

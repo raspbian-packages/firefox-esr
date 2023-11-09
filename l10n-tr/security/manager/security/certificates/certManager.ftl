@@ -26,10 +26,6 @@ certmgr-people = Aşağıdaki kişileri tanımlayan kayıtlı sertifikalarınız
 certmgr-server = Bu girdiler, sunucu sertifikası hata ayrıcalıklarını tanımlar
 certmgr-ca = Aşağıdaki sertifika makamlarını tanımlayan kayıtlı sertifikalarınız var
 
-certmgr-edit-ca-cert =
-    .title = CA sertifikası güven ayarlarını düzenle
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = CA sertifikası güven ayarlarını düzenle
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Bu sertifika posta kullanıcılarını tanımlayabilir.
-
-certmgr-delete-cert =
-    .title = Sertifikayı sil
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Sertifikayı sil
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Sunucu
-
-certmgr-override-lifetime =
-    .label = Yaşam süresi
 
 certmgr-token-name =
     .label = Güvenlik aygıtı
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Seri numarası
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256 parmak izi
 
 certmgr-view =
     .label = Görüntüle…

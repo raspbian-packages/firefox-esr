@@ -18,6 +18,8 @@ abuse-report-addon-authored-by = ад <a data-l10n-name="author-name">{ $author-
 abuse-report-learnmore =
     Няўпэўнены, якую праблему выбраць?
     <a data-l10n-name="learnmore-link">Даведацца больш аб паведамленні пра пашырэнні і тэмы</a>
+abuse-report-learnmore-intro = Няўпэўнены, якую праблему выбраць?
+abuse-report-learnmore-link = Даведацца больш аб паведамленні пра пашырэнні і тэмы
 abuse-report-submit-description = Апішыце праблему (неабавязкова)
 abuse-report-textarea =
     .placeholder = Нам лягчэй вырашыць праблему, калі нам вядомы падрабязнасці. Калі ласка, апішыце, што здарылася. Дзякуем, што дапамагаеце падтрымліваць здароўе сеціва.

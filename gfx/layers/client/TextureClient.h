@@ -64,6 +64,7 @@ class TextureData;
 class GPUVideoTextureData;
 class TextureClient;
 class ITextureClientRecycleAllocator;
+class SharedSurfaceTextureData;
 #ifdef GFX_DEBUG_TRACK_CLIENTS_IN_POOL
 class TextureClientPool;
 #endif
@@ -94,6 +95,9 @@ enum TextureAllocationFlags {
   // The texture is going to be updated using UpdateFromSurface and needs to
   // support that call.
   ALLOC_UPDATE_FROM_SURFACE = 1 << 7,
+
+  // Do not use an accelerated texture type.
+  ALLOC_DO_NOT_ACCELERATE = 1 << 8,
 };
 
 enum class BackendSelector { Content, Canvas };

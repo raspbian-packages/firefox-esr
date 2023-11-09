@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-videocontrols-scrubber =
-    .aria-label = Safle
 # This label is used by screenreaders and other assistive technology to indicate
 # to users how much of the video has been loaded from the network. It will be
 # followed by the percentage of the video that has loaded (e.g. "Loading: 13%").
@@ -36,21 +34,7 @@ videocontrols-picture-in-picture-label = Llun mewn Llun
 
 # This string is used as the label for a variation of the Picture-in-Picture video
 # toggle button when the mouse is hovering over the video.
-videocontrols-picture-in-picture-toggle-label = Gwylio yn Llun-mewn-Llun
-
-# This string is used as part of a variation of the Picture-in-Picture video toggle
-# button. When using this variation, this string appears below the toggle when the
-# mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer = Gwylio fideos yn y blaendir tra'ch bod chi'n gwneud pethau eraill gyda { -brand-short-name }
-
-# This string is used as the label for a variation of the Picture-in-Picture video
-# toggle button when the mouse is hovering over the video.
 videocontrols-picture-in-picture-toggle-label2 = Agor allan y fideo hwn
-
-# This string is used as part of a variation of the Picture-in-Picture video toggle
-# button. When using this variation, this string appears below the toggle when the
-# mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer2 = Mae mwy o sgriniau yn fwy o hwyl. Chwaraewch y fideo hwn yn Llun-mewn-Llun wrth i chi bori.
 
 videocontrols-picture-in-picture-explainer3 = Mae rhagor o sgriniau'n fwy o hwyl. Chwaraewch y fideo hwn tra byddwch chi'n gwneud pethau eraill.
 
@@ -75,3 +59,13 @@ videocontrols-status-picture-in-picture = Mae'r fideo hwn yn chwarae yn y modd L
 # duration video, $position would be "5:00" and the string which is
 # surrounded by <span> would be deleted, result string would be "5:00".
 videocontrols-position-and-duration-labels = { $position }<span data-l10n-name="position-duration-format"> / { $duration }</span>
+
+# This is a plain text version of the videocontrols-position-and-duration-labels
+# string, used by screenreaders.
+#
+# Variables:
+#   $position (String): The current media position
+#   $duration (String): The total video duration
+videocontrols-scrubber-position-and-duration =
+    .aria-label = Safle
+    .aria-valuetext = { $position } / { $duration }

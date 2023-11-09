@@ -5,46 +5,15 @@
 
 ## The main browser window's title
 
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
 #
 # default - "Mozilla Firefox"
 # private - "Mozilla Firefox (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } (Navegacion privada)
-    .data-content-title-default = { $content-title } - { -brand-full-name }
-    .data-content-title-private = { $content-title } - { -brand-full-name } (Navegacion privada)
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
-#
-# "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox — (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
-#
-# Also note the other subtle difference here: we use a `-` to separate the
-# brand name from `(Private Browsing)`, which does not happen on other OSes.
-#
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window-mac =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } - (Navegacion privada)
-    .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } - (Navegacion privada)
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
-#
-# default - "Mozilla Firefox"
-# private - "Mozilla Firefox (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
 # Variables:
 #  $content-title (String): the title of the web content.
 browser-main-window-window-titles =
@@ -52,14 +21,17 @@ browser-main-window-window-titles =
     .data-title-private = navegacion privada { -brand-full-name }
     .data-content-title-default = { $content-title } — { -brand-full-name }
     .data-content-title-private = { $content-title } — navegacion privada { -brand-full-name }
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
 #
 # "default" - "Mozilla Firefox"
 # "private" - "Mozilla Firefox — (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -109,16 +81,12 @@ urlbar-xr-notification-anchor =
     .tooltiptext = Dobrir lo panèl d’autorizasions per la realitat virtuala
 urlbar-storage-access-anchor =
     .tooltiptext = Dobrir lo panèl de permissions tocant la navegacion
-urlbar-translate-notification-anchor =
-    .tooltiptext = Traduire aquesta pagina
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = Gerir lo partiment de vòstras fenèstras o d'ecran amb aqueste site
 urlbar-indexed-db-notification-anchor =
     .tooltiptext = Mostrar lo messatge sus l'emmagazinatge fòra linha
 urlbar-password-notification-anchor =
     .tooltiptext = Mostrar lo messatge per enregistrar lo senhal
-urlbar-translated-notification-anchor =
-    .tooltiptext = Gerir la traduccion de paginas
 urlbar-plugins-notification-anchor =
     .tooltiptext = Gerir l'utilizacion dels moduls complementaris
 urlbar-web-rtc-share-devices-notification-anchor =
@@ -144,6 +112,11 @@ urlbar-tip-icon-description =
     .alt = Astúcia :
 urlbar-result-menu-button =
     .title = Dobrir lo menú
+urlbar-result-menu-button-feedback = Comentaris
+    .title = Dobrir lo menú
+urlbar-result-menu-learn-more =
+    .label = Ne saber mai
+    .accesskey = N
 urlbar-result-menu-remove-from-history =
     .label = Tirar de l’istoric
     .accesskey = T
@@ -208,10 +181,6 @@ urlbar-star-add-bookmark =
 
 ## Page Action Context Menu
 
-page-action-manage-extension =
-    .label = Gerir l’extension…
-page-action-remove-extension =
-    .label = Suprimir l’extension
 page-action-manage-extension2 =
     .label = Gerir l’extension…
     .accesskey = G
@@ -406,7 +375,7 @@ identity-clear-site-data =
 identity-connection-not-secure-security-view = Sètz pas connectat amb seguretat a aquel site.
 identity-connection-verified = Sètz connectat amb seguretat a aquel site.
 identity-ev-owner-label = Certificat emés per :
-identity-description-custom-root = Mozilla reconeis pas aqueste emissor de certificats. Benlèu que foguèt apondut per vòstre sistèma operatiu o per un administrator. <label data-l10n-name="link">Ne saber mai</label>
+identity-description-custom-root2 = Mozilla reconeis pas aqueste emissor de certificats. Benlèu que foguèt apondut per vòstre sistèma operatiu o per un administrator.
 identity-remove-cert-exception =
     .label = Suprimir l'excepcion
     .accesskey = L
@@ -414,14 +383,12 @@ identity-description-insecure = La vòstra connexion a aquel site es pas privada
 identity-description-insecure-login-forms = Las informacions d’identificacion que marcatz sus aquela pagina son pas seguras e pòdon far perilh.
 identity-description-weak-cipher-intro = Vòstra connexion a aquel site web utiliza un chiframent flac e es pas privada.
 identity-description-weak-cipher-risk = D’autres pòdon accedir a vòstras informacions o modificar lo compòrtament del site web.
-identity-description-active-blocked = { -brand-short-name } a blocat d'elements pas segurs sus aquela pagina. <label data-l10n-name="link">Ne saber mai</label>
+identity-description-active-blocked2 = { -brand-short-name } a blocat d'elements pas segurs sus aquela pagina.
 identity-description-passive-loaded = Vòstra connexion es pas privada e las informacions que partejatz amb aquel site pòdon èsser vistas per d’autres.
-identity-description-passive-loaded-insecure = Aquel site ten de contenguts pas segurs (coma d'imatges). <label data-l10n-name="link">Ne saber mai</label>
-identity-description-passive-loaded-mixed = Pasmens se { -brand-short-name } a blocat de contengut, demòra d'elements pas segurs sus la pagina (coma d'imatges). <label data-l10n-name="link">Ne saber mai</label>
+identity-description-passive-loaded-insecure2 = Aquel site ten de contenguts pas segurs (coma d'imatges).
+identity-description-passive-loaded-mixed2 = Pasmens se { -brand-short-name } a blocat de contengut, demòra d'elements pas segurs sus la pagina (coma d'imatges).
 identity-description-active-loaded = Aquel site web ten de contengut non segurs (coma d'scripts) e la connexion establida es pas privada.
 identity-description-active-loaded-insecure = Las informacions que partejatz amb aquel site pòdon èsser vistas per d’autres (coma par exemple los senhals, los messatges, las cartas de crèdit, etc.).
-identity-learn-more =
-    .value = Ne saber mai
 identity-disable-mixed-content-blocking =
     .label = Desactivar la proteccion per ara
     .accesskey = D
@@ -501,13 +468,6 @@ popup-select-window-or-screen =
     .label = Fenèstra o ecran :
     .accesskey = F
 popup-all-windows-shared = L'ensemble de las fenèstras visiblas sus vòstre ecran seràn partejadas.
-popup-screen-sharing-block =
-    .label = Blocar
-    .accesskey = B
-popup-screen-sharing-always-block =
-    .label = Totjorn blocar
-    .accesskey = T
-popup-mute-notifications-checkbox = Rescondre las notificacions pendent un partiment
 
 ## WebRTC window or screen share tab switch warning
 
@@ -520,7 +480,6 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
-enable-devtools-popup-description = Per utilizar l’acorchi F12, dobrissètz d’en primièr lo panèl d’aisinas de desvolopament via lo menú Desvolopaire Web.
 enable-devtools-popup-description2 = Per utilizar l’acorchi F12, dobrissètz d’en primièr lo panèl d’aisinas de desvolopament via lo menú Aisinas del navegador.
 
 ## URL Bar
@@ -663,6 +622,20 @@ reader-view-enter-button =
 reader-view-close-button =
     .aria-label = Tampar la vista de lectura
 
+## Picture-in-Picture urlbar button
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+picture-in-picture-urlbar-button-open =
+    .tooltiptext = Dobrir la vidèo incrustada ({ $shortcut })
+picture-in-picture-urlbar-button-close =
+    .tooltiptext = Tampar la vidèo incrustada ({ $shortcut })
+picture-in-picture-panel-header = Vidèo incrustada
+picture-in-picture-panel-headline = Aqueste site web recomanda pas l’usatge de la foncion vidèo incrustada
+picture-in-picture-panel-body = S’activatz la foncion de vidèo incrustada, es possible que las vidèos s‘afichen pas coma los desvolopaires desiran.
+picture-in-picture-enable-toggle =
+    .label = Activar malgrat tot
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -679,19 +652,6 @@ fullscreen-exit-mac-button = Sortir del mòde ecran complèt (Esc)
 pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> a lo contra-ròtle sus la vòstra mirga. Quichatz sus Esc per tornar recuperar lo contra-ròtle.
 pointerlock-warning-no-domain = Aqueste document a lo contraròtle sul vòstre gredon. Quichatz Esc per tornar prendre lo contra-ròtle.
 
-## Subframe crash notification
-
-crashed-subframe-message = <strong>Part d’aquesta pagina a fracassat.</strong> Per notificar { -brand-product-name } d’aqueste problèma e que siá reglat, enviatz un rapòrt.
-# The string for crashed-subframe-title.title should match crashed-subframe-message,
-# but without any markup.
-crashed-subframe-title =
-    .title = Part d’aquesta pagina a fracassat. Per notificar { -brand-product-name } d’aqueste problèma e que siá reglat, enviatz un rapòrt.
-crashed-subframe-learnmore-link =
-    .value = Ne saber mai
-crashed-subframe-submit =
-    .label = Enviar un rapòrt
-    .accesskey = E
-
 ## Bookmarks panels, menus and toolbar
 
 bookmarks-manage-bookmarks =
@@ -707,6 +667,11 @@ bookmarks-other-bookmarks-menu =
     .label = Autres marcapaginas
 bookmarks-mobile-bookmarks-menu =
     .label = Marcapaginas del mobile
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
@@ -731,12 +696,13 @@ bookmarks-tools-menu-button-visibility =
             [true] Levar lo menú personalizat dels marcapaginas
            *[other] Apondre lo menú personalizat als marcapaginas
         }
+
+##
+
 bookmarks-search =
     .label = Recercar dins los marcapaginas
 bookmarks-tools =
     .label = Aisinas dels marcapaginas
-bookmarks-bookmark-edit-panel =
-    .label = Modificar aqueste marcapagina
 bookmarks-subview-edit-bookmark =
     .label = Modificar aqueste marcapagina…
 # The aria-label is a spoken label that should not include the word "toolbar" or
@@ -752,9 +718,6 @@ bookmarks-toolbar-placeholder =
     .title = Elements de la barra personala
 bookmarks-toolbar-placeholder-button =
     .label = Elements de la barra personala
-# "Bookmark" is a verb, as in "Add current tab to bookmarks".
-bookmarks-current-tab =
-    .label = Onglet marcapagina actual
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-subview-bookmark-tab =
     .label = Marcar l’onglet actual…
@@ -781,11 +744,6 @@ repair-text-encoding-button =
 ## Customize Toolbar Buttons
 
 # Variables:
-#  $shortcut (String): keyboard shortcut to open the add-ons manager
-toolbar-addons-themes-button =
-    .label = Moduls complementaris e tèmas
-    .tooltiptext = Gerissètz los moduls e los tèmas ({ $shortcut })
-# Variables:
 #  $shortcut (String): keyboard shortcut to open settings (only on macOS)
 toolbar-settings-button =
     .label = Paramètres
@@ -800,6 +758,9 @@ toolbar-overflow-customize-button =
 toolbar-button-email-link =
     .label = Madar per corrièr electronic un ligam cap a la pagina…
     .tooltiptext = Enviar per corrièl lo ligam d’aquesta pagina
+toolbar-button-logins =
+    .label = Senhals
+    .tooltiptext = Veire e gerir los senhals salvats
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
@@ -831,13 +792,6 @@ eme-notifications-drm-content-playing-dismiss-accesskey = I
 
 panel-save-update-username = Nom d’utilizaire
 panel-save-update-password = Senhal
-
-## Add-on removal warning
-
-# Variables:
-#  $name (String): The name of the addon that will be removed.
-addon-removal-title = Suprimir { $name } ?
-addon-removal-abuse-report-checkbox = Senhalar aquesta extension a { -vendor-short-name }
 
 ##
 
@@ -906,8 +860,6 @@ navbar-library =
     .tooltiptext = Veire l'istoric, salvar los marcapaginas, e mai
 navbar-search =
     .title = Recercar
-navbar-accessibility-indicator =
-    .tooltiptext = Foncionalitats d’accessibilitat activadas
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
@@ -949,6 +901,15 @@ unified-extensions-button-permissions-needed =
         Extensions
         Autorizacion requerida
 
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = Extensions
+    .tooltiptext =
+        Extensions
+        D’unas son pas premesas
+
 ## Autorefresh blocker
 
 refresh-blocked-refresh-label = { -brand-short-name } a empachat lo recargament automatic d'aquesta pagina.
@@ -959,9 +920,43 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-relay = { -relay-brand-name } agama vòstra adreça electronica vertadièra per ajudar a vos protegir contra las divulgacions de donadas e los messatges indesirables.
-firefox-relay-offer-how-we-integrate = En contunhant, poiretz generar un alias de messatjariá { -relay-brand-short-name } novèl dirèctament a partir del gestionari de senhals de { -brand-shorter-name }.
+firefox-relay-offer-why-to-use-relay = Nòstres aliàs segurs e facils d’utilizar protegisson vòstra identitat e blocan lo spam en amagant vòstra adreça electronica.
 # Variables:
-#  $sitename (String): name of the site where user enters their Relay mask
 #  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-does = Transferirem totes los messatges de <strong>{ $sitename }</strong> a <strong>{ $useremail }</strong>.
+firefox-relay-offer-what-relay-provides = Totes los corrièls enviats a vòstres aliàs de messatjariá seràn transferits a <strong>{ $useremail }</strong> (levat se decidissètz de los blocar).
+firefox-relay-offer-legal-notice = En clicant « Utilizar los aliàs de messatjariá », acceptatz las <label data-l10n-name="tos-url">Condicions d’utilizacion</label> e la <label data-l10n-name="privacy-url">Politica de confidencialitat</label>.
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = (Pas verificat)
+popup-notification-xpinstall-prompt-learn-more = Ne saber mai sus l’installacion de moduls de fòrma segura
+
+## Pop-up warning
+
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message =
+    { $popupCount ->
+        [one] { -brand-short-name } a empachat aqueste site de dobrir una fenèstra sorgissenta.
+       *[other] { -brand-short-name } a empachat aqueste site de dobrir { $popupCount } fenèstras sorgissenta.
+    }
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message = { -brand-short-name } a empachat aqueste site de dobrir mai de  { $popupCount } fenèstras sorgissentas.
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Opcions
+           *[other] Preferéncias
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] O
+           *[other] P
+        }
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = Afichar « { $popupURI } »

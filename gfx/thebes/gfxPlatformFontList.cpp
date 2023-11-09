@@ -77,11 +77,27 @@ const gfxFontEntry::ScriptRange gfxPlatformFontList::sComplexScriptRanges[] = {
     // want to mask the basic Arabic block here?
     // This affects the arabic-fallback-*.html reftests, which rely on
     // loading a font that *doesn't* have any GSUB table.
-    {0x0600, 0x06FF, 1, {TRUETYPE_TAG('a', 'r', 'a', 'b'), 0, 0}},
+    {0x0600, 0x060B, 1, {TRUETYPE_TAG('a', 'r', 'a', 'b'), 0, 0}},
+    // skip 060C Arabic comma, also used by N'Ko etc
+    {0x060D, 0x061A, 1, {TRUETYPE_TAG('a', 'r', 'a', 'b'), 0, 0}},
+    // skip 061B Arabic semicolon, also used by N'Ko etc
+    {0x061C, 0x061E, 1, {TRUETYPE_TAG('a', 'r', 'a', 'b'), 0, 0}},
+    // skip 061F Arabic question mark, also used by N'Ko etc
+    {0x0620, 0x063F, 1, {TRUETYPE_TAG('a', 'r', 'a', 'b'), 0, 0}},
+    // skip 0640 Arabic tatweel (for syriac, adlam, etc)
+    {0x0641, 0x06D3, 1, {TRUETYPE_TAG('a', 'r', 'a', 'b'), 0, 0}},
+    // skip 06D4 Arabic full stop (for hanifi rohingya)
+    {0x06D5, 0x06FF, 1, {TRUETYPE_TAG('a', 'r', 'a', 'b'), 0, 0}},
     {0x0700, 0x074F, 1, {TRUETYPE_TAG('s', 'y', 'r', 'c'), 0, 0}},
     {0x0750, 0x077F, 1, {TRUETYPE_TAG('a', 'r', 'a', 'b'), 0, 0}},
     {0x08A0, 0x08FF, 1, {TRUETYPE_TAG('a', 'r', 'a', 'b'), 0, 0}},
     {0x0900,
+     0x0963,
+     2,
+     {TRUETYPE_TAG('d', 'e', 'v', '2'), TRUETYPE_TAG('d', 'e', 'v', 'a'), 0}},
+    // skip 0964 DEVANAGARI DANDA and 0965 DEVANAGARI DOUBLE DANDA, shared by
+    // various other Indic writing systems
+    {0x0966,
      0x097F,
      2,
      {TRUETYPE_TAG('d', 'e', 'v', '2'), TRUETYPE_TAG('d', 'e', 'v', 'a'), 0}},
@@ -134,13 +150,19 @@ const gfxFontEntry::ScriptRange gfxPlatformFontList::sComplexScriptRanges[] = {
     {0, 0, 0, {0, 0, 0}}  // terminator
 };
 
-static const char* kObservedPrefs[] = {"font.", "font.name-list.",
-                                       "intl.accept_languages",  // hmmmm...
-                                       nullptr};
+static const char* kObservedPrefs[] = {
+    "font.", "font.name-list.", "intl.accept_languages",  // hmmmm...
+    "browser.display.use_document_fonts.icon_font_allowlist", nullptr};
 
 static const char kFontSystemWhitelistPref[] = "font.system.whitelist";
 
 static const char kCJKFallbackOrderPref[] = "font.cjk_pref_fallback_order";
+
+// Pref for the list of icon font families that still get to override the
+// default font from prefs, even when use_document_fonts is disabled.
+// (This is to enable ligature-based icon fonts to keep working.)
+static const char kIconFontsPref[] =
+    "browser.display.use_document_fonts.icon_font_allowlist";
 
 // xxx - this can probably be eliminated by reworking pref font handling code
 static const char* gPrefLangNames[] = {
@@ -164,7 +186,8 @@ static void FontListPrefChanged(const char* aPref, void* aData = nullptr) {
   // XXX this could be made to only clear out the cache for the prefs that were
   // changed but it probably isn't that big a deal.
   gfxPlatformFontList::PlatformFontList()->ClearLangGroupPrefFonts();
-  gfxFontCache::GetCache()->AgeAllGenerations();
+  gfxPlatformFontList::PlatformFontList()->LoadIconFontOverrideList();
+  gfxFontCache::GetCache()->Flush();
 }
 
 static gfxFontListPrefObserver* gFontListPrefObserver = nullptr;
@@ -275,10 +298,12 @@ gfxPlatformFontList::gfxPlatformFontList(bool aNeedFullnamePostscriptNames)
   mLangService = nsLanguageAtomService::GetService();
 
   LoadBadUnderlineList();
+  LoadIconFontOverrideList();
 
   mFontPrefs = MakeUnique<FontPrefs>();
 
   gfxFontUtils::GetPrefsFontList(kFontSystemWhitelistPref, mEnabledFontsList);
+  mFontFamilyWhitelistActive = !mEnabledFontsList.IsEmpty();
 
   // pref changes notification setup
   NS_ASSERTION(!gFontListPrefObserver,
@@ -301,6 +326,20 @@ gfxPlatformFontList::gfxPlatformFontList(bool aNeedFullnamePostscriptNames)
   }
 
   RegisterStrongMemoryReporter(new MemoryReporter());
+
+  // initialize lang group pref font defaults (i.e. serif/sans-serif)
+  mDefaultGenericsLangGroup.AppendElements(ArrayLength(gPrefLangNames));
+  for (uint32_t i = 0; i < ArrayLength(gPrefLangNames); i++) {
+    nsAutoCString prefDefaultFontType("font.default.");
+    prefDefaultFontType.Append(GetPrefLangName(eFontPrefLang(i)));
+    nsAutoCString serifOrSans;
+    Preferences::GetCString(prefDefaultFontType.get(), serifOrSans);
+    if (serifOrSans.EqualsLiteral("sans-serif")) {
+      mDefaultGenericsLangGroup[i] = StyleGenericFontFamily::SansSerif;
+    } else {
+      mDefaultGenericsLangGroup[i] = StyleGenericFontFamily::Serif;
+    }
+  }
 }
 
 gfxPlatformFontList::~gfxPlatformFontList() {
@@ -310,7 +349,17 @@ gfxPlatformFontList::~gfxPlatformFontList() {
   // the initialization thread is using.
   AutoLock lock(mLock);
 
+  // We can't just do mSharedCmaps.Clear() here because removing each item from
+  // the table would drop its last reference, and its Release() method would
+  // then call back to MaybeRemoveCmap to search for it, which we can't do
+  // while in the middle of clearing the table.
+  // So we first clear the "shared" flag in each entry, so Release() won't try
+  // to re-find them in the table.
+  for (auto iter = mSharedCmaps.ConstIter(); !iter.Done(); iter.Next()) {
+    iter.Get()->mCharMap->ClearSharedFlag();
+  }
   mSharedCmaps.Clear();
+
   ClearLangGroupPrefFontsLocked();
 
   NS_ASSERTION(gFontListPrefObserver, "There is no font list pref observer");
@@ -340,7 +389,6 @@ void gfxPlatformFontList::FontWhitelistPrefChanged(const char* aPref,
 
 void gfxPlatformFontList::ApplyWhitelist() {
   uint32_t numFonts = mEnabledFontsList.Length();
-  mFontFamilyWhitelistActive = (numFonts > 0);
   if (!mFontFamilyWhitelistActive) {
     return;
   }
@@ -382,7 +430,6 @@ void gfxPlatformFontList::ApplyWhitelist() {
 void gfxPlatformFontList::ApplyWhitelist(
     nsTArray<fontlist::Family::InitData>& aFamilies) {
   mLock.AssertCurrentThreadIn();
-  mFontFamilyWhitelistActive = !mEnabledFontsList.IsEmpty();
   if (!mFontFamilyWhitelistActive) {
     return;
   }
@@ -497,20 +544,12 @@ bool gfxPlatformFontList::InitFontList() {
     // There's no need to broadcast this reflow request to child processes, as
     // ContentParent::NotifyUpdatedFonts deals with it by re-entering into this
     // function on child processes.
-    if (NS_IsMainThread()) {
-      gfxPlatform::ForceGlobalReflow(gfxPlatform::NeedsReframe::Yes,
-                                     gfxPlatform::BroadcastToChildren::No);
-    } else {
-      NS_DispatchToMainThread(
-          NS_NewRunnableFunction("font-info-updated notification callback", [] {
-            gfxPlatform::ForceGlobalReflow(
-                gfxPlatform::NeedsReframe::Yes,
-                gfxPlatform::BroadcastToChildren::No);
-          }));
-    }
+    ForceGlobalReflowLocked(gfxPlatform::NeedsReframe::Yes,
+                            gfxPlatform::BroadcastToChildren::No);
 
     mAliasTable.Clear();
     mLocalNameTable.Clear();
+    mIconFontsSet.Clear();
 
     CancelLoadCmapsTask();
     mStartedLoadingCmapsFrom = 0xffffffffu;
@@ -534,6 +573,9 @@ bool gfxPlatformFontList::InitFontList() {
     }
 
     gfxFontUtils::GetPrefsFontList(kFontSystemWhitelistPref, mEnabledFontsList);
+    mFontFamilyWhitelistActive = !mEnabledFontsList.IsEmpty();
+
+    LoadIconFontOverrideList();
   }
 
   // From here, gfxPlatformFontList::IsInitialized will return true,
@@ -596,7 +638,7 @@ bool gfxPlatformFontList::InitFontList() {
   gfxFontStyle defStyle;
   FontFamily fam = GetDefaultFontLocked(nullptr, &defStyle);
   gfxFontEntry* fe;
-  if (fam.mIsShared) {
+  if (fam.mShared) {
     auto face = fam.mShared->FindFaceForStyle(SharedFontList(), defStyle);
     fe = face ? GetOrCreateFontEntryLocked(face, fam.mShared) : nullptr;
   } else {
@@ -605,6 +647,16 @@ bool gfxPlatformFontList::InitFontList() {
   mDefaultFontEntry = fe;
 
   return true;
+}
+
+void gfxPlatformFontList::LoadIconFontOverrideList() {
+  mIconFontsSet.Clear();
+  AutoTArray<nsCString, 20> iconFontsList;
+  gfxFontUtils::GetPrefsFontList(kIconFontsPref, iconFontsList);
+  for (auto& name : iconFontsList) {
+    ToLowerCase(name);
+    mIconFontsSet.Insert(name);
+  }
 }
 
 void gfxPlatformFontList::InitializeCodepointsWithNoFonts() {
@@ -637,7 +689,7 @@ void gfxPlatformFontList::FontListChanged() {
     // safe to use: ensure they all get flushed.
     RebuildLocalFonts(/*aForgetLocalFaces*/ true);
   }
-  gfxPlatform::ForceGlobalReflow(gfxPlatform::NeedsReframe::Yes);
+  ForceGlobalReflowLocked(gfxPlatform::NeedsReframe::Yes);
 }
 
 void gfxPlatformFontList::GenerateFontListKey(const nsACString& aKeyName,
@@ -818,8 +870,7 @@ gfxFontEntry* gfxPlatformFontList::LookupInSharedFaceNameList(
       auto* families = list->Families();
       if (families) {
         family = &families[rec->mFamilyIndex];
-        face = static_cast<fontlist::Face*>(
-            family->Faces(list)[rec->mFaceIndex].ToPtr(list));
+        face = family->Faces(list)[rec->mFaceIndex].ToPtr<fontlist::Face>(list);
       }
     }
   } else {
@@ -872,7 +923,7 @@ void gfxPlatformFontList::UpdateFontList(bool aFullRebuild) {
     if (mStartedLoadingCmapsFrom != 0xffffffffu) {
       InitializeCodepointsWithNoFonts();
       mStartedLoadingCmapsFrom = 0xffffffffu;
-      gfxPlatform::ForceGlobalReflow(gfxPlatform::NeedsReframe::No);
+      ForceGlobalReflowLocked(gfxPlatform::NeedsReframe::No);
     }
   }
 }
@@ -936,7 +987,7 @@ void gfxPlatformFontList::GetFontFamilyList(
   }
 }
 
-gfxFont* gfxPlatformFontList::SystemFindFontForChar(
+already_AddRefed<gfxFont> gfxPlatformFontList::SystemFindFontForChar(
     nsPresContext* aPresContext, uint32_t aCh, uint32_t aNextCh,
     Script aRunScript, eFontPresentation aPresentation,
     const gfxFontStyle* aStyle, FontVisibility* aVisibility) {
@@ -953,14 +1004,14 @@ gfxFont* gfxPlatformFontList::SystemFindFontForChar(
   if (aCh == 0xFFFD) {
     gfxFontEntry* fontEntry = nullptr;
     auto& fallbackFamily = mReplacementCharFallbackFamily[level];
-    if (fallbackFamily.mIsShared && fallbackFamily.mShared) {
+    if (fallbackFamily.mShared) {
       fontlist::Face* face =
           fallbackFamily.mShared->FindFaceForStyle(SharedFontList(), *aStyle);
       if (face) {
         fontEntry = GetOrCreateFontEntryLocked(face, fallbackFamily.mShared);
         *aVisibility = fallbackFamily.mShared->Visibility();
       }
-    } else if (!fallbackFamily.mIsShared && fallbackFamily.mUnshared) {
+    } else if (fallbackFamily.mUnshared) {
       fontEntry = fallbackFamily.mUnshared->FindFontForStyle(*aStyle);
       *aVisibility = fallbackFamily.mUnshared->Visibility();
     }
@@ -977,17 +1028,17 @@ gfxFont* gfxPlatformFontList::SystemFindFontForChar(
   // search commonly available fonts
   bool common = true;
   FontFamily fallbackFamily;
-  gfxFont* candidate =
+  RefPtr<gfxFont> candidate =
       CommonFontFallback(aPresContext, aCh, aNextCh, aRunScript, aPresentation,
                          aStyle, fallbackFamily);
-  gfxFont* font = nullptr;
+  RefPtr<gfxFont> font;
   if (candidate) {
     if (aPresentation == eFontPresentation::Any) {
-      font = candidate;
+      font = std::move(candidate);
     } else {
       bool hasColorGlyph = candidate->HasColorGlyphFor(aCh, aNextCh);
       if (hasColorGlyph == PrefersColor(aPresentation)) {
-        font = candidate;
+        font = std::move(candidate);
       }
     }
   }
@@ -1004,10 +1055,7 @@ gfxFont* gfxPlatformFontList::SystemFindFontForChar(
     if (font && aPresentation != eFontPresentation::Any && candidate) {
       bool hasColorGlyph = font->HasColorGlyphFor(aCh, aNextCh);
       if (hasColorGlyph != PrefersColor(aPresentation)) {
-        // We're discarding `font` and using `candidate` instead, so ensure
-        // `font` is known to the global cache expiration tracker.
-        RefPtr<gfxFont> autoRefDeref(font);
-        font = candidate;
+        font = std::move(candidate);
       }
     }
   }
@@ -1030,7 +1078,7 @@ gfxFont* gfxPlatformFontList::SystemFindFontForChar(
   if (!font) {
     mCodepointsWithNoFonts[level].set(aCh);
   } else {
-    *aVisibility = fallbackFamily.mIsShared
+    *aVisibility = fallbackFamily.mShared
                        ? fallbackFamily.mShared->Visibility()
                        : fallbackFamily.mUnshared->Visibility();
     if (aCh == 0xFFFD) {
@@ -1052,12 +1100,12 @@ gfxFont* gfxPlatformFontList::SystemFindFontForChar(
   Telemetry::Accumulate(Telemetry::SYSTEM_FONT_FALLBACK_SCRIPT,
                         int(aRunScript) + 1);
 
-  return font;
+  return font.forget();
 }
 
 #define NUM_FALLBACK_FONTS 8
 
-gfxFont* gfxPlatformFontList::CommonFontFallback(
+already_AddRefed<gfxFont> gfxPlatformFontList::CommonFontFallback(
     nsPresContext* aPresContext, uint32_t aCh, uint32_t aNextCh,
     Script aRunScript, eFontPresentation aPresentation,
     const gfxFontStyle* aMatchStyle, FontFamily& aMatchedFamily) {
@@ -1071,19 +1119,20 @@ gfxFont* gfxPlatformFontList::CommonFontFallback(
   // If a color-emoji presentation is requested, we will check any font found
   // to see if it can provide this; if not, we'll remember it as a possible
   // candidate but search the remainder of the list for a better choice.
-  gfxFont* candidateFont = nullptr;
+  RefPtr<gfxFont> candidateFont;
   FontFamily candidateFamily;
-  auto check = [&](gfxFontEntry* aFontEntry, FontFamily aFamily) -> gfxFont* {
-    gfxFont* font = aFontEntry->FindOrMakeFont(aMatchStyle);
+  auto check = [&](gfxFontEntry* aFontEntry,
+                   FontFamily aFamily) -> already_AddRefed<gfxFont> {
+    RefPtr<gfxFont> font = aFontEntry->FindOrMakeFont(aMatchStyle);
     if (aPresentation < eFontPresentation::EmojiDefault ||
         font->HasColorGlyphFor(aCh, aNextCh)) {
       aMatchedFamily = aFamily;
-      return font;
+      return font.forget();
     }
     // We want a color glyph but this font only has monochrome; remember it
     // (unless we already have a candidate) but continue to search.
     if (!candidateFont) {
-      candidateFont = font;
+      candidateFont = std::move(font);
       candidateFamily = aFamily;
     }
     return nullptr;
@@ -1100,12 +1149,9 @@ gfxFont* gfxPlatformFontList::CommonFontFallback(
       // always do a potential sync initialization of the family?
       family->SearchAllFontsForChar(SharedFontList(), &data);
       if (data.mBestMatch) {
-        gfxFont* font = check(data.mBestMatch, FontFamily(family));
+        RefPtr<gfxFont> font = check(data.mBestMatch, FontFamily(family));
         if (font) {
-          // Twiddle the refcount of any stored candidate (that we're not going
-          // to return after all) so that the cache gets a chance to drop it.
-          RefPtr<gfxFont> autoRefDeref(candidateFont);
-          return font;
+          return font.forget();
         }
       }
     }
@@ -1118,10 +1164,9 @@ gfxFont* gfxPlatformFontList::CommonFontFallback(
       }
       fallback->FindFontForChar(&data);
       if (data.mBestMatch) {
-        gfxFont* font = check(data.mBestMatch, FontFamily(fallback));
+        RefPtr<gfxFont> font = check(data.mBestMatch, FontFamily(fallback));
         if (font) {
-          RefPtr<gfxFont> autoRefDeref(candidateFont);
-          return font;
+          return font.forget();
         }
       }
     }
@@ -1132,13 +1177,13 @@ gfxFont* gfxPlatformFontList::CommonFontFallback(
   // found.
   if (candidateFont) {
     aMatchedFamily = candidateFamily;
-    return candidateFont;
+    return candidateFont.forget();
   }
 
   return nullptr;
 }
 
-gfxFont* gfxPlatformFontList::GlobalFontFallback(
+already_AddRefed<gfxFont> gfxPlatformFontList::GlobalFontFallback(
     nsPresContext* aPresContext, uint32_t aCh, uint32_t aNextCh,
     Script aRunScript, eFontPresentation aPresentation,
     const gfxFontStyle* aMatchStyle, uint32_t& aCmapCount,
@@ -1152,34 +1197,30 @@ gfxFont* gfxPlatformFontList::GlobalFontFallback(
     gfxFontEntry* fe = PlatformGlobalFontFallback(aPresContext, aCh, aRunScript,
                                                   aMatchStyle, aMatchedFamily);
     if (fe) {
-      if (aMatchedFamily.mIsShared) {
+      if (aMatchedFamily.mShared) {
         if (IsVisibleToCSS(*aMatchedFamily.mShared, level)) {
-          gfxFont* font = fe->FindOrMakeFont(aMatchStyle);
+          RefPtr<gfxFont> font = fe->FindOrMakeFont(aMatchStyle);
           if (font) {
             if (aPresentation == eFontPresentation::Any) {
-              return font;
+              return font.forget();
             }
             bool hasColorGlyph = font->HasColorGlyphFor(aCh, aNextCh);
             if (hasColorGlyph == PrefersColor(aPresentation)) {
-              return font;
+              return font.forget();
             }
-            // If we don't use this font, we need to touch its refcount
-            // to trigger gfxFontCache expiration tracking.
-            RefPtr<gfxFont> autoRefDeref(font);
           }
         }
       } else {
         if (IsVisibleToCSS(*aMatchedFamily.mUnshared, level)) {
-          gfxFont* font = fe->FindOrMakeFont(aMatchStyle);
+          RefPtr<gfxFont> font = fe->FindOrMakeFont(aMatchStyle);
           if (font) {
             if (aPresentation == eFontPresentation::Any) {
-              return font;
+              return font.forget();
             }
             bool hasColorGlyph = font->HasColorGlyphFor(aCh, aNextCh);
             if (hasColorGlyph == PrefersColor(aPresentation)) {
-              return font;
+              return font.forget();
             }
-            RefPtr<gfxFont> autoRefDeref(font);
           }
         }
       }
@@ -1636,7 +1677,7 @@ fontlist::Family* gfxPlatformFontList::FindSharedFamily(
   if (!FindAndAddFamiliesLocked(aPresContext, StyleGenericFontFamily::None,
                                 aFamily, &families, aFlags, aStyle, aLanguage,
                                 aDevToCss) ||
-      !families[0].mFamily.mIsShared) {
+      !families[0].mFamily.mShared) {
     return nullptr;
   }
   fontlist::Family* family = families[0].mFamily.mShared;
@@ -1712,7 +1753,7 @@ bool gfxPlatformFontList::InitializeFamily(fontlist::Family* aFamily,
       auto* faces = aFamily->Faces(list);
       if (faces) {
         for (size_t i = 0; i < aFamily->NumFaces(); i++) {
-          auto* face = static_cast<fontlist::Face*>(faces[i].ToPtr(list));
+          auto* face = faces[i].ToPtr<fontlist::Face>(list);
           if (face && face->mCharacterMap.IsNull()) {
             // We don't want to cache this font entry, as the parent will most
             // likely never use it again; it's just to populate the charmap for
@@ -1746,7 +1787,7 @@ gfxFontEntry* gfxPlatformFontList::FindFontForFamily(
   if (family.IsNull()) {
     return nullptr;
   }
-  if (family.mIsShared) {
+  if (family.mShared) {
     auto face = family.mShared->FindFaceForStyle(SharedFontList(), *aStyle);
     if (!face) {
       return nullptr;
@@ -1814,12 +1855,11 @@ bool gfxPlatformFontList::GetStandardFamilyName(const nsCString& aFontName,
 
 bool gfxPlatformFontList::GetLocalizedFamilyName(const FontFamily& aFamily,
                                                  nsACString& aFamilyName) {
-  if (aFamily.mIsShared) {
-    if (aFamily.mShared) {
-      aFamilyName = SharedFontList()->LocalizedFamilyName(aFamily.mShared);
-      return true;
-    }
-  } else if (aFamily.mUnshared) {
+  if (aFamily.mShared) {
+    aFamilyName = SharedFontList()->LocalizedFamilyName(aFamily.mShared);
+    return true;
+  }
+  if (aFamily.mUnshared) {
     aFamily.mUnshared->LocalizedName(aFamilyName);
     return true;
   }
@@ -1857,7 +1897,7 @@ ShmemCharMapHashEntry::ShmemCharMapHashEntry(const gfxSparseBitSet* aCharMap)
       mHash(aCharMap->GetChecksum()) {
   size_t len = SharedBitSet::RequiredSize(*aCharMap);
   mCharMap = mList->Alloc(len);
-  SharedBitSet::Create(mCharMap.ToPtr(mList), len, *aCharMap);
+  SharedBitSet::Create(mCharMap.ToPtr(mList, len), len, *aCharMap);
 }
 
 fontlist::Pointer gfxPlatformFontList::GetShmemCharMapLocked(
@@ -1869,27 +1909,63 @@ fontlist::Pointer gfxPlatformFontList::GetShmemCharMapLocked(
   return entry->GetCharMap();
 }
 
-// lookup cmap in the shared cmap set, adding if not already present
-gfxCharacterMap* gfxPlatformFontList::FindCharMap(gfxCharacterMap* aCmap) {
+// Lookup aCmap in the shared cmap set, adding if not already present.
+// This is the only way for a reference to a gfxCharacterMap to be acquired
+// by another thread than its original creator.
+already_AddRefed<gfxCharacterMap> gfxPlatformFontList::FindCharMap(
+    gfxCharacterMap* aCmap) {
+  // Lock to prevent potentially racing against MaybeRemoveCmap.
   AutoLock lock(mLock);
+
+  // Find existing entry or insert a new one (which will add a reference).
   aCmap->CalcHash();
-  gfxCharacterMap* cmap = mSharedCmaps.PutEntry(aCmap)->GetKey();
-  cmap->mShared = true;
-  return cmap;
+  aCmap->mShared = true;  // Set the shared flag in preparation for adding
+                          // to the global table.
+  RefPtr cmap = mSharedCmaps.PutEntry(aCmap)->GetKey();
+
+  // If we ended up finding a different, pre-existing entry, clear the
+  // shared flag on this one so that it'll get deleted on Release().
+  if (cmap.get() != aCmap) {
+    aCmap->mShared = false;
+  }
+
+  return cmap.forget();
 }
 
-// remove the cmap from the shared cmap set
-void gfxPlatformFontList::RemoveCmap(const gfxCharacterMap* aCharMap) {
+// Potentially remove the charmap from the shared cmap set. This is called
+// when a user of the charmap drops a reference and the refcount goes to 1;
+// in that case, it is possible our shared set is the only remaining user
+// of the object, and we should remove it.
+// Note that aCharMap might have already been freed, so we must not try to
+// dereference it until we have checked that it's still present in our table.
+void gfxPlatformFontList::MaybeRemoveCmap(gfxCharacterMap* aCharMap) {
+  // Lock so that nobody else can get a reference via FindCharMap while we're
+  // checking here.
   AutoLock lock(mLock);
-  // skip lookups during teardown
-  if (mSharedCmaps.Count() == 0) {
+
+  // Skip lookups during teardown.
+  if (!mSharedCmaps.Count()) {
     return;
   }
 
-  // cmap needs to match the entry *and* be the same ptr before removing
+  // aCharMap needs to match the entry and be the same ptr and still have a
+  // refcount of exactly 1 (i.e. we hold the only reference) before removing.
+  // If we're racing another thread, it might already have been removed, in
+  // which case GetEntry will not find it and we won't try to dereference the
+  // already-freed pointer.
   CharMapHashKey* found =
       mSharedCmaps.GetEntry(const_cast<gfxCharacterMap*>(aCharMap));
-  if (found && found->GetKey() == aCharMap) {
+  if (found && found->GetKey() == aCharMap && aCharMap->RefCount() == 1) {
+    // Forget our reference to the object that's being deleted, without
+    // calling Release() on it.
+    Unused << found->mCharMap.forget();
+
+    // Do the deletion.
+    delete aCharMap;
+
+    // Log this as a "Release" to keep leak-checking correct.
+    NS_LOG_RELEASE(aCharMap, 0, "gfxCharacterMap");
+
     mSharedCmaps.RemoveEntry(found);
   }
 }
@@ -2395,22 +2471,6 @@ StyleGenericFontFamily gfxPlatformFontList::GetDefaultGeneric(
 
   AutoLock lock(mLock);
 
-  // initialize lang group pref font defaults (i.e. serif/sans-serif)
-  if (MOZ_UNLIKELY(mDefaultGenericsLangGroup.IsEmpty())) {
-    mDefaultGenericsLangGroup.AppendElements(ArrayLength(gPrefLangNames));
-    for (uint32_t i = 0; i < ArrayLength(gPrefLangNames); i++) {
-      nsAutoCString prefDefaultFontType("font.default.");
-      prefDefaultFontType.Append(GetPrefLangName(eFontPrefLang(i)));
-      nsAutoCString serifOrSans;
-      Preferences::GetCString(prefDefaultFontType.get(), serifOrSans);
-      if (serifOrSans.EqualsLiteral("sans-serif")) {
-        mDefaultGenericsLangGroup[i] = StyleGenericFontFamily::SansSerif;
-      } else {
-        mDefaultGenericsLangGroup[i] = StyleGenericFontFamily::Serif;
-      }
-    }
-  }
-
   if (uint32_t(aLang) < ArrayLength(gPrefLangNames)) {
     return mDefaultGenericsLangGroup[uint32_t(aLang)];
   }
@@ -2610,7 +2670,7 @@ void gfxPlatformFontList::CleanupLoader() {
                FindFamiliesFlags::eNoAddToNamesMissedWhenSearching));
         });
     if (forceReflow) {
-      gfxPlatform::ForceGlobalReflow(gfxPlatform::NeedsReframe::No);
+      ForceGlobalReflowLocked(gfxPlatform::NeedsReframe::No);
     }
 
     mOtherNamesMissed = nullptr;
@@ -2629,6 +2689,22 @@ void gfxPlatformFontList::CleanupLoader() {
   }
 
   gfxFontInfoLoader::CleanupLoader();
+}
+
+void gfxPlatformFontList::ForceGlobalReflowLocked(
+    gfxPlatform::NeedsReframe aNeedsReframe,
+    gfxPlatform::BroadcastToChildren aBroadcastToChildren) {
+  if (!NS_IsMainThread()) {
+    NS_DispatchToMainThread(NS_NewRunnableFunction(
+        "gfxPlatformFontList::ForceGlobalReflowLocked",
+        [aNeedsReframe, aBroadcastToChildren] {
+          gfxPlatform::ForceGlobalReflow(aNeedsReframe, aBroadcastToChildren);
+        }));
+    return;
+  }
+
+  AutoUnlock unlock(mLock);
+  gfxPlatform::ForceGlobalReflow(aNeedsReframe, aBroadcastToChildren);
 }
 
 void gfxPlatformFontList::GetPrefsAndStartLoader() {
@@ -2908,6 +2984,7 @@ base::SharedMemoryHandle gfxPlatformFontList::ShareShmBlockToProcess(
 void gfxPlatformFontList::ShmBlockAdded(uint32_t aGeneration, uint32_t aIndex,
                                         base::SharedMemoryHandle aHandle) {
   if (SharedFontList()) {
+    AutoLock lock(mLock);
     SharedFontList()->ShmBlockAdded(aGeneration, aIndex, std::move(aHandle));
   }
 }
@@ -2950,7 +3027,7 @@ void gfxPlatformFontList::SetCharacterMap(uint32_t aGeneration,
   if (AppShutdown::IsInOrBeyond(ShutdownPhase::AppShutdownConfirmed)) {
     return;
   }
-  fontlist::Face* face = static_cast<fontlist::Face*>(aFacePtr.ToPtr(list));
+  auto* face = aFacePtr.ToPtr<fontlist::Face>(list);
   if (face) {
     face->mCharacterMap = GetShmemCharMap(&aMap);
   }
@@ -2978,7 +3055,7 @@ void gfxPlatformFontList::SetupFamilyCharMap(
   // should have hit the MOZ_DIAGNOSTIC_ASSERT in FontList::ToSharedPointer
   // rather than passing a null or bad pointer to the parent.)
 
-  auto* family = static_cast<fontlist::Family*>(aFamilyPtr.ToPtr(list));
+  auto* family = aFamilyPtr.ToPtr<fontlist::Family>(list);
   if (!family) {
     // Unable to resolve to a native pointer (or it was null).
     NS_WARNING("unexpected null Family pointer");
@@ -3083,6 +3160,13 @@ bool gfxPlatformFontList::FontPrefs::LookupNameList(const nsACString& aPref,
     return true;
   }
   return false;
+}
+
+bool gfxPlatformFontList::IsKnownIconFontFamily(
+    const nsAtom* aFamilyName) const {
+  nsAtomCString fam(aFamilyName);
+  ToLowerCase(fam);
+  return mIconFontsSet.Contains(fam);
 }
 
 #undef LOG

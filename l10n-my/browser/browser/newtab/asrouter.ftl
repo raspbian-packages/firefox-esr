@@ -63,11 +63,10 @@ cfr-doorhanger-extension-total-users =
        *[other] သုံးစွဲသူ { $total } ယောက်
     }
 
-## These messages are steps on how to use the feature and are shown together.
-
-
 ## Firefox Accounts Message
 
+cfr-doorhanger-bookmark-fxa-header = သင့် စာမှတ်များ နေရာမျိုးစုံ တွင်အသုံးပြုပါ
+cfr-doorhanger-bookmark-fxa-body = ကောင်းကောင်းတွေ့တာပဲ! ဒီ စာမှတ် ကို သင့် မိုဘိုင်း ကိရိယာပေါ်မှာပဲ မထားခဲ့ပါနဲ့။ အခုပဲ { -fxaccount-brand-name } နှင့် စတင်ပါ။
 
 ## Protections panel
 
@@ -80,61 +79,24 @@ cfr-whatsnew-button =
 
 cfr-whatsnew-release-notes-link-text = ထုတ်ပြန်ချက်မှတ်စုများကိုဖတ်ပါ
 
-## Search Bar
-
-
-## Picture-in-Picture
-
-## Permission Prompt
-
-## Fingerprinter Counter
-
-## Bookmark Sync
-
-
-## Login Sync
-
-## Send Tab
-
-## Firefox Send
-
-## Social Tracking Protection
-
 ## Enhanced Tracking Protection Milestones
 
 cfr-doorhanger-milestone-ok-button = အားလုံးကိုကြည့်ပါ
     .accesskey = s
-
-## What’s New Panel Content for Firefox 76
-
-
-## Lockwise message
-
-
-## Vulnerable Passwords message
-
-
-## Picture-in-Picture fullscreen message
-
-
-## Protections Dashboard message
-
-
-## Better PDF message
-
 
 ## DOH Message
 
 cfr-doorhanger-doh-secondary-button = ပိတ်ထားသည်
     .accesskey = D
 
-## What's new: Cookies message
-
 ## Fission Experiment Message
+
 
 ## Full Video Support CFR message
 
+
 ## Spotlight modal shared strings
+
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -142,9 +104,12 @@ cfr-doorhanger-doh-secondary-button = ပိတ်ထားသည်
 ## bit of info about how to improve their privacy and then offered a button
 ## to the Mozilla VPN page and a link to dismiss the dialog.
 
+
 ## Total Cookie Protection Rollout
 
+
 ## Emotive Continuous Onboarding
+
 
 ## MR2022 Background Update Windows native toast notification strings.
 ##
@@ -159,7 +124,25 @@ cfr-doorhanger-doh-secondary-button = ပိတ်ထားသည်
 ## The button labels are fitted into narrow fixed-width buttons by
 ## Windows and therefore must be as narrow as possible.
 
+
 ## Firefox View CFR
 
+
 ## Firefox View Spotlight
+
+
+## Colorways expiry reminder CFR
+
+
+## Cookie Banner Handling CFR
+
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+## FxA sync CFR
+
+## Device Migration FxA Spotlight
 

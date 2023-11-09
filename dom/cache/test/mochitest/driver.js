@@ -34,20 +34,24 @@ function runTests(testFile, order) {
         ["dom.serviceWorkers.enabled", true],
         ["dom.serviceWorkers.testing.enabled", true],
         ["dom.serviceWorkers.exemptFromPerDomainMax", true],
+        [
+          "privacy.partition.always_partition_third_party_non_cookie_storage",
+          false,
+        ],
       ],
     });
   }
 
   // adapted from dom/indexedDB/test/helpers.js
   function clearStorage() {
-    var clearUnpartitionedStorage = new Promise(function(resolve, reject) {
+    var clearUnpartitionedStorage = new Promise(function (resolve, reject) {
       var qms = SpecialPowers.Services.qms;
       var principal = SpecialPowers.wrap(document).nodePrincipal;
       var request = qms.clearStoragesForPrincipal(principal);
       var cb = SpecialPowers.wrapCallback(resolve);
       request.callback = cb;
     });
-    var clearPartitionedStorage = new Promise(function(resolve, reject) {
+    var clearPartitionedStorage = new Promise(function (resolve, reject) {
       var qms = SpecialPowers.Services.qms;
       var principal = SpecialPowers.wrap(document).partitionedPrincipal;
       var request = qms.clearStoragesForPrincipal(principal);
@@ -58,7 +62,7 @@ function runTests(testFile, order) {
   }
 
   function loadScript(script) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       var s = document.createElement("script");
       s.src = script;
       s.onerror = reject;
@@ -85,10 +89,10 @@ function runTests(testFile, order) {
   }
 
   function runFrameTest() {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       var iframe = document.createElement("iframe");
       iframe.src = "frame.html";
-      iframe.onload = function() {
+      iframe.onload = function () {
         var doc = iframe.contentDocument;
         var s = doc.createElement("script");
         s.src = testFile;
@@ -123,7 +127,7 @@ function runTests(testFile, order) {
 
   if (order == "both") {
     info("Running tests in both modes; first: sequential");
-    return runTests(testFile, "sequential").then(function() {
+    return runTests(testFile, "sequential").then(function () {
       info("Running tests in parallel mode");
       return runTests(testFile, "parallel");
     });
@@ -137,7 +141,7 @@ function runTests(testFile, order) {
       .then(clearStorage)
       .then(runFrameTest)
       .then(clearStorage)
-      .catch(function(e) {
+      .catch(function (e) {
         ok(false, "A promise was rejected during test execution: " + e);
       });
   }
@@ -147,7 +151,7 @@ function runTests(testFile, order) {
       Promise.all([runWorkerTest(), runServiceWorkerTest(), runFrameTest()])
     )
     .then(clearStorage)
-    .catch(function(e) {
+    .catch(function (e) {
       ok(false, "A promise was rejected during test execution: " + e);
     });
 }

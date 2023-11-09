@@ -10,8 +10,8 @@
 #include "vm/JSContext.h"
 #include "vm/JSObject.h"
 #include "vm/PIC.h"
-#include "vm/Realm.h"
 
+#include "vm/JSContext-inl.h"
 #include "vm/JSObject-inl.h"
 
 using namespace js;
@@ -162,7 +162,7 @@ void ForOfIterator::closeThrow() {
   MOZ_ASSERT(iterator);
 
   RootedValue completionException(cx_);
-  RootedSavedFrame completionExceptionStack(cx_);
+  Rooted<SavedFrame*> completionExceptionStack(cx_);
   if (cx_->isExceptionPending()) {
     if (!GetAndClearExceptionAndStack(cx_, &completionException,
                                       &completionExceptionStack)) {

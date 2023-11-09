@@ -1,4 +1,5 @@
-/* -*- Mode: c++; tab-width: 2; indent-tabs-mode: nil; -*- */
+/* -*- tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim: set ts=2 et sw=2 tw=80: */
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
@@ -9,6 +10,8 @@
  */
 
 #import <Cocoa/Cocoa.h>
+
+#include <dlfcn.h>
 
 #include "mozilla/AvailableMemoryWatcher.h"
 #include "CustomCocoaEvents.h"
@@ -26,6 +29,7 @@
 #include "nsServiceManagerUtils.h"
 #include "nsObjCExceptions.h"
 #include "nsCocoaUtils.h"
+#include "nsCocoaFeatures.h"
 #include "nsChildView.h"
 #include "nsToolkit.h"
 #include "TextInputHandler.h"
@@ -195,6 +199,8 @@ void OnUncaughtException(NSException* aException) {
 
 - (id)initWithAppShell:(nsAppShell*)aAppShell;
 - (void)applicationWillTerminate:(NSNotification*)aNotification;
+- (BOOL)shouldSaveApplicationState:(NSCoder*)coder;
+- (BOOL)shouldRestoreApplicationState:(NSCoder*)coder;
 @end
 
 // nsAppShell implementation
@@ -770,6 +776,35 @@ bool nsAppShell::ProcessNextNativeEvent(bool aMayWait) {
   return moreEvents;
 }
 
+// Attempt to work around bug 1801419 by loading and initializing the
+// SidecarCore private framework as the app shell starts up. This normally
+// happens on demand, the first time any Cmd-key combination is pressed, and
+// sometimes triggers crashes, caused by an Apple bug. We hope that doing it
+// now, and somewhat more simply, will avoid the crashes. They happen
+// (intermittently) when SidecarCore code tries to access C strings in special
+// sections of its own __TEXT segment, and triggers fatal page faults (which
+// is Apple's bug). Many of the C strings are part of the Objective-C class
+// hierarchy (class names and so forth). We hope that adding them to this
+// hierarchy will "pin" them in place -- so they'll rarely, if ever, be paged
+// out again. Bug 1801419's crashes happen much more often on macOS 13
+// (Ventura) than on other versions of macOS. So we only use this hack on
+// macOS 13 and up.
+static void PinSidecarCoreTextCStringSections() {
+  if (!dlopen("/System/Library/PrivateFrameworks/SidecarCore.framework/SidecarCore", RTLD_LAZY)) {
+    return;
+  }
+
+  // Explicitly run the most basic part of the initialization code that
+  // normally runs automatically on the first Cmd-key combination.
+  Class displayManagerClass = NSClassFromString(@"SidecarDisplayManager");
+  if ([displayManagerClass respondsToSelector:@selector(sharedManager)]) {
+    id sharedManager = [displayManagerClass performSelector:@selector(sharedManager)];
+    if ([sharedManager respondsToSelector:@selector(devices)]) {
+      [sharedManager performSelector:@selector(devices)];
+    }
+  }
+}
+
 // Run
 //
 // Overrides the base class's Run() method to call [NSApp run] (which spins
@@ -790,6 +825,9 @@ nsAppShell::Run(void) {
   mStarted = true;
 
   if (XRE_IsParentProcess()) {
+    if (nsCocoaFeatures::OnVenturaOrLater()) {
+      PinSidecarCoreTextCStringSections();
+    }
     AddScreenWakeLockListener();
   }
 
@@ -980,6 +1018,10 @@ void nsAppShell::OnMemoryPressureChanged(dispatch_source_memorypressure_flags_t 
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:NSApplicationDidBecomeActiveNotification
                                                object:NSApp];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(timezoneChanged:)
+                                                 name:NSSystemTimeZoneDidChangeNotification
+                                               object:nil];
   }
 
   return self;
@@ -1030,6 +1072,22 @@ void nsAppShell::OnMemoryPressureChanged(dispatch_source_memorypressure_flags_t 
   }
 
   NS_OBJC_END_TRY_IGNORE_BLOCK;
+}
+
+- (void)timezoneChanged:(NSNotification*)aNotification {
+  NS_OBJC_BEGIN_TRY_IGNORE_BLOCK;
+
+  nsBaseAppShell::OnSystemTimezoneChange();
+
+  NS_OBJC_END_TRY_IGNORE_BLOCK;
+}
+
+- (BOOL)shouldSaveApplicationState:(NSCoder*)coder {
+  return YES;
+}
+
+- (BOOL)shouldRestoreApplicationState:(NSCoder*)coder {
+  return YES;
 }
 
 @end

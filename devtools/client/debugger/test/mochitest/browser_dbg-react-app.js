@@ -4,7 +4,7 @@
 
 "use strict";
 
-add_task(async function() {
+add_task(async function () {
   const dbg = await initDebugger("doc-react.html", "App.js");
   dbg.actions.toggleMapScopes();
 
@@ -30,4 +30,5 @@ add_task(async function() {
     sourceTab.querySelector(".source-icon.react"),
     "Source tab has a React icon"
   );
+  assertSourceIcon(dbg, "App.js", "react");
 });

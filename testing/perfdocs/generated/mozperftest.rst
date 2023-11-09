@@ -1,13 +1,14 @@
 ===========
-mozperftest
+Mozperftest
 ===========
 
-**mozperftest** can be used to run performance tests.
+**Mozperftest** can be used to run performance tests.
 
 
 .. toctree::
 
    running
+   tools
    writing
    developing
    vision
@@ -182,6 +183,16 @@ perftest_youtube_link.js
 :name: YouTube Link
 
 **Measures time to load YouTube video**
+
+perftest_android_startup.js
+===========================
+
+:owner: Performance Team
+:name: android-startup
+
+**Measures android startup times**
+
+This test consists of 2 main tests, cold main first frame(cmff) and cold view nav start(cvns). cold main first frame is the measurement from when you click the app icon & get duration to first frame from 'am start -W'. cold view nav start is the measurement from when you send a VIEW intent & get duration from logcat: START proc to PageStart.
 
 perftest_android_main.js
 ========================

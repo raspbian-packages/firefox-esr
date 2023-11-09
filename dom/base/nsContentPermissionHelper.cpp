@@ -293,8 +293,7 @@ nsresult nsContentPermissionUtils::AskPermission(
 
     req->IPDLAddRef();
     ContentChild::GetSingleton()->SendPContentPermissionRequestConstructor(
-        req, permArray, IPC::Principal(principal),
-        IPC::Principal(topLevelPrincipal),
+        req, permArray, principal, topLevelPrincipal,
         hasValidTransientUserGestureActivation,
         isRequestDelegatedToUnsafeThirdParty, child->GetTabId());
     ContentPermissionRequestChildMap()[req.get()] = child->GetTabId();
@@ -591,7 +590,7 @@ void ContentPermissionRequestBase::RequestDelayedTask(
 }
 
 nsresult TranslateChoices(
-    JS::HandleValue aChoices,
+    JS::Handle<JS::Value> aChoices,
     const nsTArray<PermissionRequest>& aPermissionRequests,
     nsTArray<PermissionChoice>& aTranslatedChoices) {
   if (aChoices.isNullOrUndefined()) {
@@ -692,7 +691,7 @@ nsContentPermissionRequestProxy::GetPrincipal(
     return NS_ERROR_FAILURE;
   }
 
-  NS_ADDREF(*aRequestingPrincipal = mParent->mPrincipal);
+  NS_IF_ADDREF(*aRequestingPrincipal = mParent->mPrincipal);
   return NS_OK;
 }
 
@@ -704,12 +703,7 @@ nsContentPermissionRequestProxy::GetTopLevelPrincipal(
     return NS_ERROR_FAILURE;
   }
 
-  if (!mParent->mTopLevelPrincipal) {
-    *aRequestingPrincipal = nullptr;
-    return NS_OK;
-  }
-
-  NS_ADDREF(*aRequestingPrincipal = mParent->mTopLevelPrincipal);
+  NS_IF_ADDREF(*aRequestingPrincipal = mParent->mTopLevelPrincipal);
   return NS_OK;
 }
 
@@ -780,7 +774,7 @@ nsContentPermissionRequestProxy::Cancel() {
 }
 
 NS_IMETHODIMP
-nsContentPermissionRequestProxy::Allow(JS::HandleValue aChoices) {
+nsContentPermissionRequestProxy::Allow(JS::Handle<JS::Value> aChoices) {
   if (mParent == nullptr) {
     return NS_ERROR_FAILURE;
   }
@@ -822,7 +816,7 @@ void RemotePermissionRequest::DoCancel() {
   request->Cancel();
 }
 
-void RemotePermissionRequest::DoAllow(JS::HandleValue aChoices) {
+void RemotePermissionRequest::DoAllow(JS::Handle<JS::Value> aChoices) {
   NS_ASSERTION(mRequest, "We need a request");
   nsCOMPtr<nsIContentPermissionRequest> request(mRequest);
   request->Allow(aChoices);
@@ -860,7 +854,7 @@ mozilla::ipc::IPCResult RemotePermissionRequest::RecvNotifyResult(
         return IPC_FAIL_NO_REASON(this);
       }
     }
-    JS::RootedValue val(cx, JS::ObjectValue(*obj));
+    JS::Rooted<JS::Value> val(cx, JS::ObjectValue(*obj));
     DoAllow(val);
   } else {
     DoCancel();

@@ -20,6 +20,7 @@
 #define wasm_module_types_h
 
 #include "mozilla/RefPtr.h"
+#include "mozilla/Span.h"
 
 #include "js/AllocPolicy.h"
 #include "js/RefCounted.h"
@@ -42,9 +43,9 @@ namespace wasm {
 
 using mozilla::Maybe;
 using mozilla::Nothing;
+using mozilla::Span;
 
 class FuncType;
-class TypeIdDesc;
 
 // A Module can either be asm.js or wasm.
 
@@ -62,6 +63,54 @@ struct CacheableChars : UniqueChars {
 
 using CacheableCharsVector = Vector<CacheableChars, 0, SystemAllocPolicy>;
 
+// CacheableName is used to cacheably store a UTF-8 string that may contain
+// null terminators in sequence.
+
+struct CacheableName {
+ private:
+  UTF8Bytes bytes_;
+
+  const char* begin() const { return (const char*)bytes_.begin(); }
+  size_t length() const { return bytes_.length(); }
+
+ public:
+  CacheableName() = default;
+  MOZ_IMPLICIT CacheableName(UTF8Bytes&& rhs) : bytes_(std::move(rhs)) {}
+
+  bool isEmpty() const { return bytes_.length() == 0; }
+
+  Span<char> utf8Bytes() { return Span<char>(bytes_); }
+  Span<const char> utf8Bytes() const { return Span<const char>(bytes_); }
+
+  static CacheableName fromUTF8Chars(UniqueChars&& utf8Chars);
+  [[nodiscard]] static bool fromUTF8Chars(const char* utf8Chars,
+                                          CacheableName* name);
+
+  [[nodiscard]] JSAtom* toAtom(JSContext* cx) const;
+  [[nodiscard]] bool toPropertyKey(JSContext* cx,
+                                   MutableHandleId propertyKey) const;
+  [[nodiscard]] UniqueChars toQuotedString(JSContext* cx) const;
+
+  size_t sizeOfExcludingThis(mozilla::MallocSizeOf mallocSizeOf) const;
+  WASM_DECLARE_FRIEND_SERIALIZE(CacheableName);
+};
+
+using CacheableNameVector = Vector<CacheableName, 0, SystemAllocPolicy>;
+
+// A hash policy for names.
+struct NameHasher {
+  using Key = Span<const char>;
+  using Lookup = Span<const char>;
+
+  static HashNumber hash(const Lookup& aLookup) {
+    return mozilla::HashString(aLookup.data(), aLookup.Length());
+  }
+
+  static bool match(const Key& aKey, const Lookup& aLookup) {
+    return aKey == aLookup;
+  }
+};
+
 // Import describes a single wasm import. An ImportVector describes all
 // of a single module's imports.
 //
@@ -69,12 +118,12 @@ using CacheableCharsVector = Vector<CacheableChars, 0, SystemAllocPolicy>;
 // immutably by Module.
 
 struct Import {
-  CacheableChars module;
-  CacheableChars field;
+  CacheableName module;
+  CacheableName field;
   DefinitionKind kind;
 
   Import() = default;
-  Import(UniqueChars&& module, UniqueChars&& field, DefinitionKind kind)
+  Import(CacheableName&& module, CacheableName&& field, DefinitionKind kind)
       : module(std::move(module)), field(std::move(field)), kind(kind) {}
 
   size_t sizeOfExcludingThis(mozilla::MallocSizeOf mallocSizeOf) const;
@@ -103,15 +152,16 @@ class Export {
   };
 
  private:
-  CacheableChars fieldName_;
+  CacheableName fieldName_;
   CacheablePod pod;
 
  public:
   Export() = default;
-  explicit Export(UniqueChars fieldName, uint32_t index, DefinitionKind kind);
-  explicit Export(UniqueChars fieldName, DefinitionKind kind);
+  explicit Export(CacheableName&& fieldName, uint32_t index,
+                  DefinitionKind kind);
+  explicit Export(CacheableName&& fieldName, DefinitionKind kind);
 
-  const char* fieldName() const { return fieldName_.get(); }
+  const CacheableName& fieldName() const { return fieldName_; }
 
   DefinitionKind kind() const { return pod.kind_; }
   uint32_t funcIndex() const;
@@ -146,8 +196,7 @@ enum class FuncFlags : uint8_t {
 // A FuncDesc describes a single function definition.
 
 struct FuncDesc {
-  FuncType* type;
-  TypeIdDesc* typeId;
+  const FuncType* type;
   // Bit pack to keep this struct small on 32-bit systems
   uint32_t typeIndex : 24;
   FuncFlags flags : 8;
@@ -157,11 +206,8 @@ struct FuncDesc {
   static_assert(sizeof(FuncFlags) == sizeof(uint8_t));
 
   FuncDesc() = default;
-  FuncDesc(FuncType* type, TypeIdDesc* typeId, uint32_t typeIndex)
-      : type(type),
-        typeId(typeId),
-        typeIndex(typeIndex),
-        flags(FuncFlags::None) {}
+  FuncDesc(const FuncType* type, uint32_t typeIndex)
+      : type(type), typeIndex(typeIndex), flags(FuncFlags::None) {}
 
   bool isExported() const {
     return uint8_t(flags) & uint8_t(FuncFlags::Exported);
@@ -291,7 +337,7 @@ using GlobalDescVector = Vector<GlobalDesc, 0, SystemAllocPolicy>;
 
 // The TagOffsetVector represents the offsets in the layout of the
 // data buffer stored in a Wasm exception.
-using TagOffsetVector = Vector<uint32_t, 0, SystemAllocPolicy>;
+using TagOffsetVector = Vector<uint32_t, 2, SystemAllocPolicy>;
 
 struct TagType : AtomicRefCounted<TagType> {
   ValTypeVector argTypes_;
@@ -323,15 +369,11 @@ using SharedTagType = RefPtr<const TagType>;
 struct TagDesc {
   TagKind kind;
   SharedTagType type;
-  uint32_t globalDataOffset;
   bool isExport;
 
-  TagDesc() : globalDataOffset(UINT32_MAX), isExport(false) {}
+  TagDesc() : isExport(false) {}
   TagDesc(TagKind kind, const SharedTagType& type, bool isExport = false)
-      : kind(kind),
-        type(type),
-        globalDataOffset(UINT32_MAX),
-        isExport(isExport) {}
+      : kind(kind), type(type), isExport(isExport) {}
 
   size_t sizeOfExcludingThis(mozilla::MallocSizeOf mallocSizeOf) const;
 };
@@ -562,28 +604,25 @@ static_assert(MaxMemory32LimitField <= UINT64_MAX / PageSize);
 
 struct TableDesc {
   RefType elemType;
-  bool isImportedOrExported;
+  bool isImported;
+  bool isExported;
   bool isAsmJS;
-  uint32_t globalDataOffset;
   uint32_t initialLength;
   Maybe<uint32_t> maximumLength;
-
-  WASM_CHECK_CACHEABLE_POD(elemType, isImportedOrExported, isAsmJS,
-                           globalDataOffset, initialLength, maximumLength);
+  Maybe<InitExpr> initExpr;
 
   TableDesc() = default;
   TableDesc(RefType elemType, uint32_t initialLength,
-            Maybe<uint32_t> maximumLength, bool isAsmJS,
-            bool isImportedOrExported = false)
+            Maybe<uint32_t> maximumLength, Maybe<InitExpr>&& initExpr,
+            bool isAsmJS, bool isImported = false, bool isExported = false)
       : elemType(elemType),
-        isImportedOrExported(isImportedOrExported),
+        isImported(isImported),
+        isExported(isExported),
         isAsmJS(isAsmJS),
-        globalDataOffset(UINT32_MAX),
         initialLength(initialLength),
-        maximumLength(maximumLength) {}
+        maximumLength(maximumLength),
+        initExpr(std::move(initExpr)) {}
 };
-
-WASM_DECLARE_CACHEABLE_POD(TableDesc);
 
 using TableDescVector = Vector<TableDesc, 0, SystemAllocPolicy>;
 

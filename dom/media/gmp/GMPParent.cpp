@@ -20,6 +20,7 @@
 #include "mozilla/ipc/GeckoChildProcessHost.h"
 #if defined(XP_LINUX) && defined(MOZ_SANDBOX)
 #  include "mozilla/SandboxInfo.h"
+#  include "base/shared_memory.h"
 #endif
 #include "mozilla/Services.h"
 #include "mozilla/SSE.h"
@@ -51,7 +52,6 @@
 using mozilla::ipc::GeckoChildProcessHost;
 
 using CrashReporter::AnnotationTable;
-using CrashReporter::GetIDFromMinidump;
 
 namespace mozilla::gmp {
 
@@ -64,7 +64,7 @@ namespace mozilla::gmp {
 #define __CLASS__ "GMPParent"
 
 GMPParent::GMPParent()
-    : mState(GMPStateNotLoaded),
+    : mState(GMPState::NotLoaded),
       mPluginId(GeckoChildProcessHost::GetUniqueID()),
       mProcess(nullptr),
       mDeleteProcessOnlyOnUnload(false),
@@ -73,7 +73,6 @@ GMPParent::GMPParent()
       mCanDecrypt(false),
       mGMPContentChildCount(0),
       mChildPid(0),
-      mHoldingSelfRef(false),
 #ifdef ALLOW_GECKO_CHILD_PROCESS_ARCH
       mChildLaunchArch(base::PROCESS_ARCH_INVALID),
 #endif
@@ -98,6 +97,7 @@ void GMPParent::CloneFrom(const GMPParent* aOther) {
   mVersion = aOther->mVersion;
   mDescription = aOther->mDescription;
   mDisplayName = aOther->mDisplayName;
+  mPluginType = aOther->mPluginType;
 #if defined(XP_WIN) || defined(XP_LINUX)
   mLibs = aOther->mLibs;
 #endif
@@ -206,10 +206,10 @@ RefPtr<GenericPromise> GMPParent::Init(GeckoMediaPluginServiceParent* aService,
   // set |mChildLaunchArch| to x64 and allow the library to be used as long
   // as this process is a universal binary.
   if (!(pluginArch & arm64) && (pluginArch & x86)) {
-    bool isWidevine = parentLeafName.Find("widevine") != kNotFound;
+    bool isWidevine = parentLeafName.Find(u"widevine") != kNotFound;
     bool isWidevineAllowed =
         StaticPrefs::media_gmp_widevinecdm_allow_x64_plugin_on_arm64();
-    bool isH264 = parentLeafName.Find("openh264") != kNotFound;
+    bool isH264 = parentLeafName.Find(u"openh264") != kNotFound;
     bool isH264Allowed =
         StaticPrefs::media_gmp_gmpopenh264_allow_x64_plugin_on_arm64();
     bool isClearkey = parentLeafName.Find(u"clearkey") != kNotFound;
@@ -270,7 +270,7 @@ RefPtr<GenericPromise> GMPParent::Init(GeckoMediaPluginServiceParent* aService,
 }
 
 void GMPParent::Crash() {
-  if (mState != GMPStateNotLoaded) {
+  if (mState != GMPState::NotLoaded) {
     Unused << SendCrashPluginNow();
   }
 }
@@ -286,19 +286,30 @@ class NotifyGMPProcessLoadedTask : public Runnable {
   NS_IMETHOD Run() override {
     MOZ_ASSERT(NS_IsMainThread());
 
-    nsCOMPtr<nsISerialEventTarget> gmpEventTarget =
-        mGMPParent->GMPEventTarget();
-    if (!gmpEventTarget) {
-      return NS_ERROR_FAILURE;
+    bool canProfile = true;
+
+#if defined(XP_LINUX) && defined(MOZ_SANDBOX)
+    if (SandboxInfo::Get().Test(SandboxInfo::kEnabledForMedia) &&
+        base::SharedMemory::UsingPosixShm()) {
+      canProfile = false;
     }
+#endif
 
-    ipc::Endpoint<PProfilerChild> profilerParent(
-        ProfilerParent::CreateForProcess(mProcessId));
+    if (canProfile) {
+      nsCOMPtr<nsISerialEventTarget> gmpEventTarget =
+          mGMPParent->GMPEventTarget();
+      if (!gmpEventTarget) {
+        return NS_ERROR_FAILURE;
+      }
 
-    gmpEventTarget->Dispatch(
-        NewRunnableMethod<ipc::Endpoint<mozilla::PProfilerChild>&&>(
-            "GMPParent::SendInitProfiler", mGMPParent,
-            &GMPParent::SendInitProfiler, std::move(profilerParent)));
+      ipc::Endpoint<PProfilerChild> profilerParent(
+          ProfilerParent::CreateForProcess(mProcessId));
+
+      gmpEventTarget->Dispatch(
+          NewRunnableMethod<ipc::Endpoint<mozilla::PProfilerChild>&&>(
+              "GMPParent::SendInitProfiler", mGMPParent,
+              &GMPParent::SendInitProfiler, std::move(profilerParent)));
+    }
 
     return NS_OK;
   }
@@ -310,7 +321,7 @@ class NotifyGMPProcessLoadedTask : public Runnable {
 nsresult GMPParent::LoadProcess() {
   MOZ_ASSERT(mDirectory, "Plugin directory cannot be NULL!");
   MOZ_ASSERT(GMPEventTarget()->IsOnCurrentThread());
-  MOZ_ASSERT(mState == GMPStateNotLoaded);
+  MOZ_ASSERT(mState == GMPState::NotLoaded);
 
   nsAutoString path;
   if (NS_WARN_IF(NS_FAILED(mDirectory->GetPath(path)))) {
@@ -337,11 +348,10 @@ nsresult GMPParent::LoadProcess() {
       return NS_ERROR_FAILURE;
     }
 
-    mChildPid = base::GetProcId(mProcess->GetChildProcessHandle());
+    mChildPid = mProcess->GetChildProcessId();
     GMP_PARENT_LOG_DEBUG("%s: Launched new child process", __FUNCTION__);
 
-    bool opened = Open(mProcess->TakeInitialPort(),
-                       base::GetProcId(mProcess->GetChildProcessHandle()));
+    bool opened = mProcess->TakeInitialEndpoint().Bind(this);
     if (!opened) {
       GMP_PARENT_LOG_DEBUG("%s: Failed to open channel to new child process",
                            __FUNCTION__);
@@ -388,14 +398,7 @@ nsresult GMPParent::LoadProcess() {
     GMP_PARENT_LOG_DEBUG("%s: Sent StartPlugin to child process", __FUNCTION__);
   }
 
-  mState = GMPStateLoaded;
-
-  // Hold a self ref while the child process is alive. This ensures that
-  // during shutdown the GMPParent stays alive long enough to
-  // terminate the child process.
-  MOZ_ASSERT(!mHoldingSelfRef);
-  mHoldingSelfRef = true;
-  AddRef();
+  mState = GMPState::Loaded;
 
   return NS_OK;
 }
@@ -418,8 +421,8 @@ void GMPParent::CloseIfUnused() {
   MOZ_ASSERT(GMPEventTarget()->IsOnCurrentThread());
   GMP_PARENT_LOG_DEBUG("%s", __FUNCTION__);
 
-  if ((mDeleteProcessOnlyOnUnload || mState == GMPStateLoaded ||
-       mState == GMPStateUnloading) &&
+  if ((mDeleteProcessOnlyOnUnload || mState == GMPState::Loaded ||
+       mState == GMPState::Unloading) &&
       !IsUsed()) {
     // Ensure all timers are killed.
     for (uint32_t i = mTimers.Length(); i > 0; i--) {
@@ -437,15 +440,16 @@ void GMPParent::CloseIfUnused() {
 
 void GMPParent::CloseActive(bool aDieWhenUnloaded) {
   MOZ_ASSERT(GMPEventTarget()->IsOnCurrentThread());
-  GMP_PARENT_LOG_DEBUG("%s: state %d", __FUNCTION__, mState);
+  GMP_PARENT_LOG_DEBUG("%s: state %u", __FUNCTION__,
+                       uint32_t(GMPState(mState)));
 
   if (aDieWhenUnloaded) {
     mDeleteProcessOnlyOnUnload = true;  // don't allow this to go back...
   }
-  if (mState == GMPStateLoaded) {
-    mState = GMPStateUnloading;
+  if (mState == GMPState::Loaded) {
+    mState = GMPState::Unloading;
   }
-  if (mState != GMPStateNotLoaded && IsUsed()) {
+  if (mState != GMPState::NotLoaded && IsUsed()) {
     Unused << SendCloseActive();
     CloseIfUnused();
   }
@@ -467,7 +471,7 @@ void GMPParent::Shutdown() {
   }
 
   MOZ_ASSERT(!IsUsed());
-  if (mState == GMPStateNotLoaded || mState == GMPStateClosing) {
+  if (mState == GMPState::NotLoaded || mState == GMPState::Closing) {
     return;
   }
 
@@ -480,7 +484,7 @@ void GMPParent::Shutdown() {
     // Destroy ourselves and rise from the fire to save memory
     mService->ReAddOnGMPThread(self);
   }  // else we've been asked to die and stay dead
-  MOZ_ASSERT(mState == GMPStateNotLoaded);
+  MOZ_ASSERT(mState == GMPState::NotLoaded);
 }
 
 class NotifyGMPShutdownTask : public Runnable {
@@ -524,10 +528,10 @@ void GMPParent::DeleteProcess() {
   MOZ_ASSERT(GMPEventTarget()->IsOnCurrentThread());
   GMP_PARENT_LOG_DEBUG("%s", __FUNCTION__);
 
-  if (mState != GMPStateClosing) {
+  if (mState != GMPState::Closing) {
     // Don't Close() twice!
     // Probably remove when bug 1043671 is resolved
-    mState = GMPStateClosing;
+    mState = GMPState::Closing;
     Close();
   }
   mProcess->Delete(NewRunnableMethod("gmp::GMPParent::ChildTerminated", this,
@@ -536,7 +540,7 @@ void GMPParent::DeleteProcess() {
   mProcess = nullptr;
 
 #if defined(MOZ_WIDGET_ANDROID)
-  if (mState != GMPStateNotLoaded) {
+  if (mState != GMPState::NotLoaded) {
     nsCOMPtr<nsIEventTarget> launcherThread(GetIPCLauncher());
     MOZ_ASSERT(launcherThread);
 
@@ -553,16 +557,11 @@ void GMPParent::DeleteProcess() {
   }
 #endif  // defined(MOZ_WIDGET_ANDROID)
 
-  mState = GMPStateNotLoaded;
+  mState = GMPState::NotLoaded;
 
   nsCOMPtr<nsIRunnable> r =
       new NotifyGMPShutdownTask(NS_ConvertUTF8toUTF16(mNodeId));
   mMainThread->Dispatch(r.forget());
-
-  if (mHoldingSelfRef) {
-    Release();
-    mHoldingSelfRef = false;
-  }
 }
 
 GMPState GMPParent::State() const { return mState; }
@@ -578,12 +577,12 @@ nsCOMPtr<nsISerialEventTarget> GMPParent::GMPEventTarget() {
   // nullptr if the GeckoMediaPluginService has started shutdown.
   nsCOMPtr<nsIThread> gmpThread;
   mps->GetThread(getter_AddRefs(gmpThread));
-  return gmpThread ? gmpThread->SerialEventTarget() : nullptr;
+  return gmpThread;
 }
 
 /* static */
 bool GMPCapability::Supports(const nsTArray<GMPCapability>& aCapabilities,
-                             const nsCString& aAPI,
+                             const nsACString& aAPI,
                              const nsTArray<nsCString>& aTags) {
   for (const nsCString& tag : aTags) {
     if (!GMPCapability::Supports(aCapabilities, aAPI, tag)) {
@@ -595,7 +594,7 @@ bool GMPCapability::Supports(const nsTArray<GMPCapability>& aCapabilities,
 
 /* static */
 bool GMPCapability::Supports(const nsTArray<GMPCapability>& aCapabilities,
-                             const nsCString& aAPI, const nsCString& aTag) {
+                             const nsACString& aAPI, const nsCString& aTag) {
   for (const GMPCapability& capabilities : aCapabilities) {
     if (!capabilities.mAPIName.Equals(aAPI)) {
       continue;
@@ -623,16 +622,18 @@ bool GMPCapability::Supports(const nsTArray<GMPCapability>& aCapabilities,
 }
 
 bool GMPParent::EnsureProcessLoaded() {
-  if (mState == GMPStateLoaded) {
-    return true;
-  }
-  if (mState == GMPStateClosing || mState == GMPStateUnloading) {
-    return false;
+  switch (mState) {
+    case GMPState::NotLoaded:
+      return NS_SUCCEEDED(LoadProcess());
+    case GMPState::Loaded:
+      return true;
+    case GMPState::Unloading:
+    case GMPState::Closing:
+      return false;
   }
 
-  nsresult rv = LoadProcess();
-
-  return NS_SUCCEEDED(rv);
+  MOZ_ASSERT_UNREACHABLE("Unhandled GMPState!");
+  return false;
 }
 
 void GMPParent::AddCrashAnnotations() {
@@ -695,7 +696,7 @@ void GMPParent::ActorDestroy(ActorDestroyReason aWhy) {
   }
 
   // warn us off trying to close again
-  mState = GMPStateClosing;
+  mState = GMPState::Closing;
   mAbnormalShutdownInProgress = true;
   CloseActive(false);
 
@@ -704,7 +705,7 @@ void GMPParent::ActorDestroy(ActorDestroyReason aWhy) {
     RefPtr<GMPParent> self(this);
     // Must not call Close() again in DeleteProcess(), as we'll recurse
     // infinitely if we do.
-    MOZ_ASSERT(mState == GMPStateClosing);
+    MOZ_ASSERT(mState == GMPState::Closing);
     DeleteProcess();
     // Note: final destruction will be Dispatched to ourself
     mService->ReAddOnGMPThread(self);
@@ -805,6 +806,23 @@ static void ApplyGlibcWorkaround(nsCString& aLibs) {
 }
 #endif
 
+#if defined(XP_WIN)
+static void ApplyOleaut32(nsCString& aLibs) {
+  // In the libwebrtc update in bug 1766646 an include of comdef.h for using
+  // _bstr_t was introduced. This resulted in a dependency on comsupp.lib which
+  // contains a `_variant_t vtMissing` that would get cleared in an exit
+  // handler. VariantClear is defined in oleaut32.dll, and so we'd try to load
+  // oleaut32.dll on exit but get denied by the sandbox.
+  // Note that we had includes of comdef.h before bug 1766646 but it is the use
+  // of _bstr_t that triggers the vtMissing exit handler.
+  // See bug 1788592 for details.
+  if (!aLibs.IsEmpty()) {
+    aLibs.AppendLiteral(", ");
+  }
+  aLibs.AppendLiteral("oleaut32.dll");
+}
+#endif
+
 RefPtr<GenericPromise> GMPParent::ReadGMPInfoFile(nsIFile* aFile) {
   MOZ_ASSERT(GMPEventTarget()->IsOnCurrentThread());
   GMPInfoFileParser parser;
@@ -825,12 +843,18 @@ RefPtr<GenericPromise> GMPParent::ReadGMPInfoFile(nsIFile* aFile) {
   ReadInfoField(parser, "libraries"_ns, mLibs);
 #endif
 
+  UpdatePluginType();
+
 #ifdef XP_LINUX
   // The glibc workaround (see above) isn't needed for clearkey
   // because it's built along with the browser.
-  if (!mDisplayName.EqualsASCII("clearkey")) {
+  if (mPluginType != GMPPluginType::Clearkey) {
     ApplyGlibcWorkaround(mLibs);
   }
+#endif
+
+#ifdef XP_WIN
+  ApplyOleaut32(mLibs);
 #endif
 
   nsTArray<nsCString> apiTokens;
@@ -935,42 +959,52 @@ RefPtr<GenericPromise> GMPParent::ParseChromiumManifest(
   }
 #endif
 
+  UpdatePluginType();
+
   GMPCapability video;
 
   // We hard code a few of the settings because they can't be stored in the
   // widevine manifest without making our API different to widevine's.
-  if (mDisplayName.EqualsASCII("clearkey")) {
-    video.mAPITags.AppendElement(nsCString{kClearKeyKeySystemName});
-    video.mAPITags.AppendElement(
-        nsCString{kClearKeyWithProtectionQueryKeySystemName});
+  switch (mPluginType) {
+    case GMPPluginType::Clearkey:
+      video.mAPITags.AppendElement(nsCString{kClearKeyKeySystemName});
+      video.mAPITags.AppendElement(
+          nsCString{kClearKeyWithProtectionQueryKeySystemName});
 #if XP_WIN
-    mLibs = nsLiteralCString(
-        "dxva2.dll, evr.dll, freebl3.dll, mfh264dec.dll, mfplat.dll, "
-        "msmpeg2vdec.dll, nss3.dll, softokn3.dll");
+      mLibs = nsLiteralCString(
+          "dxva2.dll, evr.dll, freebl3.dll, mfh264dec.dll, mfplat.dll, "
+          "msmpeg2vdec.dll, nss3.dll, softokn3.dll");
 #elif XP_LINUX
-    mLibs = "libfreeblpriv3.so, libsoftokn3.so"_ns;
+      mLibs = "libfreeblpriv3.so, libsoftokn3.so"_ns;
 #endif
-  } else if (mDisplayName.EqualsASCII("WidevineCdm")) {
-    video.mAPITags.AppendElement(nsCString{kWidevineKeySystemName});
+      break;
+    case GMPPluginType::Widevine:
+      video.mAPITags.AppendElement(nsCString{kWidevineKeySystemName});
 #if XP_WIN
-    // psapi.dll added for GetMappedFileNameW, which could possibly be avoided
-    // in future versions, see bug 1383611 for details.
-    mLibs = "dxva2.dll, ole32.dll, psapi.dll, winmm.dll"_ns;
+      // psapi.dll added for GetMappedFileNameW, which could possibly be avoided
+      // in future versions, see bug 1383611 for details.
+      mLibs = "dxva2.dll, ole32.dll, psapi.dll, winmm.dll"_ns;
 #endif
-  } else if (mDisplayName.EqualsASCII("fake")) {
-    // The fake CDM just exposes a key system with id "fake".
-    video.mAPITags.AppendElement(nsCString{"fake"});
+      break;
+    case GMPPluginType::Fake:
+      // The fake CDM just exposes a key system with id "fake".
+      video.mAPITags.AppendElement(nsCString{"fake"});
 #if XP_WIN
-    mLibs = "dxva2.dll, ole32.dll"_ns;
+      mLibs = "dxva2.dll, ole32.dll"_ns;
 #endif
-  } else {
-    GMP_PARENT_LOG_DEBUG("%s: Unrecognized key system: %s, failing.",
-                         __FUNCTION__, mDisplayName.get());
-    return GenericPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+      break;
+    default:
+      GMP_PARENT_LOG_DEBUG("%s: Unrecognized key system: %s, failing.",
+                           __FUNCTION__, mDisplayName.get());
+      return GenericPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
   }
 
 #ifdef XP_LINUX
   ApplyGlibcWorkaround(mLibs);
+#endif
+
+#ifdef XP_WIN
+  ApplyOleaut32(mLibs);
 #endif
 
   nsCString codecsString = NS_ConvertUTF16toUTF8(m.mX_cdm_codecs);
@@ -1033,6 +1067,20 @@ bool GMPParent::CanBeUsedFrom(const nsACString& aNodeId) const {
 void GMPParent::SetNodeId(const nsACString& aNodeId) {
   MOZ_ASSERT(!aNodeId.IsEmpty());
   mNodeId = aNodeId;
+}
+
+void GMPParent::UpdatePluginType() {
+  if (mDisplayName.EqualsLiteral("WidevineCdm")) {
+    mPluginType = GMPPluginType::Widevine;
+  } else if (mDisplayName.EqualsLiteral("gmpopenh264")) {
+    mPluginType = GMPPluginType::OpenH264;
+  } else if (mDisplayName.EqualsLiteral("clearkey")) {
+    mPluginType = GMPPluginType::Clearkey;
+  } else if (mDisplayName.EqualsLiteral("fake")) {
+    mPluginType = GMPPluginType::Fake;
+  } else {
+    mPluginType = GMPPluginType::Unknown;
+  }
 }
 
 const nsCString& GMPParent::GetDisplayName() const { return mDisplayName; }

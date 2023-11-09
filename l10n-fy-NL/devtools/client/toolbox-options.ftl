@@ -46,6 +46,12 @@ options-inspector-draggable-properties-label = Klik en sleep om ôfmjittingswear
 options-inspector-draggable-properties-tooltip =
     .title = Klik en sleep om de ôfmjittingswearden te bewurkjen yn de ynspektorrigelwerjefte.
 
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Brûk ienfâldigere aksintuearring mei prefers-reduced-motion
+options-inspector-simplified-highlighters-tooltip =
+    .title = Skeakelet ienfâldiger aksintuearringen yn as prefers-reduced-motion ynskeakele is. Trekt linen yn stee fan opfolle rjochthoeken rûn aksintuearre eleminten om knippereffekten foar te kommen.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Standertkleurienheid
@@ -124,6 +130,11 @@ options-enable-remote-label = Remote debugging ynskeakelje
 options-enable-remote-tooltip2 =
     .title = Troch dizze opsje yn te skeakeljen kinne jo dizze browserynstallaasje op ôfstân debugge
 
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = Brûk de F12-toets om DevTools te iepenjen of te sluten
+options-enable-f12-tooltip =
+    .title = As jo dizze opsje ynskeakelje, wurdt de F12-toets keppele om it DevTools-ark te iepenjen of te sluten
+
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Oanpaste opmaakeleminten ynskeakelje
 options-enable-custom-formatters-tooltip =
@@ -141,4 +152,3 @@ options-source-maps-tooltip =
 
 # The message shown for settings that trigger page reload
 options-context-triggers-page-refresh = * Allinnich aktuele sesje, fernijt de side
-

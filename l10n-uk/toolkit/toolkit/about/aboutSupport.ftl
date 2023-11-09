@@ -61,7 +61,7 @@ app-basics-os-theme = Тема ОС
 # Rosetta is Apple's translation process to run apps containing x86_64
 # instructions on Apple Silicon. This should remain in English.
 app-basics-rosetta = Перекладено Rosetta
-app-basics-memory-use = Використання пам’яті
+app-basics-memory-use = Використання пам'яті
 app-basics-performance = Швидкодія
 app-basics-service-workers = Зареєстровані Service Workers
 app-basics-third-party = Сторонні модулі
@@ -175,6 +175,15 @@ media-codec-support-info = Інформація про підтримку код
 # List all the entries of the database.
 media-capabilities-enumerate = Перерахувати базу даних
 
+## Codec support table
+
+media-codec-support-sw-decoding = Програмне декодування
+media-codec-support-hw-decoding = Апаратне декодування
+media-codec-support-codec-name = Назва кодека
+media-codec-support-supported = Підтримується
+media-codec-support-unsupported = Не підтримується
+media-codec-support-error = Інформація про підтримку кодеків недоступна. Повторіть спробу після відтворення медіафайлу.
+
 ##
 
 intl-title = Інтернаціоналізація та локалізація
@@ -196,7 +205,7 @@ intl-regional-prefs = Регіональні налаштування
 ##
 ## See also https://firefox-source-docs.mozilla.org/remote/
 
-remote-debugging-title = Віддалене зневадження (Протокол Chromium)
+remote-debugging-title = Віддалене налагодження (Протокол Chromium)
 remote-debugging-accepting-connections = Вхідні з'єднання
 remote-debugging-url = URL
 
@@ -248,7 +257,7 @@ text-copied = Текст скопійовано в буфер
 ## The verb "blocked" here refers to a graphics feature such as "Direct2D" or "OpenGL layers".
 
 blocked-driver = Заблоковано для вашої версії графічного драйвера.
-blocked-gfx-card = Заблоковано для вашої відеоплати через нерозв’язані проблеми з драйвером.
+blocked-gfx-card = Заблоковано для вашого графічного процесора через нерозв'язані проблеми з драйвером.
 blocked-os-version = Заблоковано для вашої версії операційної системи.
 blocked-mismatched-version = Заблоковано через невідповідність версії вашого графічного драйвера в реєстрі та DLL.
 # Variables
@@ -293,6 +302,8 @@ webgl2-renderer = Засіб візуалізації WebGL2
 webgl2-version = WebGL 2 - Версія драйвера
 webgl2-driver-extensions = WebGL 2 - Розширення драйвера
 webgl2-extensions = WebGL 2 - Розширення
+webgpu-default-adapter = Стандартний адаптер WebGPU
+webgpu-fallback-adapter = Запасний адаптер WebGPU
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Заблоковано, у зв'язку з відомими проблемами: <a data-l10n-name="bug-link">звіт { $bugNumber }</a>

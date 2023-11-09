@@ -20,7 +20,7 @@ perftools-heading-features = Nodweddion
 perftools-heading-features-default = Nodweddion (Ymlaen yn rhagosodedig drwy argymhelliad)
 perftools-heading-features-disabled = Nodweddion wedi'u Hanalluogi
 perftools-heading-features-experimental = Arbrofol
-perftools-heading-threads = Trywyddion
+perftools-heading-threads = Edafedd
 perftools-heading-threads-jvm = Trywyddau JVM
 perftools-heading-local-build = Adeiladedd lleol
 
@@ -84,8 +84,6 @@ perftools-thread-renderer =
     .title = Pan fydd WebRender wedi'i alluogi, mae'r trywydd sy'n gweithredu OpenGL yn galw
 perftools-thread-render-backend =
     .title = Trywydd WebRender RenderBackend
-perftools-thread-paint-worker =
-    .title = Pan mae off-main-thread wedi'i alluogi, yr edefyn y mae paentio yn digwydd arno
 perftools-thread-timer =
     .title = Yr amseryddion trin trywydd (setTimeout, setInterval, nsITimer)
 perftools-thread-style-thread =
@@ -133,6 +131,11 @@ perftools-onboarding-close-button =
 
 # Presets and their l10n IDs are defined in the file
 # devtools/client/performance-new/popup/background.jsm.js
+# The same labels and descriptions are also defined in appmenu.ftl.
+
+
+# Presets and their l10n IDs are defined in the file
+# devtools/client/performance-new/shared/background.jsm.js
 # The same labels and descriptions are also defined in appmenu.ftl.
 
 perftools-presets-web-developer-label = Datblygwr Gwe

@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Nedávno zatvorené
 firefoxview-closed-tabs-description2 = V tomto okne znova otvorte stránky, ktoré ste zatvorili.
 firefoxview-closed-tabs-placeholder-header = Žiadne nedávno zatvorené karty
 firefoxview-closed-tabs-placeholder-body = Keď zatvoríte kartu v tomto okne, môžete ju opätovne získať tu.
+firefoxview-closed-tabs-placeholder-body2 = Keď kartu zatvoríte, môžete ju odtiaľto opätovne načítať.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Naposledy prezerané
 firefoxview-tabs-list-tab-button =
     .title = Otvoriť { $targetURI } na novej karte
 firefoxview-try-colorways-button = Vyskúšajte farebné témy
-firefoxview-no-current-colorway-collection = Nové farby sú na ceste
 firefoxview-change-colorway-button = Zmeniť farebnú tému
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Zobraziť zoznam
 firefoxview-collapse-button-hide =
     .title = Skryť zoznam
+firefoxview-overview-nav = Nedávne prehliadanie
+    .title = Nedávne prehliadanie
+firefoxview-overview-header = Nedávne prehliadanie
+    .title = Nedávne prehliadanie
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = História
+    .title = História
+firefoxview-history-header = História
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Otvorené karty
+    .title = Otvorené karty
+firefoxview-opentabs-header = Otvorené karty
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Nedávno zatvorené karty
+    .title = Nedávno zatvorené karty
+firefoxview-recently-closed-header = Nedávno zatvorené karty
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Karty z ďalších zariadení
+    .title = Karty z ďalších zariadení
+firefoxview-synced-tabs-header = Karty z ďalších zariadení
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Zobraziť všetky
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Okno { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Okno { $winID } (aktuálne)
+firefoxview-opentabs-focus-tab =
+    .title = Prepnúť na túto kartu
+firefoxview-show-more = Zobraziť viac
+firefoxview-show-less = Zobraziť menej
+firefoxview-sort-history-by-date-label = Usporiadať podľa dátumu
+firefoxview-sort-history-by-site-label = Usporiadať podľa lokality
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Dnes – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Včera – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Zobraziť celú históriu

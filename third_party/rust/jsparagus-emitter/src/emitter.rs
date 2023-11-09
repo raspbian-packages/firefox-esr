@@ -44,6 +44,13 @@ pub enum CheckIsObjectKind {
 }
 
 #[derive(Debug, Clone, Copy)]
+pub enum CompletionKind {
+    Normal = 0,
+    Return = 1,
+    Throw = 2,
+}
+
+#[derive(Debug, Clone, Copy)]
 pub enum FunctionPrefixKind {
     None = 0,
     Get = 1,
@@ -67,6 +74,7 @@ pub enum ThrowMsgKind {
     MissingPrivateOnGet = 5,
     MissingPrivateOnSet = 6,
     AssignToPrivateMethod = 7,
+    DecoratorInvalidReturnType = 8,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -709,6 +717,11 @@ impl InstructionWriter {
         self.emit_op(Opcode::EndIter);
     }
 
+    pub fn close_iter(&mut self, kind: CompletionKind) {
+        self.emit_op(Opcode::CloseIter);
+        self.write_u8(kind as u8);
+    }
+
     pub fn check_is_obj(&mut self, kind: CheckIsObjectKind) {
         self.emit_op(Opcode::CheckIsObj);
         self.write_u8(kind as u8);
@@ -782,8 +795,18 @@ impl InstructionWriter {
         self.write_u16(argc);
     }
 
+    pub fn call_content(&mut self, argc: u16) {
+        self.emit_argc_op(Opcode::CallContent, argc);
+        self.write_u16(argc);
+    }
+
     pub fn call_iter(&mut self, argc: u16) {
         self.emit_argc_op(Opcode::CallIter, argc);
+        self.write_u16(argc);
+    }
+
+    pub fn call_content_iter(&mut self, argc: u16) {
+        self.emit_argc_op(Opcode::CallContentIter, argc);
         self.write_u16(argc);
     }
 
@@ -834,6 +857,11 @@ impl InstructionWriter {
 
     pub fn new_(&mut self, argc: u16) {
         self.emit_argc_op(Opcode::New, argc);
+        self.write_u16(argc);
+    }
+
+    pub fn new_content(&mut self, argc: u16) {
+        self.emit_argc_op(Opcode::NewContent, argc);
         self.write_u16(argc);
     }
 
@@ -1176,12 +1204,14 @@ impl InstructionWriter {
         self.emit_op(Opcode::DebugLeaveLexicalEnv);
     }
 
-    pub fn recreate_lexical_env(&mut self) {
+    pub fn recreate_lexical_env(&mut self, lexical_scope_index: GCThingIndex) {
         self.emit_op(Opcode::RecreateLexicalEnv);
+        self.write_g_c_thing_index(lexical_scope_index);
     }
 
-    pub fn freshen_lexical_env(&mut self) {
+    pub fn freshen_lexical_env(&mut self, lexical_scope_index: GCThingIndex) {
         self.emit_op(Opcode::FreshenLexicalEnv);
+        self.write_g_c_thing_index(lexical_scope_index);
     }
 
     pub fn push_class_body_env(&mut self, lexical_scope_index: GCThingIndex) {

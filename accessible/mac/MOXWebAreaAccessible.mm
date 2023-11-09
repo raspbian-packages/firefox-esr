@@ -8,8 +8,11 @@
 #import "MOXWebAreaAccessible.h"
 
 #import "MOXSearchInfo.h"
+#import "MacUtils.h"
 
+#include "nsAccUtils.h"
 #include "nsCocoaUtils.h"
+#include "DocAccessible.h"
 #include "DocAccessibleParent.h"
 
 using namespace mozilla::a11y;
@@ -120,14 +123,8 @@ using namespace mozilla::a11y;
   }
 
   nsAutoString url;
-  if (mGeckoAccessible->IsLocal()) {
-    MOZ_ASSERT(mGeckoAccessible->AsLocal()->IsDoc());
-    DocAccessible* acc = mGeckoAccessible->AsLocal()->AsDoc();
-    acc->URL(url);
-  } else {
-    RemoteAccessible* proxy = mGeckoAccessible->AsRemote();
-    proxy->URL(url);
-  }
+  MOZ_ASSERT(mGeckoAccessible->IsDoc());
+  nsAccUtils::DocumentURL(mGeckoAccessible, url);
 
   if (url.IsEmpty()) {
     return nil;

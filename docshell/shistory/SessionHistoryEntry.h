@@ -66,10 +66,22 @@ class SessionHistoryInfo {
   nsIURI* GetURI() const { return mURI; }
   void SetURI(nsIURI* aURI) { mURI = aURI; }
 
+  nsIURI* GetOriginalURI() const { return mOriginalURI; }
   void SetOriginalURI(nsIURI* aOriginalURI) { mOriginalURI = aOriginalURI; }
 
+  nsIURI* GetUnstrippedURI() const { return mUnstrippedURI; }
+  void SetUnstrippedURI(nsIURI* aUnstrippedURI) {
+    mUnstrippedURI = aUnstrippedURI;
+  }
+
+  nsIURI* GetResultPrincipalURI() const { return mResultPrincipalURI; }
   void SetResultPrincipalURI(nsIURI* aResultPrincipalURI) {
     mResultPrincipalURI = aResultPrincipalURI;
+  }
+
+  nsIReferrerInfo* GetReferrerInfo() { return mReferrerInfo; }
+  void SetReferrerInfo(nsIReferrerInfo* aReferrerInfo) {
+    mReferrerInfo = aReferrerInfo;
   }
 
   bool HasPostData() const { return mPostData; }
@@ -147,6 +159,8 @@ class SessionHistoryInfo {
 
   void SetSaveLayoutStateFlag(bool aSaveLayoutStateFlag);
 
+  bool GetPersist() const { return mPersist; }
+
  private:
   friend class SessionHistoryEntry;
   friend struct mozilla::ipc::IPDLParamTraits<SessionHistoryInfo>;
@@ -156,6 +170,7 @@ class SessionHistoryInfo {
   nsCOMPtr<nsIURI> mURI;
   nsCOMPtr<nsIURI> mOriginalURI;
   nsCOMPtr<nsIURI> mResultPrincipalURI;
+  nsCOMPtr<nsIURI> mUnstrippedURI;
   nsCOMPtr<nsIReferrerInfo> mReferrerInfo;
   nsString mTitle;
   nsString mName;
@@ -218,7 +233,7 @@ struct LoadingSessionHistoryInfo {
   explicit LoadingSessionHistoryInfo(SessionHistoryEntry* aEntry);
   // Initializes mInfo using aEntry and otherwise copies the values from aInfo.
   LoadingSessionHistoryInfo(SessionHistoryEntry* aEntry,
-                            LoadingSessionHistoryInfo* aInfo);
+                            const LoadingSessionHistoryInfo* aInfo);
   // For about:blank only.
   explicit LoadingSessionHistoryInfo(const SessionHistoryInfo& aInfo);
 
@@ -356,6 +371,16 @@ class SessionHistoryEntry : public nsISHEntry, public nsSupportsWeakReference {
   NS_DECL_NSISHENTRY
   NS_DECLARE_STATIC_IID_ACCESSOR(NS_SESSIONHISTORYENTRY_IID)
 
+  bool IsInSessionHistory() {
+    SessionHistoryEntry* entry = this;
+    while (nsCOMPtr<SessionHistoryEntry> parent =
+               do_QueryReferent(entry->mParent)) {
+      entry = parent;
+    }
+    return entry->SharedInfo()->mSHistory &&
+           entry->SharedInfo()->mSHistory->IsAlive();
+  }
+
   void ReplaceWith(const SessionHistoryEntry& aSource);
 
   const SessionHistoryInfo& Info() const { return *mInfo; }
@@ -396,9 +421,18 @@ class SessionHistoryEntry : public nsISHEntry, public nsSupportsWeakReference {
 
   void SetWireframe(const Maybe<Wireframe>& aWireframe);
 
+  struct LoadingEntry {
+    // A pointer to the entry being loaded. Will be cleared by the
+    // SessionHistoryEntry destructor, at latest.
+    SessionHistoryEntry* mEntry;
+    // Snapshot of the entry's SessionHistoryInfo when the load started, to be
+    // used for validation purposes only.
+    UniquePtr<SessionHistoryInfo> mInfoSnapshotForValidation;
+  };
+
   // Get an entry based on LoadingSessionHistoryInfo's mLoadId. Parent process
   // only.
-  static SessionHistoryEntry* GetByLoadId(uint64_t aLoadId);
+  static LoadingEntry* GetByLoadId(uint64_t aLoadId);
   static void SetByLoadId(uint64_t aLoadId, SessionHistoryEntry* aEntry);
   static void RemoveLoadId(uint64_t aLoadId);
 
@@ -418,7 +452,7 @@ class SessionHistoryEntry : public nsISHEntry, public nsSupportsWeakReference {
 
   HistoryEntryCounterForBrowsingContext mBCHistoryLength;
 
-  static nsTHashMap<nsUint64HashKey, SessionHistoryEntry*>* sLoadIdToEntry;
+  static nsTHashMap<nsUint64HashKey, LoadingEntry>* sLoadIdToEntry;
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(SessionHistoryEntry, NS_SESSIONHISTORYENTRY_IID)

@@ -3,9 +3,9 @@
 
 "use strict";
 
-XPCOMUtils.defineLazyModuleGetters(this, {
-  SearchEngineSelector: "resource://gre/modules/SearchEngineSelector.jsm",
-  SearchService: "resource://gre/modules/SearchService.jsm",
+ChromeUtils.defineESModuleGetters(this, {
+  SearchEngineSelector: "resource://gre/modules/SearchEngineSelector.sys.mjs",
+  SearchService: "resource://gre/modules/SearchService.sys.mjs",
 });
 
 const tests = [];
@@ -52,6 +52,26 @@ for (let canonicalId of ["canonical", "canonical-001"]) {
       hasTelemetryId(engines, "Google", "google-canonical"),
   });
 }
+
+tests.push({
+  locale: "en-US",
+  region: "US",
+  distribution: "canonical-002",
+  test: engines =>
+    hasParams(engines, "Google", "searchbar", "client=ubuntu-sn") &&
+    hasParams(engines, "Google", "searchbar", "channel=fs") &&
+    hasTelemetryId(engines, "Google", "google-ubuntu-sn"),
+});
+
+tests.push({
+  locale: "en-US",
+  region: "GB",
+  distribution: "canonical-002",
+  test: engines =>
+    hasParams(engines, "Google", "searchbar", "client=ubuntu-sn") &&
+    hasParams(engines, "Google", "searchbar", "channel=fs") &&
+    hasTelemetryId(engines, "Google", "google-ubuntu-sn"),
+});
 
 tests.push({
   locale: "zh-CN",
@@ -290,6 +310,7 @@ tests.push({
   region: "US",
   distribution: "mint-001",
   test: engines =>
+    hasParams(engines, "DuckDuckGo", "searchbar", "t=lm") &&
     hasParams(engines, "Google", "searchbar", "client=firefox-b-1-lm") &&
     hasDefault(engines, "Google") &&
     hasEnginesFirst(engines, ["Google"]) &&
@@ -301,6 +322,7 @@ tests.push({
   region: "GB",
   distribution: "mint-001",
   test: engines =>
+    hasParams(engines, "DuckDuckGo", "searchbar", "t=lm") &&
     hasParams(engines, "Google", "searchbar", "client=firefox-b-lm") &&
     hasDefault(engines, "Google") &&
     hasEnginesFirst(engines, ["Google"]) &&

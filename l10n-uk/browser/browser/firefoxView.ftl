@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Недавно закриті
 firefoxview-closed-tabs-description2 = Повторно відкрити сторінки, які ви закрили в цьому вікні.
 firefoxview-closed-tabs-placeholder-header = Немає недавно закритих вкладок
 firefoxview-closed-tabs-placeholder-body = Якщо ви закриєте вкладку в цьому вікні, її можна отримати тут.
+firefoxview-closed-tabs-placeholder-body2 = Якщо ви закриєте вкладку, її можна отримати тут.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Остання активна
 firefoxview-tabs-list-tab-button =
     .title = Відкрити { $targetURI } у новій вкладці
 firefoxview-try-colorways-button = Спробувати забарвлення
-firefoxview-no-current-colorway-collection = Нові забарвлення вже незабаром
 firefoxview-change-colorway-button = Змінити забарвлення
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Показати список
 firefoxview-collapse-button-hide =
     .title = Сховати список
+firefoxview-overview-nav = Останні перегляди
+    .title = Останні перегляди
+firefoxview-overview-header = Останні перегляди
+    .title = Останні перегляди
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Історія
+    .title = Історія
+firefoxview-history-header = Історія
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Відкриті вкладки
+    .title = Відкриті вкладки
+firefoxview-opentabs-header = Відкриті вкладки
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Недавно закриті вкладки
+    .title = Недавно закриті вкладки
+firefoxview-recently-closed-header = Недавно закриті вкладки
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Вкладки з інших пристроїв
+    .title = Вкладки з інших пристроїв
+firefoxview-synced-tabs-header = Вкладки з інших пристроїв
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Переглянути все
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Вікно { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Вікно { $winID } (поточне)
+firefoxview-opentabs-focus-tab =
+    .title = Перемкнутись на цю вкладку
+firefoxview-show-more = Показати ще
+firefoxview-show-less = Показати менше
+firefoxview-sort-history-by-date-label = Сортувати за датою
+firefoxview-sort-history-by-site-label = Сортувати за сайтом
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Сьогодні - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Учора - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Показати всю історію

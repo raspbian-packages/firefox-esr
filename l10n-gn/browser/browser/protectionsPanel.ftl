@@ -63,7 +63,6 @@ protections-panel-not-found-label = Ndaipóri juhupyre
 ##
 
 protections-panel-settings-label = Ñemo’ã ñemboheko
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Ñemo’ãha rupa
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Myañyhẽha
 protections-panel-site-not-working-view-issue-list-payments = Jehepume’ẽ
 protections-panel-site-not-working-view-issue-list-comments = Je’erei
 protections-panel-site-not-working-view-issue-list-videos = Ta’ãngamýi
+protections-panel-site-not-working-view-issue-list-fonts = Taity
 
 protections-panel-site-not-working-view-send-report = Emondo marandu’i
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Emombe’u tenda henyhẽ’ỹva
 protections-panel-content-blocking-breakage-report-view-description = Pe tapykuehoha jejoko ikatu omoapañuãi heta ñanduti rendápe. Emombe’úvo ko’ã apañuãi eipytyvõta { -brand-short-name } oikoporãvétaha opavavépe g̃uarã. Emondóvo ko marandu, og̃uahẽta Mozilla-pe peteĩ URL ha marandu ne kundaha ñemboheko rehegua. <label data-l10n-name="learn-more">Kuaave</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Pe tapykuehoha jejoko ikatu omoapañuãi heta ñanduti rendápe. Emombe’úvo ko’ã apañuãi eipytyvõta { -brand-short-name } oikoporãvétaha opavavépe g̃uarã. Emondóvo ko marandu, og̃uahẽta { -vendor-short-name }-pe peteĩ URL ha marandu ne kundaha ñemboheko rehegua.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Heja
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Emondo ñemombe’u
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Kookie Banner Ñemomichĩ
+protections-panel-cookie-banner-handling-enabled = Hendy ko tendápe
+protections-panel-cookie-banner-handling-disabled = Ko tendágui okápe
+protections-panel-cookie-banner-handling-undetected = Tenda ko’ág̃a oñepytyvõ’ỹva
+
+protections-panel-cookie-banner-view-title =
+    .title = Kookie Banner Ñemomichĩ
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = ¿Embogue kookie banner ñemomichĩ { $host } peg̃uarã?
+protections-panel-cookie-banner-view-turn-on-for-site = ¿Emyandy kookie banner ñemomichĩ ko tendápe g̃uarã?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } omboguéta kookie ko tendagua ha ombohekopyahúta kuatiarogue. Emboguepárõ kookie ombotykuaa ne rembiapo térã omonandi ne mba’ejoguakue.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } omboykese ijehegui opaite kookie mba’ejerure umi tenda ojokupytývape.
+protections-panel-cookie-banner-view-cancel = Heja
+protections-panel-cookie-banner-view-turn-off = Mbogue
+protections-panel-cookie-banner-view-turn-on = Myandy

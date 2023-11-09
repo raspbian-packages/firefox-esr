@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Tembiapoite ñe’ẽporãpyre
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Mba’ére ahechahína kóva
+
 cfr-doorhanger-extension-cancel-button = Ko’ág̃a nahániri
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Embojuaju ko’ág̃a
     .accesskey = A
+
 cfr-doorhanger-extension-manage-settings-button = Eñangareko je’eporã ñemboheko rehe
     .accesskey = M
+
 cfr-doorhanger-extension-never-show-recommendation = Ani ehechauka ko je’eporã
     .accesskey = S
+
 cfr-doorhanger-extension-learn-more-link = Kuaave
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = Hese { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Je’ete
 cfr-doorhanger-extension-notification2 = Je’eporã
     .tooltiptext = Jepysokue je’eporã
     .a11y-announcement = Jepysokue je’eporã eipurukuaáva
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Je’eporã
@@ -57,29 +65,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } puruhára
     }
 
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = ¡Kookie ñe’ẽmondo ohóma!
-cfr-cookie-banner-handling-body = Emoneĩ { -brand-short-name } omboykévo ijehegui kookie ñe’ẽmondo mba’ejerure, ikatu vove. Péicha ndoikóiramo, oñemoneĩta opaite kookie oñemboykeve hag̃ua ñe’ẽmondo.
-cfr-cookie-banner-accept-button = Emboyke mba’ejerure
-    .accesskey = D
-cfr-cookie-banner-reject-button = Ani ko’ág̃a
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-1 = Ehecha’ive kookie ovetã iñapysẽva
-cfr-cookie-banner-handling-body-variant-1 = Eheja { -brand-short-name } tombohovái ijehegui kookie rovetã iñapysẽva ikatu hag̃uáicha eikundaha apañuãi’ỹre. { -brand-short-name } omboykéta opaite mba’ejerure ikatúramo, térã, omoneĩmbaitéta.
-cfr-cookie-banner-accept-button-variant-1 = Emboyke ovetã iñapysẽva
-    .accesskey = D
-cfr-cookie-banner-reject-button-variant-1 = Nahániri, aguyje
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-2 = Kookie ñe’ẽmondo ñemomichĩ
-cfr-cookie-banner-handling-body-variant-2 = ¿Emoneĩ { -brand-short-name } tomboyke kookie ñe’ẽmondo mba’ejerure tendagua ikatúrõ. Térã emoneĩ kookiepe jeike ikatu vove?
-cfr-cookie-banner-accept-button-variant-2 = Moneĩ
-    .accesskey = A
-cfr-cookie-banner-reject-button-variant-2 = Ani ko’ág̃a
-    .accesskey = N
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Embojuehe nde rechaukaha eimeha guive.
@@ -100,9 +85,11 @@ cfr-protections-panel-link-text = Eikuaave
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Peteĩchagua pyahu:
+
 cfr-whatsnew-button =
     .label = Oĩpa mba’e pyahu
     .tooltiptext = Oĩpa mba’e pyahu
+
 cfr-whatsnew-release-notes-link-text = Emoñe’ẽ jehaipy rehegua
 
 ## Enhanced Tracking Protection Milestones
@@ -130,13 +117,6 @@ cfr-doorhanger-doh-secondary-button = Pe’a
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = Ne ñemigua romomba’e. { -brand-short-name } ko’ág̃a omoha’eño ñanduti renda peteĩva ambu’egui, ombohasyvéva umi mba’evaiapohápe omondávo ne ñe’ẽñemi, kuatia’atã ñemurã papapy ha ambue marandu ehayhúva.
-cfr-doorhanger-fission-header = Tenda ñemoha’eño
-cfr-doorhanger-fission-primary-button = OK, arekóma
-    .accesskey = O
-cfr-doorhanger-fission-secondary-button = Kuaave
-    .accesskey = L
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Ikatu ko’ã ta’ãngamýi ko tendagua ndojehechaporãi { -brand-short-name } ag̃aguápe. Embojokupyty hag̃ua ta’ãngamýi, embohekopyahu { -brand-short-name } ko’ág̃a.
@@ -145,11 +125,6 @@ cfr-doorhanger-video-support-primary-button = Embohekopyahu ko’ág̃a
     .accesskey = U
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Kuaave
-    .title = Embotuicha eñemomaranduve hag̃ua tembiapoite rehegua
-spotlight-learn-more-expanded = Kuaave
-    .title = Mboty
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -166,18 +141,6 @@ spotlight-public-wifi-vpn-link = Ani ko’ág̃a
     .accesskey = N
 
 ## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Eipuru ore rembiaporapykuere
-    ñemigua imbaretevéva tembiasakuépe
-spotlight-total-cookie-protection-body = Ñemo’ãmbaite kookie rovake omboyke tapykuehohápe oipurúvo kookie nde rapykueho hag̃ua ñandutípe.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } omopu’ã tápia kookie jerére ha ojoko tenda oĩhápe ani hag̃ua tapykuehoha oipuru nde rapykueho hag̃ua. Pe jeike voi ndive, oipytyvõta oiko porãve hag̃ua tembiapoite rojapo hag̃ua ñanduti iporãva opavavépe g̃uarã.
-spotlight-total-cookie-protection-primary-button = Embojuruja Total Cookie Protection
-spotlight-total-cookie-protection-secondary-button = Ani ko’ág̃a
 
 ## Emotive Continuous Onboarding
 
@@ -207,11 +170,13 @@ spotlight-pin-secondary-button = Ani ko’ág̃a
 
 mr2022-background-update-toast-title = { -brand-short-name } pyahu. Hekoñemive. Ojehapykueho’ive. Jejokua’ỹre.
 mr2022-background-update-toast-text = Eipuru { -brand-short-name } ipyahuve, hekopyahúva romo’ãva tapykuehoha rovake imbaretevéva ag̃aite peve.
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
 mr2022-background-update-toast-primary-button-label = Embojuruja { -brand-shorter-name } ko’ág̃a
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -230,6 +195,7 @@ firefoxview-cfr-body-v2 = Eguerujey tendayke oñembotyramóva ha ehasa pya’e m
 ## Firefox View Spotlight
 
 firefoxview-spotlight-promo-title = Emomaitei { -firefoxview-brand-name }-pe
+
 # “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
 firefoxview-spotlight-promo-subtitle = ¿Eipota tendayke ijurujáva ne pumbyrúpe? Eguerujey pya’e. ¿Eikotevẽ tenda eikeramoha rehe? Oĩ { -firefoxview-brand-name }-pe.
 firefoxview-spotlight-promo-primarybutton = Ehecha mba’éichapa omba’apo
@@ -239,6 +205,7 @@ firefoxview-spotlight-promo-secondarybutton = Jepo
 
 colorways-cfr-primarybutton = Eiporaro sa’y ojueheguáva
     .accesskey = C
+
 # "shades" refers to the different color options available to users in colorways.
 colorways-cfr-body = Embosa’y kundahára eipotavévape { -brand-short-name } ndive ohechakuaáva umi ñe’ẽ omoambuéva mba’ekuaa.
 colorways-cfr-header-28days = Umi sa’y ojuehegua Independent Voices ndojepurukuaavéitama 16 jasyteĩ guive
@@ -248,21 +215,11 @@ colorways-cfr-header-today = Umi sa’y ojuehegua Independent Voices ndojepuruku
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = ¡Opáma kookie marandu’i!
-cfr-cookiebanner-accept-button = Emboyke marandu’i
-    .accesskey = D
-cfr-cookiebanner-reject-button = Ani ko’ág̃a
-    .accesskey = N
-cfr-cookiebanner-header-variant-1 = Ehecha’ive kookie ovetã iñapysẽva
-cfr-cookiebanner-accept-button-variant-1 = Emboyke iñapysẽva
-    .accesskey = D
-cfr-cookiebanner-reject-button-variant-1 = Nahániri, aguyje
-    .accesskey = N
-cfr-cookiebanner-header-variant-2 = Kookie Marandu’i Ñemomichĩ
-cfr-cookiebanner-accept-button-variant-2 = Moneĩ
-    .accesskey = A
-cfr-cookiebanner-reject-button-variant-2 = Ani ko’ág̃a
+cfr-cbh-header = ¿Emoneĩ { -brand-short-name } tomboyke kookie banner?
+cfr-cbh-body = { -brand-short-name } omboykekuaa ijehegui heta kookie banner mba’ejerure.
+cfr-cbh-confirm-button = Embojevy kookie banner
+    .accesskey = R
+cfr-cbh-dismiss-button = Ani ko’ág̃a
     .accesskey = N
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
@@ -270,3 +227,30 @@ cfr-cookiebanner-reject-button-variant-2 = Ani ko’ág̃a
 july-jam-headline = Roguereko ñemo’ãpe
 july-jam-body = Peteĩteĩva jasýpe, { -brand-short-name } ojoko hetave 3,000 tapykuehoha puruháragui, ome’ẽva jeike pya’e ha tekorosã Ñandutípe.
 july-jam-set-default-primary = Embojuruja juajuha { -brand-short-name } ndive
+fox-doodle-pin-headline = Eg̃uahẽporãjey
+
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = Peteĩ ñemomandu’a ikautha eguereko ne kundahára ijeheguíva namombyryiete ndehegui.
+fox-doodle-pin-primary = Embojuruja juajuha { -brand-short-name } ndive
+fox-doodle-pin-secondary = Ani ko’ág̃a
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>Umi PDFs ijurujáma { -brand-short-name }.</strong> Embosako’i ha emboheraguapy myanyhẽha kundaharapevoi. Emoambue hag̃ua, eheka “PDF” ñemoĩporãha.
+set-default-pdf-handler-primary = Aikumby
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = ¿Eikesépa mba’e’oka pyahúpe?
+fxa-sync-cfr-body = Ehecha umi ipyahuvéva techaukaha, ñe’ẽñemi ha tendayke toĩ embojurujávo kundahára pyahu { -brand-product-name }.
+fxa-sync-cfr-primary = Kuaave
+    .accesskey = L
+fxa-sync-cfr-secondary = Chemomandu’a ag̃ave
+    .accesskey = R
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = ¿Eipuruhína mba’e’oka itujavéva?
+device-migration-fxa-spotlight-primary-button = Mba’éichapa añongatúta che mba’ekuaarã
+device-migration-fxa-spotlight-link = Chemomandu’a ag̃ave

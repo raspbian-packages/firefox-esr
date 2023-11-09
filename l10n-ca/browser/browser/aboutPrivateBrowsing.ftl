@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] Fixa a la barra de tasques
     }
 about-private-browsing-pin-promo-title = Ni galetes, ni historial, directament des del vostre escriptori. Navegueu sense sentir-vos observat.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Adeu als bàners de galetes!
+about-private-browsing-cookie-banners-promo-button = Reduïu els bàners de galetes
+about-private-browsing-cookie-banners-promo-message = Permeteu que el { -brand-short-name } gestioni automàticament les finestres emergents de galetes per a una navegació sense distraccions. El { -brand-short-name } rebutjarà totes les sol·licituds, si és possible.

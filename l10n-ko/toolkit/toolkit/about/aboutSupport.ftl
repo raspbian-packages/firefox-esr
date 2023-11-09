@@ -172,6 +172,15 @@ media-codec-support-info = 코덱 지원 정보
 # List all the entries of the database.
 media-capabilities-enumerate = 데이터베이스 열거
 
+## Codec support table
+
+media-codec-support-sw-decoding = 소프트웨어 디코딩
+media-codec-support-hw-decoding = 하드웨어 디코딩
+media-codec-support-codec-name = 코덱 이름
+media-codec-support-supported = 지원됨
+media-codec-support-unsupported = 지원 안 됨
+media-codec-support-error = 코덱 지원 정보를 사용할 수 없습니다. 미디어 파일 재생 후 다시 시도하세요.
+
 ##
 
 intl-title = 국제화 및 현지화
@@ -265,6 +274,8 @@ webgl2-renderer = WebGL2 드라이버 랜더러
 webgl2-version = WebGL 2 드라이버 버전
 webgl2-driver-extensions = WebGL 2 드라이버 확장 기능
 webgl2-extensions = WebGL 2 확장 기능
+webgpu-default-adapter = WebGPU 기본 어댑터
+webgpu-fallback-adapter = WebGPU 폴백 어댑터
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = 알려진 문제로 인해 차단됨: <a data-l10n-name="bug-link">bug { $bugNumber }</a>

@@ -63,7 +63,6 @@ protections-panel-not-found-label = Ingen fundet
 ##
 
 protections-panel-settings-label = Indstillinger for beskyttelse
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Oversigt over beskyttelse
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formularer
 protections-panel-site-not-working-view-issue-list-payments = Betalinger
 protections-panel-site-not-working-view-issue-list-comments = Kommentarer
 protections-panel-site-not-working-view-issue-list-videos = Videoer
+protections-panel-site-not-working-view-issue-list-fonts = Skrifttyper
 
 protections-panel-site-not-working-view-send-report = Send en rapport
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Rapportér problemer med et websted
 protections-panel-content-blocking-breakage-report-view-description = Blokering af indhold kan skabe problemer for nogle websteder. Ved at rapportere problemer hjælper du med at gøre { -brand-short-name } bedre for alle. Dette sender en URL samt information om dine browser-indstillinger til Mozilla. <label data-l10n-name="learn-more">Læs mere</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Blokering af indhold kan skabe problemer for nogle websteder. Ved at rapportere problemer hjælper du med at gøre { -brand-short-name } bedre for alle. Dette sender en URL samt information om dine browser-indstillinger til { -vendor-short-name }.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Afbryd
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Send rapport
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Reduktion af cookie-bannere
+protections-panel-cookie-banner-handling-enabled = Slået til for dette websted
+protections-panel-cookie-banner-handling-disabled = Slået fra for dette websted
+protections-panel-cookie-banner-handling-undetected = Webstedet understøttes ikke i øjeblikket
+
+protections-panel-cookie-banner-view-title =
+    .title = Reduktion af cookie-bannere
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Slå reduktion af cookie-bannere fra for { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Slå reduktion af cookie-bannere til for dette websted?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } vil rydde dette websteds cookies og indlæse siden igen. Rydning af alle cookies kan logge dig ud eller tømme indkøbskurve.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } forsøger automatisk at afvise alle cookie-anmodninger på understøttede websteder.
+protections-panel-cookie-banner-view-cancel = Annuller
+protections-panel-cookie-banner-view-turn-off = Slå fra
+protections-panel-cookie-banner-view-turn-on = Slå til

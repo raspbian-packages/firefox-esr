@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = კავშირის პარამეტრები
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = კავშირის პარამეტრები
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = თ
     .tooltip = ამ მითითების შედეგად, პროქსის ანგარიშზე ავტომატურად შეხვალთ, თუ ანგარიშის მონაცემები შენახული იქნება. ასევე გეცნობებათ, თუ შესვლა ვერ მოხერხდება.
 
+connection-proxy-autologin-checkbox =
+    .label = შესვლის მოთხოვნის გამოტოვება, თუ პაროლი დამახსოვრებულია
+    .accesskey = თ
+    .tooltiptext = ამ მითითების შედეგად, პროქსის ანგარიშზე ავტომატურად შეხვალთ, თუ ანგარიშის მონაცემები შენახული იქნება. ასევე გეცნობებათ, თუ შესვლა ვერ მოხერხდება.
+
 connection-proxy-socks-remote-dns =
     .label = პროქსის DNS SOCKS v5-ის გამოყენებისას
     .accesskey = d
-
-connection-dns-over-https =
-    .label = DNS-სთან HTTPS-კავშირი
-    .accesskey = H
-
-connection-dns-over-https-url-resolver = მომსახურების გამოყენება
-    .accesskey = ხ
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

@@ -17,13 +17,15 @@ firefox-relay-must-login-to-fxa = Πρέπει να συνδεθείτε στο�
 firefox-relay-get-unlimited-masks =
     .label = Διαχείριση μασκών
     .accesskey = Δ
-firefox-relay-opt-in-title = Προστασία διεύθυνσης email
-firefox-relay-opt-in-subtitle = Προσθήκη του { -relay-brand-name }
-firefox-relay-generate-mask-title = Προστασία διεύθυνσης email
-firefox-relay-generate-mask-subtitle = Δημιουργία μάσκας { -relay-brand-short-name }
-firefox-relay-opt-in-confirmation-enable =
-    .label = Συνέχεια
-    .accesskey = Σ
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Προστασία διεύθυνσης email:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = Χρήση μάσκας email του { -relay-brand-name }
+firefox-relay-use-mask-title = Χρήση μάσκας email του { -relay-brand-name }
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = Χρήση μάσκας email
+    .accesskey = Χ
 firefox-relay-opt-in-confirmation-disable =
     .label = Να μην εμφανιστεί ξανά
     .accesskey = Ν

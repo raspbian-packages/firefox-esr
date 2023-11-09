@@ -5,16 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "mozilla/ArrayUtils.h"
-#include "mozilla/EventStates.h"
 
 #include "inLayoutUtils.h"
 
 #include "gfxTextRun.h"
+#include "mozilla/dom/HTMLSlotElement.h"
 #include "nsArray.h"
+#include "nsContentList.h"
 #include "nsString.h"
 #include "nsIContentInlines.h"
 #include "nsIScrollableFrame.h"
 #include "mozilla/dom/Document.h"
+#include "mozilla/dom/HTMLTemplateElement.h"
 #include "ChildIterator.h"
 #include "nsComputedDOMStyle.h"
 #include "mozilla/EventStateManager.h"
@@ -142,41 +144,81 @@ bool InspectorUtils::IsIgnorableWhitespace(CharacterData& aDataNode) {
 /* static */
 nsINode* InspectorUtils::GetParentForNode(nsINode& aNode,
                                           bool aShowingAnonymousContent) {
-  // First do the special cases -- document nodes and anonymous content
-  nsINode* parent = nullptr;
-
+  if (nsINode* parent = aNode.GetParentNode()) {
+    return parent;
+  }
   if (aNode.IsDocument()) {
-    parent = inLayoutUtils::GetContainerFor(*aNode.AsDocument());
-  } else if (aShowingAnonymousContent) {
-    if (aNode.IsContent()) {
-      parent = aNode.AsContent()->GetFlattenedTreeParent();
+    return inLayoutUtils::GetContainerFor(*aNode.AsDocument());
+  }
+  if (aShowingAnonymousContent) {
+    if (auto* frag = DocumentFragment::FromNode(aNode)) {
+      // This deals with shadow roots and HTMLTemplateElement.content.
+      return frag->GetHost();
     }
   }
-
-  if (!parent) {
-    // Ok, just get the normal DOM parent node
-    return aNode.GetParentNode();
-  }
-
-  return parent;
+  return nullptr;
 }
 
 /* static */
-already_AddRefed<nsINodeList> InspectorUtils::GetChildrenForNode(
-    nsINode& aNode, bool aShowingAnonymousContent) {
-  nsCOMPtr<nsINodeList> kids;
-
-  if (aShowingAnonymousContent) {
-    if (aNode.IsContent()) {
-      kids = aNode.AsContent()->GetChildren(nsIContent::eAllChildren);
+void InspectorUtils::GetChildrenForNode(nsINode& aNode,
+                                        bool aShowingAnonymousContent,
+                                        bool aIncludeAssignedNodes,
+                                        bool aIncludeSubdocuments,
+                                        nsTArray<RefPtr<nsINode>>& aResult) {
+  if (aIncludeSubdocuments) {
+    if (auto* doc = inLayoutUtils::GetSubDocumentFor(&aNode)) {
+      aResult.AppendElement(doc);
+      // XXX Do we really want to early-return?
+      return;
     }
   }
 
-  if (!kids) {
-    kids = aNode.ChildNodes();
+  if (!aShowingAnonymousContent || !aNode.IsContent()) {
+    for (nsINode* child = aNode.GetFirstChild(); child;
+         child = child->GetNextSibling()) {
+      aResult.AppendElement(child);
+    }
+    return;
   }
 
-  return kids.forget();
+  if (auto* tmpl = HTMLTemplateElement::FromNode(aNode)) {
+    aResult.AppendElement(tmpl->Content());
+    // XXX Do we really want to early-return?
+    return;
+  }
+
+  if (auto* element = Element::FromNode(aNode)) {
+    if (auto* shadow = element->GetShadowRoot()) {
+      aResult.AppendElement(shadow);
+    }
+  }
+  nsIContent* parent = aNode.AsContent();
+  if (auto* node = nsLayoutUtils::GetMarkerPseudo(parent)) {
+    aResult.AppendElement(node);
+  }
+  if (auto* node = nsLayoutUtils::GetBeforePseudo(parent)) {
+    aResult.AppendElement(node);
+  }
+  if (aIncludeAssignedNodes) {
+    if (auto* slot = HTMLSlotElement::FromNode(aNode)) {
+      for (nsINode* node : slot->AssignedNodes()) {
+        aResult.AppendElement(node);
+      }
+    }
+  }
+  for (nsIContent* node = parent->GetFirstChild(); node;
+       node = node->GetNextSibling()) {
+    aResult.AppendElement(node);
+  }
+  AutoTArray<nsIContent*, 4> anonKids;
+  nsContentUtils::AppendNativeAnonymousChildren(parent, anonKids,
+                                                nsIContent::eAllChildren);
+  for (nsIContent* node : anonKids) {
+    aResult.AppendElement(node);
+  }
+  if (auto* node = nsLayoutUtils::GetAfterPseudo(parent)) {
+    aResult.AppendElement(node);
+  }
 }
 
 /* static */
@@ -198,7 +240,7 @@ void InspectorUtils::GetCSSStyleRules(
   }
 
   if (aIncludeVisitedStyle) {
-    if (ComputedStyle* styleIfVisited = computedStyle->GetStyleIfVisited()) {
+    if (auto* styleIfVisited = computedStyle->GetStyleIfVisited()) {
       computedStyle = styleIfVisited;
     }
   }
@@ -209,7 +251,7 @@ void InspectorUtils::GetCSSStyleRules(
     return;
   }
 
-  nsTArray<const RawServoStyleRule*> rawRuleList;
+  nsTArray<const StyleLockedStyleRule*> rawRuleList;
   Servo_ComputedValues_GetStyleRuleList(computedStyle, &rawRuleList);
 
   AutoTArray<ServoStyleRuleMap*, 1> maps;
@@ -238,7 +280,7 @@ void InspectorUtils::GetCSSStyleRules(
   }
 
   // Find matching rules in the table.
-  for (const RawServoStyleRule* rawRule : Reversed(rawRuleList)) {
+  for (const StyleLockedStyleRule* rawRule : Reversed(rawRuleList)) {
     CSSStyleRule* rule = nullptr;
     for (ServoStyleRuleMap* map : maps) {
       rule = map->Lookup(rawRule);
@@ -507,15 +549,13 @@ void InspectorUtils::GetCSSValuesForProperty(GlobalObject& aGlobalObject,
 /* static */
 void InspectorUtils::RgbToColorName(GlobalObject& aGlobalObject, uint8_t aR,
                                     uint8_t aG, uint8_t aB,
-                                    nsAString& aColorName, ErrorResult& aRv) {
+                                    nsAString& aColorName) {
   const char* color = NS_RGBToColorName(NS_RGB(aR, aG, aB));
   if (!color) {
     aColorName.Truncate();
-    aRv.Throw(NS_ERROR_INVALID_ARG);
-    return;
+  } else {
+    aColorName.AssignASCII(color);
   }
-
-  aColorName.AssignASCII(color);
 }
 
 /* static */
@@ -556,7 +596,7 @@ bool InspectorUtils::SetContentState(GlobalObject& aGlobalObject,
                                      ErrorResult& aRv) {
   RefPtr<EventStateManager> esm =
       inLayoutUtils::GetEventStateManagerFor(aElement);
-  EventStates state(aState);
+  ElementState state(aState);
   if (!esm || !EventStateManager::ManagesState(state)) {
     aRv.Throw(NS_ERROR_INVALID_ARG);
     return false;
@@ -571,7 +611,7 @@ bool InspectorUtils::RemoveContentState(GlobalObject& aGlobalObject,
                                         ErrorResult& aRv) {
   RefPtr<EventStateManager> esm =
       inLayoutUtils::GetEventStateManagerFor(aElement);
-  EventStates state(aState);
+  ElementState state(aState);
   if (!esm || !EventStateManager::ManagesState(state)) {
     aRv.Throw(NS_ERROR_INVALID_ARG);
     return false;
@@ -579,7 +619,7 @@ bool InspectorUtils::RemoveContentState(GlobalObject& aGlobalObject,
 
   bool result = esm->SetContentState(nullptr, state);
 
-  if (aClearActiveDocument && state == NS_EVENT_STATE_ACTIVE) {
+  if (aClearActiveDocument && state == ElementState::ACTIVE) {
     EventStateManager* activeESM = static_cast<EventStateManager*>(
         EventStateManager::GetActiveEventStateManager());
     if (activeESM == esm) {
@@ -594,7 +634,7 @@ bool InspectorUtils::RemoveContentState(GlobalObject& aGlobalObject,
 uint64_t InspectorUtils::GetContentState(GlobalObject& aGlobalObject,
                                          Element& aElement) {
   // NOTE: if this method is removed,
-  // please remove GetInternalValue from EventStates
+  // please remove GetInternalValue from ElementState
   return aElement.State().GetInternalValue();
 }
 
@@ -612,12 +652,12 @@ void InspectorUtils::GetUsedFontFaces(GlobalObject& aGlobalObject,
   }
 }
 
-static EventStates GetStatesForPseudoClass(const nsAString& aStatePseudo) {
+static ElementState GetStatesForPseudoClass(const nsAString& aStatePseudo) {
   if (aStatePseudo.IsEmpty() || aStatePseudo[0] != u':') {
-    return EventStates();
+    return ElementState();
   }
   NS_ConvertUTF16toUTF8 statePseudo(Substring(aStatePseudo, 1));
-  return EventStates(Servo_PseudoClass_GetStates(&statePseudo));
+  return ElementState(Servo_PseudoClass_GetStates(&statePseudo));
 }
 
 /* static */
@@ -643,7 +683,7 @@ void InspectorUtils::AddPseudoClassLock(GlobalObject& aGlobalObject,
                                         Element& aElement,
                                         const nsAString& aPseudoClass,
                                         bool aEnabled) {
-  EventStates state = GetStatesForPseudoClass(aPseudoClass);
+  ElementState state = GetStatesForPseudoClass(aPseudoClass);
   if (state.IsEmpty()) {
     return;
   }
@@ -655,7 +695,7 @@ void InspectorUtils::AddPseudoClassLock(GlobalObject& aGlobalObject,
 void InspectorUtils::RemovePseudoClassLock(GlobalObject& aGlobal,
                                            Element& aElement,
                                            const nsAString& aPseudoClass) {
-  EventStates state = GetStatesForPseudoClass(aPseudoClass);
+  ElementState state = GetStatesForPseudoClass(aPseudoClass);
   if (state.IsEmpty()) {
     return;
   }
@@ -667,12 +707,12 @@ void InspectorUtils::RemovePseudoClassLock(GlobalObject& aGlobal,
 bool InspectorUtils::HasPseudoClassLock(GlobalObject& aGlobalObject,
                                         Element& aElement,
                                         const nsAString& aPseudoClass) {
-  EventStates state = GetStatesForPseudoClass(aPseudoClass);
+  ElementState state = GetStatesForPseudoClass(aPseudoClass);
   if (state.IsEmpty()) {
     return false;
   }
 
-  EventStates locks = aElement.LockedStyleStates().mLocks;
+  ElementState locks = aElement.LockedStyleStates().mLocks;
   return locks.HasAllStates(state);
 }
 

@@ -8,22 +8,24 @@
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
-firefox-relay-mask-generation-failed = { -relay-brand-name } gat ekki búið til nýja grímu. HTTP-villukóði: { $status }.
-firefox-relay-get-reusable-masks-failed = { -relay-brand-name } fann ekki neinar endurnýtanlegar grímur. HTTP-villukóði: { $status }.
+firefox-relay-mask-generation-failed = { -relay-brand-name } gat ekki búið til nýja tölvupósthulu. HTTP-villukóði: { $status }.
+firefox-relay-get-reusable-masks-failed = { -relay-brand-name } fann ekki neinar endurnýtanlegar tölvupósthulur. HTTP-villukóði: { $status }.
 
 ##
 
 firefox-relay-must-login-to-fxa = Þú verður að skrá þig inn á { -fxaccount-brand-name } til að nota { -relay-brand-name }.
 firefox-relay-get-unlimited-masks =
-    .label = Sýsla með grímur
+    .label = Sýsla með tölvupósthulur
     .accesskey = m
-firefox-relay-opt-in-title = Verndaðu tölvupóstfangið þitt
-firefox-relay-opt-in-subtitle = Bæta við { -relay-brand-name }
-firefox-relay-generate-mask-title = Verndaðu tölvupóstfangið þitt
-firefox-relay-generate-mask-subtitle = Búðu til { -relay-brand-short-name } grímu
-firefox-relay-opt-in-confirmation-enable =
-    .label = Halda áfram
-    .accesskey = H
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Verndaðu tölvupóstfangið þitt:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = Notaðu { -relay-brand-name } tölvupósthulu
+firefox-relay-use-mask-title = Notaðu { -relay-brand-name } tölvupósthulu
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = Nota tölvupósthulu
+    .accesskey = u
 firefox-relay-opt-in-confirmation-disable =
     .label = Ekki sýna mér þetta aftur
     .accesskey = k

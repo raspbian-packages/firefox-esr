@@ -30,6 +30,15 @@ import-from-nothing =
 import-from-safari =
     .label = Safari
     .accesskey = S
+import-from-opera =
+    .label = Opera
+    .accesskey = O
+import-from-vivaldi =
+    .label = Vivaldi
+    .accesskey = V
+import-from-brave =
+    .label = Brave
+    .accesskey = r
 import-from-canary =
     .label = Chrome Canary
     .accesskey = n
@@ -51,6 +60,9 @@ import-from-firefox =
 import-from-360se =
     .label = 360 Secure Browser
     .accesskey = 3
+import-from-opera-gx =
+    .label = Opera GX
+    .accesskey = G
 
 no-migration-sources = Non se atoparon programas que conteñan marcadores, historiais ou contrasinais.
 
@@ -61,8 +73,8 @@ import-items-description = Escolla os elementos que quere importar:
 
 import-permissions-page-title = Déalle permisos a { -brand-short-name }
 
-# Do not translate "Bookmarks.plist"; the file name is the same everywhere.
-import-permissions-description = macOS require que se lle permita explicitamente a { -brand-short-name } acceder aos marcadores do Safari. Prema en «Continuar» e seleccione o ficheiro «Bookmarks.plist» no panel Abrir ficheiro que aparece.
+# Do not translate "Safari" (the name of the browser on Apple devices)
+import-safari-permissions-string = macOS necesita que permita de maneira explícita a { -brand-short-name } acceder aos datos de Safari. Prema «Continuar», seleccione o cartafol de «Safari» no diálogo de Finder que aparecerá e prema «Abrir».
 
 import-migrating-page-title = Importando…
 
@@ -155,3 +167,8 @@ browser-data-session-checkbox =
     .label = Xanelas e lapelas
 browser-data-session-label =
     .value = Xanelas e lapelas
+
+browser-data-payment-methods-checkbox =
+    .label = Métodos de pagamento
+browser-data-payment-methods-label =
+    .value = Métodos de pagamento

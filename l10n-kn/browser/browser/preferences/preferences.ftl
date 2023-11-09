@@ -51,6 +51,17 @@ restart-later = ಆಮೇಲೆ ಮರು ಆರಂಭಿಸು
 ##   $name (String): name of the extension
 
 
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
+
 ## Preferences UI Search Results
 
 search-results-header = ಹುಡುಕು ಫಲಿತಾಂಶಗಳು
@@ -102,6 +113,12 @@ browser-containers-learn-more = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರ�
 browser-containers-settings =
     .label = ಸಿದ್ಧತೆಗಳು…‍
     .accesskey = i
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
+
+##
 
 containers-disable-alert-cancel-button = ಸಕ್ರಿಯವಾಗಿಯೇ ಇರಿಸಿ
 
@@ -345,13 +362,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = ಫೈರ್ಫಾಕ್ಸ್ ಮುಖಪುಟದ ವಿಷಯ
-
 home-prefs-search-header =
     .label = ಜಾಲದ ಹುಡುಕಾಟ
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 # Variables:
 #  $provider (String): Name of the corresponding content provider, e.g "Pocket".
@@ -389,6 +408,7 @@ search-engine-default-header = ಪೂರ್ವನಿಯೋಜಿತ ಹುಡು
 search-suggestions-option =
     .label = search ಸಲಹೆಗಳನ್ನು ತೋರಿಸು
     .accesskey = s
+
 
 search-suggestions-cant-show = ಎಂದಿಗೂ ಸಹ ಇತಿಹಾಸವನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಬೇಡ ಎಂದು ನೀವು { -brand-short-name } ಅನ್ನು ಸಂರಚಿಸಿರುವುದರಿಂದ ಹುಡುಕುವಾಗ ಸ್ಥಳದ ಪಟ್ಟಿಯ ಫಲಿತಾಂಶಗಳಲ್ಲಿ ಯಾವುದೆ ಸಲಹೆಗಳನ್ನು ತೋರಿಸಲಾಗುವುದಿಲ್ಲ.
 
@@ -428,6 +448,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = ಜಾಲವನ್ನು ನಿಮ್ಮೊಂದಿಗೆ ಒಯ್ಯಿರಿ
 
 # This message contains two links and two icon images.
@@ -442,14 +466,22 @@ sync-mobile-promo = Firefox ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ<img data-l1
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = ಪ್ರೊಫೈಲ್ ಚಿತ್ರವನ್ನು ಬದಲಾಯಿಸು
 
 sync-manage-account = ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸು
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } ಪರಿಶೀಲಿಸಲಾಗಿಲ್ಲ.
 sync-signedin-login-failure = ಮರಳಿ ಸಂಪರ್ಕಿತಗೊಳ್ಳಲು ದಯವಿಟ್ಟು ಸೈನ್‌ ಇನ್ ಆಗಿ { $email }
+
+##
 
 sync-remove-account =
     .label = ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕು
@@ -495,6 +527,16 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = ಉಳಿಸು‍
     .accesskey = v
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = ಪರಿಶೀಲನೆಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = ಒಂದು ಪರಿಶೀಲನಾ ಕೊಂಡಿಯನ್ನು { $email } ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ.
+sync-verification-not-sent-title = ಧೃಡೀಕರಣವನ್ನು ಕಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ
+sync-verification-not-sent-body = ನಾವು ಈ ಸಮಯದಲ್ಲಿ ಒಂದು ದೃಢೀಕರಣ ಮೇಲ್ ಅನ್ನು ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ, ದಯವಿಟ್ಟು ಇನ್ನೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.
 
 ## Privacy Section
 
@@ -573,6 +615,9 @@ sitedata-settings =
     .label = ದತ್ತಾಂಶವನ್ನು ನಿರ್ವಹಿಸು…
     .accesskey = M
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-header = ವಿಳಾಸ ಪಟ್ಟಿ
@@ -600,6 +645,9 @@ content-blocking-learn-more = ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ
 
 
 ##
+
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 
 ## Privacy Section - Tracking
@@ -683,6 +731,9 @@ certs-devices =
     .accesskey = D
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

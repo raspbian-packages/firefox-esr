@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Markahi Laman ini
-    .accesskey = m
-    .tooltiptext = Markahi laman ini
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Markahi Laman
-    .accesskey = M
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Edit Markah
-    .accesskey = E
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Markahi Laman ini
-    .accesskey = m
-    .tooltiptext = Markahi laman ini ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Edit Markah Ini
-    .accesskey = m
-    .tooltiptext = Edit markah ini
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Edit Markah Ini
-    .accesskey = m
-    .tooltiptext = Edit markah ini ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Markahi Laman
     .accesskey = m
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Buka Tautan di Jendela Mode Penjelajahan Pribadi Baru
     .accesskey = P
-
-main-context-menu-bookmark-link =
-    .label = Markahi Tautan
-    .accesskey = M
 
 main-context-menu-bookmark-link-2 =
     .label = Markahi Tautan…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Surelkan Audio…
     .accesskey = k
 
-main-context-menu-plugin-play =
-    .label = Aktifkan plugin ini
-    .accesskey = p
-
-main-context-menu-plugin-hide =
-    .label = Sembunyikan plugin ini
-    .accesskey = y
-
 main-context-menu-save-to-pocket =
     .label = Simpan Laman ke { -pocket-brand-name }
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = G
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Gunakan Topeng Email { -relay-brand-short-name }
+    .accesskey = T
 
 main-context-menu-suggest-strong-password =
     .label = Sarankan Kata Sandi Kuat…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Muatkan Bingkai Lagi
     .accesskey = t
 
-main-context-menu-frame-bookmark =
-    .label = Markahi Bingkai Ini
-    .accesskey = B
-
 main-context-menu-frame-add-bookmark =
     .label = Markahi Bingkai...
     .accesskey = M
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Lihat Informasi Bingkai
     .accesskey = I
-
-main-context-menu-print-selection =
-    .label = Cetak yang Dipilih
-    .accesskey = C
 
 main-context-menu-print-selection-2 =
     .label = Cetak yang Dipilih…

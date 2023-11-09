@@ -4,7 +4,9 @@
 
 "use strict";
 
-add_task(async function() {
+const { asyncStore } = require("devtools/client/debugger/src/utils/prefs");
+
+add_task(async function () {
   info("Test XHR requests done very early during page load");
 
   const dbg = await initDebugger("doc-xhr.html", "fetch.js");
@@ -54,7 +56,7 @@ add_task(async function() {
   assertNotPaused(dbg);
 });
 
-add_task(async function() {
+add_task(async function () {
   info("Test simple XHR breakpoints set before doing the request");
 
   const dbg = await initDebugger("doc-xhr.html", "fetch.js");
@@ -77,7 +79,7 @@ add_task(async function() {
 });
 
 // Tests the "pause on any URL" checkbox works properly
-add_task(async function() {
+add_task(async function () {
   info("Test 'pause on any URL'");
   const dbg = await initDebugger("doc-xhr.html", "fetch.js");
 
@@ -109,7 +111,7 @@ add_task(async function() {
 });
 
 // Tests removal works properly
-add_task(async function() {
+add_task(async function () {
   info("Assert the frontend state when removing breakpoints");
   const dbg = await initDebugger("doc-xhr.html");
 
@@ -131,6 +133,44 @@ add_task(async function() {
     getXHRBreakpointLabels(listItems).join(""),
     "134",
     "Only the desired breakpoint was removed"
+  );
+});
+
+add_task(async function () {
+  info("Assert that remove all the breakpoints work well");
+  const dbg = await initDebugger("doc-xhr.html");
+
+  await addXHRBreakpoint(dbg, "1");
+  await addXHRBreakpoint(dbg, "2");
+  await addXHRBreakpoint(dbg, "3");
+  await addXHRBreakpoint(dbg, "4");
+
+  is(
+    getXHRBreakpointsElements(dbg).length,
+    4,
+    "There a 4 items on the XHR breakpoints display list"
+  );
+
+  let persistedXHRBreakpoints = await asyncStore.xhrBreakpoints;
+  is(
+    persistedXHRBreakpoints.length,
+    4,
+    "Check that the persisted XHR breakpoints have 4 items"
+  );
+
+  await dbg.actions.removeAllXHRBreakpoints();
+
+  is(
+    getXHRBreakpointsElements(dbg).length,
+    0,
+    "XHR breakpoints display list is empty"
+  );
+
+  persistedXHRBreakpoints = await asyncStore.xhrBreakpoints;
+  is(
+    persistedXHRBreakpoints.length,
+    0,
+    "Check that there are no persisted XHR breakpoints"
   );
 });
 

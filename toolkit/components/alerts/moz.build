@@ -12,6 +12,11 @@ XPIDL_SOURCES += [
     "nsIAlertsService.idl",
 ]
 
+if CONFIG["OS_ARCH"] == "WINNT":
+    XPIDL_SOURCES += [
+        "nsIWindowsAlertsService.idl",
+    ]
+
 XPIDL_MODULE = "alerts"
 
 EXPORTS += [
@@ -38,5 +43,3 @@ JAR_MANIFESTS += ["jar.mn"]
 
 with Files("**"):
     BUG_COMPONENT = ("Toolkit", "Notifications and Alerts")
-
-REQUIRES_UNIFIED_BUILD = True

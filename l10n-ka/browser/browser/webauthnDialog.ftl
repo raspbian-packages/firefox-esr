@@ -4,10 +4,11 @@
 
 # Variables:
 #  $retriesLeft (Number): number of tries left
-webauthn-pin-invalid-prompt =
+webauthn-pin-invalid-long-prompt =
     { $retriesLeft ->
-        [0] არასწორი PIN! გთხოვთ, სწორად შეიყვანოთ PIN თქვენი მოწყობილობისთვის
-        [one] არასწორი PIN! გთხოვთ, სწორად შეიყვანოთ PIN თქვენი მოწყობილობისთვის. დაგრჩათ { $retriesLeft } მცდელობა.
-       *[other] არასწორი PIN! გთხოვთ, სწორად შეიყვანოთ PIN თქვენი მოწყობილობისთვის. დაგრჩათ { $retriesLeft } მცდელობა.
+        [one] არასწორი PIN. დარჩენილია { $retriesLeft } მცდელობა ამ მოწყობილობის დასამოწმებელ მონაცემებთან წვდომის სამუდამოდ დაკარგვამდე.
+       *[other] არასწორი PIN. დარჩენილია { $retriesLeft } მცდელობა ამ მოწყობილობის დასამოწმებელ მონაცემებთან წვდომის სამუდამოდ დაკარგვამდე.
     }
+webauthn-pin-invalid-short-prompt = არასწორი PIN. სცადეთ ხელახლა.
 webauthn-pin-required-prompt = შეიყვანეთ PIN თქვენი მოწყობილობისთვის.
+

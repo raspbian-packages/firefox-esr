@@ -10,6 +10,7 @@
 #include "nsIObjectInputStream.h"
 #include "nsIObjectOutputStream.h"
 #include "mozilla/UniquePtr.h"
+#include "mozilla/UniquePtrExtensions.h"
 
 class nsIURI;
 
@@ -33,7 +34,8 @@ nsresult NewObjectOutputWrappedStorageStream(
 // allocated with 'new []'.  After calling this function, the caller would
 // typically call StartupCache::PutBuffer with the returned buffer.
 nsresult NewBufferFromStorageStream(nsIStorageStream* storageStream,
-                                    UniquePtr<char[]>* buffer, uint32_t* len);
+                                    UniqueFreePtr<char[]>* buffer,
+                                    uint32_t* len);
 
 nsresult ResolveURI(nsIURI* in, nsIURI** out);
 
@@ -53,10 +55,10 @@ nsresult ResolveURI(nsIURI* in, nsIURI** out);
 // passed in.
 //
 // For example, in the js loader (loaderType = "jsloader"):
-//  resource://gre/modules/XPCOMUtils.jsm or
-//  file://$GRE_DIR/modules/XPCOMUtils.jsm or
-//  jar:file://$GRE_DIR/omni.jar!/modules/XPCOMUtils.jsm becomes
-//     jsloader/resource/gre/modules/XPCOMUtils.jsm
+//  resource://gre/modules/XPCOMUtils.sys.mjs or
+//  file://$GRE_DIR/modules/XPCOMUtils.sys.mjs or
+//  jar:file://$GRE_DIR/omni.jar!/modules/XPCOMUtils.sys.mjs becomes
+//     jsloader/resource/gre/modules/XPCOMUtils.sys.mjs
 //  file://$PROFILE_DIR/extensions/{uuid}/components/component.js becomes
 //     jsloader/$PROFILE_DIR/extensions/%7Buuid%7D/components/component.js
 //  jar:file://$PROFILE_DIR/extensions/some.xpi!/components/component.js becomes

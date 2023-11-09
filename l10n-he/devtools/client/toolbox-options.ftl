@@ -46,6 +46,12 @@ options-inspector-draggable-properties-label = לחיצה וגרירה כדי ל
 options-inspector-draggable-properties-tooltip =
     .title = לחיצה וגרירה כדי לערוך ערכים של גדלים בתצוגת הכללים במפקח
 
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = שימוש במדגישים פשוטים יותר כש־prefers-reduced-motion מופעל
+options-inspector-simplified-highlighters-tooltip =
+    .title = מאפשר מדגישים פשוטים יותר כאשר prefers-reduced-motion מופעל. יצויירו קווים במקום מלבנים ממולאים סביב אלמנטים מסומנים כדי למנוע אפקטים מהבהבים.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = יחידת צבע כבררת מחדל
@@ -121,6 +127,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = הפעלת מנפה שגיאות מרוחק
 options-enable-remote-tooltip2 =
     .title = הפעלת אפשרות זו תאפשר לנפות שגיאות מרחוק במופע דפדפן זה
+
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = שימוש במקש F12 כדי לפתוח או לסגור את כלי הפיתוח
+options-enable-f12-tooltip =
+    .title = הפעלת אפשרות זו תקשר את מקש F12 לפתיחה או סגירת ארגז הכלים של כלי הפיתוח
 
 # The label for checkbox that toggles the service workers testing over HTTP on or off.
 options-enable-service-workers-http-label = הפעלת Service Workers על גבי HTTP (כשארגז הכלים פתוח)

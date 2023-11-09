@@ -12,6 +12,8 @@
 #include "mozilla/StaticPrefs_privacy.h"
 #include "mozilla/dom/BrowserChild.h"
 #include "mozilla/dom/BrowsingContext.h"
+#include "mozilla/dom/Document.h"
+#include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/WindowGlobalParent.h"
 #include "nsIClassifiedChannel.h"
 #include "nsIRunnable.h"
@@ -23,6 +25,7 @@
 #include "mozIThirdPartyUtil.h"
 
 using namespace mozilla;
+using namespace mozilla::dom;
 using mozilla::dom::BrowsingContext;
 using mozilla::dom::ContentChild;
 using mozilla::dom::Document;
@@ -136,6 +139,13 @@ void ReportBlockingToConsole(uint64_t aWindowID, nsIURI* aURI,
   if (aURI->SchemeIs("chrome") || aURI->SchemeIs("about")) {
     return;
   }
+  bool hasFlags;
+  nsresult rv = NS_URIChainHasFlags(
+      aURI, nsIProtocolHandler::URI_FORBIDS_COOKIE_ACCESS, &hasFlags);
+  if (NS_FAILED(rv) || hasFlags) {
+    // If the protocol doesn't support cookies, no need to report them blocked.
+    return;
+  }
 
   nsAutoString sourceLine;
   uint32_t lineNumber = 0, columnNumber = 0;
@@ -214,25 +224,26 @@ void ReportBlockingToConsole(uint64_t aWindowID, nsIURI* aURI,
 void ReportBlockingToConsole(nsIChannel* aChannel, nsIURI* aURI,
                              uint32_t aRejectedReason) {
   MOZ_ASSERT(aChannel && aURI);
+  uint64_t windowID = nsContentUtils::GetInnerWindowID(aChannel);
+  if (!windowID) {
+    // Get the window ID from the target BrowsingContext
+    nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
 
-  // Get the window ID from the target BrowsingContext
-  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
+    RefPtr<dom::BrowsingContext> targetBrowsingContext;
+    loadInfo->GetTargetBrowsingContext(getter_AddRefs(targetBrowsingContext));
 
-  RefPtr<dom::BrowsingContext> targetBrowsingContext;
-  loadInfo->GetTargetBrowsingContext(getter_AddRefs(targetBrowsingContext));
+    if (!targetBrowsingContext) {
+      return;
+    }
 
-  if (!targetBrowsingContext) {
-    return;
+    WindowContext* windowContext =
+        targetBrowsingContext->GetCurrentWindowContext();
+    if (!windowContext) {
+      return;
+    }
+
+    windowID = windowContext->InnerWindowId();
   }
-
-  WindowContext* windowContext =
-      targetBrowsingContext->GetCurrentWindowContext();
-  if (!windowContext) {
-    return;
-  }
-
-  uint64_t windowID = windowContext->InnerWindowId();
-
   ReportBlockingToConsole(windowID, aURI, aRejectedReason);
 }
 

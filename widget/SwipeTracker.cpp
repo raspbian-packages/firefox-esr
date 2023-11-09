@@ -10,6 +10,7 @@
 #include "mozilla/FlushType.h"
 #include "mozilla/PresShell.h"
 #include "mozilla/StaticPrefs_widget.h"
+#include "mozilla/StaticPrefs_browser.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/TouchEvents.h"
 #include "mozilla/dom/SimpleGestureEventBinding.h"
@@ -61,8 +62,8 @@ SwipeTracker::SwipeTracker(nsIWidget& aWidget,
 void SwipeTracker::Destroy() { UnregisterFromRefreshDriver(); }
 
 SwipeTracker::~SwipeTracker() {
-  MOZ_ASSERT(!mRegisteredWithRefreshDriver,
-             "Destroy needs to be called before deallocating");
+  MOZ_RELEASE_ASSERT(!mRegisteredWithRefreshDriver,
+                     "Destroy needs to be called before deallocating");
 }
 
 double SwipeTracker::SwipeSuccessTargetValue() const {
@@ -130,23 +131,19 @@ nsEventStatus SwipeTracker::ProcessEvent(
   }
 
   const bool computedSwipeSuccess = ComputeSwipeSuccess();
-
-  // The velocity component might push us over the success threshold, in which
-  // case we want to pass the success threshold in the event we send so that the
-  // UI draws as 100% opacity to indicate such. We don't want to include the
-  // velocity in the amount we put on the event if we aren't over the success
-  // threshold because that would lead to the opacity decreasing even if the
-  // user continues to increase the swipe distance. If we do compute swipe
-  // success here and the user does not lift their fingers and then decreases
-  // the total swipe so that we go below the success threshold the opacity would
-  // also decrease in that case but that seems okay.
   double eventAmount = mGestureAmount;
-  if (computedSwipeSuccess) {
-    eventAmount = kSwipeSuccessThreshold;
+  // If ComputeSwipeSuccess returned false because the users fingers were
+  // moving slightly away from the target direction then we do not want to
+  // display the UI as if we were at the success threshold as that would
+  // give a false indication that navigation would happen.
+  if (!computedSwipeSuccess && (eventAmount >= kSwipeSuccessThreshold ||
+                                eventAmount <= -kSwipeSuccessThreshold)) {
+    eventAmount = 0.999 * kSwipeSuccessThreshold;
     if (mGestureAmount < 0.f) {
       eventAmount = -eventAmount;
     }
   }
+
   SendSwipeEvent(eSwipeGestureUpdate, 0, eventAmount, aEvent.mTimeStamp);
 
   if (aEvent.mType == PanGestureInput::PANGESTURE_END) {
@@ -163,15 +160,15 @@ nsEventStatus SwipeTracker::ProcessEvent(
                                    swipeTracker->SwipeFinished(timeStamp);
                                  }));
     } else {
-      StartAnimating(0.0);
+      StartAnimating(eventAmount, 0.0);
     }
   }
 
   return nsEventStatus_eConsumeNoDefault;
 }
 
-void SwipeTracker::StartAnimating(double aTargetValue) {
-  mAxis.SetPosition(mGestureAmount);
+void SwipeTracker::StartAnimating(double aStartValue, double aTargetValue) {
+  mAxis.SetPosition(aStartValue);
   mAxis.SetDestination(aTargetValue);
   mAxis.SetVelocity(mCurrentVelocity);
 
@@ -180,7 +177,8 @@ void SwipeTracker::StartAnimating(double aTargetValue) {
   // Add ourselves as a refresh driver observer. The refresh driver
   // will call WillRefresh for each animation frame until we
   // unregister ourselves.
-  MOZ_ASSERT(!mRegisteredWithRefreshDriver);
+  MOZ_RELEASE_ASSERT(!mRegisteredWithRefreshDriver,
+                     "We only want a single refresh driver registration");
   if (mRefreshDriver) {
     mRefreshDriver->AddRefreshObserver(this, FlushType::Style,
                                        "Swipe animation");
@@ -217,8 +215,8 @@ void SwipeTracker::UnregisterFromRefreshDriver() {
   if (mRegisteredWithRefreshDriver) {
     MOZ_ASSERT(mRefreshDriver, "How were we able to register, then?");
     mRefreshDriver->RemoveRefreshObserver(this, FlushType::Style);
+    mRegisteredWithRefreshDriver = false;
   }
-  mRegisteredWithRefreshDriver = false;
 }
 
 /* static */ WidgetSimpleGestureEvent SwipeTracker::CreateSwipeGestureEvent(

@@ -25,10 +25,19 @@ add_task(async function setup() {
   await Services.search.init();
 });
 
-async function loadSettingsFile(settingsFile, setVersion) {
+async function loadSettingsFile(settingsFile, setVersion, setHashes) {
   settingsTemplate = await readJSONFile(do_get_file(settingsFile));
   if (setVersion) {
     settingsTemplate.version = SearchUtils.SETTINGS_VERSION;
+  }
+
+  if (setHashes) {
+    settingsTemplate.metaData.hash = SearchUtils.getVerificationHash(
+      settingsTemplate.metaData.current
+    );
+    settingsTemplate.metaData.privateHash = SearchUtils.getVerificationHash(
+      settingsTemplate.metaData.private
+    );
   }
 
   delete settingsTemplate.visibleDefaultEngines;
@@ -72,6 +81,8 @@ async function checkLoadSettingProperties(
   );
   Assert.equal(engines[0].alias, "testAlias", "Should have set the alias");
   Assert.equal(engines[0].hidden, false, "Should have not hidden the engine");
+  Assert.equal(engines[0].id, "engine1@search.mozilla.orgdefault");
+
   Assert.equal(
     engines[1].name,
     "engine2",
@@ -79,9 +90,11 @@ async function checkLoadSettingProperties(
   );
   Assert.equal(engines[1].alias, "", "Should have not set the alias");
   Assert.equal(engines[1].hidden, true, "Should have hidden the engine");
+  Assert.equal(engines[1].id, "engine2@search.mozilla.orgdefault");
 
   // The extra engine is the second in the list.
   isSubObjectOf(EXPECTED_ENGINE.engine, engines[2]);
+  Assert.ok(engines[2].id, "test-addon-id@mozilla.orgdefault");
 
   let engineFromSS = ss.getEngineByName(EXPECTED_ENGINE.engine.name);
   Assert.ok(!!engineFromSS);
@@ -94,9 +107,16 @@ async function checkLoadSettingProperties(
   );
 
   Assert.equal(
-    ss._settings.getAttribute("useSavedOrder"),
+    ss._settings.getMetaDataAttribute("useSavedOrder"),
     expectedUseDBValue,
     "Should have set the useSavedOrder metadata correctly."
+  );
+
+  let migratedSettingsFile = await promiseSettingsData();
+
+  Assert.equal(
+    migratedSettingsFile.engines[0].id,
+    "engine1@search.mozilla.orgdefault"
   );
 
   removeSettingsFile();
@@ -104,6 +124,17 @@ async function checkLoadSettingProperties(
 
 add_task(async function test_legacy_setting_engine_properties() {
   Services.prefs.setBoolPref(legacyUseSavedOrderPrefName, true);
+
+  let legacySettings = await readJSONFile(
+    do_get_file("data/search-legacy.json")
+  );
+
+  // Assert the engine ids have not been migrated yet
+  for (let engine of legacySettings.engines) {
+    Assert.ok(!("id" in engine));
+  }
+  Assert.ok(!("defaultEngineId" in legacySettings.metaData));
+  Assert.ok(!("privateDefaultEngineId" in legacySettings.metaData));
 
   await checkLoadSettingProperties("data/search-legacy.json", false, true);
 
@@ -113,12 +144,174 @@ add_task(async function test_legacy_setting_engine_properties() {
   );
 });
 
+add_task(
+  async function test_legacy_setting_migration_with_undefined_metaData_current_and_private() {
+    let ss = Services.search.wrappedJSObject;
+
+    await loadSettingsFile("data/search-legacy.json", false);
+    const settingsFileWritten = promiseAfterSettings();
+
+    await ss.reset();
+    await Services.search.init();
+
+    await settingsFileWritten;
+
+    let migratedSettingsFile = await promiseSettingsData();
+
+    Assert.equal(
+      migratedSettingsFile.metaData.defaultEngineId,
+      "",
+      "When there is no metaData.current attribute in settings file, the migration should set the defaultEngineId to an empty string."
+    );
+    Assert.equal(
+      migratedSettingsFile.metaData.privateDefaultEngineId,
+      "",
+      "When there is no metaData.private attribute in settings file, the migration should set the privateDefaultEngineId to an empty string."
+    );
+
+    removeSettingsFile();
+  }
+);
+
+add_task(
+  async function test_legacy_setting_migration_with_correct_metaData_current_and_private_hashes() {
+    let ss = Services.search.wrappedJSObject;
+
+    await loadSettingsFile(
+      "data/search-legacy-correct-default-engine-hashes.json",
+      false,
+      true
+    );
+    const settingsFileWritten = promiseAfterSettings();
+
+    await ss.reset();
+    await Services.search.init();
+
+    await settingsFileWritten;
+
+    let migratedSettingsFile = await promiseSettingsData();
+
+    Assert.equal(
+      migratedSettingsFile.metaData.defaultEngineId,
+      "engine2@search.mozilla.orgdefault",
+      "When the metaData.current and associated hash are correct, the migration should set the defaultEngineId to the engine id."
+    );
+    Assert.equal(
+      migratedSettingsFile.metaData.privateDefaultEngineId,
+      "engine2@search.mozilla.orgdefault",
+      "When the metaData.private and associated hash are correct, the migration should set the privateDefaultEngineId to the private engine id."
+    );
+
+    removeSettingsFile();
+  }
+);
+
+add_task(
+  async function test_legacy_setting_migration_with_incorrect_metaData_current_and_private_hashes_app_provided() {
+    let ss = Services.search.wrappedJSObject;
+
+    // Here we are testing correct migration for the case that a user has set
+    // their default engine to an application provided engine (but not the app
+    // default).
+    //
+    // In this case we should ignore invalid hashes for the default engines,
+    // and allow the select default to remain. This covers the case where
+    // a user has copied a profile from a different directory.
+    // See SearchService._getEngineDefault for more details.
+
+    await loadSettingsFile(
+      "data/search-legacy-wrong-default-engine-hashes.json",
+      false,
+      false
+    );
+    const settingsFileWritten = promiseAfterSettings();
+
+    await ss.reset();
+    await Services.search.init();
+
+    await settingsFileWritten;
+
+    let migratedSettingsFile = await promiseSettingsData();
+
+    Assert.equal(
+      migratedSettingsFile.metaData.defaultEngineId,
+      "engine2@search.mozilla.orgdefault",
+      "Should ignore invalid metaData.hash when the default engine is application provided."
+    );
+    Assert.equal(
+      Services.search.defaultEngine.name,
+      "engine2",
+      "Should have the correct engine set as default"
+    );
+
+    Assert.equal(
+      migratedSettingsFile.metaData.privateDefaultEngineId,
+      "engine2@search.mozilla.orgdefault",
+      "Should ignore invalid metaData.privateHash when the default private engine is application provided."
+    );
+    Assert.equal(
+      Services.search.defaultPrivateEngine.name,
+      "engine2",
+      "Should have the correct engine set as default private"
+    );
+
+    removeSettingsFile();
+  }
+);
+
+add_task(
+  async function test_legacy_setting_migration_with_incorrect_metaData_current_and_private_hashes_third_party() {
+    let ss = Services.search.wrappedJSObject;
+
+    // This test is checking that if the user has set a third-party engine as
+    // default, and the verification hash is invalid, then we do not copy
+    // the default engine setting.
+
+    await loadSettingsFile(
+      "data/search-legacy-wrong-third-party-engine-hashes.json",
+      false,
+      false
+    );
+    const settingsFileWritten = promiseAfterSettings();
+
+    await ss.reset();
+    await Services.search.init();
+
+    await settingsFileWritten;
+
+    let migratedSettingsFile = await promiseSettingsData();
+
+    Assert.equal(
+      migratedSettingsFile.metaData.defaultEngineId,
+      "",
+      "Should reset the default engine when metaData.hash is invalid and the engine is not application provided."
+    );
+    Assert.equal(
+      Services.search.defaultEngine.name,
+      "engine1",
+      "Should have reset the default engine"
+    );
+
+    Assert.equal(
+      migratedSettingsFile.metaData.privateDefaultEngineId,
+      "",
+      "Should reset the default engine when metaData.privateHash is invalid and the engine is not application provided."
+    );
+    Assert.equal(
+      Services.search.defaultPrivateEngine.name,
+      "engine1",
+      "Should have reset the default private engine"
+    );
+
+    removeSettingsFile();
+  }
+);
+
 add_task(async function test_current_setting_engine_properties() {
   await checkLoadSettingProperties("data/search.json", true, false);
 });
 
 add_task(async function test_settings_metadata_properties() {
-  info("init search service");
   let ss = Services.search.wrappedJSObject;
 
   await loadSettingsFile("data/search.json");
@@ -139,7 +332,7 @@ add_task(async function test_settings_metadata_properties() {
 
   for (let name of metaDataProperties) {
     Assert.notEqual(
-      ss._settings.getAttribute(`${name}`),
+      ss._settings.getMetaDataAttribute(`${name}`),
       undefined,
       `Search settings should have ${name} property defined.`
     );
@@ -147,6 +340,113 @@ add_task(async function test_settings_metadata_properties() {
 
   removeSettingsFile();
 });
+
+add_task(async function test_settings_write_when_settings_changed() {
+  let ss = Services.search.wrappedJSObject;
+  await loadSettingsFile("data/search.json");
+
+  const settingsFileWritten = promiseAfterSettings();
+  await ss.reset();
+  await Services.search.init();
+  await settingsFileWritten;
+
+  Assert.ok(
+    ss._settings.isCurrentAndCachedSettingsEqual(),
+    "Settings and cached settings should be the same after search service initializaiton."
+  );
+
+  const settingsFileWritten2 = promiseAfterSettings();
+  ss._settings.setMetaDataAttribute("value", "test");
+
+  Assert.ok(
+    !ss._settings.isCurrentAndCachedSettingsEqual(),
+    "Settings should differ from cached settings after a new attribute is set."
+  );
+
+  await settingsFileWritten2;
+  info("Settings write complete");
+
+  Assert.ok(
+    ss._settings.isCurrentAndCachedSettingsEqual(),
+    "Settings and cached settings should be the same after new attribte on settings is written."
+  );
+
+  removeSettingsFile();
+});
+
+add_task(async function test_set_and_get_engine_metadata_attribute() {
+  let ss = Services.search.wrappedJSObject;
+  await loadSettingsFile("data/search.json");
+
+  const settingsFileWritten = promiseAfterSettings();
+  await ss.reset();
+  await Services.search.init();
+  await settingsFileWritten;
+
+  let engines = await ss.getEngines();
+  const settingsFileWritten2 = promiseAfterSettings();
+  ss._settings.setEngineMetaDataAttribute(engines[0].name, "value", "test");
+  await settingsFileWritten2;
+
+  Assert.equal(
+    "test",
+    ss._settings.getEngineMetaDataAttribute(engines[0].name, "value"),
+    `${engines[0].name}'s metadata property "value" should be set as "test" after calling getEngineMetaDataAttribute.`
+  );
+
+  let userSettings = await ss._settings.get();
+  let engine = userSettings.engines.find(e => e._name == engines[0].name);
+
+  Assert.equal(
+    "test",
+    engine._metaData.value,
+    `${engines[0].name}'s metadata property "value" should be set as "test" from settings file.`
+  );
+
+  removeSettingsFile();
+});
+
+add_task(
+  async function test_settings_write_prevented_when_settings_unchanged() {
+    let ss = Services.search.wrappedJSObject;
+    await loadSettingsFile("data/search.json");
+
+    const settingsFileWritten = promiseAfterSettings();
+    await ss.reset();
+    await Services.search.init();
+    await settingsFileWritten;
+
+    Assert.ok(
+      ss._settings.isCurrentAndCachedSettingsEqual(),
+      "Settings and cached settings should be the same after search service initializaiton."
+    );
+
+    // Update settings.
+    const settingsFileWritten2 = promiseAfterSettings();
+    ss._settings.setMetaDataAttribute("value", "test");
+
+    Assert.ok(
+      !ss._settings.isCurrentAndCachedSettingsEqual(),
+      "Settings should differ from cached settings after a new attribute is set."
+    );
+    await settingsFileWritten2;
+
+    // Set the same attribute as before to ensure there was no change.
+    // Settings write should be prevented.
+    let promiseWritePrevented = SearchTestUtils.promiseSearchNotification(
+      "write-prevented-when-settings-unchanged"
+    );
+    ss._settings.setMetaDataAttribute("value", "test");
+
+    Assert.ok(
+      ss._settings.isCurrentAndCachedSettingsEqual(),
+      "Settings and cached settings should be the same."
+    );
+    await promiseWritePrevented;
+
+    removeSettingsFile();
+  }
+);
 
 /**
  * Test that the JSON settings written in the profile is correct.
@@ -160,34 +460,8 @@ add_task(async function test_settings_write() {
   const settingsFileWritten = promiseAfterSettings();
   await ss.reset();
   await Services.search.init();
-
   await settingsFileWritten;
-  removeSettingsFile();
 
-  let settings = do_get_profile().clone();
-  settings.append(SETTINGS_FILENAME);
-  Assert.ok(!settings.exists());
-
-  info("Next step is forcing flush");
-  // Note: the dispatch is needed, to avoid some reentrency
-  // issues in SearchService.
-  let settingsWritePromise = promiseAfterSettings();
-
-  Services.tm.dispatchToMainThread(() => {
-    // Call the observe method directly to simulate a remove but not actually
-    // remove anything.
-    Services.search.wrappedJSObject._settings
-      .QueryInterface(Ci.nsIObserver)
-      .observe(null, "browser-search-engine-modified", "engine-removed");
-  });
-
-  await settingsWritePromise;
-
-  info("Settings write complete");
-  Assert.ok(settings.exists());
-  // Check that the search.json.mozlz4 settings matches the template
-
-  info("Check search.json.mozlz4");
   let settingsData = await promiseSettingsData();
 
   // Remove buildID and locale, as they are no longer used.
@@ -241,7 +515,7 @@ async function settings_write_check(disableFn) {
   // Simulate the search service being initialized.
   disableFn(true);
 
-  ss._settings.setAttribute("value", "test");
+  ss._settings.setMetaDataAttribute("value", "test");
 
   Assert.ok(
     ss._settings._write.notCalled,
@@ -270,9 +544,10 @@ async function settings_write_check(disableFn) {
 }
 
 add_task(async function test_settings_write_prevented_during_init() {
-  await settings_write_check(
-    disable => (Services.search.wrappedJSObject._initialized = !disable)
-  );
+  await settings_write_check(disable => {
+    let status = disable ? "success" : "failed";
+    Services.search.wrappedJSObject.forceInitializationStatusForTests(status);
+  });
 });
 
 add_task(async function test_settings_write_prevented_during_reload() {

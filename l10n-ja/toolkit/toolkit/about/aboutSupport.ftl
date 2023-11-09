@@ -170,6 +170,14 @@ media-codec-support-info = コーデックサポート情報
 # List all the entries of the database.
 media-capabilities-enumerate = データベースを列挙
 
+## Codec support table
+
+media-codec-support-sw-decoding = ソフトウェアデコーディング
+media-codec-support-hw-decoding = ハードウェアデコーディング
+media-codec-support-codec-name = コーデック名
+media-codec-support-supported = 対応
+media-codec-support-unsupported = 未対応
+
 ##
 
 intl-title = 国際化とローカライズ
@@ -263,6 +271,8 @@ webgl2-renderer = WebGL 2 ドライバーのレンダラー
 webgl2-version = WebGL 2 ドライバーのバージョン
 webgl2-driver-extensions = WebGL 2 ドライバーの拡張
 webgl2-extensions = WebGL 2 拡張
+webgpu-default-adapter = WebGPU の既定のアダプター
+webgpu-fallback-adapter = WebGPU のフォールバックアダプター
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = 既知の問題によりブロックリストに追加: <a data-l10n-name="bug-link">bug { $bugNumber }</a>

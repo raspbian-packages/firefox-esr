@@ -82,8 +82,8 @@ perftools-thread-renderer =
   .title = When WebRender is enabled, the thread that executes OpenGL calls
 perftools-thread-render-backend =
   .title = The WebRender RenderBackend thread
-perftools-thread-paint-worker =
-  .title = When off-main-thread painting is enabled, the thread on which painting happens
+perftools-thread-timer =
+  .title = The thread handling timers (setTimeout, setInterval, nsITimer)
 perftools-thread-style-thread =
   .title = Style computation is split into multiple threads
 pref-thread-stream-trans =
@@ -128,7 +128,7 @@ perftools-onboarding-close-button =
 ## Profiler presets
 
 # Presets and their l10n IDs are defined in the file
-# devtools/client/performance-new/popup/background.jsm.js
+# devtools/client/performance-new/shared/background.jsm.js
 # The same labels and descriptions are also defined in appmenu.ftl.
 
 perftools-presets-web-developer-label = Web Developer
@@ -145,6 +145,10 @@ perftools-presets-media-description2 = Preset for investigating audio and video 
 
 perftools-presets-networking-label = Networking
 perftools-presets-networking-description = Preset for investigating networking bugs in { -brand-shorter-name }.
+
+# "Power" is used in the sense of energy (electricity used by the computer).
+perftools-presets-power-label = Power
+perftools-presets-power-description = Preset for investigating power use bugs in { -brand-shorter-name }, with low overhead.
 
 perftools-presets-custom-label = Custom
 

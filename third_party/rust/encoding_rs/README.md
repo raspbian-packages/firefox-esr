@@ -167,7 +167,7 @@ There are currently these optional cargo features:
 
 ### `simd-accel`
 
-Enables SIMD acceleration using the nightly-dependent `packed_simd_2` crate.
+Enables SIMD acceleration using the nightly-dependent `packed_simd` crate.
 
 This is an opt-in feature, because enabling this feature _opts out_ of Rust's
 guarantees of future compilers compiling old code (aka. "stability story").
@@ -188,7 +188,7 @@ feature.
 _Note!_ If you are compiling for a target that does not have 128-bit SIMD
 enabled as part of the target definition and you are enabling 128-bit SIMD
 using `-C target_feature`, you need to enable the `core_arch` Cargo feature
-for `packed_simd_2` to compile a crates.io snapshot of `core_arch` instead of
+for `packed_simd` to compile a crates.io snapshot of `core_arch` instead of
 using the standard-library copy of `core::arch`, because the `core::arch`
 module of the pre-compiled standard library has been compiled with the
 assumption that the CPU doesn't have 128-bit SIMD. At present this applies
@@ -445,10 +445,20 @@ To regenerate the generated code:
       adapted to Rust in rust-encoding.~
 - [x] Add actually fast CJK encode options.
 - [ ] ~Investigate [Bob Steagall's lookup table acceleration for UTF-8](https://github.com/BobSteagall/CppNow2018/blob/master/FastConversionFromUTF-8/Fast%20Conversion%20From%20UTF-8%20with%20C%2B%2B%2C%20DFAs%2C%20and%20SSE%20Intrinsics%20-%20Bob%20Steagall%20-%20C%2B%2BNow%202018.pdf).~
-- [ ] Provide a build mode that works without `alloc` (with lesser API surface).
+- [x] Provide a build mode that works without `alloc` (with lesser API surface).
 - [ ] Migrate to `std::simd` once it is stable and declare 1.0.
 
 ## Release Notes
+
+### 0.8.33
+
+* Use `packed_simd` instead of `packed_simd_2` again now that updates are back under the `packed_simd` name. Only affects the `simd-accel` optional nightly feature.
+
+### 0.8.32
+
+* Removed `build.rs`. (This removal should resolve false positives reported by some antivirus products. This may break some build configurations that have opted out of Rust's guarantees against future build breakage.)
+* Internal change to what API is used for reinterpreting the lane configuration of SIMD vectors.
+* Documentation improvements.
 
 ### 0.8.31
 

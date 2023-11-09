@@ -6,6 +6,7 @@
 #include "ThemeColors.h"
 
 #include "mozilla/RelativeLuminanceUtils.h"
+#include "mozilla/StaticPrefs_layout.h"
 #include "mozilla/StaticPrefs_widget.h"
 #include "ThemeDrawing.h"
 #include "nsNativeTheme.h"
@@ -27,7 +28,7 @@ struct ColorPalette {
 
   constexpr static ColorPalette Default() {
     return ColorPalette(
-        sDefaultAccent, sDefaultAccentForeground,
+        sDefaultAccent, sDefaultAccentText,
         sRGBColor::UnusualFromARGB(0x4d008deb),  // Luminance: 25.04791%
         sRGBColor::UnusualFromARGB(0xff0250bb),  // Luminance: 9.33808%
         sRGBColor::UnusualFromARGB(0xff054096)   // Luminance: 5.90106%
@@ -83,12 +84,13 @@ struct ColorPalette {
   sRGBColor mAccentDarker;
 };
 
-static nscolor ThemedAccentColor(bool aBackground, ColorScheme aScheme) {
-  MOZ_ASSERT(StaticPrefs::widget_non_native_theme_use_theme_accent());
-  return ColorPalette::EnsureOpaque(LookAndFeel::Color(
-      aBackground ? LookAndFeel::ColorID::MozAccentColor
-                  : LookAndFeel::ColorID::MozAccentColorForeground,
-      aScheme, LookAndFeel::UseStandins::No));
+static nscolor GetAccentColor(bool aBackground, ColorScheme aScheme) {
+  auto useStandins = LookAndFeel::UseStandins(
+      !StaticPrefs::widget_non_native_theme_use_theme_accent());
+  return ColorPalette::EnsureOpaque(
+      LookAndFeel::Color(aBackground ? LookAndFeel::ColorID::Accentcolor
+                                     : LookAndFeel::ColorID::Accentcolortext,
+                         aScheme, useStandins));
 }
 
 static ColorPalette sDefaultLightPalette = ColorPalette::Default();
@@ -179,7 +181,8 @@ ColorScheme ThemeColors::ColorSchemeForWidget(const nsIFrame* aFrame,
   if (StaticPrefs::widget_disable_dark_scrollbar()) {
     return ColorScheme::Light;
   }
-  return nsNativeTheme::IsDarkBackground(const_cast<nsIFrame*>(aFrame))
+  return nsNativeTheme::IsDarkBackgroundForScrollbar(
+             const_cast<nsIFrame*>(aFrame))
              ? ColorScheme::Dark
              : ColorScheme::Light;
 }
@@ -188,18 +191,12 @@ ColorScheme ThemeColors::ColorSchemeForWidget(const nsIFrame* aFrame,
 void ThemeColors::RecomputeAccentColors() {
   MOZ_RELEASE_ASSERT(NS_IsMainThread());
 
-  if (!StaticPrefs::widget_non_native_theme_use_theme_accent()) {
-    sDefaultLightPalette = sDefaultDarkPalette = ColorPalette::Default();
-    return;
-  }
-
   sDefaultLightPalette =
-      ColorPalette(ThemedAccentColor(true, ColorScheme::Light),
-                   ThemedAccentColor(false, ColorScheme::Light));
+      ColorPalette(GetAccentColor(true, ColorScheme::Light),
+                   GetAccentColor(false, ColorScheme::Light));
 
-  sDefaultDarkPalette =
-      ColorPalette(ThemedAccentColor(true, ColorScheme::Dark),
-                   ThemedAccentColor(false, ColorScheme::Dark));
+  sDefaultDarkPalette = ColorPalette(GetAccentColor(true, ColorScheme::Dark),
+                                     GetAccentColor(false, ColorScheme::Dark));
 }
 
 /*static*/
@@ -237,8 +234,8 @@ nscolor ThemeColors::ComputeCustomAccentForeground(nscolor aColor) {
   return RelativeLuminanceUtils::Adjust(aColor, targetLuminance);
 }
 
-nscolor ThemeColors::AdjustUnthemedScrollbarThumbColor(nscolor aFaceColor,
-                                                       EventStates aStates) {
+nscolor ThemeColors::AdjustUnthemedScrollbarThumbColor(
+    nscolor aFaceColor, dom::ElementState aStates) {
   // In Windows 10, scrollbar thumb has the following colors:
   //
   // State  | Color    | Luminance
@@ -248,8 +245,8 @@ nscolor ThemeColors::AdjustUnthemedScrollbarThumbColor(nscolor aFaceColor,
   // Active | Gray 96  |     11.7%
   //
   // This function is written based on the ratios between the values.
-  bool isActive = aStates.HasState(NS_EVENT_STATE_ACTIVE);
-  bool isHover = aStates.HasState(NS_EVENT_STATE_HOVER);
+  bool isActive = aStates.HasState(dom::ElementState::ACTIVE);
+  bool isHover = aStates.HasState(dom::ElementState::HOVER);
   if (!isActive && !isHover) {
     return aFaceColor;
   }

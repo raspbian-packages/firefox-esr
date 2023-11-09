@@ -106,6 +106,7 @@ graphics-gpu2-title = GPU #2
 graphics-decision-log-title = Päätösloki
 graphics-crash-guards-title = Kaatumisvahdin käytöstä poistamat ominaisuudet
 graphics-workarounds-title = Hätäratkaisut
+graphics-device-pixel-ratios = Ikkunoiden pikselisuhteet
 # Windowing system in use on Linux (e.g. X11, Wayland).
 graphics-window-protocol = Ikkunointiprotokolla
 # Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
@@ -119,6 +120,7 @@ place-database-stats-count = Lukumäärä
 place-database-stats-size-kib = Koko (KiB)
 place-database-stats-size-perc = Koko (%)
 place-database-stats-efficiency-perc = Tehokkuus (%)
+place-database-stats-sequentiality-perc = Peräkkäisyys (%)
 place-database-integrity = Virheettömyys
 place-database-verify-integrity = Tarkista virheettömyys
 a11y-title = Saavutettavuus
@@ -168,6 +170,15 @@ media-capabilities-title = Mediaominaisuudet
 media-codec-support-info = Koodekkitukitiedot
 # List all the entries of the database.
 media-capabilities-enumerate = Listaa tietokannan sisältö
+
+## Codec support table
+
+media-codec-support-sw-decoding = Ohjelmistopohjainen purku
+media-codec-support-hw-decoding = Laitteistopohjainen purku
+media-codec-support-codec-name = Koodekin nimi
+media-codec-support-supported = Tuettu
+media-codec-support-unsupported = Ei tuettu
+media-codec-support-error = Koodekkitukitietoja ei ole saatavilla. Yritä uudelleen mediatiedoston toiston jälkeen.
 
 ##
 
@@ -282,6 +293,8 @@ webgl2-renderer = WebGL 2 -ajurin mallintaja
 webgl2-version = WebGL 2 -ajurin versio
 webgl2-driver-extensions = WebGL 2 -ajurin laajennukset
 webgl2-extensions = WebGL 2 -laajennukset
+webgpu-default-adapter = WebGPU-oletussovitin
+webgpu-fallback-adapter = WebGPU-varasovitin
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Estolistalla tunnetuista ongelmista johtuen: <a data-l10n-name="bug-link">vika { $bugNumber }</a>

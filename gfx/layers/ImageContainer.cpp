@@ -42,6 +42,7 @@
 
 #  include "gfxWindowsPlatform.h"
 #  include "mozilla/gfx/DeviceManagerDx.h"
+#  include "mozilla/layers/D3D11ShareHandleImage.h"
 #  include "mozilla/layers/D3D11YCbCrImage.h"
 #endif
 
@@ -465,6 +466,40 @@ void ImageContainer::EnsureRecycleAllocatorForRDD(
 }
 
 #ifdef XP_WIN
+already_AddRefed<D3D11RecycleAllocator>
+ImageContainer::GetD3D11RecycleAllocator(KnowsCompositor* aKnowsCompositor,
+                                         gfx::SurfaceFormat aPreferredFormat) {
+  MOZ_ASSERT(aKnowsCompositor);
+
+  if (!aKnowsCompositor->SupportsD3D11()) {
+    return nullptr;
+  }
+
+  RefPtr<ID3D11Device> device = gfx::DeviceManagerDx::Get()->GetImageDevice();
+  if (!device) {
+    return nullptr;
+  }
+
+  RecursiveMutexAutoLock lock(mRecursiveMutex);
+  if (mD3D11RecycleAllocator && mD3D11RecycleAllocator->mDevice == device &&
+      mD3D11RecycleAllocator->GetKnowsCompositor() == aKnowsCompositor) {
+    return do_AddRef(mD3D11RecycleAllocator);
+  }
+
+  mD3D11RecycleAllocator =
+      new D3D11RecycleAllocator(aKnowsCompositor, device, aPreferredFormat);
+
+  if (device != DeviceManagerDx::Get()->GetCompositorDevice()) {
+    RefPtr<SyncObjectClient> syncObject =
+        SyncObjectClient::CreateSyncObjectClient(
+            aKnowsCompositor->GetTextureFactoryIdentifier().mSyncHandle,
+            device);
+    mD3D11RecycleAllocator->SetSyncObject(syncObject);
+  }
+
+  return do_AddRef(mD3D11RecycleAllocator);
+}
+
 already_AddRefed<D3D11YCbCrRecycleAllocator>
 ImageContainer::GetD3D11YCbCrRecycleAllocator(
     KnowsCompositor* aKnowsCompositor) {
@@ -699,7 +734,8 @@ bool RecyclingPlanarYCbCrImage::CopyData(const Data& aData) {
   auto cbcrSize = aData.CbCrDataSize();
   const auto checkedSize =
       CheckedInt<uint32_t>(aData.mCbCrStride) * cbcrSize.height * 2 +
-      CheckedInt<uint32_t>(aData.mYStride) * ySize.height;
+      CheckedInt<uint32_t>(aData.mYStride) * ySize.height *
+          (aData.mAlpha ? 2 : 1);
 
   if (!checkedSize.isValid()) return false;
 
@@ -712,7 +748,7 @@ bool RecyclingPlanarYCbCrImage::CopyData(const Data& aData) {
   // update buffer size
   mBufferSize = size;
 
-  mData = aData;
+  mData = aData;  // mAlpha will be set if aData has it
   mData.mYChannel = mBuffer.get();
   mData.mCbChannel = mData.mYChannel + mData.mYStride * ySize.height;
   mData.mCrChannel = mData.mCbChannel + mData.mCbCrStride * cbcrSize.height;
@@ -724,6 +760,10 @@ bool RecyclingPlanarYCbCrImage::CopyData(const Data& aData) {
             aData.mCbSkip);
   CopyPlane(mData.mCrChannel, aData.mCrChannel, cbcrSize, aData.mCbCrStride,
             aData.mCrSkip);
+  if (aData.mAlpha) {
+    CopyPlane(mData.mAlpha->mChannel, aData.mAlpha->mChannel, ySize,
+              aData.mYStride, aData.mYSkip);
+  }
 
   mSize = aData.mPictureRect.Size();
   mOrigin = aData.mPictureRect.TopLeft();
@@ -910,13 +950,13 @@ UniquePtr<uint8_t[]> NVImage::AllocateBuffer(uint32_t aSize) {
 
 SourceSurfaceImage::SourceSurfaceImage(const gfx::IntSize& aSize,
                                        gfx::SourceSurface* aSourceSurface)
-    : Image(nullptr, ImageFormat::CAIRO_SURFACE),
+    : Image(nullptr, ImageFormat::MOZ2D_SURFACE),
       mSize(aSize),
       mSourceSurface(aSourceSurface),
       mTextureFlags(TextureFlags::DEFAULT) {}
 
 SourceSurfaceImage::SourceSurfaceImage(gfx::SourceSurface* aSourceSurface)
-    : Image(nullptr, ImageFormat::CAIRO_SURFACE),
+    : Image(nullptr, ImageFormat::MOZ2D_SURFACE),
       mSize(aSourceSurface->GetSize()),
       mSourceSurface(aSourceSurface),
       mTextureFlags(TextureFlags::DEFAULT) {}

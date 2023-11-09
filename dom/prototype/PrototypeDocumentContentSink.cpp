@@ -8,6 +8,7 @@
 #include "mozilla/dom/PrototypeDocumentContentSink.h"
 #include "nsIParser.h"
 #include "mozilla/dom/Document.h"
+#include "mozilla/dom/URL.h"
 #include "nsIContent.h"
 #include "nsIURI.h"
 #include "nsNetUtil.h"
@@ -334,7 +335,7 @@ nsresult PrototypeDocumentContentSink::PrepareToWalk() {
 
   // TODO(emilio): Should this really notify? We don't notify of appends anyhow,
   // and we just appended the root so no styles can possibly depend on it.
-  mDocument->UpdateDocumentStates(NS_DOCUMENT_STATE_RTL_LOCALE, true);
+  mDocument->UpdateDocumentStates(DocumentState::RTL_LOCALE, true);
 
   nsContentUtils::AddScriptRunner(
       new nsDocElementCreatedNotificationRunner(mDocument));
@@ -679,14 +680,15 @@ nsresult PrototypeDocumentContentSink::DoneWalking() {
   }
 
   mDocument->SetDelayFrameLoaderInitialization(false);
-  mDocument->MaybeInitializeFinalizeFrameLoaders();
+  RefPtr<Document> doc = mDocument;
+  doc->MaybeInitializeFinalizeFrameLoaders();
 
   // If the document we are loading has a reference or it is a
   // frameset document, disable the scroll bars on the views.
 
-  mDocument->SetScrollToRef(mDocument->GetDocumentURI());
+  doc->SetScrollToRef(mDocument->GetDocumentURI());
 
-  mDocument->EndLoad();
+  doc->EndLoad();
 
   return NS_OK;
 }
@@ -854,14 +856,14 @@ PrototypeDocumentContentSink::OnStreamComplete(nsIStreamLoader* aLoader,
                                         !mOffThreadCompileStringBuf),
                "PrototypeDocument can't load multiple scripts at once");
 
-    rv = ScriptLoader::ConvertToUTF16(channel, string, stringLen, u""_ns,
-                                      mDocument, mOffThreadCompileStringBuf,
-                                      mOffThreadCompileStringLength);
+    rv = ScriptLoader::ConvertToUTF8(channel, string, stringLen, u""_ns,
+                                     mDocument, mOffThreadCompileStringBuf,
+                                     mOffThreadCompileStringLength);
     if (NS_SUCCEEDED(rv)) {
       // Pass ownership of the buffer, carefully emptying the existing
       // fields in the process.  Note that the |Compile| function called
       // below always takes ownership of the buffer.
-      char16_t* units = nullptr;
+      Utf8Unit* units = nullptr;
       size_t unitsLength = 0;
 
       std::swap(units, mOffThreadCompileStringBuf);
@@ -1026,7 +1028,7 @@ nsresult PrototypeDocumentContentSink::ExecuteScript(
 
   // On failure, ~AutoScriptEntry will handle exceptions, so
   // there is no need to manually check the return value.
-  JS::RootedValue rval(cx);
+  JS::Rooted<JS::Value> rval(cx);
   Unused << JS_ExecuteScript(cx, scriptObject, &rval);
 
   return NS_OK;

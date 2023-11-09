@@ -24,7 +24,11 @@ neterror-pref-reset-button = Restaurar il standard
 neterror-return-to-previous-page-button = Turnar
 neterror-return-to-previous-page-recommended-button = Turnar (recumandà)
 neterror-try-again-button = Empruvar anc ina giada
+neterror-add-exception-button = Adina cuntinuar per questa website
+neterror-settings-button = Midar ils parameters DNS
 neterror-view-certificate-link = Mussar il certificat
+neterror-trr-continue-this-time = Cuntinuar questa giada
+neterror-disable-native-feedback-warning = Adina cuntinuar
 
 ##
 
@@ -48,6 +52,35 @@ neterror-dns-not-found-hint-header = <strong>Sche l'adressa endatada constat, po
 neterror-dns-not-found-hint-try-again = Empruvar pli tard anc ina giada
 neterror-dns-not-found-hint-check-network = Controllar la connexiun cun la rait
 neterror-dns-not-found-hint-firewall = Verifitgar che { -brand-short-name } ha il dretg d'acceder al web (eventualmain es ti connectà, ma davos ina firewall)
+
+## TRR-only specific messages
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+neterror-dns-not-found-trr-only-reason =
+    { -brand-short-name } na po betg proteger tia dumonda per l'adressa da questa website via noss server DNS fidà.
+    Il motiv:
+neterror-dns-not-found-trr-third-party-warning2 = Ti pos cuntinuar cun il servetsch da resoluziun DNS predefinì. Ma ina terza partida po eventualmain vesair tge websites che ti visitas.
+
+neterror-dns-not-found-trr-only-could-not-connect = { -brand-short-name } n'ha betg pudì stabilir ina connexiun cun { $trrDomain }.
+neterror-dns-not-found-trr-only-timeout = La connexiun cun { $trrDomain } ha cuzzà pli ditg che spetgà.
+neterror-dns-not-found-trr-offline = Ti n'es betg connectà cun l'internet.
+neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } n'ha betg chattà questa website.
+neterror-dns-not-found-trr-server-problem = Igl ha dà in problem cun { $trrDomain }.
+neterror-dns-not-found-trr-unknown-problem = Problem nunspetgà.
+
+## Native fallback specific messages
+## Variables:
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+neterror-dns-not-found-native-fallback-reason =
+    { -brand-short-name } na po betg proteger tia dumonda per l'adressa da questa website via noss server DNS fidà.
+    Il motiv:
+neterror-dns-not-found-native-fallback-heuristic = DNS via HTTPS è vegnì deactivà en tia rait.
+neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } n'ha betg pudì stabilir ina connexiun cun { $trrDomain }.
+
+##
 
 neterror-file-not-found-filename = Controllescha sch'il num da datoteca cuntegna in sbagl da scripziun grond u pitschen u auters sbagls da tippar.
 neterror-file-not-found-moved = Controllescha sche la datoteca è vegnida renumnada, stizzada u spustada.

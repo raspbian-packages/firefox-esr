@@ -65,6 +65,15 @@ class MediaSourceDemuxer : public MediaDataDemuxer,
   static constexpr media::TimeUnit EOS_FUZZ =
       media::TimeUnit::FromMicroseconds(500000);
 
+  // Largest gap allowed between muxed streams with different
+  // start times. The specs suggest up to a "reasonably short" gap of
+  // one second. We conservatively choose to allow a gap up to a bit over
+  // a half-second here, which is still twice our previous effective value
+  // and should resolve embedded playback issues on Twitter, DokiDoki, etc.
+  // See: https://www.w3.org/TR/media-source-2/#presentation-start-time
+  static constexpr media::TimeUnit EOS_FUZZ_START =
+      media::TimeUnit::FromMicroseconds(550000);
+
  private:
   ~MediaSourceDemuxer();
   friend class MediaSourceTrackDemuxer;
@@ -123,12 +132,7 @@ class MediaSourceTrackDemuxer
   void DetachManager();
 
  private:
-  bool OnTaskQueue() const {
-    MOZ_ASSERT(mParent);
-    auto taskQueue = mParent->GetTaskQueue();
-    MOZ_ASSERT(taskQueue);
-    return taskQueue->IsCurrentThreadIn();
-  }
+  bool OnTaskQueue() const { return mTaskQueue->IsCurrentThreadIn(); }
 
   RefPtr<SeekPromise> DoSeek(const media::TimeUnit& aTime);
   RefPtr<SamplesPromise> DoGetSamples(int32_t aNumSamples);
@@ -139,6 +143,8 @@ class MediaSourceTrackDemuxer
   media::TimeUnit GetNextRandomAccessPoint();
 
   RefPtr<MediaSourceDemuxer> mParent;
+  const RefPtr<TaskQueue> mTaskQueue;
+
   TrackInfo::TrackType mType;
   // Monitor protecting members below accessed from multiple threads.
   Monitor mMonitor MOZ_UNANNOTATED;

@@ -1,23 +1,22 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { BookmarkHTMLUtils } = ChromeUtils.import(
-  "resource://gre/modules/BookmarkHTMLUtils.jsm"
+const { BookmarkHTMLUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/BookmarkHTMLUtils.sys.mjs"
 );
-const { BookmarkJSONUtils } = ChromeUtils.import(
-  "resource://gre/modules/BookmarkJSONUtils.jsm"
+const { BookmarkJSONUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/BookmarkJSONUtils.sys.mjs"
 );
-const { SyncedBookmarksMirror } = ChromeUtils.import(
-  "resource://gre/modules/SyncedBookmarksMirror.jsm"
+const { Bookmark, BookmarkFolder, BookmarksEngine, Livemark } =
+  ChromeUtils.importESModule(
+    "resource://services-sync/engines/bookmarks.sys.mjs"
+  );
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
 );
-const { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
-const {
-  Bookmark,
-  BookmarkFolder,
-  BookmarksEngine,
-  Livemark,
-} = ChromeUtils.import("resource://services-sync/engines/bookmarks.js");
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
+const { SyncedRecordsTelemetry } = ChromeUtils.importESModule(
+  "resource://services-sync/telemetry.sys.mjs"
+);
 
 var recordedEvents = [];
 
@@ -78,7 +77,7 @@ add_task(async function test_buffer_timeout() {
   await Service.recordManager.clearCache();
   await PlacesSyncUtils.bookmarks.reset();
   let engine = new BookmarksEngine(Service);
-  engine._newWatchdog = function() {
+  engine._newWatchdog = function () {
     // Return an already-aborted watchdog, so that we can abort merges
     // immediately.
     let watchdog = Async.watchdog();
@@ -160,7 +159,7 @@ add_bookmark_test(async function test_maintenance_after_failure(engine) {
   try {
     let syncStartup = engine._syncStartup;
     let syncError = new Error("Something is rotten in the state of Places");
-    engine._syncStartup = function() {
+    engine._syncStartup = function () {
       throw syncError;
     };
 
@@ -475,8 +474,8 @@ async function test_restoreOrImport(engine, { replace }) {
     });
     _(`Get Firefox!: ${bmk1.guid}`);
 
-    let backupFilePath = OS.Path.join(
-      OS.Constants.Path.tmpDir,
+    let backupFilePath = PathUtils.join(
+      PathUtils.tempDir,
       `t_b_e_${Date.now()}.json`
     );
 
@@ -507,7 +506,7 @@ async function test_restoreOrImport(engine, { replace }) {
       "Verify that there's only one bookmark on the server, and it's Thunderbird."
     );
     // Of course, there's also the Bookmarks Toolbar and Bookmarks Menu...
-    let wbos = collection.keys(function(id) {
+    let wbos = collection.keys(function (id) {
       return !["menu", "toolbar", "mobile", "unfiled", folder1.guid].includes(
         id
       );
@@ -570,15 +569,12 @@ async function test_restoreOrImport(engine, { replace }) {
 
     _("Verify that there's the right bookmarks on the server.");
     // Of course, there's also the Bookmarks Toolbar and Bookmarks Menu...
-    let payloads = server
-      .user("foo")
-      .collection("bookmarks")
-      .payloads();
-    let bookmarkWBOs = payloads.filter(function(wbo) {
+    let payloads = server.user("foo").collection("bookmarks").payloads();
+    let bookmarkWBOs = payloads.filter(function (wbo) {
       return wbo.type == "bookmark";
     });
 
-    let folderWBOs = payloads.filter(function(wbo) {
+    let folderWBOs = payloads.filter(function (wbo) {
       return (
         wbo.type == "folder" &&
         wbo.id != "menu" &&
@@ -749,9 +745,8 @@ add_bookmark_test(async function test_misreconciled_root(engine) {
   Assert.notEqual(-1, toolbarIDBefore);
 
   let parentRecordIDBefore = toolbarBefore.parentid;
-  let parentGUIDBefore = PlacesSyncUtils.bookmarks.recordIdToGuid(
-    parentRecordIDBefore
-  );
+  let parentGUIDBefore =
+    PlacesSyncUtils.bookmarks.recordIdToGuid(parentRecordIDBefore);
   let parentIDBefore = await PlacesUtils.promiseItemId(parentGUIDBefore);
   Assert.equal("string", typeof parentGUIDBefore);
 
@@ -770,16 +765,16 @@ add_bookmark_test(async function test_misreconciled_root(engine) {
   let rec = new FakeRecord(BookmarkFolder, to_apply);
 
   _("Applying record.");
-  store.applyIncomingBatch([rec]);
+  let countTelemetry = new SyncedRecordsTelemetry();
+  store.applyIncomingBatch([rec], countTelemetry);
 
   // Ensure that afterwards, toolbar is still there.
   // As of 2012-12-05, this only passes because Places doesn't use "toolbar" as
   // the real GUID, instead using a generated one. Sync does the translation.
   let toolbarAfter = await store.createRecord("toolbar", "bookmarks");
   let parentRecordIDAfter = toolbarAfter.parentid;
-  let parentGUIDAfter = PlacesSyncUtils.bookmarks.recordIdToGuid(
-    parentRecordIDAfter
-  );
+  let parentGUIDAfter =
+    PlacesSyncUtils.bookmarks.recordIdToGuid(parentRecordIDAfter);
   let parentIDAfter = await PlacesUtils.promiseItemId(parentGUIDAfter);
   Assert.equal(
     await PlacesUtils.promiseItemGuid(toolbarIDBefore),
@@ -1179,7 +1174,7 @@ add_task(async function test_resume_buffer() {
     // Replace applyIncomingBatch with a custom one that calls the original,
     // but forces it to throw on the 2nd chunk.
     let origApplyIncomingBatch = engine._store.applyIncomingBatch;
-    engine._store.applyIncomingBatch = function(records) {
+    engine._store.applyIncomingBatch = function (records) {
       if (records.length > batchChunkSize) {
         // Hacky way to make reading from the batchChunkSize'th record throw.
         delete records[batchChunkSize];

@@ -6,12 +6,14 @@
 
 #include "ContentSignatureVerifier.h"
 
+#include "AppTrustDomain.h"
 #include "CryptoTask.h"
 #include "ScopedNSSTypes.h"
 #include "SharedCertVerifier.h"
 #include "cryptohi.h"
 #include "keyhi.h"
 #include "mozilla/Base64.h"
+#include "mozilla/Logging.h"
 #include "mozilla/dom/Promise.h"
 #include "nsCOMPtr.h"
 #include "nsPromiseFlatString.h"
@@ -423,9 +425,7 @@ static nsresult ParseContentSignatureHeader(
        directive != nullptr; directive = directive->getNext()) {
     CSVerifier_LOG(
         ("CSVerifier: found directive '%s'", directive->mName.get()));
-    if (directive->mName.Length() == signature_var.Length() &&
-        directive->mName.EqualsIgnoreCase(signature_var.get(),
-                                          signature_var.Length())) {
+    if (directive->mName.EqualsIgnoreCase(signature_var)) {
       if (!aSignature.IsEmpty()) {
         CSVerifier_LOG(("CSVerifier: found two ContentSignatures"));
         return NS_ERROR_INVALID_SIGNATURE;

@@ -25,7 +25,6 @@ pocket-panel-saved-save-tags = Na'nïnj sà'
 pocket-panel-saved-saving-tags = Na'nïn sà'aj...
 pocket-panel-saved-suggested-tags = Etiketâ ga'ue gini'iājt
 pocket-panel-saved-tags-saved = Nej etiketâ ngà nata'a
-pocket-panel-signup-view-list = Ni'iaj riña lîsta
 
 ## about:pocket-signup panel
 
@@ -41,7 +40,12 @@ pocket-panel-signup-tagline-story-two = Ni'iājt riña { -pocket-brand-name } ng
 
 ## about:pocket-home panel
 
+
 ## Pocket panel header component
+
+pocket-panel-header-sign-in = Gāyi\'ì sēsiûn
 
 ## Pocket panel buttons
 
+pocket-panel-button-show-all = Nādigân Daran’anj
+pocket-panel-button-remove = Nādure\'

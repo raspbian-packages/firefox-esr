@@ -8,8 +8,6 @@
 
 #include "ImageContainer.h"
 #include "Intervals.h"
-#include "mozilla/AlreadyAddRefed.h"
-#include "mozilla/ErrorResult.h"
 #include "mozilla/dom/ImageBitmapBinding.h"
 
 using namespace mozilla::layers;
@@ -178,7 +176,7 @@ ImageUtils::ImageUtils(layers::Image* aImage) : mImpl(nullptr) {
     case mozilla::ImageFormat::NV_IMAGE:
       mImpl = new YUVImpl(aImage);
       break;
-    case mozilla::ImageFormat::CAIRO_SURFACE:
+    case mozilla::ImageFormat::MOZ2D_SURFACE:
     default:
       mImpl = new Impl(aImage);
   }

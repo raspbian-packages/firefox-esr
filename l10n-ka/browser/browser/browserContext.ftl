@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = გვერდის ჩანიშვნა
-    .accesskey = გ
-    .tooltiptext = გვერდის ჩანიშვნა
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = გვერდის ჩანიშვნა
-    .accesskey = ნ
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = სანიშნის ჩასწორება
-    .accesskey = წ
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = გვერდის ჩანიშვნა
-    .accesskey = გ
-    .tooltiptext = გვერდის ჩანიშვნა ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = სანიშნის ჩასწორება
-    .accesskey = გ
-    .tooltiptext = სანიშნის ჩასწორება
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = სანიშნის ჩასწორება
-    .accesskey = გ
-    .tooltiptext = სანიშნის ჩასწორება ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = გვერდის ჩანიშვნა…
     .accesskey = ნ
@@ -189,12 +151,8 @@ main-context-menu-open-link-new-window =
     .accesskey = ფ
 
 main-context-menu-open-link-new-private-window =
-    .label = ბმულის ახალ პირად ფანჯარაში გახსნა
+    .label = ბმულის გახსნა ახალ პირად ფანჯარაში
     .accesskey = პ
-
-main-context-menu-bookmark-link =
-    .label = ბმულის ჩანიშვნა
-    .accesskey = ლ
 
 main-context-menu-bookmark-link-2 =
     .label = ბმულის ჩანიშვნა…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = ხმოვანი ფაილის გაგზავნა ელფოსტით…
     .accesskey = ე
 
-main-context-menu-plugin-play =
-    .label = ამ მოდულის ჩართვა
-    .accesskey = ჩ
-
-main-context-menu-plugin-hide =
-    .label = ამ მოდულის დამალვა
-    .accesskey = დ
-
 main-context-menu-save-to-pocket =
     .label = გვერდის შენახვა { -pocket-brand-name }-ში
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = ო
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = გამოიყენეთ { -relay-brand-short-name } ელფოსტის შესანიღბად
+    .accesskey = ე
 
 main-context-menu-suggest-strong-password =
     .label = მძლავრი პაროლის შემოთავაზება…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = ჩარჩოს განახლება
     .accesskey = ხ
 
-main-context-menu-frame-bookmark =
-    .label = ჩარჩოს ჩანიშვნა
-    .accesskey = ჩ
-
 main-context-menu-frame-add-bookmark =
     .label = ჩარჩოს ჩანიშვნა…
     .accesskey = ო
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = ჩარჩოს მონაცემების ჩვენება
     .accesskey = მ
-
-main-context-menu-print-selection =
-    .label = მონიშნულის ამობეჭდვა
-    .accesskey = უ
 
 main-context-menu-print-selection-2 =
     .label = მონიშნულის ამობეჭდვა…
@@ -500,7 +446,7 @@ main-context-menu-inspect-a11y-properties =
     .label = დამხმარე საშუალებების გამოკვლევა
 
 main-context-menu-eme-learn-more =
-    .label = ვრცლად DRM-ის შესახებ…
+    .label = ვრცლად, რა არის DRM…
     .accesskey = D
 
 # Variables

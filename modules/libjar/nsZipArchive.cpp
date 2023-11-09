@@ -151,8 +151,8 @@ class ZipArchiveLogger {
 
  private:
   static StaticMutex sLock;
-  int mRefCnt GUARDED_BY(sLock);
-  PRFileDesc* mFd GUARDED_BY(sLock);
+  int mRefCnt MOZ_GUARDED_BY(sLock);
+  PRFileDesc* mFd MOZ_GUARDED_BY(sLock);
 };
 
 StaticMutex ZipArchiveLogger::sLock;
@@ -588,7 +588,7 @@ nsZipItem* nsZipArchive::CreateZipItem() {
 //  nsZipArchive::BuildFileList
 //---------------------------------------------
 nsresult nsZipArchive::BuildFileList(PRFileDesc* aFd)
-    NO_THREAD_SAFETY_ANALYSIS {
+    MOZ_NO_THREAD_SAFETY_ANALYSIS {
   // We're only called from the constructor, but need to call
   // CreateZipItem(), which touches locked data, and modify mFiles.  Turn
   // off thread-safety, which normally doesn't apply for constructors
@@ -766,6 +766,7 @@ nsZipHandle* nsZipArchive::GetFD() const { return mFd.get(); }
 //---------------------------------------------
 uint32_t nsZipArchive::GetDataOffset(nsZipItem* aItem) {
   MOZ_ASSERT(aItem);
+  MOZ_DIAGNOSTIC_ASSERT(mFd);
 
   uint32_t offset;
   MMAP_FAULT_HANDLER_BEGIN_HANDLE(mFd)
@@ -809,7 +810,10 @@ uint32_t nsZipArchive::GetDataOffset(nsZipItem* aItem) {
 // nsZipArchive::GetData
 //---------------------------------------------
 const uint8_t* nsZipArchive::GetData(nsZipItem* aItem) {
-  MOZ_ASSERT(aItem);
+  MOZ_DIAGNOSTIC_ASSERT(aItem);
+  if (!aItem) {
+    return nullptr;
+  }
   uint32_t offset = GetDataOffset(aItem);
 
   MMAP_FAULT_HANDLER_BEGIN_HANDLE(mFd)
@@ -838,6 +842,7 @@ nsZipArchive::nsZipArchive(nsZipHandle* aZipHandle, PRFileDesc* aFd,
     : mRefCnt(0), mFd(aZipHandle), mUseZipLog(false), mBuiltSynthetics(false) {
   // initialize the table to nullptr
   memset(mFiles, 0, sizeof(mFiles));
+  MOZ_DIAGNOSTIC_ASSERT(aZipHandle);
 
   //-- get table of contents for archive
   aRv = BuildFileList(aFd);

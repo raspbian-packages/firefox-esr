@@ -148,6 +148,11 @@ class SheetLoadData final
   // mIsBeingParsed is true if this stylesheet is currently being parsed.
   bool mIsBeingParsed : 1;
 
+  // mIsLoading is set to true when a sheet load is initiated. This field is
+  // also used by the SharedSubResourceCache to avoid having multiple loads for
+  // the same resource.
+  bool mIsLoading : 1;
+
   // mIsCancelled is set to true when a sheet load is stopped by
   // Stop() or StopLoadingSheet() (which was removed in Bug 556446).
   // SheetLoadData::OnStreamComplete() checks this to avoid parsing
@@ -252,6 +257,14 @@ class SheetLoadData final
   bool IsLinkRelPreload() const { return css::IsLinkRelPreload(mPreloadKind); }
 
   bool BlocksLoadEvent() const { return !RootLoadData().IsLinkRelPreload(); }
+
+  bool IsSyncLoad() const override { return mSyncLoad; }
+  bool IsLoading() const override { return mIsLoading; }
+  bool IsCancelled() const override { return mIsCancelled; }
+
+  void StartLoading() override { mIsLoading = true; }
+  void SetLoadCompleted() override { mIsLoading = false; }
+  void Cancel() override { mIsCancelled = true; }
 
  private:
   const SheetLoadData& RootLoadData() const {

@@ -67,7 +67,7 @@ policy-DisablePrimaryPasswordCreation = Si és cert, no es pot crear una contras
 
 policy-DisablePasswordReveal = No permet mostrar les contrasenyes dels inicis de sessió guardats.
 
-policy-DisablePocket = Desactiva la funció de guardar llocs web al Pocket.
+policy-DisablePocket2 = Desactiva la funció de guardar llocs web al { -pocket-brand-name }.
 
 policy-DisablePrivateBrowsing = Desactiva la navegació privada.
 
@@ -109,10 +109,6 @@ policy-Extensions = Instal·la, desinstal·la o bloca extensions. L'opció d'ins
 policy-ExtensionSettings = Gestiona tots els aspectes de la instal·lació de l'extensió.
 
 policy-ExtensionUpdate = Activa o desactiva les actualitzacions automàtiques de les extensions.
-
-policy-FirefoxHome = Configura el Firefox Home.
-
-policy-FlashPlugin = Permet o denega l'ús del connector Flash.
 
 policy-Handlers = Configura els gestors d'aplicacions per defecte.
 
@@ -165,9 +161,6 @@ policy-SanitizeOnShutdown2 = Esborra les dades de navegació en eixir.
 policy-SearchBar = Defineix la ubicació per defecte de la barra de cerca. L'usuari encara la pot personalitzar.
 
 policy-SearchSuggestEnabled = Activa o desactiva els suggeriments de cerca.
-
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Instal·la mòduls PKCS #11.
 
 policy-ShowHomeButton = Mostra el botó d'inici a la barra d'eines.
 

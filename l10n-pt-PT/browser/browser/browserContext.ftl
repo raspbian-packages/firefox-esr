@@ -86,38 +86,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Adicionar esta página aos marcadores
-    .accesskey = m
-    .tooltiptext = Adicionar esta página aos marcadores
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Adicionar página aos marcadores
-    .accesskey = m
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Editar marcador
-    .accesskey = m
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Adicionar esta página aos marcadores
-    .accesskey = m
-    .tooltiptext = Adicionar esta página aos marcadores ({ $shortcut })
-main-context-menu-bookmark-change =
-    .aria-label = Editar este marcador
-    .accesskey = m
-    .tooltiptext = Editar este marcador
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Editar este marcador
-    .accesskey = m
-    .tooltiptext = Editar este marcador ({ $shortcut })
 main-context-menu-bookmark-page =
     .aria-label = Adicionar página aos marcadores…
     .accesskey = m
@@ -165,9 +133,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Abrir ligação numa nova janela privada
     .accesskey = p
-main-context-menu-bookmark-link =
-    .label = Adicionar ligação aos marcadores
-    .accesskey = o
 main-context-menu-bookmark-link-2 =
     .label = Adicionar ligação aos marcadores…
     .accesskey = B
@@ -191,6 +156,11 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Copiar ligação
     .accesskey = l
+# This command copies the link, removing additional
+# query parameters used to track users across sites.
+main-context-menu-strip-on-share-link =
+    .label = Copiar ligação do site sem monitorização
+    .accesskey = s
 
 ## Media (video/audio) controls
 ##
@@ -307,12 +277,6 @@ main-context-menu-video-email =
 main-context-menu-audio-email =
     .label = Enviar áudio por e-mail…
     .accesskey = a
-main-context-menu-plugin-play =
-    .label = Ativar este plugin
-    .accesskey = t
-main-context-menu-plugin-hide =
-    .label = Ocultar este plugin
-    .accesskey = u
 main-context-menu-save-to-pocket =
     .label = Guardar página no { -pocket-brand-name }
     .accesskey = k
@@ -333,6 +297,9 @@ main-context-menu-use-saved-password =
 
 ##
 
+main-context-menu-use-relay-mask =
+    .label = Utilizar a máscara de e-mail do { -relay-brand-short-name }
+    .accesskey = U
 main-context-menu-suggest-strong-password =
     .label = Sugerir palavra-passe forte…
     .accesskey = S
@@ -360,9 +327,6 @@ main-context-menu-frame-open-window =
 main-context-menu-frame-reload =
     .label = Recarregar frame
     .accesskey = R
-main-context-menu-frame-bookmark =
-    .label = Adicionar este frame aos marcadores
-    .accesskey = m
 main-context-menu-frame-add-bookmark =
     .label = Adicionar frame aos marcadores…
     .accesskey = m
@@ -378,9 +342,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Ver informação do frame
     .accesskey = i
-main-context-menu-print-selection =
-    .label = Imprimir seleção
-    .accesskey = r
 main-context-menu-print-selection-2 =
     .label = Imprimir seleção…
     .accesskey = r

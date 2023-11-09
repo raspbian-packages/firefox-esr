@@ -47,6 +47,7 @@ firefoxview-tabpickup-password-locked-description = Za pśistup k swójim rejtar
 firefoxview-tabpickup-password-locked-link = Dalšne informacije
 firefoxview-tabpickup-password-locked-primarybutton = Głowne gronidło zapódaś
 firefoxview-tabpickup-signed-out-header = Pśizjawśo se, aby zasej zwězał
+firefoxview-tabpickup-signed-out-description = Aby se zasej zwězował a pśistup k swójim rejtarikam měł, pśizjawśo se pla swójogo { -fxaccount-brand-name }.
 firefoxview-tabpickup-signed-out-primarybutton = Pśizjawiś
 firefoxview-tabpickup-syncing = Wobcakajśo, mjaztym až se waše rejtariki synchronizěruju. Buźo jano wokognuśe traś.
 firefoxview-mobile-promo-header = Wobstarajśo se rejtariki ze swójogo telefona abo tableta
@@ -57,6 +58,8 @@ firefoxview-mobile-confirmation-description = Něnto móžośo swóje rejtariki 
 firefoxview-closed-tabs-title = Njedawno zacynjone
 firefoxview-closed-tabs-description2 = Wócyńśo boki znowego, kótarež sćo zacynił w toś tom woknje.
 firefoxview-closed-tabs-placeholder-header = Žedne rowno zacynjone rejtariki
+firefoxview-closed-tabs-placeholder-body = Gaž w toś tom woknje rejtarik zacynjaśo, móžośo jen wót how wuwołaś.
+firefoxview-closed-tabs-placeholder-body2 = Gaž rejtarik zacynjaśo, móžośo jen wót how wuwołaś.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -74,7 +77,68 @@ firefoxview-change-colorway-button = Barwowu kombinaciju změniś
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
 firefoxview-synced-tabs-placeholder-header = Hyšći nic njejo wiźeś
+firefoxview-synced-tabs-placeholder-body = Pśiducy raz, gaž bok w { -brand-product-name } na drugem rěźe wócynjaśo, mějśo pśistup k njomu ako wót guslowarja.
 firefoxview-collapse-button-show =
     .title = Lisćinu pokazaś
 firefoxview-collapse-button-hide =
     .title = Lisćinu schowaś
+firefoxview-overview-nav = Njedawno woglědane
+    .title = Njedawno woglědane
+firefoxview-overview-header = Njedawno woglědane
+    .title = Njedawno woglědane
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Historija
+    .title = Historija
+firefoxview-history-header = Historija
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Wócynjone rejtarki
+    .title = Wócynjone rejtarki
+firefoxview-opentabs-header = Wócynjone rejtariki
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Rowno zacynjone rejtariki
+    .title = Rowno zacynjone rejtariki
+firefoxview-recently-closed-header = Rowno zacynjone rejtariki
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Rejtariki z drugich rědow
+    .title = Rejtariki z drugich rědow
+firefoxview-synced-tabs-header = Rejtariki z drugich rědow
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Wšykne pokazaś
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Wokno { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Wokno { $winID } (aktualne)
+firefoxview-opentabs-focus-tab =
+    .title = K toś tomu rejtarkoju pśejś
+firefoxview-show-more = Wěcej pokazaś
+firefoxview-show-less = Mjenjej pokazaś
+firefoxview-sort-history-by-date-label = Pó datumje sortěrowaś
+firefoxview-sort-history-by-site-label = Pó sedle sortěrowaś
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Źinsa – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Cora – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Wšu historiju pokazaś
+firefoxview-view-more-browsing-history = Dalšnu pśeglědowańsku historiju pokazaś

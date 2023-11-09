@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Ühenduse sätted
-    .style =
-        { PLATFORM() ->
-            [macos] width: 48em
-           *[other] width: 53em
-        }
-
 connection-window2 =
     .title = Ühenduse sätted
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = v
     .tooltip = Selle valiku korral autenditakse sind automaatselt puhverserveritega, mille parool on salvestatud. Parooli küsitakse juhul, kui autentimine ebaõnnestub.
 
+connection-proxy-autologin-checkbox =
+    .label = Salvestatud paroolide korral autentimist ei küsita
+    .accesskey = v
+    .tooltiptext = Selle valiku korral autenditakse sind automaatselt puhverserveritega, mille parool on salvestatud. Parooli küsitakse juhul, kui autentimine ebaõnnestub.
+
 connection-proxy-socks-remote-dns =
     .label = Puhverserveri DNS, kui kasutusel on SOCKS v5
     .accesskey = e
-
-connection-dns-over-https =
-    .label = Lubatakse DNS üle HTTPSi
-    .accesskey = D
-
-connection-dns-over-https-url-resolver = Teenusepakkuja
-    .accesskey = j
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

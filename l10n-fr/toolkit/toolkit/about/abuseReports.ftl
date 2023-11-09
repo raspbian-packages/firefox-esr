@@ -18,6 +18,8 @@ abuse-report-addon-authored-by = par <a data-l10n-name="author-name">{ $author-n
 abuse-report-learnmore =
     Vous ne savez pas quel problème choisir ?
     <a data-l10n-name="learnmore-link">Apprenez-en plus sur le signalement d’extensions et de thèmes</a>
+abuse-report-learnmore-intro = Vous ne savez pas quel problème choisir ?
+abuse-report-learnmore-link = Apprenez-en plus sur le signalement d’extensions et de thèmes
 abuse-report-submit-description = Décrivez le problème (facultatif)
 abuse-report-textarea =
     .placeholder = Il est plus facile pour nous de résoudre un problème si nous avons connaissance des détails. Veuillez décrire ce que vous avez constaté. Merci de nous aider à garder le Web en bonne santé.

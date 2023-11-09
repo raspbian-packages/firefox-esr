@@ -125,12 +125,13 @@ about-processes-frame-name-many = 서브 프레임 ({ $number }): { $shortUrl }
 ## Utility process actor names
 
 about-processes-utility-actor-unknown = 알 수 없는 작업자
-about-processes-utility-actor-audio-decoder = 오디오 디코더
-
 about-processes-utility-actor-audio-decoder-generic = 일반 오디오 디코더
 about-processes-utility-actor-audio-decoder-applemedia = 애플 미디어 오디오 디코더
 about-processes-utility-actor-audio-decoder-wmf = Windows Media Framework 오디오 디코더
 about-processes-utility-actor-mf-media-engine = Windows Media Foundation 미디어 엔진 CDM
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = JavaScript Oracle
+about-processes-utility-actor-windows-utils = Windows 유틸리티
 
 ## Displaying CPU (percentage and total)
 ## Variables:

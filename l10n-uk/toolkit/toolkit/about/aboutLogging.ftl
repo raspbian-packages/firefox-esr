@@ -2,28 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
--profiler-brand-name = Firefox Profiler
-
-##
-
 # This is the title of the page
 about-logging-title = Про журналювання
 about-logging-page-title = Менеджер журналів
 about-logging-current-log-file = Поточний файл журналу:
-about-logging-current-log-modules = Поточні модулі журналу:
 about-logging-new-log-file = Новий файл журналу:
 about-logging-currently-enabled-log-modules = Наразі ввімкнені модулі журналу:
 about-logging-log-tutorial = Перегляньте <a data-l10n-name="logging">HTTP журналювання</a> для інструкцій з використання цього засобу.
@@ -44,15 +26,25 @@ about-logging-logging-to-profiler = Запис до { -profiler-brand-name }
 about-logging-no-log-modules = Немає
 about-logging-no-log-file = Немає
 about-logging-logging-preset-selector-text = Попереднє налаштування журналювання:
+about-logging-with-profiler-stacks-checkbox = Увімкнути трасування стека для повідомлень журналу
 
 ## Logging presets
 
 about-logging-preset-networking-label = Мережа
 about-logging-preset-networking-description = Модулі журналу для діагностики мережевих проблем
+about-logging-preset-networking-cookie-label = Куки
+about-logging-preset-networking-cookie-description = Модулі журналу для діагностики проблем із куками
+about-logging-preset-networking-websocket-label = Вебсокети
+about-logging-preset-networking-websocket-description = Модулі журналу для діагностики проблем із вебсокетами
+about-logging-preset-networking-http3-label = HTTP/3
+about-logging-preset-networking-http3-description = Модулі журналу для діагностики проблем із HTTP/3 та QUIC
 about-logging-preset-media-playback-label = Відтворення медіа
 about-logging-preset-media-playback-description = Модулі журналу для діагностики проблем із відтворенням медіа (не проблем із відеоконференціями)
+about-logging-preset-webrtc-label = WebRTC
+about-logging-preset-webrtc-description = Модулі журналу для діагностики викликів WebRTC
 about-logging-preset-custom-label = Власне
 about-logging-preset-custom-description = Модулі журналу вибрані вручну
+
 # Error handling
 about-logging-error = Помилка:
 
@@ -66,4 +58,5 @@ about-logging-unknown-profiler-preset = Невідоме попереднє на
 about-logging-unknown-option = Невідомий параметр about:logging “{ $k }“
 about-logging-configuration-url-ignored = URL конфігурації проігноровано
 about-logging-file-and-profiler-override = Не можна примусово виводити файл і одночасно перевизначати параметри профайлера
+
 about-logging-configured-via-url = Параметр налаштовано через URL

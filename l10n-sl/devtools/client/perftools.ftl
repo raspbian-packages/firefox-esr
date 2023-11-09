@@ -33,7 +33,9 @@ perftools-range-interval-milliseconds = { NUMBER($interval, maxFractionalUnits: 
 
 # The size of the memory buffer used to store things in the profiler.
 perftools-range-entries-label = Velikost medpomnilnika:
+
 perftools-custom-threads-label = Dodaj niti po meri po imenu:
+
 perftools-devtools-interval-label = Interval:
 perftools-devtools-threads-label = Niti:
 perftools-devtools-settings-label = Nastavitve
@@ -63,6 +65,10 @@ perftools-button-edit-settings = Uredi nastavitve …
 
 perftools-thread-gecko-main =
     .title = Glavni procesi za nadrejeni proces in za procese vsebine
+perftools-thread-compositor =
+    .title = Sestavi različne naslikane elemente na strani
+perftools-thread-renderer =
+    .title = Ko je omogočen WebRender: nit, ki izvaja klice OpenGL
 perftools-thread-render-backend =
     .title = Nit WebRender RenderBackend
 perftools-thread-style-thread =
@@ -88,6 +94,7 @@ perftools-record-all-registered-threads = Preglasi zgornje izbire in spremljaj v
 ## devtools.performance.new-panel-onboarding preference is true.
 
 perftools-onboarding-message = <b>Novo</b>: { -profiler-brand-name } je sedaj vključen med razvojna orodja. <a>Preberite več</a> o tem zmogljivem novem orodju.
+
 perftools-onboarding-close-button =
     .aria-label = Zapri uvodno sporočilo
 
@@ -98,19 +105,30 @@ perftools-onboarding-close-button =
 # devtools/client/performance-new/popup/background.jsm.js
 # The same labels and descriptions are also defined in appmenu.ftl.
 
+
+# Presets and their l10n IDs are defined in the file
+# devtools/client/performance-new/shared/background.jsm.js
+# The same labels and descriptions are also defined in appmenu.ftl.
+
 perftools-presets-web-developer-label = Spletni razvoj
 perftools-presets-web-developer-description = Priporočena prednastavitev za razhroščevanje večine spletnih aplikacij, z nizko porabo sredstev.
+
 perftools-presets-firefox-label = { -brand-shorter-name }
 perftools-presets-firefox-description = Priporočena prednastavitev za spremljanje zmogljivosti { -brand-shorter-name(sklon: "rodilnik") }.
+
 perftools-presets-graphics-label = Grafika
 perftools-presets-graphics-description = Prednastavitev za preiskovanje napak grafike v { -brand-shorter-name(sklon: "mestnik") }
+
 perftools-presets-media-label = Predstavnost
 perftools-presets-media-description2 = Prednastavitev za preiskovanje napak zvoka in videa v { -brand-shorter-name(sklon: "mestnik") }.
+
 perftools-presets-networking-label = Omrežje
 perftools-presets-networking-description = Prednastavitev za preiskovanje napak v delovanju omrežja v { -brand-shorter-name(sklon: "mestnik") }
+
 # "Power" is used in the sense of energy (electricity used by the computer).
 perftools-presets-power-label = Napajanje
 perftools-presets-power-description = Prednastavitev za preiskovanje napak pri porabi energije v { -brand-shorter-name(sklon: "mestnik") } z nizko porabo sredstev.
+
 perftools-presets-custom-label = Po meri
 
 ##

@@ -71,16 +71,16 @@ struct ArgumentsData {
    * canonical value so any element access to the arguments object should load
    * the value out of the CallObject (which is pointed to by MAYBE_CALL_SLOT).
    */
-  GCPtrValue args[1];
+  GCPtr<Value> args[1];
 
   /* For jit use: */
   static ptrdiff_t offsetOfArgs() { return offsetof(ArgumentsData, args); }
 
   /* Iterate args. */
-  GCPtrValue* begin() { return args; }
-  const GCPtrValue* begin() const { return args; }
-  GCPtrValue* end() { return args + numArgs; }
-  const GCPtrValue* end() const { return args + numArgs; }
+  GCPtr<Value>* begin() { return args; }
+  const GCPtr<Value>* begin() const { return args; }
+  GCPtr<Value>* end() { return args + numArgs; }
+  const GCPtr<Value>* end() const { return args + numArgs; }
 
   static size_t bytesRequired(size_t numArgs) {
     return offsetof(ArgumentsData, args) + numArgs * sizeof(Value);
@@ -286,9 +286,7 @@ class ArgumentsObject : public NativeObject {
     setFixedSlot(INITIAL_LENGTH_SLOT, Int32Value(v));
   }
 
-  /*
-   * Create the default "length" property and set LENGTH_OVERRIDDEN_BIT.
-   */
+  // Create the default "length" property and set LENGTH_OVERRIDDEN_BIT.
   static bool reifyLength(JSContext* cx, Handle<ArgumentsObject*> obj);
 
   // True iff arguments[@@iterator] has been assigned or deleted.
@@ -303,9 +301,7 @@ class ArgumentsObject : public NativeObject {
     setFixedSlot(INITIAL_LENGTH_SLOT, Int32Value(v));
   }
 
-  /*
-   * Create the default @@iterator property and set ITERATOR_OVERRIDDEN_BIT.
-   */
+  // Create the default @@iterator property and set ITERATOR_OVERRIDDEN_BIT.
   static bool reifyIterator(JSContext* cx, Handle<ArgumentsObject*> obj);
 
   /*
@@ -397,7 +393,7 @@ class ArgumentsObject : public NativeObject {
 
   void setArg(unsigned i, const Value& v) {
     MOZ_ASSERT(i < data()->numArgs);
-    GCPtrValue& lhs = data()->args[i];
+    GCPtr<Value>& lhs = data()->args[i];
     MOZ_ASSERT(!lhs.isMagic());
     lhs = v;
   }
@@ -522,6 +518,9 @@ class MappedArgumentsObject : public ArgumentsObject {
   static size_t getCalleeSlotOffset() {
     return getFixedSlotOffset(CALLEE_SLOT);
   }
+
+  // Create the default "callee" property and set CALLEE_OVERRIDDEN_BIT.
+  static bool reifyCallee(JSContext* cx, Handle<MappedArgumentsObject*> obj);
 
  private:
   static bool obj_enumerate(JSContext* cx, HandleObject obj);

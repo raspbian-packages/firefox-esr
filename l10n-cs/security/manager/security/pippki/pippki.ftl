@@ -28,10 +28,6 @@ pippki-pw-change2empty-in-fips-mode = Momentálně jste v režimu FIPS, který v
 
 ## Reset Primary Password dialog
 
-reset-primary-password-window =
-    .title = Obnovení hlavního hesla
-    .style = width: 40em
-
 reset-primary-password-window2 =
     .title = Obnovení hlavního hesla
     .style = min-width: 40em
@@ -43,10 +39,6 @@ pippki-reset-password-confirmation-title = Obnovení hlavního hesla
 pippki-reset-password-confirmation-message = Vaše hlavní heslo bylo obnoveno.
 
 ## Downloading cert dialog
-
-download-cert-window =
-    .title = Stažení certifikátu
-    .style = width: 46em
 
 download-cert-window2 =
     .title = Stažení certifikátu
@@ -82,7 +74,8 @@ set-password-reminder = Důležité: Pokud zapomenete svoje heslo zálohy certif
 
 ## Protected Auth dialog
 
-protected-auth-window =
-    .title = Zabezpečený autentizační token
-protected-auth-msg = Autentizujte se prosím k vašemu tokenu. Autentizační postup závisí na druhu vašeho tokenu.
-protected-auth-token = Token:
+## Protected authentication alert
+
+# Variables:
+# $tokenName (String) - The name of the token to authenticate to (for example, "OS Client Cert Token (Modern)")
+protected-auth-alert = Ověřte prosím token „{ $tokenName }“. Jak to udělat, závisí na tokenu (například pomocí čtečky otisků prstů nebo zadáním kódu pomocí klávesnice).

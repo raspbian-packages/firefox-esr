@@ -8,6 +8,7 @@
 
 #include "mozilla/Attributes.h"
 #include "mozilla/layout/RemotePrintJobChild.h"
+#include "mozilla/Maybe.h"
 #include "mozilla/UniquePtr.h"
 
 #include "nsCOMPtr.h"
@@ -57,15 +58,14 @@ class nsPrintJob final : public nsIWebProgressListener,
   using RemotePrintJobChild = mozilla::layout::RemotePrintJobChild;
 
  public:
-  nsPrintJob();
-
   // nsISupports interface...
   NS_DECL_ISUPPORTS
 
   NS_DECL_NSIWEBPROGRESSLISTENER
 
   /**
-   * Initialize for printing, or for creating a print preview document.
+   * Construct & initialize for printing, or for creating a print preview
+   * document.
    *
    * aDocViewerPrint owns us.
    *
@@ -86,10 +86,12 @@ class nsPrintJob final : public nsIWebProgressListener,
    * with a new docViewer and nsPrintJob, and passes the previous print preview
    * document as aOriginalDoc (it doesn't want to pass the actual original
    * document since it may have mutated)!
+   * TODO(dholbert): This^ note is probably somewhat out of date, in part
+   * because frontend code doesn't create "print preview tabs" anymore,
+   * now that we have a tab-modal print/print-preview dialog...
    */
-  nsresult Initialize(nsIDocumentViewerPrint* aDocViewerPrint,
-                      nsIDocShell* aDocShell, Document* aOriginalDoc,
-                      float aScreenDPI);
+  nsPrintJob(nsIDocumentViewerPrint& aDocViewerPrint, nsIDocShell& aDocShell,
+             Document& aOriginalDoc, float aScreenDPI);
 
   // Our nsIWebBrowserPrint implementation (nsDocumentViewer) defers to the
   // following methods.
@@ -99,7 +101,7 @@ class nsPrintJob final : public nsIWebProgressListener,
    * PrintPreview calls.
    */
   MOZ_CAN_RUN_SCRIPT_BOUNDARY nsresult
-  Print(Document* aSourceDoc, nsIPrintSettings* aPrintSettings,
+  Print(Document& aSourceDoc, nsIPrintSettings* aPrintSettings,
         RemotePrintJobChild* aRemotePrintJob,
         nsIWebProgressListener* aWebProgressListener);
 
@@ -114,7 +116,7 @@ class nsPrintJob final : public nsIWebProgressListener,
    * is actually our docViewer's current document!
    */
   MOZ_CAN_RUN_SCRIPT_BOUNDARY nsresult
-  PrintPreview(Document* aSourceDoc, nsIPrintSettings* aPrintSettings,
+  PrintPreview(Document& aSourceDoc, nsIPrintSettings* aPrintSettings,
                nsIWebProgressListener* aWebProgressListener,
                PrintPreviewResolver&& aCallback);
 
@@ -147,7 +149,7 @@ class nsPrintJob final : public nsIWebProgressListener,
   // If FinishPrintPreview() fails, caller may need to reset the state of the
   // object, for example by calling CleanupOnFailure().
   MOZ_CAN_RUN_SCRIPT_BOUNDARY nsresult FinishPrintPreview();
-  void FirePrintingErrorEvent(nsresult aPrintError);
+  MOZ_CAN_RUN_SCRIPT_BOUNDARY void FirePrintingErrorEvent(nsresult aPrintError);
 
   bool CheckBeforeDestroy() const;
   nsresult Cancel();
@@ -199,11 +201,11 @@ class nsPrintJob final : public nsIWebProgressListener,
 
   MOZ_CAN_RUN_SCRIPT nsresult CommonPrint(
       bool aIsPrintPreview, nsIPrintSettings* aPrintSettings,
-      nsIWebProgressListener* aWebProgressListener, Document* aSourceDoc);
+      nsIWebProgressListener* aWebProgressListener, Document& aSourceDoc);
 
   MOZ_CAN_RUN_SCRIPT nsresult DoCommonPrint(
       bool aIsPrintPreview, nsIPrintSettings* aPrintSettings,
-      nsIWebProgressListener* aWebProgressListener, Document* aSourceDoc);
+      nsIWebProgressListener* aWebProgressListener, Document& aSourceDoc);
 
   void FirePrintCompletionEvent();
 
@@ -282,6 +284,15 @@ class nsPrintJob final : public nsIWebProgressListener,
 
   int32_t mNumPrintablePages = 0;
 
+  // Indicates if the page has a specific orientation from @page { size }.
+  // Stores true if this is landscape, false if this is portrait, or nothing
+  // if there is no page-size-orientation.
+  mozilla::Maybe<bool> mMaybeCSSPageLandscape;
+
+  // Indicates if the page has a specific size from @page { size }.
+  // Stores the page size if one was found.
+  mozilla::Maybe<nsSize> mMaybeCSSPageSize;
+
   // If true, indicates that we have started Printing but have not gone to the
   // timer to start printing the pages. It gets turned off right before we go
   // to the timer.
@@ -295,7 +306,6 @@ class nsPrintJob final : public nsIWebProgressListener,
   bool mDoingInitialReflow = false;
   bool mIsDestroying = false;
   bool mDisallowSelectionPrint = false;
-  bool mIsForModalWindow = false;
 };
 
 #endif  // nsPrintJob_h

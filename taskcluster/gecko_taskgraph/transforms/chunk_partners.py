@@ -9,10 +9,11 @@ Chunk the partner repack tasks by subpartner and locale
 import copy
 
 from mozbuild.chunkify import chunkify
-from gecko_taskgraph.transforms.base import TransformSequence
+from taskgraph.transforms.base import TransformSequence
+
 from gecko_taskgraph.util.partners import (
-    get_repack_ids_by_platform,
     apply_partner_priority,
+    get_repack_ids_by_platform,
 )
 
 transforms = TransformSequence()
@@ -41,8 +42,8 @@ def chunk_partners(config, jobs):
             if config.kind in (
                 "release-partner-repack-signing",
                 "release-eme-free-repack-signing",
-                "release-partner-repack-notarization-part-1",
-                "release-eme-free-repack-notarization-part-1",
+                "release-eme-free-repack-mac-signing",
+                "release-partner-repack-mac-signing",
             ):
                 repacks_per_chunk = job.get("repacks-per-chunk")
                 chunks, remainder = divmod(len(platform_repack_ids), repacks_per_chunk)

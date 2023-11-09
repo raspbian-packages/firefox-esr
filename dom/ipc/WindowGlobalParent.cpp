@@ -21,6 +21,7 @@
 #include "mozilla/dom/ContentParent.h"
 #include "mozilla/dom/BrowserHost.h"
 #include "mozilla/dom/BrowserParent.h"
+#include "mozilla/dom/IdentityCredential.h"
 #include "mozilla/dom/MediaController.h"
 #include "mozilla/dom/WindowGlobalChild.h"
 #include "mozilla/dom/ChromeUtils.h"
@@ -30,10 +31,10 @@
 #include "mozilla/ScopeExit.h"
 #include "mozilla/ServoCSSParser.h"
 #include "mozilla/ServoStyleSet.h"
+#include "mozilla/StaticPrefs_dom.h"
 #include "mozilla/StaticPrefs_network.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/Variant.h"
-#include "mozJSComponentLoader.h"
 #include "nsContentUtils.h"
 #include "nsDocShell.h"
 #include "nsDocShellLoadState.h"
@@ -318,7 +319,7 @@ mozilla::ipc::IPCResult WindowGlobalParent::RecvLoadURI(
     return IPC_FAIL(this, "Illegal cross-process javascript: load attempt");
   }
 
-  CanonicalBrowsingContext* targetBC = aTargetBC.get_canonical();
+  RefPtr<CanonicalBrowsingContext> targetBC = aTargetBC.get_canonical();
 
   // FIXME: For cross-process loads, we should double check CanAccess() for the
   // source browsing context in the parent process.
@@ -351,7 +352,7 @@ mozilla::ipc::IPCResult WindowGlobalParent::RecvInternalLoad(
     return IPC_FAIL(this, "Illegal cross-process javascript: load attempt");
   }
 
-  CanonicalBrowsingContext* targetBC =
+  RefPtr<CanonicalBrowsingContext> targetBC =
       aLoadState->TargetBrowsingContext().get_canonical();
 
   // FIXME: For cross-process loads, we should double check CanAccess() for the
@@ -450,9 +451,9 @@ mozilla::ipc::IPCResult WindowGlobalParent::RecvUpdateDocumentTitle(
     return IPC_OK();
   }
 
-  (new AsyncEventDispatcher(frameElement, u"pagetitlechanged"_ns,
-                            CanBubble::eYes, ChromeOnlyDispatch::eYes))
-      ->RunDOMEventWhenSafe();
+  AsyncEventDispatcher::RunDOMEventWhenSafe(
+      *frameElement, u"pagetitlechanged"_ns, CanBubble::eYes,
+      ChromeOnlyDispatch::eYes);
 
   return IPC_OK();
 }
@@ -513,12 +514,12 @@ IPCResult WindowGlobalParent::RecvRawMessage(
   Maybe<StructuredCloneData> data;
   if (aData) {
     data.emplace();
-    data->BorrowFromClonedMessageDataForParent(*aData);
+    data->BorrowFromClonedMessageData(*aData);
   }
   Maybe<StructuredCloneData> stack;
   if (aStack) {
     stack.emplace();
-    stack->BorrowFromClonedMessageDataForParent(*aStack);
+    stack->BorrowFromClonedMessageData(*aStack);
   }
   ReceiveRawMessage(aMeta, std::move(data), std::move(stack));
   return IPC_OK();
@@ -580,7 +581,8 @@ already_AddRefed<JSWindowActorParent> WindowGlobalParent::GetExistingActor(
 }
 
 already_AddRefed<JSActor> WindowGlobalParent::InitJSActor(
-    JS::HandleObject aMaybeActor, const nsACString& aName, ErrorResult& aRv) {
+    JS::Handle<JSObject*> aMaybeActor, const nsACString& aName,
+    ErrorResult& aRv) {
   RefPtr<JSWindowActorParent> actor;
   if (aMaybeActor.get()) {
     aRv = UNWRAP_OBJECT(JSWindowActorParent, aMaybeActor.get(), actor);
@@ -972,45 +974,6 @@ void WindowGlobalParent::DrawSnapshotInternal(gfx::CrossProcessPaint* aPaint,
       });
 }
 
-already_AddRefed<Promise> WindowGlobalParent::GetSecurityInfo(
-    ErrorResult& aRv) {
-  RefPtr<BrowserParent> browserParent = GetBrowserParent();
-  if (NS_WARN_IF(!browserParent)) {
-    aRv.Throw(NS_ERROR_FAILURE);
-    return nullptr;
-  }
-
-  nsIGlobalObject* global = GetParentObject();
-  RefPtr<Promise> promise = Promise::Create(global, aRv);
-  if (aRv.Failed()) {
-    return nullptr;
-  }
-
-  SendGetSecurityInfo(
-      [promise](Maybe<nsCString>&& aResult) {
-        if (aResult) {
-          nsCOMPtr<nsISupports> infoObj;
-          nsresult rv =
-              NS_DeserializeObject(aResult.value(), getter_AddRefs(infoObj));
-          if (NS_WARN_IF(NS_FAILED(rv))) {
-            promise->MaybeReject(NS_ERROR_FAILURE);
-          }
-          nsCOMPtr<nsITransportSecurityInfo> info = do_QueryInterface(infoObj);
-          if (!info) {
-            promise->MaybeReject(NS_ERROR_FAILURE);
-          }
-          promise->MaybeResolve(info);
-        } else {
-          promise->MaybeResolveWithUndefined();
-        }
-      },
-      [promise](ResponseRejectReason&& aReason) {
-        promise->MaybeReject(NS_ERROR_FAILURE);
-      });
-
-  return promise.forget();
-}
-
 /**
  * Accumulated page use counter data for a given top-level content document.
  */
@@ -1130,6 +1093,13 @@ void WindowGlobalParent::FinishAccumulatingPageUseCounters() {
             (" > reporting [%s]",
              nsContentUtils::TruncatedURLForDisplay(mDocumentURI).get()));
 
+    Maybe<nsCString> urlForLogging;
+    const bool dumpCounters = StaticPrefs::dom_use_counters_dump_page();
+    if (dumpCounters) {
+      urlForLogging.emplace(
+          nsContentUtils::TruncatedURLForDisplay(mDocumentURI));
+    }
+
     Telemetry::Accumulate(Telemetry::TOP_LEVEL_CONTENT_DOCUMENTS_DESTROYED, 1);
 
     for (int32_t c = 0; c < eUseCounter_Count; ++c) {
@@ -1140,8 +1110,10 @@ void WindowGlobalParent::FinishAccumulatingPageUseCounters() {
 
       auto id = static_cast<Telemetry::HistogramID>(
           Telemetry::HistogramFirstUseCounter + uc * 2 + 1);
-      MOZ_LOG(gUseCountersLog, LogLevel::Debug,
-              (" > %s\n", Telemetry::GetHistogramName(id)));
+      if (dumpCounters) {
+        printf_stderr("USE_COUNTER_PAGE: %s - %s\n",
+                      Telemetry::GetHistogramName(id), urlForLogging->get());
+      }
       Telemetry::Accumulate(id, 1);
     }
   } else {
@@ -1297,13 +1269,13 @@ mozilla::ipc::IPCResult WindowGlobalParent::RecvSetDocumentDomain(
     }
   }
 
-  if (!Document::IsValidDomain(uri, aDomain)) {
+  if (!aDomain || !Document::IsValidDomain(uri, aDomain)) {
     // Error: illegal domain
     return IPC_FAIL(
         this, "Setting domain that's not a suffix of existing domain value.");
   }
 
-  if (GetBrowsingContext()->CrossOriginIsolated()) {
+  if (Group()->IsPotentiallyCrossOriginIsolated()) {
     return IPC_FAIL(this, "Setting domain in a cross-origin isolated BC.");
   }
 
@@ -1380,14 +1352,34 @@ mozilla::ipc::IPCResult WindowGlobalParent::RecvReloadWithHttpsOnlyException() {
 
   RefPtr<nsDocShellLoadState> loadState = new nsDocShellLoadState(insecureURI);
   loadState->SetTriggeringPrincipal(nsContentUtils::GetSystemPrincipal());
-  loadState->SetLoadFlags(nsIWebNavigation::LOAD_FLAGS_REPLACE_HISTORY);
+  loadState->SetLoadType(LOAD_NORMAL_REPLACE);
 
-  BrowsingContext()->Top()->LoadURI(loadState, /* setNavigating */ true);
+  RefPtr<CanonicalBrowsingContext> topBC = BrowsingContext()->Top();
+  topBC->LoadURI(loadState, /* setNavigating */ true);
 
   return IPC_OK();
 }
 
+IPCResult WindowGlobalParent::RecvDiscoverIdentityCredentialFromExternalSource(
+    const IdentityCredentialRequestOptions& aOptions,
+    const DiscoverIdentityCredentialFromExternalSourceResolver& aResolver) {
+  IdentityCredential::DiscoverFromExternalSourceInMainProcess(
+      DocumentPrincipal(), this->BrowsingContext(), aOptions)
+      ->Then(
+          GetCurrentSerialEventTarget(), __func__,
+          [aResolver](const IPCIdentityCredential& aResult) {
+            return aResolver(Some(aResult));
+          },
+          [aResolver](nsresult aErr) { aResolver(Nothing()); });
+  return IPC_OK();
+}
+
 void WindowGlobalParent::ActorDestroy(ActorDestroyReason aWhy) {
+  if (GetBrowsingContext()->IsTopContent()) {
+    Telemetry::Accumulate(Telemetry::ORB_DID_EVER_BLOCK_RESPONSE,
+                          mShouldReportHasBlockedOpaqueResponse);
+  }
+
   if (mPageUseCountersWindow) {
     mPageUseCountersWindow->FinishAccumulatingPageUseCounters();
     mPageUseCountersWindow = nullptr;
@@ -1453,8 +1445,8 @@ void WindowGlobalParent::ActorDestroy(ActorDestroyReason aWhy) {
   WindowContext::Discard();
 
   // Report content blocking log when destroyed.
-  // There shouldn't have any content blocking log when a documnet is loaded in
-  // the parent process(See NotifyContentBlockingeEvent), so we could skip
+  // There shouldn't have any content blocking log when a document is loaded in
+  // the parent process(See NotifyContentBlockingEvent), so we could skip
   // reporting log when it is in-process.
   if (!IsInProcess()) {
     RefPtr<BrowserParent> browserParent =
@@ -1467,7 +1459,7 @@ void WindowGlobalParent::ActorDestroy(ActorDestroyReason aWhy) {
 
         if (mDocumentURI && (net::SchemeIsHTTP(mDocumentURI) ||
                              net::SchemeIsHTTPS(mDocumentURI))) {
-          GetContentBlockingLog()->ReportOrigins();
+          GetContentBlockingLog()->ReportEmailTrackingLog(DocumentPrincipal());
         }
       }
     }
@@ -1571,6 +1563,21 @@ void WindowGlobalParent::ExitTopChromeDocumentFullscreen() {
       // This only clears the DOM fullscreen, will not exit from browser UI
       // fullscreen mode.
       Document::AsyncExitFullscreen(chromeDoc);
+    }
+  }
+}
+
+void WindowGlobalParent::SetShouldReportHasBlockedOpaqueResponse(
+    nsContentPolicyType aContentPolicy) {
+  // It's always okay to block TYPE_BEACON, TYPE_PING and TYPE_CSP_REPORT in
+  // the parent process because content processes can do nothing to their
+  // responses. Hence excluding them from the telemetry as blocking
+  // them have no webcompat concerns.
+  if (aContentPolicy != nsIContentPolicy::TYPE_BEACON &&
+      aContentPolicy != nsIContentPolicy::TYPE_PING &&
+      aContentPolicy != nsIContentPolicy::TYPE_CSP_REPORT) {
+    if (IsTop()) {
+      mShouldReportHasBlockedOpaqueResponse = true;
     }
   }
 }

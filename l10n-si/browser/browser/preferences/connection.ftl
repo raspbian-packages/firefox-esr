@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = සම්බන්ධතාවයේ සැකසුම්
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = සම්බන්ධතාවයේ සැකසුම්
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = ඔබ අක්තපත්‍ර සුරකින ලද්දේ නම් මෙම විකල්පය නිහඬව ඔබව ප්‍රතියුක්තය වෙත සත්‍යාපනය කරයි. සත්‍යාපනයට අසමත් නම් ඔබගෙන් විමසනු ඇත.
 
+connection-proxy-autologin-checkbox =
+    .label = මුරපදය තිබේ නම් සත්‍යාපනයට නොදක්වන්න
+    .accesskey = i
+    .tooltiptext = ඔබ අක්තපත්‍ර සුරකින ලද්දේ නම් මෙම විකල්පය නිහඬව ඔබව ප්‍රතියුක්තය වෙත සත්‍යාපනය කරයි. සත්‍යාපනයට අසමත් නම් ඔබගෙන් විමසනු ඇත.
+
 connection-proxy-socks-remote-dns =
     .label = SOCKS v5 භාවිත විට ව.නා.ප. ප්‍රතියුක්තය
     .accesskey = D
-
-connection-dns-over-https =
-    .label = HTTPS මගින් ව.නා.ප. සබල කරන්න
-    .accesskey = b
-
-connection-dns-over-https-url-resolver = සැපයුම්කරු භාවිතය
-    .accesskey = P
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

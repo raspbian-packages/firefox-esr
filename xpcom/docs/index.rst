@@ -14,6 +14,6 @@ These pages contain documentation for Mozilla's Cross-Platform Component Object 
    collections
    xpidl
    writing-xpcom-interface
-   dmd
    hashtables
    hashtables_detailed
+   cc-macros

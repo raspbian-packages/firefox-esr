@@ -13,6 +13,7 @@
 onboarding-welcome-header = Witajśo k { -brand-short-name }
 onboarding-start-browsing-button-label = Pśeglědowanje startowaś
 onboarding-not-now-button-label = Nic něnto
+mr1-onboarding-get-started-primary-button-label = Prědne kšace
 
 ## Custom Return To AMO onboarding strings
 
@@ -28,6 +29,7 @@ return-to-amo-add-theme-label = Drastwu pśidaś
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
 
 mr1-return-to-amo-subtitle = Witajśo k { -brand-short-name }
+mr1-return-to-amo-addon-title = Maśo malsny, priwatny wobglědowak k ruce. Něnto móžośo <b>{ $addon-name }</b> pśidaś a hyšći wěcej z { -brand-short-name } cyniś.
 mr1-return-to-amo-add-extension-label = { $addon-name } pśidaś
 
 ## Multistage onboarding strings (about:welcome pages)
@@ -36,31 +38,10 @@ mr1-return-to-amo-add-extension-label = { $addon-name } pśidaś
 # Variables:
 #   $current (Int) - Number of the current page
 #   $total (Int) - Total number of pages
-onboarding-welcome-steps-indicator =
-    .aria-label = Prědne kšace: wobrazowka { $current } z { $total }
 
-# Aria-label to make the "steps" of multistage onboarding visible to screen readers.
-# Variables:
-#   $current (Int) - Number of the current page
-#   $total (Int) - Total number of pages
-
-onboarding-welcome-steps-indicator2 =
-    .aria-valuetext = Póstup: kšac { $current } z { $total }
 onboarding-welcome-steps-indicator-label =
     .aria-label = Póstup: kšac { $current } z { $total }
-# "Hero Text" displayed on left side of welcome screen.
-# The "Fire" in "Fire starts here" plays on the "Fire" in "Firefox".
-# It also signals the passion users bring to Firefox, how they use
-# Firefox to pursue those passions, as well as the boldness in their
-# choice to use Firefox over a larger competitor browser.
-# An alternative title for localization is: "It starts here".
-# This text can be formatted to span multiple lines as needed.
-mr1-welcome-screen-hero-text = Zachopinamy wót how
-# Caption for background image in about:welcome. "Soraya Osorio" is the name
-# of the person and shouldn't be translated.
-# In case your language needs to adapt the nouns to a gender, Soraya is a female name (she/her).
-# You can see the picture in about:welcome in Nightly 90.
-mr1-onboarding-welcome-image-caption = Soraya Osorio — Meblowa designerka, pśiwisaŕka Firefox
+
 # This button will open system settings to turn on prefers-reduced-motion
 mr1-onboarding-reduce-motion-button-label = Animacije znjemóžniś
 
@@ -68,74 +49,33 @@ mr1-onboarding-reduce-motion-button-label = Animacije znjemóžniś
 ## match the OS' application context menu item action where Windows uses "pin"
 ## and "taskbar" while macOS "keep" and "Dock" (proper noun).
 
-# Title used on welcome page when Firefox is not pinned
-mr1-onboarding-pin-header =
-    { PLATFORM() ->
-        [macos] { -brand-short-name } za lažki pśistup we wašom doku zachować
-       *[other] { -brand-short-name } za lažki pśistup k wašej nadawkowej rědce pśipěś
-    }
-# Primary button string used on welcome page when Firefox is not pinned.
-mr1-onboarding-pin-primary-button-label =
-    { PLATFORM() ->
-        [macos] W doku zachowaś
-       *[other] K nadawkowej rědce pśipěś
-    }
-
 ## Multistage MR1 onboarding strings (about:welcome pages)
 
-# This string will be used on welcome page primary button label
-# when Firefox is both pinned and default
-mr1-onboarding-get-started-primary-button-label = Prědne kšace
-mr1-onboarding-welcome-header = Witajśo k { -brand-short-name }
-mr1-onboarding-set-default-pin-primary-button-label = { -brand-short-name } k primarnemu wobglědowakoju cyniś
-    .title = Nastaja { -brand-short-name } ako standardny wobglědowak a pśipina jen k nadawkowej rědce
-# This string will be used on welcome page primary button label
-# when Firefox is not default but already pinned
-mr1-onboarding-set-default-only-primary-button-label = { -brand-short-name } k strandardnemu wobglědowakoju cyniś
-mr1-onboarding-set-default-secondary-button-label = Nic něnto
+# String for the Firefox Accounts button
 mr1-onboarding-sign-in-button-label = Pśizjawiś
 
 ## Title, subtitle and primary button string used on set default onboarding screen
 ## when Firefox is not default browser
 
-mr1-onboarding-default-header = { -brand-short-name } k swójomu standardnemu wobglědowakoju cyniś
-mr1-onboarding-default-subtitle = Stajśo malsnosć, wěstotu a priwatnosć na awtopilot.
-mr1-onboarding-default-primary-button-label = Ako standardny wobglědowak nastajiś
-
 ## Multistage MR1 onboarding strings (about:welcome pages)
 
-mr1-onboarding-import-header = Wzejśo wšykno sobu
-mr1-onboarding-import-subtitle = Importěrujśo swóje gronidła, <br/>cytańske znamjenja a wěcej.
 # The primary import button label will depend on whether we can detect which browser was used to download Firefox.
 # Variables:
 #   $previous (Str) - Previous browser name, such as Edge, Chrome
 mr1-onboarding-import-primary-button-label-attribution = Z { $previous } importěrowaś
-# This string will be used in cases where we can't detect the previous browser name.
-mr1-onboarding-import-primary-button-label-no-attribution = Z pjerwjejšnego wobglědowaka importěrowaś
-mr1-onboarding-import-secondary-button-label = Nic něnto
-mr2-onboarding-colorway-header = Žywjenje w barwje
-mr2-onboarding-colorway-subtitle = Žywe nowe barwowe kombinacije. Za wobgranicowany cas k dispoziciji.
-mr2-onboarding-colorway-primary-button-label = Barwowu kombinaciju składowaś
-mr2-onboarding-colorway-secondary-button-label = Nic něnto
-mr2-onboarding-colorway-label-soft = Mělny
-mr2-onboarding-colorway-label-balanced = Wurownany
-# "Bold" is used in the sense of bravery or courage, not in the sense of
-# emphasized text.
-mr2-onboarding-colorway-label-bold = Intensiwny
-# Automatic theme uses operating system color settings
-mr2-onboarding-theme-label-auto = Awtomatiski
-# This string will be used for Default theme
-mr2-onboarding-theme-label-default = Standard
+
 mr1-onboarding-theme-header = Pśiswójśo se jen
 mr1-onboarding-theme-subtitle = Personalizěrujśo { -brand-short-name } z drastwu.
-mr1-onboarding-theme-primary-button-label = Drastwu składowaś
 mr1-onboarding-theme-secondary-button-label = Nic něnto
+
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Systemowa drastwa
+
 mr1-onboarding-theme-label-light = Swětły
 mr1-onboarding-theme-label-dark = Śamny
 # "Alpenglow" here is the name of the theme, and should be kept in English.
 mr1-onboarding-theme-label-alpenglow = Alpenglow
+
 onboarding-theme-primary-button-label = Dokóńcony
 
 ## Please make sure to split the content of the title attribute into lines whose
@@ -148,61 +88,49 @@ mr1-onboarding-theme-tooltip-system =
     .title =
         Drastwu źěłowego systema
         za tłocaški, menije a wokna wužywaś.
+
 # Input description for system theme
 mr1-onboarding-theme-description-system =
     .aria-description =
         Drastwu źěłowego systema
         za tłocaški, menije a wokna wužywaś.
+
 # Tooltip displayed on hover of light theme
 mr1-onboarding-theme-tooltip-light =
     .title =
         Swětłu drastwu za tłocaški,
         menije a wokna wužywaś.
+
 # Input description for light theme
 mr1-onboarding-theme-description-light =
     .aria-description =
         Swětłu drastwu za tłocaški,
         menije a wokna wužywaś.
+
 # Tooltip displayed on hover of dark theme
 mr1-onboarding-theme-tooltip-dark =
     .title =
         Śamnu drastwu za tłocaški,
         menije a wokna wužywaś.
+
 # Input description for dark theme
 mr1-onboarding-theme-description-dark =
     .aria-description =
         Śamnu drastwu za tłocaški,
         menije a wokna wužywaś.
+
 # Tooltip displayed on hover of Alpenglow theme
 mr1-onboarding-theme-tooltip-alpenglow =
     .title =
         Dynamisku, barwojtu drastwu za tłocaški,
         menije a wokna wužywaś.
+
 # Input description for Alpenglow theme
 mr1-onboarding-theme-description-alpenglow =
     .aria-description =
         Dynamisku, barwojtu drastwu za tłocaški,
         menije a wokna wužywaś.
-# Tooltip displayed on hover of non-default colorway theme
-# variations e.g. soft, balanced, bold
-mr2-onboarding-theme-tooltip =
-    .title = Toś tu barwowu kombinaciju wužywaś.
-# Selector description for non-default colorway theme
-# variations e.g. soft, balanced, bold
-mr2-onboarding-theme-description =
-    .aria-description = Toś tu barwowu kombinaciju wužywaś.
-# Tooltip displayed on hover of colorway
-# Variables:
-#   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-tooltip =
-    .title = Wuslěźćo barwowe kombinacije { $colorwayName }.
-# Selector description for colorway
-# Variables:
-#   $colorwayName (String) - Name of colorway
-mr2-onboarding-colorway-label = Wuslěźćo barwowe kombinacije { $colorwayName }.
-# Tooltip displayed on hover of default themes
-mr2-onboarding-default-theme-tooltip =
-    .title = Wuslěźćo standardne drastwy.
+
 # Selector description for default themes
 mr2-onboarding-default-theme-label = Wuslěźćo standardne drastwy.
 
@@ -230,13 +158,18 @@ mr2-onboarding-start-browsing-button-label = Pśeglědowanje zachopiś
 ##   $appLanguage (String) - The name of the language shipping in the browser build, e.g. "English (EN)"
 
 onboarding-live-language-header = Wubjeŕśo swóju rěc
+
 mr2022-onboarding-live-language-text = { -brand-short-name } wašu rěc powěda
+
 mr2022-language-mismatch-subtitle = Z pomocu našogo zgromaźeństwa jo { -brand-short-name } do wěcej ako 90 rěcow pśełožony. Zda se, až waš system { $systemLanguage } wužywa, a { -brand-short-name } { $appLanguage }.
+
 onboarding-live-language-button-label-downloading = Rěcny pakśik za { $negotiatedLanguage } se ześěgujo …
 onboarding-live-language-waiting-button = K dispoziciji stojece rěcy se wobstaruju …
 onboarding-live-language-installing = Rěcny pakśik za { $negotiatedLanguage } se instalěrujo …
+
 mr2022-onboarding-live-language-switch-to = { $negotiatedLanguage } wužywaś
 mr2022-onboarding-live-language-continue-in = Z { $appLanguage } pókšacowaś
+
 onboarding-live-language-secondary-cancel-download = Pśetergnuś
 onboarding-live-language-skip-button-label = Pśeskócyś
 
@@ -259,13 +192,24 @@ fx100-thank-you-pin-primary-button-label =
         [macos] Wobchowajśo { -brand-short-name } w doku
        *[other] Pśipěśo { -brand-short-name } k nadawkowej rědce
     }
+
 fx100-upgrade-thanks-header = 100 raz wjeliki źěk
 # Message shown with a start-browsing button. Emphasis <em> should be for "you"
 # but "Thank" can be used instead if there's no "you" in the translation.
 fx100-upgrade-thank-you-body = Jo naša 100. wersija { -brand-short-name }. Źěkujomy se <em>wam</em>, až nam pomagaśo, lěpšy, strowšy internet natwariś.
 # Message shown with either a pin-to-taskbar or set-default button.
 fx100-upgrade-thanks-keep-body = Jo naša 100. wersija! Źěkujomy se wam, až sćo źěl našogo zgromaźeństwa. Źaržćo { -brand-short-name } janož jadno kliknjenje wót pśiducych 100 zdalony.
+
 mr2022-onboarding-secondary-skip-button-label = Toś ten kšac pśeskócyś
+
+## MR2022 New User Easy Setup screen strings
+
+# Primary button string used on new user onboarding first screen showing multiple actions such as Set Default, Import from previous browser.
+mr2022-onboarding-easy-setup-primary-button-label = Składowaś a pókšacowaś
+# Set Default action checkbox label used on new user onboarding first screen
+mr2022-onboarding-easy-setup-set-default-checkbox-label = Nastajśo { -brand-short-name } ako standardny wobglědowak
+# Import action checkbox label used on new user onboarding first screen
+mr2022-onboarding-easy-setup-import-checkbox-label = Z pjerwjejšnego wobglědowaka importěrowaś
 
 ## MR2022 New User Pin Firefox screen strings
 
@@ -312,6 +256,9 @@ mr2022-onboarding-set-default-subtitle = Wužywajśo wobglědowak, kótaryž se 
 ## These strings will be used on the welcome page
 ## when Firefox is already set to default and pinned.
 
+# When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
+# and makes sense in the context of navigating the web.
+mr2022-onboarding-get-started-primary-subtitle = Naša nejnowša wersija jo wokoło was natwarjona, kótaraž wam lažčejše ako do togo cyni, web pśeglědowaś. Jo połny funkcijow, wó kótarychž se myslimy, až se wam spódobaju.
 mr2022-onboarding-get-started-primary-button-label = Instalacija za sekundy
 
 ## MR2022 Import Settings screen strings
@@ -329,30 +276,37 @@ mr2022-onboarding-colorway-title = Wubjeŕśo barwu, kótaraž was inspirěrujo
 mr2022-onboarding-colorway-subtitle = Njewótwisne głose mógu kulturu změniś.
 mr2022-onboarding-colorway-primary-button-label-continue = Nastajiś a pókšacowaś
 mr2022-onboarding-existing-colorway-checkbox-label = { -firefox-home-brand-name } k wašomu barbnemu startowemu bokoju cyniś
+
 mr2022-onboarding-colorway-label-default = Standard
 mr2022-onboarding-colorway-tooltip-default2 =
     .title = Aktualne barwy { -brand-short-name }
 mr2022-onboarding-colorway-description-default = <b>Móje aktualne barwy { -brand-short-name } wužywaś.</b>
+
 mr2022-onboarding-colorway-label-playmaker = Wjeźecy grajaŕ
 mr2022-onboarding-colorway-tooltip-playmaker2 =
     .title = Wjeźecy grajaŕ (cerwjeny)
 mr2022-onboarding-colorway-description-playmaker = <b>Sćo wjeźecy grajaŕ.</b> Napórajośo góźby, aby dobył a kuždemu wokoło was pomagał, jich graśe pólěpšyś.
+
 mr2022-onboarding-colorway-label-expressionist = Ekspresionist
 mr2022-onboarding-colorway-tooltip-expressionist2 =
     .title = Ekspresionist (žołty)
 mr2022-onboarding-colorway-description-expressionist = <b>Sćo ekspresionist.</b> Wiźiśo swět hynac a waše źěła zacuśa drugich wóźe.
+
 mr2022-onboarding-colorway-label-visionary = Wizionaŕ
 mr2022-onboarding-colorway-tooltip-visionary2 =
     .title = Wizionaŕ (zeleny)
 mr2022-onboarding-colorway-description-visionary = <b>Sćo wizionaŕ.</b> Stajaśo status quo do pšašanja a pógnuwaśo druge, se lěpšy pśichod pśedstajiś.
+
 mr2022-onboarding-colorway-label-activist = Aktiwist
 mr2022-onboarding-colorway-tooltip-activist2 =
     .title = Aktiwist (módry)
 mr2022-onboarding-colorway-description-activist = <b>Sćo aktiwist.</b> Zawóstajaśo swět ako lěpše městno, ako sćo jen namakał a wjeźośo druge k wěrje.
+
 mr2022-onboarding-colorway-label-dreamer = Cowaŕ
 mr2022-onboarding-colorway-tooltip-dreamer2 =
     .title = Cowaŕ (violetny)
 mr2022-onboarding-colorway-description-dreamer = <b>Sćo cowaŕ.</b> Wěriśo, až gluka skobodnego lěbgoźi a inspirěrujośo druge, aby skobodne byli.
+
 mr2022-onboarding-colorway-label-innovator = Inowator
 mr2022-onboarding-colorway-tooltip-innovator2 =
     .title = Inowator (oranžowy)
@@ -361,6 +315,7 @@ mr2022-onboarding-colorway-description-innovator = <b>Sćo inowator.</b> Wiźiś
 ## MR2022 Multistage Mobile Download screen strings
 
 mr2022-onboarding-mobile-download-title = Skócćo wót laptopa do telefona a zasej slědk
+mr2022-onboarding-mobile-download-subtitle = Wobstarajśo se rejtariki z jadnogo rěda a cyńśo tam dalej, gaž sćo pśestał na drugem rěźe. Mimo togo móžośo swóje cytańske znamjenja a gronidła synchronizěrowaś, źožkuli { -brand-product-name } wužywaśo.
 mr2022-onboarding-mobile-download-cta-text = Scannujśo QR-kod, aby { -brand-product-name } za swój mobilny rěd dostał abo <a data-l10n-name="download-label">sćelśo se ześěgnjeński wótkaz.</a>
 mr2022-onboarding-no-mobile-download-cta-text = Skannujśo QR-kod, aby se { -brand-product-name } za mobilny rěd wobstarał.
 
@@ -386,18 +341,40 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = Detailěrowane i
 ## MR2022 Multistage Gratitude screen strings
 
 mr2022-onboarding-gratitude-title = Pomagajśo nam lěpšy web natwariś.
+mr2022-onboarding-gratitude-subtitle = Wjeliki źěk, až { -brand-short-name } wužywaśo, kótaryž se wót załožby Mozilla Foundation spěchujo. Z wašeju pomocu źěłamy na tom, internet wěcej wótwórjony, pśistupny a lěpšy za kuždego cyniś.
 mr2022-onboarding-gratitude-primary-button-label = Cytajśo, což jo nowe
 mr2022-onboarding-gratitude-secondary-button-label = Pśeglědowanje zachopiś
 
 ## Onboarding spotlight for infrequent users
 
 onboarding-infrequent-import-title = Cujśo se ako doma
+onboarding-infrequent-import-subtitle = Lěc tam wóstawaśo abo jano krotko póbywaśo, njezabywajśo, až móžośo swóje cytańske znamjenja, gronidła a wěcej importěrowaś.
 onboarding-infrequent-import-primary-button = Do { -brand-short-name } importěrowaś
 
 ## MR2022 Illustration alt tags
 ## Descriptive tags for illustrations used by screen readers and other assistive tech
 
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Wósoba, kótaraž na laptopje źěła, wobdana wót gwězdow a kwětkow
 mr2022-onboarding-default-image-alt =
     .aria-label = Wósoba, kótaraž logo { -brand-product-name } wobejma
 mr2022-onboarding-import-image-alt =
     .aria-label = Wósoba, kótaraž skateboard z tejzu softwarowych symbolow jězdźi
+mr2022-onboarding-mobile-download-image-alt =
+    .aria-label = Žaby pśez łopjena wutkow z QR-kodom skokocoju, aby wy { -brand-product-name } za mobilne rědy we srjejźi
+mr2022-onboarding-pin-private-image-alt =
+    .aria-label = Guslowaŕski kij dajo se logoju priwatnego modusa { -brand-product-name } z kłobyka zjawiś
+mr2022-onboarding-privacy-segmentation-image-alt =
+    .aria-label = Swětłokóžate a śamnokóžate ruki gromadu klatśaju
+mr2022-onboarding-gratitude-image-alt =
+    .aria-label = Póglěd na schowanje słyńca z woknom z lišku a śpineju rostlinu na woknowej delce
+mr2022-onboarding-colorways-image-alt =
+    .aria-label = Ruka barwojtu collage zelenego wócka, oranžowego crjeja, cerwjenego basketbala, wioletnych nagłownych słuchatkow, módreje wutšoby a žołteje krony
+
+## Device migration onboarding
+
+onboarding-device-migration-image-alt =
+    .aria-label = Žwaleca se liška na wobrazowce laptopa. Laptop ma pśizamknjonu myšku.
+onboarding-device-migration-title = Witajśo slědk!
+onboarding-device-migration-subtitle = Pśizjawśo se pla { -fxaccount-brand-name(capitalization: "sentence") }, aby swóje cytańske znamjenja, gronidła a historiju na swójom nowem rěźe sobu wzeł.
+onboarding-device-migration-primary-button-label = Pśizjawiś

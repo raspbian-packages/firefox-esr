@@ -57,10 +57,10 @@ function serverStopListener() {
   server.stop();
 }
 
-function createHttpRequest(browsingContextId, requestId) {
+function createHttpRequest(browserId, requestId) {
   let uri = baseURL;
   var chan = make_channel(uri);
-  chan.topBrowsingContextId = browsingContextId;
+  chan.browserId = browserId;
   var listner = new HttpResponseListener(requestId);
   chan.setRequestHeader("X-ID", requestId, false);
   chan.setRequestHeader("Cache-control", "no-store", false);
@@ -128,7 +128,7 @@ function setup_http_server() {
 
   var allDummyHttpRequestReceived = false;
   // Start server; will be stopped at test cleanup time.
-  server.registerPathHandler("/", function(metadata, response) {
+  server.registerPathHandler("/", function (metadata, response) {
     var id = metadata.getHeader("X-ID");
     log("Server recived the response id=" + id);
 
@@ -166,7 +166,7 @@ function setup_http_server() {
     }
   });
 
-  registerCleanupFunction(function() {
+  registerCleanupFunction(function () {
     server.stop(serverStopListener);
   });
 }
@@ -191,5 +191,5 @@ function run_test() {
   );
   windowIdWrapper.data = FOCUSED_WINDOW_ID;
   var obsvc = Services.obs;
-  obsvc.notifyObservers(windowIdWrapper, "net:current-top-browsing-context-id");
+  obsvc.notifyObservers(windowIdWrapper, "net:current-browser-id");
 }

@@ -18,12 +18,10 @@
 #include "nsPIDOMWindow.h"
 #include "nsProgressFrame.h"
 #include "nsMeterFrame.h"
-#include "nsMenuFrame.h"
 #include "nsRangeFrame.h"
 #include "nsCSSRendering.h"
 #include "ImageContainer.h"
 #include "mozilla/ComputedStyle.h"
-#include "mozilla/EventStates.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/HTMLBodyElement.h"
 #include "mozilla/dom/HTMLInputElement.h"
@@ -40,15 +38,15 @@ nsNativeTheme::nsNativeTheme() : mAnimatedContentTimeout(UINT32_MAX) {}
 
 NS_IMPL_ISUPPORTS(nsNativeTheme, nsITimerCallback, nsINamed)
 
-/* static */ EventStates nsNativeTheme::GetContentState(
+/* static */ ElementState nsNativeTheme::GetContentState(
     nsIFrame* aFrame, StyleAppearance aAppearance) {
   if (!aFrame) {
-    return EventStates();
+    return ElementState();
   }
 
   nsIContent* frameContent = aFrame->GetContent();
   if (!frameContent || !frameContent->IsElement()) {
-    return EventStates();
+    return ElementState();
   }
 
   const bool isXULElement = frameContent->IsXULElement();
@@ -71,13 +69,13 @@ NS_IMPL_ISUPPORTS(nsNativeTheme, nsITimerCallback, nsINamed)
     MOZ_ASSERT(frameContent && frameContent->IsElement());
   }
 
-  EventStates flags = frameContent->AsElement()->StyleState();
+  ElementState flags = frameContent->AsElement()->StyleState();
   nsNumberControlFrame* numberControlFrame =
       nsNumberControlFrame::GetNumberControlFrameForSpinButton(aFrame);
   if (numberControlFrame &&
       numberControlFrame->GetContent()->AsElement()->StyleState().HasState(
-          NS_EVENT_STATE_DISABLED)) {
-    flags |= NS_EVENT_STATE_DISABLED;
+          ElementState::DISABLED)) {
+    flags |= ElementState::DISABLED;
   }
 
   if (!isXULElement) {
@@ -85,31 +83,32 @@ NS_IMPL_ISUPPORTS(nsNativeTheme, nsITimerCallback, nsINamed)
   }
 
   if (CheckBooleanAttr(aFrame, nsGkAtoms::disabled)) {
-    flags |= NS_EVENT_STATE_DISABLED;
+    flags |= ElementState::DISABLED;
   }
 
   switch (aAppearance) {
     case StyleAppearance::RadioLabel:
     case StyleAppearance::Radio: {
       if (CheckBooleanAttr(aFrame, nsGkAtoms::focused)) {
-        flags |= NS_EVENT_STATE_FOCUS;
+        flags |= ElementState::FOCUS;
         nsPIDOMWindowOuter* window =
             aFrame->GetContent()->OwnerDoc()->GetWindow();
         if (window && window->ShouldShowFocusRing()) {
-          flags |= NS_EVENT_STATE_FOCUSRING;
+          flags |= ElementState::FOCUSRING;
         }
       }
-      if (CheckBooleanAttr(aFrame, nsGkAtoms::selected)) {
-        flags |= NS_EVENT_STATE_CHECKED;
+      if (CheckBooleanAttr(aFrame, nsGkAtoms::selected) ||
+          CheckBooleanAttr(aFrame, nsGkAtoms::checked)) {
+        flags |= ElementState::CHECKED;
       }
       break;
     }
     case StyleAppearance::CheckboxLabel:
     case StyleAppearance::Checkbox: {
       if (CheckBooleanAttr(aFrame, nsGkAtoms::checked)) {
-        flags |= NS_EVENT_STATE_CHECKED;
+        flags |= ElementState::CHECKED;
       } else if (CheckBooleanAttr(aFrame, nsGkAtoms::indeterminate)) {
-        flags |= NS_EVENT_STATE_INDETERMINATE;
+        flags |= ElementState::INDETERMINATE;
       }
       break;
     }
@@ -120,7 +119,7 @@ NS_IMPL_ISUPPORTS(nsNativeTheme, nsITimerCallback, nsINamed)
     case StyleAppearance::Searchfield:
     case StyleAppearance::Textarea: {
       if (CheckBooleanAttr(aFrame, nsGkAtoms::focused)) {
-        flags |= NS_EVENT_STATE_FOCUS | NS_EVENT_STATE_FOCUSRING;
+        flags |= ElementState::FOCUS | ElementState::FOCUSRING;
       }
       break;
     }
@@ -193,12 +192,13 @@ bool nsNativeTheme::IsButtonTypeMenu(nsIFrame* aFrame) {
 }
 
 bool nsNativeTheme::IsPressedButton(nsIFrame* aFrame) {
-  EventStates eventState =
-      GetContentState(aFrame, StyleAppearance::Toolbarbutton);
-  if (eventState.HasState(NS_EVENT_STATE_DISABLED)) return false;
+  ElementState state = GetContentState(aFrame, StyleAppearance::Toolbarbutton);
+  if (state.HasState(ElementState::DISABLED)) {
+    return false;
+  }
 
   return IsOpenButton(aFrame) ||
-         eventState.HasAllStates(NS_EVENT_STATE_ACTIVE | NS_EVENT_STATE_HOVER);
+         state.HasAllStates(ElementState::ACTIVE | ElementState::HOVER);
 }
 
 bool nsNativeTheme::IsWidgetStyled(nsPresContext* aPresContext,
@@ -207,31 +207,6 @@ bool nsNativeTheme::IsWidgetStyled(nsPresContext* aPresContext,
   // Check for specific widgets to see if HTML has overridden the style.
   if (!aFrame) {
     return false;
-  }
-
-  // Resizers have some special handling, dependent on whether in a scrollable
-  // container or not. If so, use the scrollable container's to determine
-  // whether the style is overriden instead of the resizer. This allows a
-  // non-native transparent resizer to be used instead. Otherwise, we just
-  // fall through and return false.
-  if (aAppearance == StyleAppearance::Resizer) {
-    nsIFrame* parentFrame = aFrame->GetParent();
-    if (parentFrame && parentFrame->IsScrollFrame()) {
-      // if the parent is a scrollframe, the resizer should be native themed
-      // only if the scrollable area doesn't override the widget style.
-      //
-      // note that the condition below looks a bit suspect but it's the right
-      // one. If there's no valid appearance, then we should return true, it's
-      // effectively the same as if it had overridden the appearance.
-      parentFrame = parentFrame->GetParent();
-      if (!parentFrame) {
-        return false;
-      }
-      auto parentAppearance =
-          parentFrame->StyleDisplay()->EffectiveAppearance();
-      return parentAppearance == StyleAppearance::None ||
-             IsWidgetStyled(aPresContext, parentFrame, parentAppearance);
-    }
   }
 
   /**
@@ -323,10 +298,14 @@ nsNativeTheme::TreeSortDirection nsNativeTheme::GetTreeSortDirection(
 }
 
 bool nsNativeTheme::IsLastTreeHeaderCell(nsIFrame* aFrame) {
-  if (!aFrame) return false;
+  if (!aFrame) {
+    return false;
+  }
 
-  // A tree column picker is always the last header cell.
-  if (aFrame->GetContent()->IsXULElement(nsGkAtoms::treecolpicker)) return true;
+  // A tree column picker button is always the last header cell.
+  if (aFrame->GetContent()->IsXULElement(nsGkAtoms::button)) {
+    return true;
+  }
 
   // Find the parent tree.
   nsIContent* parent = aFrame->GetContent()->GetParent();
@@ -356,7 +335,7 @@ bool nsNativeTheme::IsBottomTab(nsIFrame* aFrame) {
                                                nsGkAtoms::_class, classStr);
   }
   // FIXME: This looks bogus, shouldn't this be looking at GetClasses()?
-  return !classStr.IsEmpty() && classStr.Find("tab-bottom") != kNotFound;
+  return !classStr.IsEmpty() && classStr.Find(u"tab-bottom") != kNotFound;
 }
 
 bool nsNativeTheme::IsFirstTab(nsIFrame* aFrame) {
@@ -547,16 +526,8 @@ bool nsNativeTheme::IsRangeHorizontal(nsIFrame* aFrame) {
   return aFrame->GetSize().width >= aFrame->GetSize().height;
 }
 
-static nsIFrame* GetBodyFrame(nsIFrame* aCanvasFrame) {
-  nsIContent* body = aCanvasFrame->PresContext()->Document()->GetBodyElement();
-  if (!body) {
-    return nullptr;
-  }
-  return body->GetPrimaryFrame();
-}
-
 /* static */
-bool nsNativeTheme::IsDarkBackground(nsIFrame* aFrame) {
+bool nsNativeTheme::IsDarkBackgroundForScrollbar(nsIFrame* aFrame) {
   // Try to find the scrolled frame. Note that for stuff like xul <tree> there
   // might be none.
   {
@@ -573,29 +544,15 @@ bool nsNativeTheme::IsDarkBackground(nsIFrame* aFrame) {
     }
   }
 
-  auto backgroundFrame = nsCSSRendering::FindNonTransparentBackgroundFrame(
-      aFrame, /* aStopAtThemed = */ false);
-  if (!backgroundFrame.mFrame) {
-    return false;
-  }
+  return IsDarkBackground(aFrame);
+}
 
-  nscolor color = backgroundFrame.mFrame->StyleBackground()->BackgroundColor(
-      backgroundFrame.mFrame);
-
-  if (backgroundFrame.mIsForCanvas) {
-    // For canvas frames, prefer to look at the body first, because the body
-    // background color is most likely what will be visible as the background
-    // color of the page, even if the html element has a different background
-    // color which prevents that of the body frame to propagate to the viewport.
-    if (nsIFrame* bodyFrame = GetBodyFrame(aFrame)) {
-      nscolor bodyColor =
-          bodyFrame->StyleBackground()->BackgroundColor(bodyFrame);
-      if (NS_GET_A(bodyColor)) {
-        color = bodyColor;
-      }
-    }
-  }
-
+/* static */
+bool nsNativeTheme::IsDarkBackground(nsIFrame* aFrame) {
+  auto color =
+      nsCSSRendering::FindEffectiveBackgroundColor(
+          aFrame, /* aStopAtThemed = */ false, /* aPreferBodyToCanvas = */ true)
+          .mColor;
   return LookAndFeel::IsDarkColor(color);
 }
 

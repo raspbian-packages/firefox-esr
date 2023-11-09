@@ -2,28 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
--profiler-brand-name = Firefox Profiler
-
-##
-
 # This is the title of the page
 about-logging-title = 關於記錄功能
 about-logging-page-title = 記錄管理員
 about-logging-current-log-file = 目前的紀錄檔：
-about-logging-current-log-modules = 目前的紀錄模組:
 about-logging-new-log-file = 新記錄檔：
 about-logging-currently-enabled-log-modules = 目前啟用的記錄模組：
 about-logging-log-tutorial = 請參考 <a data-l10n-name="logging">HTTP Logging</a> 一文當中的使用教學來使用此工具。
@@ -44,15 +26,25 @@ about-logging-logging-to-profiler = 記錄到 { -profiler-brand-name }
 about-logging-no-log-modules = 無
 about-logging-no-log-file = 無
 about-logging-logging-preset-selector-text = 預設記錄類型：
+about-logging-with-profiler-stacks-checkbox = 開啟紀錄訊息的堆疊追踪
 
 ## Logging presets
 
 about-logging-preset-networking-label = 網路連線
 about-logging-preset-networking-description = 用來診斷網路問題的記錄模組
+about-logging-preset-networking-cookie-label = Cookie
+about-logging-preset-networking-cookie-description = 用來診斷 Cookie 問題的記錄模組
+about-logging-preset-networking-websocket-label = WebSockets
+about-logging-preset-networking-websocket-description = 用來診斷 WebSocket 問題的記錄模組
+about-logging-preset-networking-http3-label = HTTP/3
+about-logging-preset-networking-http3-description = 用來診斷 HTTP/3 與 QUIC 問題的記錄模組
 about-logging-preset-media-playback-label = 媒體播放
 about-logging-preset-media-playback-description = 用來診斷媒體播放問題（非網路會議問題）的記錄模組
+about-logging-preset-webrtc-label = WebRTC
+about-logging-preset-webrtc-description = 用來診斷 WebRTC 問題的記錄模組
 about-logging-preset-custom-label = 自訂
 about-logging-preset-custom-description = 手動選擇的記錄模組
+
 # Error handling
 about-logging-error = 錯誤：
 
@@ -66,4 +58,5 @@ about-logging-unknown-profiler-preset = 預設效能檢測類型「{ $v }」未�
 about-logging-unknown-option = about:logging 選項「{ $k }」未知
 about-logging-configuration-url-ignored = 已忽略設定網址
 about-logging-file-and-profiler-override = 無法同時強制輸出到檔案並忽略效能檢測器選項
+
 about-logging-configured-via-url = 透過網址設定的選項

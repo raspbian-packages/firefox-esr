@@ -19,12 +19,18 @@
 
 #include <fstream>
 
-#define RUN_IF_SUPPORTED(mimeType, test)                   \
-  do {                                                     \
-    RefPtr<PEMFactory> f(new PEMFactory());                \
-    if (f->SupportsMimeType(nsLiteralCString(mimeType))) { \
-      test();                                              \
-    }                                                      \
+#ifdef XP_WIN
+#include "mozilla/WindowsVersion.h"
+#endif
+
+#define RUN_IF_SUPPORTED(mimeType, test)                     \
+  do {                                                       \
+    if (!isWin7()) {                                         \
+      RefPtr<PEMFactory> f(new PEMFactory());                \
+      if (f->SupportsMimeType(nsLiteralCString(mimeType))) { \
+        test();                                              \
+      }                                                      \
+    }                                                        \
   } while (0)
 
 #define BLOCK_SIZE 64
@@ -156,16 +162,25 @@ already_AddRefed<MediaDataEncoder> CreateVideoEncoder(
                         "TestMediaDataEncoder"));
 
   RefPtr<MediaDataEncoder> e;
+#ifdef MOZ_WIDGET_ANDROID
+  const bool hardwareNotAllowed = false;
+#else
+  const bool hardwareNotAllowed = true;
+#endif
   if (aSpecific) {
-    e = f->CreateEncoder(CreateEncoderParams(
-        videoInfo /* track info */, aUsage, taskQueue, aPixelFormat,
-        FRAME_RATE /* FPS */, KEYFRAME_INTERVAL /* keyframe interval */,
-        BIT_RATE /* bitrate */, aSpecific.value()));
+    e = f->CreateEncoder(
+        CreateEncoderParams(videoInfo /* track info */, aUsage, taskQueue,
+                            aPixelFormat, FRAME_RATE /* FPS */,
+                            KEYFRAME_INTERVAL /* keyframe interval */,
+                            BIT_RATE /* bitrate */, aSpecific.value()),
+        hardwareNotAllowed);
   } else {
-    e = f->CreateEncoder(CreateEncoderParams(
-        videoInfo /* track info */, aUsage, taskQueue, aPixelFormat,
-        FRAME_RATE /* FPS */, KEYFRAME_INTERVAL /* keyframe interval */,
-        BIT_RATE /* bitrate */));
+    e = f->CreateEncoder(
+        CreateEncoderParams(videoInfo /* track info */, aUsage, taskQueue,
+                            aPixelFormat, FRAME_RATE /* FPS */,
+                            KEYFRAME_INTERVAL /* keyframe interval */,
+                            BIT_RATE /* bitrate */),
+        hardwareNotAllowed);
   }
 
   return e.forget();
@@ -198,6 +213,15 @@ void WaitForShutdown(RefPtr<MediaDataEncoder> aEncoder) {
       []() { FAIL() << "Shutdown should never be rejected"; });
   SpinEventLoopUntil("TestMediaDataEncoder.cpp:WaitForShutdown"_ns,
                      [&result]() { return result; });
+}
+
+bool isWin7() {
+  #ifdef XP_WIN
+  if (!IsWin8OrLater()) {
+    return true;
+  }
+  #endif
+  return false;
 }
 
 TEST_F(MediaDataEncoderTest, H264Create) {

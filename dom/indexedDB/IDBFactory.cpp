@@ -15,6 +15,7 @@
 #include "mozilla/dom/BindingDeclarations.h"
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/IDBFactoryBinding.h"
+#include "mozilla/dom/quota/PersistenceType.h"
 #include "mozilla/dom/quota/QuotaManager.h"
 #include "mozilla/dom/BrowserChild.h"
 #include "mozilla/dom/WorkerPrivate.h"
@@ -392,7 +393,7 @@ RefPtr<IDBOpenDBRequest> IDBFactory::Open(JSContext* aCx,
                                           ErrorResult& aRv) {
   return OpenInternal(aCx,
                       /* aPrincipal */ nullptr, aName,
-                      Optional<uint64_t>(aVersion), Optional<StorageType>(),
+                      Optional<uint64_t>(aVersion),
                       /* aDeleting */ false, aCallerType, aRv);
 }
 
@@ -401,19 +402,7 @@ RefPtr<IDBOpenDBRequest> IDBFactory::Open(JSContext* aCx,
                                           const IDBOpenDBOptions& aOptions,
                                           CallerType aCallerType,
                                           ErrorResult& aRv) {
-  if (!IsChrome() && aOptions.mStorage.WasPassed()) {
-    nsCOMPtr<nsPIDOMWindowInner> window = do_QueryInterface(mGlobal);
-    if (window && window->GetExtantDoc()) {
-      window->GetExtantDoc()->WarnOnceAbout(
-          DeprecatedOperations::eIDBOpenDBOptions_StorageType);
-    } else if (!NS_IsMainThread()) {
-      // The method below reports on the main thread too, so we need to make
-      // sure we're on a worker. Workers don't have a WarnOnceAbout mechanism,
-      // so this will be reported every time.
-      WorkerPrivate::ReportErrorToConsole("IDBOpenDBOptions_StorageType");
-    }
-  }
-
+  // This overload is nonstandard, see bug 1275496.
   // Ignore calls with empty options for telemetry of usage count.
   // Unfortunately, we cannot distinguish between the use of the method with
   // only a single argument (which actually is a standard overload we don't want
@@ -426,7 +415,6 @@ RefPtr<IDBOpenDBRequest> IDBFactory::Open(JSContext* aCx,
 
   return OpenInternal(aCx,
                       /* aPrincipal */ nullptr, aName, aOptions.mVersion,
-                      aOptions.mStorage,
                       /* aDeleting */ false, aCallerType, aRv);
 }
 
@@ -435,7 +423,6 @@ RefPtr<IDBOpenDBRequest> IDBFactory::DeleteDatabase(
     CallerType aCallerType, ErrorResult& aRv) {
   return OpenInternal(aCx,
                       /* aPrincipal */ nullptr, aName, Optional<uint64_t>(),
-                      aOptions.mStorage,
                       /* aDeleting */ true, aCallerType, aRv);
 }
 
@@ -475,7 +462,6 @@ RefPtr<IDBOpenDBRequest> IDBFactory::OpenForPrincipal(
   }
 
   return OpenInternal(aCx, aPrincipal, aName, Optional<uint64_t>(aVersion),
-                      Optional<StorageType>(),
                       /* aDeleting */ false, aGuarantee, aRv);
 }
 
@@ -491,7 +477,6 @@ RefPtr<IDBOpenDBRequest> IDBFactory::OpenForPrincipal(
   }
 
   return OpenInternal(aCx, aPrincipal, aName, aOptions.mVersion,
-                      aOptions.mStorage,
                       /* aDeleting */ false, aGuarantee, aRv);
 }
 
@@ -507,15 +492,13 @@ RefPtr<IDBOpenDBRequest> IDBFactory::DeleteForPrincipal(
   }
 
   return OpenInternal(aCx, aPrincipal, aName, Optional<uint64_t>(),
-                      aOptions.mStorage,
                       /* aDeleting */ true, aGuarantee, aRv);
 }
 
 RefPtr<IDBOpenDBRequest> IDBFactory::OpenInternal(
     JSContext* aCx, nsIPrincipal* aPrincipal, const nsAString& aName,
-    const Optional<uint64_t>& aVersion,
-    const Optional<StorageType>& aStorageType, bool aDeleting,
-    CallerType aCallerType, ErrorResult& aRv) {
+    const Optional<uint64_t>& aVersion, bool aDeleting, CallerType aCallerType,
+    ErrorResult& aRv) {
   if (NS_WARN_IF(!mGlobal)) {
     aRv.Throw(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR);
     return nullptr;
@@ -555,6 +538,20 @@ RefPtr<IDBOpenDBRequest> IDBFactory::OpenInternal(
       return nullptr;
     }
   } else {
+    if (mGlobal->GetStorageAccess() == StorageAccess::ePrivateBrowsing) {
+      if (NS_IsMainThread()) {
+        SetUseCounter(
+            mGlobal->GetGlobalJSObject(),
+            aDeleting
+                ? eUseCounter_custom_PrivateBrowsingIDBFactoryOpen
+                : eUseCounter_custom_PrivateBrowsingIDBFactoryDeleteDatabase);
+      } else {
+        SetUseCounter(
+            aDeleting ? UseCounterWorker::Custom_PrivateBrowsingIDBFactoryOpen
+                      : UseCounterWorker::
+                            Custom_PrivateBrowsingIDBFactoryDeleteDatabase);
+      }
+    }
     principalInfo = *mPrincipalInfo;
   }
 
@@ -585,27 +582,15 @@ RefPtr<IDBOpenDBRequest> IDBFactory::OpenInternal(
     isInternal = QuotaManager::IsOriginInternal(origin);
   }
 
-  // Allow storage attributes for add-ons independent of the pref.
-  // This works in the main thread only, workers don't have the principal.
-  bool isAddon = false;
-  if (NS_IsMainThread()) {
-    // aPrincipal is passed inconsistently, so even when we are already on
-    // the main thread, we may have been passed a null aPrincipal.
-    auto principalOrErr = PrincipalInfoToPrincipal(principalInfo);
-    if (principalOrErr.isOk()) {
-      nsAutoString addonId;
-      Unused << NS_WARN_IF(
-          NS_FAILED(principalOrErr.unwrap()->GetAddonId(addonId)));
-      isAddon = !addonId.IsEmpty();
-    }
-  }
+  const bool isPrivate =
+      principalInfo.type() == PrincipalInfo::TContentPrincipalInfo &&
+      principalInfo.get_ContentPrincipalInfo().attrs().mPrivateBrowsingId > 0;
 
   if (isInternal) {
     // Chrome privilege and internal origins always get persistent storage.
     persistenceType = PERSISTENCE_TYPE_PERSISTENT;
-  } else if ((isAddon || StaticPrefs::dom_indexedDB_storageOption_enabled()) &&
-             aStorageType.WasPassed()) {
-    persistenceType = PersistenceTypeFromStorageType(aStorageType.Value());
+  } else if (isPrivate) {
+    persistenceType = PERSISTENCE_TYPE_PRIVATE;
   } else {
     persistenceType = PERSISTENCE_TYPE_DEFAULT;
   }

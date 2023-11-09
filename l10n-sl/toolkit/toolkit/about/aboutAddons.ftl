@@ -6,11 +6,16 @@ addons-page-title = Upravitelj dodatkov
 search-header =
     .placeholder = Iskanje po addons.mozilla.org
     .searchbuttonlabel = Išči
-search-header-shortcut =
-    .key = f
+
+## Variables
+##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
+
 list-empty-get-extensions-message = Odkrijte razširitve in teme na <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-dictionaries-message = Prenesite slovarje z <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-language-packs-message = Prenesite jezikovne pakete z <a data-l10n-name="get-extensions">{ $domain }</a>
+
+##
+
 list-empty-installed =
     .value = Nimate nameščenega nobenega dodatka te vrste.
 list-empty-available-updates =
@@ -141,7 +146,7 @@ addon-category-sitepermission-title =
     .title = Dovoljenja strani
 # String displayed in about:addons in the Site Permissions section
 # Variables:
-#  $host (string): DNS host name for which the webextension enables permissions
+#  $host (string) - DNS host name for which the webextension enables permissions
 addon-sitepermission-host = Dovoljenja za spletno mesto { $host }
 
 ## These are global warnings
@@ -153,6 +158,8 @@ extensions-warning-check-compatibility-button = Omogoči
 extensions-warning-update-security = Preverjanje, ali je posodobitev dodatkov varna, je onemogočeno. Posodobitve lahko ogrozijo vaš sistem.
 extensions-warning-update-security-button = Omogoči
     .title = Omogoči preverjanje, ali je posodobitev dodatka varna
+extensions-warning-imported-addons = Dokončajte nameščanje razširitev, ki so bile uvožene v { -brand-short-name(sklon: "tozilnik") }.
+extensions-warning-imported-addons-button = Namesti razširitve
 
 ## Strings connected to add-on updates
 
@@ -221,6 +228,8 @@ shortcuts-duplicate-warning-message = { $shortcut } se uporablja kot bližnjica 
 # Variables:
 #   $addon (string) - Name of the add-on
 shortcuts-exists = Že uporablja { $addon }
+# Variables:
+#   $numberToShow (number) - Number of other elements available to show
 shortcuts-card-expand-button =
     { $numberToShow ->
         [one] Prikaži še { $numberToShow }
@@ -292,17 +301,7 @@ permissions-addon-button = Dovoljenja
 extension-enabled-heading = Omogočeno
 extension-disabled-heading = Onemogočeno
 theme-enabled-heading = Omogočeno
-theme-disabled-heading = Onemogočeno
 theme-disabled-heading2 = Shranjene teme
-theme-monochromatic-heading = Barvne kombinacije
-theme-monochromatic-subheading = Živahne nove barvne kombinacije za { -brand-product-name }. Le še kratek čas.
-# Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
-theme-colorways-button = Preizkusite barvne kombinacije
-# Refers to the button label for the colorways card when a user has a colorway theme enabled.
-theme-colorways-button-colorway-enabled = Spremeni barvno kombinacijo
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
-colorway-collection-expiry-label = Poteče: { DATETIME($expiryDate, month: "long", day: "numeric") }
 plugin-enabled-heading = Omogočeno
 plugin-disabled-heading = Onemogočeno
 dictionary-enabled-heading = Omogočeno
@@ -353,6 +352,10 @@ addon-detail-updates-radio-on = Vključeno
 addon-detail-updates-radio-off = Izključeno
 addon-detail-update-check-label = Poišči posodobitve
 install-update-button = Posodobi
+# aria-label associated to the updates row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-updates =
+    .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
@@ -361,6 +364,24 @@ addon-badge-private-browsing-allowed2 =
 addon-detail-private-browsing-help = Če je dovoljeno, bo imela razširitev dostop do vaše spletne dejavnosti v zasebnem brskanju. <a data-l10n-name="learn-more">Več o tem</a>
 addon-detail-private-browsing-allow = Dovoli
 addon-detail-private-browsing-disallow = Ne dovoli
+# aria-label associated to the private browsing row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-private-browsing =
+    .aria-label = { detail-private-browsing-label }
+
+## "sites with restrictions" (internally called "quarantined") are special domains
+## where add-ons are normally blocked for security reasons.
+
+# Used as a description for the option to allow or block an add-on on quarantined domains.
+addon-detail-quarantined-domains-label = Dovoli delovanje na spletnih mestih z omejitvami
+# Used as help text part of the quarantined domains UI controls row.
+addon-detail-quarantined-domains-help = Razširitvi omogoči dostop do spletnih mest, ki jih omejuje { -vendor-short-name }. Dovolite samo v primeru, da razširitvi zaupate.
+# Used as label and tooltip text on the radio inputs associated to the quarantined domains UI controls.
+addon-detail-quarantined-domains-allow = Dovoli
+addon-detail-quarantined-domains-disallow = Ne dovoli
+# aria-label associated to the quarantined domains exempt row to help screen readers to announce the group.
+addon-detail-group-label-quarantined-domains =
+    .aria-label = { addon-detail-quarantined-domains-label }
 
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
@@ -389,6 +410,8 @@ addon-permissions-optional = Izbirna dovoljenja za dodatno delovanje:
 addon-permissions-learnmore = Več o dovoljenjih
 recommended-extensions-heading = Priporočene razširitve
 recommended-themes-heading = Priporočene teme
+# Variables:
+#   $hostname (string) - Host where the permissions are granted
 addon-sitepermissions-required = Spletnemu mestu <span data-l10n-name="hostname">{ $hostname }</span> daje naslednje zmožnosti:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
@@ -413,10 +436,10 @@ addon-page-options-button =
 
 ## Detail notifications
 ## Variables:
-##   $name (String): name of the add-on.
+##   $name (string) - Name of the add-on.
 
 # Variables:
-#   $version (String): application version.
+#   $version (string) - Application version.
 details-notification-incompatible = Dodatek { $name } ni združljiv z brskalnikom { -brand-short-name } { $version }.
 details-notification-incompatible-link = Več informacij
 details-notification-unsigned-and-disabled = { $name } ni bilo mogoče potrditi za uporabo v { -brand-short-name }u, zato je onemogočen.

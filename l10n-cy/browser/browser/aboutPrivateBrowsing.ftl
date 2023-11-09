@@ -13,11 +13,11 @@ about-private-browsing-search-btn =
 about-private-browsing-handoff =
     .title = Chwilio gyda { $engine } neu roi cyfeiriad
 about-private-browsing-handoff-no-engine =
-    .title = Chwilio neu roi cyfeiriad
+    .title = Chwilio neu gyfeiriad gwe
 # Variables
 #  $engine (String): the name of the user's default search engine
 about-private-browsing-handoff-text = Chwilio gyda { $engine } neu roi cyfeiriad
-about-private-browsing-handoff-text-no-engine = Chwilio neu roi cyfeiriad
+about-private-browsing-handoff-text-no-engine = Chwilio neu gyfeiriad gwe
 about-private-browsing-not-private = Nid ydych mewn ffenestr breifat ar hyn o bryd.
 about-private-browsing-info-description-private-window = Ffenestr breifat: Mae { -brand-short-name } yn clirio'ch hanes chwilio a phori pan fyddwch yn cau pob ffenestr breifat. Nid yw hyn yn eich gwneud chi'n anhysbys.
 about-private-browsing-info-description-simplified = Mae { -brand-short-name } yn clirio'ch hanes chwilio a phori pan fyddwch yn cau pob ffenestr breifat, ond nid yw hyn yn eich gwneud chi'n anhysbys.
@@ -60,7 +60,15 @@ about-private-browsing-promo-close-button =
 about-private-browsing-pin-promo-header = Rhyddid pori preifat mewn un clic
 about-private-browsing-pin-promo-link-text =
     { PLATFORM() ->
-        [macos] Ei Gadw yn y Doc
+        [macos] Cadw yn y Doc
        *[other] Pinio i'r bar tasgau
     }
 about-private-browsing-pin-promo-title = Dim cwcis na hanes wedi'u cadw, o'ch bwrdd gwaith. Porwch fel nad oes neb yn gwylio.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Gwaredu baneri cwcis!
+about-private-browsing-cookie-banners-promo-button = Lleihau Baneri Cwcis
+about-private-browsing-cookie-banners-promo-message = Gadael i { -brand-short-name } ateb ffenestri llamlenni cwcis yn awtomatig er mwyn i chi fod yn rhydd i bori. Bydd { -brand-short-name } yn gwrthod pob cais os yn bosib.

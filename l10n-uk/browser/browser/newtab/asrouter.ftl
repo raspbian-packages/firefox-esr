@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Рекомендована функція
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Чому я це бачу?
+
 cfr-doorhanger-extension-cancel-button = Не зараз
     .accesskey = е
+
 cfr-doorhanger-extension-ok-button = Додати
     .accesskey = т
+
 cfr-doorhanger-extension-manage-settings-button = Керувати налаштуваннями рекомендацій
     .accesskey = К
+
 cfr-doorhanger-extension-never-show-recommendation = Не показувати цю рекомендацію
     .accesskey = Н
+
 cfr-doorhanger-extension-learn-more-link = Докладніше
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = від { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Рекомендація
 cfr-doorhanger-extension-notification2 = Рекомендація
     .tooltiptext = Рекомендація розширень
     .a11y-announcement = Доступна рекомендація розширень
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Рекомендація
@@ -59,29 +67,6 @@ cfr-doorhanger-extension-total-users =
        *[many] { $total } користувачів
     }
 
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = Геть банери про куки!
-cfr-cookie-banner-handling-body = Дозвольте { -brand-short-name } автоматично відхиляти всі запити на збереження кук, коли це можливо. В іншому випадку всі запити будуть схвалюватися, щоб уникнути показу ще більшої кількості банерів.
-cfr-cookie-banner-accept-button = Відхиляти запити
-    .accesskey = х
-cfr-cookie-banner-reject-button = Не зараз
-    .accesskey = е
-cfr-cookie-banner-handling-header-variant-1 = Менше спливних повідомлень про збереження кук
-cfr-cookie-banner-handling-body-variant-1 = Дозвольте { -brand-short-name } автоматично відповідати на спливні повідомлення про збереження кук, щоб ви могли користуватися інтернетом без відволікання. { -brand-short-name } відхилятиме всі можливі запити або схвалюватиме, якщо неможливо відхилити.
-cfr-cookie-banner-accept-button-variant-1 = Відхиляти спливні запити
-    .accesskey = з
-cfr-cookie-banner-reject-button-variant-1 = Ні, дякую
-    .accesskey = Н
-cfr-cookie-banner-handling-header-variant-2 = Зменшення кількості банерів кук
-cfr-cookie-banner-handling-body-variant-2 = Дозволити { -brand-short-name } відхиляти запити із погодженням на збереження кук сайтів, якщо це можливо, або схвалювати запити, якщо відхилити неможливо?
-cfr-cookie-banner-accept-button-variant-2 = Дозволити
-    .accesskey = з
-cfr-cookie-banner-reject-button-variant-2 = Не зараз
-    .accesskey = Н
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Синхронізуйте свої закладки всюди.
@@ -102,9 +87,11 @@ cfr-protections-panel-link-text = Докладніше
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Нова функція:
+
 cfr-whatsnew-button =
     .label = Що нового
     .tooltiptext = Що нового
+
 cfr-whatsnew-release-notes-link-text = Ознайомитися з інформацією про випуск
 
 ## Enhanced Tracking Protection Milestones
@@ -134,13 +121,6 @@ cfr-doorhanger-doh-secondary-button = Вимкнути
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = Ваша приватність має значення. { -brand-short-name } тепер ізолює вебсайти один від одного, що ускладнює викрадення зловмисниками паролів, номерів кредитних карток та інших приватних відомостей.
-cfr-doorhanger-fission-header = Ізоляція сайту
-cfr-doorhanger-fission-primary-button = Гаразд, зрозуміло
-    .accesskey = Г
-cfr-doorhanger-fission-secondary-button = Докладніше
-    .accesskey = л
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Відео на цьому сайті можуть відтворюватися неправильно в цій версії { -brand-short-name }. Для повноцінної підтримки відео, оновіть { -brand-short-name }.
@@ -149,11 +129,6 @@ cfr-doorhanger-video-support-primary-button = Оновити
     .accesskey = н
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Докладніше
-    .title = Розгорніть для перегляду подробиць про функцію
-spotlight-learn-more-expanded = Докладніше
-    .title = Закрити
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -170,18 +145,6 @@ spotlight-public-wifi-vpn-link = Не зараз
     .accesskey = е
 
 ## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Випробуйте першими наш найпотужніший
-    захист приватності за весь час
-spotlight-total-cookie-protection-body = Повний захист кук не дає змогу елементам стеження переслідувати вас в мережі за допомогою кук.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } обгороджує куки, обмежуючи їх використання сайтом, на якому ви перебуваєте, тому елементи стеження не можуть використовувати їх для переслідування. Завдяки ранньому доступу ви допомагаєте оптимізувати цю функцію, щоб ми продовжували створювати кращий Інтернет для кожного.
-spotlight-total-cookie-protection-primary-button = Увімкнути повний захист кук
-spotlight-total-cookie-protection-secondary-button = Не зараз
 
 ## Emotive Continuous Onboarding
 
@@ -211,11 +174,13 @@ spotlight-pin-secondary-button = Не зараз
 
 mr2022-background-update-toast-title = Новий { -brand-short-name }. Ще приватніший. Менше стеження. Жодних компромісів.
 mr2022-background-update-toast-text = Спробуйте найновіший { -brand-short-name }, з нашим оновленим, найпотужнішим захистом від стеження.
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
 mr2022-background-update-toast-primary-button-label = Відкрити { -brand-shorter-name }
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -234,6 +199,7 @@ firefoxview-cfr-body-v2 = Легко повертайтеся до нещода�
 ## Firefox View Spotlight
 
 firefoxview-spotlight-promo-title = Вітайте { -firefoxview-brand-name }
+
 # “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
 firefoxview-spotlight-promo-subtitle = Ця відкрита вкладка потрібна на вашому телефоні? Перенесіть її. Потрібен щойно відвіданий сайт? Пуф, він повернувся за допомогою { -firefoxview-brand-name(case: "gen", capitalization: "lower") }
 firefoxview-spotlight-promo-primarybutton = Дивитись, як це працює
@@ -243,6 +209,7 @@ firefoxview-spotlight-promo-secondarybutton = Пропустити
 
 colorways-cfr-primarybutton = Оберіть забарвлення
     .accesskey = О
+
 # "shades" refers to the different color options available to users in colorways.
 colorways-cfr-body = Розфарбуйте свій браузер ексклюзивними відтінками { -brand-short-name }, натхненними голосами, які змінили культуру.
 colorways-cfr-header-28days = Забарвлення незалежних голосів доступні до 16 січня
@@ -252,28 +219,43 @@ colorways-cfr-header-today = Забарвлення незалежних гол�
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = Геть банери про куки!
-cfr-cookiebanner-body = Дозволити { -brand-short-name } автоматично відхиляти всі можливі запити банерів про куки.
-cfr-cookiebanner-accept-button = Відхиляти банери
-    .accesskey = х
-cfr-cookiebanner-reject-button = Не зараз
-    .accesskey = Н
-cfr-cookiebanner-header-variant-1 = Менше спливних повідомлень про збереження кук
-cfr-cookiebanner-body-variant-1 = Дозвольте { -brand-short-name } автоматично відповідати на спливні повідомлення про збереження кук, щоб ви могли користуватися інтернетом без відволікання. { -brand-short-name } відхилятиме всі можливі запити.
-cfr-cookiebanner-accept-button-variant-1 = Відхиляти спливні запити
-    .accesskey = с
-cfr-cookiebanner-reject-button-variant-1 = Ні, дякую
-    .accesskey = Н
-cfr-cookiebanner-header-variant-2 = Зменшення кількості банерів кук
-cfr-cookiebanner-body-variant-2 = Зменште кількість банерів про куки, дозволивши { -brand-short-name } відхиляти запити від вебсайтів про збереження кук, коли це можливо.
-cfr-cookiebanner-accept-button-variant-2 = Дозволити
-    .accesskey = з
-cfr-cookiebanner-reject-button-variant-2 = Не зараз
+cfr-cbh-header = Дозволити { -brand-short-name } відхиляти банери кук?
+cfr-cbh-body = { -brand-short-name } може автоматично відхиляти багато запитів банерів кук.
+cfr-cbh-confirm-button = Відхилити банери кук
+    .accesskey = В
+cfr-cbh-dismiss-button = Не зараз
     .accesskey = Н
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
 july-jam-headline = Ми прикриваємо вас
 july-jam-body = Щомісяця { -brand-short-name } блокує в середньому понад 3000 елементів стеження для одного користувача, надаючи безпечний, швидкий доступ до здорового інтернету.
-july-jam-set-default-primary = Відкривати мої посилання з { -brand-short-name }
+july-jam-set-default-primary = Відкривати посилання в { -brand-short-name }
+fox-doodle-pin-headline = З поверненням
+
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = Це нагадування про те, що ви можете зберегти свій улюблений незалежний браузер лише одним рухом.
+fox-doodle-pin-primary = Відкривати посилання в { -brand-short-name }
+fox-doodle-pin-secondary = Не зараз
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>Тепер ваші файли PDF відкриватимуться в { -brand-short-name }.</strong> Редагуйте й підписуйте форми безпосередньо в браузері. Щоб змінити поведінку, шукайте “PDF” у налаштуваннях.
+set-default-pdf-handler-primary = Зрозуміло
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = Новий пристрій у майбутньому?
+fxa-sync-cfr-body = Будьте певні, що ваші останні закладки, паролі та вкладки завжди з вами, коли ви відкриваєте новий браузер { -brand-product-name }.
+fxa-sync-cfr-primary = Докладніше
+    .accesskey = о
+fxa-sync-cfr-secondary = Нагадати пізніше
+    .accesskey = Н
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = Користуєтеся старішим пристроєм?
+device-migration-fxa-spotlight-body = Зробіть резервну копію даних, щоб не втратити важливу інформацію, як-от закладки та паролі, особливо якщо переходите на новий пристрій.
+device-migration-fxa-spotlight-primary-button = Як створити резервну копію моїх даних
+device-migration-fxa-spotlight-link = Нагадати пізніше

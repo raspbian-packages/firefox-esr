@@ -3,10 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 page-title = Informações técnicas
-page-subtitle =
-    Esta página contém informações técnicas que podem ser úteis se você estiver
-    tentando solucionar um problema. Se estiver procurando respostas para as dúvidas mais comuns
-    do { -brand-short-name }, confira o <a data-l10n-name="support-link">site de suporte</a>.
+page-subtitle = Esta página contém informações técnicas que podem ser úteis se você estiver tentando solucionar um problema. Se estiver procurando respostas às dúvidas mais comuns sobre o { -brand-short-name }, consulte o <a data-l10n-name="support-link">site de suporte</a>.
 crashes-title = Relatórios de travamento
 crashes-id = ID do relatório
 crashes-send-date = Envio
@@ -70,7 +67,7 @@ app-basics-launcher-process-status = Processo de lançamento
 app-basics-multi-process-support = Janelas multiprocessadas
 app-basics-fission-support = Janelas do Fission
 app-basics-remote-processes-count = Processos remotos
-app-basics-enterprise-policies = Diretivas empresariais
+app-basics-enterprise-policies = Diretivas corporativas
 app-basics-location-service-key-google = Chave do Serviço de Localização do Google
 app-basics-safebrowsing-key-google = Chave do Google Safebrowsing
 app-basics-key-mozilla = Chave do serviço de localização da Mozilla
@@ -174,6 +171,15 @@ media-capabilities-title = Capacidades de mídia
 media-codec-support-info = Informações de suporte ao codec
 # List all the entries of the database.
 media-capabilities-enumerate = Enumeração de banco de dados
+
+## Codec support table
+
+media-codec-support-sw-decoding = Decodificação de software
+media-codec-support-hw-decoding = Decodificação de hardware
+media-codec-support-codec-name = Nome do codec
+media-codec-support-supported = Suportado
+media-codec-support-unsupported = Não suportado
+media-codec-support-error = Informações de suporte a codec não disponíveis. Tente novamente após reproduzir de novo um arquivo de mídia.
 
 ##
 
@@ -288,6 +294,8 @@ webgl2-renderer = Renderizador do driver WebGL 2
 webgl2-version = Versão do driver WebGL 2
 webgl2-driver-extensions = Extensões do driver WebGL 2
 webgl2-extensions = Extensões WebGL 2
+webgpu-default-adapter = Adaptador padrão de WebGPU
+webgpu-fallback-adapter = Adaptador alternativo de WebGPU
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Incluído na lista de bloqueio devido a problemas conhecidos: <a data-l10n-name="bug-link">bug { $bugNumber }</a>

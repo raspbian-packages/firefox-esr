@@ -17,7 +17,9 @@ EXPORTS.mozilla += [
     "PlatformMutex.h",
     "PlatformRWLock.h",
     "Printf.h",
+    "SIMD.h",
     "Sprintf.h",
+    "SSE.h",
     "StackWalk.h",
     "TimeStamp.h",
     "Uptime.h",
@@ -43,10 +45,29 @@ SOURCES += [
     "AwakeTimeStamp.cpp",
     "MmapFaultHandler.cpp",
     "Printf.cpp",
+    "SIMD.cpp",
     "StackWalk.cpp",
     "TimeStamp.cpp",
     "Uptime.cpp",
 ]
+
+if CONFIG["CPU_ARCH"].startswith("x86"):
+    SOURCES += [
+        "SIMD_avx2.cpp",
+        "SSE.cpp",
+    ]
+    SOURCES["SIMD_avx2.cpp"].flags += ["-mavx2"]
+
+if not CONFIG["JS_STANDALONE"]:
+    EXPORTS.mozilla += [
+        "ProcessType.h",
+        "RuntimeExceptionModule.h",
+    ]
+
+    SOURCES += [
+        "ProcessType.cpp",
+        "RuntimeExceptionModule.cpp",
+    ]
 
 OS_LIBS += CONFIG["REALTIME_LIBS"]
 
@@ -59,6 +80,8 @@ if CONFIG["OS_ARCH"] == "WINNT":
         "WindowsEnumProcessModules.h",
         "WindowsMapRemoteView.h",
         "WindowsProcessMitigations.h",
+        "WindowsStackCookie.h",
+        "WindowsUnwindInfo.h",
     ]
     EXPORTS.mozilla.glue += [
         "WindowsUnicode.h",
@@ -84,11 +107,6 @@ if CONFIG["OS_ARCH"] == "WINNT":
             "/ipc/mscom/COMWrappers.cpp",
             "/ipc/mscom/ProcessRuntime.cpp",
             "PreXULSkeletonUI.cpp",
-        ]
-
-    if CONFIG["ACCESSIBILITY"]:
-        SOURCES += [
-            "/ipc/mscom/ActivationContext.cpp",
         ]
 
 elif CONFIG["HAVE_CLOCK_MONOTONIC"]:

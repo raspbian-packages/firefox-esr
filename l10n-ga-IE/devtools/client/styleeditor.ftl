@@ -16,7 +16,6 @@ styleeditor-save-button = Sábháil
     .accesskey = S
 styleeditor-options-button =
     .tooltiptext = Roghanna don Eagarthóir Stíle
-styleeditor-media-rules = Rialacha @media
 styleeditor-editor-textbox =
     .data-placeholder = Cuir CSS anseo.
 styleeditor-no-stylesheet = Níl aon stílbhileog ag an leathanach seo.
@@ -32,3 +31,15 @@ styleeditor-find-again =
 styleeditor-go-to-line =
     .label = Léim go líne…
     .accesskey = L
+
+# This string is shown in the style sheets list
+# Variables:
+#   $ruleCount (Integer) - The number of rules in the stylesheet.
+styleeditor-stylesheet-rule-count =
+    { $ruleCount ->
+        [one] { $ruleCount } riail.
+        [two] { $ruleCount } riail.
+        [few] { $ruleCount } riail.
+        [many] { $ruleCount } riail.
+       *[other] { $ruleCount } riail.
+    }

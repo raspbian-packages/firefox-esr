@@ -297,6 +297,10 @@ bool VideoSink::IsPlaying() const {
   return mAudioSink->IsPlaying();
 }
 
+const AudioDeviceInfo* VideoSink::AudioDevice() const {
+  return mAudioSink->AudioDevice();
+}
+
 void VideoSink::Shutdown() {
   AssertOwnerThread();
   MOZ_ASSERT(!mAudioSink->IsStarted(), "must be called after playback stops.");
@@ -468,13 +472,15 @@ void VideoSink::RenderVideoFrames(int32_t aMaxFrames, int64_t aClockTime,
     img->mFrameID = frame->mFrameID;
     img->mProducerID = mProducerID;
 
-    VSINK_LOG_V("playing video frame %" PRId64 " (id=%x) (vq-queued=%zu)",
+    VSINK_LOG_V("playing video frame %" PRId64
+                " (id=%x, vq-queued=%zu, clock=%" PRId64 ")",
                 frame->mTime.ToMicroseconds(), frame->mFrameID,
-                VideoQueue().GetSize());
+                VideoQueue().GetSize(), aClockTime);
     if (!wasSent) {
       PROFILER_MARKER("PlayVideo", MEDIA_PLAYBACK, {}, MediaSampleMarker,
                       frame->mTime.ToMicroseconds(),
-                      frame->GetEndTime().ToMicroseconds());
+                      frame->GetEndTime().ToMicroseconds(),
+                      VideoQueue().GetSize());
     }
   }
 
@@ -692,4 +698,9 @@ bool VideoSink::InitializeBlankImage() {
   SetImageToGreenPixel(mBlankImage->AsPlanarYCbCrImage());
   return true;
 }
+
+void VideoSink::EnableTreatAudioUnderrunAsSilence(bool aEnabled) {
+  mAudioSink->EnableTreatAudioUnderrunAsSilence(aEnabled);
+}
+
 }  // namespace mozilla

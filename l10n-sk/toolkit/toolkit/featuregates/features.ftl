@@ -12,7 +12,7 @@ experimental-features-css-masonry-description = Povolí podporu pre experimentá
 # by various online articles and is technical in nature.
 experimental-features-web-gpu2 =
     .label = Web API: WebGPU
-experimental-features-web-gpu-description2 = Toto nové API poskytuje podporu na nízkej úrovni pri výpočtoch a grafickom vykresľovaní pomocou <a data-l10n-name="wikipedia">grafického procesora (GPU)</a> zariadenia alebo počítača používateľa. <a data-l10n-name="spec">Špecifikácia</a> sa však stále vyvíja. Ďalšie informácie nájdete v bugzille, <a data-l10n-name="bugzilla">bug 1602129</a>.
+experimental-features-web-gpu-description3 = <a data-l10n-name="wikipedia-webgpu">WebGPU API</a> poskytuje nízkoúrovňovú podporu pre vykonávanie výpočtov a grafického vykresľovania pomocou <a data-l10n-name="wikipedia-gpu">grafického procesora (GPU)</a> zariadenia alebo počítača používateľa. Prvá verzia <a data-l10n-name="spec">špecifikácie</a> sa blíži k finalizácii. Ďalšie informácie nájdete v bugzille, <a data-l10n-name="bugzilla">bug 1616739</a>.
 
 # The title of the experiment should be kept in English as it may be referenced
 # by various online articles and is technical in nature.
@@ -20,20 +20,10 @@ experimental-features-media-jxl =
     .label = Médiá: JPEG XL
 experimental-features-media-jxl-description = Ak je táto funkcia povolená, aplikácia { -brand-short-name } podporuje formát JPEG XL (JXL). Toto je vylepšený formát obrazového súboru, ktorý podporuje bezstratový prechod z tradičných súborov JPEG. Ďalšie informácie nájdete v bugzille, <a data-l10n-name="bugzilla">bug 1539075</a>.
 
-# The title of the experiment should be kept in English as it may be referenced
-# by various online articles and is technical in nature.
-experimental-features-css-constructable-stylesheets =
-    .label = CSS: podpora Constructable Stylesheets
-experimental-features-css-constructable-stylesheets-description = Pridanie konštruktora k rozhraniu <a data-l10n-name="mdn-cssstylesheet">CSSStyleSheet</a>, ako aj celý rad súvisiacich zmien, umožňuje priame vytváranie nových šablón štýlov bez nutnosti pridania hárku štýlov do HTML. Takto je oveľa jednoduchšie vytvárať opakovane použiteľné šablóny štýlov na použitie s <a data-l10n-name="mdn-shadowdom">Shadow DOM</a>. Ďalšie informácie nájdete v bugzille, <a data-l10n-name="bugzilla">bug 1520690</a>.
-
 experimental-features-devtools-compatibility-panel =
     .label = Nástroje pre vývojárov: panel Kompatibilita
 experimental-features-devtools-compatibility-panel-description = Bočný panel nástroja Prieskumník stránky, ktorý zobrazuje podrobné informácie o kompatibilite vašej aplikácie s rôznymi prehliadačmi. Ďalšie informácie nájdete v bugzille, <a data-l10n-name="bugzilla">bug 1584464</a>.
 
-# Do not translate 'SameSite', 'Lax' and 'None'.
-experimental-features-cookie-samesite-lax-by-default2 =
-    .label = Cookies: SameSite=Lax v predvolenom nastavení
-experimental-features-cookie-samesite-lax-by-default2-description = Ak nie je špecifikovaný atribút “SameSite”, štandardne sa pre súbory cookie použije hodnota “SameSite=Lax”. Súčasný stav neobmedzeného používania cookies je nutné po zapnutí tejto voľby explicitne určiť v kóde stránky nastavením hodnoty “SameSite=None”.
 
 # Do not translate 'SameSite', 'Lax' and 'None'.
 experimental-features-cookie-samesite-none-requires-secure2 =
@@ -45,12 +35,6 @@ experimental-features-cookie-samesite-none-requires-secure2-description = Súbor
 experimental-features-abouthome-startup-cache =
     .label = Vyrovnávacia pamäť spustenia pre about:home
 experimental-features-abouthome-startup-cache-description = Vyrovnávacia pamäť pre úvodný dokument about:home, ktorý sa predvolene načítava pri štarte. Účelom vyrovnávacej pamäte je zlepšiť výkon pri štarte.
-
-# The title of the experiment should be kept in English as it may be referenced
-# by various online articles and is technical in nature.
-experimental-features-cookie-samesite-schemeful =
-    .label = Súbory cookie: správanie Schemeful SameSite
-experimental-features-cookie-samesite-schemeful-description = Zaobchádzajte so súbormi cookie z tej istej domény, ale s rôznymi schémami (napr. http://example.com a https://example.com), ako s cookies tretích strán. Zvyšuje bezpečnosť, ale potenciálne vedie k rozbitiu stránok.
 
 # "Service Worker" is an API name and is usually not translated.
 experimental-features-devtools-serviceworker-debugger-support =
@@ -72,7 +56,3 @@ experimental-features-js-warp-description = Povoľte projekt Warp, ktorý má zl
 experimental-features-ime-search =
     .label = Panel s adresou: zobrazovať výsledky počas zostavovania IME
 experimental-features-ime-search-description = IME (Input Method Editor) je nástroj, ktorý vám umožňuje zadávať zložité symboly, napríklad tie, ktoré sa používajú vo východoázijských alebo indických písaných jazykoch, pomocou štandardnej klávesnice. Povolením tohto experimentu zostane panel s adresou otvorený a zobrazia sa výsledky vyhľadávania a návrhy, zatiaľ čo na zadávanie textu sa používa editor IME. Upozorňujeme, že editor IME môže zobrazovať panel, ktorý prekrýva výsledky panela s adresou, preto sa táto predvoľba odporúča iba pre editor IME, ktorý tento typ panela nepoužíva.
-
-experimental-features-accessibility-cache =
-    .label = Vyrovnávacia pamäť pre zjednodušenie ovládania
-experimental-features-accessibility-cache-description = Ukladá všetky informácie o prístupnosti zo všetkých dokumentov v hlavnom procese { -brand-short-name(case: "gen") }. To zlepšuje výkon čítačiek obrazovky a iných aplikácií, ktoré používajú rozhrania API na zjednodušenie ovládania.

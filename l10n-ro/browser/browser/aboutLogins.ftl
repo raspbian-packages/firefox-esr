@@ -5,11 +5,6 @@
 
 about-logins-page-title = Date de autentificare și parole
 
-login-filter =
-    .placeholder = Caută date de autentificare
-
-create-login-button = Creează o autentificare nouă
-
 fxaccounts-sign-in-text = Obține parolele de pe celelalte dispozitive
 fxaccounts-sign-in-sync-button = Autentifică-te pentru a sincroniza
 fxaccounts-avatar-button =
@@ -35,6 +30,8 @@ about-logins-menu-menuitem-help = Ajutor
 
 login-list =
     .aria-label = Date de autentificare corespondente criteriilor de căutare
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } autentificare
@@ -65,7 +62,10 @@ about-logins-login-intro-heading-logged-out2 = Cauți datele de autentificare sa
 about-logins-login-intro-heading-logged-in = Nu am găsit date de autentificare sincronizate.
 login-intro-description = Dacă ți-ai salvat datele de autentificare în { -brand-product-name } pe un alt dispozitiv, iată cum le poți aduce aici:
 login-intro-instructions-fxa = Creează un cont sau autentifică-te în { -fxaccount-brand-name(case: "definite-article") } de pe dispozitivul pe care ai salvat datele de autentificare.
-about-logins-intro-import2 = Dacă datele tale de autentificare sunt salvate în afara { -brand-product-name }, le poți <a data-l10n-name="import-browser-link">importa din alt browser</a> sau <a data-l10n-name="import-file-link">dintr-un fișier</a>
+login-intro-instructions-fxa-settings = Mergi la Setări > Sincronizare > Activează sincronizarea… Bifează caseta de selectare Date de autentificare și parole.
+login-intro-instructions-fxa-passwords-help = Vizitează <a data-l10n-name="passwords-help-link">asistența pentru parole</a> pentru mai mult ajutor.
+about-logins-intro-browser-only-import = Dacă datele tale de autentificare sunt salvate în alt browser, le poți<a data-l10n-name="import-link">importa în { -brand-product-name }</a>
+about-logins-intro-import2 = Dacă datele tale de autentificare sunt salvate în afara { -brand-product-name }, le poți <a data-l10n-name="import-browser-link">importa dintr-un alt browser</a> sau <a data-l10n-name="import-file-link">dintr-un fișier</a>
 
 ## Login
 
@@ -89,9 +89,11 @@ login-item-copied-password-button-text = Copiată!
 login-item-save-changes-button = Salvează modificările
 login-item-save-new-button = Salvează
 login-item-cancel-button = Renunță
-login-item-time-changed = Ultima modificare: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Data creării: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Ultima utilizare: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
 
 ## OS Authentication dialog
 
@@ -142,6 +144,9 @@ about-logins-confirm-remove-dialog-title = Elimini această autentificare?
 confirm-delete-dialog-message = Această acțiune este ireversibilă.
 about-logins-confirm-remove-dialog-confirm-button = Elimină
 
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
         [1] Elimină
@@ -186,6 +191,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] Acest lucru va elimina toate autentificările pe care le-ai salvat în { -brand-short-name } pe toate dispozitivele sincronizate cu { -fxaccount-brand-name(case: "definite-article", capitalization: "lower-and-you") }. De asemenea, vor fi eliminate alertele privind încălcarea securității datelor care apar aici. Nu vei putea anula această acțiune.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Exportă date de autentificare și parole
 about-logins-confirm-export-dialog-message = Parolele tale vor fi salvate în text lizibil (de ex., BadP@ssw0rd) și oricine poate deschide fișierul exportat le va putea vedea.
 about-logins-confirm-export-dialog-confirm-button = Exportă…
@@ -205,7 +212,6 @@ about-logins-breach-alert-date = Această încălcare a securității datelor a 
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Mergi la { $hostname }
-about-logins-breach-alert-learn-more-link = Află mai multe
 
 ## Vulnerable Password notification
 

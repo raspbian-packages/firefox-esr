@@ -51,6 +51,17 @@ restart-later = Mula semula Kemudian
 ## Variables:
 ##   $name (String): name of the extension
 
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -111,9 +122,16 @@ browser-containers-settings =
     .accesskey = p
 
 containers-disable-alert-title = Tutup Semua Tab Penyimpan?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc = Jika anda menyahaktif Tab Penyimpan sekarang, { $tabCount } tab penyimpan akan ditutup. Adakah anda pasti mahu menyahaktif Tab Penyimpan?
 
 containers-disable-alert-ok-button = Tutup { $tabCount } Tab Penyimpan
+
+##
+
 containers-disable-alert-cancel-button = Sentiasa didayakan
 
 containers-remove-alert-title = Buang Penyimpan Ini?
@@ -389,11 +407,6 @@ home-restore-defaults =
     .label = Pulih Piawai
     .accesskey = P
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Halaman Utama Firefox (Piawai)
-
 home-mode-choice-custom =
     .label = URLs Penyesuaian...
 
@@ -421,14 +434,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Kandungan Halaman Utama Firefox
-home-prefs-content-description = Pilih kandungan yang mahu dalam skrin Halaman Utama Firefox.
-
 home-prefs-search-header =
     .label = Carian Web
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 # Variables:
 #  $provider (String): Name of the corresponding content provider, e.g "Pocket".
@@ -478,6 +492,7 @@ search-show-suggestions-url-bar-option =
     .label = Papar cadangan carian dalam keputusan bar alamat
     .accesskey = P
 
+
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -526,6 +541,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = Bawa Web dengan anda
 
 # This message contains two links and two icon images.
@@ -540,14 +559,22 @@ sync-mobile-promo = Muat turun Firefox untuk<img data-l10n-name="android-icon"/>
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Tukar gambar profil
 
 sync-manage-account = Urus Akaun
     .accesskey = s
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } tidak disahkan.
 sync-signedin-login-failure = Sila daftar masuk untuk menyambung semula { $email }
+
+##
 
 sync-resend-verification =
     .label = Hantar semula Pengesahan
@@ -612,6 +639,16 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Simpan
     .accesskey = p
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Pengesahan Telah Dihantar
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = Pautan pengesahan telah dihantar kepada { $email }.
+sync-verification-not-sent-title = Gagal Menghantar Pengesahan
+sync-verification-not-sent-body = Kami tidak dapat menghantar e-mel pengesahan pada masa ini, sila cuba lagi selepas ini.
 
 ## Privacy Section
 
@@ -730,6 +767,9 @@ sitedata-settings =
     .label = Urus Data…
     .accesskey = U
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-header = Bar Alamat
@@ -768,7 +808,7 @@ enhanced-tracking-protection-setting-custom =
 
 ##
 
-content-blocking-all-third-party-cookies = Semua kuki pihak ketiga
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-tracking-protection-change-block-list = Tukar senarai sekatan
 
@@ -882,6 +922,9 @@ certs-devices =
     .accesskey = P
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

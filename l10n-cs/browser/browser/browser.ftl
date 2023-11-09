@@ -5,46 +5,15 @@
 
 ## The main browser window's title
 
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
 #
 # default - "Mozilla Firefox"
 # private - "Mozilla Firefox (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } (Anonymní prohlížení)
-    .data-content-title-default = { $content-title } - { -brand-full-name }
-    .data-content-title-private = { $content-title } - { -brand-full-name } (Anonymní prohlížení)
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
-#
-# "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox — (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
-#
-# Also note the other subtle difference here: we use a `-` to separate the
-# brand name from `(Private Browsing)`, which does not happen on other OSes.
-#
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window-mac =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } - (Anonymní prohlížení)
-    .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } - (Anonymní prohlížení)
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
-#
-# default - "Mozilla Firefox"
-# private - "Mozilla Firefox (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
 # Variables:
 #  $content-title (String): the title of the web content.
 browser-main-window-window-titles =
@@ -52,14 +21,18 @@ browser-main-window-window-titles =
     .data-title-private = { -brand-full-name } — anonymní prohlížení
     .data-content-title-default = { $content-title } — { -brand-full-name }
     .data-content-title-private = { $content-title } — { -brand-full-name } — anonymní prohlížení
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
+
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
 #
 # "default" - "Mozilla Firefox"
 # "private" - "Mozilla Firefox — (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -71,11 +44,13 @@ browser-main-window-mac-window-titles =
     .data-title-private = { -brand-full-name } — anonymní prohlížení
     .data-content-title-default = { $content-title }
     .data-content-title-private = { $content-title } — anonymní prohlížení
+
 # This gets set as the initial title, and is overridden as soon as we start
 # updating the titlebar based on loaded tabs or private browsing state.
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
+
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } — anonymní prohlížení
@@ -109,16 +84,12 @@ urlbar-xr-notification-anchor =
     .tooltiptext = Otevře panel oprávnění pro virtuální realitu
 urlbar-storage-access-anchor =
     .tooltiptext = Otevřít nastavení přístupu k informacím o vašem prohlížení
-urlbar-translate-notification-anchor =
-    .tooltiptext = Přeloží tuto stránku
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = Spravovat sdílení oken nebo obrazovky se stránkou
 urlbar-indexed-db-notification-anchor =
     .tooltiptext = Otevřít panel zpráv offline úložiště
 urlbar-password-notification-anchor =
     .tooltiptext = Otevřít panel zpráv uložení hesla
-urlbar-translated-notification-anchor =
-    .tooltiptext = Spravovat překlad stránky
 urlbar-plugins-notification-anchor =
     .tooltiptext = Správa využití zásuvného modulu
 urlbar-web-rtc-share-devices-notification-anchor =
@@ -142,8 +113,14 @@ urlbar-search-tips-confirm-short = Rozumím
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = Tip:
+
 urlbar-result-menu-button =
     .title = Otevře nabídku
+urlbar-result-menu-button-feedback = Zpětná vazba
+    .title = Otevřít nabídku
+urlbar-result-menu-learn-more =
+    .label = Zjistit více
+    .accesskey = Z
 urlbar-result-menu-remove-from-history =
     .label = Smazat z historie
     .accesskey = r
@@ -158,8 +135,10 @@ urlbar-result-menu-tip-get-help =
 
 urlbar-search-tips-onboard = Méně psaní, více výsledků: používejte { $engineName } přímo z adresního řádku.
 urlbar-search-tips-redirect-2 = Zadejte do adresního řádku vyhledávaný text a uvidíte návrhy z vyhledávače { $engineName } a vaší historie prohlížení.
+
 # Make sure to match the name of the Search panel in settings.
 urlbar-search-tips-persist = Vyhledávání je nyní jednodušší. Zkuste své vyhledávání upřesnit zde v adresním řádku. Chcete-li místo toho zobrazit adresu URL, přejděte v nastavení do Vyhledávání.
+
 # Prompts users to use the Urlbar when they are typing in the domain of a
 # search engine, e.g. google.com or amazon.com.
 urlbar-tabtosearch-onboard = Klepněte na tuto zkratku, abyste rychleji našli, co potřebujete.
@@ -197,10 +176,12 @@ urlbar-midi-blocked =
     .tooltiptext = Tomuto serveru jste zablokovali přístup k MIDI zařízením.
 urlbar-install-blocked =
     .tooltiptext = Tomuto serveru jste zablokovali instalaci doplňků.
+
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
 urlbar-star-edit-bookmark =
     .tooltiptext = Upraví tuto záložku ({ $shortcut })
+
 # Variables
 #   $shortcut (String) - A keyboard shortcut for the add bookmark command.
 urlbar-star-add-bookmark =
@@ -208,10 +189,6 @@ urlbar-star-add-bookmark =
 
 ## Page Action Context Menu
 
-page-action-manage-extension =
-    .label = Nastavení tohoto rozšíření
-page-action-remove-extension =
-    .label = Odebrat rozšíření
 page-action-manage-extension2 =
     .label = Nastavení tohoto rozšíření…
     .accesskey = e
@@ -233,8 +210,10 @@ full-screen-exit =
 # This string prompts the user to use the list of search shortcuts in
 # the Urlbar and searchbar.
 search-one-offs-with-title = Vyhledat pomocí
+
 search-one-offs-change-settings-compact-button =
     .tooltiptext = Změnit nastavení vyhledávání
+
 search-one-offs-context-open-new-tab =
     .label = Hledat v novém panelu
     .accesskey = n
@@ -244,12 +223,14 @@ search-one-offs-context-set-as-default =
 search-one-offs-context-set-as-default-private =
     .label = Nastavit jako výchozí vyhledávač pro anonymní prohlížení
     .accesskey = p
+
 # Search engine one-off buttons with an @alias shortcut/keyword.
 # Variables:
 #  $engineName (String): The name of the engine.
 #  $alias (String): The @alias shortcut/keyword.
 search-one-offs-engine-with-alias =
     .tooltiptext = { $engineName } ({ $alias })
+
 # Shown when adding new engines from the address bar shortcut buttons or context
 # menu, or from the search bar shortcut buttons.
 # Variables:
@@ -286,72 +267,83 @@ search-one-offs-actions =
 # Opens the about:addons page in the home / recommendations section
 quickactions-addons = Zobrazit doplňky
 quickactions-cmd-addons2 = doplňky
+
 # Opens the bookmarks library window
 quickactions-bookmarks2 = Správa záložek
 quickactions-cmd-bookmarks = záložky
+
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = Vymazat historii
 quickactions-cmd-clearhistory = vymazat historii
+
 # Opens about:downloads page
 quickactions-downloads2 = Zobrazit stahování
 quickactions-cmd-downloads = stahování
+
 # Opens about:addons page in the extensions section
 quickactions-extensions = Správa rozšíření
 quickactions-cmd-extensions = rozšíření
+
 # Opens the devtools web inspector
 quickactions-inspector2 = Otevřít nástroje pro vývojáře
 quickactions-cmd-inspector = průzkumník, nástroje pro vývojáře, devtools
+
 # Opens about:logins
 quickactions-logins2 = Správa přihlašovacích údajů
 quickactions-cmd-logins = přihlašovací údaje, hesla
+
 # Opens about:addons page in the plugins section
 quickactions-plugins = Správa zásuvných modulů
 quickactions-cmd-plugins = zásuvné moduly
+
 # Opens the print dialog
 quickactions-print2 = Vytisknout stránku
 quickactions-cmd-print = tisk
+
 # Opens a new private browsing window
 quickactions-private2 = Otevřít anonymní okno
 quickactions-cmd-private = anonymní prohlížení
+
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh =
-    { -brand-short-name.gender ->
-        [masculine] Obnova { -brand-short-name(case: "gen") }
-        [feminine] Obnova { -brand-short-name(case: "gen") }
-        [neuter] Obnova { -brand-short-name(case: "gen") }
-       *[other] Obnova aplikace { -brand-short-name }
+    { -brand-short-name.case-status ->
+        [with-cases] Obnova { -brand-short-name(case: "gen") }
+       *[no-cases] Obnova aplikace { -brand-short-name }
     }
 quickactions-cmd-refresh = obnova, obnovit
+
 # Restarts the browser
 quickactions-restart =
-    { -brand-short-name.gender ->
-        [masculine] Restartovat { -brand-short-name(case: "acc") }
-        [feminine] Restartovat { -brand-short-name(case: "acc") }
-        [neuter] Restartovat { -brand-short-name(case: "acc") }
-       *[other] Restartovat aplikaci { -brand-short-name }
+    { -brand-short-name.case-status ->
+        [with-cases] Restartovat { -brand-short-name(case: "acc") }
+       *[no-cases] Restartovat aplikaci { -brand-short-name }
     }
 quickactions-cmd-restart = restart, restartovat
+
 # Opens the screenshot tool
 quickactions-screenshot3 = Pořídit snímek stránky
 quickactions-cmd-screenshot = snímek obrazovky, stránky
+
 # Opens about:preferences
 quickactions-settings2 = Nastavení
 quickactions-cmd-settings = nastavení, předvolby, možnosti
+
 # Opens about:addons page in the themes section
 quickactions-themes = Nastavení vzhledu
 quickactions-cmd-themes = motivy vzhledu
+
 # Opens a SUMO article explaining how to update the browser
 quickactions-update =
-    { -brand-short-name.gender ->
-        [masculine] Aktualizace { -brand-short-name(case: "gen") }
-        [feminine] Aktualizace { -brand-short-name(case: "gen") }
-        [neuter] Aktualizace { -brand-short-name(case: "gen") }
-       *[other] Aktualizace aplikace { -brand-short-name }
+    { -brand-short-name.case-status ->
+        [with-cases] Aktualizace { -brand-short-name(case: "gen") }
+       *[no-cases] Aktualizace aplikace { -brand-short-name }
     }
 quickactions-cmd-update = aktualizace, aktualizovat
+
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = Zobrazit zdrojový kód stránky
 quickactions-cmd-viewsource = zdrojový kód
+
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Zjistit více o rychlých akcích
@@ -378,6 +370,7 @@ bookmark-panel-show-editor-checkbox =
     .accesskey = u
 bookmark-panel-save-button =
     .label = Uložit
+
 # Width of the bookmark panel.
 # Should be large enough to fully display the Done and
 # Cancel/Remove Bookmark buttons.
@@ -397,12 +390,10 @@ identity-connection-not-secure = Spojení není zabezpečené
 identity-connection-secure = Zabezpečené spojení
 identity-connection-failure = Chyba spojení
 identity-connection-internal =
-    Toto je zabezpečená stránka { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "gen") }
-        [feminine] { -brand-short-name(case: "gen") }
-        [neuter] { -brand-short-name(case: "gen") }
-       *[other] aplikace { -brand-short-name }
-    }.
+    { -brand-short-name.case-status ->
+        [with-cases] Toto je zabezpečená stránka { -brand-short-name(case: "gen") }.
+       *[no-cases] Toto je zabezpečená stránka aplikace { -brand-short-name }.
+    }
 identity-connection-file = Tato stránka je uložena ve vašem počítači.
 identity-extension-page = Tato stránka je načtena z doplňku.
 identity-active-blocked =
@@ -417,6 +408,7 @@ identity-passive-loaded = Části této stránky nejsou zabezpečené (napříkl
 identity-active-loaded = Na této stránce jste ochranu zakázali.
 identity-weak-encryption = Tento server používá slabé šifrování.
 identity-insecure-login-forms = Přihlašovací údaje zadané na této stránce mohou být vyzrazeny.
+
 identity-https-only-connection-upgraded = (přepnuto na HTTPS)
 identity-https-only-label = Režim „pouze HTTPS“
 identity-https-only-dropdown-on =
@@ -434,16 +426,18 @@ identity-https-only-info-turn-on2 =
     } spojení na HTTPS, kdykoliv je to možné, zapněte pro tento server režim „pouze HTTPS“.
 identity-https-only-info-turn-off2 = Pokud se zdá, že je stránka rozbitá, zkuste vypnout režim „pouze HTTPS“, aby se znovu načetla pomocí nezabezpečeného spojení HTTP.
 identity-https-only-info-no-upgrade = Nepodařilo se přepnout spojení z HTTP.
+
 identity-permissions-storage-access-header = Cross-site cookies
 identity-permissions-storage-access-hint = Tyto weby mohou používat cross-site cookies a během vaší návštěvy této stránky tak přistupovat k jejím datům.
 identity-permissions-storage-access-learn-more = Zjistit více
+
 identity-permissions-reload-hint = Pro provedení změn může být potřeba stránku znovu načíst.
 identity-clear-site-data =
     .label = Vymazat cookies a data stránky…
 identity-connection-not-secure-security-view = Spojení s tímto serverem není zabezpečené.
 identity-connection-verified = Spojení s tímto serverem je zabezpečené.
 identity-ev-owner-label = Certifikát vydán pro:
-identity-description-custom-root = Mozilla tohoto vydavatele certifikátů nezná. Mohl být přidán operačním systémem nebo správcem vašeho počítače. <label data-l10n-name="link">Zjistit více</label>
+identity-description-custom-root2 = Mozilla tohoto vydavatele certifikátů nezná. Mohl být přidán operačním systémem nebo správcem vašeho počítače.
 identity-remove-cert-exception =
     .label = Odstranit výjimku
     .accesskey = O
@@ -451,26 +445,24 @@ identity-description-insecure = Vaše připojení k tomuto serveru není soukrom
 identity-description-insecure-login-forms = Přihlašovací údaje, které zadáte na této stránce, nebudou zabezpečeny a mohou být vyzrazeny.
 identity-description-weak-cipher-intro = Vaše spojení s tímto serverem používá slabé šifrování a není soukromé.
 identity-description-weak-cipher-risk = Ostatní lidé mohou vidět vaše informace nebo pozměnit chování stránky.
-identity-description-active-blocked =
+identity-description-active-blocked2 =
     { -brand-short-name.gender ->
         [masculine] { -brand-short-name } zablokoval
         [feminine] { -brand-short-name } zablokovala
         [neuter] { -brand-short-name } zablokovalo
        *[other] Aplikace { -brand-short-name } zablokovala
-    } nezabezpečené části této stránky. <label data-l10n-name="link">Zjistit více</label>
+    } nezabezpečené části této stránky.
 identity-description-passive-loaded = Vaše připojení není soukromé a informace, které sdílíte s tímto serverem, mohou být viděny ostatními.
-identity-description-passive-loaded-insecure = Tato webová stránka obsahuje obsah, který není zabezpečen (například obrázky). <label data-l10n-name="link">Zjistit více</label>
-identity-description-passive-loaded-mixed =
+identity-description-passive-loaded-insecure2 = Tato webová stránka obsahuje obsah, který není zabezpečen (například obrázky).
+identity-description-passive-loaded-mixed2 =
     Ačkoli { -brand-short-name.gender ->
         [masculine] { -brand-short-name } zablokoval
         [feminine] { -brand-short-name } zablokovala
         [neuter] { -brand-short-name } zablokovalo
        *[other] aplikace { -brand-short-name } zablokovala
-    } nějaký obsah, stránka stále ještě obsahuje nezabezpečený obsah (například obrázky). <label data-l10n-name="link">Zjistit více</label>
+    } nějaký obsah, stránka stále ještě obsahuje nezabezpečený obsah (například obrázky).
 identity-description-active-loaded = Tato webová stránka obsahuje obsah, který není zabezpečen (například skripty), a připojení k tomuto serveru tak není soukromé.
 identity-description-active-loaded-insecure = Informace, které sdílíte s tímto serverem (jako hesla, zprávy, číslo platební karty, atd.), mohou být viděny ostatními.
-identity-learn-more =
-    .value = Zjistit více
 identity-disable-mixed-content-blocking =
     .label = Vypnout ochranu
     .accesskey = V
@@ -513,6 +505,7 @@ browser-tab-mute =
         [few] Vypnout zvuk { $count } panelů
        *[other] Vypnout zvuk { $count } panelů
     }
+
 browser-tab-unmute =
     { $count ->
         [1] Zapnout zvuk panelu
@@ -520,6 +513,7 @@ browser-tab-unmute =
         [few] Zapnout zvuk { $count } panelů
        *[other] Zapnout zvuk { $count } panelů
     }
+
 browser-tab-unblock =
     { $count ->
         [1] Spustit přehrávání
@@ -532,7 +526,12 @@ browser-tab-unblock =
 
 browser-import-button2 =
     .label = Importovat záložky…
-    .tooltiptext = Importovat záložky z jiného prohlížeče do { -brand-short-name(case: "gen") }.
+    .tooltiptext =
+        { -brand-short-name.case-status ->
+            [with-cases] Importovat záložky z jiného prohlížeče do { -brand-short-name(case: "gen") }.
+           *[no-cases] Importovat záložky z jiného prohlížeče do aplikace { -brand-short-name }
+        }
+
 bookmarks-toolbar-empty-message = Chcete-li mít ke svým záložkám rychlý přístup, umístěte je sem na lištu záložek. <a data-l10n-name="manage-bookmarks">Spravovat záložky…</a>
 
 ## WebRTC Pop-up notifications
@@ -553,17 +552,14 @@ popup-select-window-or-screen =
     .label = Okno nebo obrazovka:
     .accesskey = O
 popup-all-windows-shared = Budou sdílena všechna viditelná okna na vaší obrazovce.
-popup-screen-sharing-block =
-    .label = Blokovat
-    .accesskey = B
-popup-screen-sharing-always-block =
-    .label = Vždy blokovat
-    .accesskey = V
-popup-mute-notifications-checkbox = Ztlumit oznámení ze serverů během sdílení
 
 ## WebRTC window or screen share tab switch warning
 
-sharing-warning-window = Sdílíte obsah okna { -brand-short-name(case: "gen") }. Ostatní lidé uvidí obsah každého panelu, který otevřete.
+sharing-warning-window =
+    { -brand-short-name.case-status ->
+        [with-cases] Sdílíte obsah okna { -brand-short-name(case: "gen") }. Ostatní lidé uvidí obsah každého panelu, který otevřete.
+       *[no-cases] Sdílíte obsah okna aplikace { -brand-short-name }. Ostatní lidé uvidí obsah každého panelu, který otevřete.
+    }
 sharing-warning-screen = Sdílíte obsah celé své obrazovky. Ostatní lidé uvidí obsah každého panelu, který otevřete.
 sharing-warning-proceed-to-tab =
     .label = Otevřít panel
@@ -572,7 +568,6 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
-enable-devtools-popup-description = Pokud chcete používat zkratku F12, otevřete nejprve DevTools z nabídky Nástroje pro vývojáře.
 enable-devtools-popup-description2 = Pokud chcete používat zkratku F12, otevřete nejprve DevTools z nabídky Nástroje prohlížeče.
 
 ## URL Bar
@@ -581,6 +576,7 @@ enable-devtools-popup-description2 = Pokud chcete používat zkratku F12, otevř
 # engine is unknown.
 urlbar-placeholder =
     .placeholder = Zadejte webovou adresu nebo dotaz pro vyhledávač
+
 # This placeholder is used in search mode with search engines that search the
 # entire web.
 # Variables
@@ -589,6 +585,7 @@ urlbar-placeholder =
 urlbar-placeholder-search-mode-web-2 =
     .placeholder = Vyhledat na webu
     .aria-label = Vyhledat pomocí { $name }
+
 # This placeholder is used in search mode with search engines that search a
 # specific site (e.g., Amazon).
 # Variables
@@ -597,26 +594,32 @@ urlbar-placeholder-search-mode-web-2 =
 urlbar-placeholder-search-mode-other-engine =
     .placeholder = Zadejte hledaný výraz
     .aria-label = Vyhledat na serveru { $name }
+
 # This placeholder is used when searching bookmarks.
 urlbar-placeholder-search-mode-other-bookmarks =
     .placeholder = Zadejte hledaný výraz
     .aria-label = Hledat v záložkách
+
 # This placeholder is used when searching history.
 urlbar-placeholder-search-mode-other-history =
     .placeholder = Zadejte hledaný výraz
     .aria-label = Hledat v historii
+
 # This placeholder is used when searching open tabs.
 urlbar-placeholder-search-mode-other-tabs =
     .placeholder = Zadejte hledaný výraz
     .aria-label = Hledat v otevřených panelech
+
 # This placeholder is used when searching quick actions.
 urlbar-placeholder-search-mode-other-actions =
     .placeholder = Zadejte hledané výrazy
     .aria-label = Vyhledávání akcí
+
 # Variables
 #  $name (String): the name of the user's default search engine
 urlbar-placeholder-with-name =
     .placeholder = Zadejte webovou adresu nebo dotaz pro vyhledávač { $name }
+
 # Variables
 #  $component (String): the name of the component which forces remote control.
 #    Example: "DevTools", "Marionette", "RemoteAgent".
@@ -626,9 +629,11 @@ urlbar-permissions-granted =
     .tooltiptext = Tomuto serveru jste udělili dodatečná oprávnění.
 urlbar-switch-to-tab =
     .value = Přepnout na panel:
+
 # Used to indicate that a selected autocomplete entry is provided by an extension.
 urlbar-extension =
     .value = Rozšíření:
+
 urlbar-go-button =
     .tooltiptext = Přejde na adresu v adresním řádku
 urlbar-page-action-button =
@@ -696,12 +701,14 @@ urlbar-result-action-search-actions = Akce vyhledávání
 # urlbar results.
 urlbar-group-firefox-suggest =
     .label = { -firefox-suggest-brand-name }
+
 # A label shown above the search suggestions group in the urlbar results. It
 # should use sentence case.
 # Variables
 #  $engine (String): the name of the search engine providing the suggestions
 urlbar-group-search-suggestions =
     .label = Návrhy vyhledávače { $engine }
+
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Rychlé akce
@@ -715,6 +722,22 @@ reader-view-enter-button =
 reader-view-close-button =
     .aria-label = Zavřít zobrazení čtečky
 
+## Picture-in-Picture urlbar button
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+picture-in-picture-urlbar-button-open =
+    .tooltiptext = Otevřít obraz v obraze ({ $shortcut })
+
+picture-in-picture-urlbar-button-close =
+    .tooltiptext = Zavřít obraz v obraze ({ $shortcut })
+
+picture-in-picture-panel-header = Obraz v obraze
+picture-in-picture-panel-headline = Tato webová stránka nedoporučuje režim Obraz v obraze
+picture-in-picture-panel-body = Pokud je zapnutý režim Obraz v obraze, videa se nemusí zobrazovat tak, jak vývojář zamýšlel.
+picture-in-picture-enable-toggle =
+    .label = Přesto povolit
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -722,9 +745,12 @@ reader-view-close-button =
 #  $domain (String): the domain that is full screen, e.g. "mozilla.org"
 fullscreen-warning-domain = <span data-l10n-name="domain">{ $domain }</span> je teď v režimu celé obrazovky
 fullscreen-warning-no-domain = Tento dokument je teď v režimu celé obrazovky
+
+
 fullscreen-exit-button = Ukončit režim celé obrazovky (Esc)
 # "esc" is lowercase on mac keyboards, but uppercase elsewhere.
 fullscreen-exit-mac-button = Ukončit režim celé obrazovky (esc)
+
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
 # Variables
 #  $domain (String): the domain that is using pointer-lock, e.g. "mozilla.org"
@@ -732,29 +758,6 @@ pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> m�
 pointerlock-warning-no-domain = Tento dokument má kontrolu nad vaším kurzorem. Pro odebrání kontroly stiskněte klávesu Esc.
 
 ## Subframe crash notification
-
-crashed-subframe-message =
-    <strong>Část této stránky spadla.</strong> Pokud chcete autorům { -brand-shorter-name.gender ->
-        [masculine] { -brand-product-name(case: "gen") }
-        [feminine] { -brand-product-name(case: "gen") }
-        [neuter] { -brand-product-name(case: "gen") }
-       *[other] aplikace { -brand-product-name }
-    } tento problém nahlásit pro zrychlení opravy, odešlete prosím hlášení.
-# The string for crashed-subframe-title.title should match crashed-subframe-message,
-# but without any markup.
-crashed-subframe-title =
-    .title =
-        Část této stránky spadla. Pokud chcete autorům { -brand-product-name.gender ->
-            [masculine] { -brand-product-name(case: "gen") }
-            [feminine] { -brand-product-name(case: "gen") }
-            [neuter] { -brand-product-name(case: "gen") }
-           *[other] aplikace { -brand-product-name }
-        } tento problém nahlásit pro zrychlení opravy, odešlete prosím hlášení.
-crashed-subframe-learnmore-link =
-    .value = Zjistit více
-crashed-subframe-submit =
-    .label = Odeslat hlášení
-    .accesskey = d
 
 ## Bookmarks panels, menus and toolbar
 
@@ -771,6 +774,11 @@ bookmarks-other-bookmarks-menu =
     .label = Ostatní záložky
 bookmarks-mobile-bookmarks-menu =
     .label = Záložky z mobilu
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
@@ -795,14 +803,16 @@ bookmarks-tools-menu-button-visibility =
             [true] Odebrat nabídku záložek z lišty
            *[other] Přidat nabídku záložek na lištu
         }
+
+##
+
 bookmarks-search =
     .label = Hledat v záložkách
 bookmarks-tools =
     .label = Nástroje pro práci se záložkami
-bookmarks-bookmark-edit-panel =
-    .label = Upravit záložku
 bookmarks-subview-edit-bookmark =
     .label = Upravit záložku…
+
 # The aria-label is a spoken label that should not include the word "toolbar" or
 # such, because screen readers already know that this container is a toolbar.
 # This avoids double-speaking.
@@ -816,9 +826,7 @@ bookmarks-toolbar-placeholder =
     .title = Záložky nástrojové lišty
 bookmarks-toolbar-placeholder-button =
     .label = Záložky nástrojové lišty
-# "Bookmark" is a verb, as in "Add current tab to bookmarks".
-bookmarks-current-tab =
-    .label = Přidat současný panel do záložek
+
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-subview-bookmark-tab =
     .label = Přidat současný panel do záložek…
@@ -845,11 +853,6 @@ repair-text-encoding-button =
 ## Customize Toolbar Buttons
 
 # Variables:
-#  $shortcut (String): keyboard shortcut to open the add-ons manager
-toolbar-addons-themes-button =
-    .label = Doplňky a vzhledy
-    .tooltiptext = Správa doplňků a motivů vzhledu ({ $shortcut })
-# Variables:
 #  $shortcut (String): keyboard shortcut to open settings (only on macOS)
 toolbar-settings-button =
     .label = Nastavení
@@ -858,25 +861,35 @@ toolbar-settings-button =
             [macos] Otevře nastavení ({ $shortcut })
            *[other] Otevře nastavení
         }
+
 toolbar-overflow-customize-button =
     .label = Nastavení tlačítek a lišt…
     .accesskey = V
+
 toolbar-button-email-link =
     .label = Poslat odkaz e-mailem
     .tooltiptext = Odešle odkaz na aktuální stránku
+
+toolbar-button-logins =
+    .label = Přihlašovací údaje
+    .tooltiptext = Zobrazení a správa vašich uložených hesel
+
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
     .label = Uložit stránku
     .tooltiptext = Uloží aktuální stránku ({ $shortcut })
+
 # Variables:
 #  $shortcut (String): keyboard shortcut to open a local file
 toolbar-button-open-file =
     .label = Otevřít soubor
     .tooltiptext = Otevře soubor ({ $shortcut })
+
 toolbar-button-synced-tabs =
     .label = Synchronizované panely
     .tooltiptext = Zobrazí panely z jiných zařízení
+
 # Variables
 # $shortcut (string) - Keyboard shortcut to open a new private browsing window
 toolbar-button-new-private-window =
@@ -886,12 +899,10 @@ toolbar-button-new-private-window =
 ## EME notification panel
 
 eme-notifications-drm-content-playing =
-    Některé zvuky nebo videa na této stránce používají DRM software, což může omezit { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "acc") }
-        [feminine] { -brand-short-name(case: "acc") }
-        [neuter] { -brand-short-name(case: "acc") }
-       *[other] aplikaci { -brand-short-name }
-    } při práci s tímto obsahem.
+    { -brand-short-name.case-status ->
+        [with-cases] Některé zvuky nebo videa na této stránce používají DRM software, což může omezit { -brand-short-name(case: "acc") } při práci s tímto obsahem.
+       *[no-cases] Některé zvuky nebo videa na této stránce používají DRM software, což může omezit aplikaci { -brand-short-name } při práci s tímto obsahem.
+    }
 eme-notifications-drm-content-playing-manage = Nastavení
 eme-notifications-drm-content-playing-manage-accesskey = N
 eme-notifications-drm-content-playing-dismiss = Zavřít
@@ -903,17 +914,6 @@ panel-save-update-username = Uživatelské jméno
 panel-save-update-password = Heslo
 
 ## Add-on removal warning
-
-# Variables:
-#  $name (String): The name of the addon that will be removed.
-addon-removal-title = Opravdu chcete odebrat rozšíření { $name }?
-addon-removal-abuse-report-checkbox =
-    Nahlásit toto rozšíření { -vendor-short-name.gender ->
-        [masculine] { -vendor-short-name(case: "dat") }
-        [feminine] { -vendor-short-name(case: "dat") }
-        [neuter] { -vendor-short-name(case: "dat") }
-       *[other] organizaci { -vendor-short-name }
-    }
 
 ##
 
@@ -929,6 +929,7 @@ ui-tour-info-panel-close =
 popups-infobar-allow =
     .label = Povolit vyskakovací okna pro { $uriHost }
     .accesskey = P
+
 popups-infobar-block =
     .label = Blokovat vyskakovací okna pro { $uriHost }
     .accesskey = p
@@ -938,9 +939,11 @@ popups-infobar-block =
 popups-infobar-dont-show-message =
     .label = Při blokování vyskakovacích oken nezobrazovat tuto zprávu
     .accesskey = n
+
 edit-popup-settings =
     .label = Spravovat nastavení vyskakovacích oken…
     .accesskey = y
+
 picture-in-picture-hide-toggle =
     .label = Skrýt přepínač obrazu v obraze
     .accesskey = v
@@ -951,6 +954,7 @@ picture-in-picture-hide-toggle =
 picture-in-picture-move-toggle-right =
     .label = Přesunout přepínač zobrazení obrazu v obraze doprava
     .accesskey = r
+
 picture-in-picture-move-toggle-left =
     .label = Přesunout přepínač zobrazení obrazu v obraze doleva
     .accesskey = l
@@ -965,38 +969,43 @@ picture-in-picture-move-toggle-left =
 # this container is a toolbar. This avoids double-speaking.
 navbar-accessible =
     .aria-label = Navigace
+
 navbar-downloads =
     .label = Stahování
+
 navbar-overflow =
     .tooltiptext = Další nástroje…
+
 # Variables:
 #   $shortcut (String): keyboard shortcut to print the page
 navbar-print =
     .label = Vytisknout
     .tooltiptext = Vytiskne tuto stránku… ({ $shortcut })
+
 navbar-home =
     .label = Domů
     .tooltiptext =
-        Otevře domovskou stránku { -brand-short-name.gender ->
-            [masculine] { -brand-short-name(case: "gen") }
-            [feminine] { -brand-short-name(case: "gen") }
-            [neuter] { -brand-short-name(case: "gen") }
-           *[other] aplikace { -brand-short-name }
+        { -brand-short-name.case-status ->
+            [with-cases] Otevře domovskou stránku { -brand-short-name(case: "gen") }
+           *[no-cases] Otevře domovskou stránku aplikace { -brand-short-name }
         }
+
 navbar-library =
     .label = Knihovna stránek
     .tooltiptext = Zobrazí historii, uložené záložky, a mnoho dalšího
+
 navbar-search =
     .title = Vyhledávací pole
-navbar-accessibility-indicator =
-    .tooltiptext = Funkce pro podporu přístupnosti povoleny
+
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
 tabs-toolbar =
     .aria-label = Ouška panelů
+
 tabs-toolbar-new-tab =
     .label = Nový panel
+
 tabs-toolbar-list-all-tabs =
     .label = Seznam všech panelů
     .tooltiptext = Seznam všech panelů
@@ -1005,26 +1014,23 @@ tabs-toolbar-list-all-tabs =
 
 # <img data-l10n-name="icon"/> will be replaced by the application menu icon
 restore-session-startup-suggestion-message =
-    <strong>Chcete otevřít předchozí panely?</strong> Předchozí relaci { -brand-short-name.gender ->
-        [masculine] { -brand-short-name(case: "gen") }
-        [feminine] { -brand-short-name(case: "gen") }
-        [neuter] { -brand-short-name(case: "gen") }
-       *[other] aplikace { -brand-short-name }
-    } můžete obnovit z nabídky <img data-l10n-name="icon"/> v části Historie.
+    { -brand-short-name.case-status ->
+        [with-cases] <strong>Chcete otevřít předchozí panely?</strong> Předchozí relaci { -brand-short-name(case: "gen") } můžete obnovit z nabídky <img data-l10n-name="icon"/> v části Historie.
+       *[no-cases] <strong>Chcete otevřít předchozí panely?</strong> Předchozí relaci aplikace { -brand-short-name } můžete obnovit z nabídky <img data-l10n-name="icon"/> v části Historie.
+    }
 restore-session-startup-suggestion-button = Jak na to
 
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message =
-    { -vendor-short-name.gender ->
-        [masculine] { -brand-short-name } automaticky odesílá některá data { -vendor-short-name(case: "dat") } z důvodu vylepšení vašeho prohlížení.
-        [feminine] { -brand-short-name } automaticky odesílá některá data { -vendor-short-name(case: "dat") } z důvodu vylepšení vašeho prohlížení.
-        [neuter] { -brand-short-name } automaticky odesílá některá data { -vendor-short-name(case: "dat") } z důvodu vylepšení vašeho prohlížení.
-       *[other] { -brand-short-name } automaticky odesílá některá data organizaci { -vendor-short-name } z důvodu vylepšení vašeho prohlížení.
+    { -vendor-short-name.case-status ->
+        [with-cases] { -brand-short-name } automaticky odesílá některá data { -vendor-short-name(case: "dat") } z důvodu vylepšení vašeho prohlížení.
+       *[no-cases] { -brand-short-name } automaticky odesílá některá data organizaci { -vendor-short-name } z důvodu vylepšení vašeho prohlížení.
     }
 data-reporting-notification-button =
     .label = Nastavit odesílaná data
     .accesskey = N
+
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Anonymní prohlížení
 
@@ -1043,6 +1049,15 @@ unified-extensions-button-permissions-needed =
         Rozšíření
         Vyžadována oprávnění
 
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = Rozšíření
+    .tooltiptext =
+        Rozšíření
+        Některá rozšíření nejsou povolena.
+
 ## Autorefresh blocker
 
 refresh-blocked-refresh-label =
@@ -1059,21 +1074,103 @@ refresh-blocked-redirect-label =
         [neuter] { -brand-short-name } zabránilo této stránce v automatickém přesměrování na jinou stránku.
        *[other] Aplikace { -brand-short-name } zabránila této stránce v automatickém přesměrování na jinou stránku.
     }
+
 refresh-blocked-allow =
     .label = Povolit
     .accesskey = P
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-relay = Služba { -relay-brand-name } skryje vaši skutečnou e-mailovou adresu, aby vás ochránila před úniky dat a nevyžádanou poštou.
-firefox-relay-offer-how-we-integrate =
-    { -brand-shorter-name.gender ->
-        [masculine] Budete-li pokračovat, budete moci generovat nové e-mailové masky služby { -relay-brand-short-name } přímo ze správce přihlašovacích údajů ve { -brand-shorter-name(case: "loc") }.
-        [feminine] Budete-li pokračovat, budete moci generovat nové e-mailové masky služby { -relay-brand-short-name } přímo ze správce přihlašovacích údajů v { -brand-shorter-name(case: "loc") }.
-        [neuter] Budete-li pokračovat, budete moci generovat nové e-mailové masky služby { -relay-brand-short-name } přímo ze správce přihlašovacích údajů v { -brand-shorter-name(case: "loc") }.
-       *[other] Budete-li pokračovat, budete moci generovat nové e-mailové masky služby { -relay-brand-short-name } přímo ze správce přihlašovacích údajů v aplikaci { -brand-shorter-name }.
-    }
+## Popup Notification
+
+firefox-relay-offer-why-to-use-relay = Naše bezpečné, snadno použitelné masky chrání vaši identitu a předchází nevyžádané poště tím, že skrývají vaši e-mailovou adresu.
+
 # Variables:
-#  $sitename (String): name of the site where user enters their Relay mask
 #  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-does = Všechny e-maily z <strong>{ $sitename }</strong> přepošleme na <strong>{ $useremail }</strong>.
+firefox-relay-offer-what-relay-provides = Všechny e-maily odeslané na vaše e-mailové masky budou přeposlány na adresu <strong>{ $useremail }</strong> (dokud se nerozhodnete je zablokovat).
+
+firefox-relay-offer-legal-notice = Klepnutím na „Použít e-mailovou masku“ souhlasíte s <label data-l10n-name="tos-url">podmínkami poskytování služby</label> a <label data-l10n-name="privacy-url">zásadami ochrany osobních údajů</label>.
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = (Neověřeno)
+popup-notification-xpinstall-prompt-learn-more = Zjistit více o bezpečné instalaci doplňků
+
+## Pop-up warning
+
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message =
+    { -brand-short-name.gender ->
+        [masculine]
+            { $popupCount ->
+                [one] { -brand-short-name } zabránil stránce otevřít vyskakovací okno.
+                [few] { -brand-short-name } zabránil stránce otevřít { $popupCount } vyskakovací okna
+               *[other] { -brand-short-name } zabránil stránce otevřít { $popupCount } vyskakovacích oken.
+            }
+        [feminine]
+            { $popupCount ->
+                [one] { -brand-short-name } zabránila stránce otevřít vyskakovací okno.
+                [few] { -brand-short-name } zabránila stránce otevřít { $popupCount } vyskakovací okna
+               *[other] { -brand-short-name } zabránila stránce otevřít { $popupCount } vyskakovacích oken.
+            }
+        [neuter]
+            { $popupCount ->
+                [one] { -brand-short-name } zabránilo stránce otevřít vyskakovací okno.
+                [few] { -brand-short-name } zabránilo stránce otevřít { $popupCount } vyskakovací okna
+               *[other] { -brand-short-name } zabránilo stránce otevřít { $popupCount } vyskakovacích oken.
+            }
+       *[other]
+            { $popupCount ->
+                [one] Aplikace { -brand-short-name } zabránila stránce otevřít vyskakovací okno.
+                [few] Aplikace { -brand-short-name } zabránila stránce otevřít { $popupCount } vyskakovací okna
+               *[other] Aplikace { -brand-short-name } zabránila stránce otevřít { $popupCount } vyskakovacích oken.
+            }
+    }
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message =
+    { -brand-short-name.gender ->
+        [masculine]
+            { $popupCount ->
+                [one] { -brand-short-name } zabránil stránce otevřít více než jedno vyskakovací okno.
+                [few] { -brand-short-name } zabránil stránce otevřít více než { $popupCount } vyskakovací okna
+               *[other] { -brand-short-name } zabránil stránce otevřít více než { $popupCount } vyskakovacích oken.
+            }
+        [feminine]
+            { $popupCount ->
+                [one] { -brand-short-name } zabránila stránce otevřít více než jedno vyskakovací okno.
+                [few] { -brand-short-name } zabránila stránce otevřít více než { $popupCount } vyskakovací okna
+               *[other] { -brand-short-name } zabránila stránce otevřít více než { $popupCount } vyskakovacích oken.
+            }
+        [neuter]
+            { $popupCount ->
+                [one] { -brand-short-name } zabránilo stránce otevřít více než jedno vyskakovací okno.
+                [few] { -brand-short-name } zabránilo stránce otevřít více než { $popupCount } vyskakovací okna
+               *[other] { -brand-short-name } zabránilo stránce otevřít více než { $popupCount } vyskakovacích oken.
+            }
+       *[other]
+            { $popupCount ->
+                [one] Aplikace { -brand-short-name } zabránila stránce otevřít více než jedno vyskakovací okno.
+                [few] Aplikace { -brand-short-name } zabránila stránce otevřít více než { $popupCount } vyskakovací okna
+               *[other] Aplikace { -brand-short-name } zabránila stránce otevřít více než { $popupCount } vyskakovacích oken.
+            }
+    }
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Možnosti
+           *[other] Předvolby
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] M
+           *[other] P
+        }
+
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = Zobrazit „{ $popupURI }“

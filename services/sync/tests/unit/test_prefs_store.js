@@ -1,8 +1,8 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { PromiseTestUtils } = ChromeUtils.import(
-  "resource://testing-common/PromiseTestUtils.jsm"
+const { PromiseTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/PromiseTestUtils.sys.mjs"
 );
 PromiseTestUtils.allowMatchingRejectionsGlobally(
   /Unable to arm timer, the object has been finalized\./
@@ -11,15 +11,16 @@ PromiseTestUtils.allowMatchingRejectionsGlobally(
   /IOUtils\.profileBeforeChange getter: IOUtils: profileBeforeChange phase has already finished/
 );
 
-const { Preferences } = ChromeUtils.import(
-  "resource://gre/modules/Preferences.jsm"
+const { Preferences } = ChromeUtils.importESModule(
+  "resource://gre/modules/Preferences.sys.mjs"
 );
-const { PrefRec } = ChromeUtils.import(
-  "resource://services-sync/engines/prefs.js"
+const { PrefRec, getPrefsGUIDForTest } = ChromeUtils.importESModule(
+  "resource://services-sync/engines/prefs.sys.mjs"
 );
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
-
-const PREFS_GUID = CommonUtils.encodeBase64URL(Services.appinfo.ID);
+const PREFS_GUID = getPrefsGUIDForTest();
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
+);
 
 const DEFAULT_THEME_ID = "default-theme@mozilla.org";
 const COMPACT_THEME_ID = "firefox-compact-light@mozilla.org";
@@ -32,12 +33,6 @@ AddonTestUtils.createAppInfo(
   "1.9.2"
 );
 AddonTestUtils.overrideCertDB();
-
-// Attempting to set the
-// security.turn_off_all_security_so_that_viruses_can_take_over_this_computer
-// preference to enable Cu.exitIfInAutomation crashes, probably due to
-// shutdown behaviors faked by AddonTestUtils.jsm's cleanup function.
-do_disable_fast_shutdown();
 
 add_task(async function run_test() {
   _("Test fixtures.");
@@ -340,4 +335,80 @@ add_task(async function test_dangerously_allow() {
   } finally {
     prefs.resetBranch("");
   }
+});
+
+add_task(async function test_incoming_sets_seen() {
+  _("Test the sync-seen allow-list");
+
+  let engine = Service.engineManager.get("prefs");
+  let store = engine._store;
+  let prefs = new Preferences();
+
+  Services.prefs.readDefaultPrefsFromFile(
+    do_get_file("prefs_test_prefs_store.js")
+  );
+  const defaultValue = "the value";
+  Assert.equal(prefs.get("testing.seen"), defaultValue);
+
+  let record = await store.createRecord(PREFS_GUID, "prefs");
+  // Haven't seen a non-default value before, so remains null.
+  Assert.strictEqual(record.value["testing.seen"], null);
+
+  // pretend an incoming record with the default value - it might not be
+  // the default everywhere, so we treat it specially.
+  record = new PrefRec("prefs", PREFS_GUID);
+  record.value = {
+    "testing.seen": defaultValue,
+  };
+  await store.update(record);
+  // Our special control value should now be set.
+  Assert.strictEqual(
+    prefs.get("services.sync.prefs.sync-seen.testing.seen"),
+    true
+  );
+  // It's still the default value, so the value is not considered changed
+  Assert.equal(prefs.isSet("testing.seen"), false);
+
+  // But now that special control value is set, the record always contains the value.
+  record = await store.createRecord(PREFS_GUID, "prefs");
+  Assert.strictEqual(record.value["testing.seen"], defaultValue);
+});
+
+add_task(async function test_outgoing_when_changed() {
+  _("Test the 'seen' pref is set first sync of non-default value");
+
+  let engine = Service.engineManager.get("prefs");
+  let store = engine._store;
+  let prefs = new Preferences();
+  prefs.resetBranch();
+
+  Services.prefs.readDefaultPrefsFromFile(
+    do_get_file("prefs_test_prefs_store.js")
+  );
+  const defaultValue = "the value";
+  Assert.equal(prefs.get("testing.seen"), defaultValue);
+
+  let record = await store.createRecord(PREFS_GUID, "prefs");
+  // Haven't seen a non-default value before, so remains null.
+  Assert.strictEqual(record.value["testing.seen"], null);
+
+  // Change the value.
+  prefs.set("testing.seen", "new value");
+  record = await store.createRecord(PREFS_GUID, "prefs");
+  // creating the record toggled that "seen" pref.
+  Assert.strictEqual(
+    prefs.get("services.sync.prefs.sync-seen.testing.seen"),
+    true
+  );
+  Assert.strictEqual(prefs.get("testing.seen"), "new value");
+
+  // Resetting the pref does not change that seen value.
+  prefs.reset("testing.seen");
+  Assert.strictEqual(prefs.get("testing.seen"), defaultValue);
+
+  record = await store.createRecord(PREFS_GUID, "prefs");
+  Assert.strictEqual(
+    prefs.get("services.sync.prefs.sync-seen.testing.seen"),
+    true
+  );
 });

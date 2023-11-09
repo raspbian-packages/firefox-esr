@@ -2,7 +2,7 @@ schema: 1
 
 bugzilla:
   product: Core
-  component: "ImageLib"
+  component: "Graphics: ImageLib"
 
 origin:
   name: libjxl
@@ -10,9 +10,9 @@ origin:
 
   url: https://github.com/libjxl/libjxl
 
-  release: commit 318c592d98b97d103941b90d47107f06a10c71da (2022-03-21T20:44:46Z).
+  release: 91760e31a40fb811867fbe9bda6ddf73c962389e (2023-05-16T11:48:39Z).
 
-  revision: 318c592d98b97d103941b90d47107f06a10c71da
+  revision: 91760e31a40fb811867fbe9bda6ddf73c962389e
 
   license: Apache-2.0
 
@@ -35,3 +35,4 @@ vendoring:
     - doc
     - third_party/testdata
     - tools
+    - lib/lib.gni # Symlink is not permitted in mozilla-central

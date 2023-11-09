@@ -116,12 +116,6 @@ cfr-doorhanger-doh-secondary-button = Изключване
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-header = Изолирана страница
-cfr-doorhanger-fission-primary-button = Добре, разбрах
-    .accesskey = Д
-cfr-doorhanger-fission-secondary-button = Научете повече
-    .accesskey = Н
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-header = Обновете { -brand-short-name } за възпроизвеждане на видео
@@ -129,11 +123,6 @@ cfr-doorhanger-video-support-primary-button = Обновяване
     .accesskey = б
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Научете повече
-    .title = Отворете, за да научите повече
-spotlight-learn-more-expanded = Научете повече
-    .title = Затваряне
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -149,8 +138,6 @@ spotlight-public-wifi-vpn-link = Не сега
     .accesskey = Н
 
 ## Total Cookie Protection Rollout
-
-spotlight-total-cookie-protection-secondary-button = Не сега
 
 ## Emotive Continuous Onboarding
 
@@ -170,7 +157,24 @@ spotlight-pin-secondary-button = Не сега
 ## The button labels are fitted into narrow fixed-width buttons by
 ## Windows and therefore must be as narrow as possible.
 
+
 ## Firefox View CFR
 
+
 ## Firefox View Spotlight
+
+
+## Colorways expiry reminder CFR
+
+
+## Cookie Banner Handling CFR
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+## FxA sync CFR
+
+## Device Migration FxA Spotlight
 

@@ -13,7 +13,6 @@ styleeditor-save-button = සුරකින්න
     .accesskey = S
 styleeditor-options-button =
     .tooltiptext = ශෛලි සංස්කරක විකල්ප
-styleeditor-media-rules = මාධ්‍ය විමසුම්
 styleeditor-editor-textbox =
     .data-placeholder = CSS මෙහි ලියන්න.
 styleeditor-no-stylesheet = මෙහි ශෛලි පත්‍රයක් නැත.
@@ -31,3 +30,12 @@ styleeditor-find-again =
 styleeditor-go-to-line =
     .label = පේලියට පනින්න…
     .accesskey = J
+
+# This string is shown in the style sheets list
+# Variables:
+#   $ruleCount (Integer) - The number of rules in the stylesheet.
+styleeditor-stylesheet-rule-count =
+    { $ruleCount ->
+        [one] නීති { $ruleCount }.
+       *[other] නීති { $ruleCount }.
+    }

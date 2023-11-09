@@ -59,12 +59,14 @@
 #include <utility>
 
 #include "js/Debug.h"
+#include "js/RealmOptions.h"
 #include "js/friend/DumpFunctions.h"  // js::DumpHeap
 #include "js/GCAPI.h"
 #include "js/HeapAPI.h"
 #include "js/Object.h"  // JS::GetClass, JS::GetCompartment, JS::GetPrivate
 #include "js/PropertyAndElement.h"  // JS_DefineProperty
 #include "js/Warnings.h"            // JS::SetWarningReporter
+#include "js/ShadowRealmCallbacks.h"
 #include "js/SliceBudget.h"
 #include "jsfriendapi.h"
 #include "mozilla/ArrayUtils.h"
@@ -72,9 +74,11 @@
 #include "mozilla/CycleCollectedJSContext.h"
 #include "mozilla/DebuggerOnGCRunnable.h"
 #include "mozilla/MemoryReporting.h"
+#include "mozilla/PerfStats.h"
 #include "mozilla/ProfilerLabels.h"
 #include "mozilla/ProfilerMarkers.h"
 #include "mozilla/Sprintf.h"
+#include "mozilla/StaticPrefs_javascript.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/TimelineConsumers.h"
 #include "mozilla/TimelineMarker.h"
@@ -87,6 +91,8 @@
 #include "mozilla/dom/PromiseBinding.h"
 #include "mozilla/dom/PromiseDebugging.h"
 #include "mozilla/dom/ScriptSettings.h"
+#include "mozilla/dom/ShadowRealmGlobalScope.h"
+#include "mozilla/dom/RegisterShadowRealmBindings.h"
 #include "nsContentUtils.h"
 #include "nsCycleCollectionNoteRootCallback.h"
 #include "nsCycleCollectionParticipant.h"
@@ -155,7 +161,7 @@ struct NoteWeakMapChildrenTracer : public JS::CallbackTracer {
         mMap(nullptr),
         mKey(nullptr),
         mKeyDelegate(nullptr) {}
-  void onChild(JS::GCCellPtr aThing) override;
+  void onChild(JS::GCCellPtr aThing, const char* name) override;
   nsCycleCollectionNoteRootCallback& mCb;
   bool mTracedAny;
   JSObject* mMap;
@@ -163,7 +169,8 @@ struct NoteWeakMapChildrenTracer : public JS::CallbackTracer {
   JSObject* mKeyDelegate;
 };
 
-void NoteWeakMapChildrenTracer::onChild(JS::GCCellPtr aThing) {
+void NoteWeakMapChildrenTracer::onChild(JS::GCCellPtr aThing,
+                                        const char* name) {
   if (aThing.is<JSString>()) {
     return;
   }
@@ -393,11 +400,11 @@ struct TraversalTracer : public JS::CallbackTracer {
                            JS::TraceOptions(JS::WeakMapTraceAction::Skip,
                                             JS::WeakEdgeTraceAction::Trace)),
         mCb(aCb) {}
-  void onChild(JS::GCCellPtr aThing) override;
+  void onChild(JS::GCCellPtr aThing, const char* name) override;
   nsCycleCollectionTraversalCallback& mCb;
 };
 
-void TraversalTracer::onChild(JS::GCCellPtr aThing) {
+void TraversalTracer::onChild(JS::GCCellPtr aThing, const char* name) {
   // Checking strings and symbols for being gray is rather slow, and we don't
   // need either of them for the cycle collector.
   if (aThing.is<JSString>() || aThing.is<JS::Symbol>()) {
@@ -419,7 +426,7 @@ void TraversalTracer::onChild(JS::GCCellPtr aThing) {
   if (JS::IsCCTraceKind(aThing.kind())) {
     if (MOZ_UNLIKELY(mCb.WantDebugInfo())) {
       char buffer[200];
-      context().getEdgeName(buffer, sizeof(buffer));
+      context().getEdgeName(name, buffer, sizeof(buffer));
       mCb.NoteNextEdgeName(buffer);
     }
     mCb.NoteJSChild(aThing);
@@ -656,6 +663,14 @@ size_t JSHolderMap::SizeOfExcludingThis(MallocSizeOf aMallocSizeOf) const {
   return n;
 }
 
+static bool InitializeShadowRealm(JSContext* aCx,
+                                  JS::Handle<JSObject*> aGlobal) {
+  MOZ_ASSERT(StaticPrefs::javascript_options_experimental_shadow_realms());
+
+  JSAutoRealm ar(aCx, aGlobal);
+  return dom::RegisterShadowRealmBindings(aCx, aGlobal);
+}
+
 CycleCollectedJSRuntime::CycleCollectedJSRuntime(JSContext* aCx)
     : mContext(nullptr),
       mGCThingCycleCollectorGlobal(sGCThingCycleCollectorGlobal),
@@ -705,6 +720,8 @@ CycleCollectedJSRuntime::CycleCollectedJSRuntime(JSContext* aCx)
   JS::SetWaitCallback(mJSRuntime, BeforeWaitCallback, AfterWaitCallback,
                       sizeof(dom::AutoYieldJSThreadExecution));
   JS::SetWarningReporter(aCx, MozCrashWarningReporter);
+  JS::SetShadowRealmInitializeGlobalCallback(aCx, InitializeShadowRealm);
+  JS::SetShadowRealmGlobalCreationCallback(aCx, dom::NewShadowRealmGlobal);
 
   js::AutoEnterOOMUnsafeRegion::setAnnotateOOMAllocationSizeCallback(
       CrashReporter::AnnotateOOMAllocationSize);
@@ -730,7 +747,7 @@ class JSLeakTracer : public JS::CallbackTracer {
                            JS::WeakMapTraceAction::TraceKeysAndValues) {}
 
  private:
-  void onChild(JS::GCCellPtr thing) override {
+  void onChild(JS::GCCellPtr thing, const char* name) override {
     const char* kindName = JS::GCTraceKindToAscii(thing.kind());
     size_t size = JS::GCTraceKindSize(thing.kind());
     MOZ_LOG_CTOR(thing.asCell(), kindName, size);
@@ -1160,17 +1177,22 @@ void CycleCollectedJSRuntime::GCNurseryCollectionCallback(
   MOZ_ASSERT(CycleCollectedJSContext::Get()->Context() == aContext);
   MOZ_ASSERT(NS_IsMainThread());
 
-  RefPtr<TimelineConsumers> timelines = TimelineConsumers::Get();
-  if (timelines && !timelines->IsEmpty()) {
+  if (!TimelineConsumers::IsEmpty()) {
     UniquePtr<AbstractTimelineMarker> abstractMarker(
         MakeUnique<MinorGCMarker>(aProgress, aReason));
-    timelines->AddMarkerForAllObservedDocShells(abstractMarker);
+    TimelineConsumers::AddMarkerForAllObservedDocShells(abstractMarker);
   }
 
+  TimeStamp now = TimeStamp::Now();
   if (aProgress == JS::GCNurseryProgress::GC_NURSERY_COLLECTION_START) {
-    self->mLatestNurseryCollectionStart = TimeStamp::Now();
-  } else if (aProgress == JS::GCNurseryProgress::GC_NURSERY_COLLECTION_END &&
-             profiler_thread_is_being_profiled_for_markers()) {
+    self->mLatestNurseryCollectionStart = now;
+  } else if (aProgress == JS::GCNurseryProgress::GC_NURSERY_COLLECTION_END) {
+    PerfStats::RecordMeasurement(PerfStats::Metric::MinorGC,
+                                 now - self->mLatestNurseryCollectionStart);
+  }
+
+  if (aProgress == JS::GCNurseryProgress::GC_NURSERY_COLLECTION_END &&
+      profiler_thread_is_being_profiled_for_markers()) {
     struct GCMinorMarker {
       static constexpr mozilla::Span<const char> MarkerTypeName() {
         return mozilla::MakeStringSpan("GCMinor");
@@ -1201,7 +1223,7 @@ void CycleCollectedJSRuntime::GCNurseryCollectionCallback(
 
     profiler_add_marker(
         "GCMinor", baseprofiler::category::GCCC,
-        MarkerTiming::IntervalUntilNowFrom(self->mLatestNurseryCollectionStart),
+        MarkerTiming::Interval(self->mLatestNurseryCollectionStart, now),
         GCMinorMarker{},
         ProfilerString8View::WrapNullTerminatedString(
             JS::MinorGcToJSON(aContext).get()));
@@ -1797,6 +1819,10 @@ const char* CycleCollectedJSRuntime::OOMStateToString(
       MOZ_ASSERT_UNREACHABLE("OOMState holds an invalid value");
       return "Unknown";
   }
+}
+
+bool CycleCollectedJSRuntime::OOMReported() {
+  return mOutOfMemoryState == OOMState::Reported;
 }
 
 void CycleCollectedJSRuntime::AnnotateAndSetOutOfMemory(OOMState* aStatePtr,

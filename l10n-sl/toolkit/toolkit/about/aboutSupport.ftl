@@ -175,6 +175,15 @@ media-codec-support-info = Podatki o podpori kodekov
 # List all the entries of the database.
 media-capabilities-enumerate = Oštevilči bazo podatkov
 
+## Codec support table
+
+media-codec-support-sw-decoding = Programsko dekodiranje
+media-codec-support-hw-decoding = Strojno dekodiranje
+media-codec-support-codec-name = Ime kodeka
+media-codec-support-supported = Podprt
+media-codec-support-unsupported = Nepodprt
+media-codec-support-error = Podatki o podpori kodeka niso na voljo. Poskusite znova po predvajanju predstavnostne datoteke.
+
 ##
 
 intl-title = Jeziki in lokalizacija
@@ -298,6 +307,8 @@ webgl2-renderer = Izrisovalnik gonilnika WebGL 2
 webgl2-version = Različica gonilnika WebGL 2
 webgl2-driver-extensions = Razširitve gonilnika WebGL 2
 webgl2-extensions = Razširitve WebGL 2
+webgpu-default-adapter = Privzeta vmesniška kartica za WebGPU
+webgpu-fallback-adapter = Pomožna vmesniška kartica za WebGPU
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Dodano na seznam zavrnjenih zaradi znanih težav: <a data-l10n-name="bug-link">hrošč { $bugNumber }</a>
@@ -313,8 +324,8 @@ gpu-device-reset = Ponastavitev naprave
 gpu-device-reset-button = Sproži ponastavitev naprave
 uses-tiling = Uporablja razpostavljanje
 content-uses-tiling = Uporablja razpostavljanje (vsebina)
-off-main-thread-paint-enabled = Izrisovanje izven glavne niti je omogočeno
-off-main-thread-paint-worker-count = Število workerjev za izrisovanje izven glavne niti
+off-main-thread-paint-enabled = Slikanje izven glavne niti je omogočeno
+off-main-thread-paint-worker-count = Število workerjev za slikanje izven glavne niti
 target-frame-rate = Ciljna hitrost sličic
 min-lib-versions = Najnižja podprta različica
 loaded-lib-versions = Trenutna različica

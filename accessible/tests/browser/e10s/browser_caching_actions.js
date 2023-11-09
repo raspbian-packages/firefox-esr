@@ -101,7 +101,7 @@ addAccessibleTask(
 
   <div onclick=""><p id="p_in_clickable_div">p in clickable div</p></div>
   `,
-  async function(browser, docAcc) {
+  async function (browser, docAcc) {
     is(docAcc.actionCount, 0, "Doc should not have any actions");
 
     const _testActions = async (id, expectedActions, domEvents) => {
@@ -155,6 +155,7 @@ addAccessibleTask(
     await invokeContentTask(browser, [], () => {
       content.document
         .getElementById("onclick_img")
+        // eslint-disable-next-line @microsoft/sdl/no-insecure-url
         .setAttribute("longdesc", "http://example.com");
     });
     acc = findAccessibleChildByID(docAcc, "onclick_img");
@@ -206,8 +207,60 @@ addAccessibleTask(
   },
   {
     chrome: true,
-    topLevel: !isWinNoCache,
-    iframe: !isWinNoCache,
-    remoteIframe: !isWinNoCache,
+    topLevel: true,
+    iframe: true,
+    remoteIframe: true,
+  }
+);
+
+/**
+ * Test access key.
+ */
+addAccessibleTask(
+  `
+<button id="noKey">noKey</button>
+<button id="key" accesskey="a">key</button>
+  `,
+  async function (browser, docAcc) {
+    const noKey = findAccessibleChildByID(docAcc, "noKey");
+    is(noKey.accessKey, "", "noKey has no accesskey");
+    const key = findAccessibleChildByID(docAcc, "key");
+    is(key.accessKey, MAC ? "⌃⌥a" : "Alt+Shift+a", "key has correct accesskey");
+
+    info("Changing accesskey");
+    await invokeContentTask(browser, [], () => {
+      content.document.getElementById("key").accessKey = "b";
+    });
+    await untilCacheIs(
+      () => key.accessKey,
+      MAC ? "⌃⌥b" : "Alt+Shift+b",
+      "Correct accesskey after change"
+    );
+
+    info("Removing accesskey");
+    await invokeContentTask(browser, [], () => {
+      content.document.getElementById("key").removeAttribute("accesskey");
+    });
+    await untilCacheIs(
+      () => key.accessKey,
+      "",
+      "Empty accesskey after removal"
+    );
+
+    info("Adding accesskey");
+    await invokeContentTask(browser, [], () => {
+      content.document.getElementById("key").accessKey = "c";
+    });
+    await untilCacheIs(
+      () => key.accessKey,
+      MAC ? "⌃⌥c" : "Alt+Shift+c",
+      "Correct accesskey after addition"
+    );
+  },
+  {
+    chrome: true,
+    topLevel: true,
+    iframe: false, // Bug 1796846
+    remoteIframe: false, // Bug 1796846
   }
 );

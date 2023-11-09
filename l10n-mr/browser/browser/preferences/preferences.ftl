@@ -53,6 +53,17 @@ restart-later = नंतर पुनःसुरु करा
 ## Variables:
 ##   $name (String): name of the extension
 
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -116,6 +127,10 @@ browser-containers-settings =
     .accesskey = i
 
 containers-disable-alert-title = सगळे कंटेनर टॅब बंद करायचे आहेत का?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] जर आपण आता कंटेनर टॅब्स निष्क्रिय केलेत, तर { $tabCount } कंटेनर टॅब बंद होईल. आपल्याला खरंच कंटेनर टॅब्स निष्क्रिय करायचेत का?
@@ -127,6 +142,9 @@ containers-disable-alert-ok-button =
         [one] { $tabCount } कंटेनर टॅब बंद करा
        *[other] { $tabCount } कंटेनर टॅब्स बंद करा
     }
+
+##
+
 containers-disable-alert-cancel-button = सक्रिय ठेवा
 
 containers-remove-alert-title = हा कंटेनर काढून टाकायचा का?
@@ -423,11 +441,6 @@ home-restore-defaults =
     .label = पूर्वनिर्धारित स्थितित आणा
     .accesskey = R
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Firefox मुखपृष्ठ (पूर्वनिर्धारित)
-
 home-mode-choice-custom =
     .label = सानुकूलीत URLs...
 
@@ -455,14 +468,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = फायरफॉक्स होम वरील मजकूर
-home-prefs-content-description = आपल्या फायरफॉक्सचा मुख्यपृष्ठवर आपल्याला कोणती माहिती पाहिजे ते निवडा.
-
 home-prefs-search-header =
     .label = वेब शोध
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 # Variables:
 #  $provider (String): Name of the corresponding content provider, e.g "Pocket".
@@ -518,6 +532,7 @@ search-show-suggestions-url-bar-option =
     .label = पत्ता पट्टी परिणामांत शोध सूचना दाखवा
     .accesskey = l
 
+
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -566,6 +581,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = आपला वेब आपल्याबरोबर घेऊन चला
 
 # This message contains two links and two icon images.
@@ -580,6 +599,9 @@ sync-mobile-promo = साठी डाउनलोड करा <img data-l10n-
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = प्रोफाइल प्रतिमा बदला
 
@@ -590,8 +612,13 @@ sync-sign-out =
 sync-manage-account = खाते व्यवस्थापित करा
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } चाचणी झाली नाही.
 sync-signedin-login-failure = पुन्हा जोडणीकरिता कृपया साइन करा { $email }
+
+##
 
 sync-resend-verification =
     .label = पडताळणी पुन्हा पाठवा
@@ -611,6 +638,13 @@ prefs-sync-now =
     .labelnotsyncing = आत्ता सिंक करा
     .accesskeynotsyncing = N
     .labelsyncing = सिंक करत आहे
+
+prefs-sync-now-button =
+    .label = आत्ता सिंक करा
+    .accesskey = N
+
+prefs-syncing-button =
+    .label = सिंक करत आहे
 
 ## The list of things currently syncing.
 
@@ -678,6 +712,16 @@ sync-device-name-save =
     .accesskey = v
 
 sync-connect-another-device = अन्य उपकरण जोडा
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = वैधता पाठवली
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = पडताळणीसाठी { $email } वर दुवा पाठवला आहे.
+sync-verification-not-sent-title = खात्री करण्यासाठी दुवा पाठवू शकत नाही.
+sync-verification-not-sent-body = खात्री करण्यासाठी या वेळी इ-मेल पाठवू शकत नाही, कृपया थोड्या वेळाने पुन्हा प्रयत्न करा.
 
 ## Privacy Section
 
@@ -796,6 +840,9 @@ sitedata-settings =
     .label = डेटा व्यवस्थापित करा...
     .accesskey = M
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-header = पत्ता पट्टी
@@ -843,9 +890,10 @@ content-blocking-social-media-trackers = सोशल मीडिया ट्�
 content-blocking-all-cookies = सर्व कुकीज
 content-blocking-unvisited-cookies = भेट न दिलेल्या साइटवरील कुकीज
 content-blocking-all-windows-tracking-content = सर्व विंडोमधील सामग्री ट्रॅक करणे
-content-blocking-all-third-party-cookies = सर्व तृतीय-पक्ष कुकीज
 content-blocking-cryptominers = क्रिप्टोमाइनर
 content-blocking-fingerprinters = फिंगरप्रिंटर
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-warning-title = सावधान!
 content-blocking-warning-learn-how = कसे ते जाणा
@@ -1000,6 +1048,9 @@ certs-devices =
     .accesskey = D
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

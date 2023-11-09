@@ -1,10 +1,13 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { PREFS_GUID } = ChromeUtils.import(
-  "resource://services-sync/engines/prefs.js"
+const { getPrefsGUIDForTest } = ChromeUtils.importESModule(
+  "resource://services-sync/engines/prefs.sys.mjs"
 );
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
+const PREFS_GUID = getPrefsGUIDForTest();
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
+);
 
 async function cleanup(engine, server) {
   await engine._tracker.stop();

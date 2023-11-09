@@ -8,7 +8,7 @@
 const TEST_ENGINE_BASENAME = "searchSuggestionEngine.xml";
 
 add_task(async function checkCtrlWorks() {
-  registerCleanupFunction(async function() {
+  registerCleanupFunction(async function () {
     await PlacesUtils.history.clear();
     await UrlbarTestUtils.formHistory.clear();
   });
@@ -73,14 +73,10 @@ add_task(async function checkCtrlWorks() {
 
 add_task(async function checkPrefTurnsOffCanonize() {
   // Add a dummy search engine to avoid hitting the network.
-  let engine = await SearchTestUtils.promiseNewSearchEngine(
-    getRootDirectory(gTestPath) + TEST_ENGINE_BASENAME
-  );
-  let oldDefaultEngine = await Services.search.getDefault();
-  await Services.search.setDefault(engine);
-  registerCleanupFunction(async () =>
-    Services.search.setDefault(oldDefaultEngine)
-  );
+  await SearchTestUtils.promiseNewSearchEngine({
+    url: getRootDirectory(gTestPath) + TEST_ENGINE_BASENAME,
+    setAsDefault: true,
+  });
 
   const win = await BrowserTestUtils.openNewBrowserWindow();
 
@@ -200,7 +196,7 @@ add_task(async function autofill() {
   await BrowserTestUtils.closeWindow(win);
 });
 
-add_task(async function() {
+add_task(async function () {
   info(
     "Test whether canonization is disabled until the ctrl key is releasing if the key was used to paste text into urlbar"
   );
@@ -229,7 +225,7 @@ add_task(async function() {
   await BrowserTestUtils.closeWindow(win);
 });
 
-add_task(async function() {
+add_task(async function () {
   info("Test whether canonization is enabled again after releasing the ctrl");
 
   await SpecialPowers.pushPrefEnv({

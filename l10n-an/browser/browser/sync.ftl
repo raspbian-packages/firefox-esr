@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = Activar sincronización
 
 fxa-menu-connect-another-device =
     .label = Connectar belatro dispositivo…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Ninviar pestanya ta lo dispostivo
+           *[other] Ninviar { $tabCount } pestanyas ta lo dispositivo
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

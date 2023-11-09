@@ -9,9 +9,8 @@ failed-pp-change = Get ekki breytt aðallykilorði.
 incorrect-pp = Þú settir ekki inn rétt núverandi aðallykilorð. Reyndu aftur.
 pp-change-ok = Tókst að breyta aðallykilorði.
 
-pp-empty-warning = Geymdu lykilorðin þín og einkalyklar verða ekki vernduð.
-pp-erased-ok = Þú hefur eytt aðallykilorðinu þínu. { pp-empty-warning }
-pp-not-wanted = Aðvörun! Þú hefur ákveðið að nota ekki aðallykilorð. { pp-empty-warning }
+settings-pp-erased-ok = Þú hefur eytt aðallykilorðinu þínu. Geymd lykilorð og einkalyklar skilríkja sem stýrt er af { -brand-short-name } verða ekki vernduð.
+settings-pp-not-wanted = Aðvörun! Þú hefur ákveðið að nota ekki aðallykilorð. Geymd lykilorð og einkalyklar skilríkja sem stýrt er af { -brand-short-name } verða ekki vernduð.
 
 pp-change2empty-in-fips-mode = Þú ert núna í FIPS-ham. FIPS má ekki hafa tómt aðallykilorð.
 pw-change-success-title = Lykilorði breytt

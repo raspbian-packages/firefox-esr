@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Nedavno zaprto
 firefoxview-closed-tabs-description2 = Ponovno odprite strani, ki ste jih zaprli v tem oknu.
 firefoxview-closed-tabs-placeholder-header = Ni nedavno zaprtih zavihkov
 firefoxview-closed-tabs-placeholder-body = Tukaj lahko najdete zavihke, ki ste jih zaprli v tem oknu.
+firefoxview-closed-tabs-placeholder-body2 = Tukaj lahko najdete zavihke, ki ste jih zaprli.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Zadnja dejavnost
 firefoxview-tabs-list-tab-button =
     .title = Odpri { $targetURI } v novem zavihku
 firefoxview-try-colorways-button = Preizkusite barvne kombinacije
-firefoxview-no-current-colorway-collection = Nove barvne kombinacije so na poti
 firefoxview-change-colorway-button = Spremeni barvno kombinacijo
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Prikaži seznam
 firefoxview-collapse-button-hide =
     .title = Skrij seznam
+firefoxview-overview-nav = Nedavno brskanje
+    .title = Nedavno brskanje
+firefoxview-overview-header = Nedavno brskanje
+    .title = Nedavno brskanje
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Zgodovina
+    .title = Zgodovina
+firefoxview-history-header = Zgodovina
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Odprti zavihki
+    .title = Odprti zavihki
+firefoxview-opentabs-header = Odprti zavihki
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Nedavno zaprti zavihki
+    .title = Nedavno zaprti zavihki
+firefoxview-recently-closed-header = Nedavno zaprti zavihki
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Zavihki z drugih naprav
+    .title = Zavihki z drugih naprav
+firefoxview-synced-tabs-header = Zavihki z drugih naprav
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Prikaži vse
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Okno { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Okno { $winID } (trenutno)
+firefoxview-opentabs-focus-tab =
+    .title = Preklopi na ta zavihek
+firefoxview-show-more = Prikaži več
+firefoxview-show-less = Prikaži manj
+firefoxview-sort-history-by-date-label = Razvrsti po datumu
+firefoxview-sort-history-by-site-label = Razvrsti po spletnem mestu
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Danes – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Včeraj – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Prikaži vso zgodovino

@@ -15,7 +15,6 @@
 #include "WebGLQuery.h"
 #include "WebGLRenderbuffer.h"
 #include "WebGLTexture.h"
-#include "WebGLExtensions.h"
 #include "WebGLVertexArray.h"
 
 #include "nsDebug.h"
@@ -933,10 +932,19 @@ void WebGLContext::ReadPixelsPbo(const webgl::ReadPixelsDesc& desc,
   //////
 
   {
-    const auto bytesPerType =
-        webgl::BytesPerPixel({LOCAL_GL_RED, desc.pi.type});
+    const auto pii = webgl::PackingInfoInfo::For(desc.pi);
+    if (!pii) {
+      GLenum err = LOCAL_GL_INVALID_OPERATION;
+      if (!desc.pi.format || !desc.pi.type) {
+        err = LOCAL_GL_INVALID_ENUM;
+      }
+      GenerateError(err, "`format` (%s) and/or `type` (%s) not acceptable.",
+                    EnumString(desc.pi.format).c_str(),
+                    EnumString(desc.pi.type).c_str());
+      return;
+    }
 
-    if (offset % bytesPerType != 0) {
+    if (offset % pii->bytesPerElement != 0) {
       ErrorInvalidOperation(
           "`offset` must be divisible by the size of `type`"
           " in bytes.");
@@ -1007,8 +1015,8 @@ static bool ArePossiblePackEnums(const WebGLContext* webgl,
 
   if (pi.type == LOCAL_GL_UNSIGNED_INT_24_8) return false;
 
-  uint8_t bytes;
-  if (!GetBytesPerPixel(pi, &bytes)) return false;
+  const auto pii = webgl::PackingInfoInfo::For(pi);
+  if (!pii) return false;
 
   return true;
 }
@@ -1276,8 +1284,9 @@ void WebGLContext::StencilOpSeparate(GLenum face, GLenum sfail, GLenum dpfail,
 ////////////////////////////////////////////////////////////////////////////////
 // Uniform setters.
 
-void WebGLContext::UniformData(const uint32_t loc, const bool transpose,
-                               const Range<const uint8_t>& data) const {
+void WebGLContext::UniformData(
+    const uint32_t loc, const bool transpose,
+    const Range<const webgl::UniformDataVal>& data) const {
   const FuncScope funcScope(*this, "uniform setter");
 
   if (!IsWebGL2() && transpose) {
@@ -1303,7 +1312,7 @@ void WebGLContext::UniformData(const uint32_t loc, const bool transpose,
 
   // -
 
-  const auto lengthInType = data.length() / sizeof(float);
+  const auto lengthInType = data.length();
   const auto elemCount = lengthInType / channels;
   if (elemCount > 1 && !validationInfo.isArray) {
     GenerateError(
@@ -1344,10 +1353,13 @@ void WebGLContext::UniformData(const uint32_t loc, const bool transpose,
 
     const auto srcBegin = reinterpret_cast<const uint32_t*>(data.begin().get());
     auto destIndex = locInfo->indexIntoUniform;
-    for (const auto& val : Range<const uint32_t>(srcBegin, elemCount)) {
-      if (destIndex >= texUnits.size()) break;
-      texUnits[destIndex] = val;
-      destIndex += 1;
+    if (destIndex < texUnits.length()) {
+      // Only sample as many indexes as available tex units allow.
+      const auto destCount = std::min(elemCount, texUnits.length() - destIndex);
+      for (const auto& val : Range<const uint32_t>(srcBegin, destCount)) {
+        texUnits[destIndex] = AssertedCast<uint8_t>(val);
+        destIndex += 1;
+      }
     }
   }
 }
@@ -1547,6 +1559,15 @@ void WebGLContext::PolygonOffset(GLfloat factor, GLfloat units) {
   if (IsContextLost()) return;
 
   gl->fPolygonOffset(factor, units);
+}
+
+void WebGLContext::ProvokingVertex(const webgl::ProvokingVertex mode) const {
+  const FuncScope funcScope(*this, "provokingVertex");
+  if (IsContextLost()) return;
+  MOZ_RELEASE_ASSERT(
+      IsExtensionEnabled(WebGLExtensionID::WEBGL_provoking_vertex));
+
+  gl->fProvokingVertex(UnderlyingValue(mode));
 }
 
 void WebGLContext::SampleCoverage(GLclampf value, WebGLboolean invert) {

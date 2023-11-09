@@ -28,7 +28,18 @@ toolbox-meatball-menu-community-label = Tinamital…
 # contributors.
 toolbox-meatball-menu-noautohide-label = Tichup ri ruyonil rewaxik ri elenel rutzijol
 
+toolbox-meatball-menu-pseudo-locale-bidi = Titzij “bidi” ch'ab'äl
+
 ##
 
+
 ## These labels are shown in the top-toolbar in the Browser Toolbox and Browser Console
+
+toolbox-mode-browser-toolbox-label = Rub'anikil kikaxa taq rusamajib'al okik'amaya'l
+toolbox-mode-browser-console-label = Rub'anikil Rutemeb'al Okik'amaya'l
+
+toolbox-mode-everything-label = K'ïy tajinïk
+toolbox-mode-everything-sub-label = (Eqal)
+
+toolbox-mode-parent-process-sub-label = (Anin)
 

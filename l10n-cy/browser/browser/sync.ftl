@@ -21,6 +21,18 @@ fxa-menu-turn-on-sync-default = Cychwyn Sync
 
 fxa-menu-connect-another-device =
     .label = Cysylltu Dyfais Arall…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [zero] Anfon Tab i Ddyfais
+            [one] Anfon { $tabCount } Tab i Ddyfais
+            [two] Anfon { $tabCount } Dab i Ddyfais
+            [few] Anfon { $tabCount } Thab i Ddyfais
+            [many] Anfon { $tabCount } Tab i Ddyfais
+           *[other] Anfon { $tabCount } Thab i Ddyfais
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

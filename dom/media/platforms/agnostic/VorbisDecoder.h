@@ -36,6 +36,7 @@ class VorbisDataDecoder final
   nsCString GetDescriptionName() const override {
     return "vorbis audio decoder"_ns;
   }
+  nsCString GetCodecName() const override { return "vorbis"_ns; }
 
   // Return true if mimetype is Vorbis
   static bool IsVorbis(const nsACString& aMimeType);

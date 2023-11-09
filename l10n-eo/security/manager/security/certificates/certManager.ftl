@@ -26,10 +26,6 @@ certmgr-people = Vi havas konservitajn atestilojn, kiuj identigas tiujn ĉi pers
 certmgr-server = Tiuj registroj identigas esceptojn por atestilaj eraroj
 certmgr-ca = Vi havas konservitajn atestilojn, kiuj identigas tiujn ĉi atestilaj aŭtoritatoj
 
-certmgr-edit-ca-cert =
-    .title = Modifi agordojn de CA atestila fido
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Modifi agordojn de CA atestila fido
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Tiu ĉi atestilo povas identigi retpoŝtajn uzantojn.
-
-certmgr-delete-cert =
-    .title = Forigi atestilon
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Forigi atestilon
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Servilo
-
-certmgr-override-lifetime =
-    .label = Vivodaŭro
 
 certmgr-token-name =
     .label = Sekureca aparato
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Seria numero
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256 fingrospuro
 
 certmgr-view =
     .label = Vidi…

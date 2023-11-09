@@ -100,6 +100,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Raporteeri katkisest saidist
 protections-panel-content-blocking-breakage-report-view-description = Teatud jälitajate blokkimine võib põhjustada probleeme mõningate saitidega. Probleemidest raporteerimisega aitad sa teha { -brand-short-name }i paremaks kõigi jaoks. Selle raportiga saadetakse Mozillale nii külastatava saidi URL kui ka infot sinu brauseri sätete kohta. <label data-l10n-name="learn-more">Rohkem teavet</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Teatud jälitajate blokkimine võib põhjustada probleeme mõningate saitidega. Probleemidest raporteerimisega aitad sa teha { -brand-short-name }i paremaks kõigi jaoks. Selle raportiga saadetakse { -vendor-short-name }le nii külastatava saidi URL kui ka infot sinu brauseri sätete kohta.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -110,3 +111,6 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Loobu
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Saada raport
+
+# Cookie Banner Handling
+

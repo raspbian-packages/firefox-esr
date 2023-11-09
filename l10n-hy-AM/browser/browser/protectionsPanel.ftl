@@ -97,6 +97,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Հաղորդել կոտրված կայքի մասին
 protections-panel-content-blocking-breakage-report-view-description = Որոշ հետևումների արգելափակումը կարող է որոշ կայքերի խնդիրների պատճառ դառնալ։ Այս խնդիրների զեկուցումը { -brand-short-name }-ը բոլորի համար ավելի լավը կդարձնի։ Այս զեկույցն ուղարկելով Mozila-ին կուղարկվի URL և ձեր զննարկչի կարգավորումների մասին տեղեկություն։ <label data-l10n-name="learn-more">Իմանալ ավելին</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Որոշ հետևումների արգելափակումը կարող է որոշ կայքերի խնդիրների պատճառ դառնալ։ Այս խնդիրների զեկուցումը { -brand-short-name }-ը բոլորի համար ավելի լավը կդարձնի։ Այս զեկույցն ուղարկելով { -vendor-short-name }-ին կուղարկվի URL և ձեր զննարկչի կարգավորումների մասին տեղեկություն։
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -107,3 +108,8 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Չեղարկել
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Ուղարկել զեկույց
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-view-turn-off = Անջատել
+protections-panel-cookie-banner-view-turn-on = Միացնել

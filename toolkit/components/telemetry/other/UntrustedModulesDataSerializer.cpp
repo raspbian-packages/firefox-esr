@@ -15,6 +15,10 @@
 #include "nsUnicharUtils.h"
 #include "nsXULAppAPI.h"
 
+#if defined(MOZ_GECKO_PROFILER)
+#  include "shared-libraries.h"
+#endif  // MOZ_GECKO_PROFILER
+
 namespace mozilla {
 namespace Telemetry {
 
@@ -62,10 +66,11 @@ static void LimitStringLength(nsAString& aStr, size_t aMaxFieldLength) {
  *                         (see LimitStringLength())
  * @return true upon success
  */
-static bool AddLengthLimitedStringProp(JSContext* cx, JS::HandleObject aObj,
+static bool AddLengthLimitedStringProp(JSContext* cx,
+                                       JS::Handle<JSObject*> aObj,
                                        const char* aName, const nsAString& aVal,
                                        size_t aMaxFieldLength = MAX_PATH) {
-  JS::RootedValue jsval(cx);
+  JS::Rooted<JS::Value> jsval(cx);
   nsAutoString shortVal(aVal);
   LimitStringLength(shortVal, aMaxFieldLength);
   jsval.setString(Common::ToJSString(cx, shortVal));
@@ -105,17 +110,17 @@ static JSString* ModuleVersionToJSString(JSContext* aCx,
  * @return true if aRet was successfully assigned to the new array object.
  */
 template <typename T, typename Converter, typename... Args>
-static bool ContainerToJSArray(JSContext* cx, JS::MutableHandleObject aRet,
+static bool ContainerToJSArray(JSContext* cx, JS::MutableHandle<JSObject*> aRet,
                                const T& aContainer,
                                Converter&& aElementConverter, Args&&... aArgs) {
-  JS::RootedObject arr(cx, JS::NewArrayObject(cx, 0));
+  JS::Rooted<JSObject*> arr(cx, JS::NewArrayObject(cx, 0));
   if (!arr) {
     return false;
   }
 
   size_t i = 0;
   for (auto&& item : aContainer) {
-    JS::RootedValue jsel(cx);
+    JS::Rooted<JS::Value> jsel(cx);
     if (!aElementConverter(cx, &jsel, *item, std::forward<Args>(aArgs)...)) {
       return false;
     }
@@ -129,20 +134,21 @@ static bool ContainerToJSArray(JSContext* cx, JS::MutableHandleObject aRet,
   return true;
 }
 
-static bool SerializeModule(JSContext* aCx, JS::MutableHandleValue aElement,
+static bool SerializeModule(JSContext* aCx,
+                            JS::MutableHandle<JS::Value> aElement,
                             const RefPtr<ModuleRecord>& aModule,
                             uint32_t aFlags) {
   if (!aModule) {
     return false;
   }
 
-  JS::RootedObject obj(aCx, JS_NewPlainObject(aCx));
+  JS::Rooted<JSObject*> obj(aCx, JS_NewPlainObject(aCx));
   if (!obj) {
     return false;
   }
 
   if (aFlags & nsITelemetry::INCLUDE_PRIVATE_FIELDS_IN_LOADEVENTS) {
-    JS::RootedValue jsFileObj(aCx);
+    JS::Rooted<JS::Value> jsFileObj(aCx);
     if (!dom::ToJSValue(aCx, aModule->mResolvedDosName, &jsFileObj) ||
         !JS_DefineProperty(aCx, obj, "dllFile", jsFileObj, JSPROP_ENUMERATE)) {
       return false;
@@ -155,7 +161,7 @@ static bool SerializeModule(JSContext* aCx, JS::MutableHandleValue aElement,
   }
 
   if (aModule->mVersion.isSome()) {
-    JS::RootedValue jsModuleVersion(aCx);
+    JS::Rooted<JS::Value> jsModuleVersion(aCx);
     jsModuleVersion.setString(
         ModuleVersionToJSString(aCx, aModule->mVersion.ref()));
     if (!JS_DefineProperty(aCx, obj, "fileVersion", jsModuleVersion,
@@ -163,6 +169,22 @@ static bool SerializeModule(JSContext* aCx, JS::MutableHandleValue aElement,
       return false;
     }
   }
+
+#if defined(MOZ_GECKO_PROFILER)
+  if (aModule->mResolvedDosName) {
+    nsAutoString path;
+    if (aModule->mResolvedDosName->GetPath(path) == NS_OK) {
+      SharedLibraryInfo info = SharedLibraryInfo::GetInfoFromPath(path.Data());
+      if (info.GetSize() > 0) {
+        nsCString breakpadId = info.GetEntry(0).GetBreakpadId();
+        if (!AddLengthLimitedStringProp(aCx, obj, "debugID",
+                                        NS_ConvertASCIItoUTF16(breakpadId))) {
+          return false;
+        }
+      }
+    }
+  }
+#endif  // MOZ_GECKO_PROFILER
 
   if (aModule->mVendorInfo.isSome()) {
     const char* propName;
@@ -190,7 +212,7 @@ static bool SerializeModule(JSContext* aCx, JS::MutableHandleValue aElement,
     }
   }
 
-  JS::RootedValue jsTrustFlags(aCx);
+  JS::Rooted<JS::Value> jsTrustFlags(aCx);
   jsTrustFlags.setNumber(static_cast<uint32_t>(aModule->mTrustFlags));
   if (!JS_DefineProperty(aCx, obj, "trustFlags", jsTrustFlags,
                          JSPROP_ENUMERATE)) {
@@ -203,7 +225,7 @@ static bool SerializeModule(JSContext* aCx, JS::MutableHandleValue aElement,
 
 /* static */
 bool UntrustedModulesDataSerializer::SerializeEvent(
-    JSContext* aCx, JS::MutableHandleValue aElement,
+    JSContext* aCx, JS::MutableHandle<JS::Value> aElement,
     const ProcessedModuleLoadEventContainer& aEventContainer,
     const IndexMap& aModuleIndices) {
   MOZ_ASSERT(NS_IsMainThread());
@@ -213,12 +235,12 @@ bool UntrustedModulesDataSerializer::SerializeEvent(
     return false;
   }
 
-  JS::RootedObject obj(aCx, JS_NewPlainObject(aCx));
+  JS::Rooted<JSObject*> obj(aCx, JS_NewPlainObject(aCx));
   if (!obj) {
     return false;
   }
 
-  JS::RootedValue jsProcessUptimeMS(aCx);
+  JS::Rooted<JS::Value> jsProcessUptimeMS(aCx);
   // Javascript doesn't like 64-bit integers; convert to double.
   jsProcessUptimeMS.setNumber(static_cast<double>(event.mProcessUptimeMS));
   if (!JS_DefineProperty(aCx, obj, "processUptimeMS", jsProcessUptimeMS,
@@ -227,7 +249,7 @@ bool UntrustedModulesDataSerializer::SerializeEvent(
   }
 
   if (event.mLoadDurationMS) {
-    JS::RootedValue jsLoadDurationMS(aCx);
+    JS::Rooted<JS::Value> jsLoadDurationMS(aCx);
     jsLoadDurationMS.setNumber(event.mLoadDurationMS.value());
     if (!JS_DefineProperty(aCx, obj, "loadDurationMS", jsLoadDurationMS,
                            JSPROP_ENUMERATE)) {
@@ -235,7 +257,7 @@ bool UntrustedModulesDataSerializer::SerializeEvent(
     }
   }
 
-  JS::RootedValue jsThreadId(aCx);
+  JS::Rooted<JS::Value> jsThreadId(aCx);
   jsThreadId.setNumber(static_cast<uint32_t>(event.mThreadId));
   if (!JS_DefineProperty(aCx, obj, "threadID", jsThreadId, JSPROP_ENUMERATE)) {
     return false;
@@ -249,7 +271,7 @@ bool UntrustedModulesDataSerializer::SerializeEvent(
   }
 
   if (!effectiveThreadName.IsEmpty()) {
-    JS::RootedValue jsThreadName(aCx);
+    JS::Rooted<JS::Value> jsThreadName(aCx);
     jsThreadName.setString(Common::ToJSString(aCx, effectiveThreadName));
     if (!JS_DefineProperty(aCx, obj, "threadName", jsThreadName,
                            JSPROP_ENUMERATE)) {
@@ -272,7 +294,7 @@ bool UntrustedModulesDataSerializer::SerializeEvent(
   strBaseAddress.AppendLiteral(u"0x");
   strBaseAddress.AppendInt(event.mBaseAddress, 16);
 
-  JS::RootedValue jsBaseAddress(aCx);
+  JS::Rooted<JS::Value> jsBaseAddress(aCx);
   jsBaseAddress.setString(Common::ToJSString(aCx, strBaseAddress));
   if (!JS_DefineProperty(aCx, obj, "baseAddress", jsBaseAddress,
                          JSPROP_ENUMERATE)) {
@@ -284,21 +306,21 @@ bool UntrustedModulesDataSerializer::SerializeEvent(
     return false;
   }
 
-  JS::RootedValue jsModuleIndex(aCx);
+  JS::Rooted<JS::Value> jsModuleIndex(aCx);
   jsModuleIndex.setNumber(index);
   if (!JS_DefineProperty(aCx, obj, "moduleIndex", jsModuleIndex,
                          JSPROP_ENUMERATE)) {
     return false;
   }
 
-  JS::RootedValue jsIsDependent(aCx);
+  JS::Rooted<JS::Value> jsIsDependent(aCx);
   jsIsDependent.setBoolean(event.mIsDependent);
   if (!JS_DefineProperty(aCx, obj, "isDependent", jsIsDependent,
                          JSPROP_ENUMERATE)) {
     return false;
   }
 
-  JS::RootedValue jsLoadStatus(aCx);
+  JS::Rooted<JS::Value> jsLoadStatus(aCx);
   jsLoadStatus.setNumber(event.mLoadStatus);
   if (!JS_DefineProperty(aCx, obj, "loadStatus", jsLoadStatus,
                          JSPROP_ENUMERATE)) {
@@ -321,8 +343,8 @@ static nsDependentCString GetProcessTypeString(GeckoProcessType aType) {
 }
 
 nsresult UntrustedModulesDataSerializer::GetPerProcObject(
-    const UntrustedModulesData& aData, JS::MutableHandleObject aObj) {
-  JS::RootedValue jsProcType(mCx);
+    const UntrustedModulesData& aData, JS::MutableHandle<JSObject*> aObj) {
+  JS::Rooted<JS::Value> jsProcType(mCx);
   jsProcType.setString(
       Common::ToJSString(mCx, GetProcessTypeString(aData.mProcessType)));
   if (!JS_DefineProperty(mCx, aObj, "processType", jsProcType,
@@ -330,14 +352,14 @@ nsresult UntrustedModulesDataSerializer::GetPerProcObject(
     return NS_ERROR_FAILURE;
   }
 
-  JS::RootedValue jsElapsed(mCx);
+  JS::Rooted<JS::Value> jsElapsed(mCx);
   jsElapsed.setNumber(aData.mElapsed.ToSecondsSigDigits());
   if (!JS_DefineProperty(mCx, aObj, "elapsed", jsElapsed, JSPROP_ENUMERATE)) {
     return NS_ERROR_FAILURE;
   }
 
   if (aData.mXULLoadDurationMS.isSome()) {
-    JS::RootedValue jsXulLoadDurationMS(mCx);
+    JS::Rooted<JS::Value> jsXulLoadDurationMS(mCx);
     jsXulLoadDurationMS.setNumber(aData.mXULLoadDurationMS.value());
     if (!JS_DefineProperty(mCx, aObj, "xulLoadDurationMS", jsXulLoadDurationMS,
                            JSPROP_ENUMERATE)) {
@@ -345,21 +367,21 @@ nsresult UntrustedModulesDataSerializer::GetPerProcObject(
     }
   }
 
-  JS::RootedValue jsSanitizationFailures(mCx);
+  JS::Rooted<JS::Value> jsSanitizationFailures(mCx);
   jsSanitizationFailures.setNumber(aData.mSanitizationFailures);
   if (!JS_DefineProperty(mCx, aObj, "sanitizationFailures",
                          jsSanitizationFailures, JSPROP_ENUMERATE)) {
     return NS_ERROR_FAILURE;
   }
 
-  JS::RootedValue jsTrustTestFailures(mCx);
+  JS::Rooted<JS::Value> jsTrustTestFailures(mCx);
   jsTrustTestFailures.setNumber(aData.mTrustTestFailures);
   if (!JS_DefineProperty(mCx, aObj, "trustTestFailures", jsTrustTestFailures,
                          JSPROP_ENUMERATE)) {
     return NS_ERROR_FAILURE;
   }
 
-  JS::RootedObject eventsArray(mCx);
+  JS::Rooted<JSObject*> eventsArray(mCx);
   if (!ContainerToJSArray(mCx, &eventsArray, aData.mEvents, &SerializeEvent,
                           mIndexMap)) {
     return NS_ERROR_FAILURE;
@@ -370,8 +392,8 @@ nsresult UntrustedModulesDataSerializer::GetPerProcObject(
   }
 
   if (!(mFlags & nsITelemetry::EXCLUDE_STACKINFO_FROM_LOADEVENTS)) {
-    JS::RootedObject combinedStacksObj(mCx,
-                                       CreateJSStackObject(mCx, aData.mStacks));
+    JS::Rooted<JSObject*> combinedStacksObj(
+        mCx, CreateJSStackObject(mCx, aData.mStacks));
     if (!combinedStacksObj) {
       return NS_ERROR_FAILURE;
     }
@@ -387,14 +409,14 @@ nsresult UntrustedModulesDataSerializer::GetPerProcObject(
 
 nsresult UntrustedModulesDataSerializer::AddLoadEvents(
     const UntrustedModuleLoadingEvents& aEvents,
-    JS::MutableHandleObject aPerProcObj) {
-  JS::RootedValue eventsArrayVal(mCx);
+    JS::MutableHandle<JSObject*> aPerProcObj) {
+  JS::Rooted<JS::Value> eventsArrayVal(mCx);
   if (!JS_GetProperty(mCx, aPerProcObj, "events", &eventsArrayVal) ||
       !eventsArrayVal.isObject()) {
     return NS_ERROR_FAILURE;
   }
 
-  JS::RootedObject eventsArray(mCx, &eventsArrayVal.toObject());
+  JS::Rooted<JSObject*> eventsArray(mCx, &eventsArrayVal.toObject());
   bool isArray;
   if (!JS::IsArrayObject(mCx, eventsArray, &isArray) && !isArray) {
     return NS_ERROR_FAILURE;
@@ -406,7 +428,7 @@ nsresult UntrustedModulesDataSerializer::AddLoadEvents(
   }
 
   for (auto item : aEvents) {
-    JS::RootedValue jsel(mCx);
+    JS::Rooted<JS::Value> jsel(mCx);
     if (!SerializeEvent(mCx, &jsel, *item, mIndexMap) ||
         !JS_DefineElement(mCx, eventsArray, currentPos++, jsel,
                           JSPROP_ENUMERATE)) {
@@ -426,7 +448,7 @@ nsresult UntrustedModulesDataSerializer::AddSingleData(
           if (!addPtr) {
             addPtr.Insert(mCurModulesArrayIdx);
 
-            JS::RootedValue jsModule(mCx);
+            JS::Rooted<JS::Value> jsModule(mCx);
             if (!SerializeModule(mCx, &jsModule, entry.GetData(), mFlags) ||
                 !JS_DefineElement(mCx, mModulesArray, mCurModulesArrayIdx,
                                   jsModule, JSPROP_ENUMERATE)) {
@@ -451,18 +473,18 @@ nsresult UntrustedModulesDataSerializer::AddSingleData(
   strPid.AppendInt(static_cast<uint32_t>(aData.mPid), 16);
 
   if (mFlags & nsITelemetry::EXCLUDE_STACKINFO_FROM_LOADEVENTS) {
-    JS::RootedValue perProcVal(mCx);
+    JS::Rooted<JS::Value> perProcVal(mCx);
     if (JS_GetProperty(mCx, mPerProcObjContainer, strPid.get(), &perProcVal) &&
         perProcVal.isObject()) {
       // If a corresponding per-proc object already exists in the dictionary,
       // and we skip to serialize CombinedStacks, we can add loading events
       // into the JS object directly.
-      JS::RootedObject perProcObj(mCx, &perProcVal.toObject());
+      JS::Rooted<JSObject*> perProcObj(mCx, &perProcVal.toObject());
       return AddLoadEvents(aData.mEvents, &perProcObj);
     }
   }
 
-  JS::RootedObject perProcObj(mCx, JS_NewPlainObject(mCx));
+  JS::Rooted<JSObject*> perProcObj(mCx, JS_NewPlainObject(mCx));
   if (!perProcObj) {
     return NS_ERROR_FAILURE;
   }
@@ -472,7 +494,7 @@ nsresult UntrustedModulesDataSerializer::AddSingleData(
     return rv;
   }
 
-  JS::RootedValue jsPerProcObjValue(mCx);
+  JS::Rooted<JS::Value> jsPerProcObjValue(mCx);
   jsPerProcObjValue.setObject(*perProcObj);
   if (!JS_DefineProperty(mCx, mPerProcObjContainer, strPid.get(),
                          jsPerProcObjValue, JSPROP_ENUMERATE)) {
@@ -488,29 +510,39 @@ UntrustedModulesDataSerializer::UntrustedModulesDataSerializer(
       mCx(aCx),
       mMainObj(mCx, JS_NewPlainObject(mCx)),
       mModulesArray(mCx, JS::NewArrayObject(mCx, 0)),
+      mBlockedModulesArray(mCx, JS::NewArrayObject(mCx, 0)),
       mPerProcObjContainer(mCx, JS_NewPlainObject(mCx)),
       mMaxModulesArrayLen(aMaxModulesArrayLen),
       mCurModulesArrayIdx(0),
+      mCurBlockedModulesArrayIdx(0),
       mFlags(aFlags) {
-  if (!mMainObj || !mModulesArray || !mPerProcObjContainer) {
+  if (!mMainObj || !mModulesArray || !mBlockedModulesArray ||
+      !mPerProcObjContainer) {
     return;
   }
 
-  JS::RootedValue jsVersion(mCx);
+  JS::Rooted<JS::Value> jsVersion(mCx);
   jsVersion.setNumber(kThirdPartyModulesPingVersion);
   if (!JS_DefineProperty(mCx, mMainObj, "structVersion", jsVersion,
                          JSPROP_ENUMERATE)) {
     return;
   }
 
-  JS::RootedValue jsModulesArrayValue(mCx);
+  JS::Rooted<JS::Value> jsModulesArrayValue(mCx);
   jsModulesArrayValue.setObject(*mModulesArray);
   if (!JS_DefineProperty(mCx, mMainObj, "modules", jsModulesArrayValue,
                          JSPROP_ENUMERATE)) {
     return;
   }
 
-  JS::RootedValue jsPerProcObjContainerValue(mCx);
+  JS::Rooted<JS::Value> jsBlockedModulesArrayValue(mCx);
+  jsBlockedModulesArrayValue.setObject(*mBlockedModulesArray);
+  if (!JS_DefineProperty(mCx, mMainObj, "blockedModules",
+                         jsBlockedModulesArrayValue, JSPROP_ENUMERATE)) {
+    return;
+  }
+
+  JS::Rooted<JS::Value> jsPerProcObjContainerValue(mCx);
   jsPerProcObjContainerValue.setObject(*mPerProcObjContainer);
   if (!JS_DefineProperty(mCx, mMainObj, "processes", jsPerProcObjContainerValue,
                          JSPROP_ENUMERATE)) {
@@ -524,7 +556,8 @@ UntrustedModulesDataSerializer::operator bool() const {
   return NS_SUCCEEDED(mCtorResult);
 }
 
-void UntrustedModulesDataSerializer::GetObject(JS::MutableHandleValue aRet) {
+void UntrustedModulesDataSerializer::GetObject(
+    JS::MutableHandle<JS::Value> aRet) {
   aRet.setObject(*mMainObj);
 }
 
@@ -544,6 +577,29 @@ nsresult UntrustedModulesDataSerializer::Add(
     if (NS_FAILED(rv)) {
       return rv;
     }
+  }
+
+  return NS_OK;
+}
+
+nsresult UntrustedModulesDataSerializer::AddBlockedModules(
+    const nsTArray<nsDependentSubstring>& blockedModules) {
+  if (NS_FAILED(mCtorResult)) {
+    return mCtorResult;
+  }
+
+  if (blockedModules.Length() >= mMaxModulesArrayLen) {
+    return NS_ERROR_CANNOT_CONVERT_DATA;
+  }
+
+  for (const auto& blockedModule : blockedModules) {
+    JS::Rooted<JS::Value> jsBlockedModule(mCx);
+    jsBlockedModule.setString(Common::ToJSString(mCx, blockedModule));
+    if (!JS_DefineElement(mCx, mBlockedModulesArray, mCurBlockedModulesArrayIdx,
+                          jsBlockedModule, JSPROP_ENUMERATE)) {
+      return NS_ERROR_FAILURE;
+    }
+    ++mCurBlockedModulesArrayIdx;
   }
 
   return NS_OK;

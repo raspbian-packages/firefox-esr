@@ -42,6 +42,9 @@ static const char kEdgeLeft[] = "print_edge_left";
 static const char kEdgeBottom[] = "print_edge_bottom";
 static const char kEdgeRight[] = "print_edge_right";
 
+static const char kIgnoreUnwriteableMargins[] =
+    "print_ignore_unwriteable_margins";
+
 static const char kUnwriteableMarginTopTwips[] =
     "print_unwriteable_margin_top_twips";
 static const char kUnwriteableMarginLeftTwips[] =
@@ -117,7 +120,10 @@ nsPrintSettingsService::SerializeToPrintData(nsIPrintSettings* aSettings,
   data->printBGColors() = aSettings->GetPrintBGColors();
   data->printBGImages() = aSettings->GetPrintBGImages();
 
+  data->ignoreUnwriteableMargins() = aSettings->GetIgnoreUnwriteableMargins();
   data->honorPageRuleMargins() = aSettings->GetHonorPageRuleMargins();
+  data->usePageRuleSizeAsPaperSize() =
+      aSettings->GetUsePageRuleSizeAsPaperSize();
   data->showMarginGuides() = aSettings->GetShowMarginGuides();
   data->printSelectionOnly() = aSettings->GetPrintSelectionOnly();
 
@@ -192,6 +198,8 @@ nsPrintSettingsService::DeserializeToPrintSettings(const PrintData& data,
   settings->SetPrintBGColors(data.printBGColors());
   settings->SetPrintBGImages(data.printBGImages());
   settings->SetHonorPageRuleMargins(data.honorPageRuleMargins());
+  settings->SetUsePageRuleSizeAsPaperSize(data.usePageRuleSizeAsPaperSize());
+  settings->SetIgnoreUnwriteableMargins(data.ignoreUnwriteableMargins());
   settings->SetShowMarginGuides(data.showMarginGuides());
   settings->SetPrintSelectionOnly(data.printSelectionOnly());
 
@@ -395,10 +403,14 @@ nsresult nsPrintSettingsService::ReadPrefs(nsIPrintSettings* aPS,
     prefRead = ReadInchesToTwipsPref(GetPrefName(kMarginRight, aPrinterName),
                                      margin.right) ||
                prefRead;
-    ;
     if (prefRead && MarginIsOK(margin)) {
       aPS->SetMarginInTwips(margin);
       noValidPrefsFound = false;
+
+      prefRead = GETBOOLPREF(kIgnoreUnwriteableMargins, &b);
+      if (prefRead) {
+        aPS->SetIgnoreUnwriteableMargins(b);
+      }
     }
   }
 
@@ -581,6 +593,8 @@ nsresult nsPrintSettingsService::WritePrefs(nsIPrintSettings* aPS,
                              margin.bottom);
     WriteInchesFromTwipsPref(GetPrefName(kMarginRight, aPrinterName),
                              margin.right);
+    Preferences::SetBool(GetPrefName(kIgnoreUnwriteableMargins, aPrinterName),
+                         aPS->GetIgnoreUnwriteableMargins());
   }
 
   if (aFlags & nsIPrintSettings::kInitSaveEdges) {
@@ -765,14 +779,24 @@ nsPrintSettingsService::GetDefaultPrintSettingsForPrinting(
 
   nsIPrintSettings* settings = *aPrintSettings;
 
-  nsAutoString printerName;
-  settings->GetPrinterName(printerName);
-  if (printerName.IsEmpty()) {
-    GetLastUsedPrinterName(printerName);
-    settings->SetPrinterName(printerName);
+  // For security reasons, we don't pass the printer name to content processes.
+  // Once bug 1776169 is fixed, we can just assert that this is the parent
+  // process.
+  bool usePrinterName = XRE_IsParentProcess();
+
+  if (usePrinterName) {
+    nsAutoString printerName;
+    settings->GetPrinterName(printerName);
+    if (printerName.IsEmpty()) {
+      GetLastUsedPrinterName(printerName);
+      settings->SetPrinterName(printerName);
+    }
+    InitPrintSettingsFromPrinter(printerName, settings);
   }
-  InitPrintSettingsFromPrinter(printerName, settings);
-  InitPrintSettingsFromPrefs(settings, true, nsIPrintSettings::kInitSaveAll);
+
+  InitPrintSettingsFromPrefs(settings, usePrinterName,
+                             nsIPrintSettings::kInitSaveAll);
+
   return NS_OK;
 }
 
@@ -785,6 +809,8 @@ nsPrintSettingsService::CreateNewPrintSettings(
 NS_IMETHODIMP
 nsPrintSettingsService::GetLastUsedPrinterName(
     nsAString& aLastUsedPrinterName) {
+  MOZ_ASSERT(XRE_IsParentProcess());
+
   aLastUsedPrinterName.Truncate();
   Preferences::GetString(kPrinterName, aLastUsedPrinterName);
   return NS_OK;
@@ -795,7 +821,7 @@ nsPrintSettingsService::InitPrintSettingsFromPrinter(
     const nsAString& aPrinterName, nsIPrintSettings* aPrintSettings) {
   // Don't get print settings from the printer in the child when printing via
   // parent, these will be retrieved in the parent later in the print process.
-  if (XRE_IsContentProcess() && StaticPrefs::print_print_via_parent()) {
+  if (XRE_IsContentProcess()) {
     return NS_OK;
   }
 
@@ -907,14 +933,20 @@ nsPrintSettingsService::InitPrintSettingsFromPrefs(nsIPrintSettings* aPS,
  *  Save all of the printer settings; if we can find a printer name, save
  *  printer-specific preferences. Otherwise, save generic ones.
  */
-nsresult nsPrintSettingsService::SavePrintSettingsToPrefs(
-    nsIPrintSettings* aPS, bool aUsePrinterNamePrefix, uint32_t aFlags) {
+nsresult nsPrintSettingsService::MaybeSavePrintSettingsToPrefs(
+    nsIPrintSettings* aPS, uint32_t aFlags) {
   NS_ENSURE_ARG_POINTER(aPS);
   MOZ_DIAGNOSTIC_ASSERT(XRE_GetProcessType() == GeckoProcessType_Default);
+  MOZ_ASSERT(!(aFlags & nsIPrintSettings::kInitSavePrinterName),
+             "Use SaveLastUsedPrintNameToPrefs");
+
+  if (!Preferences::GetBool("print.save_print_settings", false)) {
+    return NS_OK;
+  }
 
   // Get the printer name from the PrinterSettings for an optional prefix.
   nsAutoString prtName;
-  nsresult rv = GetAdjustedPrinterName(aPS, aUsePrinterNamePrefix, prtName);
+  nsresult rv = GetAdjustedPrinterName(aPS, true, prtName);
   NS_ENSURE_SUCCESS(rv, rv);
 
 #ifndef MOZ_WIDGET_ANDROID
@@ -923,13 +955,27 @@ nsresult nsPrintSettingsService::SavePrintSettingsToPrefs(
   // without a good way for us to fix things for them (unprefixed prefs act as
   // defaults and can result in values being inappropriately propagated to
   // prefixed prefs).
-  if (prtName.IsEmpty() && aFlags != nsIPrintSettings::kInitSavePrinterName) {
+  if (prtName.IsEmpty()) {
     MOZ_DIAGNOSTIC_ASSERT(false, "Print settings must be saved with a prefix");
     return NS_ERROR_FAILURE;
   }
 #endif
 
   return WritePrefs(aPS, prtName, aFlags);
+}
+
+nsresult nsPrintSettingsService::MaybeSaveLastUsedPrinterNameToPrefs(
+    const nsAString& aPrinterName) {
+  MOZ_DIAGNOSTIC_ASSERT(XRE_GetProcessType() == GeckoProcessType_Default);
+
+  if (!Preferences::GetBool("print.save_print_settings", false)) {
+    return NS_OK;
+  }
+
+  if (!aPrinterName.IsEmpty()) {
+    Preferences::SetString(kPrinterName, aPrinterName);
+  }
+  return NS_OK;
 }
 
 //-----------------------------------------------------

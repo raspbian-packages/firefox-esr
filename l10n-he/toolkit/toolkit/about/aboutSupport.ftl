@@ -160,6 +160,15 @@ media-device-rate = קצב
 media-device-latency = עיכוב
 media-codec-support-info = מידע על תמיכה במקודדים
 
+## Codec support table
+
+media-codec-support-sw-decoding = קידוד תוכנה
+media-codec-support-hw-decoding = קידוד חומרה
+media-codec-support-codec-name = שם קודק
+media-codec-support-supported = נתמך
+media-codec-support-unsupported = לא נתמך
+media-codec-support-error = מידע תמיכה במקודדים אינו זמין. יש לנסות שוב לאחר הפעלת קובץ מדיה.
+
 ##
 
 intl-title = בינלאומי ושפות

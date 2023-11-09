@@ -6,11 +6,10 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <hwy/aligned_allocator.h>
 #include <vector>
 
 #include "lib/jxl/ans_params.h"
-#include "lib/jxl/aux_out.h"
-#include "lib/jxl/aux_out_fwd.h"
 #include "lib/jxl/base/padded_bytes.h"
 #include "lib/jxl/base/profiler.h"
 #include "lib/jxl/base/span.h"
@@ -26,6 +25,8 @@
 #include "lib/jxl/modular/modular_image.h"
 
 namespace jxl {
+
+struct AuxOut;
 
 std::pair<uint32_t, uint32_t> ComputeUsedOrders(
     const SpeedTier speed, const AcStrategyImage& ac_strategy,
@@ -73,7 +74,8 @@ void ComputeCoeffOrder(SpeedTier speed, const ACImage& acs,
   if (used_orders != 0) {
     uint64_t threshold =
         (std::numeric_limits<uint64_t>::max() >> 32) * block_fraction;
-    uint64_t s[2] = {0x94D049BB133111EBull, 0xBF58476D1CE4E5B9ull};
+    uint64_t s[2] = {static_cast<uint64_t>(0x94D049BB133111EBull),
+                     static_cast<uint64_t>(0xBF58476D1CE4E5B9ull)};
     // Xorshift128+ adapted from xorshift128+-inl.h
     auto use_sample = [&]() {
       auto s1 = s[0];

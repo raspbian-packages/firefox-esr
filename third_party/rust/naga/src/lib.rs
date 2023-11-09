@@ -34,6 +34,9 @@ with optional span info, representing a series of statements executed in order. 
 `EntryPoint`s or `Function` is a `Block`, and `Statement` has a
 [`Block`][Statement::Block] variant.
 
+If the `clone` feature is enabled, [`Arena`], [`UniqueArena`], [`Type`], [`TypeInner`],
+[`Constant`], [`Function`], [`EntryPoint`] and [`Module`] can be cloned.
+
 ## Arenas
 
 To improve translator performance and reduce memory usage, most structures are
@@ -104,10 +107,13 @@ Naga's rules for when `Expression`s are evaluated are as follows:
     [`Atomic`] statement, representing the result of the atomic operation, is
     evaluated when the `Atomic` statement is executed.
 
+-   A [`RayQueryProceedResult`] expression, which is a boolean
+    indicating if the ray query is finished, is evaluated when the
+    [`RayQuery`] statement whose [`Proceed::result`] points to it is
+    executed.
+
 -   All other expressions are evaluated when the (unique) [`Statement::Emit`]
-    statement that covers them is executed. The [`Expression::needs_pre_emit`]
-    method returns `true` if the given expression is one of those variants that
-    does *not* need to be covered by an `Emit` statement.
+    statement that covers them is executed.
 
 Now, strictly speaking, not all `Expression` variants actually care when they're
 evaluated. For example, you can evaluate a [`BinaryOperator::Add`] expression
@@ -165,6 +171,7 @@ need to be stored in a local variable to be carried upwards in the statement
 tree.
 
 [`AtomicResult`]: Expression::AtomicResult
+[`RayQueryProceedResult`]: Expression::RayQueryProceedResult
 [`CallResult`]: Expression::CallResult
 [`Constant`]: Expression::Constant
 [`Derivative`]: Expression::Derivative
@@ -179,6 +186,9 @@ tree.
 [`Call`]: Statement::Call
 [`Emit`]: Statement::Emit
 [`Store`]: Statement::Store
+[`RayQuery`]: Statement::RayQuery
+
+[`Proceed::result`]: RayQueryFunction::Proceed::result
 
 [`Validator::validate`]: valid::Validator::validate
 [`ModuleInfo`]: valid::ModuleInfo
@@ -188,7 +198,9 @@ tree.
     clippy::new_without_default,
     clippy::unneeded_field_pattern,
     clippy::match_like_matches_macro,
-    clippy::if_same_then_else
+    clippy::collapsible_if,
+    clippy::derive_partial_eq_without_eq,
+    clippy::needless_borrowed_reference
 )]
 #![warn(
     trivial_casts,
@@ -196,9 +208,11 @@ tree.
     unused_extern_crates,
     unused_qualifications,
     clippy::pattern_type_mismatch,
-    clippy::missing_const_for_fn
+    clippy::missing_const_for_fn,
+    clippy::rest_pat_in_fully_bound_structs,
+    clippy::match_wildcard_for_single_variants
 )]
-#![deny(clippy::panic)]
+#![cfg_attr(not(test), deny(clippy::panic))]
 
 mod arena;
 pub mod back;
@@ -211,7 +225,7 @@ pub mod valid;
 
 pub use crate::arena::{Arena, Handle, Range, UniqueArena};
 
-pub use crate::span::{Span, SpanContext, WithSpan};
+pub use crate::span::{SourceLocation, Span, SpanContext, WithSpan};
 #[cfg(feature = "arbitrary")]
 use arbitrary::Arbitrary;
 #[cfg(feature = "deserialize")]
@@ -228,7 +242,11 @@ pub type FastHashMap<K, T> = rustc_hash::FxHashMap<K, T>;
 pub type FastHashSet<K> = rustc_hash::FxHashSet<K>;
 
 /// Map of expressions that have associated variable names
-pub(crate) type NamedExpressions = FastHashMap<Handle<Expression>, String>;
+pub(crate) type NamedExpressions = indexmap::IndexMap<
+    Handle<Expression>,
+    String,
+    std::hash::BuildHasherDefault<rustc_hash::FxHasher>,
+>;
 
 /// Early fragment tests.
 ///
@@ -242,6 +260,7 @@ pub(crate) type NamedExpressions = FastHashMap<Handle<Expression>, String>;
 ///   - GLSL: `layout(early_fragment_tests) in;`
 ///   - HLSL: `Attribute earlydepthstencil`
 ///   - SPIR-V: `ExecutionMode EarlyFragmentTests`
+///   - WGSL: `@early_depth_test`
 ///
 /// For more, see:
 ///   - <https://www.khronos.org/opengl/wiki/Early_Fragment_Test#Explicit_specification>
@@ -261,6 +280,7 @@ pub struct EarlyDepthTest {
 ///     - `depth_any` option behaves as if the layout qualifier was not present.
 ///   - HLSL: `SV_DepthGreaterEqual`/`SV_DepthLessEqual`/`SV_Depth`
 ///   - SPIR-V: `ExecutionMode Depth<Greater/Less/Unchanged>`
+///   - WGSL: `@early_depth_test(greater_equal/less_equal/unchanged)`
 ///
 /// For more, see:
 ///   - <https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_conservative_depth.txt>
@@ -333,6 +353,7 @@ pub enum BuiltIn {
     VertexIndex,
     // fragment
     FragDepth,
+    PointCoord,
     FrontFacing,
     PrimitiveIndex,
     SampleIndex,
@@ -525,6 +546,14 @@ pub enum StorageFormat {
     Rgba32Uint,
     Rgba32Sint,
     Rgba32Float,
+
+    // Normalized 16-bit per channel formats
+    R16Unorm,
+    R16Snorm,
+    Rg16Unorm,
+    Rg16Snorm,
+    Rgba16Unorm,
+    Rgba16Snorm,
 }
 
 /// Sub-class of the image type.
@@ -557,6 +586,7 @@ pub enum ImageClass {
 
 /// A data type declared in the module.
 #[derive(Debug, Eq, Hash, PartialEq)]
+#[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "serialize", derive(Serialize))]
 #[cfg_attr(feature = "deserialize", derive(Deserialize))]
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
@@ -569,6 +599,7 @@ pub struct Type {
 
 /// Enum with additional information, depending on the kind of type.
 #[derive(Debug, Eq, Hash, PartialEq)]
+#[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "serialize", derive(Serialize))]
 #[cfg_attr(feature = "deserialize", derive(Deserialize))]
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
@@ -698,12 +729,60 @@ pub enum TypeInner {
     },
     /// Can be used to sample values from images.
     Sampler { comparison: bool },
-    /// Array of bindings
+
+    /// Opaque object representing an acceleration structure of geometry.
+    AccelerationStructure,
+
+    /// Locally used handle for ray queries.
+    RayQuery,
+
+    /// Array of bindings.
+    ///
+    /// A `BindingArray` represents an array where each element draws its value
+    /// from a separate bound resource. The array's element type `base` may be
+    /// [`Image`], [`Sampler`], or any type that would be permitted for a global
+    /// in the [`Uniform`] or [`Storage`] address spaces. Only global variables
+    /// may be binding arrays; on the host side, their values are provided by
+    /// [`TextureViewArray`], [`SamplerArray`], or [`BufferArray`]
+    /// bindings.
+    ///
+    /// Since each element comes from a distinct resource, a binding array of
+    /// images could have images of varying sizes (but not varying dimensions;
+    /// they must all have the same `Image` type). Or, a binding array of
+    /// buffers could have elements that are dynamically sized arrays, each with
+    /// a different length.
+    ///
+    /// Binding arrays are not [`DATA`]. This means that all binding array
+    /// globals must be placed in the [`Handle`] address space. Referring to
+    /// such a global produces a `BindingArray` value directly; there are never
+    /// pointers to binding arrays. The only operation permitted on
+    /// `BindingArray` values is indexing, which yields the element by value,
+    /// not a pointer to the element. (This means that buffer array contents
+    /// cannot be stored to; [naga#1864] covers lifting this restriction.)
+    ///
+    /// Unlike textures and samplers, binding arrays are not [`ARGUMENT`], so
+    /// they cannot be passed as arguments to functions.
+    ///
+    /// Naga's WGSL front end supports binding arrays with the type syntax
+    /// `binding_array<T, N>`.
+    ///
+    /// [`Image`]: TypeInner::Image
+    /// [`Sampler`]: TypeInner::Sampler
+    /// [`Uniform`]: AddressSpace::Uniform
+    /// [`Storage`]: AddressSpace::Storage
+    /// [`TextureViewArray`]: https://docs.rs/wgpu/latest/wgpu/enum.BindingResource.html#variant.TextureViewArray
+    /// [`SamplerArray`]: https://docs.rs/wgpu/latest/wgpu/enum.BindingResource.html#variant.SamplerArray
+    /// [`BufferArray`]: https://docs.rs/wgpu/latest/wgpu/enum.BindingResource.html#variant.BufferArray
+    /// [`DATA`]: crate::valid::TypeFlags::DATA
+    /// [`Handle`]: AddressSpace::Handle
+    /// [`ARGUMENT`]: crate::valid::TypeFlags::ARGUMENT
+    /// [naga#1864]: https://github.com/gfx-rs/naga/issues/1864
     BindingArray { base: Handle<Type>, size: ArraySize },
 }
 
 /// Constant value.
 #[derive(Debug, PartialEq)]
+#[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "serialize", derive(Serialize))]
 #[cfg_attr(feature = "deserialize", derive(Deserialize))]
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
@@ -828,6 +907,45 @@ pub enum UnaryOperator {
 }
 
 /// Operation that can be applied on two values.
+///
+/// ## Arithmetic type rules
+///
+/// The arithmetic operations `Add`, `Subtract`, `Multiply`, `Divide`, and
+/// `Modulo` can all be applied to [`Scalar`] types other than [`Bool`], or
+/// [`Vector`]s thereof. Both operands must have the same type.
+///
+/// `Add` and `Subtract` can also be applied to [`Matrix`] values. Both operands
+/// must have the same type.
+///
+/// `Multiply` supports additional cases:
+///
+/// -   A [`Matrix`] or [`Vector`] can be multiplied by a scalar [`Float`],
+///     either on the left or the right.
+///
+/// -   A [`Matrix`] on the left can be multiplied by a [`Vector`] on the right
+///     if the matrix has as many columns as the vector has components (`matCxR
+///     * VecC`).
+///
+/// -   A [`Vector`] on the left can be multiplied by a [`Matrix`] on the right
+///     if the matrix has as many rows as the vector has components (`VecR *
+///     matCxR`).
+///
+/// -   Two matrices can be multiplied if the left operand has as many columns
+///     as the right operand has rows (`matNxR * matCxN`).
+///
+/// In all the above `Multiply` cases, the byte widths of the underlying scalar
+/// types of both operands must be the same.
+///
+/// Note that `Multiply` supports mixed vector and scalar operations directly,
+/// whereas the other arithmetic operations require an explicit [`Splat`] for
+/// mixed-type use.
+///
+/// [`Scalar`]: TypeInner::Scalar
+/// [`Vector`]: TypeInner::Vector
+/// [`Matrix`]: TypeInner::Matrix
+/// [`Float`]: ScalarKind::Float
+/// [`Bool`]: ScalarKind::Bool
+/// [`Splat`]: Expression::Splat
 #[derive(Clone, Copy, Debug, Hash, Eq, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serialize", derive(Serialize))]
 #[cfg_attr(feature = "deserialize", derive(Deserialize))]
@@ -874,6 +992,17 @@ pub enum AtomicFunction {
     Exchange { compare: Option<Handle<Expression>> },
 }
 
+/// Hint at which precision to compute a derivative.
+#[derive(Clone, Copy, Debug, Hash, Eq, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "serialize", derive(Serialize))]
+#[cfg_attr(feature = "deserialize", derive(Deserialize))]
+#[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
+pub enum DerivativeControl {
+    Coarse,
+    Fine,
+    None,
+}
+
 /// Axis on which to compute a derivative.
 #[derive(Clone, Copy, Debug, Hash, Eq, Ord, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "serialize", derive(Serialize))]
@@ -910,6 +1039,7 @@ pub enum MathFunction {
     Min,
     Max,
     Clamp,
+    Saturate,
     // trigonometry
     Cos,
     Cosh,
@@ -963,6 +1093,8 @@ pub enum MathFunction {
     Transpose,
     Determinant,
     // bits
+    CountTrailingZeros,
+    CountLeadingZeros,
     CountOneBits,
     ReverseBits,
     ExtractBits,
@@ -1108,14 +1240,15 @@ pub enum Expression {
         base: Handle<Expression>,
         index: Handle<Expression>,
     },
-    /// Array access with a known index.
+    /// Access the same types as [`Access`], plus [`Struct`] with a known index.
+    ///
+    /// [`Access`]: Expression::Access
+    /// [`Struct`]: TypeInner::Struct
     AccessIndex {
         base: Handle<Expression>,
         index: u32,
     },
     /// Constant value.
-    ///
-    /// Every `Constant` expression
     Constant(Handle<Constant>),
     /// Splat scalar into a vector.
     Splat {
@@ -1170,7 +1303,7 @@ pub enum Expression {
     /// Load a value indirectly.
     ///
     /// For [`TypeInner::Atomic`] the result is a corresponding scalar.
-    /// For other types behind the pointer<T>, the result is T.
+    /// For other types behind the `pointer<T>`, the result is `T`.
     Load { pointer: Handle<Expression> },
     /// Sample a point from a sampled or a depth image.
     ImageSample {
@@ -1281,6 +1414,7 @@ pub enum Expression {
     /// Compute the derivative on an axis.
     Derivative {
         axis: DerivativeAxis,
+        ctrl: DerivativeControl,
         //modifier,
         expr: Handle<Expression>,
     },
@@ -1310,29 +1444,40 @@ pub enum Expression {
     /// Result of calling another function.
     CallResult(Handle<Function>),
     /// Result of an atomic operation.
-    AtomicResult {
-        kind: ScalarKind,
-        width: Bytes,
-        comparison: bool,
-    },
+    AtomicResult { ty: Handle<Type>, comparison: bool },
     /// Get the length of an array.
     /// The expression must resolve to a pointer to an array with a dynamic size.
     ///
     /// This doesn't match the semantics of spirv's `OpArrayLength`, which must be passed
     /// a pointer to a structure containing a runtime array in its' last field.
     ArrayLength(Handle<Expression>),
+
+    /// Result of a [`Proceed`] [`RayQuery`] statement.
+    ///
+    /// [`Proceed`]: RayQueryFunction::Proceed
+    /// [`RayQuery`]: Statement::RayQuery
+    RayQueryProceedResult,
+
+    /// Return an intersection found by `query`.
+    ///
+    /// If `committed` is true, return the committed result available when
+    RayQueryGetIntersection {
+        query: Handle<Expression>,
+        committed: bool,
+    },
 }
 
 pub use block::Block;
 
 /// The value of the switch case.
 // Clone is used only for error reporting and is not intended for end users
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 #[cfg_attr(feature = "serialize", derive(Serialize))]
 #[cfg_attr(feature = "deserialize", derive(Deserialize))]
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
 pub enum SwitchValue {
-    Integer(i32),
+    I32(i32),
+    U32(u32),
     Default,
 }
 
@@ -1350,6 +1495,48 @@ pub struct SwitchCase {
     /// If true, the control flow continues to the next case in the list,
     /// or default.
     pub fall_through: bool,
+}
+
+/// An operation that a [`RayQuery` statement] applies to its [`query`] operand.
+///
+/// [`RayQuery` statement]: Statement::RayQuery
+/// [`query`]: Statement::RayQuery::query
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "serialize", derive(Serialize))]
+#[cfg_attr(feature = "deserialize", derive(Deserialize))]
+#[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
+pub enum RayQueryFunction {
+    /// Initialize the `RayQuery` object.
+    Initialize {
+        /// The acceleration structure within which this query should search for hits.
+        ///
+        /// The expression must be an [`AccelerationStructure`].
+        ///
+        /// [`AccelerationStructure`]: TypeInner::AccelerationStructure
+        acceleration_structure: Handle<Expression>,
+
+        #[allow(rustdoc::private_intra_doc_links)]
+        /// A struct of detailed parameters for the ray query.
+        ///
+        /// This expression should have the struct type given in
+        /// [`SpecialTypes::ray_desc`]. This is available in the WGSL
+        /// front end as the `RayDesc` type.
+        descriptor: Handle<Expression>,
+    },
+
+    /// Start or continue the query given by the statement's [`query`] operand.
+    ///
+    /// After executing this statement, the `result` expression is a
+    /// [`Bool`] scalar indicating whether there are more intersection
+    /// candidates to consider.
+    ///
+    /// [`query`]: Statement::RayQuery::query
+    /// [`Bool`]: ScalarKind::Bool
+    Proceed {
+        result: Handle<Expression>,
+    },
+
+    Terminate,
 }
 
 //TODO: consider removing `Clone`. It's not valid to clone `Statement::Emit` anyway.
@@ -1375,6 +1562,22 @@ pub enum Statement {
         reject: Block,
     },
     /// Conditionally executes one of multiple blocks, based on the value of the selector.
+    ///
+    /// Each case must have a distinct [`value`], exactly one of which must be
+    /// [`Default`]. The `Default` may appear at any position, and covers all
+    /// values not explicitly appearing in other cases. A `Default` appearing in
+    /// the midst of the list of cases does not shadow the cases that follow.
+    ///
+    /// Some backend languages don't support fallthrough (HLSL due to FXC,
+    /// WGSL), and may translate fallthrough cases in the IR by duplicating
+    /// code. However, all backend languages do support cases selected by
+    /// multiple values, like `case 1: case 2: case 3: { ... }`. This is
+    /// represented in the IR as a series of fallthrough cases with empty
+    /// bodies, except for the last.
+    ///
+    /// [`value`]: SwitchCase::value
+    /// [`body`]: SwitchCase::body
+    /// [`Default`]: SwitchValue::Default
     Switch {
         selector: Handle<Expression>, //int
         cases: Vec<SwitchCase>,
@@ -1397,11 +1600,23 @@ pub enum Statement {
     /// this loop. (It may have `Break` and `Continue` statements targeting
     /// loops or switches nested within the `continuing` block.)
     ///
+    /// If present, `break_if` is an expression which is evaluated after the
+    /// continuing block. If its value is true, control continues after the
+    /// `Loop` statement, rather than branching back to the top of body as
+    /// usual. The `break_if` expression corresponds to a "break if" statement
+    /// in WGSL, or a loop whose back edge is an `OpBranchConditional`
+    /// instruction in SPIR-V.
+    ///
     /// [`Break`]: Statement::Break
     /// [`Continue`]: Statement::Continue
     /// [`Kill`]: Statement::Kill
     /// [`Return`]: Statement::Return
-    Loop { body: Block, continuing: Block },
+    /// [`break if`]: Self::Loop::break_if
+    Loop {
+        body: Block,
+        continuing: Block,
+        break_if: Option<Handle<Expression>>,
+    },
 
     /// Exits the innermost enclosing [`Loop`] or [`Switch`].
     ///
@@ -1446,7 +1661,7 @@ pub enum Statement {
     ///
     /// For [`TypeInner::Atomic`] type behind the pointer, the value
     /// has to be a corresponding scalar.
-    /// For other types behind the pointer<T>, the value is T.
+    /// For other types behind the `pointer<T>`, the value is `T`.
     ///
     /// This statement is a barrier for any operations on the
     /// `Expression::LocalVariable` or `Expression::GlobalVariable`
@@ -1497,6 +1712,15 @@ pub enum Statement {
         arguments: Vec<Handle<Expression>>,
         result: Option<Handle<Expression>>,
     },
+    RayQuery {
+        /// The [`RayQuery`] object this statement operates on.
+        ///
+        /// [`RayQuery`]: TypeInner::RayQuery
+        query: Handle<Expression>,
+
+        /// The specific operation we're performing on `query`.
+        fun: RayQueryFunction,
+    },
 }
 
 /// A function argument.
@@ -1529,6 +1753,7 @@ pub struct FunctionResult {
 
 /// A function defined in the module.
 #[derive(Debug, Default)]
+#[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "serialize", derive(Serialize))]
 #[cfg_attr(feature = "deserialize", derive(Deserialize))]
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
@@ -1593,6 +1818,7 @@ pub struct Function {
 /// [`function`]: EntryPoint::function
 /// [`stage`]: EntryPoint::stage
 #[derive(Debug)]
+#[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "serialize", derive(Serialize))]
 #[cfg_attr(feature = "deserialize", derive(Deserialize))]
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
@@ -1611,6 +1837,26 @@ pub struct EntryPoint {
     pub function: Function,
 }
 
+/// Set of special types that can be optionally generated by the frontends.
+#[derive(Debug, Default)]
+#[cfg_attr(feature = "clone", derive(Clone))]
+#[cfg_attr(feature = "serialize", derive(Serialize))]
+#[cfg_attr(feature = "deserialize", derive(Deserialize))]
+#[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
+pub struct SpecialTypes {
+    /// Type for `RayDesc`.
+    ///
+    /// Call [`Module::generate_ray_desc_type`] to populate this if
+    /// needed and return the handle.
+    pub ray_desc: Option<Handle<Type>>,
+
+    /// Type for `RayIntersection`.
+    ///
+    /// Call [`Module::generate_ray_intersection_type`] to populate
+    /// this if needed and return the handle.
+    pub ray_intersection: Option<Handle<Type>>,
+}
+
 /// Shader module.
 ///
 /// A module is a set of constants, global variables and functions, as well as
@@ -1623,12 +1869,15 @@ pub struct EntryPoint {
 ///
 /// When finished, you can export modules using one of the [available backends][back].
 #[derive(Debug, Default)]
+#[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "serialize", derive(Serialize))]
 #[cfg_attr(feature = "deserialize", derive(Deserialize))]
 #[cfg_attr(feature = "arbitrary", derive(Arbitrary))]
 pub struct Module {
     /// Arena for the types defined in this module.
     pub types: UniqueArena<Type>,
+    /// Dictionary of special type handles.
+    pub special_types: SpecialTypes,
     /// Arena for the constants defined in this module.
     pub constants: Arena<Constant>,
     /// Arena for the global variables defined in this module.

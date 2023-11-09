@@ -4,14 +4,27 @@
 
 # Variables:
 #  $retriesLeft (Number): number of tries left
-webauthn-pin-invalid-prompt =
+webauthn-pin-invalid-long-prompt =
     { $retriesLeft ->
-        [0] PIN anghywir! Rhowch y PIN cywir ar gyfer eich dyfais.
-        [zero] PIN anghywir! Rhowch y PIN cywir ar gyfer eich dyfais.
-        [one] PIN anghywir! Rhowch y PIN cywir ar gyfer eich dyfais. Mae gennych { $retriesLeft } ymgais ar ôl.
-        [two] PIN anghywir! Rhowch y PIN cywir ar gyfer eich dyfais. Mae gennych { $retriesLeft } ymgais ar ôl.
-        [few] PIN anghywir! Rhowch y PIN cywir ar gyfer eich dyfais. Mae gennych { $retriesLeft } ymgais ar ôl.
-        [many] PIN anghywir! Rhowch y PIN cywir ar gyfer eich dyfais. Mae gennych { $retriesLeft } ymgais ar ôl.
-       *[other] PIN anghywir! Rhowch y PIN cywir ar gyfer eich dyfais. Mae gennych { $retriesLeft } ymgais ar ôl.
+        [zero] PIN anghywir. Mae gennych { $retriesLeft } ymgais ar ôl cyn i chi golli mynediad parhaol i'r manylion adnabod ar y ddyfais hon.
+        [one] PIN anghywir. Mae gennych { $retriesLeft } ymgais ar ôl cyn i chi golli mynediad parhaol i'r manylion adnabod ar y ddyfais hon.
+        [two] PIN anghywir. Mae gennych { $retriesLeft } ymgais ar ôl cyn i chi golli mynediad parhaol i'r manylion adnabod ar y ddyfais hon.
+        [few] PIN anghywir. Mae gennych { $retriesLeft } ymgais ar ôl cyn i chi golli mynediad parhaol i'r manylion adnabod ar y ddyfais hon.
+        [many] PIN anghywir. Mae gennych { $retriesLeft } ymgais ar ôl cyn i chi golli mynediad parhaol i'r manylion adnabod ar y ddyfais hon.
+       *[other] PIN anghywir. Mae gennych { $retriesLeft } ymgais ar ôl cyn i chi golli mynediad parhaol i'r manylion adnabod ar y ddyfais hon.
     }
+webauthn-pin-invalid-short-prompt = PIN anghywir. Ceisiwch eto.
 webauthn-pin-required-prompt = Rhowch y PIN ar gyfer eich dyfais.
+
+# Variables:
+#  $retriesLeft (Number): number of tries left
+webauthn-uv-invalid-long-prompt =
+    { $retriesLeft ->
+        [zero] Methodd dilysu defnyddiwr. Nid oes gennych unrhyw ymgeisiau ar ôl
+        [one] Methodd dilysu defnyddiwr. Mae gennych { $retriesLeft } ymgais ar ôl. Ceisiwch eto.
+        [two] Methodd dilysu defnyddiwr. Mae gennych { $retriesLeft } ymgais ar ôl. Ceisiwch eto.
+        [few] Methodd dilysu defnyddiwr. Mae gennych { $retriesLeft } ymgais ar ôl. Ceisiwch eto.
+        [many] Methodd dilysu defnyddiwr. Mae gennych { $retriesLeft } ymgais ar ôl. Ceisiwch eto.
+       *[other] Methodd dilysu defnyddiwr. Mae gennych { $retriesLeft } ymgais ar ôl. Ceisiwch eto.
+    }
+webauthn-uv-invalid-short-prompt = Methodd dilysu defnyddiwr. Ceisiwch eto.

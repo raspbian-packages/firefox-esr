@@ -175,6 +175,15 @@ media-codec-support-info = Informations sur la prise en charge des codecs
 # List all the entries of the database.
 media-capabilities-enumerate = Parcourir la base de données
 
+## Codec support table
+
+media-codec-support-sw-decoding = Décodage logiciel
+media-codec-support-hw-decoding = Décodage matériel
+media-codec-support-codec-name = Nom du codec
+media-codec-support-supported = Pris en charge
+media-codec-support-unsupported = Non pris en charge
+media-codec-support-error = Les informations sur la prise en charge des codecs ne sont pas disponibles. Réessayez après avoir lu un fichier multimédia.
+
 ##
 
 intl-title = Langue et internationalisation
@@ -288,6 +297,8 @@ webgl2-renderer = Pilote WebGL 2 - Rendu
 webgl2-version = Pilote WebGL 2 - Version
 webgl2-driver-extensions = Pilote WebGL 2 - Extensions
 webgl2-extensions = WebGL 2 - Extensions
+webgpu-default-adapter = Adaptateur WebGPU par défaut
+webgpu-fallback-adapter = Adaptateur WebGPU de secours
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Mis en liste de blocage en raison de problèmes connus : <a data-l10n-name="bug-link">bug { $bugNumber }</a>

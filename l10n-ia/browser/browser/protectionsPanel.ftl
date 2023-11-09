@@ -63,7 +63,6 @@ protections-panel-not-found-label = Necun detegite
 ##
 
 protections-panel-settings-label = Parametros de protection
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Pannello de protectiones
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formularios
 protections-panel-site-not-working-view-issue-list-payments = Pagamentos
 protections-panel-site-not-working-view-issue-list-comments = Commentos
 protections-panel-site-not-working-view-issue-list-videos = Videos
+protections-panel-site-not-working-view-issue-list-fonts = Typos de characteres
 
 protections-panel-site-not-working-view-send-report = Inviar un reporto
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Reportar sito rupte
 protections-panel-content-blocking-breakage-report-view-description = Blocar certe traciatores pote causar problemas con alcun sitos web. Reportar iste problemas adjuta a meliorar { -brand-short-name } pro totes. Le invio de iste reporto transmittera a Mozilla un URL e informationes sur le configuration de tu navigator. <label data-l10n-name="learn-more">Saper plus</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Blocar certe traciatores pote causar problemas con alcun sitos web. Reportar iste problemas adjuta a meliorar { -brand-short-name } pro totes. Le invio de iste reporto transmittera a { -vendor-short-name } un URL e informationes sur le configuration de tu navigator.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Cancellar
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Inviar le reporto
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Reduction de banner pro le cookie
+protections-panel-cookie-banner-handling-enabled = Activar pro iste sito
+protections-panel-cookie-banner-handling-disabled = Disactivar pro iste sito
+protections-panel-cookie-banner-handling-undetected = Sito actualmente non supportate
+
+protections-panel-cookie-banner-view-title =
+    .title = Reduction de banner pro le cookie
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Disactivar le Reduction de bandieras pro cookies pro { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Activar le Reduction de bandieras pro cookies pro iste sito?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } clarara le cookies de iste sito e actualisara le pagina. Clarar tote le cookies pote clauder tu connexion o vacuar tu carrettos de compras.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } tenta rejectar automaticamente tote le requestas de cookies sur le sitos supportate.
+protections-panel-cookie-banner-view-cancel = Cancellar
+protections-panel-cookie-banner-view-turn-off = Disactivar
+protections-panel-cookie-banner-view-turn-on = Activar

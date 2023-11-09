@@ -5,10 +5,12 @@
 
 about-logins-page-title = Kitikirisaxik molojri'ïl & Ewan taq Tzij
 
-login-filter =
+about-logins-login-filter =
     .placeholder = Kekanöx Tikirib'äl taq Molojri'ïl
+    .key = F
 
-create-login-button = Titz'uk K'ak'a' Tikirib'äl Molojri'ïl
+create-new-login-button =
+    .title = Titz'uk k'ak'a' rutikirib'al molojri'ïl
 
 fxaccounts-sign-in-text = Ke'ak'ulu' ewan taq kitzij ru ch'aqa' chik taq okisab'äl
 fxaccounts-sign-in-sync-button = Tatikirisaj molojri'ïl pa yaximon
@@ -35,10 +37,20 @@ about-logins-menu-menuitem-help = To'ïk
 
 login-list =
     .aria-label = Tikirib'äl taq molojri'ïl nikik'äm ki' rik'in ri nikanöx
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } tikirib'äl molojri'ïl
        *[other] { $count } tikirib'äl taq molojri'ïl
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count } richin { $total } molojri'ïl
+       *[other] { $count } richin { $total } taq molojri'ïl
     }
 login-list-sort-label-text = Tichol chi:
 login-list-name-option = B'i'aj (A-Y)
@@ -99,9 +111,17 @@ login-item-copied-password-button-text = ¡Xwachib'ëx!
 login-item-save-changes-button = Keyak Jaloj
 login-item-save-new-button = Tiyak
 login-item-cancel-button = Tiq'at
-login-item-time-changed = Ruk'isib'äl jaloj: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Xtz'uk: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Ruk'isib'äl rokisaxik: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = Xtz'uk
+login-item-timeline-action-updated = Xk'ex
+login-item-timeline-action-used = Xokisäx
 
 ## OS Authentication dialog
 
@@ -152,6 +172,9 @@ about-logins-confirm-remove-dialog-title = ¿La niyuj el rutikirib'al re moloj r
 confirm-delete-dialog-message = Man tikirel ta nitzolïx re b'anïk.
 about-logins-confirm-remove-dialog-confirm-button = Tiyuj
 
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
         [1] Tiyuj
@@ -190,6 +213,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] Re' xkeruyüj ronojel ri kitikirisab'al taq molojri'ïl xe'ayäk rik'in { -brand-short-name } pa ronojel ximon taq awokisab'al rik'in { -fxaccount-brand-name }. Re' chuqa' xkeruyüj ri rutzijol taq tz'ilanem yek'ulun wawe'. Man xkatikïr ta xtatzolij re' b'anoj re'.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Kek'wäx el kitikirisaxik molojri'ïl chuqa' ewan taq tzij
 about-logins-confirm-export-dialog-message = Xkeyak ri ewan taq atzij achi'el tz'etel tz'ib'anïk (achi'el, BadP@ssw0rd) richin chi xab'achike xtijaqon ri yakb'äl k'wa'an, nitikïr nutz'ët.
 about-logins-confirm-export-dialog-confirm-button = Tik'wäx el…
@@ -209,7 +234,6 @@ about-logins-breach-alert-date = Re tz'ilanem re' xk'ulwachitäj pa { DATETIME($
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Tib'e pa { $hostname }
-about-logins-breach-alert-learn-more-link = Tetamäx ch'aqa' chik
 
 ## Vulnerable Password notification
 

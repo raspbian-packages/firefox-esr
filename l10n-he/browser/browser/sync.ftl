@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = הפעלת סנכרון
 
 fxa-menu-connect-another-device =
     .label = חיבור מכשיר נוסף…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] שליחת לשונית למכשיר
+           *[other] שליחת { $tabCount } לשוניות למכשיר
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

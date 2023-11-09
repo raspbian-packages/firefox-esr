@@ -42,11 +42,11 @@ jobs:
         parent: ubuntu1804-i386-raw
     ubuntu1804-base:
         symbol: I(ub18-base)
-        definition: debian-base
         parent: ubuntu1804-raw
         packages:
             - ub18-mercurial
             - ub18-python-zstandard
+            - ub18-python-psutil
     ubuntu1804-test-base:
         symbol: I(ub18-test-base)
         parent: ubuntu1804-base
@@ -82,7 +82,6 @@ jobs:
         args:
             BASE_IMAGE: debian:jessie-20210208
             DIST: jessie
-            SNAPSHOT: '20210208T213147Z'
     debian8-packages:
         symbol: I(deb8-pkg)
         definition: debian-packages
@@ -93,13 +92,16 @@ jobs:
         args:
             BASE_IMAGE: i386/debian:jessie-20210208
             DIST: jessie
-            SNAPSHOT: '20210208T213147Z'
     debian8-i386-packages:
         symbol: I(deb8-32-pkg)
         definition: debian-packages
         parent: debian8-i386-raw
     custom-v8:
         symbol: I(custom-v8)
+        parent: debian11-base
+    # Chromium-as-Release
+    custom-car-linux:
+        symbol: I(custom-car-linux)
         parent: debian11-base
     valgrind-build:
         symbol: I(vb)
@@ -108,44 +110,16 @@ jobs:
             - deb11-valgrind
     lint:
         symbol: I(lnt)
-        parent: ubuntu1804-base
-    # Neither the debian10-raw nor the debian10-packages images can have
-    # packages dependencies.
-    debian10-raw:
-        symbol: I(deb10-raw)
-        definition: debian-raw
-        args:
-            BASE_IMAGE: debian:buster-20220509
-            DIST: buster
-            SNAPSHOT: '20220509T214601Z'
-    debian10-packages:
-        symbol: I(deb10-pkg)
-        definition: debian-packages
-        parent: debian10-raw
-    debian10-base:
-        symbol: I(deb10-base)
-        definition: debian-base
-        parent: debian10-raw
-        packages:
-            - deb10-mercurial
-            - deb10-python-zstandard
-    debian10-test:
-        symbol: I(deb10-test)
-        parent: debian10-base
-    debian10-test-iris:
-        symbol: I(deb10-ti)
-        parent: debian10-test
-        packages:
-            - deb10-python-zstandard
+        parent: debian11-base
     # Neither the debian11-raw nor the debian11-packages images can have
     # packages dependencies.
     debian11-raw:
         symbol: I(deb11-raw)
         definition: debian-raw
         args:
-            BASE_IMAGE: debian:bullseye-20220509
+            BASE_IMAGE: debian:bullseye-20221205
             DIST: bullseye
-            SNAPSHOT: '20220509T214601Z'
+            SNAPSHOT: '20221204T212138Z'
     debian11-packages:
         symbol: I(deb11-pkg)
         definition: debian-packages
@@ -161,10 +135,18 @@ jobs:
         symbol: I(deb11)
         parent: debian11-base
         definition: debian-build
+    debian11-repackage:
+        symbol: I(deb11-rpk)
+        parent: debian11-base
+        definition: debian-repackage
+        packages:
+            - deb11-mercurial
     deb11-toolchain-build:
         symbol: I(deb11-toolchain)
         parent: debian11-base
         definition: toolchain-build
+        packages:
+            - deb11-cmake
     android-build:
         symbol: I(agb)
         parent: debian11-base
@@ -192,36 +174,42 @@ jobs:
         parent: debian11-base
     partner-repack:
         symbol: I(PR)
-        parent: debian10-base
+        parent: debian11-base
         definition: partner-repack
+    updatebot:
+        symbol: I(3rdp)
+        parent: push-to-try
     periodic-updates:
         symbol: I(file)
-        parent: ubuntu1804-base
+        parent: debian11-base
     firefox-snap:
         symbol: I(snap)
     firefox-flatpak:
         symbol: I(flatpak)
     webrender:
         symbol: I(webrender)
-        parent: debian10-base
+        parent: debian11-base
     condprof:
         symbol: I(condprof)
         parent: ubuntu1804-test
     github-sync:
         symbol: I(github-sync)
-        parent: debian10-base
+        parent: debian11-base
     sentry:
         symbol: I(sentry)
-        parent: debian10-base
+        parent: debian11-base
     system-symbols-mac:
         symbol: I(system-symbols-mac)
-        parent: debian10-base
+        parent: debian11-base
     system-symbols-win:
         symbol: I(system-symbols-win)
-        parent: debian10-base
+        parent: debian11-base
+    system-symbols-linux-scraper:
+        symbol: I(system-symbols-linux)
+        parent: debian11-base
     push-to-try:
         symbol: I(push-to-try)
-        parent: debian10-base
+        parent: debian11-base
     decision:
         symbol: I(decision)
         parent: ubuntu2004-base

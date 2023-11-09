@@ -52,6 +52,17 @@ restart-later = Cak odoco lacen
 ## Variables:
 ##   $name (String): name of the extension
 
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -115,6 +126,10 @@ browser-containers-settings =
     .accesskey = r
 
 containers-disable-alert-title = Lor dirica matino weng me mako jami?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] Ka ijuko Dirica matino me mako jami kombedi, ki biloro dirica matidi { $tabCount } me mako jami. Imoko ada ni imito juko Dirica matino me mako jami?
@@ -126,6 +141,9 @@ containers-disable-alert-ok-button =
         [one] Lor Dirica matida { $tabCount } me mako jami
        *[other] Lor Dirica matino { $tabCount } me mako jami
     }
+
+##
+
 containers-disable-alert-cancel-button = Wek ma kicako
 
 containers-remove-alert-title = Kwany Lamak jami man?
@@ -403,11 +421,6 @@ home-restore-defaults =
     .label = Dwok makwongo
     .accesskey = D
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Acakki me Firefox (Makwongo)
-
 home-mode-choice-blank =
     .label = Potbuk ma nono
 
@@ -432,14 +445,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Jami me Acakki Firefox
-home-prefs-content-description = Yer jami ma imito ii kio me Acakki Firefox.
-
 home-prefs-search-header =
     .label = Yeny me kakube
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 home-prefs-recommended-by-header =
     .label = Lami tam obedo { $provider }
@@ -489,6 +503,7 @@ search-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Nyut tam me yeny i adwogi pa lanyut me kanonge
     .accesskey = l
+
 
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
@@ -544,6 +559,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = Ter Kakube ni kwedi
 
 # This message contains two links and two icon images.
@@ -558,6 +577,9 @@ sync-mobile-promo = Gam Firefox pi <img data-l10n-name="android-icon"/> <a data-
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Lok cal me propwail
 
@@ -568,8 +590,13 @@ sync-sign-out =
 sync-manage-account = Lo akaunt
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } pe ki moko ada ne.
 sync-signedin-login-failure = Tim ber i dony me kube odoco { $email }
+
+##
 
 sync-resend-verification =
     .label = Nwo cwalo moko ada
@@ -590,9 +617,14 @@ prefs-sync-now =
     .accesskeynotsyncing = K
     .labelsyncing = Ribo…
 
-## The list of things currently syncing.
+prefs-sync-now-button =
+    .label = Rib Kombedi
+    .accesskey = K
 
-sync-currently-syncing-heading = Kombedi dong itye ka ribo jami magi:
+prefs-syncing-button =
+    .label = Ribo…
+
+## The list of things currently syncing.
 
 sync-currently-syncing-bookmarks = Alamabuk
 sync-currently-syncing-history = Gin mukato
@@ -650,6 +682,16 @@ sync-device-name-save =
     .accesskey = o
 
 sync-connect-another-device = Kub nyonyo mukene
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Moko ada kicwalo
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = Kicwalo kakube me moko ada i { $email }.
+sync-verification-not-sent-title = Pe twero cwalo moko ada
+sync-verification-not-sent-body = Pe wa twero cwalo email me moko ada i cawa man, tim ber item doki lacen.
 
 ## Privacy Section
 
@@ -768,6 +810,9 @@ sitedata-settings =
     .label = Lo Data
     .accesskey = D
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-header = Lanyut me kanonge
@@ -798,6 +843,8 @@ content-blocking-learn-more = Nong ngec mapol
 
 content-blocking-all-cookies = Angija weng
 content-blocking-unvisited-cookies = Angija ki kakube mape kilimo gi
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-warning-title = Ngec!
 content-blocking-warning-learn-how = Nong ngec nining
@@ -932,6 +979,9 @@ certs-devices =
 ## Privacy Section - HTTPS-Only
 
 httpsonly-learn-more = Nong ngec mapol
+
+## DoH Section
+
 
 ## The following strings are used in the Download section of settings
 

@@ -33,7 +33,11 @@
 class nsICacheInfoChannel;
 
 namespace mozilla::dom {
+
 class ScriptLoadContext;
+class WorkerLoadContext;
+class WorkletLoadContext;
+
 }  // namespace mozilla::dom
 
 namespace mozilla::loader {
@@ -104,14 +108,17 @@ class ScriptFetchOptions {
   const enum mozilla::dom::ReferrerPolicy mReferrerPolicy;
 
   /*
-   *  Used to determine CSP
+   *  Used to determine CSP and if we are on the About page.
+   *  Only used in DOM content scripts.
+   *  TODO: Move to ScriptLoadContext
    */
   nsCOMPtr<nsIPrincipal> mTriggeringPrincipal;
   /*
-   *      Represents fields populated by DOM elements (nonce, parser metadata)
-   *      Leave this field as a nullptr for any fetch that requires the
-   *      default classic script options.
-   *      (https://html.spec.whatwg.org/multipage/webappapis.html#default-classic-script-fetch-options)
+   *  Represents fields populated by DOM elements (nonce, parser metadata)
+   *  Leave this field as a nullptr for any fetch that requires the
+   *  default classic script options.
+   *  (https://html.spec.whatwg.org/multipage/webappapis.html#default-classic-script-fetch-options)
+   *  TODO: extract necessary fields rather than passing this object
    */
   nsCOMPtr<mozilla::dom::Element> mElement;
 };
@@ -203,8 +210,8 @@ class ScriptLoadRequest
   };
 
   bool IsFetching() const { return mState == State::Fetching; }
-
   bool IsCompiling() const { return mState == State::Compiling; }
+  bool IsLoadingImports() const { return mState == State::LoadingImports; }
 
   bool IsReadyToRun() const {
     return mState == State::Ready || mState == State::Canceled;
@@ -223,11 +230,13 @@ class ScriptLoadRequest
     mDataType = DataType::eUnknown;
     mScriptData.reset();
   }
+
+  bool IsUTF8ParsingEnabled();
+
   void SetTextSource() {
     MOZ_ASSERT(IsUnknownDataType());
     mDataType = DataType::eTextSource;
-    if (mozilla::StaticPrefs::
-            dom_script_loader_external_scripts_utf8_parsing_enabled()) {
+    if (IsUTF8ParsingEnabled()) {
       mScriptData.emplace(VariantType<ScriptTextBuffer<Utf8Unit>>());
     } else {
       mScriptData.emplace(VariantType<ScriptTextBuffer<char16_t>>());
@@ -297,11 +306,16 @@ class ScriptLoadRequest
   void DropBytecodeCacheReferences();
 
   bool HasLoadContext() const { return mLoadContext; }
-
   bool HasScriptLoadContext() const;
+  bool HasWorkerLoadContext() const;
+
   mozilla::dom::ScriptLoadContext* GetScriptLoadContext();
 
   mozilla::loader::ComponentLoadContext* GetComponentLoadContext();
+
+  mozilla::dom::WorkerLoadContext* GetWorkerLoadContext();
+
+  mozilla::dom::WorkletLoadContext* GetWorkletLoadContext();
 
   const ScriptKind mKind;  // Whether this is a classic script or a module
                            // script.
@@ -332,8 +346,11 @@ class ScriptLoadRequest
 
   const nsCOMPtr<nsIURI> mURI;
   nsCOMPtr<nsIPrincipal> mOriginPrincipal;
-  nsAutoCString
-      mURL;  // Keep the URI's filename alive during off thread parsing.
+
+  // Keep the URI's filename alive during off thread parsing.
+  // Also used by workers to report on errors while loading, and used by
+  // worklets as the file name in compile options.
+  nsAutoCString mURL;
 
   // The base URL used for resolving relative module imports.
   nsCOMPtr<nsIURI> mBaseURL;

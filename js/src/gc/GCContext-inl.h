@@ -10,7 +10,6 @@
 #include "gc/GCContext.h"
 
 #include "gc/ZoneAllocator.h"
-#include "js/RefCounted.h"
 
 inline void JS::GCContext::free_(Cell* cell, void* p, size_t nbytes,
                                  MemoryUse use) {
@@ -31,7 +30,11 @@ inline void JS::GCContext::release(Cell* cell, T* p, size_t nbytes,
 
 inline void JS::GCContext::removeCellMemory(Cell* cell, size_t nbytes,
                                             MemoryUse use) {
-  RemoveCellMemory(cell, nbytes, use, isCollecting());
+  // This may or may not be called as part of GC.
+  if (nbytes && cell->isTenured()) {
+    auto zone = js::ZoneAllocator::from(cell->asTenured().zoneFromAnyThread());
+    zone->removeCellMemory(cell, nbytes, use, isFinalizing());
+  }
 }
 
 #endif  // gc_GCContext_inl_h

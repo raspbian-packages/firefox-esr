@@ -13,14 +13,16 @@ import * as asyncValue from "./async-value";
 
 import { initialState } from "../reducers/index";
 
+import { getDisplayURL } from "./sources-tree/getURL";
+import { createLocation } from "./location";
+
 function makeMockSource(url = "url", id = "source", thread = "FakeThread") {
   return {
     id,
     url,
+    displayURL: getDisplayURL(url),
     thread,
-    isBlackBoxed: false,
     isPrettyPrinted: false,
-    relativeUrl: url,
     isWasm: false,
     extensionName: null,
     isExtension: false,
@@ -28,11 +30,12 @@ function makeMockSource(url = "url", id = "source", thread = "FakeThread") {
   };
 }
 
-function makeMockDisplaySource(url = "url", id = "source") {
-  return {
-    ...makeMockSource(url, id),
-    displayURL: url,
-  };
+function makeMockDisplaySource(
+  url = "url",
+  id = "source",
+  thread = "FakeThread"
+) {
+  return makeMockSource(url, id, thread);
 }
 
 function makeMockSourceWithContent(
@@ -88,10 +91,9 @@ function makeMockWasmSource() {
   return {
     id: "wasm-source-id",
     url: "url",
+    displayURL: getDisplayURL("url"),
     thread: "FakeThread",
-    isBlackBoxed: false,
     isPrettyPrinted: false,
-    relativeUrl: "url",
     isWasm: true,
     extensionName: null,
     isExtension: false,
@@ -135,8 +137,8 @@ function mockScopeAddVariable(scope, name) {
 
 function makeMockBreakpoint(source = makeMockSource(), line = 1, column) {
   const location = column
-    ? { sourceId: source.id, line, column }
-    : { sourceId: source.id, line };
+    ? { sourceId: source.id, source: { id: source.id }, line, column }
+    : { sourceId: source.id, source: { id: source.id }, line };
   return {
     id: "breakpoint",
     location,
@@ -156,7 +158,13 @@ function makeMockFrame(
   displayName = `display-${id}`,
   index = 0
 ) {
-  const location = { sourceId: source.id, line };
+  const sourceActor = {
+    id: `${source.id}-actor`,
+    actor: `${source.id}-actor`,
+    source: source.id,
+    sourceObject: source,
+  };
+  const location = createLocation({ source, sourceActor, line });
   return {
     id,
     thread: "FakeThread",
@@ -223,6 +231,21 @@ function makeMockState(state) {
   };
 }
 
+function formatTree(tree, depth = 0, str = "") {
+  const whitespace = new Array(depth * 2).join(" ");
+
+  if (tree.type === "directory") {
+    str += `${whitespace} - ${tree.name} path=${tree.path} \n`;
+    tree.contents.forEach(t => {
+      str = formatTree(t, depth + 1, str);
+    });
+  } else {
+    str += `${whitespace} - ${tree.name} path=${tree.path} source_id=${tree.contents.id} \n`;
+  }
+
+  return str;
+}
+
 export {
   makeMockDisplaySource,
   makeMockSource,
@@ -243,4 +266,5 @@ export {
   makeMockState,
   makeMockThread,
   makeFullfilledMockSourceContent,
+  formatTree,
 };

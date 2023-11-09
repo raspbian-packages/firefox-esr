@@ -8,22 +8,24 @@
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
-firefox-relay-mask-generation-failed = { -relay-brand-name } no pudo generar una nueva máscara. Código de error HTTP: { $status }.
-firefox-relay-get-reusable-masks-failed = { -relay-brand-name } no pudo encontrar máscaras reutilizables. Código de error HTTP: { $status }.
+firefox-relay-mask-generation-failed = { -relay-brand-name } no pudo generar un nuevo alias. Código de error HTTP: { $status }.
+firefox-relay-get-reusable-masks-failed = { -relay-brand-name } no pudo encontrar alias reutilizables. Código de error HTTP: { $status }.
 
 ##
 
 firefox-relay-must-login-to-fxa = Debe iniciar sesión en { -fxaccount-brand-name } para usar { -relay-brand-name }.
 firefox-relay-get-unlimited-masks =
-    .label = Administrar máscaras
+    .label = Administrar alias
     .accesskey = m
-firefox-relay-opt-in-title = Proteger dirección de correo electrónico
-firefox-relay-opt-in-subtitle = Agregar { -relay-brand-name }
-firefox-relay-generate-mask-title = Proteger dirección de correo electrónico
-firefox-relay-generate-mask-subtitle = Generar máscara de { -relay-brand-short-name }
-firefox-relay-opt-in-confirmation-enable =
-    .label = Continuar
-    .accesskey = C
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Proteger dirección de correo electrónico:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = Usar alias de correo de { -relay-brand-name }
+firefox-relay-use-mask-title = Usar alias de correo de { -relay-brand-name }
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = Usar alias de correo
+    .accesskey = U
 firefox-relay-opt-in-confirmation-disable =
     .label = No mostrar nuevamente
     .accesskey = v

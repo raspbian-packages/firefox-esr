@@ -39,16 +39,11 @@ add_task(async function test_removeFolderTransaction_reinsert() {
       ]);
     }
   };
-  let observer = {
-    __proto__: NavBookmarkObserver.prototype,
-  };
-  PlacesUtils.bookmarks.addObserver(observer);
   PlacesUtils.observers.addListener(
     ["bookmark-added", "bookmark-removed"],
     listener
   );
-  PlacesUtils.registerShutdownFunction(function() {
-    PlacesUtils.bookmarks.removeObserver(observer);
+  PlacesUtils.registerShutdownFunction(function () {
     PlacesUtils.observers.removeListener(
       ["bookmark-added", "bookmark-removed"],
       listener
@@ -62,7 +57,9 @@ add_task(async function test_removeFolderTransaction_reinsert() {
   let tbId = await PlacesUtils.promiseItemId(tb.guid);
 
   await transaction.transact();
-
+  let bookmarksMenuItemId = await PlacesUtils.promiseItemId(
+    PlacesUtils.bookmarks.menuGuid
+  );
   checkNotifications(
     [
       ["bookmark-removed", tbId, folderId, tb.guid, folder.guid],
@@ -70,7 +67,7 @@ add_task(async function test_removeFolderTransaction_reinsert() {
       [
         "bookmark-removed",
         folderId,
-        PlacesUtils.bookmarksMenuFolderId,
+        bookmarksMenuItemId,
         folder.guid,
         PlacesUtils.bookmarks.menuGuid,
       ],
@@ -89,7 +86,7 @@ add_task(async function test_removeFolderTransaction_reinsert() {
       [
         "bookmark-added",
         folderId,
-        PlacesUtils.bookmarksMenuFolderId,
+        bookmarksMenuItemId,
         folder.guid,
         PlacesUtils.bookmarks.menuGuid,
       ],
@@ -108,7 +105,7 @@ add_task(async function test_removeFolderTransaction_reinsert() {
       [
         "bookmark-removed",
         folderId,
-        PlacesUtils.bookmarksMenuFolderId,
+        bookmarksMenuItemId,
         folder.guid,
         PlacesUtils.bookmarks.menuGuid,
       ],

@@ -4,10 +4,19 @@
 
 # Variables:
 #  $retriesLeft (Number): number of tries left
-webauthn-pin-invalid-prompt =
+webauthn-pin-invalid-long-prompt =
     { $retriesLeft ->
-        [0] קוד PIN שגוי! נא להזין את קוד ה־PIN הנכון עבור המכשיר שלך.
-        [one] קוד PIN שגוי! נא להזין את קוד ה־PIN הנכון עבור המכשיר שלך. נותר לך ניסיון אחד.
-       *[other] קוד PIN שגוי! נא להזין את קוד ה־PIN הנכון עבור המכשיר שלך. נותרו לך { $retriesLeft } ניסיונות.
+        [one] קוד PIN שגוי. נשאר לך ניסיון אחד לפני שהגישה שלך למכשיר זה תאבד לצמיתות.
+       *[other] קוד PIN שגוי. נשארו לך { $retriesLeft } ניסיונות לפני שהגישה שלך למכשיר זה תאבד לצמיתות.
     }
+webauthn-pin-invalid-short-prompt = קוד PIN שגוי. נא לנסות שוב.
 webauthn-pin-required-prompt = נא להזין את קוד ה־PIN עבור המכשיר שלך.
+
+# Variables:
+#  $retriesLeft (Number): number of tries left
+webauthn-uv-invalid-long-prompt =
+    { $retriesLeft ->
+        [one] אימות המשתמש נכשל. נותר לך ניסיון אחד אחרון. נא לנסות שוב.
+       *[other] אימות המשתמש נכשל. נותרו לך עוד { $retriesLeft } ניסיונות. נא לנסות שוב.
+    }
+webauthn-uv-invalid-short-prompt = אימות המשתמש נכשל. נא לנסות שוב.

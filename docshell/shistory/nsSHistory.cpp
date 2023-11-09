@@ -1284,6 +1284,10 @@ static void FinishRestore(CanonicalBrowsingContext* aBrowsingContext,
       });
     }
 
+    if (aEntry) {
+      aEntry->SetWireframe(Nothing());
+    }
+
     // ReplacedBy will swap the entry back.
     aBrowsingContext->SetActiveSessionHistoryEntry(aEntry);
     loadingBC->SetActiveSessionHistoryEntry(nullptr);
@@ -1394,7 +1398,9 @@ void nsSHistory::LoadURIOrBFCache(LoadEntryResult& aLoadEntry) {
     }
   }
 
-  aLoadEntry.mBrowsingContext->LoadURI(aLoadEntry.mLoadState, false);
+  RefPtr<BrowsingContext> bc = aLoadEntry.mBrowsingContext;
+  RefPtr<nsDocShellLoadState> loadState = aLoadEntry.mLoadState;
+  bc->LoadURI(loadState, false);
 }
 
 /* static */

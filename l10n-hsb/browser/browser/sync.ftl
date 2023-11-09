@@ -21,6 +21,16 @@ fxa-menu-turn-on-sync-default = Synchronizaciju zmóžnić
 
 fxa-menu-connect-another-device =
     .label = Dalši grat zwjazać…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] { $tabCount } rajtark na grat pósłać
+            [two] { $tabCount } rajtarkaj na grat pósłać
+            [few] { $tabCount } rajtarki na grat pósłać
+           *[other] { $tabCount } rajtarkow na grat pósłać
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

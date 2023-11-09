@@ -122,8 +122,8 @@ static int mar_read_index(MarFile* mar) {
     return -1;
   }
 
-  if (mar_read_buffer(mar, &offset_to_index, &mar_position,
-                      sizeof(uint32_t)) != 0) {
+  if (mar_read_buffer(mar, &offset_to_index, &mar_position, sizeof(uint32_t)) !=
+      0) {
     return -1;
   }
   offset_to_index = ntohl(offset_to_index);
@@ -132,8 +132,8 @@ static int mar_read_index(MarFile* mar) {
   if (mar_buffer_seek(mar, &mar_position, offset_to_index) != 0) {
     return -1;
   }
-  if (mar_read_buffer(mar, &size_of_index, &mar_position,
-                      sizeof(uint32_t)) != 0) {
+  if (mar_read_buffer(mar, &size_of_index, &mar_position, sizeof(uint32_t)) !=
+      0) {
     return -1;
   }
   size_of_index = ntohl(size_of_index);
@@ -481,7 +481,7 @@ int get_open_mar_file_info(MarFile* mar, size_t* mar_position,
 
   /* Get the number of signatures */
   if (mar_read_buffer(mar, &signatureCount, mar_position,
-                                            sizeof(signatureCount)) != 0) {
+                      sizeof(signatureCount)) != 0) {
     return -1;
   }
   signatureCount = ntohl(signatureCount);
@@ -500,8 +500,8 @@ int get_open_mar_file_info(MarFile* mar, size_t* mar_position,
     }
 
     /* Read the signature length and skip past the signature */
-    if (mar_read_buffer(mar, &signatureLen, mar_position,
-                                            sizeof(uint32_t)) != 0) {
+    if (mar_read_buffer(mar, &signatureLen, mar_position, sizeof(uint32_t)) !=
+        0) {
       return -1;
     }
     signatureLen = ntohl(signatureLen);
@@ -511,7 +511,7 @@ int get_open_mar_file_info(MarFile* mar, size_t* mar_position,
   }
 
   if (*mar_position <= (size_t)INT64_MAX &&
-        (int64_t)mar_position == (int64_t)offsetToContent) {
+      (int64_t)mar_position == (int64_t)offsetToContent) {
     *hasAdditionalBlocks = 0;
   } else {
     if (numAdditionalBlocks) {
@@ -586,8 +586,8 @@ int mar_read_product_info_block(MarFile* mar,
   /* The buffer size is 97 bytes because the MAR channel name < 64 bytes, and
      product version < 32 bytes + 3 NULL terminator bytes. */
   char buf[MAXADDITIONALBLOCKSIZE + 1] = {'\0'};
-  if (get_open_mar_file_info(mar, &mar_position, NULL, NULL, &hasAdditionalBlocks,
-                             &offsetAdditionalBlocks,
+  if (get_open_mar_file_info(mar, &mar_position, NULL, NULL,
+                             &hasAdditionalBlocks, &offsetAdditionalBlocks,
                              &numAdditionalBlocks) != 0) {
     return -1;
   }

@@ -623,6 +623,11 @@ already_AddRefed<dom::EventTarget> XULKeySetGlobalKeyListener::GetHandlerTarget(
 
 bool XULKeySetGlobalKeyListener::CanHandle(KeyEventHandler* aHandler,
                                            bool aWillExecute) const {
+  // If the <key> element itself is disabled, ignore it.
+  if (aHandler->KeyElementIsDisabled()) {
+    return false;
+  }
+
   nsCOMPtr<dom::Element> commandElement;
   if (!GetElementForHandler(aHandler, getter_AddRefs(commandElement))) {
     return false;
@@ -721,16 +726,15 @@ bool RootWindowGlobalKeyListener::IsHTMLEditorFocused() {
   nsINode* focusedNode = fm->GetFocusedElement();
   if (focusedNode && focusedNode->IsElement()) {
     // If there is a focused element, make sure it's in the active editing host.
-    // Note that GetActiveEditingHost finds the current editing host based on
+    // Note that ComputeEditingHost finds the current editing host based on
     // the document's selection.  Even though the document selection is usually
     // collapsed to where the focus is, but the page may modify the selection
     // without our knowledge, in which case this check will do something useful.
-    nsCOMPtr<dom::Element> activeEditingHost =
-        htmlEditor->GetActiveEditingHost();
-    if (!activeEditingHost) {
+    dom::Element* editingHost = htmlEditor->ComputeEditingHost();
+    if (!editingHost) {
       return false;
     }
-    return focusedNode->IsInclusiveDescendantOf(activeEditingHost);
+    return focusedNode->IsInclusiveDescendantOf(editingHost);
   }
 
   return false;

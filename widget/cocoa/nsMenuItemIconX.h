@@ -60,8 +60,7 @@ class nsMenuItemIconX final : public mozilla::widget::IconLoader::Listener {
   // GetIconURI returns null if the item should not have any icon.
   already_AddRefed<nsIURI> GetIconURI(nsIContent* aContent);
 
-  Listener* mListener;            // [weak]
-  nsIntRect mImageRegionRect;
+  Listener* mListener;  // [weak]
   RefPtr<const mozilla::ComputedStyle> mComputedStyle;
   mozilla::WeakPtr<nsPresContext> mPresContext;
   NSImage* mIconImage = nil;  // [strong]

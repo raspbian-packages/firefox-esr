@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = Syngronisaasje ynskeakelje
 
 fxa-menu-connect-another-device =
     .label = In oar apparaat ferbine…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Ljepblêd nei apparaat ferstjoere
+           *[other] { $tabCount } ljepblêden nei apparaat ferstjoere
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

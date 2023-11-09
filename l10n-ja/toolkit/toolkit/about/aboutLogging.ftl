@@ -2,27 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
--profiler-brand-name = Firefox Profiler
-
-##
-
 # This is the title of the page
 about-logging-title = HTTP ログについて
 about-logging-page-title = ログマネージャー
 about-logging-current-log-file = 現在のログファイル:
-about-logging-current-log-modules = 現在のログモジュール:
 about-logging-new-log-file = 新しいログファイル:
 about-logging-currently-enabled-log-modules = 現在有効なログモジュール:
 about-logging-log-tutorial = このツールの使い方は <a data-l10n-name="logging">HTTP Logging</a> を参照してください。
@@ -43,6 +26,7 @@ about-logging-logging-to-profiler = ログを { -profiler-brand-name } に記録
 about-logging-no-log-modules = なし
 about-logging-no-log-file = なし
 about-logging-logging-preset-selector-text = ログプリセット:
+about-logging-with-profiler-stacks-checkbox = ログメッセージのスタックとレースを有効にする
 
 ## Logging presets
 

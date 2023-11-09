@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Dodaj stran med zaznamke
-    .accesskey = r
-    .tooltiptext = Dodaj stran med zaznamke
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Dodaj stran med zaznamke
-    .accesskey = D
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Uredi zaznamek
-    .accesskey = U
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Dodaj stran med zaznamke
-    .accesskey = r
-    .tooltiptext = Dodaj stran med zaznamke ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Uredi ta zaznamek
-    .accesskey = r
-    .tooltiptext = Uredi zaznamek
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Uredi ta zaznamek
-    .accesskey = r
-    .tooltiptext = Uredi zaznamek ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Dodaj stran med zaznamke …
     .accesskey = m
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Odpri povezavo v novem zasebnem oknu
     .accesskey = P
-
-main-context-menu-bookmark-link =
-    .label = Dodaj povezavo med zaznamke
-    .accesskey = m
 
 main-context-menu-bookmark-link-2 =
     .label = Dodaj povezavo med zaznamke …
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Pošlji zvok po e-pošti …
     .accesskey = o
 
-main-context-menu-plugin-play =
-    .label = Omogoči vtičnik
-    .accesskey = m
-
-main-context-menu-plugin-hide =
-    .label = Skrij vtičnik
-    .accesskey = S
-
 main-context-menu-save-to-pocket =
     .label = Shrani stran v { -pocket-brand-name }
     .accesskey = s
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = o
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Uporabi e-poštno masko { -relay-brand-short-name }
+    .accesskey = e
 
 main-context-menu-suggest-strong-password =
     .label = Predlagaj močno geslo …
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Ponovno naloži okvir
     .accesskey = R
 
-main-context-menu-frame-bookmark =
-    .label = Dodaj okvir med zaznamke
-    .accesskey = m
-
 main-context-menu-frame-add-bookmark =
     .label = Dodaj okvir med zaznamke …
     .accesskey = m
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Pokaži podatke o okvirju
     .accesskey = I
-
-main-context-menu-print-selection =
-    .label = Natisni izbrano
-    .accesskey = N
 
 main-context-menu-print-selection-2 =
     .label = Natisni izbrano …

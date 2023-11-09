@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = แท็บใหม่
 tabbrowser-empty-private-tab-title = แท็บส่วนตัวใหม่
+
 tabbrowser-menuitem-close-tab =
     .label = ปิดแท็บ
 tabbrowser-menuitem-close =
     .label = ปิด
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -97,6 +96,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = ไม่ต้องแสดงก
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = อนุญาตให้การแจ้งเตือนเช่นนี้จาก { $domain } นำคุณไปที่แท็บของไซต์
+
 tabbrowser-customizemode-tab-title = ปรับแต่ง { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -115,3 +115,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = เปิดเสียงแท็บ
     .accesskey = ส
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = กำลังเล่นเสียง
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = แสดงรายการ { $tabCount } แท็บทั้งหมด
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = ปิดเสียงแท็บ
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = เปิดเสียงแท็บ
+tabbrowser-manager-close-tab =
+    .tooltiptext = ปิดแท็บ

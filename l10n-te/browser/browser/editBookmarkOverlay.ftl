@@ -24,6 +24,12 @@ bookmark-overlay-folders-expander =
     .tooltiptextdown = { bookmark-overlay-folders-expander.tooltiptext }
     .tooltiptextup = దాచిపెట్టు
 
+bookmark-overlay-folders-expander2 =
+    .tooltiptext = అన్ని ఇష్టాంశముల సంచయాలను చూపించు
+
+bookmark-overlay-folders-expander-hide =
+    .tooltiptext = దాచిపెట్టు
+
 bookmark-overlay-new-folder-button =
     .label = కొత్త సంచయం
     .accesskey = o
@@ -39,6 +45,12 @@ bookmark-overlay-tags-expander =
     .tooltiptext = అన్ని ట్యాగులను చూపించు
     .tooltiptextdown = { bookmark-overlay-tags-expander.tooltiptext }
     .tooltiptextup = దాచిపెట్టు
+
+bookmark-overlay-tags-expander2 =
+    .tooltiptext = అన్ని ట్యాగులను చూపించు
+
+bookmark-overlay-tags-expander-hide =
+    .tooltiptext = దాచిపెట్టు
 
 bookmark-overlay-keyword-2 =
     .value = కీపదం

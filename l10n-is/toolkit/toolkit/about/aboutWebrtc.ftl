@@ -13,6 +13,9 @@ about-webrtc-document-title = WebRTC Internals
 # translated. This string is used as a title for a file save dialog box.
 about-webrtc-save-page-dialog-title = vista about:webrtc sem
 
+## These labels are for a disclosure which contains the information for closed PeerConnection sections
+
+
 ## AEC is an abbreviation for Acoustic Echo Cancellation.
 
 about-webrtc-aec-logging-msg-label = AEC atvikaskráning
@@ -20,7 +23,13 @@ about-webrtc-aec-logging-off-state-label = Byrja AEC-atvikaskráningu
 about-webrtc-aec-logging-on-state-label = Hætta AEC-atvikaskráningu
 about-webrtc-aec-logging-on-state-msg = AEC-atvikaskráning virk (talaðu við viðmælanda í nokkrar mínútur og stöðvaðu svo skráninguna)
 
+about-webrtc-aec-logging-toggled-on-state-msg = AEC-atvikaskráning virk (talaðu við viðmælanda í nokkrar mínútur og stöðvaðu svo skráninguna)
+# Variables:
+#  $path (String) - The path to which the aec log file is saved.
+about-webrtc-aec-logging-toggled-off-state-msg = Hægt er að finna skrár fyrir atvikaskráningu í: { $path }
+
 ##
+
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
 # an abbreviation for Identifier. This string should not normally be translated
@@ -88,6 +97,11 @@ about-webrtc-log-show-msg = sýna atvikaskrá
 about-webrtc-log-hide-msg = fela atvikaskrá
     .title = smelltu til að fella saman þetta svæði
 
+about-webrtc-log-section-show-msg = Sýna atvikaskrá
+    .title = Smelltu til að stækka þetta svæði
+about-webrtc-log-section-hide-msg = Fela atvikaskrá
+    .title = Smelltu til að fella saman þetta svæði
+
 ## These are used to display a header for a PeerConnection.
 ## Variables:
 ##  $browser-id (Number) - A numeric id identifying the browser tab for the PeerConnection.
@@ -97,6 +111,11 @@ about-webrtc-log-hide-msg = fela atvikaskrá
 
 about-webrtc-connection-open = [ { $browser-id } | { $id } ] { $url } { $now }
 about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (lokað) { $now }
+
+## These are used to indicate what direction media is flowing.
+## Variables:
+##  $codecs - a list of media codecs
+
 
 ##
 
@@ -109,11 +128,21 @@ about-webrtc-raw-cand-show-msg = sýna umsækjendur
     .title = smelltu til að stækka þetta svæði
 about-webrtc-raw-cand-hide-msg = fela umsækjendur
     .title = smelltu til að fella saman þetta svæði
+about-webrtc-raw-cand-section-show-msg = Sýna umsækjendur
+    .title = Smelltu til að stækka þetta svæði
+about-webrtc-raw-cand-section-hide-msg = Fela umsækjendur
+    .title = Smelltu til að fella saman þetta svæði
 about-webrtc-priority = Forgangur
 about-webrtc-fold-show-msg = sýna nánar
     .title = smelltu til að stækka þetta svæði
 about-webrtc-fold-hide-msg = fela nánar
     .title = smelltu til að fella saman þetta svæði
+about-webrtc-fold-default-show-msg = Sýna nánar
+    .title = Smelltu til að stækka þetta svæði
+about-webrtc-fold-default-hide-msg = Fela nánar
+    .title = Smelltu til að fella saman þetta svæði
+about-webrtc-dropped-frames-label = Römmum hent:
+about-webrtc-discarded-packets-label = Pökkum hent:
 about-webrtc-decoder-label = Afkóðari
 about-webrtc-encoder-label = Kóðari
 about-webrtc-show-tab-label = Sýna flipa
@@ -126,6 +155,10 @@ about-webrtc-estimated-framerate = Áætluð rammatíðni
 about-webrtc-rotation-degrees = Snúningur (gráður)
 
 ## SSRCs are identifiers that represent endpoints in an RTP stream
+
+
+## These are displayed on the button that shows or hides the
+## PeerConnection configuration disclosure
 
 
 ##
@@ -152,6 +185,10 @@ about-webrtc-save-page-msg = síða vistuð á: { $path }
 about-webrtc-debug-mode-off-state-msg = rakningarskrá er að finna á: { $path }
 about-webrtc-debug-mode-on-state-msg = villuleitarhamur virkur, rakningarskrá á: { $path }
 about-webrtc-aec-logging-off-state-msg = hægt er að finna skrár fyrir atvikaskráningu í: { $path }
+
+about-webrtc-save-page-complete-msg = Síða vistuð á: { $path }
+about-webrtc-debug-mode-toggled-off-state-msg = Rakningarskrá er að finna á: { $path }
+about-webrtc-debug-mode-toggled-on-state-msg = Villuleitarhamur virkur, rakningarskrá á: { $path }
 
 ##
 
@@ -186,6 +223,16 @@ about-webrtc-trickle-caption-msg = Leka umsækjendur (sem er sent eftir svar) er
 
 ## "SDP" is an abbreviation for Session Description Protocol, an IETF standard.
 ## See http://wikipedia.org/wiki/Session_Description_Protocol
+
+
+## These are displayed on the button that shows or hides the SDP information disclosure
+
+about-webrtc-show-msg-sdp = Sýna SDP
+about-webrtc-hide-msg-sdp = Fela SDP
+
+## These are displayed on the button that shows or hides the Media Context information disclosure.
+## The Media Context is the set of preferences and detected capabilities that informs
+## the negotiated CODEC settings.
 
 
 ##

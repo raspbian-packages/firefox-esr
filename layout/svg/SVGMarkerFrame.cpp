@@ -10,6 +10,7 @@
 // Keep others in (case-insensitive) order:
 #include "gfxContext.h"
 #include "mozilla/PresShell.h"
+#include "mozilla/SVGContextPaint.h"
 #include "mozilla/SVGGeometryFrame.h"
 #include "mozilla/SVGObserverUtils.h"
 #include "mozilla/SVGUtils.h"
@@ -122,20 +123,24 @@ void SVGMarkerFrame::PaintMark(gfxContext& aContext,
   gfxMatrix markTM = ThebesMatrix(viewBoxTM) * ThebesMatrix(mMarkerTM) *
                      aToMarkedFrameUserSpace;
 
+  gfxClipAutoSaveRestore autoSaveClip(&aContext);
   if (StyleDisplay()->IsScrollableOverflow()) {
-    aContext.Save();
     gfxRect clipRect = SVGUtils::GetClipRectForFrame(
         this, viewBox.x, viewBox.y, viewBox.width, viewBox.height);
-    SVGUtils::SetClipRect(&aContext, markTM, clipRect);
+    autoSaveClip.TransformedClip(markTM, clipRect);
   }
 
   nsIFrame* kid = GetAnonymousChildFrame(this);
   ISVGDisplayableFrame* SVGFrame = do_QueryFrame(kid);
   // The CTM of each frame referencing us may be different.
   SVGFrame->NotifySVGChanged(ISVGDisplayableFrame::TRANSFORM_CHANGED);
+  RefPtr<SVGContextPaintImpl> contextPaint = new SVGContextPaintImpl();
+  contextPaint->Init(aContext.GetDrawTarget(), aContext.CurrentMatrixDouble(),
+                     aMarkedFrame, SVGContextPaint::GetContextPaint(marker),
+                     aImgParams);
+  AutoSetRestoreSVGContextPaint autoSetRestore(contextPaint,
+                                               marker->OwnerDoc());
   SVGUtils::PaintFrameWithEffects(kid, aContext, markTM, aImgParams);
-
-  if (StyleDisplay()->IsScrollableOverflow()) aContext.Restore();
 }
 
 SVGBBox SVGMarkerFrame::GetMarkBBoxContribution(const Matrix& aToBBoxUserspace,

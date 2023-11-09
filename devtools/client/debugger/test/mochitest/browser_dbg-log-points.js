@@ -8,7 +8,7 @@
 
 "use strict";
 
-add_task(async function() {
+add_task(async function () {
   Services.prefs.setBoolPref("devtools.toolbox.splitconsoleEnabled", true);
   const dbg = await initDebugger(
     "doc-script-switching.html",
@@ -25,7 +25,7 @@ add_task(async function() {
 
   await dbg.actions.addBreakpoint(
     getContext(dbg),
-    { line: 8, sourceId: source.id },
+    createLocation({ line: 8, source }),
     { logValue: "'a', 'b', 'c'" }
   );
 

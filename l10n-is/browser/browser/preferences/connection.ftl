@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Stillingar tengingar
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Stillingar tengingar
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Þessi valmöguleiki auðkennir þig á milliþjónum ef búið er að vista auðkenni. Spurt verður um auðkenni ef innskráning misheppnast.
 
+connection-proxy-autologin-checkbox =
+    .label = Ekki biðja um auðkenningu ef lykilorð er vistað
+    .accesskey = i
+    .tooltiptext = Þessi valmöguleiki auðkennir þig á milliþjónum ef búið er að vista auðkenni. Spurt verður um auðkenni ef innskráning misheppnast.
+
 connection-proxy-socks-remote-dns =
     .label = DNS milliþjónn ef notað er SOCKS v5
     .accesskey = D
-
-connection-dns-over-https =
-    .label = Virkja DNS yfir HTTPS
-    .accesskey = b
-
-connection-dns-over-https-url-resolver = Nota Provider
-    .accesskey = P
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

@@ -1,9 +1,11 @@
-const { ComponentUtils } = ChromeUtils.import(
-  "resource://gre/modules/ComponentUtils.jsm"
+/* eslint-env mozilla/chrome-script */
+
+const { ComponentUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/ComponentUtils.sys.mjs"
 );
 
-const { Downloads } = ChromeUtils.import(
-  "resource://gre/modules/Downloads.jsm"
+const { Downloads } = ChromeUtils.importESModule(
+  "resource://gre/modules/Downloads.sys.mjs"
 );
 
 let gMIMEService = Cc["@mozilla.org/mime;1"].getService(Ci.nsIMIMEService);
@@ -30,7 +32,6 @@ Services.prefs.setIntPref("browser.download.folderList", 2);
 Services.prefs.setCharPref("browser.download.dir", tmpDir.path);
 
 const FAKE_CID = Services.uuid.generateUUID();
-/* eslint-env mozilla/frame-script */
 function HelperAppLauncherDialog() {}
 HelperAppLauncherDialog.prototype = {
   show(aLauncher, aWindowContext, aReason) {
@@ -77,10 +78,10 @@ registrar.registerFactory(
   FAKE_CID,
   "",
   HELPERAPP_DIALOG_CONTRACT,
-  ComponentUtils._getFactory(HelperAppLauncherDialog)
+  ComponentUtils.generateSingletonFactory(HelperAppLauncherDialog)
 );
 
-addMessageListener("unregister", async function() {
+addMessageListener("unregister", async function () {
   registrar.registerFactory(
     HELPERAPP_DIALOG_CID,
     "",
@@ -93,7 +94,7 @@ addMessageListener("unregister", async function() {
     await dl.refresh();
     if (dl.target.exists || dl.target.partFileExists) {
       dump("Finalizing download.\n");
-      await dl.finalize(true).catch(Cu.reportError);
+      await dl.finalize(true).catch(console.error);
     }
   }
   await list.removeFinished();

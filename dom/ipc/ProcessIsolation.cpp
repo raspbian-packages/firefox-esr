@@ -224,9 +224,11 @@ static IsolationBehavior IsolationBehaviorForURI(nsIURI* aURI, bool aIsSubframe,
     // content, and should be allocated processes based on their simple content
     // principals.
     if (path == "blank"_ns || path == "srcdoc"_ns) {
+      MOZ_ASSERT(NS_IsContentAccessibleAboutURI(aURI));
       return IsolationBehavior::WebContent;
     }
 
+    MOZ_ASSERT(!NS_IsContentAccessibleAboutURI(aURI));
     // If we're loading an `about:reader` URI, perform isolation based on the
     // principal of the URI being loaded.
     if (path == "reader"_ns && aForChannelCreationURI) {
@@ -847,6 +849,15 @@ Result<NavigationIsolationOptions, nsresult> IsolationOptionsForNavigation(
   if (coop ==
       nsILoadInfo::OPENER_POLICY_SAME_ORIGIN_EMBEDDER_POLICY_REQUIRE_CORP) {
     webProcessType = WebProcessType::WebCoopCoep;
+
+    // If we're changing BrowsingContext, and are going to end up within a
+    // webCOOP+COEP group, ensure we use a cross-origin isolated BCG ID.
+    if (options.mReplaceBrowsingContext) {
+      MOZ_ASSERT(!options.mSpecificGroupId,
+                 "overriding previously-specified BCG ID");
+      options.mSpecificGroupId = BrowsingContextGroup::CreateId(
+          /* aPotentiallyCrossOriginIsolated */ true);
+    }
   }
 
   switch (webProcessType) {

@@ -165,12 +165,32 @@ class CanvasTranslator final : public gfx::InlineTranslator,
   void RemoveTexture(int64_t aTextureId);
 
   /**
+   * Overriden to remove any DataSourceSurfaces associated with the RefPtr.
+   *
+   * @param aRefPtr the key to the surface
+   * @param aSurface the surface to store
+   */
+  void AddSourceSurface(gfx::ReferencePtr aRefPtr,
+                        gfx::SourceSurface* aSurface) final {
+    if (mMappedSurface == aRefPtr) {
+      mPreparedMap = nullptr;
+      mMappedSurface = nullptr;
+    }
+    RemoveDataSurface(aRefPtr);
+    InlineTranslator::AddSourceSurface(aRefPtr, aSurface);
+  }
+
+  /**
    * Removes the SourceSurface and other objects associated with a SourceSurface
    * from another process.
    *
    * @param aRefPtr the key to the objects to remove
    */
   void RemoveSourceSurface(gfx::ReferencePtr aRefPtr) final {
+    if (mMappedSurface == aRefPtr) {
+      mPreparedMap = nullptr;
+      mMappedSurface = nullptr;
+    }
     RemoveDataSurface(aRefPtr);
     InlineTranslator::RemoveSourceSurface(aRefPtr);
   }
@@ -272,7 +292,7 @@ class CanvasTranslator final : public gfx::InlineTranslator,
   UniquePtr<gfx::DataSourceSurface::ScopedMap> mPreparedMap;
   typedef std::unordered_map<int64_t, UniquePtr<SurfaceDescriptor>>
       DescriptorMap;
-  DescriptorMap mSurfaceDescriptors GUARDED_BY(mSurfaceDescriptorsMonitor);
+  DescriptorMap mSurfaceDescriptors MOZ_GUARDED_BY(mSurfaceDescriptorsMonitor);
   Monitor mSurfaceDescriptorsMonitor{
       "CanvasTranslator::mSurfaceDescriptorsMonitor"};
   Atomic<bool> mDeactivated{false};

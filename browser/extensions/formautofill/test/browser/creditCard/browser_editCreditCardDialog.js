@@ -1,8 +1,8 @@
 "use strict";
 
-add_setup(async function() {
-  let { formAutofillStorage } = ChromeUtils.import(
-    "resource://autofill/FormAutofillStorage.jsm"
+add_setup(async function () {
+  let { formAutofillStorage } = ChromeUtils.importESModule(
+    "resource://autofill/FormAutofillStorage.sys.mjs"
   );
   await formAutofillStorage.initialize();
 });
@@ -49,8 +49,6 @@ add_task(async function test_saveCreditCard() {
     EventUtils.synthesizeKey("VK_TAB", {}, win);
     EventUtils.synthesizeKey(TEST_CREDIT_CARD_1["cc-name"], {}, win);
     EventUtils.synthesizeKey("VK_TAB", {}, win);
-    EventUtils.synthesizeKey(TEST_CREDIT_CARD_1["cc-type"], {}, win);
-    EventUtils.synthesizeKey("VK_TAB", {}, win);
     EventUtils.synthesizeKey("VK_TAB", {}, win);
     info("saving credit card");
     EventUtils.synthesizeKey("VK_RETURN", {}, win);
@@ -86,9 +84,6 @@ add_task(async function test_saveCreditCardWithMaxYear() {
     );
     EventUtils.synthesizeKey("VK_TAB", {}, win);
     EventUtils.synthesizeKey(TEST_CREDIT_CARD_2["cc-name"], {}, win);
-    EventUtils.synthesizeKey("VK_TAB", {}, win);
-    EventUtils.synthesizeKey(TEST_CREDIT_CARD_1["cc-type"], {}, win);
-    EventUtils.synthesizeKey("VK_TAB", {}, win);
     EventUtils.synthesizeKey("VK_TAB", {}, win);
     info("saving credit card");
     EventUtils.synthesizeKey("VK_RETURN", {}, win);
@@ -132,8 +127,6 @@ add_task(async function test_saveCreditCardWithBillingAddress() {
     );
     EventUtils.synthesizeKey("VK_TAB", {}, win);
     EventUtils.synthesizeKey(TEST_CREDIT_CARD["cc-name"], {}, win);
-    EventUtils.synthesizeKey("VK_TAB", {}, win);
-    EventUtils.synthesizeKey(TEST_CREDIT_CARD["cc-type"], {}, win);
     EventUtils.synthesizeKey("VK_TAB", {}, win);
     EventUtils.synthesizeKey(billingAddress["given-name"], {}, win);
     EventUtils.synthesizeKey("VK_TAB", {}, win);
@@ -242,11 +235,7 @@ add_task(async function test_editCreditCardWithMissingBillingAddress() {
 });
 
 add_task(async function test_addInvalidCreditCard() {
-  await testDialog(EDIT_CREDIT_CARD_DIALOG_URL, win => {
-    const unloadHandler = () =>
-      ok(false, "Edit credit card dialog shouldn't be closed");
-    win.addEventListener("unload", unloadHandler);
-
+  await testDialog(EDIT_CREDIT_CARD_DIALOG_URL, async win => {
     EventUtils.synthesizeKey("VK_TAB", {}, win);
     EventUtils.synthesizeKey("test", {}, win);
     EventUtils.synthesizeKey("VK_TAB", {}, win);
@@ -265,67 +254,13 @@ add_task(async function test_addInvalidCreditCard() {
       false,
       "cc-number is invalid"
     );
-    SimpleTest.requestFlakyTimeout(
-      "Ensure the window remains open after save attempt"
-    );
-    // eslint-disable-next-line mozilla/no-arbitrary-setTimeout
-    setTimeout(() => {
-      win.removeEventListener("unload", unloadHandler);
-      info("closing");
-      win.close();
-    }, TIMEOUT_ENSURE_CC_EDIT_DIALOG_NOT_CLOSED);
+    await ensureCreditCardDialogNotClosed(win);
+    info("closing");
+    win.close();
   });
   info("closed");
   let creditCards = await getCreditCards();
 
-  is(creditCards.length, 0, "Credit card storage is empty");
-});
-
-add_task(async function test_editCardWithInvalidNetwork() {
-  const TEST_CREDIT_CARD = Object.assign({}, TEST_CREDIT_CARD_2, {
-    "cc-type": "asiv",
-  });
-  await setStorage(TEST_CREDIT_CARD);
-
-  let creditCards = await getCreditCards();
-  is(creditCards.length, 1, "one credit card in storage");
-  is(
-    creditCards[0]["cc-type"],
-    TEST_CREDIT_CARD["cc-type"],
-    "Check saved cc-type"
-  );
-  await testDialog(
-    EDIT_CREDIT_CARD_DIALOG_URL,
-    win => {
-      EventUtils.synthesizeKey("VK_TAB", {}, win);
-      EventUtils.synthesizeKey("VK_TAB", {}, win);
-      EventUtils.synthesizeKey("VK_TAB", {}, win);
-      EventUtils.synthesizeKey("VK_TAB", {}, win);
-      EventUtils.synthesizeKey("VK_RIGHT", {}, win);
-      EventUtils.synthesizeKey("test", {}, win);
-      win.document.querySelector("#save").click();
-    },
-    {
-      record: creditCards[0],
-    }
-  );
-  ok(true, "Edit credit card dialog is closed");
-  creditCards = await getCreditCards();
-
-  is(creditCards.length, 1, "only one credit card is in storage");
-  is(
-    creditCards[0]["cc-name"],
-    TEST_CREDIT_CARD["cc-name"] + "test",
-    "cc name changed"
-  );
-  is(
-    creditCards[0]["cc-type"],
-    "visa",
-    "unknown cc-type removed and next autodetected to visa upon manual save"
-  );
-  await removeCreditCards([creditCards[0].guid]);
-
-  creditCards = await getCreditCards();
   is(creditCards.length, 0, "Credit card storage is empty");
 });
 
@@ -345,8 +280,8 @@ add_task(async function test_editInvalidCreditCardNumber() {
   // Directly use FormAutofillStorage so we can set
   // sourceSync: true, since saveCreditCard uses FormAutofillParent
   // which doesn't expose this option.
-  let { formAutofillStorage } = ChromeUtils.import(
-    "resource://autofill/FormAutofillStorage.jsm"
+  let { formAutofillStorage } = ChromeUtils.importESModule(
+    "resource://autofill/FormAutofillStorage.sys.mjs"
   );
   await formAutofillStorage.initialize();
   // Use `sourceSync: true` to bypass field normalization which will
@@ -445,4 +380,43 @@ add_task(async function test_editCreditCardWithInvalidNumber() {
 
   creditCards = await getCreditCards();
   is(creditCards.length, 0, "Credit card storage is empty");
+});
+
+add_task(async function test_noAutocompletePopupOnSystemTab() {
+  await setStorage(TEST_CREDIT_CARD_1);
+
+  await BrowserTestUtils.withNewTab(
+    { gBrowser, url: PRIVACY_PREF_URL },
+    async browser => {
+      // Open credit card manage dialog
+      await SpecialPowers.spawn(browser, [], async () => {
+        let button = content.document.querySelector(
+          "#creditCardAutofill button"
+        );
+        button.click();
+      });
+      let dialog = await waitForSubDialogLoad(
+        content,
+        MANAGE_CREDIT_CARDS_DIALOG_URL
+      );
+
+      // Open edit credit card dialog
+      await SpecialPowers.spawn(dialog, [], async () => {
+        let button = content.document.querySelector("#add");
+        button.click();
+      });
+      dialog = await waitForSubDialogLoad(content, EDIT_CREDIT_CARD_DIALOG_URL);
+
+      // Focus on credit card number field
+      await SpecialPowers.spawn(dialog, [], async () => {
+        let number = content.document.querySelector("#cc-number");
+        number.focus();
+      });
+
+      // autocomplete popup should not appear
+      await ensureNoAutocompletePopup(browser);
+    }
+  );
+
+  await removeAllRecords();
 });

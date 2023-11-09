@@ -46,6 +46,12 @@ options-inspector-draggable-properties-label = Kliknutím a potiahnutím upraví
 options-inspector-draggable-properties-tooltip =
     .title = Kliknutím a potiahnutím upravíte hodnoty veľkosti v zobrazení pravidiel inšpektora.
 
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Použiť jednoduchšie zvýrazňovače, ak je použitá vlastnosť 'prefers-reduced-motion'
+options-inspector-simplified-highlighters-tooltip =
+    .title = Povolí zjednodušené zvýrazňovanie, keď je definovaná vlastnosť 'prefers-reduced-motion'. Nakreslí čiary namiesto vyplnených obdĺžnikov okolo zvýraznených prvkov, aby sa zabránilo blikajúcim efektom.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Predvolená jednotka farieb
@@ -124,6 +130,11 @@ options-enable-remote-label = Povoliť vzdialené ladenie
 options-enable-remote-tooltip2 =
     .title = Zapnutím tejto možnosti umožníte ladenie tejto inštancie prehliadača na diaľku
 
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = Na otvorenie alebo zatvorenie Vývojárskych nástrojov používať kláves F12
+options-enable-f12-tooltip =
+    .title = Zapnutím tejto možnosti sa nastaví kláves F12 na otvorenie alebo zatvorenie panela Vývojárskych nástrojov
+
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Povoliť vlastné formátovače
 options-enable-custom-formatters-tooltip =
@@ -141,4 +152,3 @@ options-source-maps-tooltip =
 
 # The message shown for settings that trigger page reload
 options-context-triggers-page-refresh = * Len pre aktuálnu reláciu, opäť načíta obsah stránky
-

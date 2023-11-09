@@ -28,10 +28,6 @@ pippki-pw-change2empty-in-fips-mode = Sće tuchwilu we FIPS-modusu. FIPS sej hes
 
 ## Reset Primary Password dialog
 
-reset-primary-password-window =
-    .title = Hłowne hesło wróćo stajić
-    .style = width: 40em
-
 reset-primary-password-window2 =
     .title = Hłowne hesło wróćo stajić
     .style = min-width: 40em
@@ -43,10 +39,6 @@ pippki-reset-password-confirmation-title = Hłowne hesło wróćo stajić
 pippki-reset-password-confirmation-message = Waše hłowne hesło je so wróćo stajiło.
 
 ## Downloading cert dialog
-
-download-cert-window =
-    .title = Sćehnjenje certifikata
-    .style = width: 46em
 
 download-cert-window2 =
     .title = Sćehnjenje certifikata
@@ -82,7 +74,8 @@ set-password-reminder = Wažny: Jeli swoje hesło za zawěsćenje certifikata za
 
 ## Protected Auth dialog
 
-protected-auth-window =
-    .title = Přez token škitana awtentifikacija
-protected-auth-msg = Prošu awtentifikujće token. Awtentifikaciska metoda wotwisuje wot typa wašeho tokena.
-protected-auth-token = Token:
+## Protected authentication alert
+
+# Variables:
+# $tokenName (String) - The name of the token to authenticate to (for example, "OS Client Cert Token (Modern)")
+protected-auth-alert = Prošu awtentifikujće so pola tokena “{ $tokenName }”. Kak dyrbiće to činić, wotwisuje wot tokena (na přikład přez wužiwanje čitaka porstowych wotćišćow abo přez zapodawanje koda z tastaturu).

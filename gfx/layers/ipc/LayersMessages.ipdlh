@@ -29,10 +29,11 @@ using mozilla::TimeDuration from "mozilla/TimeStamp.h";
 using class mozilla::TimeStamp from "mozilla/TimeStamp.h";
 using mozilla::ScreenRotation from "mozilla/WidgetUtils.h";
 using nsCSSPropertyID from "nsCSSPropertyID.h";
-using hal::ScreenOrientation from "mozilla/HalIPCUtils.h";
+using mozilla::hal::ScreenOrientation from "mozilla/HalIPCUtils.h";
 using struct mozilla::layers::TextureInfo from "mozilla/layers/CompositorTypes.h";
 using mozilla::CSSPoint from "Units.h";
 using mozilla::CSSRect from "Units.h";
+using mozilla::gfx::IntSize from "mozilla/gfx/2D.h";
 using mozilla::LayerMargin from "Units.h";
 using mozilla::LayerPoint from "Units.h";
 using mozilla::LayerCoord from "Units.h";
@@ -41,6 +42,7 @@ using mozilla::LayerRect from "Units.h";
 using mozilla::LayerIntSize from "Units.h";
 using mozilla::LayerIntRect from "Units.h";
 using mozilla::LayerIntRegion from "Units.h";
+using mozilla::layers::TextureFlags from "mozilla/layers/CompositorTypes.h";
 using mozilla::ParentLayerIntRect from "Units.h";
 using mozilla::ParentLayerRect from "Units.h";
 using mozilla::LayoutDeviceIntRect from "Units.h";
@@ -58,6 +60,8 @@ using mozilla::layers::CompositionPayload from "mozilla/layers/LayersTypes.h";
 [MoveOnly] using mozilla::CrossProcessSemaphoreHandle from "mozilla/ipc/CrossProcessSemaphore.h";
 using struct mozilla::void_t from "mozilla/ipc/IPCCore.h";
 using mozilla::layers::LayersId from "mozilla/layers/LayersTypes.h";
+using mozilla::layers::RemoteTextureId from "mozilla/layers/LayersTypes.h";
+using mozilla::layers::RemoteTextureOwnerId from "mozilla/layers/LayersTypes.h";
 using mozilla::layers::TransactionId from "mozilla/layers/LayersTypes.h";
 using mozilla::LengthPercentage from "mozilla/ServoStyleConsts.h";
 using mozilla::RayReferenceData from "mozilla/MotionPathUtils.h";
@@ -68,6 +72,7 @@ using mozilla::StyleRotate from "mozilla/ServoStyleConsts.h";
 using mozilla::StyleScale from "mozilla/ServoStyleConsts.h";
 using mozilla::StyleTranslate from "mozilla/ServoStyleConsts.h";
 using mozilla::StyleTransform from "mozilla/ServoStyleConsts.h";
+using mozilla::StyleComputedTimingFunction from "mozilla/ServoStyleConsts.h";
 
 namespace mozilla {
 namespace layers {
@@ -88,25 +93,6 @@ struct OpAttachAsyncCompositable {
   LayerHandle layer;
   CompositableHandle compositable;
 };
-
-struct CubicBezierFunction {
-  float x1;
-  float y1;
-  float x2;
-  float y2;
-};
-
-struct StepFunction {
-  int steps;
-  uint8_t type; // Converted from StyleStepPosition.
-};
-
-union TimingFunction {
-  null_t;
-  CubicBezierFunction;
-  StepFunction;
-};
-
 struct LayerColor { DeviceColor value; };
 
 [Comparable] union Animatable {
@@ -130,7 +116,7 @@ struct AnimationSegment {
   float endPortion;
   uint8_t startComposite;
   uint8_t endComposite;
-  TimingFunction sampleFn;
+  StyleComputedTimingFunction? sampleFn;
 };
 
 [Comparable] struct MotionPathData {
@@ -224,7 +210,7 @@ struct Animation {
   // to the playbackRate is being performed.
   float previousPlaybackRate;
   // This is used in the transformed progress calculation.
-  TimingFunction easingFunction;
+  StyleComputedTimingFunction? easingFunction;
   uint8_t iterationComposite;
   // True if the animation has a fixed current time (e.g. paused and
   // forward-filling animations).
@@ -235,9 +221,11 @@ struct Animation {
   // property, and so don't need to do interpolation.
   bool isNotAnimating;
   // The base style that animations should composite with. This is only set for
-  // animations with a composite mode of additive or accumulate, and only for
-  // the first animation in the set (i.e. the animation that is lowest in the
-  // stack). In all other cases the value is null_t.
+  // 1. scroll animations with positive delays, or
+  // 2. animations with a composite mode of additive or accumulate, and only for
+  //    the first animation in the set (i.e. the animation that is lowest in the
+  //    stack).
+  // In all other cases the value is null_t.
   Animatable baseStyle;
   // An optional data specific for transform like properies.
   TransformData? transformData;
@@ -300,21 +288,22 @@ struct OpUseTexture {
   TimedTexture[] textures;
 };
 
+struct OpUseRemoteTexture {
+  RemoteTextureId textureId;
+  RemoteTextureOwnerId ownerId;
+  IntSize size;
+  TextureFlags textureFlags;
+};
+
+struct OpEnableRemoteTexturePushCallback {
+  RemoteTextureOwnerId ownerId;
+  IntSize size;
+  TextureFlags textureFlags;
+};
+
 struct OpNotifyNotUsed {
   uint64_t TextureId;
   uint64_t fwdTransactionId;
-};
-
-struct OpDeliverAcquireFence {
-  PTexture texture;
-  FileDescriptor fenceFd;
-};
-
-struct OpDeliverReleaseFence {
-  FileDescriptor? fenceFd;
-  uint64_t bufferId;
-  uint64_t fwdTransactionId;
-  bool usesImageBridge;
 };
 
 union CompositableOperationDetail {
@@ -322,7 +311,9 @@ union CompositableOperationDetail {
 
   OpUseTexture;
 
-  OpDeliverAcquireFence;
+  OpUseRemoteTexture;
+
+  OpEnableRemoteTexturePushCallback;
 };
 
 struct CompositableOperation {
@@ -358,7 +349,6 @@ struct ImageCompositeNotification {
 
 union AsyncParentMessageData {
   OpNotifyNotUsed;
-  OpDeliverReleaseFence;
 };
 
 union OMTAValue {

@@ -22,21 +22,29 @@ synced-tabs-sidebar-search =
 synced-tabs-context-open =
     .label = Abrir
     .accesskey = A
-synced-tabs-context-open-in-new-tab =
+synced-tabs-context-open-in-tab =
     .label = Abrir nunha nova lapela
-    .accesskey = o
-synced-tabs-context-open-in-new-window =
+    .accesskey = A
+synced-tabs-context-open-in-container-tab =
+    .label = Abrir nunha nova lapela contedora
+    .accesskey = i
+synced-tabs-context-open-in-window =
     .label = Abrir nunha nova xanela
-    .accesskey = n
-synced-tabs-context-open-in-new-private-window =
+    .accesskey = N
+synced-tabs-context-open-in-private-window =
     .label = Abrir nunha nova xanela privada
     .accesskey = p
-synced-tabs-context-bookmark-single-tab =
-    .label = Marcar esta lapela…
-    .accesskey = M
 
 ##
 
+# Displayed in the Synced Tabs sidebar's context menu when right-clicking tabs
+# and/or devices in the list. This string is for a menuitem equivalent to one in
+# the tab context menu (activated by right-clicking a tab in the tabstrip). That
+# string is located in tabContextMenu.ftl. So, this string should be translated
+# consistently with the "Bookmark Tab…" string there.
+synced-tabs-context-bookmark =
+    .label = Marcar a lapela…
+    .accesskey = M
 synced-tabs-context-copy =
     .label = Copiar
     .accesskey = C

@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Нова вкладка
 tabbrowser-empty-private-tab-title = Приватна вкладка
+
 tabbrowser-menuitem-close-tab =
     .label = Закрити вкладку
 tabbrowser-menuitem-close =
     .label = Закрити
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -137,6 +136,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Більше не показуват
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Дозволити таким сповіщенням від { $domain } перемикати вас на їхню вкладку
+
 tabbrowser-customizemode-tab-title = Пристосування { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -155,3 +155,27 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Увімкнути звук вкладок
     .accesskey = в
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Відтворення аудіо
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label =
+        { $tabCount ->
+            [one] Показати { $tabCount } вкладку
+            [few] Показати всі { $tabCount } вкладки
+           *[many] Показати всі { $tabCount } вкладок
+        }
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Вимкнути звук вкладки
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Увімкнути звук вкладки
+tabbrowser-manager-close-tab =
+    .tooltiptext = Закрити вкладку

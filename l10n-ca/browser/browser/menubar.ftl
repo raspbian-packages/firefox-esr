@@ -220,8 +220,6 @@ menu-history-undo-menu =
     .label = Pestanyes tancades recentment
 menu-history-undo-window-menu =
     .label = Finestres tancades recentment
-menu-history-reopen-all-tabs = Torna a obrir totes les pestanyes
-menu-history-reopen-all-windows = Torna a obrir totes les finestres
 
 ## Bookmarks Menu
 
@@ -230,10 +228,6 @@ menu-bookmarks-menu =
     .accesskey = r
 menu-bookmarks-manage =
     .label = Gestiona les adreces d'interès
-menu-bookmark-current-tab =
-    .label = Afegeix la pestanya actual a les adreces d'interès
-menu-bookmark-edit =
-    .label = Edita aquesta adreça d'interès
 menu-bookmark-tab =
     .label = Afegeix la pestanya actual a les adreces d'interès…
 menu-edit-bookmark =
@@ -331,6 +325,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Desactiva el mode de resolució de problemes
     .accesskey = m
+menu-help-switch-device =
+    .label = Canvia a un dispositiu nou
+    .accesskey = N
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

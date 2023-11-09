@@ -11,8 +11,6 @@
 
 ##
 
-firefox-relay-opt-in-subtitle = Ավելացնել { -relay-brand-name }
-firefox-relay-generate-mask-title = Պաշտպանեք ձեր էլփոստի հասցեն
 firefox-relay-opt-in-confirmation-postpone =
     .label = Ոչ հիմա
     .accesskey = N

@@ -64,18 +64,20 @@ static void PopulateRegsFromContext(Registers& aRegs, CONTEXT* aContext) {
   aRegs.mPC = reinterpret_cast<Address>(aContext->Rip);
   aRegs.mSP = reinterpret_cast<Address>(aContext->Rsp);
   aRegs.mFP = reinterpret_cast<Address>(aContext->Rbp);
+  aRegs.mLR = 0;
 #elif defined(GP_ARCH_x86)
   aRegs.mPC = reinterpret_cast<Address>(aContext->Eip);
   aRegs.mSP = reinterpret_cast<Address>(aContext->Esp);
   aRegs.mFP = reinterpret_cast<Address>(aContext->Ebp);
+  aRegs.mLR = 0;
 #elif defined(GP_ARCH_arm64)
   aRegs.mPC = reinterpret_cast<Address>(aContext->Pc);
   aRegs.mSP = reinterpret_cast<Address>(aContext->Sp);
   aRegs.mFP = reinterpret_cast<Address>(aContext->Fp);
+  aRegs.mLR = reinterpret_cast<Address>(aContext->Lr);
 #else
 #  error "bad arch"
 #endif
-  aRegs.mLR = 0;
 }
 
 // Gets a real (i.e. not pseudo) handle for the current thread, with the
@@ -286,11 +288,10 @@ void SamplerThread::Stop(PSLockRef aLock) {
 static void PlatformInit(PSLockRef aLock) {}
 
 #if defined(HAVE_NATIVE_UNWIND)
-void Registers::SyncPopulate() {
-  CONTEXT context;
-  RtlCaptureContext(&context);
-  PopulateRegsFromContext(*this, &context);
-}
+#  define REGISTERS_SYNC_POPULATE(regs) \
+    CONTEXT context;                    \
+    RtlCaptureContext(&context);        \
+    PopulateRegsFromContext(regs, &context);
 #endif
 
 #if defined(GP_PLAT_amd64_windows)

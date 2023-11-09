@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] ปักหมุดเข้ากับแถบงาน
     }
 about-private-browsing-pin-promo-title = ไม่เก็บคุกกี้หรือประวัติที่บันทึกไว้จากเดสก์ท็อปของคุณ ให้คุณเรียกดูโดยไม่มีใครแอบมอง
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = เอาแบนเนอร์คุกกี้ออกไปให้พ้น!
+about-private-browsing-cookie-banners-promo-button = ลดแบนเนอร์คุกกี้
+about-private-browsing-cookie-banners-promo-message = ให้ { -brand-short-name } ตอบป๊อปอัปคุกกี้ให้คุณโดยอัตโนมัติเพื่อให้คุณท่องเว็บได้โดยปราศจากสิ่งรบกวน { -brand-short-name } จะปฏิเสธคำขอทั้งหมดเมื่อเป็นไปได้

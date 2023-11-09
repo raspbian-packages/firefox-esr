@@ -91,23 +91,19 @@
 
 #include <functional>
 #include <limits>
-#include <math.h>
 #include <memory>
 #include <type_traits>  // std::is_same_v
 
 #include "jsnum.h"
 
-#include "builtin/BigInt.h"
 #include "gc/Allocator.h"
 #include "js/BigInt.h"
-#include "js/Conversions.h"
 #include "js/friend/ErrorMessages.h"  // js::GetErrorMessage, JSMSG_*
-#include "js/Initialization.h"
 #include "js/StableStringChars.h"
 #include "js/Utility.h"
 #include "util/CheckedArithmetic.h"
+#include "util/DifferentialTesting.h"
 #include "vm/JSContext.h"
-#include "vm/SelfHosting.h"
 #include "vm/StaticStrings.h"
 
 #include "gc/GCContext-inl.h"
@@ -120,7 +116,6 @@ using JS::AutoStableStringChars;
 using mozilla::Abs;
 using mozilla::AssertedCast;
 using mozilla::BitwiseCast;
-using mozilla::IsFinite;
 using mozilla::Maybe;
 using mozilla::NegativeInfinity;
 using mozilla::Nothing;
@@ -142,13 +137,13 @@ static bool HasLeadingZeroes(BigInt* bi) {
 #endif
 
 BigInt* BigInt::createUninitialized(JSContext* cx, size_t digitLength,
-                                    bool isNegative, gc::InitialHeap heap) {
+                                    bool isNegative, gc::Heap heap) {
   if (digitLength > MaxDigitLength) {
     ReportOversizedAllocation(cx, JSMSG_BIGINT_TOO_LARGE);
     return nullptr;
   }
 
-  BigInt* x = AllocateBigInt(cx, heap);
+  BigInt* x = cx->newCell<BigInt>(heap);
   if (!x) {
     return nullptr;
   }
@@ -213,7 +208,7 @@ size_t BigInt::sizeOfExcludingThisInNursery(
   return mallocSizeOf(heapDigits_);
 }
 
-BigInt* BigInt::zero(JSContext* cx, gc::InitialHeap heap) {
+BigInt* BigInt::zero(JSContext* cx, gc::Heap heap) {
   return createUninitialized(cx, 0, false, heap);
 }
 
@@ -1220,7 +1215,7 @@ JSLinearString* BigInt::toStringBasePowerOfTwo(JSContext* cx, HandleBigInt x,
 
   if (charsRequired > JSString::MAX_LENGTH) {
     if constexpr (allowGC) {
-      ReportOutOfMemory(cx);
+      ReportAllocationOverflow(cx);
     }
     return nullptr;
   }
@@ -1368,7 +1363,7 @@ JSLinearString* BigInt::toStringGeneric(JSContext* cx, HandleBigInt x,
   size_t maximumCharactersRequired =
       calculateMaximumCharactersRequired(x, radix);
   if (maximumCharactersRequired > JSString::MAX_LENGTH) {
-    ReportOutOfMemory(cx);
+    ReportAllocationOverflow(cx);
     return nullptr;
   }
 
@@ -1550,7 +1545,7 @@ bool BigInt::calculateMaximumDigitsRequired(JSContext* cx, uint8_t radix,
   uint64_t n = CeilDiv(static_cast<uint64_t>(charcount) * bitsPerChar,
                        DigitBits * bitsPerCharTableMultiplier);
   if (n > MaxDigitLength) {
-    ReportOutOfMemory(cx);
+    ReportOversizedAllocation(cx, JSMSG_BIGINT_TOO_LARGE);
     return false;
   }
 
@@ -1562,7 +1557,7 @@ template <typename CharT>
 BigInt* BigInt::parseLiteralDigits(JSContext* cx,
                                    const Range<const CharT> chars,
                                    unsigned radix, bool isNegative,
-                                   bool* haveParseError, gc::InitialHeap heap) {
+                                   bool* haveParseError, gc::Heap heap) {
   static_assert(
       std::is_same_v<CharT, JS::Latin1Char> || std::is_same_v<CharT, char16_t>,
       "only the bare minimum character types are supported, to avoid "
@@ -1620,7 +1615,7 @@ BigInt* BigInt::parseLiteralDigits(JSContext* cx,
 // BigInt proposal section 7.2
 template <typename CharT>
 BigInt* BigInt::parseLiteral(JSContext* cx, const Range<const CharT> chars,
-                             bool* haveParseError, js::gc::InitialHeap heap) {
+                             bool* haveParseError, js::gc::Heap heap) {
   RangedPtr<const CharT> start = chars.begin();
   const RangedPtr<const CharT> end = chars.end();
   bool isNegative = false;
@@ -1649,24 +1644,6 @@ BigInt* BigInt::parseLiteral(JSContext* cx, const Range<const CharT> chars,
                             haveParseError, heap);
 }
 
-template <typename CharT>
-bool BigInt::literalIsZeroNoRadix(const Range<const CharT> chars) {
-  MOZ_ASSERT(chars.length());
-
-  RangedPtr<const CharT> start = chars.begin();
-  RangedPtr<const CharT> end = chars.end();
-
-  // Skipping leading zeroes.
-  while (start[0] == '0') {
-    start++;
-    if (start == end) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 // trim and remove radix selection prefix.
 template <typename CharT>
 bool BigInt::literalIsZero(const Range<const CharT> chars) {
@@ -1679,11 +1656,19 @@ bool BigInt::literalIsZero(const Range<const CharT> chars) {
   if (end - start > 2 && start[0] == '0') {
     if (start[1] == 'b' || start[1] == 'B' || start[1] == 'x' ||
         start[1] == 'X' || start[1] == 'o' || start[1] == 'O') {
-      return literalIsZeroNoRadix(Range<const CharT>(start + 2, end));
+      start += 2;
     }
   }
 
-  return literalIsZeroNoRadix(Range<const CharT>(start, end));
+  // Skipping leading zeroes.
+  while (start[0] == '0') {
+    start++;
+    if (start == end) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 template bool BigInt::literalIsZero(const Range<const char16_t> chars);
@@ -1810,8 +1795,9 @@ BigInt* js::NumberToBigInt(JSContext* cx, double d) {
   // Step 1 is an assertion checked by the caller.
   // Step 2.
   if (!IsInteger(d)) {
-    char str[JS::MaximumNumberToStringLength];
-    JS::NumberToString(d, str);
+    ToCStringBuf cbuf;
+    const char* str = NumberToCString(&cbuf, d);
+    MOZ_ASSERT(str);
 
     JS_ReportErrorNumberASCII(cx, GetErrorMessage, nullptr,
                               JSMSG_NONINTEGER_NUMBER_TO_BIGINT, str);
@@ -1822,7 +1808,7 @@ BigInt* js::NumberToBigInt(JSContext* cx, double d) {
   return BigInt::createFromDouble(cx, d);
 }
 
-BigInt* BigInt::copy(JSContext* cx, HandleBigInt x, gc::InitialHeap heap) {
+BigInt* BigInt::copy(JSContext* cx, HandleBigInt x, gc::Heap heap) {
   if (x->isZero()) {
     return zero(cx, heap);
   }
@@ -2167,6 +2153,9 @@ BigInt* BigInt::lshByAbsolute(JSContext* cx, HandleBigInt x, HandleBigInt y) {
   if (y->digitLength() > 1 || y->digit(0) > MaxBitLength) {
     JS_ReportErrorNumberASCII(cx, GetErrorMessage, nullptr,
                               JSMSG_BIGINT_TOO_LARGE);
+    if (js::SupportDifferentialTesting()) {
+      fprintf(stderr, "ReportOutOfMemory called\n");
+    }
     return nullptr;
   }
   Digit shift = y->digit(0);
@@ -3285,12 +3274,12 @@ bool BigInt::equal(BigInt* lhs, BigInt* rhs) {
 }
 
 int8_t BigInt::compare(BigInt* x, double y) {
-  MOZ_ASSERT(!mozilla::IsNaN(y));
+  MOZ_ASSERT(!std::isnan(y));
 
   constexpr int LessThan = -1, Equal = 0, GreaterThan = 1;
 
   // ±Infinity exceeds a finite bigint value.
-  if (!mozilla::IsFinite(y)) {
+  if (!std::isfinite(y)) {
     return y > 0 ? LessThan : GreaterThan;
   }
 
@@ -3416,7 +3405,7 @@ int8_t BigInt::compare(BigInt* x, double y) {
 }
 
 bool BigInt::equal(BigInt* lhs, double rhs) {
-  if (mozilla::IsNaN(rhs)) {
+  if (std::isnan(rhs)) {
     return false;
   }
   return compare(lhs, rhs) == 0;
@@ -3472,14 +3461,14 @@ JS::Result<bool> BigInt::looselyEqual(JSContext* cx, HandleBigInt lhs,
 bool BigInt::lessThan(BigInt* x, BigInt* y) { return compare(x, y) < 0; }
 
 Maybe<bool> BigInt::lessThan(BigInt* lhs, double rhs) {
-  if (mozilla::IsNaN(rhs)) {
+  if (std::isnan(rhs)) {
     return Maybe<bool>(Nothing());
   }
   return Some(compare(lhs, rhs) < 0);
 }
 
 Maybe<bool> BigInt::lessThan(double lhs, BigInt* rhs) {
-  if (mozilla::IsNaN(lhs)) {
+  if (std::isnan(lhs)) {
     return Maybe<bool>(Nothing());
   }
   return Some(-compare(rhs, lhs) < 0);
@@ -3614,8 +3603,7 @@ static inline BigInt* ParseStringBigIntLiteral(JSContext* cx,
 }
 
 // Called from BigInt constructor.
-JS::Result<BigInt*, JS::OOM> js::StringToBigInt(JSContext* cx,
-                                                HandleString str) {
+JS::Result<BigInt*> js::StringToBigInt(JSContext* cx, HandleString str) {
   JSLinearString* linear = str->ensureLinear(cx);
   if (!linear) {
     return cx->alreadyReportedOOM();
@@ -3634,9 +3622,9 @@ JS::Result<BigInt*, JS::OOM> js::StringToBigInt(JSContext* cx,
     res = ParseStringBigIntLiteral(cx, chars.twoByteRange(), &parseError);
   }
 
-  // A nullptr result can indicate either a parse error or out-of-memory.
+  // A nullptr result can indicate either a parse error or generic error.
   if (!res && !parseError) {
-    return cx->alreadyReportedOOM();
+    return cx->alreadyReportedError();
   }
 
   return res;
@@ -3648,7 +3636,7 @@ BigInt* js::ParseBigIntLiteral(JSContext* cx,
   // This function is only called from the frontend when parsing BigInts. Parsed
   // BigInts are stored in the script's data vector and therefore need to be
   // allocated in the tenured heap.
-  constexpr gc::InitialHeap heap = gc::TenuredHeap;
+  constexpr gc::Heap heap = gc::Heap::Tenured;
 
   bool parseError = false;
   BigInt* res = BigInt::parseLiteral(cx, chars, &parseError, heap);

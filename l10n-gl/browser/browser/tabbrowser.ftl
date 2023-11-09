@@ -3,19 +3,19 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = Nova lapela
+tabbrowser-empty-private-tab-title = Nova lapela privada
+
 tabbrowser-menuitem-close-tab =
     .label = Pechar lapela
 tabbrowser-menuitem-close =
     .label = Pechar
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -120,6 +120,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Non amosar esta caixa de diálogo de
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Permitir que notificacións como esta de { $domain } leven para a súa lapela
+
 tabbrowser-customizemode-tab-title = Personalizar { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -138,3 +139,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Desenmudecer lapelas
     .accesskey = m
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Reproducindo audio
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Listar as { $tabCount } lapelas
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Enmudecer lapela
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Desenmudecer lapela
+tabbrowser-manager-close-tab =
+    .tooltiptext = Pechar lapela

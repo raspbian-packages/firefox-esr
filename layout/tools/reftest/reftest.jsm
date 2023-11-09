@@ -10,8 +10,8 @@ var EXPORTED_SYMBOLS = [
     "OnRefTestUnload",
 ];
 
-const { FileUtils } = ChromeUtils.import(
-    "resource://gre/modules/FileUtils.jsm"
+const { FileUtils } = ChromeUtils.importESModule(
+    "resource://gre/modules/FileUtils.sys.mjs"
 );
 const {
     XHTML_NS,
@@ -48,27 +48,23 @@ const { HttpServer } = ChromeUtils.import("resource://reftest/httpd.jsm");
 const { ReadTopManifest, CreateUrls } = ChromeUtils.import(
     "resource://reftest/manifest.jsm"
 );
-const { StructuredLogger } = ChromeUtils.import(
-    "resource://reftest/StructuredLog.jsm"
+const { StructuredLogger } = ChromeUtils.importESModule(
+    "resource://reftest/StructuredLog.sys.mjs"
 );
-const { PerTestCoverageUtils } = ChromeUtils.import(
-    "resource://reftest/PerTestCoverageUtils.jsm"
+const { PerTestCoverageUtils } = ChromeUtils.importESModule(
+    "resource://reftest/PerTestCoverageUtils.sys.mjs"
 );
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-const { XPCOMUtils } = ChromeUtils.import(
-    "resource://gre/modules/XPCOMUtils.jsm"
-);
-
-const { E10SUtils } = ChromeUtils.import(
-  "resource://gre/modules/E10SUtils.jsm"
+const { XPCOMUtils } = ChromeUtils.importESModule(
+    "resource://gre/modules/XPCOMUtils.sys.mjs"
 );
 
-XPCOMUtils.defineLazyGetter(this, "OS", function() {
-    const { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
-    return OS;
-});
+const { E10SUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/E10SUtils.sys.mjs"
+);
 
-XPCOMUtils.defineLazyServiceGetters(this, {
+const lazy = {};
+
+XPCOMUtils.defineLazyServiceGetters(lazy, {
   proxyService: [
     "@mozilla.org/network/protocol-proxy-service;1",
     "nsIProtocolProxyService",
@@ -190,9 +186,6 @@ function OnRefTestLoad(win)
     g.pendingCrashDumpDir.append("Crash Reports");
     g.pendingCrashDumpDir.append("pending");
 
-    var env = Cc["@mozilla.org/process/environment;1"].
-              getService(Ci.nsIEnvironment);
-
     g.browserIsRemote = Services.appinfo.browserTabsRemoteAutostart;
     g.browserIsFission = Services.appinfo.fissionAutostart;
 
@@ -256,7 +249,7 @@ function InitAndStartRefTests()
     try {
       prefs.setBoolPref("android.widget_paints_background", false);
     } catch (e) {}
-    
+
     // If fission is enabled, then also put data: URIs in the default web process,
     // since most reftests run in the file process, and this will make data:
     // <iframe>s OOP.
@@ -364,7 +357,7 @@ function StartHTTPServer()
     g.server.identity.add("https", "example.org", "443");
 
     const proxyFilter = {
-        proxyInfo: proxyService.newProxyInfo(
+        proxyInfo: lazy.proxyService.newProxyInfo(
             "http", // type of proxy
             "localhost", //proxy host
             g.server.identity.primaryPort, // proxy host port
@@ -384,7 +377,7 @@ function StartHTTPServer()
         },
     };
 
-    proxyService.registerChannelFilter(proxyFilter, 0);
+    lazy.proxyService.registerChannelFilter(proxyFilter, 0);
 
     g.httpServerPort = g.server.identity.primaryPort;
 }
@@ -436,9 +429,8 @@ function ReadTests() {
 
         if (testList) {
             logger.debug("Reading test objects from: " + testList);
-            let promise = OS.File.read(testList).then(function onSuccess(array) {
-                let decoder = new TextDecoder();
-                g.urls = JSON.parse(decoder.decode(array)).map(CreateUrls);
+            let promise = IOUtils.readJSON(testList).then(function onSuccess(json) {
+                g.urls = json.map(CreateUrls);
                 StartTests();
             }).catch(function onFailure(e) {
                 logger.error("Failed to load test objects: " + e);
@@ -485,9 +477,7 @@ function ReadTests() {
 
             if (dumpTests) {
                 logger.debug("Dumping test objects to file: " + dumpTests);
-                let encoder = new TextEncoder();
-                let tests = encoder.encode(JSON.stringify(g.urls));
-                OS.File.writeAtomic(dumpTests, tests, {flush: true}).then(
+                IOUtils.writeJSON(dumpTests, g.urls, { flush: true }).then(
                   function onSuccess() {
                     DoneTests();
                   },
@@ -922,7 +912,7 @@ function DoneTests()
             g.suiteStarted = false
             logger.suiteEnd({'results': g.testResults});
         } else {
-            logger._logData('results', {results: g.testResults});
+            logger.logData('results', {results: g.testResults});
         }
         logger.info("Slowest test took " + g.slowestTestTime + "ms (" + g.slowestTestURL + ")");
         logger.info("Total canvas count = " + g.recycledCanvases.length);
@@ -971,8 +961,13 @@ function UpdateCanvasCache(url, canvas)
 async function DoDrawWindow(ctx, x, y, w, h)
 {
     if (g.useDrawSnapshot) {
-      let image = await g.browser.drawSnapshot(x, y, w, h, 1.0, "#fff");
-      ctx.drawImage(image, x, y);
+      try {
+        let image = await g.browser.drawSnapshot(x, y, w, h, 1.0, "#fff");
+        ctx.drawImage(image, x, y);
+      } catch (ex) {
+        logger.error(g.currentURL + " | drawSnapshot failed: " + ex);
+        ++g.testResults.Exception;
+      }
       return;
     }
 
@@ -1925,20 +1920,18 @@ function pdfjsHasLoadedPromise() {
 }
 
 function readPdf(path, callback) {
-    OS.File.open(path, { read: true }).then(function (file) {
-        file.read().then(function (data) {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = "resource://pdf.js/build/pdf.worker.js";
-            pdfjsLib.getDocument({
-                data: data
-            }).promise.then(function (pdf) {
-                callback(null, pdf);
-            }, function (e) {
-                callback(new Error(`Couldn't parse ${path}, exception: ${e}`));
-            });
-            return;
+    IOUtils.read(path).then(function (data) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "resource://pdf.js/build/pdf.worker.js";
+        pdfjsLib.getDocument({
+            data: data
+        }).promise.then(function (pdf) {
+            callback(null, pdf);
         }, function (e) {
-            callback(new Error(`Couldn't read PDF ${path}, exception: ${e}`));
+            callback(new Error(`Couldn't parse ${path}, exception: ${e}`));
         });
+        return;
+    }, function (e) {
+        callback(new Error(`Couldn't read PDF ${path}, exception: ${e}`));
     });
 }
 

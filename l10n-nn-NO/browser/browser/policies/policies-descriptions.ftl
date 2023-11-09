@@ -42,6 +42,9 @@ policy-CertificatesDescription = Legg til sertifikat eller bruk innebygde sertif
 
 policy-Cookies = Tillat eller nekt nettstadar å lagre infokapslar.
 
+# Containers in this context is referring to container tabs in Firefox.
+policy-Containers = Angi policyar relatert til behaldarar.
+
 policy-DisabledCiphers = Deaktiver krypteringsmetodar.
 
 policy-DefaultDownloadDirectory = Vel standardmappe for nedlastingar.
@@ -71,7 +74,7 @@ policy-DisablePrimaryPasswordCreation = Om aktiv, kan ikkje eit hovudpassord lag
 
 policy-DisablePasswordReveal = Ikkje la passord bli avslørte for lagra innloggingar.
 
-policy-DisablePocket = Deaktiver funksjonen for å lagre nettsider til Pocket.
+policy-DisablePocket2 = Deaktiver funksjonen for å lagre nettsider til { -pocket-brand-name }.
 
 policy-DisablePrivateBrowsing = Slå av Privat nettlesing.
 
@@ -88,6 +91,8 @@ policy-DisableSetAsDesktopBackground = Deaktiver menykommandoen Bruk som skriveb
 policy-DisableSystemAddonUpdate = Hindre at nettlesaren installerer og oppdaterer systemtillegg.
 
 policy-DisableTelemetry = Slå av av telemetri.
+
+policy-DisableThirdPartyModuleBlocking = Hindre brukaren frå å blokkere tredjepartsmodular som blir injisert i { -brand-short-name }-prosessen.
 
 policy-DisplayBookmarksToolbar = Vis bokmerkeverktøylinja som standard.
 
@@ -116,11 +121,7 @@ policy-ExtensionSettings = Handsam alle aspekt av utvidingsinstallasjonen.
 
 policy-ExtensionUpdate = Slå på eller slå av automatisk utvidingsoppdateringar.
 
-policy-FirefoxHome = Konfigurer Firefox startside.
-
 policy-FirefoxHome2 = Konfigurer { -firefox-home-brand-name }.
-
-policy-FlashPlugin = Tillat eller nekt bruk av programtillegget Flash.
 
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Tving direkte navigering på intranettet i staden for å søkje når du skriv inn enkeltord i adressefeltet.
 
@@ -194,8 +195,8 @@ policy-SearchEngines = Konfigurer søkjemotorinnstillingar. Denne policyen er ku
 
 policy-SearchSuggestEnabled = Slå på eller av søkjeforslag.
 
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Installer PKCS #11-modular.
+# For more information, see https://wikipedia.org/wiki/PKCS_11
+policy-SecurityDevices2 = Legg til eller slett PKCS #11-modular.
 
 policy-ShowHomeButton = Vis heimknappen på verktøylinja.
 

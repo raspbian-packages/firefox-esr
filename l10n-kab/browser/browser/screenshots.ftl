@@ -55,3 +55,5 @@ screenshots-private-window-error-details = Suref-aɣ ɣef aya. Aqlaɣ nxeddem ɣ
 
 screenshots-generic-error-title = Ihuh! { -screenshots-brand-name } ur iteddu ara.
 screenshots-generic-error-details = Ur neẓri ara acu yeḍran. Ɛreḍ tikelt-nniḍen neɣ ṭṭef agdil n usebter-nniḍen?
+
+screenshots-too-large-error-title = Tuṭṭfiwin-ik•im n ugdil ttwagezment acku hrawit nezzeh

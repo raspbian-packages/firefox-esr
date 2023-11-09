@@ -24,6 +24,7 @@ neterror-pref-reset-button = Titzolïx ri runuk'ulem kan k'o wi
 neterror-return-to-previous-page-button = Titzolin
 neterror-return-to-previous-page-recommended-button = Titzolïx (Chilab'en)
 neterror-try-again-button = Titojtob'ëx chik
+neterror-settings-button = Kejal taq DNS Nuk'ulem
 neterror-view-certificate-link = Titz'et iqitzijib'äl
 
 ##
@@ -40,6 +41,19 @@ neterror-load-error-connection = We man yatikïr ta yatok pa majun ruxaq, tanik'
 neterror-load-error-firewall = We ri asamajib'al o k'amab'ey tajin nichajïx ruma jun firewall o proxi, tajikib'a' chi ri { -brand-short-name } ya'on q'ij chi re chi nok pa k'amaya'l.
 
 neterror-captive-portal = K'o chi natikirsaj molojri'ïl pa re k'amab'ey re' chuwäch yatok pa k'amaya'l.
+
+## TRR-only specific messages
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+
+## Native fallback specific messages
+## Variables:
+##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
+
+
+##
 
 neterror-file-not-found-filename = Tanik'oj chi majun sachoj pa rub'i' ri yakb'äl achi'el rutz'ib'axik, achi'el chuqa' rokisaxik nimatz'ib'.
 neterror-file-not-found-moved = Tanik'oj we ri yakb'äl xsilöx el, xk'ex rub'i' o xyuj el

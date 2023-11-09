@@ -2,10 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import sys
-import string
 import argparse
 import runpy
+import string
+import sys
 
 # Generates a line of WebIDL with the given spelling of the property name
 # (whether camelCase, _underscorePrefixed, etc.) and the given array of
@@ -39,7 +39,12 @@ def generate(output, idlFilename, dataFile):
         ]
 
         if p.pref != "":
-            extendedAttrs.append('Pref="%s"' % p.pref)
+            # BackdropFilter is a special case where we want WebIDL to check
+            # a function instead of checking the pref directly.
+            if p.method == "BackdropFilter":
+                extendedAttrs.append('Func="nsCSSProps::IsBackdropFilterAvailable"')
+            else:
+                extendedAttrs.append('Pref="%s"' % p.pref)
 
         prop = p.method
 

@@ -24,6 +24,12 @@ bookmark-overlay-folders-expander =
     .tooltiptextdown = { bookmark-overlay-folders-expander.tooltiptext }
     .tooltiptextup = Fela
 
+bookmark-overlay-folders-expander2 =
+    .tooltiptext = Sýna allar bókamerkjamöppur
+
+bookmark-overlay-folders-expander-hide =
+    .tooltiptext = Fela
+
 bookmark-overlay-new-folder-button =
     .label = Ný mappa
     .accesskey = m
@@ -39,6 +45,12 @@ bookmark-overlay-tags-expander =
     .tooltiptext = Sýna öll merki
     .tooltiptextdown = { bookmark-overlay-tags-expander.tooltiptext }
     .tooltiptextup = Fela
+
+bookmark-overlay-tags-expander2 =
+    .tooltiptext = Sýna öll merki
+
+bookmark-overlay-tags-expander-hide =
+    .tooltiptext = Fela
 
 bookmark-overlay-keyword-2 =
     .value = Stikkorð

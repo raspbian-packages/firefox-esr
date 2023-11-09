@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Nov tab
 tabbrowser-empty-private-tab-title = Nov tab privat
+
 tabbrowser-menuitem-close-tab =
     .label = Serrar il tab
 tabbrowser-menuitem-close =
     .label = Serrar
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -121,6 +120,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Betg pli ma mussar quest dialog.
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Permetter communicaziuns da { $domain } sco questa per ta manar al tab correspundent
+
 tabbrowser-customizemode-tab-title = Persunalisar { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -139,3 +139,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Reactivar il tun dals tabs
     .accesskey = u
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Reproducziun dad audio
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Enumerar tut ils { $tabCount } tabs
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Deactivar il tun dal tab
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Reactivar il tun dal tab
+tabbrowser-manager-close-tab =
+    .tooltiptext = Serrar il tab

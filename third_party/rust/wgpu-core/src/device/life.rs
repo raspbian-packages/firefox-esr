@@ -7,12 +7,11 @@ use crate::{
     },
     hub::{GlobalIdentityHandlerFactory, HalApi, Hub, Token},
     id, resource,
-    track::TrackerSet,
+    track::{BindGroupStates, RenderBundleScope, Tracker},
     RefCount, Stored, SubmissionIndex,
 };
 use smallvec::SmallVec;
 
-use copyless::VecHelper as _;
 use hal::Device as _;
 use parking_lot::Mutex;
 use thiserror::Error;
@@ -68,16 +67,20 @@ impl SuspectedResources {
         self.query_sets.extend_from_slice(&other.query_sets);
     }
 
-    pub(super) fn add_trackers(&mut self, trackers: &TrackerSet) {
+    pub(super) fn add_render_bundle_scope<A: HalApi>(&mut self, trackers: &RenderBundleScope<A>) {
+        self.buffers.extend(trackers.buffers.used());
+        self.textures.extend(trackers.textures.used());
+        self.bind_groups.extend(trackers.bind_groups.used());
+        self.render_pipelines
+            .extend(trackers.render_pipelines.used());
+        self.query_sets.extend(trackers.query_sets.used());
+    }
+
+    pub(super) fn add_bind_group_states<A: HalApi>(&mut self, trackers: &BindGroupStates<A>) {
         self.buffers.extend(trackers.buffers.used());
         self.textures.extend(trackers.textures.used());
         self.texture_views.extend(trackers.views.used());
         self.samplers.extend(trackers.samplers.used());
-        self.bind_groups.extend(trackers.bind_groups.used());
-        self.compute_pipelines.extend(trackers.compute_pipes.used());
-        self.render_pipelines.extend(trackers.render_pipes.used());
-        self.render_bundles.extend(trackers.bundles.used());
-        self.query_sets.extend(trackers.query_sets.used());
     }
 }
 
@@ -129,61 +132,61 @@ impl<A: hal::Api> NonReferencedResources<A> {
         if !self.buffers.is_empty() {
             profiling::scope!("destroy_buffers");
             for raw in self.buffers.drain(..) {
-                device.destroy_buffer(raw);
+                unsafe { device.destroy_buffer(raw) };
             }
         }
         if !self.textures.is_empty() {
             profiling::scope!("destroy_textures");
             for raw in self.textures.drain(..) {
-                device.destroy_texture(raw);
+                unsafe { device.destroy_texture(raw) };
             }
         }
         if !self.texture_views.is_empty() {
             profiling::scope!("destroy_texture_views");
             for raw in self.texture_views.drain(..) {
-                device.destroy_texture_view(raw);
+                unsafe { device.destroy_texture_view(raw) };
             }
         }
         if !self.samplers.is_empty() {
             profiling::scope!("destroy_samplers");
             for raw in self.samplers.drain(..) {
-                device.destroy_sampler(raw);
+                unsafe { device.destroy_sampler(raw) };
             }
         }
         if !self.bind_groups.is_empty() {
             profiling::scope!("destroy_bind_groups");
             for raw in self.bind_groups.drain(..) {
-                device.destroy_bind_group(raw);
+                unsafe { device.destroy_bind_group(raw) };
             }
         }
         if !self.compute_pipes.is_empty() {
             profiling::scope!("destroy_compute_pipelines");
             for raw in self.compute_pipes.drain(..) {
-                device.destroy_compute_pipeline(raw);
+                unsafe { device.destroy_compute_pipeline(raw) };
             }
         }
         if !self.render_pipes.is_empty() {
             profiling::scope!("destroy_render_pipelines");
             for raw in self.render_pipes.drain(..) {
-                device.destroy_render_pipeline(raw);
+                unsafe { device.destroy_render_pipeline(raw) };
             }
         }
         if !self.bind_group_layouts.is_empty() {
             profiling::scope!("destroy_bind_group_layouts");
             for raw in self.bind_group_layouts.drain(..) {
-                device.destroy_bind_group_layout(raw);
+                unsafe { device.destroy_bind_group_layout(raw) };
             }
         }
         if !self.pipeline_layouts.is_empty() {
             profiling::scope!("destroy_pipeline_layouts");
             for raw in self.pipeline_layouts.drain(..) {
-                device.destroy_pipeline_layout(raw);
+                unsafe { device.destroy_pipeline_layout(raw) };
             }
         }
         if !self.query_sets.is_empty() {
             profiling::scope!("destroy_query_sets");
             for raw in self.query_sets.drain(..) {
-                device.destroy_query_set(raw);
+                unsafe { device.destroy_query_set(raw) };
             }
         }
     }
@@ -217,9 +220,12 @@ struct ActiveSubmission<A: hal::Api> {
 }
 
 #[derive(Clone, Debug, Error)]
+#[non_exhaustive]
 pub enum WaitIdleError {
     #[error(transparent)]
     Device(#[from] DeviceError),
+    #[error("Tried to wait using a submission index from the wrong device. Submission index is from device {0:?}. Called poll on device {1:?}.")]
+    WrongSubmissionIndex(id::QueueId, id::DeviceId),
     #[error("GPU got stuck :(")]
     StuckGpu,
 }
@@ -273,7 +279,8 @@ pub(super) struct LifetimeTracker<A: hal::Api> {
     /// Textures can be used in the upcoming submission by `write_texture`.
     pub future_suspected_textures: Vec<Stored<id::TextureId>>,
 
-    /// Resources that are suspected for destruction.
+    /// Resources whose user handle has died (i.e. drop/destroy has been called)
+    /// and will likely be ready for destruction soon.
     pub suspected_resources: SuspectedResources,
 
     /// Resources used by queue submissions still in flight. One entry per
@@ -332,7 +339,7 @@ impl<A: hal::Api> LifetimeTracker<A> {
             }
         }
 
-        self.active.alloc().init(ActiveSubmission {
+        self.active.push(ActiveSubmission {
             index,
             last_resources,
             mapped: Vec::new(),
@@ -410,7 +417,7 @@ impl<A: hal::Api> LifetimeTracker<A> {
     }
 
     pub fn cleanup(&mut self, device: &A::Device) {
-        profiling::scope!("cleanup", "LifetimeTracker");
+        profiling::scope!("LifetimeTracker::cleanup");
         unsafe {
             self.free_resources.clean(device);
         }
@@ -435,15 +442,18 @@ impl<A: hal::Api> LifetimeTracker<A> {
         }
     }
 
-    pub fn add_work_done_closure(&mut self, closure: SubmittedWorkDoneClosure) -> bool {
+    pub fn add_work_done_closure(
+        &mut self,
+        closure: SubmittedWorkDoneClosure,
+    ) -> Option<SubmittedWorkDoneClosure> {
         match self.active.last_mut() {
             Some(active) => {
                 active.work_done_closures.push(closure);
-                true
+                None
             }
             // Note: we can't immediately invoke the closure, since it assumes
             // nothing is currently locked in the hubs.
-            None => false,
+            None => Some(closure),
         }
     }
 }
@@ -451,7 +461,7 @@ impl<A: hal::Api> LifetimeTracker<A> {
 impl<A: HalApi> LifetimeTracker<A> {
     /// Identify resources to free, according to `trackers` and `self.suspected_resources`.
     ///
-    /// Given `trackers`, the [`TrackerSet`] belonging to same [`Device`] as
+    /// Given `trackers`, the [`Tracker`] belonging to same [`Device`] as
     /// `self`, and `hub`, the [`Hub`] to which that `Device` belongs:
     ///
     /// Remove from `trackers` each resource mentioned in
@@ -491,7 +501,7 @@ impl<A: HalApi> LifetimeTracker<A> {
     pub(super) fn triage_suspected<G: GlobalIdentityHandlerFactory>(
         &mut self,
         hub: &Hub<A, G>,
-        trackers: &Mutex<TrackerSet>,
+        trackers: &Mutex<Tracker<A>>,
         #[cfg(feature = "trace")] trace: Option<&Mutex<trace::Trace>>,
         token: &mut Token<super::Device<A>>,
     ) {
@@ -510,7 +520,7 @@ impl<A: HalApi> LifetimeTracker<A> {
                     }
 
                     if let Some(res) = hub.render_bundles.unregister_locked(id.0, &mut *guard) {
-                        self.suspected_resources.add_trackers(&res.used);
+                        self.suspected_resources.add_render_bundle_scope(&res.used);
                     }
                 }
             }
@@ -529,7 +539,7 @@ impl<A: HalApi> LifetimeTracker<A> {
                     }
 
                     if let Some(res) = hub.bind_groups.unregister_locked(id.0, &mut *guard) {
-                        self.suspected_resources.add_trackers(&res.used);
+                        self.suspected_resources.add_bind_group_states(&res.used);
 
                         self.suspected_resources
                             .bind_group_layouts
@@ -670,7 +680,7 @@ impl<A: HalApi> LifetimeTracker<A> {
             let mut trackers = trackers.lock();
 
             for id in self.suspected_resources.compute_pipelines.drain(..) {
-                if trackers.compute_pipes.remove_abandoned(id) {
+                if trackers.compute_pipelines.remove_abandoned(id) {
                     log::debug!("Compute pipeline {:?} will be destroyed", id);
                     #[cfg(feature = "trace")]
                     if let Some(t) = trace {
@@ -695,7 +705,7 @@ impl<A: HalApi> LifetimeTracker<A> {
             let mut trackers = trackers.lock();
 
             for id in self.suspected_resources.render_pipelines.drain(..) {
-                if trackers.render_pipes.remove_abandoned(id) {
+                if trackers.render_pipelines.remove_abandoned(id) {
                     log::debug!("Render pipeline {:?} will be destroyed", id);
                     #[cfg(feature = "trace")]
                     if let Some(t) = trace {
@@ -829,7 +839,7 @@ impl<A: HalApi> LifetimeTracker<A> {
         &mut self,
         hub: &Hub<A, G>,
         raw: &A::Device,
-        trackers: &Mutex<TrackerSet>,
+        trackers: &Mutex<Tracker<A>>,
         token: &mut Token<super::Device<A>>,
     ) -> Vec<super::BufferMapPendingClosure> {
         if self.ready_to_map.is_empty() {
@@ -878,15 +888,20 @@ impl<A: HalApi> LifetimeTracker<A> {
                                 range: mapping.range.start..mapping.range.start + size,
                                 host,
                             };
-                            resource::BufferMapAsyncStatus::Success
+                            Ok(())
                         }
                         Err(e) => {
                             log::error!("Mapping failed {:?}", e);
-                            resource::BufferMapAsyncStatus::Error
+                            Err(e)
                         }
                     }
                 } else {
-                    resource::BufferMapAsyncStatus::Success
+                    buffer.map_state = resource::BufferMapState::Active {
+                        ptr: std::ptr::NonNull::dangling(),
+                        range: mapping.range,
+                        host: mapping.op.host,
+                    };
+                    Ok(())
                 };
                 pending_callbacks.push((mapping.op, status));
             }

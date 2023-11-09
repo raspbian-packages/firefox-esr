@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Nij ljepblêd
 tabbrowser-empty-private-tab-title = Nij privee­ljepblêd
+
 tabbrowser-menuitem-close-tab =
     .label = Ljepblêd slute
 tabbrowser-menuitem-close =
     .label = Slute
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -121,6 +120,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Dit dialoochfinster net mear toane.
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Fergelykbere meldingen fan { $domain } om jo nei harren ljepblêd te lieden tastean
+
 tabbrowser-customizemode-tab-title = { -brand-short-name } oanpasse
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -139,3 +139,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Ljepblêden dempe opheffe
     .accesskey = o
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Lûd ôfspylje
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Alle { $tabCount } ljepblêdtitels toane
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Ljepblêd dôvje
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Ljepblêd dôvje opheffe
+tabbrowser-manager-close-tab =
+    .tooltiptext = Ljepblêd slute

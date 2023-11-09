@@ -117,13 +117,6 @@ cfr-doorhanger-doh-secondary-button = از کار انداختن
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = حریم‌خصوصی شما مهم است. { -brand-short-name } حالا وب‌سایت‌ها را از همدیگر ایزوله یا در محیط جداگانه قرار می‌دهد، که کار هکرها را برای دزدین گذرواژه‌ها، کارت‌های اعتباری و سایر اطلاعات حساس سخت‌تر می‌کند.
-cfr-doorhanger-fission-header = ایزوله‌سازی سایت
-cfr-doorhanger-fission-primary-button = باشه،‌ متوجه شدم
-    .accesskey = O
-cfr-doorhanger-fission-secondary-button = اطلاعات بیشتر
-    .accesskey = ب
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = ویدئوهای این سایت ممکن است در نسخهٔ فعلی { -brand-short-name } به درستی نمایش داده نشود. برای پشتیبانی ویدئویی کامل، { -brand-short-name } را هم‌اکنون بروزرسانی کنید.
@@ -132,11 +125,6 @@ cfr-doorhanger-video-support-primary-button = هم‌اکنون بروزرسان
     .accesskey = ه
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = اطلاعات بیشتر
-    .title = برای اطلاعات بیشتر کلیک کنید
-spotlight-learn-more-expanded = اطلاعات بیشتر
-    .title = بستن
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -154,19 +142,9 @@ spotlight-public-wifi-vpn-link = اکنون نه
 
 ## Total Cookie Protection Rollout
 
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    اولین نفری باشید که قوی‌ترین آزمایش
-    حریم‌خصوصی ما را تست می‌کند
-spotlight-total-cookie-protection-body = محافظت کامل در برابر کوکی‌ها مانع از استفاده ردیاب‌ها از کوکی‌ها برای تعقیب شما در وب می‌شود.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } حصاری در اطراف کوکی‌ها ایجاد می‌کند و آنها را به سایتی که در آن هستید محدود می‌کند تا ردیاب‌ها نتوانند از آنها برای دنبال کردن شما استفاده کنند. با دسترسی زودهنگام، به بهینه‌سازی این ویژگی کمک خواهید کرد تا بتوانیم به ساختن یک وبِ بهتر برای همه ادامه دهیم.
-spotlight-total-cookie-protection-primary-button = روشن کردن محافظت کامل در برابر کوکی‌ها
-spotlight-total-cookie-protection-secondary-button = اکنون نه
-
 ## Emotive Continuous Onboarding
+
+spotlight-pin-secondary-button = اکنون نه
 
 ## MR2022 Background Update Windows native toast notification strings.
 ##
@@ -181,7 +159,28 @@ spotlight-total-cookie-protection-secondary-button = اکنون نه
 ## The button labels are fitted into narrow fixed-width buttons by
 ## Windows and therefore must be as narrow as possible.
 
+
 ## Firefox View CFR
 
+
 ## Firefox View Spotlight
+
+firefoxview-spotlight-promo-secondarybutton = پرش
+
+## Colorways expiry reminder CFR
+
+
+## Cookie Banner Handling CFR
+
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+
+## FxA sync CFR
+
+
+## Device Migration FxA Spotlight
 

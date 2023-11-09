@@ -6,10 +6,7 @@ var origin;
 var rcwnpref;
 
 function run_test() {
-  var env = Cc["@mozilla.org/process/environment;1"].getService(
-    Ci.nsIEnvironment
-  );
-  var h2Port = env.get("MOZHTTP2_PORT");
+  var h2Port = Services.env.get("MOZHTTP2_PORT");
   Assert.notEqual(h2Port, null);
   Assert.notEqual(h2Port, "");
 
@@ -57,7 +54,7 @@ var nextTest;
 var expectPass = true;
 var expectConditional = false;
 
-var Listener = function() {};
+var Listener = function () {};
 Listener.prototype = {
   onStartRequest: function testOnStartRequest(request) {
     Assert.ok(request instanceof Ci.nsIHttpChannel);

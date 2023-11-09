@@ -1,4 +1,5 @@
 // Copyright 2021 Google LLC
+// SPDX-License-Identifier: Apache-2.0
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +22,6 @@
 #define HIGHWAY_HWY_CONTRIB_SORT_SORTING_NETWORKS_TOGGLE
 #endif
 
-#include "hwy/contrib/sort/disabled_targets.h"
 #include "hwy/contrib/sort/shared-inl.h"  // SortConstants
 #include "hwy/highway.h"
 
@@ -29,6 +29,8 @@ HWY_BEFORE_NAMESPACE();
 namespace hwy {
 namespace HWY_NAMESPACE {
 namespace detail {
+
+#if VQSORT_ENABLED
 
 using Constants = hwy::SortConstants;
 
@@ -589,19 +591,18 @@ HWY_INLINE void Merge16(D d, Traits st, V& v0, V& v1, V& v2, V& v3, V& v4,
 // Reshapes `buf` into a matrix, sorts columns independently, and then merges
 // into a sorted 1D array without transposing.
 //
-// `st` is SharedTraits<LaneTraits/Traits128<Order*>>. This abstraction layer
-//   bridges differences in sort order and single-lane vs 128-bit keys.
-// `buf` ensures full vectors are aligned, and enables loads/stores without
-//   bounds checks.
+// `st` is SharedTraits<Traits*<Order*>>. This abstraction layer bridges
+//   differences in sort order and single-lane vs 128-bit keys.
 //
 // References:
 // https://drops.dagstuhl.de/opus/volltexte/2021/13775/pdf/LIPIcs-SEA-2021-3.pdf
 // https://github.com/simd-sorting/fast-and-robust/blob/master/avx2_sort_demo/avx2sort.h
 // "Entwurf und Implementierung vektorisierter Sortieralgorithmen" (M. Blacher)
-template <class Traits, typename T>
-HWY_INLINE void SortingNetwork(Traits st, T* HWY_RESTRICT buf, size_t cols) {
-  const CappedTag<T, Constants::kMaxCols> d;
-  using V = decltype(Zero(d));
+template <class Traits, class V>
+HWY_INLINE void SortingNetwork(Traits st, size_t cols, V& v0, V& v1, V& v2,
+                               V& v3, V& v4, V& v5, V& v6, V& v7, V& v8, V& v9,
+                               V& va, V& vb, V& vc, V& vd, V& ve, V& vf) {
+  const CappedTag<typename Traits::LaneType, Constants::kMaxCols> d;
 
   HWY_DASSERT(cols <= Constants::kMaxCols);
 
@@ -609,6 +610,47 @@ HWY_INLINE void SortingNetwork(Traits st, T* HWY_RESTRICT buf, size_t cols) {
   constexpr size_t kLanesPerKey = st.LanesPerKey();
   const size_t keys = cols / kLanesPerKey;
   constexpr size_t kMaxKeys = MaxLanes(d) / kLanesPerKey;
+
+  Sort16(d, st, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd, ve, vf);
+
+  // Checking MaxLanes avoids generating HWY_ASSERT code for the unreachable
+  // code paths: if MaxLanes < 2, then keys <= cols < 2.
+  if (HWY_LIKELY(keys >= 2 && kMaxKeys >= 2)) {
+    Merge2(d, st, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd, ve,
+           vf);
+
+    if (HWY_LIKELY(keys >= 4 && kMaxKeys >= 4)) {
+      Merge4(d, st, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd, ve,
+             vf);
+
+      if (HWY_LIKELY(keys >= 8 && kMaxKeys >= 8)) {
+        Merge8(d, st, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd,
+               ve, vf);
+
+        // Avoids build timeout. Must match #if condition in kMaxCols.
+#if !HWY_COMPILER_MSVC && !HWY_IS_DEBUG_BUILD
+        if (HWY_LIKELY(keys >= 16 && kMaxKeys >= 16)) {
+          Merge16(d, st, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd,
+                  ve, vf);
+
+          static_assert(Constants::kMaxCols <= 16, "Add more branches");
+        }
+#endif
+      }
+    }
+  }
+}
+
+// As above, but loads from/stores to `buf`. This ensures full vectors are
+// aligned, and enables loads/stores without bounds checks.
+//
+// NOINLINE because this is large and called twice from vqsort-inl.h.
+template <class Traits, typename T>
+HWY_NOINLINE void SortingNetwork(Traits st, T* HWY_RESTRICT buf, size_t cols) {
+  const CappedTag<T, Constants::kMaxCols> d;
+  using V = decltype(Zero(d));
+
+  HWY_DASSERT(cols <= Constants::kMaxCols);
 
   // These are aligned iff cols == Lanes(d). We prefer unaligned/non-constexpr
   // offsets to duplicating this code for every value of cols.
@@ -630,34 +672,8 @@ HWY_INLINE void SortingNetwork(Traits st, T* HWY_RESTRICT buf, size_t cols) {
   V ve = LoadU(d, buf + 0xe * cols);
   V vf = LoadU(d, buf + 0xf * cols);
 
-  Sort16(d, st, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd, ve, vf);
-
-  // Checking MaxLanes avoids generating HWY_ASSERT code for the unreachable
-  // code paths: if MaxLanes < 2, then keys <= cols < 2.
-  if (HWY_LIKELY(keys >= 2 && kMaxKeys >= 2)) {
-    Merge2(d, st, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd, ve,
-           vf);
-
-    if (HWY_LIKELY(keys >= 4 && kMaxKeys >= 4)) {
-      Merge4(d, st, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd, ve,
-             vf);
-
-      if (HWY_LIKELY(keys >= 8 && kMaxKeys >= 8)) {
-        Merge8(d, st, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd,
-               ve, vf);
-
-        // Avoids build timeout
-#if !HWY_COMPILER_MSVC
-        if (HWY_LIKELY(keys >= 16 && kMaxKeys >= 16)) {
-          Merge16(d, st, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc, vd,
-                  ve, vf);
-
-          static_assert(Constants::kMaxCols <= 16, "Add more branches");
-        }
-#endif
-      }
-    }
-  }
+  SortingNetwork(st, cols, v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, va, vb, vc,
+                 vd, ve, vf);
 
   StoreU(v0, d, buf + 0x0 * cols);
   StoreU(v1, d, buf + 0x1 * cols);
@@ -676,6 +692,11 @@ HWY_INLINE void SortingNetwork(Traits st, T* HWY_RESTRICT buf, size_t cols) {
   StoreU(ve, d, buf + 0xe * cols);
   StoreU(vf, d, buf + 0xf * cols);
 }
+
+#else
+template <class Base>
+struct SharedTraits : public Base {};
+#endif  // VQSORT_ENABLED
 
 }  // namespace detail
 // NOLINTNEXTLINE(google-readability-namespace-comments)

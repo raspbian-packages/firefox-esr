@@ -16,11 +16,10 @@ styleeditor-visibility-toggle =
 styleeditor-visibility-toggle-system =
     .tooltiptext = Folhas de estilo do sistema não podem ser desativadas
 styleeditor-save-button = Salvar
-    .tooltiptext = Salvar esta folha de estilo em um arquivo
+    .tooltiptext = Salvar esta folha de estilo em arquivo
     .accesskey = S
 styleeditor-options-button =
     .tooltiptext = Opções do editor de estilos
-styleeditor-media-rules = Regras @media
 styleeditor-at-rules = Regras com @
 styleeditor-editor-textbox =
     .data-placeholder = Digite CSS aqui.
@@ -41,3 +40,12 @@ styleeditor-go-to-line =
     .accesskey = l
 # Label displayed when searching a term that is not found in any stylesheet path
 styleeditor-stylesheet-all-filtered = Não foi encontrada nenhuma folha de estilo correspondente.
+
+# This string is shown in the style sheets list
+# Variables:
+#   $ruleCount (Integer) - The number of rules in the stylesheet.
+styleeditor-stylesheet-rule-count =
+    { $ruleCount ->
+        [one] { $ruleCount } regra.
+       *[other] { $ruleCount } regras.
+    }

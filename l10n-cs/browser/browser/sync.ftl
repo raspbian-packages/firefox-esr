@@ -21,6 +21,15 @@ fxa-menu-turn-on-sync-default = Zapnout synchronizaci
 
 fxa-menu-connect-another-device =
     .label = Připojit další zařízení…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Poslat panel do zařízení
+            [few] Poslat { $tabCount } panely do zařízení
+           *[other] Poslat { $tabCount } panelů do zařízení
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

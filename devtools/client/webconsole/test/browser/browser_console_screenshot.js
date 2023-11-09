@@ -31,11 +31,7 @@ const TEST_URI = `data:text/html,<!DOCTYPE html><meta charset=utf8>
       <div></div>
     </body>`;
 
-const { FileUtils } = ChromeUtils.import(
-  "resource://gre/modules/FileUtils.jsm"
-);
-
-add_task(async function() {
+add_task(async function () {
   await addTab(TEST_URI);
   const hud = await BrowserConsoleManager.toggleBrowserConsole();
 
@@ -54,7 +50,7 @@ add_task(async function() {
 
   info("Create an image using the downloaded file as source");
   const image = new Image();
-  image.src = OS.Path.toFileURI(file.path);
+  image.src = PathUtils.toFileURI(file.path);
   await once(image, "load");
 
   info(
@@ -106,6 +102,6 @@ add_task(async function() {
   });
 
   info("Remove the downloaded screenshot file and cleanup downloads");
-  await OS.File.remove(file.path);
+  await IOUtils.remove(file.path);
   await resetDownloads();
 });

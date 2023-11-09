@@ -222,8 +222,6 @@ menu-history-undo-menu =
     .label = Runje začinjene rajtarki
 menu-history-undo-window-menu =
     .label = Runje začinjene wokna
-menu-history-reopen-all-tabs = Wšě rajtarki znowa wočinić
-menu-history-reopen-all-windows = Wšě wokna znowa wočinić
 
 ## Bookmarks Menu
 
@@ -232,14 +230,13 @@ menu-bookmarks-menu =
     .accesskey = Z
 menu-bookmarks-manage =
     .label = Zapołožki rjadować
-menu-bookmark-current-tab =
-    .label = Aktualny rajtark jako zapołožku składować
-menu-bookmark-edit =
-    .label = Tutu zapołožku wobdźěłać
 menu-bookmark-tab =
     .label = Aktualny rajtark jako zapołožku składować …
 menu-edit-bookmark =
     .label = Tutu zapołožku wobdźěłać …
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Zapołožki přepytać
 menu-bookmarks-all-tabs =
     .label = Wšě rajtarki jako zapołožki…
 menu-bookmarks-toolbar =
@@ -333,6 +330,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Modus za rozrisanje problemow znjemóžnić
     .accesskey = M
+menu-help-switch-device =
+    .label = K nowemu gratej přeńć
+    .accesskey = n
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

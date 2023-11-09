@@ -4,15 +4,15 @@
 
 "use strict";
 
-const { Preferences } = ChromeUtils.import(
-  "resource://gre/modules/Preferences.jsm"
+const { Preferences } = ChromeUtils.importESModule(
+  "resource://gre/modules/Preferences.sys.mjs"
 );
 
-const { AppInfo } = ChromeUtils.import(
-  "chrome://remote/content/marionette/appinfo.js"
+const { AppInfo } = ChromeUtils.importESModule(
+  "chrome://remote/content/shared/AppInfo.sys.mjs"
 );
-const { error } = ChromeUtils.import(
-  "chrome://remote/content/shared/webdriver/Errors.jsm"
+const { error } = ChromeUtils.importESModule(
+  "chrome://remote/content/shared/webdriver/Errors.sys.mjs"
 );
 const {
   Capabilities,
@@ -20,33 +20,27 @@ const {
   Proxy,
   Timeouts,
   UnhandledPromptBehavior,
-} = ChromeUtils.import(
-  "chrome://remote/content/shared/webdriver/Capabilities.jsm"
+} = ChromeUtils.importESModule(
+  "chrome://remote/content/shared/webdriver/Capabilities.sys.mjs"
 );
 
-add_test(function test_Timeouts_ctor() {
+add_task(function test_Timeouts_ctor() {
   let ts = new Timeouts();
   equal(ts.implicit, 0);
   equal(ts.pageLoad, 300000);
   equal(ts.script, 30000);
-
-  run_next_test();
 });
 
-add_test(function test_Timeouts_toString() {
+add_task(function test_Timeouts_toString() {
   equal(new Timeouts().toString(), "[object Timeouts]");
-
-  run_next_test();
 });
 
-add_test(function test_Timeouts_toJSON() {
+add_task(function test_Timeouts_toJSON() {
   let ts = new Timeouts();
   deepEqual(ts.toJSON(), { implicit: 0, pageLoad: 300000, script: 30000 });
-
-  run_next_test();
 });
 
-add_test(function test_Timeouts_fromJSON() {
+add_task(function test_Timeouts_fromJSON() {
   let json = {
     implicit: 0,
     pageLoad: 2.0,
@@ -56,11 +50,9 @@ add_test(function test_Timeouts_fromJSON() {
   equal(ts.implicit, json.implicit);
   equal(ts.pageLoad, json.pageLoad);
   equal(ts.script, json.script);
-
-  run_next_test();
 });
 
-add_test(function test_Timeouts_fromJSON_unrecognised_field() {
+add_task(function test_Timeouts_fromJSON_unrecognised_field() {
   let json = {
     sessionId: "foobar",
   };
@@ -70,41 +62,33 @@ add_test(function test_Timeouts_fromJSON_unrecognised_field() {
     equal(e.name, error.InvalidArgumentError.name);
     equal(e.message, "Unrecognised timeout: sessionId");
   }
-
-  run_next_test();
 });
 
-add_test(function test_Timeouts_fromJSON_invalid_types() {
+add_task(function test_Timeouts_fromJSON_invalid_types() {
   for (let value of [null, [], {}, false, "10", 2.5]) {
     Assert.throws(
       () => Timeouts.fromJSON({ implicit: value }),
       /InvalidArgumentError/
     );
   }
-
-  run_next_test();
 });
 
-add_test(function test_Timeouts_fromJSON_bounds() {
+add_task(function test_Timeouts_fromJSON_bounds() {
   for (let value of [-1, Number.MAX_SAFE_INTEGER + 1]) {
     Assert.throws(
       () => Timeouts.fromJSON({ script: value }),
       /InvalidArgumentError/
     );
   }
-
-  run_next_test();
 });
 
-add_test(function test_PageLoadStrategy() {
+add_task(function test_PageLoadStrategy() {
   equal(PageLoadStrategy.None, "none");
   equal(PageLoadStrategy.Eager, "eager");
   equal(PageLoadStrategy.Normal, "normal");
-
-  run_next_test();
 });
 
-add_test(function test_Proxy_ctor() {
+add_task(function test_Proxy_ctor() {
   let p = new Proxy();
   let props = [
     "proxyType",
@@ -118,11 +102,9 @@ add_test(function test_Proxy_ctor() {
     ok(prop in p, `${prop} in ${JSON.stringify(props)}`);
     equal(p[prop], null);
   }
-
-  run_next_test();
 });
 
-add_test(function test_Proxy_init() {
+add_task(function test_Proxy_init() {
   let p = new Proxy();
 
   // no changed made, and 5 (system) is default
@@ -185,17 +167,13 @@ add_test(function test_Proxy_init() {
   p.noProxy = [];
   ok(p.init());
   equal(Preferences.get("network.proxy.no_proxies_on"), "");
-
-  run_next_test();
 });
 
-add_test(function test_Proxy_toString() {
+add_task(function test_Proxy_toString() {
   equal(new Proxy().toString(), "[object Proxy]");
-
-  run_next_test();
 });
 
-add_test(function test_Proxy_toJSON() {
+add_task(function test_Proxy_toJSON() {
   let p = new Proxy();
   deepEqual(p.toJSON(), {});
 
@@ -250,11 +228,9 @@ add_test(function test_Proxy_toJSON() {
   p.noProxy = ["2001:db8::1"];
   let expected = { proxyType: "manual", noProxy: "[2001:db8::1]" };
   deepEqual(p.toJSON(), expected);
-
-  run_next_test();
 });
 
-add_test(function test_Proxy_fromJSON() {
+add_task(function test_Proxy_fromJSON() {
   let p = new Proxy();
   deepEqual(p, Proxy.fromJSON(undefined));
   deepEqual(p, Proxy.fromJSON(null));
@@ -390,27 +366,22 @@ add_test(function test_Proxy_fromJSON() {
   p.noProxy = ["2001:db8::1"];
   let manual = { proxyType: "manual", noProxy: ["[2001:db8::1]"] };
   deepEqual(p, Proxy.fromJSON(manual));
-
-  run_next_test();
 });
 
-add_test(function test_UnhandledPromptBehavior() {
+add_task(function test_UnhandledPromptBehavior() {
   equal(UnhandledPromptBehavior.Accept, "accept");
   equal(UnhandledPromptBehavior.AcceptAndNotify, "accept and notify");
   equal(UnhandledPromptBehavior.Dismiss, "dismiss");
   equal(UnhandledPromptBehavior.DismissAndNotify, "dismiss and notify");
   equal(UnhandledPromptBehavior.Ignore, "ignore");
-
-  run_next_test();
 });
 
-add_test(function test_Capabilities_ctor() {
+add_task(function test_Capabilities_ctor() {
   let caps = new Capabilities();
   ok(caps.has("browserName"));
   ok(caps.has("browserVersion"));
   ok(caps.has("platformName"));
   ok(["linux", "mac", "windows", "android"].includes(caps.get("platformName")));
-  ok(caps.has("platformVersion"));
   equal(PageLoadStrategy.Normal, caps.get("pageLoadStrategy"));
   equal(false, caps.get("acceptInsecureCerts"));
   ok(caps.get("timeouts") instanceof Timeouts);
@@ -422,28 +393,24 @@ add_test(function test_Capabilities_ctor() {
   equal(false, caps.get("moz:accessibilityChecks"));
   ok(caps.has("moz:buildID"));
   ok(caps.has("moz:debuggerAddress"));
+  ok(caps.has("moz:platformVersion"));
   ok(caps.has("moz:processID"));
   ok(caps.has("moz:profile"));
   equal(false, caps.get("moz:useNonSpecCompliantPointerOrigin"));
   equal(true, caps.get("moz:webdriverClick"));
-
-  run_next_test();
 });
 
-add_test(function test_Capabilities_toString() {
+add_task(function test_Capabilities_toString() {
   equal("[object Capabilities]", new Capabilities().toString());
-
-  run_next_test();
 });
 
-add_test(function test_Capabilities_toJSON() {
+add_task(function test_Capabilities_toJSON() {
   let caps = new Capabilities();
   let json = caps.toJSON();
 
   equal(caps.get("browserName"), json.browserName);
   equal(caps.get("browserVersion"), json.browserVersion);
   equal(caps.get("platformName"), json.platformName);
-  equal(caps.get("platformVersion"), json.platformVersion);
   equal(caps.get("pageLoadStrategy"), json.pageLoadStrategy);
   equal(caps.get("acceptInsecureCerts"), json.acceptInsecureCerts);
   deepEqual(caps.get("proxy").toJSON(), json.proxy);
@@ -455,6 +422,7 @@ add_test(function test_Capabilities_toJSON() {
   equal(caps.get("moz:accessibilityChecks"), json["moz:accessibilityChecks"]);
   equal(caps.get("moz:buildID"), json["moz:buildID"]);
   equal(caps.get("moz:debuggerAddress"), json["moz:debuggerAddress"]);
+  equal(caps.get("moz:platformVersion"), json["moz:platformVersion"]);
   equal(caps.get("moz:processID"), json["moz:processID"]);
   equal(caps.get("moz:profile"), json["moz:profile"]);
   equal(
@@ -462,11 +430,9 @@ add_test(function test_Capabilities_toJSON() {
     json["moz:useNonSpecCompliantPointerOrigin"]
   );
   equal(caps.get("moz:webdriverClick"), json["moz:webdriverClick"]);
-
-  run_next_test();
 });
 
-add_test(function test_Capabilities_fromJSON() {
+add_task(function test_Capabilities_fromJSON() {
   const { fromJSON } = Capabilities;
 
   // plain
@@ -586,12 +552,10 @@ add_test(function test_Capabilities_fromJSON() {
     () => fromJSON({ "moz:webdriverClick": 1 }),
     /InvalidArgumentError/
   );
-
-  run_next_test();
 });
 
 // use Proxy.toJSON to test marshal
-add_test(function test_marshal() {
+add_task(function test_marshal() {
   let proxy = new Proxy();
 
   // drop empty fields
@@ -618,6 +582,4 @@ add_test(function test_marshal() {
   deepEqual({}, proxy.toJSON());
   proxy.proxyType = { foo: new Proxy() };
   deepEqual({}, proxy.toJSON());
-
-  run_next_test();
 });

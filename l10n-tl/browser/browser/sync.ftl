@@ -11,6 +11,14 @@ fxa-signout-dialog-body = Mananatili ang naka-sync na data sa iyong account.
 
 fxa-menu-connect-another-device =
     .label = Magkonekta ng Isa Pang Device…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Ipadala ang Tab sa Device
+           *[other] Magpadala ng { $tabCount } Tab sa Device
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

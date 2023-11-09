@@ -6,9 +6,11 @@
 #ifndef GFX_FONTENTRY_H
 #define GFX_FONTENTRY_H
 
+#include <limits>
 #include <math.h>
 #include <new>
 #include <utility>
+#include "COLRFonts.h"
 #include "ThebesRLBoxTypes.h"
 #include "gfxFontUtils.h"
 #include "gfxFontVariations.h"
@@ -57,9 +59,6 @@ namespace fontlist {
 struct Face;
 struct Family;
 }  // namespace fontlist
-namespace gfx {
-struct DeviceColor;
-}
 }  // namespace mozilla
 
 typedef struct gr_face gr_face;
@@ -69,56 +68,108 @@ typedef struct FT_MM_Var_ FT_MM_Var;
 
 class gfxCharacterMap : public gfxSparseBitSet {
  public:
-  nsrefcnt AddRef() {
+  // gfxCharacterMap instances may be shared across multiple threads via a
+  // global table managed by gfxPlatformFontList. Once a gfxCharacterMap is
+  // inserted in the global table, its mShared flag will be TRUE, and we
+  // cannot safely delete it except from gfxPlatformFontList (which will
+  // use a lock to ensure entries are removed from its table and deleted
+  // safely).
+
+  // AddRef() is pretty much standard. We don't return the refcount as our
+  // users don't care about it.
+  void AddRef() {
+    MOZ_ASSERT_TYPE_OK_FOR_REFCOUNTING(gfxCharacterMap);
     MOZ_ASSERT(int32_t(mRefCnt) >= 0, "illegal refcnt");
-    ++mRefCnt;
-    NS_LOG_ADDREF(this, mRefCnt, "gfxCharacterMap", sizeof(*this));
-    return mRefCnt;
+    [[maybe_unused]] nsrefcnt count = ++mRefCnt;
+    NS_LOG_ADDREF(this, count, "gfxCharacterMap", sizeof(*this));
   }
 
-  nsrefcnt Release() {
-    MOZ_ASSERT(0 != mRefCnt, "dup release");
-    --mRefCnt;
-    NS_LOG_RELEASE(this, mRefCnt, "gfxCharacterMap");
-    if (mRefCnt == 0) {
-      NotifyReleased();
-      // |this| has been deleted.
-      return 0;
+  // Custom Release(): if the object is referenced from the global shared
+  // table, and we're releasing the last *other* reference to it, then we
+  // notify the global table to consider also releasing its ref. (That may
+  // not actually happen, if another thread is racing with us and takes a
+  // new reference, or completes the release first!)
+  void Release() {
+    MOZ_ASSERT(int32_t(mRefCnt) > 0, "dup release");
+    // We can't safely read this after we've decremented mRefCnt, so save it
+    // in a local variable here. Note that the value is never reset to false
+    // once it has been set to true (when recording the cmap in the shared
+    // table), so there's no risk of this resulting in a "false positive" when
+    // tested later. A "false negative" is possible but harmless; it would
+    // just mean we miss an opportunity to release a reference from the shared
+    // cmap table.
+    bool isShared = mShared;
+
+    // Ensure we only access mRefCnt once, for consistency if the object is
+    // being used by multiple threads.
+    nsrefcnt count = --mRefCnt;
+    NS_LOG_RELEASE(this, count, "gfxCharacterMap");
+
+    // If isShared was true, this object has been shared across threads. In
+    // that case, if the refcount went to 1, we notify the shared table so
+    // it can drop its reference and delete the object.
+    if (isShared) {
+      MOZ_ASSERT(count > 0);
+      if (count == 1) {
+        NotifyMaybeReleased(this);
+      }
+      return;
     }
-    return mRefCnt;
+
+    // Otherwise, this object hasn't been shared and we can safely delete it
+    // as we must have been holding the only reference. (Note that if we were
+    // holding the only reference, there's no other owner who can have set
+    // mShared to true since we read it above.)
+    if (count == 0) {
+      delete this;
+    }
   }
 
-  gfxCharacterMap() : mHash(0), mBuildOnTheFly(false), mShared(false) {}
+  gfxCharacterMap() = default;
 
   explicit gfxCharacterMap(const gfxSparseBitSet& aOther)
-      : gfxSparseBitSet(aOther),
-        mHash(0),
-        mBuildOnTheFly(false),
-        mShared(false) {}
-
-  void CalcHash() { mHash = GetChecksum(); }
+      : gfxSparseBitSet(aOther) {}
 
   size_t SizeOfExcludingThis(mozilla::MallocSizeOf aMallocSizeOf) const {
     return gfxSparseBitSet::SizeOfExcludingThis(aMallocSizeOf);
   }
 
   // hash of the cmap bitvector
-  uint32_t mHash;
+  uint32_t mHash = 0;
 
   // if cmap is built on the fly it's never shared
-  bool mBuildOnTheFly;
+  bool mBuildOnTheFly = false;
 
-  // cmap is shared globally
-  bool mShared;
+  // Character map is shared globally. This can only be set by the thread that
+  // originally created the map, as no other thread can get a reference until
+  // it has been shared via the global table.
+  bool mShared = false;
 
  protected:
-  void NotifyReleased();
+  friend class gfxPlatformFontList;
 
-  nsAutoRefCnt mRefCnt;
+  // Destructor should not be called except via Release().
+  // (Note that our "friend" gfxPlatformFontList also accesses this from its
+  // MaybeRemoveCmap method.)
+  ~gfxCharacterMap() = default;
+
+  nsrefcnt RefCount() const { return mRefCnt; }
+
+  void CalcHash() { mHash = GetChecksum(); }
+
+  static void NotifyMaybeReleased(gfxCharacterMap* aCmap);
+
+  // Only used when clearing the shared-cmap hashtable during shutdown.
+  void ClearSharedFlag() {
+    MOZ_ASSERT(NS_IsMainThread());
+    mShared = false;
+  }
+
+  mozilla::ThreadSafeAutoRefCnt mRefCnt;
 
  private:
-  gfxCharacterMap(const gfxCharacterMap&);
-  gfxCharacterMap& operator=(const gfxCharacterMap&);
+  gfxCharacterMap(const gfxCharacterMap&) = delete;
+  gfxCharacterMap& operator=(const gfxCharacterMap&) = delete;
 };
 
 // Info on an individual font feature, for reporting available features
@@ -128,6 +179,8 @@ struct gfxFontFeatureInfo {
   uint32_t mScript;
   uint32_t mLangSys;
 };
+
+class gfxFontEntryCallbacks;
 
 class gfxFontEntry {
  public:
@@ -181,8 +234,9 @@ class gfxFontEntry {
   bool IsItalic() const { return SlantStyle().Min().IsItalic(); }
   bool IsOblique() const { return SlantStyle().Min().IsOblique(); }
   bool IsUpright() const { return SlantStyle().Min().IsNormal(); }
-  inline bool SupportsItalic();
-  inline bool SupportsBold();  // defined below, because of RangeFlags use
+  inline bool SupportsItalic();  // defined below, because of RangeFlags use
+  inline bool SupportsBold();
+  inline bool MayUseSyntheticSlant();
   bool IgnoreGDEF() const { return mIgnoreGDEF; }
   bool IgnoreGSUB() const { return mIgnoreGSUB; }
 
@@ -193,10 +247,10 @@ class gfxFontEntry {
   // If this is false, we might want to fall back to a different face and
   // possibly apply synthetic styling.
   bool IsNormalStyle() const {
-    return IsUpright() && Weight().Min() <= FontWeight::Normal() &&
-           Weight().Max() >= FontWeight::Normal() &&
-           Stretch().Min() <= FontStretch::Normal() &&
-           Stretch().Max() >= FontStretch::Normal();
+    return IsUpright() && Weight().Min() <= FontWeight::NORMAL &&
+           Weight().Max() >= FontWeight::NORMAL &&
+           Stretch().Min() <= FontStretch::NORMAL &&
+           Stretch().Max() >= FontStretch::NORMAL;
   }
 
   // whether a feature is supported by the font (limited to a small set
@@ -211,11 +265,12 @@ class gfxFontEntry {
   virtual bool HasFontTable(uint32_t aTableTag);
 
   inline bool HasGraphiteTables() {
-    if (!mCheckedForGraphiteTables) {
-      CheckForGraphiteTables();
-      mCheckedForGraphiteTables = true;
+    LazyFlag flag = mHasGraphiteTables;
+    if (flag == LazyFlag::Uninitialized) {
+      flag = CheckForGraphiteTables() ? LazyFlag::Yes : LazyFlag::No;
+      mHasGraphiteTables = flag;
     }
-    return mHasGraphiteTables;
+    return flag == LazyFlag::Yes;
   }
 
   inline bool HasCmapTable() {
@@ -268,22 +323,17 @@ class gfxFontEntry {
   void NotifyGlyphsChanged();
 
   bool TryGetColorGlyphs();
-  bool GetColorLayersInfo(uint32_t aGlyphId,
-                          const mozilla::gfx::DeviceColor& aDefaultColor,
-                          nsTArray<uint16_t>& layerGlyphs,
-                          nsTArray<mozilla::gfx::DeviceColor>& layerColors);
-  bool HasColorLayersForGlyph(uint32_t aGlyphId) {
-    MOZ_ASSERT(GetCOLR());
-    return gfxFontUtils::HasColorLayersForGlyph(GetCOLR(), aGlyphId);
-  }
 
   bool HasColorBitmapTable() {
-    if (!mCheckedForColorBitmapTables) {
-      mHasColorBitmapTable = HasFontTable(TRUETYPE_TAG('C', 'B', 'D', 'T')) ||
-                             HasFontTable(TRUETYPE_TAG('s', 'b', 'i', 'x'));
-      mCheckedForColorBitmapTables = true;
+    LazyFlag flag = mHasColorBitmapTable;
+    if (flag == LazyFlag::Uninitialized) {
+      flag = HasFontTable(TRUETYPE_TAG('C', 'B', 'D', 'T')) ||
+                     HasFontTable(TRUETYPE_TAG('s', 'b', 'i', 'x'))
+                 ? LazyFlag::Yes
+                 : LazyFlag::No;
+      mHasColorBitmapTable = flag;
     }
-    return mHasColorBitmapTable;
+    return flag == LazyFlag::Yes;
   }
 
   // Access to raw font table data (needed for Harfbuzz):
@@ -329,8 +379,8 @@ class gfxFontEntry {
   // cached instance; but we also don't return already_AddRefed, because
   // the caller may only need to use the font temporarily and doesn't need
   // a strong reference.
-  gfxFont* FindOrMakeFont(const gfxFontStyle* aStyle,
-                          gfxCharacterMap* aUnicodeRangeMap = nullptr);
+  already_AddRefed<gfxFont> FindOrMakeFont(
+      const gfxFontStyle* aStyle, gfxCharacterMap* aUnicodeRangeMap = nullptr);
 
   // Get an existing font table cache entry in aBlob if it has been
   // registered, or return false if not.  Callers must call
@@ -363,11 +413,30 @@ class gfxFontEntry {
   // NOTE that harfbuzz and graphite handle ownership/lifetime of the face
   // object in completely different ways.
 
-  // Get HarfBuzz face corresponding to this font file.
-  // Caller must release with hb_face_destroy() when finished with it,
-  // and the font entry will be notified via ForgetHBFace.
-  hb_face_t* GetHBFace();
-  void ForgetHBFace();
+  // Create a HarfBuzz face corresponding to this font file.
+  // Our reference to the underlying hb_face_t will be released when the
+  // returned AutoHBFace goes out of scope, but the hb_face_t itself may
+  // be kept alive by other references (e.g. if an hb_font_t has been
+  // instantiated for it).
+  class MOZ_STACK_CLASS AutoHBFace {
+   public:
+    explicit AutoHBFace(hb_face_t* aFace) : mFace(aFace) {}
+    ~AutoHBFace() { hb_face_destroy(mFace); }
+
+    operator hb_face_t*() const { return mFace; }
+
+    // Not default-constructible, not copyable.
+    AutoHBFace() = delete;
+    AutoHBFace(const AutoHBFace&) = delete;
+    AutoHBFace& operator=(const AutoHBFace&) = delete;
+
+   private:
+    hb_face_t* mFace;
+  };
+
+  AutoHBFace GetHBFace() {
+    return AutoHBFace(hb_face_create_for_tables(HBGetTable, this, nullptr));
+  }
 
   // Get the sandbox instance that graphite is running in.
   rlbox_sandbox_gr* GetGrSandbox();
@@ -437,6 +506,7 @@ class gfxFontEntry {
 
   bool HasBoldVariableWeight();
   bool HasItalicVariation();
+  bool HasSlantVariation();
   bool HasOpticalSize();
 
   void CheckForVariationAxes();
@@ -466,6 +536,14 @@ class gfxFontEntry {
   // (This is a floating-point number because of possible interpolation.)
   float TrackingForCSSPx(float aSize) const;
 
+  mozilla::gfx::Rect GetFontExtents(float aFUnitScaleFactor) const {
+    // Flip the y-axis here to match the orientation of Gecko's coordinates.
+    return mozilla::gfx::Rect(float(mXMin) * aFUnitScaleFactor,
+                              float(-mYMax) * aFUnitScaleFactor,
+                              float(mXMax - mXMin) * aFUnitScaleFactor,
+                              float(mYMax - mYMin) * aFUnitScaleFactor);
+  }
+
   nsCString mName;
   nsCString mFamilyName;
 
@@ -492,14 +570,14 @@ class gfxFontEntry {
   gfxSVGGlyphs* GetSVGGlyphs() const { return mSVGGlyphs; }
 
   // list of gfxFonts that are using SVG glyphs
-  nsTArray<const gfxFont*> mFontsUsingSVGGlyphs GUARDED_BY(mLock);
+  nsTArray<const gfxFont*> mFontsUsingSVGGlyphs MOZ_GUARDED_BY(mLock);
   nsTArray<gfxFontFeature> mFeatureSettings;
   nsTArray<gfxFontVariation> mVariationSettings;
 
   mozilla::UniquePtr<nsTHashMap<nsUint32HashKey, bool>> mSupportedFeatures
-      GUARDED_BY(mFeatureInfoLock);
+      MOZ_GUARDED_BY(mFeatureInfoLock);
   mozilla::UniquePtr<nsTHashMap<nsUint32HashKey, hb_set_t*>> mFeatureInputs
-      GUARDED_BY(mFeatureInfoLock);
+      MOZ_GUARDED_BY(mFeatureInfoLock);
 
   // Color Layer font support. These tables are inert once loaded, so we don't
   // need to hold a lock when reading them.
@@ -518,9 +596,9 @@ class gfxFontEntry {
 
   uint32_t mLanguageOverride = NO_FONT_LANGUAGE_OVERRIDE;
 
-  WeightRange mWeightRange = WeightRange(FontWeight(500));
-  StretchRange mStretchRange = StretchRange(FontStretch::Normal());
-  SlantStyleRange mStyleRange = SlantStyleRange(FontSlantStyle::Normal());
+  WeightRange mWeightRange = WeightRange(FontWeight::FromInt(500));
+  StretchRange mStretchRange = StretchRange(FontStretch::NORMAL);
+  SlantStyleRange mStyleRange = SlantStyleRange(FontSlantStyle::NORMAL);
 
   // Font metrics overrides (as multiples of used font size); negative values
   // indicate no override to be applied.
@@ -537,7 +615,7 @@ class gfxFontEntry {
   // descriptors, it is treated as the initial value for font-matching (and
   // so that is what we record in the font entry), but when rendering the
   // range is NOT clamped.
-  enum class RangeFlags : uint8_t {
+  enum class RangeFlags : uint16_t {
     eNoFlags = 0,
     eAutoWeight = (1 << 0),
     eAutoStretch = (1 << 1),
@@ -549,16 +627,18 @@ class gfxFontEntry {
     eBoldVariableWeight = (1 << 3),
     // Whether the face has an 'ital' axis.
     eItalicVariation = (1 << 4),
+    // Whether the face has a 'slnt' axis.
+    eSlantVariation = (1 << 5),
 
     // Flags to record if the face uses a non-CSS-compatible scale
     // for weight and/or stretch, in which case we won't map the
     // properties to the variation axes (though they can still be
     // explicitly set using font-variation-settings).
-    eNonCSSWeight = (1 << 5),
-    eNonCSSStretch = (1 << 6),
+    eNonCSSWeight = (1 << 6),
+    eNonCSSStretch = (1 << 7),
 
     // Whether the font has an 'opsz' axis.
-    eOpticalSize = (1 << 7)
+    eOpticalSize = (1 << 8)
   };
   RangeFlags mRangeFlags = RangeFlags::eNoFlags;
 
@@ -573,22 +653,29 @@ class gfxFontEntry {
   bool mSkipDefaultFeatureSpaceCheck : 1;
 
   mozilla::Atomic<bool> mSVGInitialized;
-  mozilla::Atomic<bool> mHasSpaceFeaturesInitialized;
-  mozilla::Atomic<bool> mHasSpaceFeatures;
-  mozilla::Atomic<bool> mHasSpaceFeaturesKerning;
-  mozilla::Atomic<bool> mHasSpaceFeaturesNonKerning;
-  mozilla::Atomic<bool> mGraphiteSpaceContextualsInitialized;
-  mozilla::Atomic<bool> mHasGraphiteSpaceContextuals;
-  mozilla::Atomic<bool> mSpaceGlyphIsInvisible;
-  mozilla::Atomic<bool> mSpaceGlyphIsInvisibleInitialized;
-  mozilla::Atomic<bool> mHasGraphiteTables;
-  mozilla::Atomic<bool> mCheckedForGraphiteTables;
   mozilla::Atomic<bool> mHasCmapTable;
   mozilla::Atomic<bool> mGrFaceInitialized;
   mozilla::Atomic<bool> mCheckedForColorGlyph;
   mozilla::Atomic<bool> mCheckedForVariationAxes;
-  mozilla::Atomic<bool> mHasColorBitmapTable;
-  mozilla::Atomic<bool> mCheckedForColorBitmapTables;
+
+  // Atomic flags that are lazily evaluated - initially set to UNINITIALIZED,
+  // changed to NO or YES once we determine the actual value.
+  enum class LazyFlag : uint8_t { Uninitialized = 0xff, No = 0, Yes = 1 };
+
+  std::atomic<LazyFlag> mSpaceGlyphIsInvisible;
+  std::atomic<LazyFlag> mHasGraphiteTables;
+  std::atomic<LazyFlag> mHasGraphiteSpaceContextuals;
+  std::atomic<LazyFlag> mHasColorBitmapTable;
+
+  enum class SpaceFeatures : uint8_t {
+    Uninitialized = 0xff,
+    None = 0,
+    HasFeatures = 1 << 0,
+    Kerning = 1 << 1,
+    NonKerning = 1 << 2
+  };
+
+  std::atomic<SpaceFeatures> mHasSpaceFeatures;
 
  protected:
   friend class gfxPlatformFontList;
@@ -600,7 +687,9 @@ class gfxFontEntry {
 
   virtual gfxFont* CreateFontInstance(const gfxFontStyle* aFontStyle) = 0;
 
-  virtual void CheckForGraphiteTables();
+  inline bool CheckForGraphiteTables() {
+    return HasFontTable(TRUETYPE_TAG('S', 'i', 'l', 'f'));
+  }
 
   // Copy a font table into aBuffer.
   // The caller will be responsible for ownership of the data.
@@ -615,7 +704,7 @@ class gfxFontEntry {
   // Helper for HasTrackingTable; check/parse the table and cache pointers
   // to the subtables we need. Returns false on failure, in which case the
   // table is unusable.
-  bool ParseTrakTable() REQUIRES(mLock);
+  bool ParseTrakTable() MOZ_REQUIRES(mLock);
 
   // lookup the cmap in cached font data
   virtual already_AddRefed<gfxCharacterMap> GetCMAPFromFontInfo(
@@ -679,13 +768,7 @@ class gfxFontEntry {
   // number of current users of this entry's mGrFace
   nsrefcnt mGrFaceRefCnt = 0;
 
-  static tainted_opaque_gr<const void*> GrGetTable(
-      rlbox_sandbox_gr& sandbox, tainted_opaque_gr<const void*> aAppFaceHandle,
-      tainted_opaque_gr<unsigned int> aName,
-      tainted_opaque_gr<unsigned int*> aLen);
-  static void GrReleaseTable(rlbox_sandbox_gr& sandbox,
-                             tainted_opaque_gr<const void*> aAppFaceHandle,
-                             tainted_opaque_gr<const void*> aTableBuffer);
+  friend class gfxFontEntryCallbacks;
 
   // For memory reporting: size of user-font data belonging to this entry.
   // We record this in the font entry because the actual data block may be
@@ -698,6 +781,13 @@ class gfxFontEntry {
   uint16_t mUnitsPerEm = 0;
 
   uint16_t mNumTrakSizes = 0;
+
+  // Font extents in FUnits. (To be set from the 'head' table; default to
+  // "huge" to avoid any clipping if real extents not available.)
+  int16_t mXMin = std::numeric_limits<int16_t>::min();
+  int16_t mYMin = std::numeric_limits<int16_t>::min();
+  int16_t mXMax = std::numeric_limits<int16_t>::max();
+  int16_t mYMax = std::numeric_limits<int16_t>::max();
 
  private:
   /**
@@ -794,6 +884,7 @@ class gfxFontEntry {
 };
 
 MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(gfxFontEntry::RangeFlags)
+MOZ_MAKE_ENUM_CLASS_BITWISE_OPERATORS(gfxFontEntry::SpaceFeatures)
 
 inline bool gfxFontEntry::SupportsItalic() {
   return SlantStyle().Max().IsItalic() ||
@@ -810,6 +901,22 @@ inline bool gfxFontEntry::SupportsBold() {
   return Weight().Max().IsBold() ||
          ((mRangeFlags & RangeFlags::eAutoWeight) == RangeFlags::eAutoWeight &&
           HasBoldVariableWeight());
+}
+
+inline bool gfxFontEntry::MayUseSyntheticSlant() {
+  if (!IsUpright()) {
+    return false;  // The resource is already non-upright.
+  }
+  if (HasSlantVariation()) {
+    if (mRangeFlags & RangeFlags::eAutoSlantStyle) {
+      return false;
+    }
+    if (!SlantStyle().IsSingle()) {
+      return false;  // The resource has a 'slnt' axis, and has not been
+                     // clamped to just its upright setting.
+    }
+  }
+  return true;
 }
 
 // used when iterating over all fonts looking for a match for a given character
@@ -862,11 +969,12 @@ class gfxFontFamily {
   bool CheckForLegacyFamilyNames(gfxPlatformFontList* aFontList);
 
   // Callers must hold a read-lock for as long as they're using the list.
-  const nsTArray<RefPtr<gfxFontEntry>>& GetFontList() REQUIRES_SHARED(mLock) {
+  const nsTArray<RefPtr<gfxFontEntry>>& GetFontList()
+      MOZ_REQUIRES_SHARED(mLock) {
     return mAvailableFonts;
   }
-  void ReadLock() ACQUIRE_SHARED(mLock) { mLock.ReadLock(); }
-  void ReadUnlock() RELEASE_SHARED(mLock) { mLock.ReadUnlock(); }
+  void ReadLock() MOZ_ACQUIRE_SHARED(mLock) { mLock.ReadLock(); }
+  void ReadUnlock() MOZ_RELEASE_SHARED(mLock) { mLock.ReadUnlock(); }
 
   uint32_t FontListLength() const {
     mozilla::AutoReadLock lock(mLock);
@@ -878,7 +986,7 @@ class gfxFontFamily {
     AddFontEntryLocked(aFontEntry);
   }
 
-  void AddFontEntryLocked(RefPtr<gfxFontEntry> aFontEntry) REQUIRES(mLock) {
+  void AddFontEntryLocked(RefPtr<gfxFontEntry> aFontEntry) MOZ_REQUIRES(mLock) {
     // Avoid potentially duplicating entries.
     if (mAvailableFonts.Contains(aFontEntry)) {
       return;
@@ -951,7 +1059,7 @@ class gfxFontFamily {
   // This is a no-op in cases where the family is explicitly populated by other
   // means, rather than being asked to find its faces via system API.
   virtual void FindStyleVariationsLocked(FontInfoData* aFontInfoData = nullptr)
-      REQUIRES(mLock){};
+      MOZ_REQUIRES(mLock){};
   void FindStyleVariations(FontInfoData* aFontInfoData = nullptr) {
     if (mHasStyles) {
       return;
@@ -977,7 +1085,7 @@ class gfxFontFamily {
     return mFamilyCharacterMap.test(aCh);
   }
 
-  void ResetCharacterMap() REQUIRES(mLock) {
+  void ResetCharacterMap() MOZ_REQUIRES(mLock) {
     mFamilyCharacterMap.reset();
     mFamilyCharacterMapInitialized = false;
   }
@@ -997,12 +1105,12 @@ class gfxFontFamily {
   bool CheckForFallbackFaces() const { return mCheckForFallbackFaces; }
 
   // sort available fonts to put preferred (standard) faces towards the end
-  void SortAvailableFonts() REQUIRES(mLock);
+  void SortAvailableFonts() MOZ_REQUIRES(mLock);
 
   // check whether the family fits into the simple 4-face model,
   // so we can use simplified style-matching;
   // if so set the mIsSimpleFamily flag (defaults to False before we've checked)
-  void CheckForSimpleFamily() REQUIRES(mLock);
+  void CheckForSimpleFamily() MOZ_REQUIRES(mLock);
 
   // For memory reporter
   virtual void AddSizeOfExcludingThis(mozilla::MallocSizeOf aMallocSizeOf,
@@ -1045,7 +1153,7 @@ class gfxFontFamily {
                                    bool useFullName = false);
 
   // set whether this font family is in "bad" underline offset blocklist.
-  void SetBadUnderlineFonts() REQUIRES(mLock) {
+  void SetBadUnderlineFonts() MOZ_REQUIRES(mLock) {
     for (auto& f : mAvailableFonts) {
       if (f) {
         f->mIsBadUnderlineFont = true;
@@ -1054,8 +1162,8 @@ class gfxFontFamily {
   }
 
   nsCString mName;
-  nsTArray<RefPtr<gfxFontEntry>> mAvailableFonts GUARDED_BY(mLock);
-  gfxSparseBitSet mFamilyCharacterMap GUARDED_BY(mLock);
+  nsTArray<RefPtr<gfxFontEntry>> mAvailableFonts MOZ_GUARDED_BY(mLock);
+  gfxSparseBitSet mFamilyCharacterMap MOZ_GUARDED_BY(mLock);
 
   mutable mozilla::RWLock mLock;
 
@@ -1068,7 +1176,7 @@ class gfxFontFamily {
   mozilla::Atomic<bool> mCheckedForLegacyFamilyNames;
   mozilla::Atomic<bool> mHasOtherFamilyNames;
 
-  bool mIsSimpleFamily : 1 GUARDED_BY(mLock);
+  bool mIsSimpleFamily : 1 MOZ_GUARDED_BY(mLock);
   bool mIsBadUnderlineFamily : 1;
   bool mSkipDefaultFeatureSpaceCheck : 1;
   bool mCheckForFallbackFaces : 1;  // check other faces for character
@@ -1086,33 +1194,28 @@ class gfxFontFamily {
   };
 };
 
-// Wrapper for either a mozilla::fontlist::Family in the shared font list or an
-// unshared gfxFontFamily that belongs just to the current process. This does
-// not own a reference, it just wraps a raw pointer and records the type.
+// Wrapper for either a raw pointer to a mozilla::fontlist::Family in the shared
+// font list or a strong pointer to an unshared gfxFontFamily that belongs just
+// to the current process.
 struct FontFamily {
-  FontFamily() : mUnshared(nullptr), mIsShared(false) {}
-
+  FontFamily() = default;
   FontFamily(const FontFamily& aOther) = default;
 
-  explicit FontFamily(gfxFontFamily* aFamily)
-      : mUnshared(aFamily), mIsShared(false) {}
+  explicit FontFamily(RefPtr<gfxFontFamily>&& aFamily)
+      : mUnshared(std::move(aFamily)) {}
 
-  explicit FontFamily(mozilla::fontlist::Family* aFamily)
-      : mShared(aFamily), mIsShared(true) {}
+  explicit FontFamily(gfxFontFamily* aFamily) : mUnshared(aFamily) {}
+
+  explicit FontFamily(mozilla::fontlist::Family* aFamily) : mShared(aFamily) {}
 
   bool operator==(const FontFamily& aOther) const {
-    return mIsShared == aOther.mIsShared &&
-           (mIsShared ? mShared == aOther.mShared
-                      : mUnshared == aOther.mUnshared);
+    return mShared == aOther.mShared && mUnshared == aOther.mUnshared;
   }
 
-  bool IsNull() const { return mIsShared ? !mShared : !mUnshared; }
+  bool IsNull() const { return !mShared && !mUnshared; }
 
-  union {
-    gfxFontFamily* mUnshared;
-    mozilla::fontlist::Family* mShared;
-  };
-  bool mIsShared;
+  RefPtr<gfxFontFamily> mUnshared;
+  mozilla::fontlist::Family* mShared = nullptr;
 };
 
 // Struct used in the gfxFontGroup font list to keep track of a font family
@@ -1126,6 +1229,10 @@ struct FamilyAndGeneric final {
                             mozilla::StyleGenericFontFamily aGeneric =
                                 mozilla::StyleGenericFontFamily(0))
       : mFamily(aFamily), mGeneric(aGeneric) {}
+  explicit FamilyAndGeneric(RefPtr<gfxFontFamily>&& aFamily,
+                            mozilla::StyleGenericFontFamily aGeneric =
+                                mozilla::StyleGenericFontFamily(0))
+      : mFamily(std::move(aFamily)), mGeneric(aGeneric) {}
   explicit FamilyAndGeneric(mozilla::fontlist::Family* aFamily,
                             mozilla::StyleGenericFontFamily aGeneric =
                                 mozilla::StyleGenericFontFamily(0))

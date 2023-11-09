@@ -8,16 +8,19 @@
 #ifndef mozilla_net_EarlyHintsService_h
 #define mozilla_net_EarlyHintsService_h
 
+#include "mozilla/dom/ipc/IdType.h"
 #include "mozilla/Maybe.h"
+#include "mozilla/RefPtr.h"
 #include "mozilla/TimeStamp.h"
 #include "nsStringFwd.h"
-#include "mozilla/RefPtr.h"
+#include "nsTArray.h"
 
-class nsILoadInfo;
+class nsIChannel;
 class nsIURI;
 
 namespace mozilla::net {
 
+class EarlyHintConnectArgs;
 class OngoingEarlyHints;
 
 class EarlyHintsService {
@@ -25,18 +28,25 @@ class EarlyHintsService {
   EarlyHintsService();
   ~EarlyHintsService();
   void EarlyHint(const nsACString& aLinkHeader, nsIURI* aBaseURI,
-                 nsILoadInfo* aLoadInfo);
+                 nsIChannel* aChannel, const nsACString& aReferrerPolicy,
+                 const nsACString& aCSPHeader);
   void FinalResponse(uint32_t aResponseStatus);
-  void Cancel();
+  void Cancel(const nsACString& aReason);
+
+  void RegisterLinksAndGetConnectArgs(
+      dom::ContentParentId aCpId, nsTArray<EarlyHintConnectArgs>& aOutLinks);
+
+  uint32_t LinkType() const { return mLinkType; }
 
  private:
   void CollectTelemetry(Maybe<uint32_t> aResponseStatus);
+  void CollectLinkTypeTelemetry(const nsAString& aRel);
 
   Maybe<TimeStamp> mFirstEarlyHint;
   uint32_t mEarlyHintsCount{0};
-  bool mCanceled{false};
 
   RefPtr<OngoingEarlyHints> mOngoingEarlyHints;
+  uint32_t mLinkType = 0;
 };
 
 }  // namespace mozilla::net

@@ -28,9 +28,7 @@ var timer = Cc["@mozilla.org/timer;1"];
 var partTimer = timer.createInstance(Ci.nsITimer);
 
 function getFileAsInputStream(aFilename) {
-  var file = Cc["@mozilla.org/file/directory_service;1"]
-    .getService(Ci.nsIProperties)
-    .get("CurWorkD", Ci.nsIFile);
+  var file = Services.dirsvc.get("CurWorkD", Ci.nsIFile);
 
   file.append("tests");
   file.append("image");
@@ -76,7 +74,7 @@ function sendParts(response) {
     if (!wait) {
       callback = getSendNextPart(response);
     } else {
-      callback = function() {
+      callback = function () {
         sendParts(response);
       };
     }
@@ -95,7 +93,7 @@ function getSendNextPart(response) {
   var part = bodyParts[bodyPartIndex];
   var nextPartHead = "Content-Type: " + part[1] + "\r\n\r\n";
   var inputStream = getFileAsInputStream(part[0]);
-  return function() {
+  return function () {
     response.bodyOutputStream.write(nextPartHead, nextPartHead.length);
     response.bodyOutputStream.writeFrom(inputStream, inputStream.available());
     inputStream.close();

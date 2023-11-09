@@ -16,8 +16,8 @@ graph-week-summary =
 # earliest date recorded in the database.
 graph-total-tracker-summary =
     { $count ->
-        [one] <b>{ $count }</b> tracexador bloqueado desde o { DATETIME($earliestDate, day: "numeric", month: "long", year: "numeric") }
-       *[other] <b>{ $count }</b> tracexadores bloqueados desde o { DATETIME($earliestDate, day: "numeric", month: "long", year: "numeric") }
+        [one] <b>{ $count }</b> rastrexador bloqueado desde o { DATETIME($earliestDate, day: "numeric", month: "long", year: "numeric") }
+       *[other] <b>{ $count }</b> rastrexadores bloqueados desde o { DATETIME($earliestDate, day: "numeric", month: "long", year: "numeric") }
     }
 
 # Text displayed instead of the graph when in Private Mode
@@ -34,8 +34,8 @@ protection-report-page-summary-default = { -brand-short-name } protexe a súa pr
 
 protection-report-settings-link = Xestione a súa configuración de privacidade e seguridade
 
-etp-card-title-always = Protección de seguimento mellorada: sempre activada
-etp-card-title-custom-not-blocking = Protección avanzada de rastreo: Desactivada
+etp-card-title-always = Protección mellorada contra o rastrexo: sempre activada
+etp-card-title-custom-not-blocking = Protección mellorada contra o rastrexo: desactivada
 etp-card-content-description = { -brand-short-name } impide automaticamente que as empresas sigan a súa presenza en segredo pola rede.
 protection-report-etp-card-content-custom-not-blocking = Actualmente todas as proteccións están desactivadas. Escolla que rastreadores bloquear xestionando a súa configuración de protección { -brand-short-name }.
 protection-report-manage-protections = Xestionar configuración
@@ -56,8 +56,8 @@ cookie-tab-content = Estas cookies seguen a súa presenza de sitio en sitio para
 tracker-tab-title = Rastrexamento de contido
 tracker-tab-description = Os sitios web poden cargar anuncios externos, vídeos e outro contido con código de rastrexo. O bloqueo de contido de rastrexo pode axudar a que os sitios se carguen máis rápido, pero é posible que algúns botóns, formularios e campos de inicio de sesión non funcionen. <a data-l10n-name="learn-more-link">Máis información</a>
 
-fingerprinter-tab-title = Pegadas dixitais
-fingerprinter-tab-content = As pegadas dixitais recollen a configuración do seu navegador e computador para crearen un perfil de vostede. Usando esta pegada dixital, poden rastrear a súa presenza en diferentes sitios web. <a data-l10n-name="learn-more-link">Máis información</a>
+fingerprinter-tab-title = Identificadores de pegada dixital
+fingerprinter-tab-content = Os identificadores de pegada dixital recollen a configuración do seu navegador e computador para crearen un perfil de vostede. Usando esta pegada dixital, poden rastrexar a súa presenza en diferentes sitios web. <a data-l10n-name="learn-more-link">Máis información</a>.
 
 cryptominer-tab-title = Criptomineiros
 cryptominer-tab-content = Os criptomineiros usan o poder informático do seu sistema para minar cartos dixitais. Os scripts de criptomoeda drenan a batería, desaceleran o ordenador e poden aumentar a súa factura enerxética. <a data-l10n-name="learn-more-link">Máis información</a>
@@ -219,11 +219,11 @@ bar-tooltip-tracker =
            *[other] { $count } rastrexamento de contido ({ $percentage }%)
         }
 bar-tooltip-fingerprinter =
-    .title = Pegadas dixitais
+    .title = Identificadores de pegada dixital
     .aria-label =
         { $count ->
-            [one] { $count } pegada dixital ({ $percentage }%)
-           *[other] { $count } pegadas dixitais ({ $percentage }%)
+            [one] { $count } identificador de pegada dixital ({ $percentage }%)
+           *[other] { $count } identificadores de pegada dixital ({ $percentage }%)
         }
 bar-tooltip-cryptominer =
     .title = Criptomineiros

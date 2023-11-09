@@ -21,6 +21,16 @@ fxa-menu-turn-on-sync-default = Cuir an sioncronachadh air
 
 fxa-menu-connect-another-device =
     .label = Ceangail uidheam eile ris…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Cuir { $tabCount } taba gun uidheam
+            [two] Cuir { $tabCount } thaba gun uidheam
+            [few] Cuir { $tabCount } tabaichean gun uidheam
+           *[other] Cuir { $tabCount } taba gun uidheam
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

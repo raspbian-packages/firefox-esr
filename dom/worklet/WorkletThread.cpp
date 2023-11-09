@@ -9,9 +9,9 @@
 #include "nsContentUtils.h"
 #include "nsCycleCollector.h"
 #include "nsJSEnvironment.h"
+#include "nsJSPrincipals.h"
 #include "mozilla/dom/AtomList.h"
 #include "mozilla/dom/WorkletGlobalScope.h"
-#include "mozilla/dom/WorkletPrincipals.h"
 #include "mozilla/ipc/BackgroundChild.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/CycleCollectedJSRuntime.h"
@@ -37,15 +37,15 @@ const uint32_t kWorkletStackSize = 256 * sizeof(size_t) * 1024;
 
 // Helper functions
 
-bool PreserveWrapper(JSContext* aCx, JS::HandleObject aObj) {
+bool PreserveWrapper(JSContext* aCx, JS::Handle<JSObject*> aObj) {
   MOZ_ASSERT(aCx);
   MOZ_ASSERT(aObj);
   MOZ_ASSERT(mozilla::dom::IsDOMObject(aObj));
   return mozilla::dom::TryPreserveWrapper(aObj);
 }
 
-JSObject* Wrap(JSContext* aCx, JS::HandleObject aExisting,
-               JS::HandleObject aObj) {
+JSObject* Wrap(JSContext* aCx, JS::Handle<JSObject*> aExisting,
+               JS::Handle<JSObject*> aObj) {
   if (aExisting) {
     js::Wrapper::Renew(aExisting, aObj,
                        &js::OpaqueCrossCompartmentWrapper::singleton);
@@ -136,7 +136,8 @@ class WorkletJSContext final : public CycleCollectedJSContext {
     JSContext* cx = Context();
 
     js::SetPreserveWrapperCallbacks(cx, PreserveWrapper, HasReleasedWrapper);
-    JS_InitDestroyPrincipalsCallback(cx, WorkletPrincipals::Destroy);
+    JS_InitDestroyPrincipalsCallback(cx, nsJSPrincipals::Destroy);
+    JS_InitReadPrincipalsCallback(cx, nsJSPrincipals::ReadPrincipals);
     JS_SetWrapObjectCallbacks(cx, &WrapObjectCallbacks);
     JS_SetFutexCanWait(cx);
 
@@ -257,7 +258,7 @@ class WorkletThread::TerminateRunnable final : public Runnable {
 WorkletThread::WorkletThread(WorkletImpl* aWorkletImpl)
     : nsThread(
           MakeNotNull<ThreadEventQueue*>(MakeUnique<mozilla::EventQueue>()),
-          nsThread::NOT_MAIN_THREAD, kWorkletStackSize),
+          nsThread::NOT_MAIN_THREAD, {.stackSize = kWorkletStackSize}),
       mWorkletImpl(aWorkletImpl),
       mExitLoop(false),
       mIsTerminating(false) {

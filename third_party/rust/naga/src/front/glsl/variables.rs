@@ -2,7 +2,7 @@ use super::{
     ast::*,
     context::{Context, ExprPos},
     error::{Error, ErrorKind},
-    Parser, Result, Span,
+    Frontend, Result, Span,
 };
 use crate::{
     AddressSpace, Binding, Block, BuiltIn, Constant, Expression, GlobalVariable, Handle,
@@ -18,7 +18,7 @@ pub struct VarDeclaration<'a, 'key> {
     pub meta: Span,
 }
 
-/// Information about a builtin used in [`add_builtin`](Parser::add_builtin).
+/// Information about a builtin used in [`add_builtin`](Frontend::add_builtin).
 struct BuiltInData {
     /// The type of the builtin.
     inner: TypeInner,
@@ -35,7 +35,7 @@ pub enum GlobalOrConstant {
     Constant(Handle<Constant>),
 }
 
-impl Parser {
+impl Frontend {
     /// Adds a builtin and returns a variable reference to it
     fn add_builtin(
         &mut self,
@@ -82,18 +82,18 @@ impl Parser {
         ));
 
         let expr = ctx.add_expression(Expression::GlobalVariable(handle), meta, body);
-        ctx.lookup_global_var_exps.insert(
-            name.into(),
-            VariableReference {
-                expr,
-                load: true,
-                mutable: data.mutable,
-                constant: None,
-                entry_arg: Some(idx),
-            },
-        );
 
-        ctx.lookup_global_var(name)
+        let var = VariableReference {
+            expr,
+            load: true,
+            mutable: data.mutable,
+            constant: None,
+            entry_arg: Some(idx),
+        };
+
+        ctx.symbol_table.add_root(name.into(), var.clone());
+
+        Some(var)
     }
 
     pub(crate) fn lookup_variable(
@@ -103,11 +103,8 @@ impl Parser {
         name: &str,
         meta: Span,
     ) -> Option<VariableReference> {
-        if let Some(local_var) = ctx.lookup_local_var(name) {
-            return Some(local_var);
-        }
-        if let Some(global_var) = ctx.lookup_global_var(name) {
-            return Some(global_var);
+        if let Some(var) = ctx.symbol_table.lookup(name).cloned() {
+            return Some(var);
         }
 
         let data = match name {
@@ -128,6 +125,16 @@ impl Parser {
                     width: 4,
                 },
                 builtin: BuiltIn::Position { invariant: false },
+                mutable: false,
+                storage: StorageQualifier::Input,
+            },
+            "gl_PointCoord" => BuiltInData {
+                inner: TypeInner::Vector {
+                    size: VectorSize::Bi,
+                    kind: ScalarKind::Float,
+                    width: 4,
+                },
+                builtin: BuiltIn::PointCoord,
                 mutable: false,
                 storage: StorageQualifier::Input,
             },
@@ -193,8 +200,8 @@ impl Parser {
                         stride: 4,
                     },
                     builtin: match name {
-                        "gl_ClipDistance" => BuiltIn::PointSize,
-                        "gl_CullDistance" => BuiltIn::FragDepth,
+                        "gl_ClipDistance" => BuiltIn::ClipDistance,
+                        "gl_CullDistance" => BuiltIn::CullDistance,
                         _ => unreachable!(),
                     },
                     mutable: self.meta.stage == ShaderStage::Vertex,
@@ -310,8 +317,7 @@ impl Parser {
                                 kind:
                                 ErrorKind::SemanticError(
                                 format!(
-                                    "swizzle cannot have duplicate components in left-hand-side expression for \"{:?}\"",
-                                    name
+                                    "swizzle cannot have duplicate components in left-hand-side expression for \"{name:?}\""
                                 )
                                 .into(),
                             ),
@@ -372,7 +378,7 @@ impl Parser {
                         _ => {
                             self.errors.push(Error {
                                 kind: ErrorKind::SemanticError(
-                                    format!("Bad swizzle size for \"{:?}\"", name).into(),
+                                    format!("Bad swizzle size for \"{name:?}\"").into(),
                                 ),
                                 meta,
                             });
@@ -406,7 +412,7 @@ impl Parser {
                 } else {
                     Err(Error {
                         kind: ErrorKind::SemanticError(
-                            format!("Invalid swizzle for vector \"{}\"", name).into(),
+                            format!("Invalid swizzle for vector \"{name}\"").into(),
                         ),
                         meta,
                     })
@@ -414,7 +420,7 @@ impl Parser {
             }
             _ => Err(Error {
                 kind: ErrorKind::SemanticError(
-                    format!("Can't lookup field on this type \"{}\"", name).into(),
+                    format!("Can't lookup field on this type \"{name}\"").into(),
                 ),
                 meta,
             }),
@@ -493,6 +499,22 @@ impl Parser {
                     entry_arg: None,
                     mutable: false,
                 };
+
+                if let Some(name) = name.as_ref() {
+                    let constant = self.module.constants.get_mut(init);
+                    if constant.name.is_none() {
+                        // set the name of the constant
+                        constant.name = Some(name.clone())
+                    } else {
+                        // add a copy of the constant with the new name
+                        let new_const = Constant {
+                            name: Some(name.clone()),
+                            specialization: constant.specialization,
+                            inner: constant.inner.clone(),
+                        };
+                        self.module.constants.fetch_or_append(new_const, meta);
+                    }
+                }
 
                 (GlobalOrConstant::Constant(init), lookup)
             }
@@ -616,16 +638,6 @@ impl Parser {
         body: &mut Block,
         decl: VarDeclaration,
     ) -> Result<Handle<Expression>> {
-        #[cfg(feature = "glsl-validate")]
-        if let Some(ref name) = decl.name {
-            if ctx.lookup_local_var_current_scope(name).is_some() {
-                self.errors.push(Error {
-                    kind: ErrorKind::VariableAlreadyDeclared(name.clone()),
-                    meta: decl.meta,
-                })
-            }
-        }
-
         let storage = decl.qualifiers.storage;
         let mutable = match storage.0 {
             StorageQualifier::AddressSpace(AddressSpace::Function) => true,
@@ -643,14 +655,21 @@ impl Parser {
             LocalVariable {
                 name: decl.name.clone(),
                 ty: decl.ty,
-                init: decl.init,
+                init: None,
             },
             decl.meta,
         );
         let expr = ctx.add_expression(Expression::LocalVariable(handle), decl.meta, body);
 
         if let Some(name) = decl.name {
-            ctx.add_local_var(name, expr, mutable);
+            let maybe_var = ctx.add_local_var(name.clone(), expr, mutable);
+
+            if maybe_var.is_some() {
+                self.errors.push(Error {
+                    kind: ErrorKind::VariableAlreadyDeclared(name),
+                    meta: decl.meta,
+                })
+            }
         }
 
         decl.qualifiers.unused_errors(&mut self.errors);

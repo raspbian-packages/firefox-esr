@@ -24,9 +24,6 @@ namespace mozilla::dom {
 
 NS_IMPL_CYCLE_COLLECTION(ResponsiveImageSelector, mOwnerNode)
 
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(ResponsiveImageSelector, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(ResponsiveImageSelector, Release)
-
 static bool ParseInteger(const nsAString& aString, int32_t& aInt) {
   nsContentUtils::ParseHTMLIntegerResultFlags parseResult;
   aInt = nsContentUtils::ParseHTMLInteger(aString, &parseResult);
@@ -228,7 +225,7 @@ bool ResponsiveImageSelector::SetSizesFromDescriptor(const nsAString& aSizes) {
   ClearSelectedCandidate();
 
   NS_ConvertUTF16toUTF8 sizes(aSizes);
-  mServoSourceSizeList = Servo_SourceSizeList_Parse(&sizes).Consume();
+  mServoSourceSizeList.reset(Servo_SourceSizeList_Parse(&sizes));
   return !!mServoSourceSizeList;
 }
 

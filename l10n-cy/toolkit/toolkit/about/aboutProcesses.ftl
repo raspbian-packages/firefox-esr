@@ -140,12 +140,13 @@ about-processes-frame-name-many = Is-fframiau ({ $number }): { $shortUrl }
 ## Utility process actor names
 
 about-processes-utility-actor-unknown = Actor anhysbys
-about-processes-utility-actor-audio-decoder = Datgodiwr Sain
-
 about-processes-utility-actor-audio-decoder-generic = Datgodiwr Sain Generig
 about-processes-utility-actor-audio-decoder-applemedia = Datgodiwr Sain Apple Media
 about-processes-utility-actor-audio-decoder-wmf = Datgodiwr Sain Fframwaith Windows Media
 about-processes-utility-actor-mf-media-engine = CDM Media Engine Windows Media Foundation
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = JavaScript Oracle
+about-processes-utility-actor-windows-utils = Windows Utils
 
 ## Displaying CPU (percentage and total)
 ## Variables:

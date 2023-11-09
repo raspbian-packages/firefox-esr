@@ -31,6 +31,25 @@ constexpr size_t kMinBytes = 9;
 
 }  // namespace
 
+std::vector<Codec> AvailableCodecs() {
+  std::vector<Codec> out;
+#if JPEGXL_ENABLE_APNG
+  out.push_back(Codec::kPNG);
+#endif
+#if JPEGXL_ENABLE_EXR
+  out.push_back(Codec::kEXR);
+#endif
+#if JPEGXL_ENABLE_GIF
+  out.push_back(Codec::kGIF);
+#endif
+#if JPEGXL_ENABLE_JPEG
+  out.push_back(Codec::kJPG);
+#endif
+  out.push_back(Codec::kPGX);
+  out.push_back(Codec::kPNM);
+  return out;
+}
+
 Codec CodecFromExtension(std::string extension,
                          size_t* JXL_RESTRICT bits_per_sample) {
   std::transform(
@@ -60,9 +79,8 @@ Codec CodecFromExtension(std::string extension,
 }
 
 Status DecodeBytes(const Span<const uint8_t> bytes,
-                   const ColorHints& color_hints,
-                   const SizeConstraints& constraints,
-                   extras::PackedPixelFile* ppf, Codec* orig_codec) {
+                   const ColorHints& color_hints, extras::PackedPixelFile* ppf,
+                   const SizeConstraints* constraints, Codec* orig_codec) {
   if (bytes.size() < kMinBytes) return JXL_FAILURE("Too few bytes");
 
   *ppf = extras::PackedPixelFile();
@@ -71,33 +89,38 @@ Status DecodeBytes(const Span<const uint8_t> bytes,
   ppf->info.uses_original_profile = true;
   ppf->info.orientation = JXL_ORIENT_IDENTITY;
 
-  Codec codec;
+  const auto choose_codec = [&]() -> Codec {
 #if JPEGXL_ENABLE_APNG
-  if (DecodeImageAPNG(bytes, color_hints, constraints, ppf)) {
-    codec = Codec::kPNG;
-  } else
+    if (DecodeImageAPNG(bytes, color_hints, ppf, constraints)) {
+      return Codec::kPNG;
+    }
 #endif
-      if (DecodeImagePGX(bytes, color_hints, constraints, ppf)) {
-    codec = Codec::kPGX;
-  } else if (DecodeImagePNM(bytes, color_hints, constraints, ppf)) {
-    codec = Codec::kPNM;
-  }
+    if (DecodeImagePGX(bytes, color_hints, ppf, constraints)) {
+      return Codec::kPGX;
+    }
+    if (DecodeImagePNM(bytes, color_hints, ppf, constraints)) {
+      return Codec::kPNM;
+    }
 #if JPEGXL_ENABLE_GIF
-  else if (DecodeImageGIF(bytes, color_hints, constraints, ppf)) {
-    codec = Codec::kGIF;
-  }
+    if (DecodeImageGIF(bytes, color_hints, ppf, constraints)) {
+      return Codec::kGIF;
+    }
 #endif
 #if JPEGXL_ENABLE_JPEG
-  else if (DecodeImageJPG(bytes, color_hints, constraints, ppf)) {
-    codec = Codec::kJPG;
-  }
+    if (DecodeImageJPG(bytes, color_hints, ppf, constraints)) {
+      return Codec::kJPG;
+    }
 #endif
 #if JPEGXL_ENABLE_EXR
-  else if (DecodeImageEXR(bytes, color_hints, constraints, ppf)) {
-    codec = Codec::kEXR;
-  }
+    if (DecodeImageEXR(bytes, color_hints, ppf, constraints)) {
+      return Codec::kEXR;
+    }
 #endif
-  else {
+    return Codec::kUnknown;
+  };
+
+  Codec codec = choose_codec();
+  if (codec == Codec::kUnknown) {
     return JXL_FAILURE("Codecs failed to decode");
   }
   if (orig_codec) *orig_codec = codec;

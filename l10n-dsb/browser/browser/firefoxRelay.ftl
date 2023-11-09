@@ -8,19 +8,24 @@
 ## Variables:
 ##   $status (Number) - HTTP status code, for example 403
 
+firefox-relay-mask-generation-failed = { -relay-brand-name } njejo mógł nowu masku generěrowaś. Zmólkowy kod HTTP: { $status }.
+firefox-relay-get-reusable-masks-failed = { -relay-brand-name } njejo mógł zasejwužywajobne maski namakaś. Zmólkowy kod: { $status }.
 
 ##
 
+firefox-relay-must-login-to-fxa = Musyśo se pla { -fxaccount-brand-name } pśizjawiś, aby { -relay-brand-name } wužywał.
 firefox-relay-get-unlimited-masks =
     .label = Maski zastojaś
     .accesskey = M
-firefox-relay-opt-in-title = Šćitajśo swóju e-mailowu adresu
-firefox-relay-opt-in-subtitle = { -relay-brand-name } pśidaś
-firefox-relay-generate-mask-title = Šćitajśo swóju e-mailowu adresu
-firefox-relay-generate-mask-subtitle = Masku { -relay-brand-short-name } generěrowaś
-firefox-relay-opt-in-confirmation-enable =
-    .label = Dalej
-    .accesskey = D
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Šćitajśo swóju e-mailowu adresu:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = E-mailowu masku { -relay-brand-name } wužywaś
+firefox-relay-use-mask-title = E-mailowu masku { -relay-brand-name } wužywaś
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = E-mailowu masku wužywaś
+    .accesskey = m
 firefox-relay-opt-in-confirmation-disable =
     .label = Wěcej njepokazaś
     .accesskey = W

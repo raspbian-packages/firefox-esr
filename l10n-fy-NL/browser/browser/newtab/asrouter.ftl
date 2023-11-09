@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Oanrekommandearre funksje
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Wêrom sjoch ik dit
+
 cfr-doorhanger-extension-cancel-button = No net
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = No tafoegje
     .accesskey = t
+
 cfr-doorhanger-extension-manage-settings-button = Ynstellingen foar oanrekommandaasjes beheare
     .accesskey = o
+
 cfr-doorhanger-extension-never-show-recommendation = Dizze oanrekommandaasje net toane
     .accesskey = D
+
 cfr-doorhanger-extension-learn-more-link = Mear ynfo
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = troch { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Oanrekommandaasje
 cfr-doorhanger-extension-notification2 = Oanrekommandaasje
     .tooltiptext = Oanrekommandaasje foar útwreiding
     .a11y-announcement = Oanrekommandaasje foar útwreiding beskikber
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Oanrekommandaasje
@@ -57,29 +65,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } brûkers
     }
 
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = Farwel cookiebanners!
-cfr-cookie-banner-handling-body = { -brand-short-name } tastean om automatysk alle cookiebannerfersiken ôf te wizen, wannear mooglik. Oars wurde alle cookies akseptearre om noch mear banners fuort te smiten.
-cfr-cookie-banner-accept-button = Fersiken ôfwize
-    .accesskey = F
-cfr-cookie-banner-reject-button = No net
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-1 = Sjoch minder cookie-pop-ups
-cfr-cookie-banner-handling-body-variant-1 = Lit { -brand-short-name } cookie-pop-ups automatysk foar jo beäntwurdzje, sadat jo wer sneupe kinne sûnder ôflieding. { -brand-short-name } wiist alle fersiken ôf as it mooglik is, of akseptearret as dit net slagget .
-cfr-cookie-banner-accept-button-variant-1 = Pop-ups slute
-    .accesskey = l
-cfr-cookie-banner-reject-button-variant-1 = Nee tankewol
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-2 = Reduksje fan cookiebanners
-cfr-cookie-banner-handling-body-variant-2 = { -brand-short-name } tastean om it tastimmingfersyk foar cookies fan in website wannear mooglik te wegerjen of om cookie-tagong te akseptearjen wannear dit net mooglik is?
-cfr-cookie-banner-accept-button-variant-2 = Tastean
-    .accesskey = T
-cfr-cookie-banner-reject-button-variant-2 = No net
-    .accesskey = N
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Syngronisearje jo blêdwizers oeral.
@@ -100,9 +85,11 @@ cfr-protections-panel-link-text = Mear ynfo
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nije funksje:
+
 cfr-whatsnew-button =
     .label = Wat is der nij
     .tooltiptext = Wat is der nij
+
 cfr-whatsnew-release-notes-link-text = Utjefteopmerkingen lêze
 
 ## Enhanced Tracking Protection Milestones
@@ -131,13 +118,6 @@ cfr-doorhanger-doh-secondary-button = Utskeakelje
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = Jo privacy is wichtich. { -brand-short-name } isolearret, of sandboxt, websites no faninoar, wêrtroch it foar hackers dreger wurdt om wachtwurden, creditkaartnûmers en oare gefoelige ynformaasje te stellen.
-cfr-doorhanger-fission-header = Website-isolaasje
-cfr-doorhanger-fission-primary-button = OK, begrepen
-    .accesskey = O
-cfr-doorhanger-fission-secondary-button = Mear ynfo
-    .accesskey = M
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Fideo’s op dizze website wurde mooglik yn dizze ferzje fan { -brand-short-name } net korrekt ôfspile. Wurkje { -brand-short-name } no by foar folsleine fideo-stipe.
@@ -146,11 +126,6 @@ cfr-doorhanger-video-support-primary-button = No bywurkje
     .accesskey = w
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Mear ynfo
-    .title = Utklappe foar mear ynfo oer de funksje
-spotlight-learn-more-expanded = Mear ynfo
-    .title = Slute
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -167,18 +142,6 @@ spotlight-public-wifi-vpn-link = No net
     .accesskey = N
 
 ## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Meitsje in testrit yn ús krêftichste
-    privacy-ûnderfining ea
-spotlight-total-cookie-protection-body = Totale cookiebeskerming foarkomt dat trackers cookies brûke om jo stikem op it ynternet te folgjen.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } bout in stek rûnom cookies, wêrtroch se beheint wurde ta de website wêrop jo jo binne, sadat trackers se net brûke kinne om jo te folgjen. As betide brûker helpe jo dizze funksje te optimalisearjen, sadat wy in better ynternet foar elkenien bouwe bliuwe kinne.
-spotlight-total-cookie-protection-primary-button = Totale cookiebeskerming ynskeakelje
-spotlight-total-cookie-protection-secondary-button = No net
 
 ## Emotive Continuous Onboarding
 
@@ -208,11 +171,13 @@ spotlight-pin-secondary-button = No net
 
 mr2022-background-update-toast-title = Nije { -brand-short-name }. Mear privee. Minder trackers. Gjin kompromissen.
 mr2022-background-update-toast-text = Probearje no de nijste { -brand-short-name }, opwurdearre mei ús krêftichste beskerming tsjin folgjen oant no ta.
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
 mr2022-background-update-toast-primary-button-label = { -brand-shorter-name } no iepenje
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -231,6 +196,7 @@ firefoxview-cfr-body-v2 = Untfang koartlyn sluten ljepblêden werom en skeakelje
 ## Firefox View Spotlight
 
 firefoxview-spotlight-promo-title = Sis hallo tsjin { -firefoxview-brand-name }
+
 # “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
 firefoxview-spotlight-promo-subtitle = Wolle jo dat iepen ljepblêd op jo telefoan? Pak it. Need oan dy side dy’t jo krekt besocht hawwe? Poef, it is werom mei { -firefoxview-brand-name }.
 firefoxview-spotlight-promo-primarybutton = Sjen hoe't dit wurket
@@ -240,6 +206,7 @@ firefoxview-spotlight-promo-secondarybutton = Oerslaan
 
 colorways-cfr-primarybutton = Kleurstelling kieze
     .accesskey = k
+
 # "shades" refers to the different color options available to users in colorways.
 colorways-cfr-body = Kleur jo browser mei foar { -brand-short-name } eksklusive tinten, ynspirearre troch stimmen dy’t de kultuer wizige hawwe.
 colorways-cfr-header-28days = Independent Voices-kleurstellingen ferrinne op 16 jannewaris
@@ -249,24 +216,11 @@ colorways-cfr-header-today = Independent Voices-kleurstellingen ferrinne hjoed
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = Farwel cookiebanners!
-cfr-cookiebanner-body = { -brand-short-name } tastean om wannear mooglik alle cookiebannerfersiken te wegerjen.
-cfr-cookiebanner-accept-button = Banners fuortsmite
-    .accesskey = f
-cfr-cookiebanner-reject-button = No net
-    .accesskey = N
-cfr-cookiebanner-header-variant-1 = Sjoch minder cookie-pop-ups
-cfr-cookiebanner-body-variant-1 = Lit { -brand-short-name } cookie-pop-ups automatysk foar jo beäntwurdzje, sadat jo wer sneupe kinne sûnder ôflieding. { -brand-short-name } wiist alle fersiken ôf as it mooglik is.
-cfr-cookiebanner-accept-button-variant-1 = Pop-ups slute
-    .accesskey = l
-cfr-cookiebanner-reject-button-variant-1 = Nee tanke
-    .accesskey = N
-cfr-cookiebanner-header-variant-2 = Reduksje fan cookiebanners
-cfr-cookiebanner-body-variant-2 = Ferminderje it oantal cookie-banners dat jo sjogge troch { -brand-short-name } ta te stean om it fersyk om tastimming foar cookies fan in website te wegerjen, wannear mooglik.
-cfr-cookiebanner-accept-button-variant-2 = Tastean
-    .accesskey = T
-cfr-cookiebanner-reject-button-variant-2 = No net
+cfr-cbh-header = { -brand-short-name } tastean om cookiebanners te wegerjen?
+cfr-cbh-body = { -brand-short-name } kin in protte cookiebannerfersiken automatysk wegerje.
+cfr-cbh-confirm-button = Cookiebanners wegerje
+    .accesskey = w
+cfr-cbh-dismiss-button = No net
     .accesskey = N
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
@@ -274,3 +228,31 @@ cfr-cookiebanner-reject-button-variant-2 = No net
 july-jam-headline = By ús binne jo feilich
 july-jam-body = Elke moanne blokkearret { -brand-short-name } gemiddeld mear as 3.000 trackers per brûker, wêrtroch jo feilich en flugge tagong hawwe ta it goede ynternet.
 july-jam-set-default-primary = Myn keppelingen iepenje mei { -brand-short-name }
+fox-doodle-pin-headline = Wolkom werom
+
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = Dit is in koart omtinken dat jo jo favorite ûnôfhinklike browser op mar ien klik ôfstân hâlde kinne.
+fox-doodle-pin-primary = Myn keppelingen iepenje mei { -brand-short-name }
+fox-doodle-pin-secondary = No net
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>Jo PDF’s wurde no iepene yn { -brand-short-name }.</strong> Bewurkje of ûndertekenje formulieren streekrjocht yn jo browser. Sykje nei ‘PDF’ yn ynstellingen om te wizigjen.
+set-default-pdf-handler-primary = Begrepen
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = Nij apparaat yn de takomst?
+fxa-sync-cfr-body = Soargje derfoar dat jo jo lêste blêdwizers, wachtwurden en ljepblêden altyd by de hân hawwe as jo in nije { -brand-product-name }-browser iepenje.
+fxa-sync-cfr-primary = Mear ynfo
+    .accesskey = M
+fxa-sync-cfr-secondary = Letter werinnerje
+    .accesskey = L
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = Brûke jo in âlder apparaat?
+device-migration-fxa-spotlight-body = Meitsje in reservekopy fan jo gegevens om derfoar te soargjen dat jo gjin wichtige ynformaasje, lykas blêdwizers en wachtwurden kwytreitsje, foaral as jo oerskeakelje nei in nij apparaat.
+device-migration-fxa-spotlight-primary-button = Hoe meitsje in reservekopy fan myn gegevens
+device-migration-fxa-spotlight-link = Letter werinnerje

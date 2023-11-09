@@ -38,9 +38,11 @@ menu-quit =
             [windows] A
            *[other] A
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Avsluta { -brand-shorter-name }
+
 menu-about =
     .label = Om { -brand-shorter-name }
     .accesskey = O
@@ -219,8 +221,6 @@ menu-history-undo-menu =
     .label = Nyligen stängda flikar
 menu-history-undo-window-menu =
     .label = Nyligen stängda fönster
-menu-history-reopen-all-tabs = Återöppna alla flikar
-menu-history-reopen-all-windows = Återöppna alla fönster
 
 ## Bookmarks Menu
 
@@ -229,14 +229,13 @@ menu-bookmarks-menu =
     .accesskey = B
 menu-bookmarks-manage =
     .label = Hantera bokmärken
-menu-bookmark-current-tab =
-    .label = Bokmärk aktuell flik
-menu-bookmark-edit =
-    .label = Redigera bokmärket
 menu-bookmark-tab =
     .label = Bokmärk aktuell flik…
 menu-edit-bookmark =
     .label = Redigera detta bokmärke…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Sök efter bokmärken
 menu-bookmarks-all-tabs =
     .label = Bokmärke för alla flikar…
 menu-bookmarks-toolbar =
@@ -330,6 +329,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Stäng av felsökningsläge
     .accesskey = g
+menu-help-switch-device =
+    .label = Byter till en ny enhet
+    .accesskey = B
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

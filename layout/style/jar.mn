@@ -7,7 +7,6 @@ toolkit.jar:
    res/html.css                              (res/html.css)
    res/quirk.css                             (res/quirk.css)
    res/counterstyles.css                     (res/counterstyles.css)
-   res/noscript.css                          (res/noscript.css)
    res/noframes.css                          (res/noframes.css)
    res/scrollbars.css                        (res/scrollbars.css)
    res/forms.css                             (res/forms.css)
@@ -23,7 +22,6 @@ toolkit.jar:
    res/accessiblecaret-tilt-right@1.5x.png   (res/accessiblecaret-tilt-right@1.5x.png)
    res/accessiblecaret-tilt-right@2x.png     (res/accessiblecaret-tilt-right@2x.png)
    res/accessiblecaret-tilt-right@2.25x.png  (res/accessiblecaret-tilt-right@2.25x.png)
-   res/searchfield-cancel.svg                (res/searchfield-cancel.svg)
    res/password.svg                          (res/password.svg)
    res/password-hide.svg                     (res/password-hide.svg)
 

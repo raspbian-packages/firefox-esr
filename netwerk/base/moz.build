@@ -166,6 +166,7 @@ EXPORTS.mozilla.net += [
     "NetworkConnectivityService.h",
     "Predictor.h",
     "PrivateBrowsingChannel.h",
+    "ProtocolHandlerInfo.h",
     "RedirectChannelRegistrar.h",
     "RequestContextService.h",
     "SimpleChannelParent.h",
@@ -231,6 +232,7 @@ UNIFIED_SOURCES += [
     "nsUDPSocket.cpp",
     "PollableEvent.cpp",
     "Predictor.cpp",
+    "ProtocolHandlerInfo.cpp",
     "ProxyAutoConfig.cpp",
     "RedirectChannelRegistrar.cpp",
     "RequestContextService.cpp",
@@ -248,6 +250,7 @@ if CONFIG["FUZZING"]:
     SOURCES += [
         "FuzzyLayer.cpp",
         "FuzzySecurityInfo.cpp",
+        "FuzzySocketControl.cpp",
     ]
 
 if CONFIG["FUZZING_INTERFACES"] and CONFIG["LIBFUZZER"]:
@@ -300,7 +303,7 @@ elif CONFIG["OS_ARCH"] == "Linux":
     ]
 
 EXTRA_JS_MODULES += [
-    "NetUtil.jsm",
+    "NetUtil.sys.mjs",
 ]
 
 DIRS += ["mozurl", "rust-helper", "http-sfv"]
@@ -310,13 +313,17 @@ include("/ipc/chromium/chromium-config.mozbuild")
 FINAL_LIBRARY = "xul"
 
 LOCAL_INCLUDES += [
+    "!/xpcom/components",
     "/docshell/base",
     "/dom/base",
+    "/js/xpconnect/src",
     "/netwerk/dns",
     "/netwerk/protocol/http",
+    "/netwerk/protocol/webtransport",
     "/netwerk/socket",
     "/netwerk/url-classifier",
     "/security/manager/ssl",
+    "/xpcom/components",
 ]
 
 if CONFIG["MOZ_WIDGET_TOOLKIT"] == "cocoa":
@@ -327,5 +334,3 @@ if CONFIG["MOZ_WIDGET_TOOLKIT"] == "cocoa":
 GeneratedFile(
     "ascii_pac_utils.inc", script="makecppstring.py", inputs=["ascii_pac_utils.js"]
 )
-
-REQUIRES_UNIFIED_BUILD = True

@@ -344,6 +344,10 @@ class CycleCollectedJSRuntime {
 
   const char* OOMStateToString(const OOMState aOomState) const;
 
+  // Returns true if OOM was reported and a new successful GC cycle hasn't
+  // occurred since.
+  bool OOMReported();
+
   void SetLargeAllocationFailure(OOMState aNewState);
 
   void AnnotateAndSetOutOfMemory(OOMState* aStatePtr, OOMState aNewState);
@@ -368,14 +372,15 @@ class CycleCollectedJSRuntime {
 
   void RunIdleTimeGCTask() {
     if (HasPendingIdleGCTask()) {
-      JS::RunIdleTimeGCTask(Runtime());
+      JS::MaybeRunNurseryCollection(Runtime(),
+                                    JS::GCReason::EAGER_NURSERY_COLLECTION);
       ClearPendingIdleGCTask();
     }
   }
 
   bool IsIdleGCTaskNeeded() {
     return !HasPendingIdleGCTask() && Runtime() &&
-           JS::IsIdleGCTaskNeeded(Runtime());
+           JS::WantEagerMinorGC(Runtime()) != JS::GCReason::NO_REASON;
   }
 
  public:

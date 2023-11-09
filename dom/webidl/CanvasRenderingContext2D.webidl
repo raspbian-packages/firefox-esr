@@ -43,25 +43,6 @@ interface CanvasRenderingContext2D {
   // associated with a canvas.
   readonly attribute HTMLCanvasElement? canvas;
 
-  // Mozilla-specific stuff
-  [Deprecated="MozCurrentTransform",
-   Pref="dom.mozCurrentTransform.enabled",
-   Throws]
-  attribute object mozCurrentTransform; // [ m11, m12, m21, m22, dx, dy ], i.e. row major
-  [Deprecated="MozCurrentTransformInverse",
-   Pref="dom.mozCurrentTransform.enabled",
-   Throws]
-  attribute object mozCurrentTransformInverse;
-
-  [SetterThrows]
-  attribute UTF8String mozTextStyle;
-
-  // image smoothing mode -- if disabled, images won't be smoothed
-  // if scaled.
-  [Deprecated="PrefixedImageSmoothingEnabled",
-   BinaryName="imageSmoothingEnabled"]
-  attribute boolean mozImageSmoothingEnabled;
-
   // Show the caret if appropriate when drawing
   [Func="CanvasUtils::HasDrawWindowPrivilege"]
   const unsigned long DRAWWINDOW_DRAW_CARET   = 0x01;
@@ -118,15 +99,15 @@ interface CanvasRenderingContext2D {
    * and Web Extensions (with a permission) only.
    */
   [Throws, NeedsSubjectPrincipal, Func="CanvasUtils::HasDrawWindowPrivilege"]
-  void drawWindow(Window window, double x, double y, double w, double h,
-                  UTF8String bgColor, optional unsigned long flags = 0);
+  undefined drawWindow(Window window, double x, double y, double w, double h,
+                       UTF8String bgColor, optional unsigned long flags = 0);
 
   /**
    * This causes a context that is currently using a hardware-accelerated
    * backend to fallback to a software one. All state should be preserved.
    */
   [ChromeOnly]
-  void demote();
+  undefined demote();
 };
 
 CanvasRenderingContext2D includes CanvasState;
@@ -145,33 +126,33 @@ CanvasRenderingContext2D includes CanvasImageData;
 CanvasRenderingContext2D includes CanvasPathDrawingStyles;
 CanvasRenderingContext2D includes CanvasTextDrawingStyles;
 CanvasRenderingContext2D includes CanvasPathMethods;
-CanvasRenderingContext2D includes CanvasHitRegions;
 
 
 interface mixin CanvasState {
   // state
-  void save(); // push state on state stack
-  void restore(); // pop state stack and restore state
+  undefined save(); // push state on state stack
+  undefined restore(); // pop state stack and restore state
+  undefined reset(); // reset the rendering context to its default state
 };
 
 interface mixin CanvasTransform {
   // transformations (default transform is the identity matrix)
   [Throws, LenientFloat]
-  void scale(double x, double y);
+  undefined scale(double x, double y);
   [Throws, LenientFloat]
-  void rotate(double angle);
+  undefined rotate(double angle);
   [Throws, LenientFloat]
-  void translate(double x, double y);
+  undefined translate(double x, double y);
   [Throws, LenientFloat]
-  void transform(double a, double b, double c, double d, double e, double f);
+  undefined transform(double a, double b, double c, double d, double e, double f);
 
   [NewObject, Throws] DOMMatrix getTransform();
   [Throws, LenientFloat]
-  void setTransform(double a, double b, double c, double d, double e, double f);
+  undefined setTransform(double a, double b, double c, double d, double e, double f);
   [Throws]
-  void setTransform(optional DOMMatrix2DInit transform = {});
+  undefined setTransform(optional DOMMatrix2DInit transform = {});
   [Throws]
-  void resetTransform();
+  undefined resetTransform();
 };
 
 interface mixin CanvasCompositing {
@@ -216,23 +197,23 @@ interface mixin CanvasFilters {
 
 interface mixin CanvasRect {
   [LenientFloat]
-  void clearRect(double x, double y, double w, double h);
+  undefined clearRect(double x, double y, double w, double h);
   [LenientFloat]
-  void fillRect(double x, double y, double w, double h);
+  undefined fillRect(double x, double y, double w, double h);
   [LenientFloat]
-  void strokeRect(double x, double y, double w, double h);
+  undefined strokeRect(double x, double y, double w, double h);
 };
 
 interface mixin CanvasDrawPath {
   // path API (see also CanvasPathMethods)
-  void beginPath();
-  void fill(optional CanvasWindingRule winding = "nonzero");
-  void fill(Path2D path, optional CanvasWindingRule winding = "nonzero");
-  void stroke();
-  void stroke(Path2D path);
-  void clip(optional CanvasWindingRule winding = "nonzero");
-  void clip(Path2D path, optional CanvasWindingRule winding = "nonzero");
-// NOT IMPLEMENTED  void resetClip();
+  undefined beginPath();
+  undefined fill(optional CanvasWindingRule winding = "nonzero");
+  undefined fill(Path2D path, optional CanvasWindingRule winding = "nonzero");
+  undefined stroke();
+  undefined stroke(Path2D path);
+  undefined clip(optional CanvasWindingRule winding = "nonzero");
+  undefined clip(Path2D path, optional CanvasWindingRule winding = "nonzero");
+// NOT IMPLEMENTED  undefined resetClip();
   [NeedsSubjectPrincipal]
   boolean isPointInPath(unrestricted double x, unrestricted double y, optional CanvasWindingRule winding = "nonzero");
   [NeedsSubjectPrincipal] // Only required because overloads can't have different extended attributes.
@@ -244,28 +225,28 @@ interface mixin CanvasDrawPath {
 };
 
 interface mixin CanvasUserInterface {
-  [Pref="canvas.focusring.enabled", Throws] void drawFocusIfNeeded(Element element);
-// NOT IMPLEMENTED  void scrollPathIntoView();
-// NOT IMPLEMENTED  void scrollPathIntoView(Path path);
+  [Pref="canvas.focusring.enabled", Throws] undefined drawFocusIfNeeded(Element element);
+// NOT IMPLEMENTED  undefined scrollPathIntoView();
+// NOT IMPLEMENTED  undefined scrollPathIntoView(Path path);
 };
 
 interface mixin CanvasText {
   // text (see also the CanvasPathDrawingStyles interface)
   [Throws, LenientFloat]
-  void fillText(DOMString text, double x, double y, optional double maxWidth);
+  undefined fillText(DOMString text, double x, double y, optional double maxWidth);
   [Throws, LenientFloat]
-  void strokeText(DOMString text, double x, double y, optional double maxWidth);
+  undefined strokeText(DOMString text, double x, double y, optional double maxWidth);
   [NewObject, Throws]
   TextMetrics measureText(DOMString text);
 };
 
 interface mixin CanvasDrawImage {
   [Throws, LenientFloat]
-  void drawImage(CanvasImageSource image, double dx, double dy);
+  undefined drawImage(CanvasImageSource image, double dx, double dy);
   [Throws, LenientFloat]
-  void drawImage(CanvasImageSource image, double dx, double dy, double dw, double dh);
+  undefined drawImage(CanvasImageSource image, double dx, double dy, double dw, double dh);
   [Throws, LenientFloat]
-  void drawImage(CanvasImageSource image, double sx, double sy, double sw, double sh, double dx, double dy, double dw, double dh);
+  undefined drawImage(CanvasImageSource image, double sx, double sy, double sw, double sh, double dx, double dy, double dw, double dh);
 };
 
 // See https://github.com/whatwg/html/issues/6262 for [EnforceRange] usage.
@@ -278,9 +259,9 @@ interface mixin CanvasImageData {
   [NewObject, Throws, NeedsSubjectPrincipal]
   ImageData getImageData([EnforceRange] long sx, [EnforceRange] long sy, [EnforceRange] long sw, [EnforceRange] long sh);
   [Throws]
-  void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy);
+  undefined putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy);
   [Throws]
-  void putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy, [EnforceRange] long dirtyX, [EnforceRange] long dirtyY, [EnforceRange] long dirtyWidth, [EnforceRange] long dirtyHeight);
+  undefined putImageData(ImageData imagedata, [EnforceRange] long dx, [EnforceRange] long dy, [EnforceRange] long dirtyX, [EnforceRange] long dirtyY, [EnforceRange] long dirtyWidth, [EnforceRange] long dirtyHeight);
 };
 
 interface mixin CanvasPathDrawingStyles {
@@ -294,7 +275,7 @@ interface mixin CanvasPathDrawingStyles {
   attribute double miterLimit; // (default 10)
 
   // dashed lines
-  [LenientFloat, Throws] void setLineDash(sequence<double> segments); // default empty
+  [LenientFloat, Throws] undefined setLineDash(sequence<double> segments); // default empty
   sequence<double> getLineDash();
   [LenientFloat] attribute double lineDashOffset;
 };
@@ -306,40 +287,42 @@ interface mixin CanvasTextDrawingStyles {
   attribute DOMString textAlign; // "start", "end", "left", "right", "center" (default: "start")
   attribute DOMString textBaseline; // "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" (default: "alphabetic")
   attribute DOMString direction; // "ltr", "rtl", "inherit" (default: "inherit")
+  attribute UTF8String letterSpacing; // default: "0px"
+  attribute DOMString fontKerning; // "auto", "normal", "none" (default: "auto")
+// NOT IMPLEMENTED  attribute CanvasFontStretch fontStretch; // (default: "normal")
+// NOT IMPLEMENTED  attribute CanvasFontVariantCaps fontVariantCaps; // (default: "normal")
+// NOT IMPLEMENTED  attribute CanvasTextRendering textRendering; // (default: "auto")
+  attribute UTF8String wordSpacing; // default: "0px"
 };
 
 interface mixin CanvasPathMethods {
   // shared path API methods
-  void closePath();
+  undefined closePath();
   [LenientFloat]
-  void moveTo(double x, double y);
+  undefined moveTo(double x, double y);
   [LenientFloat]
-  void lineTo(double x, double y);
+  undefined lineTo(double x, double y);
   [LenientFloat]
-  void quadraticCurveTo(double cpx, double cpy, double x, double y);
+  undefined quadraticCurveTo(double cpx, double cpy, double x, double y);
 
   [LenientFloat]
-  void bezierCurveTo(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
+  undefined bezierCurveTo(double cp1x, double cp1y, double cp2x, double cp2y, double x, double y);
 
   [Throws, LenientFloat]
-  void arcTo(double x1, double y1, double x2, double y2, double radius);
-// NOT IMPLEMENTED  [LenientFloat] void arcTo(double x1, double y1, double x2, double y2, double radiusX, double radiusY, double rotation);
+  undefined arcTo(double x1, double y1, double x2, double y2, double radius);
+// NOT IMPLEMENTED  [LenientFloat] undefined arcTo(double x1, double y1, double x2, double y2, double radiusX, double radiusY, double rotation);
 
   [LenientFloat]
-  void rect(double x, double y, double w, double h);
+  undefined rect(double x, double y, double w, double h);
+
+  [Throws]
+  undefined roundRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h, optional (unrestricted double or DOMPointInit or sequence<(unrestricted double or DOMPointInit)>) radii = 0);
 
   [Throws, LenientFloat]
-  void arc(double x, double y, double radius, double startAngle, double endAngle, optional boolean anticlockwise = false);
+  undefined arc(double x, double y, double radius, double startAngle, double endAngle, optional boolean anticlockwise = false);
 
   [Throws, LenientFloat]
-  void ellipse(double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, optional boolean anticlockwise = false);
-};
-
-interface mixin CanvasHitRegions {
-  // hit regions
-  [Pref="canvas.hitregions.enabled", Throws] void addHitRegion(optional HitRegionOptions options = {});
-  [Pref="canvas.hitregions.enabled"] void removeHitRegion(DOMString id);
-  [Pref="canvas.hitregions.enabled"] void clearHitRegions();
+  undefined ellipse(double x, double y, double radiusX, double radiusY, double rotation, double startAngle, double endAngle, optional boolean anticlockwise = false);
 };
 
 [Exposed=(Window,Worker),
@@ -348,7 +331,7 @@ interface CanvasGradient {
   // opaque object
   [Throws]
   // addColorStop should take a double
-  void addColorStop(float offset, UTF8String color);
+  undefined addColorStop(float offset, UTF8String color);
 };
 
 [Exposed=(Window,Worker),
@@ -356,13 +339,13 @@ interface CanvasGradient {
 interface CanvasPattern {
   // opaque object
   // [Throws, LenientFloat] - could not do this overload because of bug 1020975
-  // void setTransform(double a, double b, double c, double d, double e, double f);
+  // undefined setTransform(double a, double b, double c, double d, double e, double f);
 
   [Throws]
-  void setTransform(optional DOMMatrix2DInit matrix = {});
+  undefined setTransform(optional DOMMatrix2DInit matrix = {});
 };
 
-[Exposed=Window]
+[Exposed=(Window,Worker)]
 interface TextMetrics {
 
   // x-direction
@@ -411,6 +394,6 @@ interface Path2D
   constructor(Path2D other);
   constructor(DOMString pathString);
 
-  [Throws] void addPath(Path2D path, optional DOMMatrix2DInit transform = {});
+  [Throws] undefined addPath(Path2D path, optional DOMMatrix2DInit transform = {});
 };
 Path2D includes CanvasPathMethods;

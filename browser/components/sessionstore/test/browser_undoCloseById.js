@@ -5,21 +5,10 @@
  * This test is for the undoCloseById function.
  */
 
-const { SessionStore } = ChromeUtils.import(
-  "resource:///modules/sessionstore/SessionStore.jsm"
-);
-
-async function openAndCloseTab(window, url) {
-  let tab = BrowserTestUtils.addTab(window.gBrowser, url);
-  await promiseBrowserLoaded(tab.linkedBrowser, true, url);
-  await TabStateFlusher.flush(tab.linkedBrowser);
-  await promiseRemoveTabAndSessionState(tab);
-}
-
 async function openWindow(url) {
   let win = await promiseNewWindowLoaded();
   let flags = Ci.nsIWebNavigation.LOAD_FLAGS_REPLACE_HISTORY;
-  BrowserTestUtils.loadURI(win.gBrowser.selectedBrowser, url, { flags });
+  BrowserTestUtils.loadURIString(win.gBrowser.selectedBrowser, url, { flags });
   await promiseBrowserLoaded(win.gBrowser.selectedBrowser, true, url);
   return win;
 }
@@ -33,7 +22,7 @@ async function closeWindow(win) {
 add_task(async function test_undoCloseById() {
   // Clear the lists of closed windows and tabs.
   forgetClosedWindows();
-  while (SessionStore.getClosedTabCount(window)) {
+  while (SessionStore.getClosedTabCountForWindow(window)) {
     SessionStore.forgetClosedTab(window, 0);
   }
 
@@ -49,7 +38,7 @@ add_task(async function test_undoCloseById() {
   );
 
   // Record the first closedId created.
-  let initialClosedId = SessionStore.getClosedTabData(win)[0].closedId;
+  let initialClosedId = SessionStore.getClosedTabDataForWindow(win)[0].closedId;
 
   // Open and close another window.
   let win2 = await openWindow("about:mozilla");

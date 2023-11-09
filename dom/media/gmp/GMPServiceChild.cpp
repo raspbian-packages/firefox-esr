@@ -102,7 +102,7 @@ GeckoMediaPluginServiceChild::~GeckoMediaPluginServiceChild() {
 RefPtr<GetGMPContentParentPromise>
 GeckoMediaPluginServiceChild::GetContentParent(
     GMPCrashHelper* aHelper, const NodeIdVariant& aNodeIdVariant,
-    const nsCString& aAPI, const nsTArray<nsCString>& aTags) {
+    const nsACString& aAPI, const nsTArray<nsCString>& aTags) {
   AssertOnGMPThread();
   MOZ_ASSERT(!mShuttingDownOnGMPThread,
              "Should not be called if GMPThread is shutting down!");
@@ -132,11 +132,12 @@ GeckoMediaPluginServiceChild::GetContentParent(
         base::ProcessId otherProcess;
         nsCString displayName;
         uint32_t pluginId = 0;
+        GMPPluginType pluginType = GMPPluginType::Unknown;
         ipc::Endpoint<PGMPContentParent> endpoint;
         nsCString errorDescription;
 
         bool ok = child->SendLaunchGMP(
-            nodeIdVariant, api, tags, alreadyBridgedTo, &pluginId,
+            nodeIdVariant, api, tags, alreadyBridgedTo, &pluginId, &pluginType,
             &otherProcess, &displayName, &endpoint, &rv, &errorDescription);
 
         if (helper && pluginId) {
@@ -169,6 +170,7 @@ GeckoMediaPluginServiceChild::GetContentParent(
         if (!alreadyBridgedTo.Contains(otherProcess)) {
           parent->SetDisplayName(displayName);
           parent->SetPluginId(pluginId);
+          parent->SetPluginType(pluginType);
         }
 
         // The content parent is no longer pending.
@@ -202,7 +204,7 @@ struct GMPCapabilityAndVersion {
     for (const GMPAPITags& tags : aCapabilities.capabilities()) {
       GMPCapability cap;
       cap.mAPIName = tags.api();
-      for (const nsCString& tag : tags.tags()) {
+      for (const nsACString& tag : tags.tags()) {
         cap.mAPITags.AppendElement(tag);
       }
       mCapabilities.AppendElement(std::move(cap));
@@ -218,7 +220,7 @@ struct GMPCapabilityAndVersion {
     StringJoinAppend(s, " "_ns, mCapabilities,
                      [](auto& tags, const GMPCapability& cap) {
                        tags.Append(cap.mAPIName);
-                       for (const nsCString& tag : cap.mAPITags) {
+                       for (const nsACString& tag : cap.mAPITags) {
                          tags.AppendLiteral(":");
                          tags.Append(tag);
                        }
@@ -284,7 +286,7 @@ void GeckoMediaPluginServiceChild::BeginShutdown() {
 
 NS_IMETHODIMP
 GeckoMediaPluginServiceChild::HasPluginForAPI(const nsACString& aAPI,
-                                              nsTArray<nsCString>* aTags,
+                                              const nsTArray<nsCString>& aTags,
                                               bool* aHasPlugin) {
   StaticMutexAutoLock lock(sGMPCapabilitiesMutex);
   if (!sGMPCapabilities) {
@@ -294,7 +296,7 @@ GeckoMediaPluginServiceChild::HasPluginForAPI(const nsACString& aAPI,
 
   nsCString api(aAPI);
   for (const GMPCapabilityAndVersion& plugin : *sGMPCapabilities) {
-    if (GMPCapability::Supports(plugin.mCapabilities, api, *aTags)) {
+    if (GMPCapability::Supports(plugin.mCapabilities, api, aTags)) {
       *aHasPlugin = true;
       return NS_OK;
     }

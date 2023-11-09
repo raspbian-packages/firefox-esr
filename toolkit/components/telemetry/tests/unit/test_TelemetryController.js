@@ -8,50 +8,42 @@
  * checked in the second request.
  */
 
-const { CommonUtils } = ChromeUtils.import(
-  "resource://services-common/utils.js"
+const { ClientID } = ChromeUtils.importESModule(
+  "resource://gre/modules/ClientID.sys.mjs"
 );
-const { ClientID } = ChromeUtils.import("resource://gre/modules/ClientID.jsm");
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-const { TelemetryController } = ChromeUtils.import(
-  "resource://gre/modules/TelemetryController.jsm"
+const { TelemetryController } = ChromeUtils.importESModule(
+  "resource://gre/modules/TelemetryController.sys.mjs"
 );
-const { TelemetryStorage } = ChromeUtils.import(
-  "resource://gre/modules/TelemetryStorage.jsm"
+const { TelemetryStorage } = ChromeUtils.importESModule(
+  "resource://gre/modules/TelemetryStorage.sys.mjs"
 );
-const { TelemetrySend } = ChromeUtils.import(
-  "resource://gre/modules/TelemetrySend.jsm"
+const { TelemetrySend } = ChromeUtils.importESModule(
+  "resource://gre/modules/TelemetrySend.sys.mjs"
 );
-const { TelemetryArchive } = ChromeUtils.import(
-  "resource://gre/modules/TelemetryArchive.jsm"
+const { TelemetryArchive } = ChromeUtils.importESModule(
+  "resource://gre/modules/TelemetryArchive.sys.mjs"
 );
-const { TelemetryUtils } = ChromeUtils.import(
-  "resource://gre/modules/TelemetryUtils.jsm"
+const { TelemetryUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/TelemetryUtils.sys.mjs"
 );
-const { Preferences } = ChromeUtils.import(
-  "resource://gre/modules/Preferences.jsm"
+const { Preferences } = ChromeUtils.importESModule(
+  "resource://gre/modules/Preferences.sys.mjs"
 );
-const { ContentTaskUtils } = ChromeUtils.import(
-  "resource://testing-common/ContentTaskUtils.jsm"
+const { ContentTaskUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/ContentTaskUtils.sys.mjs"
 );
-const { TestUtils } = ChromeUtils.import(
-  "resource://testing-common/TestUtils.jsm"
+const { TestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/TestUtils.sys.mjs"
 );
-const { TelemetryArchiveTesting } = ChromeUtils.import(
-  "resource://testing-common/TelemetryArchiveTesting.jsm"
+const { TelemetryArchiveTesting } = ChromeUtils.importESModule(
+  "resource://testing-common/TelemetryArchiveTesting.sys.mjs"
 );
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "jwcrypto",
-  "resource://services-crypto/jwcrypto.jsm"
-);
-
-ChromeUtils.defineModuleGetter(
-  this,
-  "JsonSchemaValidator",
-  "resource://gre/modules/components-utils/JsonSchemaValidator.jsm"
-);
+ChromeUtils.defineESModuleGetters(this, {
+  JsonSchemaValidator:
+    "resource://gre/modules/components-utils/JsonSchemaValidator.sys.mjs",
+  jwcrypto: "resource://services-crypto/jwcrypto.sys.mjs",
+});
 
 const PING_FORMAT_VERSION = 4;
 const DELETION_REQUEST_PING_TYPE = "deletion-request";
@@ -59,7 +51,7 @@ const TEST_PING_TYPE = "test-ping-type";
 
 var gClientID = null;
 
-XPCOMUtils.defineLazyGetter(this, "DATAREPORTING_PATH", async function() {
+XPCOMUtils.defineLazyGetter(this, "DATAREPORTING_PATH", async function () {
   return PathUtils.join(PathUtils.profileDir, "datareporting");
 });
 
@@ -639,7 +631,7 @@ add_task(async function test_telemetryCleanFHRDatabase() {
     try {
       await IOUtils.read(dbFilePath);
     } catch (e) {
-      Assert.ok(e instanceof DOMException);
+      Assert.ok(DOMException.isInstance(e));
       Assert.equal(
         e.name,
         "NotFoundError",
@@ -671,7 +663,7 @@ add_task(async function test_telemetryCleanFHRDatabase() {
     try {
       await IOUtils.read(dbFilePath);
     } catch (e) {
-      Assert.ok(e instanceof DOMException);
+      Assert.ok(DOMException.isInstance(e));
       Assert.equal(
         e.name,
         "NotFoundError",
@@ -684,7 +676,7 @@ add_task(async function test_telemetryCleanFHRDatabase() {
 add_task(async function test_sendNewProfile() {
   if (
     gIsAndroid ||
-    (AppConstants.platform == "linux" && OS.Constants.Sys.bits == 32)
+    (AppConstants.platform == "linux" && !Services.appinfo.is64Bit)
   ) {
     // We don't support the pingsender on Android, yet, see bug 1335917.
     // We also don't suppor the pingsender testing on Treeherder for
@@ -699,7 +691,7 @@ add_task(async function test_sendNewProfile() {
 
   // Make sure Telemetry is shut down before beginning and that we have
   // no pending pings.
-  let resetTest = async function() {
+  let resetTest = async function () {
     await TelemetryController.testShutdown();
     await TelemetryStorage.testClearPendingPings();
     PingServer.clearRequests();
@@ -789,7 +781,7 @@ add_task(async function test_sendNewProfile() {
     subsessionId: null,
     profileSubsessionCounter: 3785,
   };
-  await CommonUtils.writeJSON(sessionState, stateFilePath);
+  await IOUtils.writeJSON(stateFilePath, sessionState);
   await TelemetryController.testReset();
   await TelemetryController.testShutdown();
 
@@ -1204,8 +1196,11 @@ add_task(function test_scalar_filtering() {
     "test keyed scalars should be snapshotted"
   );
 
-  snapshot = Telemetry.getSnapshotForScalars("main", false, /* filter */ true)
-    .parent;
+  snapshot = Telemetry.getSnapshotForScalars(
+    "main",
+    false,
+    /* filter */ true
+  ).parent;
   keyedSnapshot = Telemetry.getSnapshotForKeyedScalars(
     "main",
     false,

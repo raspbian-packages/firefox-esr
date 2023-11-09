@@ -5,10 +5,12 @@
 
 about-logins-page-title = Innlogginger og passord
 
-login-filter =
+about-logins-login-filter =
     .placeholder = Søk innlogginger
+    .key = F
 
-create-login-button = Lag ny innlogging
+create-new-login-button =
+    .title = Opprett ny innlogging
 
 fxaccounts-sign-in-text = Få passordene dine på de andre enheter dine
 fxaccounts-sign-in-sync-button = Logg inn for å synkronisere
@@ -35,10 +37,20 @@ about-logins-menu-menuitem-help = Hjelp
 
 login-list =
     .aria-label = Innlogginger som samsvarer med søket
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } innlogging
        *[other] { $count } innlogginger
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count } av { $total } innlogging
+       *[other] { $count } av { $total } innlogginger
     }
 login-list-sort-label-text = Sorter etter:
 login-list-name-option = Navn (A-Å)
@@ -99,9 +111,17 @@ login-item-copied-password-button-text = Kopiert!
 login-item-save-changes-button = Lagre endringer
 login-item-save-new-button = Lagre
 login-item-cancel-button = Avbryt
-login-item-time-changed = Sist endret: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Opprettet: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Sist brukt: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = Opprettet
+login-item-timeline-action-updated = Oppdatert
+login-item-timeline-action-used = Brukt
 
 ## OS Authentication dialog
 
@@ -152,6 +172,9 @@ about-logins-confirm-remove-dialog-title = Fjerne denne innloggingen?
 confirm-delete-dialog-message = Denne handlingen kan ikke angres.
 about-logins-confirm-remove-dialog-confirm-button = Fjern
 
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
         [1] Fjern
@@ -186,6 +209,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] Dette fjerner alle innlogginger du har lagret i { -brand-short-name } på alle enheter som er synkronisert med { -fxaccount-brand-name }. Dette vil også fjerne varsler om datalekkasjer som vises her. Du kan ikke angre denne handlingen.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Eksporter innlogginger og passord
 about-logins-confirm-export-dialog-message = Passordene dine blir lagret som lesbar tekst (f.eks. DårligP@ss0rd), slik at alle som kan åpne den eksporterte filen kan se dem.
 about-logins-confirm-export-dialog-confirm-button = Eksporter…
@@ -205,7 +230,6 @@ about-logins-breach-alert-date = Denne datalekkasjen skjedde den { DATETIME($dat
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Gå til { $hostname }
-about-logins-breach-alert-learn-more-link = Les mer
 
 ## Vulnerable Password notification
 

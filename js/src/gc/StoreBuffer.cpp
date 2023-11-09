@@ -9,12 +9,8 @@
 #include "mozilla/Assertions.h"
 
 #include "gc/Statistics.h"
-#include "vm/ArgumentsObject.h"
-#include "vm/JSContext.h"
 #include "vm/MutexIDs.h"
 #include "vm/Runtime.h"
-
-#include "gc/GC-inl.h"
 
 using namespace js;
 using namespace js::gc;
@@ -238,6 +234,8 @@ void StoreBuffer::WholeCellBuffer::clear() {
   if (storage_) {
     storage_->used() ? storage_->releaseAll() : storage_->freeAll();
   }
+
+  last_ = nullptr;
 }
 
 template struct StoreBuffer::MonoTypeBuffer<StoreBuffer::ValueEdge>;

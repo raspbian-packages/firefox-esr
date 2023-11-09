@@ -26,10 +26,6 @@ certmgr-people = Eguereko mboajepyréva marandurendápe oikuaaporãva ko’ã ta
 certmgr-server = Ko’ã jeikeha ohechakuaa jejavy mohendahavusu mboajepyréva rehegua
 certmgr-ca = Oreko mboajepyréva marandurendápe omoha’eñóva ko’ã moakãhára mboajehára
 
-certmgr-edit-ca-cert =
-    .title = Embosako’i ñemboheko jeroviaha CA mba’éva
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Embosako’i ñemboheko jeroviaha CA mba’éva
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Ko mboajepyréva ikatu ohechakuaa puruhára ñandutiveve pegua.
-
-certmgr-delete-cert =
-    .title = Mboajepyréva mboguete
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Mboajepyréva mboguete
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Mohendahavusu
-
-certmgr-override-lifetime =
-    .label = Pururã ára
 
 certmgr-token-name =
     .label = Mba’e’oka rekorasãrã
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Papapy syryry
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256 kuã rapykuere
 
 certmgr-view =
     .label = Hecha…

@@ -77,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formulieren
 protections-panel-site-not-working-view-issue-list-payments = Betellingen
 protections-panel-site-not-working-view-issue-list-comments = Opmerkingen
 protections-panel-site-not-working-view-issue-list-videos = Fideo’s
+protections-panel-site-not-working-view-issue-list-fonts = Lettertypen
 
 protections-panel-site-not-working-view-send-report = Rapport ferstjoere
 
@@ -100,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Net-wurkjende website melde
 protections-panel-content-blocking-breakage-report-view-description = It blokkearjen fan bepaalde trackers kin problemen mei bepaalde websites feroarsaakje. Troch dizze problemen te melden, helpe jo { -brand-short-name } foar elkenien te ferbetterjen. As jo dit rapport ferstjoere, wurdt sawol in URL as ynformaasje oer jo browserynstellingen nei Mozilla ferstjoerd. <label data-l10n-name="learn-more">Mear ynfo</label>
+protections-panel-content-blocking-breakage-report-view-description2 = It blokkearjen fan bepaalde trackers kin problemen mei bepaalde websites feroarsaakje. Troch dizze problemen te melden, helpe jo { -brand-short-name } foar elkenien te ferbetterjen. As jo dit rapport ferstjoere, wurdt sawol in URL as ynformaasje oer jo browserynstellingen nei { -vendor-short-name } ferstjoerd.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -110,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Annulearje
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Rapport ferstjoere
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Reduksje fan cookiebanners
+protections-panel-cookie-banner-handling-enabled = Oan foar dizze website
+protections-panel-cookie-banner-handling-disabled = Ut foar dizze website
+protections-panel-cookie-banner-handling-undetected = Website wurdt op dit stuit net stipe
+
+protections-panel-cookie-banner-view-title =
+    .title = Reduksje fan cookiebanners
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Reduksje fan cookiebanners útskeakelje foar { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Reduksje fan cookiebanners ynskeakelje foar dizze website?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } wisket de cookies foar dizze website en fernijt de side. As alle cookies wiske wurde, wurde jo mooglik ôfmeld of wurde winkelweintsjes lege.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } probearret alle cookiefersiken op stipe websites automatysk te wegerjen.
+protections-panel-cookie-banner-view-cancel = Annulearje
+protections-panel-cookie-banner-view-turn-off = Utskeakelje
+protections-panel-cookie-banner-view-turn-on = Ynskeakelje

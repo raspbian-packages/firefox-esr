@@ -12,11 +12,13 @@
 #include <VideoToolbox/VideoToolbox.h>    // For VTDecompressionSessionRef
 
 #include "AppleDecoderModule.h"
+#include "PerformanceRecorder.h"
 #include "PlatformDecoderModule.h"
 #include "ReorderQueue.h"
 #include "TimeUnits.h"
 #include "mozilla/Atomics.h"
 #include "mozilla/gfx/Types.h"
+#include "mozilla/ProfilerUtils.h"
 
 namespace mozilla {
 
@@ -30,7 +32,8 @@ class AppleVTDecoder final : public MediaDataDecoder,
   AppleVTDecoder(const VideoInfo& aConfig,
                  layers::ImageContainer* aImageContainer,
                  CreateDecoderParams::OptionSet aOptions,
-                 layers::KnowsCompositor* aKnowsCompositor);
+                 layers::KnowsCompositor* aKnowsCompositor,
+                 Maybe<TrackingId> aTrackingId);
 
   class AppleFrameRef {
    public:
@@ -64,6 +67,8 @@ class AppleVTDecoder final : public MediaDataDecoder,
                                   : "apple software VT decoder"_ns;
   }
 
+  nsCString GetCodecName() const override;
+
   ConversionRequired NeedsConversion() const override {
     return ConversionRequired::kNeedAVCC;
   }
@@ -82,6 +87,8 @@ class AppleVTDecoder final : public MediaDataDecoder,
   void ProcessDecode(MediaRawData* aSample);
   void MaybeResolveBufferedFrames();
 
+  void MaybeRegisterCallbackThread();
+
   void AssertOnTaskQueue() { MOZ_ASSERT(mTaskQueue->IsCurrentThreadIn()); }
 
   AppleFrameRef* CreateAppleFrameRef(const MediaRawData* aSample);
@@ -93,6 +100,7 @@ class AppleVTDecoder final : public MediaDataDecoder,
   const uint32_t mDisplayWidth;
   const uint32_t mDisplayHeight;
   const gfx::YUVColorSpace mColorSpace;
+  const gfx::ColorSpace2 mColorPrimaries;
   const gfx::TransferFunction mTransferFunction;
   const gfx::ColorRange mColorRange;
   const gfx::ColorDepth mColorDepth;
@@ -110,10 +118,12 @@ class AppleVTDecoder final : public MediaDataDecoder,
   const RefPtr<layers::ImageContainer> mImageContainer;
   const RefPtr<layers::KnowsCompositor> mKnowsCompositor;
   const bool mUseSoftwareImages;
+  const Maybe<TrackingId> mTrackingId;
 
   // Set on reader/decode thread calling Flush() to indicate that output is
   // not required and so input samples on mTaskQueue need not be processed.
   Atomic<bool> mIsFlushing;
+  std::atomic<ProfilerThreadId> mCallbackThreadId;
   // Protects mReorderQueue and mPromise.
   Monitor mMonitor MOZ_UNANNOTATED;
   ReorderQueue mReorderQueue;
@@ -127,6 +137,7 @@ class AppleVTDecoder final : public MediaDataDecoder,
   CMVideoFormatDescriptionRef mFormat;
   VTDecompressionSessionRef mSession;
   Atomic<bool> mIsHardwareAccelerated;
+  PerformanceRecorderMulti<DecodeStage> mPerformanceRecorder;
 };
 
 }  // namespace mozilla

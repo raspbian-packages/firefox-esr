@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] Oan taakbalke fêstsette
     }
 about-private-browsing-pin-promo-title = Gjin bewarre cookies of skiednis, direkt fan jo buroblêd. Blêdzje as oft net ien meisjocht.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Farwel cookiebanners!
+about-private-browsing-cookie-banners-promo-button = Cookiebanners redusearje
+about-private-browsing-cookie-banners-promo-message = Lit { -brand-short-name } cookie-pop-ups automatysk foar jo beäntwurdzje, sadat jo wer sneupe kinne sûnder ôflieding. { -brand-short-name } wiist alle fersiken ôf as it mooglik is.

@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = การตั้งค่าการเชื่อมต่อ
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = การตั้งค่าการเชื่อมต่อ
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = ถ
     .tooltip = ตัวเลือกนี้จะรับรองความถูกต้องของคุณไปยังพร็อกซีโดยอัตโนมัติเมื่อคุณได้บันทึกข้อมูลรับรองไว้ คุณจะได้รับการแจ้งหากการรับรองความถูกต้องล้มเหลว
 
+connection-proxy-autologin-checkbox =
+    .label = ไม่ต้องถามสำหรับการรับรองความถูกต้องหากรหัสผ่านถูกบันทึกไว้
+    .accesskey = ถ
+    .tooltiptext = ตัวเลือกนี้จะรับรองความถูกต้องของคุณไปยังพร็อกซีโดยอัตโนมัติเมื่อคุณได้บันทึกข้อมูลรับรองไว้ คุณจะได้รับการแจ้งหากการรับรองความถูกต้องล้มเหลว
+
 connection-proxy-socks-remote-dns =
     .label = DNS แบบพร็อกซีเมื่อใช้ SOCKS v5
     .accesskey = d
-
-connection-dns-over-https =
-    .label = เปิดใช้งาน DNS ผ่าน HTTPS
-    .accesskey = ป
-
-connection-dns-over-https-url-resolver = ใช้ผู้ให้บริการ
-    .accesskey = ช
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

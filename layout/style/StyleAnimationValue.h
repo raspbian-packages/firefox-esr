@@ -45,7 +45,7 @@ enum class PseudoStyleType : uint8_t;
 struct PropertyStyleAnimationValuePair;
 
 struct AnimationValue {
-  explicit AnimationValue(const RefPtr<RawServoAnimationValue>& aValue)
+  explicit AnimationValue(const RefPtr<StyleAnimationValue>& aValue)
       : mServo(aValue) {}
   AnimationValue() = default;
 
@@ -83,11 +83,11 @@ struct AnimationValue {
   const mozilla::StylePositionOrAuto& GetOffsetAnchorProperty() const;
 
   // Return the scale for mServo, which is calculated with reference to aFrame.
-  mozilla::gfx::Size GetScaleValue(const nsIFrame* aFrame) const;
+  mozilla::gfx::MatrixScales GetScaleValue(const nsIFrame* aFrame) const;
 
   // Uncompute this AnimationValue and then serialize it.
   void SerializeSpecifiedValue(nsCSSPropertyID aProperty,
-                               const RawServoStyleSet* aRawSet,
+                               const StylePerDocumentStyleData* aRawData,
                                nsACString& aString) const;
 
   // Check if |*this| and |aToValue| can be interpolated.
@@ -105,15 +105,15 @@ struct AnimationValue {
                                    const nsACString& aValue,
                                    dom::Element* aElement);
 
-  // Create an already_AddRefed<RawServoAnimationValue> from a
+  // Create an already_AddRefed<StyleAnimationValue> from a
   // layers::Animatable. Basically, this function should return AnimationValue,
   // but it seems the caller, AnimationHelper, only needs
-  // RawServoAnimationValue, so we return its already_AddRefed<> to avoid
+  // StyleAnimationValue, so we return its already_AddRefed<> to avoid
   // adding/removing a redundant ref-count.
-  static already_AddRefed<RawServoAnimationValue> FromAnimatable(
+  static already_AddRefed<StyleAnimationValue> FromAnimatable(
       nsCSSPropertyID aProperty, const layers::Animatable& aAnimatable);
 
-  RefPtr<RawServoAnimationValue> mServo;
+  RefPtr<StyleAnimationValue> mServo;
 };
 
 inline std::ostream& operator<<(std::ostream& aOut,

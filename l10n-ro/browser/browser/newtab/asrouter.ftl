@@ -112,12 +112,6 @@ cfr-doorhanger-doh-secondary-button = Dezactivează
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = Intimitatea ta contează. { -brand-short-name } izolează acum site-urile web unele de altele sau le deschide în sandboxuri, lucru care îngreunează munca hackerilor de a fura parole, numere ale cardurilor de credit și alte informații sensibile.
-cfr-doorhanger-fission-primary-button = OK, am înțeles!
-    .accesskey = K
-cfr-doorhanger-fission-secondary-button = Află mai multe
-    .accesskey = L
-
 ## Full Video Support CFR message
 
 
@@ -136,6 +130,11 @@ cfr-doorhanger-fission-secondary-button = Află mai multe
 
 ## Emotive Continuous Onboarding
 
+spotlight-pin-primary-button =
+    { PLATFORM() ->
+        [macos] Păstrează în Dock
+       *[other] Fixează în bara de activități
+    }
 
 ## MR2022 Background Update Windows native toast notification strings.
 ##
@@ -155,4 +154,22 @@ cfr-doorhanger-fission-secondary-button = Află mai multe
 
 
 ## Firefox View Spotlight
+
+
+## Colorways expiry reminder CFR
+
+
+## Cookie Banner Handling CFR
+
+
+## These strings are used in the Fox doodle Pin/set default spotlights
+
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+
+## FxA sync CFR
+
+
+## Device Migration FxA Spotlight
 

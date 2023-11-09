@@ -222,8 +222,6 @@ menu-history-undo-menu =
     .label = Rowno zacynjone rejtariki
 menu-history-undo-window-menu =
     .label = Rowno zacynjone wokna
-menu-history-reopen-all-tabs = Wšykne rejtariki znowego wócyniś
-menu-history-reopen-all-windows = Wšykne wokna znowego wócyniś
 
 ## Bookmarks Menu
 
@@ -232,14 +230,13 @@ menu-bookmarks-menu =
     .accesskey = C
 menu-bookmarks-manage =
     .label = Cytańske znamjenja zastojaś
-menu-bookmark-current-tab =
-    .label = Aktualny rejtarik ako cytańske znamje składowaś
-menu-bookmark-edit =
-    .label = Toś to cytańske znamje wobźěłaś
 menu-bookmark-tab =
     .label = Aktualny rejtarik ako cytańske znamje składowaś …
 menu-edit-bookmark =
     .label = Toś to cytańske znamje wobźěłaś …
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Cytańske znamjenja pśepytaś
 menu-bookmarks-all-tabs =
     .label = Wšykne rejtariki ako cytańske znamjenja…
 menu-bookmarks-toolbar =
@@ -333,6 +330,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Modus za rozwězowanje problemow znjemóžniś
     .accesskey = M
+menu-help-switch-device =
+    .label = K nowemu rědoju pśejś
+    .accesskey = n
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

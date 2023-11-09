@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] Ainguratu ataza-barran
     }
 about-private-browsing-pin-promo-title = Gordetako cookie edo historiarik ez. Nabigatu inor begira ez balego bezala.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Cookie iragarki-bandak kanpora!
+about-private-browsing-cookie-banners-promo-button = Murriztu cookie iragarki-bandak
+about-private-browsing-cookie-banners-promo-message = Utzi { -brand-short-name }(r)i cookie laster-leihoak automatikoki erantzuten, distraziorik gabeko nabigaziora itzul zaitezen. Ahal bada eskaera guztiak ukatuko ditu { -brand-short-name }(e)k.

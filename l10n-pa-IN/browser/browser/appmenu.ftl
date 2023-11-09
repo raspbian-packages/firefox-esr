@@ -33,6 +33,8 @@ appmenuitem-print =
     .label = …ਪਰਿੰਟ ਕਰੋ
 appmenuitem-find-in-page =
     .label = …ਸਫ਼ੇ ਵਿੱਚ ਲੱਭੋ
+appmenuitem-translate =
+    .label = …ਸਫ਼ੇ ਦਾ ਉਲੱਥਾ
 appmenuitem-zoom =
     .value = ਜ਼ੂਮ
 appmenuitem-more-tools =
@@ -126,8 +128,6 @@ profiler-popup-button-recording =
 profiler-popup-button-capturing =
     .label = ਪਰੋਫਾਈਲਰ
     .tooltiptext = ਪਰੋਫਾਈਲਰ ਪਰੋਫਾਈਲ ਇਕੱਤਰ ਕਰਦਾ ਹੈ
-profiler-popup-title =
-    .value = { -profiler-brand-name }
 profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = ਹੋਰ ਜਾਣਕਾਰੀ ਲਵੋ
@@ -164,7 +164,7 @@ profiler-popup-capture-shortcut =
 
 
 # Presets and their l10n IDs are defined in the file
-# devtools/client/performance-new/popup/background.jsm.js
+# devtools/client/performance-new/shared/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
 profiler-popup-presets-web-developer-description = ਬਹੁਤੀਆਂ ਵੈੱਬ ਐਪ ਨੂੰ ਡੀਬੱਗ ਕਰਨ ਲਈ ਘੱਟ ਉਲਝਣਾਂ ਲਈ ਸਿਫਾਰਸ਼ੀ ਪਹਿਲਾਂ ਨਿਯਤ ਸਮੂਹ।
@@ -193,8 +193,6 @@ profiler-popup-presets-custom-label =
 
 appmenu-manage-history =
     .label = ਅਤੀਤ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
-appmenu-reopen-all-tabs = ਸਾਰੀਆਂ ਟੈਬਾਂ ਮੁੜ-ਖੋਲ੍ਹੋ
-appmenu-reopen-all-windows = ਸਾਰੀਆਂ ਵਿੰਡੋ ਮੁੜ-ਖੋਲ੍ਹੋ
 appmenu-restore-session =
     .label = ਪਿਛਲੇ ਸੈਸ਼ਨ ਬਹਾਲ ਕਰੋ
 appmenu-clear-history =
@@ -204,6 +202,9 @@ appmenu-recently-closed-tabs =
     .label = ਤਾਜ਼ਾ ਖੋਲ੍ਹੀਆਂ ਟੈਬਾਂ
 appmenu-recently-closed-windows =
     .label = ਤਾਜ਼ਾ ਬੰਦ ਕੀਤੀਆਂ ਵਿੰਡੋ
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = ਅਤੀਤ ਵਿੱਚ ਖੋਜੋ
 
 ## Help panel
 
@@ -223,6 +224,8 @@ appmenu-help-report-site-issue =
 appmenu-help-share-ideas =
     .label = …ਵਿਚਾਰ ਤੇ ਸੁਝਾਅ ਸਾਂਝੇ ਕਰੋ
     .accesskey = S
+appmenu-help-switch-device =
+    .label = ਨਵੇਂ ਡਿਵਾਈਸ ਲਈ ਬਦਲਣਾ
 
 ## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
 ## are mutually exclusive, so it's possible to use the same accesskey for both.

@@ -22,7 +22,7 @@ option(env="CBINDGEN", nargs=1, when=cbindgen_is_needed, help="Path to cbindgen"
 def check_cbindgen_version(cbindgen, fatal=False):
     log.debug("trying cbindgen: %s" % cbindgen)
 
-    cbindgen_min_version = Version("0.23.0")
+    cbindgen_min_version = Version("0.24.3")
 
     # cbindgen x.y.z
     version = Version(check_cmd_output(cbindgen, "--version").strip().split(" ")[1])
@@ -91,15 +91,6 @@ def cbindgen(cbindgen_override, bootstrap_search_path, rust_search_path):
 
 set_config("CBINDGEN", cbindgen)
 
-set_define(
-    "CBINDGEN_0_24",
-    True,
-    when=depends_if(cbindgen)(
-        lambda c: Version(check_cmd_output(c, "--version").strip().split(" ")[1])
-        >= "0.24.0"
-    ),
-)
-
 # Bindgen can use rustfmt to format Rust file, but it's not required.
 option(env="RUSTFMT", nargs=1, help="Path to the rustfmt program")
 
@@ -126,15 +117,24 @@ option(
 
 @depends(
     "--with-clang-path",
+    configure_cache,
     c_compiler,
     cxx_compiler,
     clang_search_path,
     target,
     target_sysroot.path,
+    android_version,
 )
 @checking("for clang for bindgen", lambda x: x.path if x else "not found")
 def bindgen_clang_compiler(
-    clang_path, c_compiler, cxx_compiler, clang_search_path, target, sysroot_path
+    clang_path,
+    configure_cache,
+    c_compiler,
+    cxx_compiler,
+    clang_search_path,
+    target,
+    sysroot_path,
+    android_version,
 ):
     # When the target compiler is clang, use that, including flags.
     if cxx_compiler.type == "clang":
@@ -170,11 +170,22 @@ def bindgen_clang_compiler(
         return
     # Hack before bug 1617793: if the compiler is clang-cl, hack the target
     if cxx_compiler.type == "clang-cl":
-        target = split_triplet("%s-pc-windows-msvc" % target.raw_cpu, allow_msvc=True)
+        target = split_triplet("%s-pc-windows-msvc" % target.raw_cpu)
     flags = []
     if sysroot_path:
         flags.extend(("--sysroot", sysroot_path))
-    info = check_compiler([clang_path] + flags, "C++", target)
+    info = check_compiler(
+        configure_cache, [clang_path] + flags, "C++", target, android_version
+    )
+    # Usually, one check_compiler pass would be enough, but when cross-compiling
+    # and the host and target don't use the same default C++ standard, we don't
+    # get the --std flag, so try again. This is the same thing as valid_compiler()
+    # does in toolchain.configure.
+    if info.flags:
+        flags += info.flags
+        info = check_compiler(
+            configure_cache, [clang_path] + flags, "C++", target, android_version
+        )
     return namespace(
         path=clang_path,
         flags=flags + info.flags,
@@ -321,8 +332,11 @@ set_config("MOZ_CLANG_PATH", bindgen_config_paths.clang_path)
     cxx_compiler,
     bindgen_cflags_android,
     bindgen_config_paths.clang_flags,
+    all_clang_arm_flags,
 )
-def basic_bindgen_cflags(target, is_unix, compiler_info, android_cflags, clang_flags):
+def basic_bindgen_cflags(
+    target, is_unix, compiler_info, android_cflags, clang_flags, all_arm_flags
+):
     args = [
         "-x",
         "c++",
@@ -367,7 +381,7 @@ def basic_bindgen_cflags(target, is_unix, compiler_info, android_cflags, clang_f
             "-DHAVE_VISIBILITY_HIDDEN_ATTRIBUTE=1",
         ]
 
-    return args + (clang_flags or [])
+    return args + (clang_flags or []) + (all_arm_flags or [])
 
 
 option(

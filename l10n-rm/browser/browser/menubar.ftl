@@ -219,8 +219,6 @@ menu-history-undo-menu =
     .label = Tabs serrads dacurt
 menu-history-undo-window-menu =
     .label = Fanestras serradas dacurt
-menu-history-reopen-all-tabs = Reavrir tut ils tabs
-menu-history-reopen-all-windows = Reavrir tut las fanestras
 
 ## Bookmarks Menu
 
@@ -229,14 +227,13 @@ menu-bookmarks-menu =
     .accesskey = S
 menu-bookmarks-manage =
     .label = Administrar ils segnapaginas
-menu-bookmark-current-tab =
-    .label = Agiuntar in segnapagina per il tab actual
-menu-bookmark-edit =
-    .label = Modifitgar quest segnapagina
 menu-bookmark-tab =
     .label = Agiuntar in segnapagina per il tab actual…
 menu-edit-bookmark =
     .label = Modifitgar quest segnapagina…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Tschertgar en ils segnapaginas
 menu-bookmarks-all-tabs =
     .label = Agiuntar segnapaginas per tut ils tabs…
 menu-bookmarks-toolbar =
@@ -330,6 +327,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Deactivar il modus per schliar problems
     .accesskey = m
+menu-help-switch-device =
+    .label = Midar ad in nov apparat
+    .accesskey = n
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

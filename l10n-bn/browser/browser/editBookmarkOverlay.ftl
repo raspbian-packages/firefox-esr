@@ -24,6 +24,12 @@ bookmark-overlay-folders-expander =
     .tooltiptextdown = { bookmark-overlay-folders-expander.tooltiptext }
     .tooltiptextup = আড়াল করুন
 
+bookmark-overlay-folders-expander2 =
+    .tooltiptext = সব বুকমার্ক ফোল্ডার প্রদর্শন করে
+
+bookmark-overlay-folders-expander-hide =
+    .tooltiptext = আড়াল করুন
+
 bookmark-overlay-new-folder-button =
     .label = নতুন ফোল্ডার
     .accesskey = o
@@ -39,6 +45,12 @@ bookmark-overlay-tags-expander =
     .tooltiptext = সব ট্যাগ প্রদর্শন করে
     .tooltiptextdown = { bookmark-overlay-tags-expander.tooltiptext }
     .tooltiptextup = আড়াল করুন
+
+bookmark-overlay-tags-expander2 =
+    .tooltiptext = সব ট্যাগ প্রদর্শন করে
+
+bookmark-overlay-tags-expander-hide =
+    .tooltiptext = আড়াল করুন
 
 bookmark-overlay-keyword-2 =
     .value = কীওয়ার্ড

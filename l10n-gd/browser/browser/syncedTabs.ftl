@@ -22,18 +22,6 @@ synced-tabs-sidebar-search =
 synced-tabs-context-open =
     .label = Fosgail
     .accesskey = o
-synced-tabs-context-open-in-new-tab =
-    .label = Fosgail ann an taba ùr
-    .accesskey = F
-synced-tabs-context-open-in-new-window =
-    .label = Fosgail an ceangal ann an uinneag ùr
-    .accesskey = F
-synced-tabs-context-open-in-new-private-window =
-    .label = Fosgail an ceangal ann an uinneag phrìobhaideach ùr
-    .accesskey = p
-synced-tabs-context-bookmark-single-tab =
-    .label = Cuir an taba seo ris na comharran-lìn…
-    .accesskey = b
 synced-tabs-context-open-in-tab =
     .label = Fosgail ann an taba ùr
     .accesskey = F
@@ -49,6 +37,14 @@ synced-tabs-context-open-in-private-window =
 
 ##
 
+# Displayed in the Synced Tabs sidebar's context menu when right-clicking tabs
+# and/or devices in the list. This string is for a menuitem equivalent to one in
+# the tab context menu (activated by right-clicking a tab in the tabstrip). That
+# string is located in tabContextMenu.ftl. So, this string should be translated
+# consistently with the "Bookmark Tab…" string there.
+synced-tabs-context-bookmark =
+    .label = Dèan comharra-lìn dhen taba…
+    .accesskey = D
 synced-tabs-context-copy =
     .label = Dèan lethbhreac
     .accesskey = c

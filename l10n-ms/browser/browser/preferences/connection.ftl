@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Tetapan Sambungan
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Tetapan Sambungan
     .style =
@@ -76,13 +68,14 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Pilihan ini mengesahkan secara senyap apabila anda ada menyimpan kelayakan bagi pihak proksi. Tapi anda akan dimaklumkan jika pengesahan gagal.
 
+connection-proxy-autologin-checkbox =
+    .label = Jangan paparkan pengesahan jika kata laluan telah disimpan
+    .accesskey = i
+    .tooltiptext = Pilihan ini mengesahkan secara senyap apabila anda ada menyimpan kelayakan bagi pihak proksi. Tapi anda akan dimaklumkan jika pengesahan gagal.
+
 connection-proxy-socks-remote-dns =
     .label = Proksi DNS apabila menggunakan SOCKS v5
     .accesskey = d
-
-connection-dns-over-https =
-    .label = Dayakan DNS mengatasi HTTPS
-    .accesskey = D
 
 connection-dns-over-https-url-custom =
     .label = Penyesuaian

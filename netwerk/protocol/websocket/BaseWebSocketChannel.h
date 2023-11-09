@@ -77,7 +77,7 @@ class BaseWebSocketChannel : public nsIWebSocketChannel,
   virtual void GetEffectiveURL(nsAString& aEffectiveURL) const = 0;
   virtual bool IsEncrypted() const = 0;
 
-  already_AddRefed<nsIEventTarget> GetTargetThread();
+  already_AddRefed<nsISerialEventTarget> GetTargetThread();
   bool IsOnTargetThread();
 
   class ListenerAndContextContainer final {
@@ -107,7 +107,7 @@ class BaseWebSocketChannel : public nsIWebSocketChannel,
   // Used to ensure atomicity of mTargetThread.
   // Set before AsyncOpen via RetargetDeliveryTo or in AsyncOpen, never changed
   // after AsyncOpen
-  DataMutex<nsCOMPtr<nsIEventTarget>> mTargetThread{
+  DataMutex<nsCOMPtr<nsISerialEventTarget>> mTargetThread{
       "BaseWebSocketChannel::EventTargetMutex"};
 
   nsCString mProtocol;
@@ -123,8 +123,8 @@ class BaseWebSocketChannel : public nsIWebSocketChannel,
   bool mPingForced;
   bool mIsServerSide;
 
-  uint32_t mPingInterval;        /* milliseconds */
-  uint32_t mPingResponseTimeout; /* milliseconds */
+  Atomic<uint32_t> mPingInterval; /* milliseconds */
+  uint32_t mPingResponseTimeout;  /* milliseconds */
 
   uint32_t mSerial;
 

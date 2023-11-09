@@ -8,7 +8,6 @@
 #include "js/experimental/CTypes.h"  // JS::CTypesActivity{Callback,Type}, JS::InitCTypesClass, JS::SetCTypesActivityCallback, JS::SetCTypesCallbacks
 
 #include "mozilla/CheckedInt.h"
-#include "mozilla/FloatingPoint.h"
 #include "mozilla/MemoryReporting.h"
 #include "mozilla/Sprintf.h"
 #include "mozilla/TextUtils.h"
@@ -24,8 +23,8 @@
 #if defined(SOLARIS)
 #  include <ieeefp.h>
 #endif
+#include <iterator>
 #include <limits>
-#include <math.h>
 #include <stdint.h>
 #ifdef HAVE_SSIZE_T
 #  include <sys/types.h>
@@ -38,7 +37,6 @@
 
 #include "ctypes/Library.h"
 #include "gc/GCContext.h"
-#include "gc/Policy.h"
 #include "jit/AtomicOperations.h"
 #include "js/Array.h"  // JS::GetArrayLength, JS::IsArrayObject, JS::NewArrayObject
 #include "js/ArrayBuffer.h"  // JS::{IsArrayBufferObject,GetArrayBufferData,GetArrayBuffer{ByteLength,Data}}
@@ -62,6 +60,7 @@
 #include "vm/JSFunction.h"
 #include "vm/JSObject.h"
 
+#include "gc/GCContext-inl.h"
 #include "vm/JSObject-inl.h"
 
 using std::numeric_limits;
@@ -2082,8 +2081,9 @@ static JSObject* InitInt64Class(JSContext* cx, HandleObject parent,
                                 const JSFunctionSpec* fs,
                                 const JSFunctionSpec* static_fs) {
   // Init type class and constructor
-  RootedObject prototype(cx, JS_InitClass(cx, parent, nullptr, clasp, construct,
-                                          0, nullptr, fs, nullptr, static_fs));
+  RootedObject prototype(
+      cx, JS_InitClass(cx, parent, clasp, nullptr, clasp->name, construct, 0,
+                       nullptr, fs, nullptr, static_fs));
   if (!prototype) {
     return nullptr;
   }
@@ -3077,7 +3077,7 @@ void IntegerToString(IntegerType i, int radix,
   // The buffer must be big enough for all the bits of IntegerType to fit,
   // in base-2, including '-'.
   CharType buffer[sizeof(IntegerType) * 8 + 1];
-  CharType* end = buffer + sizeof(buffer) / sizeof(CharType);
+  CharType* end = std::end(buffer);
   CharType* cp = end;
 
   // Build the string in reverse. We use multiplication and subtraction
@@ -4145,17 +4145,19 @@ static void BuildTypeSource(JSContext* cx, JSObject* typeObj_, bool makeShort,
     break;
       CTYPES_FOR_EACH_WRAPPED_INT_TYPE(WRAPPED_INT_CASE)
 #undef WRAPPED_INT_CASE
-#define FLOAT_CASE(name, type, ffiType)             \
-  case TYPE_##name: {                               \
-    /* Serialize as a primitive double. */          \
-    double fp = *static_cast<type*>(data);          \
-    ToCStringBuf cbuf;                              \
-    char* str = NumberToCString(cx, &cbuf, fp);     \
-    if (!str || !result.append(str, strlen(str))) { \
-      JS_ReportOutOfMemory(cx);                     \
-      return false;                                 \
-    }                                               \
-    break;                                          \
+#define FLOAT_CASE(name, type, ffiType)                 \
+  case TYPE_##name: {                                   \
+    /* Serialize as a primitive double. */              \
+    double fp = *static_cast<type*>(data);              \
+    ToCStringBuf cbuf;                                  \
+    size_t strLength;                                   \
+    char* str = NumberToCString(&cbuf, fp, &strLength); \
+    MOZ_ASSERT(str);                                    \
+    if (!result.append(str, strLength)) {               \
+      JS_ReportOutOfMemory(cx);                         \
+      return false;                                     \
+    }                                                   \
+    break;                                              \
   }
       CTYPES_FOR_EACH_FLOAT_TYPE(FLOAT_CASE)
 #undef FLOAT_CASE
@@ -6485,10 +6487,7 @@ struct AutoValue {
   bool SizeToType(JSContext* cx, JSObject* type) {
     // Allocate a minimum of sizeof(ffi_arg) to handle small integers.
     size_t size = Align(CType::GetSize(type), sizeof(ffi_arg));
-    mData = js_malloc(size);
-    if (mData) {
-      memset(mData, 0, size);
-    }
+    mData = js_calloc(size);
     return mData != nullptr;
   }
 
@@ -8012,8 +8011,7 @@ static bool ReadTypedArrayCommon(JSContext* cx, unsigned argc, Value* vp,
 
   CheckedInt<size_t> size = *length;
   size *= CType::GetSize(baseType);
-  if (!size.isValid() ||
-      size.value() > ArrayBufferObject::maxBufferByteLength()) {
+  if (!size.isValid() || size.value() > ArrayBufferObject::MaxByteLength) {
     return SizeOverflow(cx, "data", "typed array");
   }
 

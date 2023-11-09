@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import division, print_function, unicode_literals
-
 import math
 import os
 import shutil
@@ -20,9 +18,7 @@ if sys.version_info[0] < 3:
 else:
     from importlib.abc import MetaPathFinder
 
-
 from types import ModuleType
-
 
 STATE_DIR_FIRST_RUN = """
 Mach and the build system store shared state in a common directory
@@ -30,11 +26,9 @@ on the filesystem. The following directory will be created:
 
   {}
 
-If you would like to use a different directory, hit CTRL+c, set the
-MOZBUILD_STATE_PATH environment variable to the directory you'd like to
-use, and run Mach again.
-
-Press ENTER/RETURN to continue or CTRL+c to abort.
+If you would like to use a different directory, rename or move it to your
+desired location, and set the MOZBUILD_STATE_PATH environment variable
+accordingly.
 """.strip()
 
 
@@ -145,7 +139,7 @@ def initialize(topsrcdir):
         )
     ]
 
-    from mach.util import setenv, get_state_dir
+    from mach.util import get_state_dir, setenv
 
     state_dir = _create_state_dir()
 
@@ -157,7 +151,6 @@ def initialize(topsrcdir):
 
     import mach.base
     import mach.main
-
     from mach.main import MachCommandReference
 
     # Centralized registry of available mach commands
@@ -333,7 +326,13 @@ def initialize(topsrcdir):
         "data-review": MachCommandReference(
             "toolkit/components/glean/build_scripts/mach_commands.py"
         ),
+        "perf-data-review": MachCommandReference(
+            "toolkit/components/glean/build_scripts/mach_commands.py"
+        ),
         "update-glean-tags": MachCommandReference(
+            "toolkit/components/glean/build_scripts/mach_commands.py"
+        ),
+        "update-glean": MachCommandReference(
             "toolkit/components/glean/build_scripts/mach_commands.py"
         ),
         "browsertime": MachCommandReference("tools/browsertime/mach_commands.py"),
@@ -355,6 +354,15 @@ def initialize(topsrcdir):
         "test-interventions": MachCommandReference(
             "testing/webcompat/mach_commands.py"
         ),
+        "esmify": MachCommandReference("tools/esmify/mach_commands.py"),
+        "xpcshell": MachCommandReference("js/xpconnect/mach_commands.py"),
+        "uniffi": MachCommandReference(
+            "toolkit/components/uniffi-bindgen-gecko-js/mach_commands.py"
+        ),
+        "storybook": MachCommandReference(
+            "browser/components/storybook/mach_commands.py"
+        ),
+        "widgets": MachCommandReference("toolkit/content/widgets/mach_commands.py"),
     }
 
     # Set a reasonable limit to the number of open files.
@@ -495,12 +503,13 @@ def initialize(topsrcdir):
     # Sparse checkouts may not have all mach_commands.py files. Ignore
     # errors from missing files. Same for spidermonkey tarballs.
     repo = resolve_repository()
-    missing_ok = (
-        repo is not None and repo.sparse_checkout_present()
-    ) or os.path.exists(os.path.join(topsrcdir, "INSTALL"))
-
+    if repo != "SOURCE":
+        missing_ok = (
+            repo is not None and repo.sparse_checkout_present()
+        ) or os.path.exists(os.path.join(topsrcdir, "INSTALL"))
+    else:
+        missing_ok = ()
     driver.load_commands_from_spec(MACH_COMMANDS, topsrcdir, missing_ok=missing_ok)
-
     return driver
 
 
@@ -541,7 +550,8 @@ def _finalize_telemetry_glean(telemetry, is_bootstrap, success):
         # psutil may not be available (we may not have been able to download
         # a wheel or build it from source).
         system_metrics.logical_cores.add(logical_cores)
-        system_metrics.physical_cores.add(physical_cores)
+        if physical_cores is not None:
+            system_metrics.physical_cores.add(physical_cores)
         if memory_total is not None:
             system_metrics.memory.accumulate(
                 int(math.ceil(float(memory_total) / (1024 * 1024 * 1024)))
@@ -570,11 +580,6 @@ def _create_state_dir():
         if not os.path.exists(state_dir):
             if not os.environ.get("MOZ_AUTOMATION"):
                 print(STATE_DIR_FIRST_RUN.format(state_dir))
-                try:
-                    sys.stdin.readline()
-                    print("\n")
-                except KeyboardInterrupt:
-                    sys.exit(1)
 
             print("Creating default state directory: {}".format(state_dir))
 

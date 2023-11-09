@@ -209,3 +209,29 @@ permissions-site-microphone-desc = 次のウェブサイトがマイクへのア
 permissions-site-microphone-disable-label =
     .label = マイクへのアクセスの要求をブロックする
 permissions-site-microphone-disable-desc = 上記以外のウェブサイトは、マイクへのアクセスを要求させないようにします。マイクへのアクセスをブロックすると、一部のウェブサイトが機能しなくなる可能性があります。
+
+## Site Permissions - Speaker
+##
+## "Speaker" refers to an audio output device.
+
+permissions-site-speaker-window =
+    .title = 設定 - スピーカーの使用許可
+    .style = { permissions-window2.style }
+permissions-site-speaker-desc = 次のウェブサイトが音声出力デバイスの選択を要求しています。音声出力デバイスの選択を許可するウェブサイトを指定してください。
+permissions-exceptions-doh-window =
+    .title = DNS over HTTPS を利用するウェブサイトの例外
+    .style = { permissions-window2.style }
+permissions-exceptions-manage-doh-desc = { -brand-short-name } はこれらのサイトおよびそのサブドメインで安全な DNS を利用しません。
+permissions-doh-entry-field = ウェブサイトのドメイン名を入力してください
+    .accesskey = d
+permissions-doh-add-exception =
+    .label = 追加
+    .accesskey = A
+permissions-doh-col =
+    .label = ドメイン
+permissions-doh-remove =
+    .label = 削除
+    .accesskey = R
+permissions-doh-remove-all =
+    .label = すべて削除
+    .accesskey = e

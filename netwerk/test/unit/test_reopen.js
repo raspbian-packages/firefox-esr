@@ -17,14 +17,9 @@ const NS_ERROR_ALREADY_OPENED = 0x804b0049;
 var chan = null;
 var httpserv = null;
 
-[
-  test_data_channel,
-  test_http_channel,
-  test_file_channel,
-  // Commented by default as it relies on external ressources
-  //test_ftp_channel,
-  end,
-].forEach(f => add_test(f));
+[test_data_channel, test_http_channel, test_file_channel, end].forEach(f =>
+  add_test(f)
+);
 
 // Utility functions
 
@@ -58,13 +53,13 @@ function check_throws(closure, error) {
 }
 
 function check_open_throws(error) {
-  check_throws(function() {
+  check_throws(function () {
     chan.open(listener);
   }, error);
 }
 
 function check_async_open_throws(error) {
-  check_throws(function() {
+  check_throws(function () {
     chan.asyncOpen(listener);
   }, error);
 }
@@ -108,28 +103,21 @@ function test_channel(createChanClosure) {
 }
 
 function test_data_channel() {
-  test_channel(function() {
+  test_channel(function () {
     return makeChan("data:text/plain,foo");
   });
 }
 
 function test_http_channel() {
-  test_channel(function() {
+  test_channel(function () {
     return makeChan("http://localhost:" + httpserv.identity.primaryPort + "/");
   });
 }
 
 function test_file_channel() {
   var file = do_get_file("data/test_readline1.txt");
-  test_channel(function() {
+  test_channel(function () {
     return new_file_channel(file);
-  });
-}
-
-// Uncomment test_ftp_channel in test_array to test this
-function test_ftp_channel() {
-  test_channel(function() {
-    return makeChan("ftp://ftp.mozilla.org/pub/mozilla.org/README");
   });
 }
 

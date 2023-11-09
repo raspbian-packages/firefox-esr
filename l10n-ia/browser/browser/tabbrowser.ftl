@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Nove scheda
 tabbrowser-empty-private-tab-title = Nove scheda private
+
 tabbrowser-menuitem-close-tab =
     .label = Clauder le scheda
 tabbrowser-menuitem-close =
     .label = Clauder
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -121,6 +120,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Non monstrar me plus iste fenestra d
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Permitter que notificationes como iste de { $domain } te porta a lor scheda
+
 tabbrowser-customizemode-tab-title = Personalisar { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -139,3 +139,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Non plus silentiar le schedas
     .accesskey = s
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Reproducer audios
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Listar tote le { $tabCount } schedas
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Tacer le scheda
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Non plus tacer le scheda
+tabbrowser-manager-close-tab =
+    .tooltiptext = Clauder le scheda

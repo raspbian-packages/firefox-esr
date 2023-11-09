@@ -31,6 +31,7 @@
 #include "nsIScriptContext.h"
 #include "mozilla/dom/Document.h"
 #include "nsIScriptGlobalObject.h"
+#include "nsQueryObject.h"
 #include "nsVariant.h"
 #include "mozilla/dom/ContentChild.h"
 #include "mozilla/dom/DataTransferBinding.h"
@@ -204,7 +205,7 @@ DataTransfer::DataTransfer(nsISupports* aParent, EventMessage aEventMessage,
                            bool aIsCrossDomainSubFrameDrop,
                            int32_t aClipboardType, DataTransferItemList* aItems,
                            Element* aDragImage, uint32_t aDragImageX,
-                           uint32_t aDragImageY)
+                           uint32_t aDragImageY, bool aShowFailAnimation)
     : mParent(aParent),
       mDropEffect(nsIDragService::DRAGDROP_ACTION_NONE),
       mEffectAllowed(aEffectAllowed),
@@ -217,7 +218,8 @@ DataTransfer::DataTransfer(nsISupports* aParent, EventMessage aEventMessage,
       mClipboardType(aClipboardType),
       mDragImage(aDragImage),
       mDragImageX(aDragImageX),
-      mDragImageY(aDragImageY) {
+      mDragImageY(aDragImageY),
+      mShowFailAnimation(aShowFailAnimation) {
   MOZ_ASSERT(mParent);
   MOZ_ASSERT(aItems);
 
@@ -621,8 +623,8 @@ already_AddRefed<DataTransfer> DataTransfer::MozCloneForEvent(
 // The order of the types matters. `kFileMime` needs to be one of the first two
 // types.
 static const char* kNonPlainTextExternalFormats[] = {
-    kCustomTypesMime, kFileMime,    kHTMLMime,    kRTFMime,
-    kURLMime,         kURLDataMime, kUnicodeMime, kPNGImageMime};
+    kCustomTypesMime, kFileMime, kHTMLMime,     kRTFMime,  kURLMime,
+    kURLDataMime,     kTextMime, kPNGImageMime, kPDFJSMime};
 
 /* static */
 void DataTransfer::GetExternalClipboardFormats(const int32_t& aWhichClipboard,
@@ -642,12 +644,12 @@ void DataTransfer::GetExternalClipboardFormats(const int32_t& aWhichClipboard,
 
   if (aPlainTextOnly) {
     bool hasType;
-    AutoTArray<nsCString, 1> unicodeMime = {nsDependentCString(kUnicodeMime)};
-    nsresult rv = clipboard->HasDataMatchingFlavors(unicodeMime,
-                                                    aWhichClipboard, &hasType);
+    AutoTArray<nsCString, 1> textMime = {nsDependentCString(kTextMime)};
+    nsresult rv =
+        clipboard->HasDataMatchingFlavors(textMime, aWhichClipboard, &hasType);
     NS_SUCCEEDED(rv);
     if (hasType) {
-      aResult->AppendElement(kUnicodeMime);
+      aResult->AppendElement(kTextMime);
     }
     return;
   }
@@ -684,9 +686,9 @@ void DataTransfer::GetExternalTransferableFormats(
   aTransferable->FlavorsTransferableCanExport(flavors);
 
   if (aPlainTextOnly) {
-    auto index = flavors.IndexOf(nsLiteralCString(kUnicodeMime));
+    auto index = flavors.IndexOf(nsLiteralCString(kTextMime));
     if (index != flavors.NoIndex) {
-      aResult->AppendElement(nsLiteralCString(kUnicodeMime));
+      aResult->AppendElement(nsLiteralCString(kTextMime));
     }
     return;
   }
@@ -832,7 +834,7 @@ nsresult DataTransfer::Clone(nsISupports* aParent, EventMessage aEventMessage,
   RefPtr<DataTransfer> newDataTransfer = new DataTransfer(
       aParent, aEventMessage, mEffectAllowed, mCursorState, mIsExternal,
       aUserCancelled, aIsCrossDomainSubFrameDrop, mClipboardType, mItems,
-      mDragImage, mDragImageX, mDragImageY);
+      mDragImage, mDragImageX, mDragImageY, mShowFailAnimation);
 
   newDataTransfer.forget(aNewDataTransfer);
   return NS_OK;
@@ -900,7 +902,6 @@ already_AddRefed<nsITransferable> DataTransfer::GetTransferable(
   // indicating that the data and length are no longer valid.
   const uint32_t baseLength = sizeof(uint32_t) + 1;
   uint32_t totalCustomLength = baseLength;
-
 
   /*
    * Two passes are made here to iterate over all of the types. First, look for
@@ -1084,27 +1085,20 @@ already_AddRefed<nsITransferable> DataTransfer::GetTransferable(
           continue;
         }
 
-        // The underlying drag code uses text/unicode, so use that instead of
-        // text/plain
-        const char* format;
-        NS_ConvertUTF16toUTF8 utf8format(type);
-        if (utf8format.EqualsLiteral(kTextMime)) {
-          format = kUnicodeMime;
-        } else {
-          format = utf8format.get();
-        }
+        NS_ConvertUTF16toUTF8 format(type);
 
         // If a converter is set for a format, set the converter for the
         // transferable and don't add the item
         nsCOMPtr<nsIFormatConverter> converter =
             do_QueryInterface(convertedData);
         if (converter) {
-          transferable->AddDataFlavor(format);
+          transferable->AddDataFlavor(format.get());
           transferable->SetConverter(converter);
           continue;
         }
 
-        nsresult rv = transferable->SetTransferData(format, convertedData);
+        nsresult rv =
+            transferable->SetTransferData(format.get(), convertedData);
         if (NS_FAILED(rv)) {
           return nullptr;
         }
@@ -1138,16 +1132,22 @@ bool DataTransfer::ConvertFromVariant(nsIVariant* aVariant,
       return false;
     }
 
-    nsCOMPtr<nsIFlavorDataProvider> fdp = do_QueryInterface(data);
-    if (fdp) {
-      // For flavour data providers, use 0 as the length.
+    // For flavour data providers, use 0 as the length.
+    if (nsCOMPtr<nsIFlavorDataProvider> fdp = do_QueryInterface(data)) {
       fdp.forget(aSupports);
       *aLength = 0;
-    } else {
-      data.forget(aSupports);
-      *aLength = sizeof(nsISupports*);
+      return true;
     }
 
+    // Only use the underlying BlobImpl for transferables.
+    if (RefPtr<Blob> blob = do_QueryObject(data)) {
+      RefPtr<BlobImpl> blobImpl = blob->Impl();
+      blobImpl.forget(aSupports);
+    } else {
+      data.forget(aSupports);
+    }
+
+    *aLength = sizeof(nsISupports*);
     return true;
   }
 
@@ -1219,7 +1219,7 @@ void DataTransfer::SetDataWithPrincipalFromOtherProcess(
 
 void DataTransfer::GetRealFormat(const nsAString& aInFormat,
                                  nsAString& aOutFormat) const {
-  // treat text/unicode as equivalent to text/plain
+  // For compatibility, treat text/unicode as equivalent to text/plain
   nsAutoString lowercaseFormat;
   nsContentUtils::ASCIIToLower(aInFormat, lowercaseFormat);
   if (lowercaseFormat.EqualsLiteral("text") ||
@@ -1242,7 +1242,7 @@ nsresult DataTransfer::CacheExternalData(const char* aFormat, uint32_t aIndex,
   ErrorResult rv;
   RefPtr<DataTransferItem> item;
 
-  if (strcmp(aFormat, kUnicodeMime) == 0) {
+  if (strcmp(aFormat, kTextMime) == 0) {
     item = mItems->SetDataWithPrincipal(u"text/plain"_ns, nullptr, aIndex,
                                         aPrincipal, false, aHidden, rv);
     if (NS_WARN_IF(rv.Failed())) {
@@ -1292,8 +1292,8 @@ void DataTransfer::CacheExternalDragFormats() {
   // XXXndeakin there are some other formats but those are platform specific.
   // NOTE: kFileMime must have index 0
   // TODO: should this be `kNonPlainTextExternalFormats` instead?
-  static const char* formats[] = {kFileMime,    kHTMLMime,    kURLMime,
-                                  kURLDataMime, kUnicodeMime, kPNGImageMime};
+  static const char* formats[] = {kFileMime,    kHTMLMime, kURLMime,
+                                  kURLDataMime, kTextMime, kPNGImageMime};
 
   uint32_t count;
   dragSession->GetNumDropItems(&count);
@@ -1344,10 +1344,10 @@ void DataTransfer::CacheExternalClipboardFormats(bool aPlainTextOnly) {
   }
 
   if (aPlainTextOnly) {
-    // The only thing that will be in types is kUnicodeMime
+    // The only thing that will be in types is kTextMime
     MOZ_ASSERT(typesArray.IsEmpty() || typesArray.Length() == 1);
     if (typesArray.Length() == 1) {
-      CacheExternalData(kUnicodeMime, 0, sysPrincipal, false);
+      CacheExternalData(kTextMime, 0, sysPrincipal, false);
     }
     return;
   }
@@ -1370,7 +1370,8 @@ void DataTransfer::CacheExternalData(const nsTArray<nsCString>& aTypes,
   for (const nsCString& type : aTypes) {
     if (type.EqualsLiteral(kCustomTypesMime)) {
       FillInExternalCustomTypes(0, aPrincipal);
-    } else if (type.EqualsLiteral(kFileMime) && XRE_IsContentProcess()) {
+    } else if (type.EqualsLiteral(kFileMime) && XRE_IsContentProcess() &&
+               !StaticPrefs::dom_events_dataTransfer_mozFile_enabled()) {
       // We will be ignoring any application/x-moz-file files found in the paste
       // datatransfer within e10s, as they will fail top be sent over IPC.
       // Because of that, we will unset hasFileData, whether or not it would
@@ -1381,9 +1382,10 @@ void DataTransfer::CacheExternalData(const nsTArray<nsCString>& aTypes,
       // We expect that if kFileMime is supported, then it will be the either at
       // index 0 or at index 1 in the aTypes returned by
       // GetExternalClipboardFormats
-      if (type.EqualsLiteral(kFileMime) && !XRE_IsContentProcess()) {
+      if (type.EqualsLiteral(kFileMime)) {
         hasFileData = true;
       }
+
       // If we aren't the file data, and we have file data, we want to be hidden
       CacheExternalData(
           type.get(), 0, aPrincipal,
@@ -1480,29 +1482,6 @@ void DataTransfer::SetMode(DataTransfer::Mode aMode) {
     mMode = Mode::ReadOnly;
   } else {
     mMode = aMode;
-  }
-}
-
-/* static */
-void DataTransfer::IPCDataTransferTextItemsToDataTransfer(
-    const IPCDataTransfer& aIpcDataTransfer, const bool aHidden,
-    DataTransfer& aDataTransfer) {
-  MOZ_ASSERT(XRE_IsContentProcess());
-  MOZ_ASSERT(aDataTransfer.Items()->Length() == 0);
-
-  uint32_t i = 0;
-  for (const IPCDataTransferItem& item : aIpcDataTransfer.items()) {
-    MOZ_ASSERT(item.data().type() == IPCDataTransferData::TnsString);
-    RefPtr<nsVariantCC> variant = new nsVariantCC();
-    nsresult rv = nsContentUtils::IPCTransferableItemToVariant(
-        item, variant, ContentChild::GetSingleton());
-    if (NS_FAILED(rv)) {
-      continue;
-    }
-
-    aDataTransfer.SetDataWithPrincipalFromOtherProcess(
-        NS_ConvertUTF8toUTF16(item.flavor()), variant, i,
-        nsContentUtils::GetSystemPrincipal(), aHidden);
   }
 }
 

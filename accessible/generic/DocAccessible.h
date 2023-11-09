@@ -41,6 +41,11 @@ class RelatedAccIterator;
 template <class Class, class... Args>
 class TNotification;
 
+/**
+ * An accessibility tree node that originated in a content process and
+ * represents a document. Tabs, in-process iframes, and out-of-process iframes
+ * all use this class to represent the doc they contain.
+ */
 class DocAccessible : public HyperTextAccessibleWrap,
                       public nsIDocumentObserver,
                       public nsSupportsWeakReference,
@@ -68,13 +73,12 @@ class DocAccessible : public HyperTextAccessibleWrap,
 
   virtual mozilla::a11y::ENameValueFlag Name(nsString& aName) const override;
   virtual void Description(nsString& aDescription) const override;
-  virtual LocalAccessible* FocusedChild() override;
+  virtual Accessible* FocusedChild() override;
   virtual mozilla::a11y::role NativeRole() const override;
   virtual uint64_t NativeState() const override;
   virtual uint64_t NativeInteractiveState() const override;
   virtual bool NativelyUnavailable() const override;
   virtual void ApplyARIAState(uint64_t* aState) const override;
-  virtual already_AddRefed<AccAttributes> Attributes() override;
 
   virtual void TakeFocus() const override;
 
@@ -124,6 +128,14 @@ class DocAccessible : public HyperTextAccessibleWrap,
   void QueueCacheUpdate(LocalAccessible* aAcc, uint64_t aNewDomain);
 
   /**
+   * Walks the mDependentIDsHashes list for the given accessible and
+   * queues a CacheDomain::Relations cache update fore each related acc.
+   * We call this when we observe an ID mutation or when an acc is bound
+   * to its document.
+   */
+  void QueueCacheUpdateForDependentRelations(LocalAccessible* aAcc);
+
+  /**
    * Return virtual cursor associated with the document.
    */
   nsIAccessiblePivot* VirtualCursor();
@@ -152,6 +164,8 @@ class DocAccessible : public HyperTextAccessibleWrap,
   bool IsContentLoaded() const;
 
   bool IsHidden() const;
+
+  void SetViewportCacheDirty(bool aDirty) { mViewportCacheDirty = aDirty; }
 
   /**
    * Document load states.
@@ -662,7 +676,15 @@ class DocAccessible : public HyperTextAccessibleWrap,
   /**
    * Bit mask of other states and props.
    */
-  uint32_t mDocFlags : 28;
+  uint32_t mDocFlags : 27;
+
+  /**
+   * Tracks whether we have seen changes to this document's content that
+   * indicate we should re-send the viewport cache we use for hittesting.
+   * This value is set in `BundleFieldsForCache` and processed in
+   * `ProcessQueuedCacheUpdates`.
+   */
+  bool mViewportCacheDirty : 1;
 
   /**
    * Type of document load event fired after the document is loaded completely.
@@ -765,6 +787,14 @@ class DocAccessible : public HyperTextAccessibleWrap,
    * It keeps track of Accessibles moved during this tick.
    */
   void TrackMovedAccessible(LocalAccessible* aAcc);
+
+  /**
+   * For hidden subtrees, fire a name/description change event if the subtree
+   * is a target of aria-labelledby/describedby.
+   * This does nothing if it is called on a node which is not part of a hidden
+   * aria-labelledby/describedby target.
+   */
+  void MaybeHandleChangeToHiddenNameOrDescription(nsIContent* aChild);
 
   PresShell* mPresShell;
 

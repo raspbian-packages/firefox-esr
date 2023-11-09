@@ -2,17 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function, unicode_literals
-
 import codecs
 import errno
 import io
 import itertools
 import logging
 import os
+import pprint
 import sys
 import textwrap
-
 from collections.abc import Iterable
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -22,6 +20,10 @@ sys.path.insert(0, os.path.join(base_dir, "python", "mozbuild"))
 sys.path.insert(0, os.path.join(base_dir, "third_party", "python", "packaging"))
 sys.path.insert(0, os.path.join(base_dir, "third_party", "python", "pyparsing"))
 sys.path.insert(0, os.path.join(base_dir, "third_party", "python", "six"))
+sys.path.insert(0, os.path.join(base_dir, "third_party", "python", "looseversion"))
+import mozpack.path as mozpath
+import six
+from mach.requirements import MachEnvRequirements
 from mach.site import (
     CommandSiteManager,
     ExternalPythonSite,
@@ -29,16 +31,9 @@ from mach.site import (
     MozSiteMetadata,
     SitePackagesSource,
 )
-from mach.requirements import MachEnvRequirements
-from mozbuild.configure import (
-    ConfigureSandbox,
-    TRACE,
-)
-from mozbuild.pythonutil import iter_modules_in_path
 from mozbuild.backend.configenvironment import PartialConfigEnvironment
-from mozbuild.util import write_indented_repr
-import mozpack.path as mozpath
-import six
+from mozbuild.configure import TRACE, ConfigureSandbox
+from mozbuild.pythonutil import iter_modules_in_path
 
 
 def main(argv):
@@ -253,14 +248,13 @@ def config_status(config, execute=True):
                 """\
             #!%(python)s
             # coding=utf-8
-            from __future__ import unicode_literals
         """
             )
             % {"python": config["PYTHON3"]}
         )
         for k, v in sorted(six.iteritems(sanitized_config)):
             fh.write("%s = " % k)
-            write_indented_repr(fh, v)
+            pprint.pprint(v, stream=fh, indent=4)
         fh.write(
             "__all__ = ['topobjdir', 'topsrcdir', 'defines', " "'substs', 'mozconfig']"
         )

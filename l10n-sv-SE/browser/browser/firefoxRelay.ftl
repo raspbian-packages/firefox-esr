@@ -17,13 +17,15 @@ firefox-relay-must-login-to-fxa = Du måste logga in på { -fxaccount-brand-name
 firefox-relay-get-unlimited-masks =
     .label = Hantera alias
     .accesskey = H
-firefox-relay-opt-in-title = Skydda din e-postadress
-firefox-relay-opt-in-subtitle = Lägg till { -relay-brand-name }
-firefox-relay-generate-mask-title = Skydda din e-postadress
-firefox-relay-generate-mask-subtitle = Generera { -relay-brand-short-name }-alias
-firefox-relay-opt-in-confirmation-enable =
-    .label = Fortsätt
-    .accesskey = F
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Skydda din e-postadress:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = Använd { -relay-brand-name } e-postalias
+firefox-relay-use-mask-title = Använd { -relay-brand-name } e-postalias
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = Använd e-postalias
+    .accesskey = A
 firefox-relay-opt-in-confirmation-disable =
     .label = Visa mig inte det här igen
     .accesskey = n

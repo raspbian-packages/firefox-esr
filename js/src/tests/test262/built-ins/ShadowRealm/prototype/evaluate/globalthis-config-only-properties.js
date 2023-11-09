@@ -1,4 +1,4 @@
-// |reftest| skip -- ShadowRealm is not supported
+// |reftest| shell-option(--enable-shadow-realms) skip-if(!xulRuntime.shell) -- requires shell-options
 // Copyright (C) 2021 Leo Balter. All rights reserved.
 // This code is governed by the BSD license found in the LICENSE file.
 /*---
@@ -26,7 +26,7 @@ info: |
 
   The host may use this hook to add properties to the ShadowRealm's global
   object. Those properties must be configurable.
-features: [ShadowRealm]
+features: [ShadowRealm, Array.prototype.includes]
 ---*/
 
 assert.sameValue(

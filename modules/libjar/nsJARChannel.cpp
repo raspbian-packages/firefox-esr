@@ -77,6 +77,7 @@ class nsJARInputThunk : public nsIInputStream {
         mJarReader(zipReader),
         mJarEntry(jarEntry),
         mContentLength(-1) {
+    MOZ_DIAGNOSTIC_ASSERT(zipReader, "zipReader must not be null");
     if (ENTRY_IS_DIRECTORY(mJarEntry) && fullJarURI) {
       nsCOMPtr<nsIURI> urlWithoutQueryRef;
       nsresult rv = NS_MutateURI(fullJarURI)
@@ -110,6 +111,9 @@ class nsJARInputThunk : public nsIInputStream {
 NS_IMPL_ISUPPORTS(nsJARInputThunk, nsIInputStream)
 
 nsresult nsJARInputThunk::Init() {
+  if (!mJarReader) {
+    return NS_ERROR_INVALID_ARG;
+  }
   nsresult rv;
   if (ENTRY_IS_DIRECTORY(mJarEntry)) {
     // A directory stream also needs the Spec of the FullJarURI
@@ -155,6 +159,9 @@ nsJARInputThunk::Available(uint64_t* avail) {
 }
 
 NS_IMETHODIMP
+nsJARInputThunk::StreamStatus() { return mJarStream->StreamStatus(); }
+
+NS_IMETHODIMP
 nsJARInputThunk::Read(char* buf, uint32_t count, uint32_t* countRead) {
   return mJarStream->Read(buf, count, countRead);
 }
@@ -197,6 +204,7 @@ nsJARChannel::~nsJARChannel() {
   }
 
   // Proxy release the following members to main thread.
+  NS_ReleaseOnMainThread("nsJARChannel::mLoadInfo", mLoadInfo.forget());
   NS_ReleaseOnMainThread("nsJARChannel::mCallbacks", mCallbacks.forget());
   NS_ReleaseOnMainThread("nsJARChannel::mProgressSink", mProgressSink.forget());
   NS_ReleaseOnMainThread("nsJARChannel::mLoadGroup", mLoadGroup.forget());
@@ -285,9 +293,6 @@ nsresult nsJARChannel::CreateJarInput(nsIZipReaderCache* jarCache,
       new nsJARInputThunk(reader, mJarURI, mJarEntry, jarCache != nullptr);
   rv = input->Init();
   if (NS_FAILED(rv)) {
-    if (rv == NS_ERROR_FILE_NOT_FOUND) {
-      CheckForBrokenChromeURL(mLoadInfo, mOriginalURI);
-    }
     return rv;
   }
 
@@ -487,6 +492,9 @@ nsresult nsJARChannel::OnOpenLocalFileComplete(nsresult aResult,
   MOZ_ASSERT(mIsPending);
 
   if (NS_FAILED(aResult)) {
+    if (aResult == NS_ERROR_FILE_NOT_FOUND) {
+      CheckForBrokenChromeURL(mLoadInfo, mOriginalURI);
+    }
     if (!aIsSyncCall) {
       NotifyError(aResult);
     }
@@ -567,6 +575,19 @@ nsJARChannel::GetStatus(nsresult* status) {
   else
     *status = mStatus;
   return NS_OK;
+}
+
+NS_IMETHODIMP nsJARChannel::SetCanceledReason(const nsACString& aReason) {
+  return SetCanceledReasonImpl(aReason);
+}
+
+NS_IMETHODIMP nsJARChannel::GetCanceledReason(nsACString& aReason) {
+  return GetCanceledReasonImpl(aReason);
+}
+
+NS_IMETHODIMP nsJARChannel::CancelWithReason(nsresult aStatus,
+                                             const nsACString& aReason) {
+  return CancelWithReasonImpl(aStatus, aReason);
 }
 
 NS_IMETHODIMP
@@ -720,9 +741,9 @@ nsJARChannel::SetNotificationCallbacks(nsIInterfaceRequestor* aCallbacks) {
 }
 
 NS_IMETHODIMP
-nsJARChannel::GetSecurityInfo(nsISupports** aSecurityInfo) {
+nsJARChannel::GetSecurityInfo(nsITransportSecurityInfo** aSecurityInfo) {
   MOZ_ASSERT(aSecurityInfo, "Null out param");
-  NS_IF_ADDREF(*aSecurityInfo = mSecurityInfo);
+  *aSecurityInfo = nullptr;
   return NS_OK;
 }
 
@@ -834,9 +855,19 @@ nsJARChannel::SetContentLength(int64_t aContentLength) {
 }
 
 static void RecordZeroLengthEvent(bool aIsSync, const nsCString& aSpec,
-                                  nsresult aStatus, bool aCanceled) {
+                                  nsresult aStatus, bool aCanceled,
+                                  nsILoadInfo* aLoadInfo) {
   if (!StaticPrefs::network_jar_record_failure_reason()) {
     return;
+  }
+
+  if (aLoadInfo) {
+    bool shouldSkipCheckForBrokenURLOrZeroSized;
+    MOZ_ALWAYS_SUCCEEDS(aLoadInfo->GetShouldSkipCheckForBrokenURLOrZeroSized(
+        &shouldSkipCheckForBrokenURLOrZeroSized));
+    if (shouldSkipCheckForBrokenURLOrZeroSized) {
+      return;
+    }
   }
 
   // The event can only hold 80 characters.
@@ -1017,7 +1048,7 @@ nsJARChannel::Open(nsIInputStream** aStream) {
 
   auto recordEvent = MakeScopeExit([&] {
     if (mContentLength <= 0 || NS_FAILED(rv)) {
-      RecordZeroLengthEvent(true, mSpec, rv, mCanceled);
+      RecordZeroLengthEvent(true, mSpec, rv, mCanceled, mLoadInfo);
     }
   });
 
@@ -1239,7 +1270,7 @@ nsJARChannel::OnStopRequest(nsIRequest* req, nsresult status) {
 
   if (mListener) {
     if (!mOnDataCalled || NS_FAILED(status)) {
-      RecordZeroLengthEvent(false, mSpec, status, mCanceled);
+      RecordZeroLengthEvent(false, mSpec, status, mCanceled, mLoadInfo);
     }
 
     mListener->OnStopRequest(this, status);
@@ -1297,7 +1328,7 @@ nsJARChannel::OnDataAvailable(nsIRequest* req, nsIInputStream* stream,
 }
 
 NS_IMETHODIMP
-nsJARChannel::RetargetDeliveryTo(nsIEventTarget* aEventTarget) {
+nsJARChannel::RetargetDeliveryTo(nsISerialEventTarget* aEventTarget) {
   MOZ_ASSERT(NS_IsMainThread());
 
   nsCOMPtr<nsIThreadRetargetableRequest> request = do_QueryInterface(mRequest);
@@ -1309,7 +1340,7 @@ nsJARChannel::RetargetDeliveryTo(nsIEventTarget* aEventTarget) {
 }
 
 NS_IMETHODIMP
-nsJARChannel::GetDeliveryTarget(nsIEventTarget** aEventTarget) {
+nsJARChannel::GetDeliveryTarget(nsISerialEventTarget** aEventTarget) {
   MOZ_ASSERT(NS_IsMainThread());
 
   nsCOMPtr<nsIThreadRetargetableRequest> request = do_QueryInterface(mRequest);

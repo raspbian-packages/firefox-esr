@@ -146,7 +146,7 @@ NS_QUERYFRAME_TAIL_INHERITING(nsContainerFrame)
 
 float nsPageSequenceFrame::GetPrintPreviewScale() const {
   nsPresContext* pc = PresContext();
-  float scale = pc->GetPrintPreviewScaleForSequenceFrame();
+  float scale = pc->GetPrintPreviewScaleForSequenceFrameOrScrollbars();
 
   WritingMode wm = GetWritingMode();
   if (pc->IsScreen() && MOZ_LIKELY(mScrollportSize.ISize(wm) > 0 &&
@@ -331,14 +331,6 @@ void nsPageSequenceFrame::Reflow(nsPresContext* aPresContext,
   nscoord maxInflatedSheetWidth = 0;
   nscoord maxInflatedSheetHeight = 0;
 
-  // Determine the app-unit size of each printed sheet. This is normally the
-  // same as the app-unit size of a page, but it might need the components
-  // swapped, depending on what HasOrthogonalSheetsAndPages says.
-  nsSize sheetSize = aPresContext->GetPageSize();
-  if (mPageData->mPrintSettings->HasOrthogonalSheetsAndPages()) {
-    std::swap(sheetSize.width, sheetSize.height);
-  }
-
   // Tile the sheets vertically
   for (nsIFrame* kidFrame : mFrames) {
     // Set the shared data into the page frame before reflow
@@ -346,6 +338,12 @@ void nsPageSequenceFrame::Reflow(nsPresContext* aPresContext,
                "we're only expecting PrintedSheetFrame as children");
     auto* sheet = static_cast<PrintedSheetFrame*>(kidFrame);
     sheet->SetSharedPageData(mPageData.get());
+
+    // If we want to reliably access the nsPageFrame before reflowing the sheet
+    // frame, we need to call this:
+    sheet->ClaimPageFrameFromPrevInFlow();
+
+    const nsSize sheetSize = sheet->PrecomputeSheetSize(aPresContext);
 
     // Reflow the sheet
     ReflowInput kidReflowInput(
@@ -372,6 +370,8 @@ void nsPageSequenceFrame::Reflow(nsPresContext* aPresContext,
 
     FinishReflowChild(kidFrame, aPresContext, kidReflowOutput, &kidReflowInput,
                       x, y, ReflowChildFlags::Default);
+    MOZ_ASSERT(kidFrame->GetSize() == sheetSize,
+               "PrintedSheetFrame::PrecomputeSheetSize gave the wrong size!");
     y += kidReflowOutput.Height();
     y += pageCSSMargin.bottom;
 
@@ -437,7 +437,6 @@ void nsPageSequenceFrame::Reflow(nsPresContext* aPresContext,
   CenterPages();
 
   NS_FRAME_TRACE_REFLOW_OUT("nsPageSequenceFrame::Reflow", aStatus);
-  NS_FRAME_SET_TRUNCATION(aStatus, aReflowInput, aReflowOutput);
 }
 
 //----------------------------------------------------------------------
@@ -590,7 +589,7 @@ nsresult nsPageSequenceFrame::PrePrintNextSheet(nsITimerCallback* aCallback,
 
       mCalledBeginPage = true;
 
-      RefPtr<gfxContext> renderingContext = dc->CreateRenderingContext();
+      UniquePtr<gfxContext> renderingContext = dc->CreateRenderingContext();
       NS_ENSURE_TRUE(renderingContext, NS_ERROR_OUT_OF_MEMORY);
 
       DrawTarget* drawTarget = renderingContext->GetDrawTarget();
@@ -685,12 +684,12 @@ nsresult nsPageSequenceFrame::PrintNextSheet() {
          mCurrentSheetIdx));
 
   // CreateRenderingContext can fail
-  RefPtr<gfxContext> gCtx = dc->CreateRenderingContext();
+  UniquePtr<gfxContext> gCtx = dc->CreateRenderingContext();
   NS_ENSURE_TRUE(gCtx, NS_ERROR_OUT_OF_MEMORY);
 
   nsRect drawingRect(nsPoint(0, 0), currentSheetFrame->GetSize());
   nsRegion drawingRegion(drawingRect);
-  nsLayoutUtils::PaintFrame(gCtx, currentSheetFrame, drawingRegion,
+  nsLayoutUtils::PaintFrame(gCtx.get(), currentSheetFrame, drawingRegion,
                             NS_RGBA(0, 0, 0, 0),
                             nsDisplayListBuilderMode::PaintForPrinting,
                             nsLayoutUtils::PaintFrameFlags::SyncDecodeImages);

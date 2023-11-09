@@ -30,9 +30,11 @@ menu-application-touch-bar =
 menu-quit =
     .label = Esci
     .accesskey = E
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Esci da { -brand-shorter-name }
+
 menu-about =
     .label = Informazioni su { -brand-shorter-name }
     .accesskey = I
@@ -211,8 +213,6 @@ menu-history-undo-menu =
     .label = Schede chiuse di recente
 menu-history-undo-window-menu =
     .label = Finestre chiuse di recente
-menu-history-reopen-all-tabs = Riapri tutte le schede
-menu-history-reopen-all-windows = Riapri tutte le finestre
 
 ## Bookmarks Menu
 
@@ -221,14 +221,13 @@ menu-bookmarks-menu =
     .accesskey = e
 menu-bookmarks-manage =
     .label = Gestisci segnalibri
-menu-bookmark-current-tab =
-    .label = Aggiungi scheda corrente ai segnalibri
-menu-bookmark-edit =
-    .label = Modifica segnalibro
 menu-bookmark-tab =
     .label = Aggiungi scheda corrente ai segnalibri…
 menu-edit-bookmark =
     .label = Modifica segnalibro…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Cerca nei segnalibri
 menu-bookmarks-all-tabs =
     .label = Tutte le schede nei segnalibri…
 menu-bookmarks-toolbar =
@@ -322,6 +321,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Disattiva Modalità risoluzione problemi
     .accesskey = m
+menu-help-switch-device =
+    .label = Passaggio a un nuovo dispositivo
+    .accesskey = P
 # Label of the Help menu item. Either this or
 # safeb.palm.notdeceptive.label from
 # phishing-afterload-warning-message.dtd is shown.
@@ -331,3 +333,5 @@ menu-help-report-deceptive-site =
 menu-help-not-deceptive =
     .label = Non è un sito ingannevole…
     .accesskey = e
+
+

@@ -3,18 +3,18 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 toolbar-button-firefox-view =
-  .label = { -firefoxview-brand-name }
-  .tooltiptext = { -firefoxview-brand-name }
+    .label = { -firefoxview-brand-name }
+    .tooltiptext = { -firefoxview-brand-name }
 
 menu-tools-firefox-view =
-  .label = { -firefoxview-brand-name }
-  .accesskey = F
+    .label = { -firefoxview-brand-name }
+    .accesskey = F
 
 firefoxview-page-title = { -firefoxview-brand-name }
 
 firefoxview-close-button =
-  .title = Chiudi
-  .aria-label = Chiudi
+    .title = Chiudi
+    .aria-label = Chiudi
 
 # Used instead of the localized relative time when a timestamp is within a minute or so of now
 firefoxview-just-now-timestamp = adesso
@@ -78,12 +78,13 @@ firefoxview-closed-tabs-title = Chiuse di recente
 
 firefoxview-closed-tabs-description2 = Riapri pagine che hai chiuso in questa finestra.
 firefoxview-closed-tabs-placeholder-header = Nessuna scheda chiusa di recente
-firefoxview-closed-tabs-placeholder-body = Quando chiudi una scheda in questa finestra potrai sempre recuperarla da qui.
+firefoxview-closed-tabs-placeholder-body = Quando chiudi una scheda in questa finestra puoi sempre recuperarla da qui.
+firefoxview-closed-tabs-placeholder-body2 = Quando chiudi una scheda puoi sempre recuperarla da qui.
 
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
-  .title = Rimuovi { $tabTitle }
+    .title = Rimuovi { $tabTitle }
 
 # refers to the last tab that was used
 firefoxview-pickup-tabs-badge = Ultima attiva
@@ -91,7 +92,7 @@ firefoxview-pickup-tabs-badge = Ultima attiva
 # Variables:
 #   $targetURI (string) - URL that will be opened in the new tab
 firefoxview-tabs-list-tab-button =
-  .title = Apri { $targetURI } in una nuova scheda
+    .title = Apri { $targetURI } in una nuova scheda
 
 firefoxview-try-colorways-button = Prova nuove tonalità
 firefoxview-change-colorway-button = Cambia tonalità
@@ -105,7 +106,75 @@ firefoxview-synced-tabs-placeholder-header = Non c’è ancora nulla da mostrare
 firefoxview-synced-tabs-placeholder-body = La prossima volta che apri una pagina in { -brand-product-name } su un altro dispositivo, la troverai qui.
 
 firefoxview-collapse-button-show =
-  .title = Mostra elenco
+    .title = Mostra elenco
 
 firefoxview-collapse-button-hide =
-  .title = Nascondi elenco
+    .title = Nascondi elenco
+
+firefoxview-overview-nav = Navigazione recente
+    .title = Navigazione recente
+
+firefoxview-overview-header = Navigazione recente
+  .title = Navigazione recente
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Cronologia
+    .title = Cronologia
+firefoxview-history-header = Cronologia
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Schede aperte
+    .title = Schede aperte
+firefoxview-opentabs-header = Schede aperte
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Schede chiuse di recente
+  .title = Schede chiuse di recente
+firefoxview-recently-closed-header = Schede chiuse di recente
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Schede da altri dispositivi
+  .title = Schede da altri dispositivi
+firefoxview-synced-tabs-header = Schede da altri dispositivi
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Mostra tutto
+
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+  .title = Finestra { $winID }
+
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+  .title = Finestra { $winID } (attuale)
+
+firefoxview-opentabs-focus-tab =
+  .title = Passa a questa scheda
+
+firefoxview-show-more = Mostra altro
+firefoxview-show-less = Mostra meno
+
+firefoxview-sort-history-by-date-label = Ordina per data
+firefoxview-sort-history-by-site-label = Ordina per sito
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Oggi - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Ieri - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Mostra tutta la cronologia
+
+firefoxview-view-more-browsing-history = Mostra ulteriore cronologia di navigazione

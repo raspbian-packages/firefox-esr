@@ -15,7 +15,7 @@ const testToolDefinition = {
   build: (iframeWindow, toolbox) => {
     return {
       target: toolbox.target,
-      toolbox: toolbox,
+      toolbox,
       isReady: true,
       destroy: () => {},
       panelDoc: iframeWindow.document,
@@ -23,7 +23,7 @@ const testToolDefinition = {
   },
 };
 
-add_task(async function() {
+add_task(async function () {
   gDevTools.registerTool(testToolDefinition);
   let tab = await addTab("about:blank");
 

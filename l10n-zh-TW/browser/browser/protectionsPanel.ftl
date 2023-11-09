@@ -63,7 +63,6 @@ protections-panel-not-found-label = 未偵測到
 ##
 
 protections-panel-settings-label = 保護設定
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = 保護資訊儀錶板
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = 表單
 protections-panel-site-not-working-view-issue-list-payments = 付款
 protections-panel-site-not-working-view-issue-list-comments = 註解
 protections-panel-site-not-working-view-issue-list-videos = 影片
+protections-panel-site-not-working-view-issue-list-fonts = 字型
 
 protections-panel-site-not-working-view-send-report = 請回報給我們
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = 回報網站問題
 protections-panel-content-blocking-breakage-report-view-description = 封鎖部分追蹤器後，可能會造成某些網站運作不正常。回報問題可幫助讓所有人的 { -brand-short-name } 變得更好。將會回報網址與您的瀏覽器相關設定給 Mozilla。<label data-l10n-name="learn-more">了解更多</label>
+protections-panel-content-blocking-breakage-report-view-description2 = 封鎖部分追蹤器後，可能會造成某些網站運作不正常。回報問題可幫助讓所有人的 { -brand-short-name } 變得更好。將會回報網址與您的瀏覽器相關設定給 { -vendor-short-name }。
 protections-panel-content-blocking-breakage-report-view-collection-url = 網址
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = 網址
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = 取消
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = 傳送報告
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = 減少 Cookie 橫幅
+protections-panel-cookie-banner-handling-enabled = 對此網站開啟
+protections-panel-cookie-banner-handling-disabled = 對此網站關閉
+protections-panel-cookie-banner-handling-undetected = 目前不支援的網站
+
+protections-panel-cookie-banner-view-title =
+    .title = 減少 Cookie 橫幅
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = 要為 { $host } 關閉減少 Cookie 橫幅功能嗎？
+protections-panel-cookie-banner-view-turn-on-for-site = 要為此網站開啟減少 Cookie 橫幅功能嗎？
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } 將清除此網站的 Cookie 並重新載入頁面。清除 Cookie 可能會將您從網站登出，或清空購物車。
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } 可自動在支援的網站，為您拒絕網站設定 Cookie 的請求。
+protections-panel-cookie-banner-view-cancel = 取消
+protections-panel-cookie-banner-view-turn-off = 關閉
+protections-panel-cookie-banner-view-turn-on = 開啟

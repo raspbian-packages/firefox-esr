@@ -5,14 +5,14 @@
 
 requestLongerTimeout(2);
 
-var { Toolbox } = require("devtools/client/framework/toolbox");
+var { Toolbox } = require("resource://devtools/client/framework/toolbox.js");
 
-const { LocalizationHelper } = require("devtools/shared/l10n");
+const { LocalizationHelper } = require("resource://devtools/shared/l10n.js");
 const L10N = new LocalizationHelper(
   "devtools/client/locales/toolbox.properties"
 );
 
-add_task(async function() {
+add_task(async function () {
   const tab = await addTab("about:blank");
 
   const toolIDs = (await getSupportedToolIds(tab)).filter(

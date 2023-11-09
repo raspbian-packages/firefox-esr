@@ -15,6 +15,8 @@ abuse-report-subtitle = موضوع چیست؟
 #   $author-name (string) - Name of the add-on author
 abuse-report-addon-authored-by = توسط <a data-l10n-name="author-name">{ $author-name }</a>
 abuse-report-learnmore = مطمئن نیستید چه مسئله ای را انتخاب کنید؟<a data-l10n-name="learnmore-link"> درباره گزارش افزونه‌ها و مضامین بیشتر بیاموزید</a>
+abuse-report-learnmore-intro = مطمئن نیستید چه مسئله ای را انتخاب کنید؟
+abuse-report-learnmore-link = درباره گزارش افزونه‌ها و مضامین بیشتر بیاموزید
 abuse-report-submit-description = توضیح مسئله (اختیاری)
 abuse-report-textarea =
     .placeholder = اگر مشخصات دقیق را داشته باشیم حل مشکل برای ما ساده‌تر می‌گردد. لطفا چیزی که تجربه می‌کنید را با ما در میان بگذارید. از کمک شما برای سالم نگه‌داشتن وب تشکر می‌کنیم.

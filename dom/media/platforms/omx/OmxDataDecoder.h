@@ -12,6 +12,7 @@
 #  include "MediaInfo.h"
 #  include "OMX_Component.h"
 #  include "OmxPromiseLayer.h"
+#  include "PerformanceRecorder.h"
 #  include "PlatformDecoderModule.h"
 #  include "mozilla/Monitor.h"
 #  include "mozilla/StateWatching.h"
@@ -64,7 +65,8 @@ class OmxDataDecoder final : public MediaDataDecoder,
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(OmxDataDecoder, final);
 
   OmxDataDecoder(const TrackInfo& aTrackInfo,
-                 layers::ImageContainer* aImageContainer);
+                 layers::ImageContainer* aImageContainer,
+                 Maybe<TrackingId> aTrackingId);
 
   RefPtr<InitPromise> Init() override;
   RefPtr<DecodePromise> Decode(MediaRawData* aSample) override;
@@ -73,6 +75,8 @@ class OmxDataDecoder final : public MediaDataDecoder,
   RefPtr<ShutdownPromise> Shutdown() override;
 
   nsCString GetDescriptionName() const override { return "omx decoder"_ns; }
+
+  nsCString GetCodecName() const override { return "unknown"_ns; }
 
   ConversionRequired NeedsConversion() const override {
     return ConversionRequired::kNeedAnnexB;
@@ -201,6 +205,11 @@ class OmxDataDecoder final : public MediaDataDecoder,
   BUFFERLIST mOutPortBuffers;
 
   RefPtr<MediaDataHelper> mMediaDataHelper;
+
+  const Maybe<TrackingId> mTrackingId;
+
+  // Accessed on Omx TaskQueue
+  PerformanceRecorderMulti<DecodeStage> mPerformanceRecorder;
 };
 
 template <class T>

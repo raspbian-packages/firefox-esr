@@ -10,6 +10,7 @@
 #include "mozilla/FloatingPoint.h"
 #include "mozilla/PresShell.h"
 #include "mozilla/StaticPrefs_layout.h"
+#include "mozilla/dom/Document.h"
 #include "mozilla/ToString.h"
 #include "nsCanvasFrame.h"
 #include "nsCaret.h"
@@ -225,7 +226,7 @@ void AccessibleCaret::RemoveCaretElement(Document* aDocument) {
   CaretElement().RemoveEventListener(u"touchstart"_ns, mDummyTouchListener,
                                      false);
 
-  aDocument->RemoveAnonymousContent(*mCaretElementHolder, IgnoreErrors());
+  aDocument->RemoveAnonymousContent(*mCaretElementHolder);
 }
 
 void AccessibleCaret::ClearCachedData() {

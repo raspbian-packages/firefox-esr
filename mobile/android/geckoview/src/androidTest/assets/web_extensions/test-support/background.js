@@ -68,6 +68,15 @@ const APIS = {
   CrashGpuProcess() {
     return browser.test.crashGpuProcess();
   },
+  ClearHSTSState() {
+    return browser.test.clearHSTSState();
+  },
+  TriggerCookieBannerDetected({ tab }) {
+    return browser.test.triggerCookieBannerDetected(tab.id);
+  },
+  TriggerCookieBannerHandled({ tab }) {
+    return browser.test.triggerCookieBannerHandled(tab.id);
+  },
 };
 
 port.onMessage.addListener(async message => {

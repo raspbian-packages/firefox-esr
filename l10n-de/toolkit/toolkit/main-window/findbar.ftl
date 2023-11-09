@@ -43,7 +43,7 @@ findbar-wrapped-to-top = Das Seitenende wurde erreicht, Suche vom Seitenanfang f
 findbar-wrapped-to-bottom = Der Seitenanfang wurde erreicht, Suche vom Seitenende fortgesetzt
 
 findbar-normal-find =
-    .placeholder = In Seite suchen
+    .placeholder = Seite durchsuchen
 findbar-fast-find =
     .placeholder = Suchen
 findbar-fast-find-links =

@@ -9,6 +9,7 @@
 #include "js/PropertyAndElement.h"  // JS_GetElement
 #include "js/TypeDecls.h"
 #include "jsapi.h"
+#include "mozilla/BasePrincipal.h"
 #include "mozilla/PresShell.h"
 #include "mozilla/dom/AutocompleteInfoBinding.h"
 #include "mozilla/dom/CanonicalBrowsingContext.h"
@@ -970,29 +971,19 @@ static void CollectCurrentFormData(JSContext* aCx, Document& aDocument,
 MOZ_CAN_RUN_SCRIPT
 static void SetElementAsString(Element* aElement, const nsAString& aValue) {
   IgnoredErrorResult rv;
-  HTMLTextAreaElement* textArea = HTMLTextAreaElement::FromNode(aElement);
-  if (textArea) {
+  if (auto* textArea = HTMLTextAreaElement::FromNode(aElement)) {
     textArea->SetValue(aValue, rv);
     if (!rv.Failed()) {
       nsContentUtils::DispatchInputEvent(aElement);
     }
     return;
   }
-  HTMLInputElement* input = HTMLInputElement::FromNode(aElement);
-  if (input) {
-    input->SetValue(aValue, CallerType::NonSystem, rv);
-    if (!rv.Failed()) {
-      nsContentUtils::DispatchInputEvent(aElement);
-      return;
-    }
-  }
-  input = HTMLInputElement::FromNodeOrNull(
-      nsFocusManager::GetRedirectedFocus(aElement));
-  if (input) {
+  if (auto* input = HTMLInputElement::FromNode(aElement)) {
     input->SetValue(aValue, CallerType::NonSystem, rv);
     if (!rv.Failed()) {
       nsContentUtils::DispatchInputEvent(aElement);
     }
+    return;
   }
 }
 
@@ -1138,7 +1129,8 @@ MOZ_CAN_RUN_SCRIPT
 static void SetSessionData(JSContext* aCx, Element* aElement,
                            JS::MutableHandle<JS::Value> aObject) {
   nsAutoString data;
-  if (nsContentUtils::StringifyJSON(aCx, aObject, data)) {
+  if (nsContentUtils::StringifyJSON(aCx, aObject, data,
+                                    UndefinedIsNullStringLiteral)) {
     SetElementAsString(aElement, data);
   } else {
     JS_ClearPendingException(aCx);
@@ -1495,8 +1487,9 @@ already_AddRefed<Promise> SessionStoreUtils::InitializeRestore(
     return nullptr;
   }
 
-  MOZ_DIAGNOSTIC_ASSERT(aContext.GetSessionHistory());
-  aContext.GetSessionHistory()->ReloadCurrentEntry();
+  nsCOMPtr<nsISHistory> shistory = aContext.GetSessionHistory();
+  MOZ_DIAGNOSTIC_ASSERT(shistory);
+  shistory->ReloadCurrentEntry();
 
   return aContext.GetRestorePromise();
 }
@@ -1716,10 +1709,10 @@ nsresult SessionStoreUtils::ConstructSessionStorageValues(
 }
 
 /* static */
-bool SessionStoreUtils::CopyProperty(JSContext* aCx, JS::HandleObject aDst,
-                                     JS::HandleObject aSrc,
+bool SessionStoreUtils::CopyProperty(JSContext* aCx, JS::Handle<JSObject*> aDst,
+                                     JS::Handle<JSObject*> aSrc,
                                      const nsAString& aName) {
-  JS::RootedId name(aCx);
+  JS::Rooted<JS::PropertyKey> name(aCx);
   const char16_t* data;
   size_t length = aName.GetData(&data);
 
@@ -1732,7 +1725,7 @@ bool SessionStoreUtils::CopyProperty(JSContext* aCx, JS::HandleObject aDst,
     return true;
   }
 
-  JS::RootedValue value(aCx);
+  JS::Rooted<JS::Value> value(aCx);
   if (!JS_GetPropertyById(aCx, aSrc, name, &value)) {
     return false;
   }

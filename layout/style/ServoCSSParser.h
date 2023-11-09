@@ -18,8 +18,6 @@
 #include "nsStringFwd.h"
 
 struct nsCSSRect;
-struct nsTimingFunction;
-struct RawServoDeclarationBlock;
 template <class T>
 class RefPtr;
 
@@ -28,7 +26,17 @@ namespace mozilla {
 class ServoStyleSet;
 struct URLExtraData;
 struct StyleFontFamilyList;
+struct StyleFontStretch;
+struct StyleFontWeight;
+struct StyleFontStyle;
+struct StyleLockedDeclarationBlock;
 union StyleComputedFontStyleDescriptor;
+
+template <typename Integer, typename Number, typename LinearStops>
+struct StyleTimingFunction;
+struct StylePiecewiseLinearFunction;
+using StyleComputedTimingFunction =
+    StyleTimingFunction<int32_t, float, StylePiecewiseLinearFunction>;
 
 namespace css {
 class Loader;
@@ -72,17 +80,17 @@ class ServoCSSParser {
 
   /**
    * Parse a string representing a CSS property value into a
-   * RawServoDeclarationBlock.
+   * StyleLockedDeclarationBlock.
    *
    * @param aProperty The property to be parsed.
    * @param aValue The specified value.
    * @param aParsingEnvironment All the parsing environment data we need.
    * @param aParsingMode The paring mode we apply.
-   * @return The parsed value as a RawServoDeclarationBlock. We put the value
+   * @return The parsed value as a StyleLockedDeclarationBlock. We put the value
    *   in a declaration block since that is how we represent specified values
    *   in Servo.
    */
-  static already_AddRefed<RawServoDeclarationBlock> ParseProperty(
+  static already_AddRefed<StyleLockedDeclarationBlock> ParseProperty(
       nsCSSPropertyID aProperty, const nsACString& aValue,
       const ParsingEnvironment& aParsingEnvironment,
       ParsingMode aParsingMode = ParsingMode::Default);
@@ -94,7 +102,8 @@ class ServoCSSParser {
    * @param aResult The output timing function. (output)
    * @return Whether the value was successfully parsed.
    */
-  static bool ParseEasing(const nsACString& aValue, nsTimingFunction& aResult);
+  static bool ParseEasing(const nsACString& aValue,
+                          StyleComputedTimingFunction& aResult);
 
   /**
    * Parse a specified transform list into a gfx matrix.
@@ -124,8 +133,8 @@ class ServoCSSParser {
    */
   static bool ParseFontShorthandForMatching(
       const nsACString& aValue, URLExtraData* aUrl, StyleFontFamilyList& aList,
-      StyleComputedFontStyleDescriptor& aStyle, float& aStretch, float& aWeight,
-      float* aSize = nullptr);
+      StyleFontStyle& aStyle, StyleFontStretch& aStretch,
+      StyleFontWeight& aWeight, float* aSize = nullptr);
 
   /**
    * Get a URLExtraData from a document.

@@ -5,10 +5,12 @@
 
 about-logins-page-title = Infurmaziuns d'annunzia & pleds-clav
 
-login-filter =
+about-logins-login-filter =
     .placeholder = Tschertgar datas d'annunzia
+    .key = F
 
-create-login-button = Crear datas d'annunzia
+create-new-login-button =
+    .title = Crear novas datas d'annunzia
 
 fxaccounts-sign-in-text = Acceda a tes pleds-clav cun tut tes apparats
 fxaccounts-sign-in-sync-button = S'annunziar per sincronisar
@@ -35,10 +37,20 @@ about-logins-menu-menuitem-help = Agid
 
 login-list =
     .aria-label = Infurmaziuns d'annunzia tenor la tschertga
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } infurmaziun d'annunzia
        *[other] { $count } infurmaziuns d'annunzia
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count } data d'annunzia dad { $total }
+       *[other] { $count } datas d'annunzia da { $total }
     }
 login-list-sort-label-text = Zavrar tenor:
 login-list-name-option = Num (A-Z)
@@ -99,9 +111,17 @@ login-item-copied-password-button-text = Copià!
 login-item-save-changes-button = Memorisar las midadas
 login-item-save-new-button = Memorisar
 login-item-cancel-button = Interrumper
-login-item-time-changed = Ultima midada: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Creà: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Ultima utilisaziun: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
+# Variables
+#   $datetime (date) - Event date
+login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
+login-item-timeline-action-created = Creà
+login-item-timeline-action-updated = Actualisà
+login-item-timeline-action-used = Utilisà
 
 ## OS Authentication dialog
 
@@ -152,6 +172,9 @@ about-logins-confirm-remove-dialog-title = Allontanar questas infurmaziuns d'ann
 confirm-delete-dialog-message = Questa acziun na po betg vegnir revocada.
 about-logins-confirm-remove-dialog-confirm-button = Allontanar
 
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
         [1] Allontanar
@@ -187,6 +210,8 @@ about-logins-confirm-remove-all-sync-dialog-message =
        *[other] Uschia vegnan allontanadas tut las datas d'annunzia che ti has memorisà en { -brand-short-name } sin tut ils apparats sincronisads cun il { -fxaccount-brand-name }. Era avertiments da sperditas da datas che cumparan qua vegnan allontanadas. Ti na vegns betg a pudair revocar questa acziun.
     }
 
+##
+
 about-logins-confirm-export-dialog-title = Exportar infurmaziuns d'annunzia e pleds-clav
 about-logins-confirm-export-dialog-message = Tes pleds-clav vegnan memorisads sco text legibel (p.ex. «M@lPledc1av»), uschia che mintgin che po avrir la datoteca exportada als po vesair.
 about-logins-confirm-export-dialog-confirm-button = Exportar…
@@ -206,7 +231,6 @@ about-logins-breach-alert-date = Questa perdita da datas è capitada ils { DATET
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Acceder a { $hostname }
-about-logins-breach-alert-learn-more-link = Ulteriuras infurmaziuns
 
 ## Vulnerable Password notification
 

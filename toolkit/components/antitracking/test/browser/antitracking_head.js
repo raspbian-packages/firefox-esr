@@ -473,10 +473,10 @@ this.AntiTracking = {
     let win = await BrowserTestUtils.openNewBrowserWindow();
     await BrowserTestUtils.withNewTab(
       { gBrowser: win.gBrowser, url: TEST_3RD_PARTY_PAGE },
-      async function(browser) {
+      async function (browser) {
         info("Let's interact with the tracker");
 
-        await SpecialPowers.spawn(browser, [], async function() {
+        await SpecialPowers.spawn(browser, [], async function () {
           SpecialPowers.wrap(content.document).userInteractionForTesting();
         });
       }
@@ -555,7 +555,7 @@ this.AntiTracking = {
   },
 
   _createTask(options) {
-    add_task(async function() {
+    add_task(async function () {
       info(
         "Starting " +
           (options.cookieBehavior != BEHAVIOR_ACCEPT
@@ -636,10 +636,16 @@ this.AntiTracking = {
       }
 
       let cookieBlocked = 0;
+      let { expectedBlockingNotifications } = options;
+      if (!Array.isArray(expectedBlockingNotifications)) {
+        expectedBlockingNotifications = [expectedBlockingNotifications];
+      }
       let listener = {
         onContentBlockingEvent(webProgress, request, event) {
-          if (event & options.expectedBlockingNotifications) {
-            ++cookieBlocked;
+          for (const notification of expectedBlockingNotifications) {
+            if (event & notification) {
+              ++cookieBlocked;
+            }
           }
         },
       };
@@ -725,12 +731,12 @@ this.AntiTracking = {
             doAccessRemovalChecks,
           },
         ],
-        async function(obj) {
+        async function (obj) {
           let id = "id" + Math.random();
           await new content.Promise(resolve => {
             let ifr = content.document.createElement("iframe");
             ifr.id = id;
-            ifr.onload = function() {
+            ifr.onload = function () {
               info("Sending code to the 3rd party content");
               let callback = obj.allowList + "!!!" + obj.callback;
               ifr.contentWindow.postMessage(callback, "*");
@@ -770,7 +776,7 @@ this.AntiTracking = {
                 await new content.Promise(resolve => {
                   let ifr = content.document.getElementById(id);
                   let oldWindow = ifr.contentWindow;
-                  ifr.onload = function() {
+                  ifr.onload = function () {
                     info("Sending code to the old 3rd party content");
                     oldWindow.postMessage(obj.callbackAfterRemoval, "*");
                   };
@@ -819,7 +825,7 @@ this.AntiTracking = {
         doAccessRemovalChecks &&
         options.accessRemoval == "navigate-topframe"
       ) {
-        BrowserTestUtils.loadURI(browser, TEST_4TH_PARTY_PAGE);
+        BrowserTestUtils.loadURIString(browser, TEST_4TH_PARTY_PAGE);
         await BrowserTestUtils.browserLoaded(browser);
 
         let pageshow = BrowserTestUtils.waitForContentEvent(
@@ -840,9 +846,9 @@ this.AntiTracking = {
               iframeSandbox: options.iframeSandbox,
             },
           ],
-          async function(obj) {
+          async function (obj) {
             let ifr = content.document.createElement("iframe");
-            ifr.onload = function() {
+            ifr.onload = function () {
               info(
                 "Sending code to the 3rd party content to verify accessRemoval"
               );
@@ -890,25 +896,34 @@ this.AntiTracking = {
           return false;
         }
       });
-      let expectedCategory = "";
       // When changing this list, please make sure to update the corresponding
       // code in ReportBlockingToConsole().
-      switch (options.expectedBlockingNotifications) {
-        case Ci.nsIWebProgressListener.STATE_COOKIES_BLOCKED_BY_PERMISSION:
-          expectedCategory = "cookieBlockedPermission";
-          break;
-        case Ci.nsIWebProgressListener.STATE_COOKIES_BLOCKED_TRACKER:
-          expectedCategory = "cookieBlockedTracker";
-          break;
-        case Ci.nsIWebProgressListener.STATE_COOKIES_BLOCKED_ALL:
-          expectedCategory = "cookieBlockedAll";
-          break;
-        case Ci.nsIWebProgressListener.STATE_COOKIES_BLOCKED_FOREIGN:
-          expectedCategory = "cookieBlockedForeign";
-          break;
+      let expectedCategories = [];
+      let rawExpectedCategories = options.expectedBlockingNotifications;
+      if (!Array.isArray(rawExpectedCategories)) {
+        // if given a single value to match, expect each message to match it
+        rawExpectedCategories = Array(allMessages.length).fill(
+          rawExpectedCategories
+        );
+      }
+      for (let category of rawExpectedCategories) {
+        switch (category) {
+          case Ci.nsIWebProgressListener.STATE_COOKIES_BLOCKED_BY_PERMISSION:
+            expectedCategories.push("cookieBlockedPermission");
+            break;
+          case Ci.nsIWebProgressListener.STATE_COOKIES_BLOCKED_TRACKER:
+            expectedCategories.push("cookieBlockedTracker");
+            break;
+          case Ci.nsIWebProgressListener.STATE_COOKIES_BLOCKED_ALL:
+            expectedCategories.push("cookieBlockedAll");
+            break;
+          case Ci.nsIWebProgressListener.STATE_COOKIES_BLOCKED_FOREIGN:
+            expectedCategories.push("cookieBlockedForeign");
+            break;
+        }
       }
 
-      if (expectedCategory == "") {
+      if (!expectedCategories.length) {
         is(allMessages.length, 0, "No console messages should be generated");
       } else {
         ok(!!allMessages.length, "Some console message should be generated");
@@ -924,8 +939,8 @@ this.AntiTracking = {
       for (let msg of allMessages) {
         is(
           msg.category,
-          expectedCategory,
-          "Message should be of expected category"
+          expectedCategories[index],
+          `Message ${index} should be of expected category`
         );
 
         if (options.errorMessageDomains) {
@@ -947,6 +962,10 @@ this.AntiTracking = {
 
       win.gBrowser.removeProgressListener(listener);
 
+      if (!!cookieBlocked != !!options.expectedBlockingNotifications) {
+        ok(false, JSON.stringify(cookieBlocked));
+        ok(false, JSON.stringify(options.expectedBlockingNotifications));
+      }
       is(
         !!cookieBlocked,
         !!options.expectedBlockingNotifications,
@@ -963,7 +982,7 @@ this.AntiTracking = {
   },
 
   _createCleanupTask(cleanupFunction) {
-    add_task(async function() {
+    add_task(async function () {
       info("Cleaning up.");
       if (cleanupFunction) {
         await cleanupFunction();
@@ -985,7 +1004,7 @@ this.AntiTracking = {
     testInSubIFrame,
     extraPrefs
   ) {
-    add_task(async function() {
+    add_task(async function () {
       info(
         `Starting window-open${
           testInSubIFrame ? " sub iframe" : ""
@@ -1017,7 +1036,7 @@ this.AntiTracking = {
         let iframeBrowsingContext = await SpecialPowers.spawn(
           browser,
           [{ page: TEST_IFRAME_PAGE }],
-          async function(obj) {
+          async function (obj) {
             // Add an iframe.
             let ifr = content.document.createElement("iframe");
             let loading = new content.Promise(resolve => {
@@ -1050,10 +1069,10 @@ this.AntiTracking = {
             iframeSandbox,
           },
         ],
-        async function(obj) {
+        async function (obj) {
           await new content.Promise(resolve => {
             let ifr = content.document.createElement("iframe");
-            ifr.onload = function() {
+            ifr.onload = function () {
               info("Sending code to the 3rd party content");
               ifr.contentWindow.postMessage(obj, "*");
             };
@@ -1106,7 +1125,7 @@ this.AntiTracking = {
     testInSubIFrame,
     extraPrefs
   ) {
-    add_task(async function() {
+    add_task(async function () {
       info(
         `Starting user-interaction${
           testInSubIFrame ? " sub iframe" : ""
@@ -1138,7 +1157,7 @@ this.AntiTracking = {
         let iframeBrowsingContext = await SpecialPowers.spawn(
           browser,
           [{ page: TEST_IFRAME_PAGE }],
-          async function(obj) {
+          async function (obj) {
             // Add an iframe.
             let ifr = content.document.createElement("iframe");
             let loading = new content.Promise(resolve => {
@@ -1171,7 +1190,7 @@ this.AntiTracking = {
             iframeSandbox,
           },
         ],
-        async function(obj) {
+        async function (obj) {
           let ifr = content.document.createElement("iframe");
           let loading = new content.Promise(resolve => {
             ifr.onload = resolve;
@@ -1226,9 +1245,13 @@ this.AntiTracking = {
           });
 
           info("Opening a window from the iframe.");
-          SpecialPowers.spawn(ifr, [{ popup: obj.popup }], async function(obj) {
-            content.open(obj.popup);
-          });
+          SpecialPowers.spawn(
+            ifr,
+            [{ popup: obj.popup }],
+            async function (obj) {
+              content.open(obj.popup);
+            }
+          );
 
           info("Let's wait for the window to be closed");
           await windowClosed;
@@ -1297,7 +1320,7 @@ this.AntiTracking = {
             iframeSandbox,
           },
         ],
-        async function(obj) {
+        async function (obj) {
           let ifr = content.document.createElement("iframe");
           let loading = new content.Promise(resolve => {
             ifr.onload = resolve;
@@ -1323,9 +1346,13 @@ this.AntiTracking = {
           });
 
           info("Opening a window from the iframe.");
-          SpecialPowers.spawn(ifr, [{ popup: obj.popup }], async function(obj) {
-            content.open(obj.popup);
-          });
+          SpecialPowers.spawn(
+            ifr,
+            [{ popup: obj.popup }],
+            async function (obj) {
+              content.open(obj.popup);
+            }
+          );
 
           info("Let's wait for the window to be closed");
           await windowClosed;

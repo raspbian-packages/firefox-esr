@@ -127,8 +127,7 @@ bool ShmSegmentsWriter::AllocChunk() {
 
 layers::OffsetRange ShmSegmentsWriter::AllocLargeChunk(size_t aSize) {
   ipc::Shmem shm;
-  auto shmType = ipc::SharedMemory::SharedMemoryType::TYPE_BASIC;
-  if (!mShmAllocator->AllocShmem(aSize, shmType, &shm)) {
+  if (!mShmAllocator->AllocShmem(aSize, &shm)) {
     gfxCriticalNote
         << "ShmSegmentsWriter failed to allocate large chunk of size " << aSize;
     MOZ_ASSERT(false, "ShmSegmentsWriter fails to allocate large chunk");
@@ -351,7 +350,7 @@ void IpcResourceUpdateQueue::PushExternalImageForTexture(
   MOZ_RELEASE_ASSERT(aTexture->GetIPDLActor()->GetIPCChannel() ==
                      mWriter.WrBridge()->GetIPCChannel());
   mUpdates.AppendElement(layers::OpPushExternalImageForTexture(
-      aExtId, aKey, nullptr, aTexture->GetIPDLActor(), aIsUpdate));
+      aExtId, aKey, WrapNotNull(aTexture->GetIPDLActor()), aIsUpdate));
 }
 
 bool IpcResourceUpdateQueue::UpdateImageBuffer(

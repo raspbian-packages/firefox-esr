@@ -72,6 +72,10 @@ void TimespanMetric::SetRaw(uint32_t aDuration) const {
 
 Result<Maybe<uint64_t>, nsCString> TimespanMetric::TestGetValue(
     const nsACString& aPingName) const {
+  nsCString err;
+  if (fog_timespan_test_get_error(mId, &err)) {
+    return Err(err);
+  }
   if (!fog_timespan_test_has_value(mId, &aPingName)) {
     return Maybe<uint64_t>();
   }
@@ -109,7 +113,7 @@ GleanTimespan::SetRaw(uint32_t aDuration) {
 
 NS_IMETHODIMP
 GleanTimespan::TestGetValue(const nsACString& aStorageName,
-                            JS::MutableHandleValue aResult) {
+                            JS::MutableHandle<JS::Value> aResult) {
   auto result = mTimespan.TestGetValue(aStorageName);
   if (result.isErr()) {
     aResult.set(JS::UndefinedValue());

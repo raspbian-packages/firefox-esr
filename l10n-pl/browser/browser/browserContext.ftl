@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Dodaj zakładkę do tej strony
-    .accesskey = D
-    .tooltiptext = Dodaj zakładkę do tej strony
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Dodaj zakładkę do tej strony
-    .accesskey = D
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Edytuj zakładkę
-    .accesskey = d
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Dodaj zakładkę do tej strony
-    .accesskey = D
-    .tooltiptext = Dodaj zakładkę do tej strony ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Edytuj tę zakładkę
-    .accesskey = d
-    .tooltiptext = Edytuj tę zakładkę
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Edytuj tę zakładkę
-    .accesskey = d
-    .tooltiptext = Edytuj tę zakładkę ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Dodaj zakładkę do tej strony…
     .accesskey = D
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Otwórz odnośnik w nowym oknie w trybie prywatnym
     .accesskey = w
-
-main-context-menu-bookmark-link =
-    .label = Dodaj zakładkę do tego odnośnika
-    .accesskey = D
 
 main-context-menu-bookmark-link-2 =
     .label = Dodaj zakładkę do tego odnośnika…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Wyślij dźwięk…
     .accesskey = d
 
-main-context-menu-plugin-play =
-    .label = Aktywuj tę wtyczkę
-    .accesskey = w
-
-main-context-menu-plugin-hide =
-    .label = Ukryj tę wtyczkę
-    .accesskey = U
-
 main-context-menu-save-to-pocket =
     .label = Wyślij stronę do { -pocket-brand-name }
     .accesskey = l
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = U
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Użyj maski { -relay-brand-short-name } dla adresu e-mail
+    .accesskey = m
 
 main-context-menu-suggest-strong-password =
     .label = Zaproponuj silne hasło…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Odśwież ramkę
     .accesskey = O
 
-main-context-menu-frame-bookmark =
-    .label = Dodaj zakładkę do tej ramki
-    .accesskey = D
-
 main-context-menu-frame-add-bookmark =
     .label = Dodaj zakładkę do ramki…
     .accesskey = D
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Pokaż informacje o ramce
     .accesskey = i
-
-main-context-menu-print-selection =
-    .label = Drukuj tylko zaznaczenie
-    .accesskey = u
 
 main-context-menu-print-selection-2 =
     .label = Drukuj tylko zaznaczenie…

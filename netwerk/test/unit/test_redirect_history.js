@@ -7,12 +7,11 @@ const ReferrerInfo = Components.Constructor(
   "init"
 );
 
-XPCOMUtils.defineLazyGetter(this, "URL", function() {
+XPCOMUtils.defineLazyGetter(this, "URL", function () {
   return "http://localhost:" + httpServer.identity.primaryPort;
 });
 
 var httpServer = null;
-var randomPath = "/redirect/" + Math.random();
 var redirects = [];
 const numRedirects = 10;
 

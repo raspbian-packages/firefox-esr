@@ -11,20 +11,16 @@
 /* globals require, __dirname, global, Buffer, process */
 
 const { NodeServer } = ChromeUtils.import("resource://testing-common/httpd.js");
-const { AppConstants } = ChromeUtils.import(
-  "resource://gre/modules/AppConstants.jsm"
+const { AppConstants } = ChromeUtils.importESModule(
+  "resource://gre/modules/AppConstants.sys.mjs"
 );
-let gDNS;
 
 /// Sets the TRR related prefs and adds the certificate we use for the HTTP2
 /// server.
 function trr_test_setup() {
   dump("start!\n");
 
-  let env = Cc["@mozilla.org/process/environment;1"].getService(
-    Ci.nsIEnvironment
-  );
-  let h2Port = env.get("MOZHTTP2_PORT");
+  let h2Port = Services.env.get("MOZHTTP2_PORT");
   Assert.notEqual(h2Port, null);
   Assert.notEqual(h2Port, "");
 
@@ -56,8 +52,10 @@ function trr_test_setup() {
   );
   addCertFromFile(certdb, "http2-ca.pem", "CTu,u,u");
 
-  // Turn off strict fallback mode for most tests, it is tested specifically.
+  // Turn off strict fallback mode and TRR retry for most tests,
+  // it is tested specifically.
   Services.prefs.setBoolPref("network.trr.strict_native_fallback", false);
+  Services.prefs.setBoolPref("network.trr.retry_on_recoverable_errors", false);
 
   // Turn off temp blocklist feature in tests. When enabled we may issue a
   // lookup to resolve a parent name when blocklisting, which may bleed into
@@ -140,18 +138,12 @@ class TRRDNSListener {
     );
     const currentThread = threadManager.currentThread;
 
-    if (!gDNS) {
-      gDNS = Cc["@mozilla.org/network/dns-service;1"].getService(
-        Ci.nsIDNSService
-      );
-    }
-
     this.additionalInfo =
       trrServer == "" && port == -1
         ? null
-        : gDNS.newAdditionalInfo(trrServer, port);
+        : Services.dns.newAdditionalInfo(trrServer, port);
     try {
-      this.request = gDNS.asyncResolve(
+      this.request = Services.dns.asyncResolve(
         this.name,
         this.type,
         this.options.flags || 0,
@@ -241,7 +233,7 @@ class TRRDNSListener {
   }
 
   cancel(aStatus = Cr.NS_ERROR_ABORT) {
-    gDNS.cancelAsyncResolve(
+    Services.dns.cancelAsyncResolve(
       this.name,
       this.type,
       this.options.flags || 0,
@@ -269,7 +261,8 @@ class TRRServerCode {
       let u = url.parse(req.url, true);
       let handler = global.path_handlers[u.pathname];
       if (handler) {
-        return handler(req, resp, u);
+        handler(req, resp, u);
+        return;
       }
 
       // Didn't find a handler for this path.
@@ -294,7 +287,7 @@ class TRRServerCode {
     await global.server.listen(port);
 
     global.dnsPacket = require(`${__dirname}/../dns-packet`);
-    global.ip = require(`${__dirname}/../node-ip`);
+    global.ip = require(`${__dirname}/../node_ip`);
 
     let serverPort = global.server.address().port;
 
@@ -348,7 +341,7 @@ function trrQueryHandler(req, resp, url) {
     req.on("data", chunk => {
       requestBody = Buffer.concat([requestBody, chunk]);
       if (requestBody.length == contentLength) {
-        return processRequest(req, resp, requestBody);
+        processRequest(req, resp, requestBody);
       }
     });
   } else if (method == "GET") {
@@ -359,7 +352,7 @@ function trrQueryHandler(req, resp, url) {
     }
 
     requestBody = Buffer.from(url.query.dns, "base64");
-    return processRequest(req, resp, requestBody);
+    processRequest(req, resp, requestBody);
   } else {
     // unexpected method.
     resp.writeHead(405);
@@ -414,6 +407,9 @@ function trrQueryHandler(req, resp, url) {
     };
 
     if (response.delay) {
+      // This function is handled within the httpserver where setTimeout is
+      // available.
+      // eslint-disable-next-line no-undef
       setTimeout(
         arg => {
           writeResponse(arg[0], arg[1], arg[2]);
@@ -539,14 +535,14 @@ class TRRProxyCode {
     // connections when shutting down the proxy.
     global.proxy.socketIndex = 0;
     global.proxy.socketMap = {};
-    global.proxy.on("connection", function(socket) {
+    global.proxy.on("connection", function (socket) {
       let index = global.proxy.socketIndex++;
       global.proxy.socketMap[index] = socket;
-      socket.on("close", function() {
+      socket.on("close", function () {
         delete global.proxy.socketMap[index];
       });
     });
-    global.proxy.closeSockets = function() {
+    global.proxy.closeSockets = function () {
       for (let i in global.proxy.socketMap) {
         global.proxy.socketMap[i].destroy();
       }
@@ -572,7 +568,9 @@ class TRRProxyCode {
         }
       });
       socket.on("error", error => {
-        throw `Unxpected error when conneting the HTTP/2 server from the HTTP/2 proxy during CONNECT handling: '${error}'`;
+        throw new Error(
+          `Unxpected error when conneting the HTTP/2 server from the HTTP/2 proxy during CONNECT handling: '${error}'`
+        );
       });
     });
   }

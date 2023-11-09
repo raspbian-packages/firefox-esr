@@ -15,12 +15,10 @@
 
 #include "usp10.h"
 
-class gfxGDIFont : public gfxFont {
+class gfxGDIFont final : public gfxFont {
  public:
   gfxGDIFont(GDIFontEntry* aFontEntry, const gfxFontStyle* aFontStyle,
              AntialiasOption anAAOption = kAntialiasDefault);
-
-  virtual ~gfxGDIFont();
 
   HFONT GetHFONT() const { return mFont; }
 
@@ -48,8 +46,7 @@ class gfxGDIFont : public gfxFont {
   // get hinted glyph width in pixels as 16.16 fixed-point value
   int32_t GetGlyphWidth(uint16_t aGID) override;
 
-  bool GetGlyphBounds(uint16_t aGID, gfxRect* aBounds,
-                      bool aTight) const override;
+  bool GetGlyphBounds(uint16_t aGID, gfxRect* aBounds, bool aTight) override;
 
   void AddSizeOfExcludingThis(mozilla::MallocSizeOf aMallocSizeOf,
                               FontCacheSizes* aSizes) const;
@@ -59,6 +56,8 @@ class gfxGDIFont : public gfxFont {
   FontType GetType() const override { return FONT_TYPE_GDI; }
 
  protected:
+  ~gfxGDIFont() override;
+
   const Metrics& GetHorizontalMetrics() const override { return *mMetrics; }
 
   bool ShapeText(DrawTarget* aDrawTarget, const char16_t* aText,

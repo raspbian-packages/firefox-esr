@@ -33,6 +33,8 @@ appmenuitem-print =
     .label = Inprimatu…
 appmenuitem-find-in-page =
     .label = Bilatu orrian…
+appmenuitem-translate =
+    .label = Itzuli orria…
 appmenuitem-zoom =
     .value = Zooma
 appmenuitem-more-tools =
@@ -126,8 +128,6 @@ profiler-popup-button-recording =
 profiler-popup-button-capturing =
     .label = Profil sortzailea
     .tooltiptext = Profil sortzailea profila kapturatzen ari da
-profiler-popup-title =
-    .value = { -profiler-brand-name }
 profiler-popup-header-text = { -profiler-brand-name }
 profiler-popup-reveal-description-button =
     .aria-label = Agerrarazi informazio gehiago
@@ -164,7 +164,7 @@ profiler-popup-capture-shortcut =
 
 
 # Presets and their l10n IDs are defined in the file
-# devtools/client/performance-new/popup/background.jsm.js
+# devtools/client/performance-new/shared/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
 profiler-popup-presets-web-developer-description = Web aplikazio gehienen arazketarako gomendatutako aurrezarpena, eragin negatibo txikiarekin.
@@ -193,8 +193,6 @@ profiler-popup-presets-custom-label =
 
 appmenu-manage-history =
     .label = Kudeatu historia
-appmenu-reopen-all-tabs = Ireki berriro fitxa guztiak
-appmenu-reopen-all-windows = Ireki berriro leiho guztiak
 appmenu-restore-session =
     .label = Berreskuratu aurreko saioa
 appmenu-clear-history =
@@ -204,6 +202,9 @@ appmenu-recently-closed-tabs =
     .label = Itxitako azken fitxak
 appmenu-recently-closed-windows =
     .label = Itxitako azken leihoak
+# This allows to search through the browser's history.
+appmenu-search-history =
+    .label = Bilatu historia
 
 ## Help panel
 
@@ -223,6 +224,8 @@ appmenu-help-report-site-issue =
 appmenu-help-share-ideas =
     .label = Partekatu ideiak eta iritzia…
     .accesskey = P
+appmenu-help-switch-device =
+    .label = Gailu berri batera aldatzea
 
 ## appmenu-help-enter-troubleshoot-mode and appmenu-help-exit-troubleshoot-mode
 ## are mutually exclusive, so it's possible to use the same accesskey for both.

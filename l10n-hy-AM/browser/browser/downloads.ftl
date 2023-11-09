@@ -13,6 +13,12 @@ downloads-panel =
 
 ##
 
+# The style attribute has the width of the Downloads Panel expressed using
+# a CSS unit. The longest labels that should fit are usually those of
+# in-progress and blocked downloads.
+downloads-panel-items =
+    .style = width: 35em
+
 downloads-cmd-pause =
     .label = Ընդմիջել
     .accesskey = P
@@ -24,6 +30,14 @@ downloads-cmd-cancel =
 downloads-cmd-cancel-panel =
     .aria-label = Չեղարկել
 
+downloads-cmd-show-menuitem-2 =
+    .label =
+        { PLATFORM() ->
+            [macos] Ցուցադրել պանակում
+           *[other] Ցուցադրել պանակում
+        }
+    .accesskey = F
+
 ## Displayed in the downloads context menu for files that can be opened.
 ## Variables:
 ##   $handler (String) - The name of the mime type's default file handler.
@@ -32,6 +46,11 @@ downloads-cmd-cancel-panel =
 downloads-cmd-use-system-default =
     .label = Բացել համակարգի դիտակում
     .accesskey = V
+# This version is shown when the download's mime type has a valid file handler.
+downloads-cmd-use-system-default-named =
+    .label = Բացել { $handler }-ում
+    .accesskey = I
+
 # We can use the same accesskey as downloads-cmd-always-open-similar-files.
 # Both should not be visible in the downloads context menu at the same time.
 downloads-cmd-always-use-system-default =
@@ -46,6 +65,7 @@ downloads-cmd-show-button-2 =
             [macos] Ցուցադրել որոնիչում
            *[other] Ցուցադրել պանակում
         }
+
 downloads-cmd-show-panel-2 =
     .aria-label =
         { PLATFORM() ->
@@ -58,6 +78,7 @@ downloads-cmd-show-description-2 =
             [macos] Ցուցադրել որոնիչում
            *[other] Ցուցադրել պանակում
         }
+
 downloads-cmd-show-downloads =
     .label = Ցուցադրել Ներբեռնումներ պանակը
 downloads-cmd-retry =
@@ -82,33 +103,42 @@ downloads-cmd-clear-downloads =
 downloads-cmd-delete-file =
     .label = Ջնջել
     .accesskey = D
+
 # This command is shown in the context menu when downloads are blocked.
 downloads-cmd-unblock =
     .label = Թույլատրել ներբեռնումը
     .accesskey = ա
+
 # This is the tooltip of the action button shown when malware is blocked.
 downloads-cmd-remove-file =
     .tooltiptext = Հեռացնել ֆայլը
+
 downloads-cmd-remove-file-panel =
     .aria-label = Հեռացնել ֆայլը
+
 # This is the tooltip of the action button shown when potentially unwanted
 # downloads are blocked. This opens a dialog where the user can choose
 # whether to unblock or remove the download. Removing is the default option.
 downloads-cmd-choose-unblock =
     .tooltiptext = Հեռացնել ֆայլը կամ Թույլատրել ներբեռնումը
+
 downloads-cmd-choose-unblock-panel =
     .aria-label = Հեռացնել ֆայլը կամ Թույլատրել ներբեռնումը
+
 # This is the tooltip of the action button shown when uncommon downloads are
 # blocked.This opens a dialog where the user can choose whether to open the
 # file or remove the download. Opening is the default option.
 downloads-cmd-choose-open =
     .tooltiptext = Բացել կամ հեռացնել ֆայլը
+
 downloads-cmd-choose-open-panel =
     .aria-label = Բացել կամ հեռացնել ֆայլը
+
 # Displayed when hovering a blocked download, indicates that it's possible to
 # show more information for user to take the next action.
 downloads-show-more-information =
     .value = Ցուցադրել լր. տեղեկություն
+
 # Displayed when hovering a complete download, indicates that it's possible to
 # open the file using an app available in the system.
 downloads-open-file =
@@ -122,11 +152,18 @@ downloads-open-file =
 ##   $seconds (number) - Amount of seconds left till the file opens.
 ##   $minutes (number) - Amount of minutes till the file opens.
 
-downloading-file-opens-in-some-time = Կբացի ավարտելուց հետո…
+downloading-file-opens-in-hours-and-minutes-2 =
+    .value = Կբացվի { $hours }ժ { $minutes } ր-ից...
+downloading-file-opens-in-minutes-2 =
+    .value = Կբացվի { $minutes } ր-ից...
+downloading-file-opens-in-minutes-and-seconds-2 =
+    .value = Կբացվի { $minutes } ր { $seconds } վ.-ից...
+downloading-file-opens-in-seconds-2 =
+    .value = Կբացվի { $seconds } վ-ից...
 downloading-file-opens-in-some-time-2 =
-    .value = Կբացի ավարտելուց հետո…
+    .value = Կբացվի ներբեռնելուց հետո…
 downloading-file-click-to-open =
-    .value = Բացել ավարտելուց հետո
+    .value = Բացել ներբեռնելուց հետո
 
 ##
 
@@ -134,17 +171,20 @@ downloading-file-click-to-open =
 # indicates that it's possible to download this file again.
 downloads-retry-download =
     .value = Կրկնել ներբեռնումը
+
 # Displayed when hovering a download which is able to be cancelled by users,
 # indicates that it's possible to cancel and stop the download.
 downloads-cancel-download =
     .value = Չեղարկել ներբեռնումը
+
 # This string is shown at the bottom of the Downloads Panel when all the
 # downloads fit in the available space, or when there are no downloads in
 # the panel at all.
 downloads-history =
     .label = Ցուցադրել բոլոր ներբեռնումները
     .accesskey = S
-# This string is shown at the top of the Download Details Panel, to indicate
+
+# This string is shown at the top of the download details sub-panel to indicate
 # that we are showing the details of a single download.
 downloads-details =
     .title = Ներբեռնմանի մանրամասները
@@ -160,10 +200,12 @@ downloads-details =
 downloads-clear-downloads-button =
     .label = Մաքրել ներբեռնումները
     .tooltiptext = Հեռացնում է ավարտված, չեղարկված և ձախողված ներբեռնումները
+
 # This string is shown when there are no items in the Downloads view, when it
 # is displayed inside a browser tab.
 downloads-list-empty =
     .value = Չկան ներբեռնումներ։
+
 # This string is shown when there are no items in the Downloads Panel.
 downloads-panel-empty =
     .value = Չկան ներբեռնումներ այս աշխատաշրջանում:

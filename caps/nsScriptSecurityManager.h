@@ -14,7 +14,6 @@
 #include "nsCOMPtr.h"
 #include "nsServiceManagerUtils.h"
 #include "nsStringFwd.h"
-#include "plstr.h"
 #include "js/TypeDecls.h"
 
 #include <stdint.h>
@@ -28,8 +27,8 @@ class SystemPrincipal;
 }  // namespace mozilla
 
 namespace JS {
-  enum class RuntimeCode;
-} // namespace JS
+enum class RuntimeCode;
+}  // namespace JS
 
 /////////////////////////////
 // nsScriptSecurityManager //
@@ -134,7 +133,7 @@ class nsScriptSecurityManager final : public nsIScriptSecurityManager {
   // policy machinery will be removed soon.
   nsCOMPtr<nsIDomainPolicy> mDomainPolicy;
 
-  static bool sStrictFileOriginPolicy;
+  static std::atomic<bool> sStrictFileOriginPolicy;
 
   static nsIIOService* sIOService;
   static nsIStringBundle* sStrBundle;

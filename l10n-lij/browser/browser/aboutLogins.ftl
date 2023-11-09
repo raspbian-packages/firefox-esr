@@ -5,11 +5,14 @@
 
 about-logins-page-title = Login e Poule segrete
 
-login-filter =
+about-logins-login-filter =
     .placeholder = Çerca inti login
+    .key = F
 
-create-login-button = Crea neuvo login
+create-new-login-button =
+    .title = Crea neuvo login
 
+fxaccounts-sign-in-text = Treuva torna e teu poule segrête in sci âtri dispoxitivi
 fxaccounts-sign-in-sync-button = Acedi a sync
 fxaccounts-avatar-button =
     .title = Gestisci conto
@@ -34,19 +37,31 @@ about-logins-menu-menuitem-help = Agiutto
 
 login-list =
     .aria-label = Acessi corispondenti a-a riçerca
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } acesso
        *[other] { $count } acessi
     }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count } de { $total } login
+       *[other] { $count } de { $total } login
+    }
 login-list-sort-label-text = Ordina pe:
 login-list-name-option = Nommi (A-Z)
 login-list-name-reverse-option = Nommi (Z-A)
+login-list-username-option = Nomme utente (A-Z)
 login-list-username-reverse-option = Nomme utente (Z-A)
 about-logins-login-list-alerts-option = Alarmi
 login-list-last-changed-option = Urtimo cangiamento
 login-list-last-used-option = Urtima vòtta
 login-list-intro-title = Nisciun acesso trovou
+login-list-intro-description = E poule segrête sarvæ in { -brand-product-name } saian mostræ chi.
 about-logins-login-list-empty-search-title = Nisciun acesso trovou
 about-logins-login-list-empty-search-description = No gh'é exiti da teu riçerca
 login-list-item-title-new-login = Nuovo login
@@ -87,9 +102,11 @@ login-item-copied-password-button-text = Copiou!
 login-item-save-changes-button = Sarva cangiamenti
 login-item-save-new-button = Sarva
 login-item-cancel-button = Anulla
-login-item-time-changed = Urtimo cangiamento: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Creou: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Urtimo uzo: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
+
+## The date is displayed in a timeline showing the password evolution.
+## A label is displayed under the date to describe the type of change.
+## (e.g. updated, created, etc.)
+
 
 ## OS Authentication dialog
 
@@ -123,6 +140,12 @@ about-logins-confirm-remove-dialog-title = Scancelâ st'acesso?
 confirm-delete-dialog-message = St'açion a no peu ese anula.
 about-logins-confirm-remove-dialog-confirm-button = Scancella
 
+## Variables
+##   $count (number) - Number of items
+
+
+##
+
 about-logins-confirm-export-dialog-title = Espòrta acessi e poule segrete
 about-logins-confirm-export-dialog-confirm-button = Espòrta…
 
@@ -135,7 +158,6 @@ confirm-discard-changes-dialog-confirm-button = Ignòra
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Vànni a { $hostname }
-about-logins-breach-alert-learn-more-link = Atre informaçioin
 
 ## Vulnerable Password notification
 
@@ -187,17 +209,23 @@ about-logins-import-file-picker-tsv-filter-title =
 
 about-logins-import-dialog-title = Inportaçion terminâ
 
+about-logins-import-dialog-error-file-permission-title = No ariescio a lêze o schedaio
+about-logins-import-dialog-error-unable-to-read-title = No ariescio a elaborâ o schedaio
+about-logins-import-dialog-error-unable-to-read-description = Asegûate de seleçionâ 'n schedaio CSV ò TSV
 about-logins-import-dialog-error-cancel = Anulla
 
 #
 # Variables:
 #  $number (number) - The number of the row
 about-logins-import-report-row-index = Linia { $number }
+about-logins-import-report-row-description-error = Erô: Manca 'n canpo
 
 ##
 ## Variables:
 ##  $field (String) - The name of the field from the CSV file for example url, username or password
 
+about-logins-import-report-row-description-error-multiple-values = Erô: Gh'é tanti valoî pe { $field }
+about-logins-import-report-row-description-error-missing-field = Erô: Manca { $field }
 
 ##
 ## Variables:

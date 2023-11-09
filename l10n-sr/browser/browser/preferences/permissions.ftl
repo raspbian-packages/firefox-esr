@@ -2,68 +2,84 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-permissions-window =
-    .title = Изузеци
-    .style = width: 46em
 permissions-window2 =
     .title = Изузеци
     .style = min-width: 46em
+
 permissions-close-key =
     .key = w
+
 permissions-address = Адреса веб-сајта:
     .accesskey = А
+
 permissions-block =
     .label = Блокирај
     .accesskey = Б
+
 permissions-disable-etp =
     .label = Додај изузетак
     .accesskey = и
+
 permissions-session =
     .label = Дозволи док траје сесија
     .accesskey = о
+
 permissions-allow =
     .label = Дозволи
     .accesskey = Д
+
 permissions-button-off =
     .label = Искључи
     .accesskey = И
+
 permissions-button-off-temporarily =
     .label = Привремено искључи
     .accesskey = П
+
 permissions-site-name =
     .label = Веб-сајт
+
 permissions-status =
     .label = Статус
+
 permissions-remove =
     .label = Уклони
     .accesskey = У
+
 permissions-remove-all =
     .label = Уклони све
     .accesskey = с
+
 permission-dialog =
     .buttonlabelaccept = Сачувај
     .buttonaccesskeyaccept = С
+
 permissions-autoplay-menu = Подразумевано за све веб-сајтове:
+
 permissions-searchbox =
     .placeholder = Претражите
+
 permissions-capabilities-autoplay-allow =
     .label = Дозволи звук и видео
 permissions-capabilities-autoplay-block =
     .label = Блокирај звук
 permissions-capabilities-autoplay-blockall =
     .label = Блокирај звук и видео
+
 permissions-capabilities-allow =
     .label = Дозволи
 permissions-capabilities-block =
     .label = Блокирај
 permissions-capabilities-prompt =
     .label = Увек питај
+
 permissions-capabilities-listitem-allow =
     .value = Дозволи
 permissions-capabilities-listitem-block =
     .value = Блокирај
 permissions-capabilities-listitem-allow-session =
     .value = Дозволи док траје сесија
+
 permissions-capabilities-listitem-off =
     .value = Искључено
 permissions-capabilities-listitem-off-temporarily =
@@ -76,20 +92,13 @@ permissions-invalid-uri-label = Унесите важећи назив хост�
 
 ## Exceptions - Tracking Protection
 
-permissions-exceptions-etp-window =
-    .title = Побољшана заштита од праћења – изузеци
-    .style = { permissions-window.style }
 permissions-exceptions-etp-window2 =
     .title = Побољшана заштита од праћења – изузеци
     .style = { permissions-window2.style }
-permissions-exceptions-etp-desc = Искључили сте заштиту на овим веб-сајтовима.
 permissions-exceptions-manage-etp-desc = Можете да наведете који сајтови имају искључену побољшану заштиту од праћења. Унесите тачну адресу сајта којим желите да управљате и кликните на Додај изузетак.
 
 ## Exceptions - Cookies
 
-permissions-exceptions-cookie-window =
-    .title = Колачићи и подаци о сајтовима – изузеци
-    .style = { permissions-window.style }
 permissions-exceptions-cookie-window2 =
     .title = Колачићи и подаци о сајтовима – изузеци
     .style = { permissions-window2.style }
@@ -97,9 +106,6 @@ permissions-exceptions-cookie-desc = Овде можете да наведете
 
 ## Exceptions - HTTPS-Only Mode
 
-permissions-exceptions-https-only-window =
-    .title = Изузеци – режим „Само HTTPS”
-    .style = { permissions-window.style }
 permissions-exceptions-https-only-window2 =
     .title = Изузеци – режим „Само HTTPS”
     .style = { permissions-window2.style }
@@ -107,9 +113,6 @@ permissions-exceptions-https-only-desc = Можете искључити сам�
 
 ## Exceptions - Pop-ups
 
-permissions-exceptions-popup-window =
-    .title = Искачући прозори – дозвољени веб-сајтови
-    .style = { permissions-window.style }
 permissions-exceptions-popup-window2 =
     .title = Искачући прозори – дозвољени веб-сајтови
     .style = { permissions-window2.style }
@@ -117,9 +120,6 @@ permissions-exceptions-popup-desc = Овде можете да наведете 
 
 ## Exceptions - Saved Logins
 
-permissions-exceptions-saved-logins-window =
-    .title = Сачуване лозинке – изузеци
-    .style = { permissions-window.style }
 permissions-exceptions-saved-logins-window2 =
     .title = Сачуване лозинке – изузеци
     .style = { permissions-window2.style }
@@ -127,9 +127,6 @@ permissions-exceptions-saved-logins-desc = Пријаве за следеће с
 
 ## Exceptions - Add-ons
 
-permissions-exceptions-addons-window =
-    .title = Инсталација додатака – дозвољени веб-сајтови
-    .style = { permissions-window.style }
 permissions-exceptions-addons-window2 =
     .title = Инсталација додатака – дозвољени веб-сајтови
     .style = { permissions-window2.style }
@@ -137,9 +134,6 @@ permissions-exceptions-addons-desc = Овде можете да наведете
 
 ## Site Permissions - Autoplay
 
-permissions-site-autoplay-window =
-    .title = Аутоматска репродукција – подешавања
-    .style = { permissions-window.style }
 permissions-site-autoplay-window2 =
     .title = Аутоматска репродукција – подешавања
     .style = { permissions-window2.style }
@@ -147,11 +141,8 @@ permissions-site-autoplay-desc = Овде можете да управљате �
 
 ## Site Permissions - Notifications
 
-permissions-site-notification-window =
-    .title = Подешавања - Дозволе обавештења
-    .style = { permissions-window.style }
 permissions-site-notification-window2 =
-    .title = Подешавања - Дозволе обавештења
+    .title = Подешавања - дозволе обавештења
     .style = { permissions-window2.style }
 permissions-site-notification-desc = Следећи веб-сајтови су затражили дозволу за слање обавештења. Можете да подесите којим веб-сајтовима је дозвољено да вам шаљу обавештења, као и да блокирате нове захтеве.
 permissions-site-notification-disable-label =
@@ -160,11 +151,8 @@ permissions-site-notification-disable-desc = Овим ћете онемогућ�
 
 ## Site Permissions - Location
 
-permissions-site-location-window =
-    .title = Подешавања - Дозволе за локацију
-    .style = { permissions-window.style }
 permissions-site-location-window2 =
-    .title = Подешавања - Дозволе за локацију
+    .title = Подешавања - дозволе за локацију
     .style = { permissions-window2.style }
 permissions-site-location-desc = Следећи веб-сајтови су затражили дозволу за приступ локацији. Можете да подесите којим веб-сајтовима је дозвољен приступ локацији, као и да блокирате нове захтеве.
 permissions-site-location-disable-label =
@@ -173,9 +161,6 @@ permissions-site-location-disable-desc = Овим ћете онемогућит�
 
 ## Site Permissions - Virtual Reality
 
-permissions-site-xr-window =
-    .title = Подешавања – дозволе за виртуелну реалност
-    .style = { permissions-window.style }
 permissions-site-xr-window2 =
     .title = Подешавања – дозволе за виртуелну реалност
     .style = { permissions-window2.style }
@@ -186,11 +171,8 @@ permissions-site-xr-disable-desc = Овим ћете онемогућити св
 
 ## Site Permissions - Camera
 
-permissions-site-camera-window =
-    .title = Подешавања - Дозволе за камеру
-    .style = { permissions-window.style }
 permissions-site-camera-window2 =
-    .title = Подешавања - Дозволе за камеру
+    .title = Подешавања - дозволе за камеру
     .style = { permissions-window2.style }
 permissions-site-camera-desc = Следећи веб-сајтови су затражили дозволу за приступ камери. Можете да подесите којим веб-сајтовима је дозвољен приступ камери, као и да блокирате нове захтеве.
 permissions-site-camera-disable-label =
@@ -199,13 +181,42 @@ permissions-site-camera-disable-desc = Овим ћете онемогућити 
 
 ## Site Permissions - Microphone
 
-permissions-site-microphone-window =
-    .title = Подешавња - Дозволе за микрофон
-    .style = { permissions-window.style }
 permissions-site-microphone-window2 =
-    .title = Подешавања - Дозволе за микрофон
+    .title = Подешавања - дозволе за микрофон
     .style = { permissions-window2.style }
 permissions-site-microphone-desc = Следећи веб-сајтови су затражили дозволу за приступ микрофону. Можете да подесите којим веб-сајтовима је дозвољен приступ микрофону, као и да блокирате нове захтеве.
 permissions-site-microphone-disable-label =
     .label = Блокирај нове захтеве за приступ вашем микрофону
 permissions-site-microphone-disable-desc = Овим ћете онемогућити свим веб-сајтовима ван листе да захтевају дозволу за приступ микрофону. Блокирањем приступа микрофону неке функције веб-сајтова могу да престану с радом.
+
+## Site Permissions - Speaker
+##
+## "Speaker" refers to an audio output device.
+
+permissions-site-speaker-window =
+    .title = Подешавања - дозволе за звучнике
+    .style = { permissions-window2.style }
+permissions-site-speaker-desc = Следећи веб-сајтови су затражили дозволу да изаберу аудио излазни уређај. Можете да подесите којим веб-сајтовима је дозвољено да бирају уређај за аудио излаз.
+
+permissions-exceptions-doh-window =
+    .title = Изузеци веб-сајтова за DNS преко HTTPS-а
+    .style = { permissions-window2.style }
+permissions-exceptions-manage-doh-desc = { -brand-short-name } неће користити безбедни DNS на овим веб-сајтовима и њиховим поддоменима.
+
+permissions-doh-entry-field = Унеси доменско име веб-сајта
+    .accesskey = д
+
+permissions-doh-add-exception =
+    .label = Додај
+    .accesskey = Д
+
+permissions-doh-col =
+    .label = Домен
+
+permissions-doh-remove =
+    .label = Уклони
+    .accesskey = У
+
+permissions-doh-remove-all =
+    .label = Уклони све
+    .accesskey = с

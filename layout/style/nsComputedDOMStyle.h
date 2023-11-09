@@ -262,16 +262,10 @@ class nsComputedDOMStyle final : public nsDOMCSSDeclaration,
   already_AddRefed<CSSValue> DoGetMarginLeft();
   already_AddRefed<CSSValue> DoGetMarginRight();
 
-  /* Text Properties */
-  already_AddRefed<CSSValue> DoGetLineHeight();
-
   /* Display properties */
   already_AddRefed<CSSValue> DoGetTransform();
   already_AddRefed<CSSValue> DoGetTransformOrigin();
   already_AddRefed<CSSValue> DoGetPerspectiveOrigin();
-
-  /* Column properties */
-  already_AddRefed<CSSValue> DoGetColumnRuleWidth();
 
   // For working around a MSVC bug. See related comment in
   // GenerateComputedDOMStyleGenerated.py.

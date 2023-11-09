@@ -70,15 +70,73 @@ firefoxview-pickup-tabs-badge = Son bakılan
 firefoxview-tabs-list-tab-button =
     .title = { $targetURI } adresini yeni sekmede aç
 firefoxview-try-colorways-button = Renk kuşaklarını deneyin
-firefoxview-no-current-colorway-collection = Yeni renk kuşakları yolda
 firefoxview-change-colorway-button = Renk kuşağını değiştir
 # Variables:
 #  $intensity (String): Colorway intensity
 #  $collection (String): Colorway Collection name
 firefoxview-colorway-description = { $intensity } · { $collection }
 firefoxview-synced-tabs-placeholder-header = Henüz görülecek bir şey yok
-firefoxview-synced-tabs-placeholder-body = Başka bir cihazdaki { -brand-product-name } tarayıcınızda bir sayfa açtığınızda o sayfayı burada görebilirsiniz.
+firefoxview-synced-tabs-placeholder-body = Başka bir cihazdaki { -brand-product-name } tarayıcınızda açtığınız sayfaları burada görebilirsiniz.
 firefoxview-collapse-button-show =
     .title = Listeyi göster
 firefoxview-collapse-button-hide =
     .title = Listeyi gizle
+firefoxview-overview-nav = Son bakılanlar
+    .title = Son bakılanlar
+firefoxview-overview-header = Son bakılanlar
+    .title = Son bakılanlar
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Geçmiş
+    .title = Geçmiş
+firefoxview-history-header = Geçmiş
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Açık sekmeler
+    .title = Açık sekmeler
+firefoxview-opentabs-header = Açık sekmeler
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Son kapatılan sekmeler
+    .title = Son kapatılan sekmeler
+firefoxview-recently-closed-header = Son kapatılan sekmeler
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Diğer cihazlardaki sekmeler
+    .title = Diğer cihazlardaki sekmeler
+firefoxview-synced-tabs-header = Diğer cihazlardaki sekmeler
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Tümünü göster
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Pencere { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Pencere { $winID } (Geçerli)
+firefoxview-opentabs-focus-tab =
+    .title = Bu sekmeye geç
+firefoxview-show-more = Daha fazla göster
+firefoxview-show-less = Daha az göster
+firefoxview-sort-history-by-date-label = Tarihe göre sırala
+firefoxview-sort-history-by-site-label = Siteye göre sırala
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Bugün - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Dün - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Tüm geçmişi göster

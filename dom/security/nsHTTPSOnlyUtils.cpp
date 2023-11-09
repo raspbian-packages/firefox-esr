@@ -504,10 +504,19 @@ nsHTTPSOnlyUtils::PotentiallyDowngradeHttpsFirstRequest(nsIChannel* aChannel,
   nsresult rv = aChannel->GetURI(getter_AddRefs(uri));
   NS_ENSURE_SUCCESS(rv, nullptr);
 
-  // Only downgrade if the current scheme is (a) https or (b) view-source:https
   nsAutoCString spec;
+  nsCOMPtr<nsIURI> newURI;
+
+  // Only downgrade if the current scheme is (a) https or (b) view-source:https
   if (uri->SchemeIs("https")) {
     rv = uri->GetSpec(spec);
+    NS_ENSURE_SUCCESS(rv, nullptr);
+
+    rv = NS_NewURI(getter_AddRefs(newURI), spec);
+    NS_ENSURE_SUCCESS(rv, nullptr);
+
+    rv = NS_MutateURI(newURI).SetScheme("http"_ns).Finalize(
+        getter_AddRefs(newURI));
     NS_ENSURE_SUCCESS(rv, nullptr);
   } else if (uri->SchemeIs("view-source")) {
     nsCOMPtr<nsINestedURI> nestedURI = do_QueryInterface(uri);
@@ -520,26 +529,22 @@ nsHTTPSOnlyUtils::PotentiallyDowngradeHttpsFirstRequest(nsIChannel* aChannel,
     if (!innerURI || !innerURI->SchemeIs("https")) {
       return nullptr;
     }
+    rv = NS_MutateURI(innerURI).SetScheme("http"_ns).Finalize(
+        getter_AddRefs(innerURI));
+    NS_ENSURE_SUCCESS(rv, nullptr);
+
     nsAutoCString innerSpec;
     rv = innerURI->GetSpec(innerSpec);
     NS_ENSURE_SUCCESS(rv, nullptr);
 
     spec.Append("view-source:");
     spec.Append(innerSpec);
+
+    rv = NS_NewURI(getter_AddRefs(newURI), spec);
+    NS_ENSURE_SUCCESS(rv, nullptr);
   } else {
     return nullptr;
   }
-
-  // Change the scheme to http
-  if (spec.Find("https://") < 0) {
-    MOZ_ASSERT(false, "how can we end up here not dealing with an https: URI?");
-    return nullptr;
-  }
-  spec.ReplaceSubstring("https://", "http://");
-
-  nsCOMPtr<nsIURI> newURI;
-  rv = NS_NewURI(getter_AddRefs(newURI), spec);
-  NS_ENSURE_SUCCESS(rv, nullptr);
 
   // Log downgrade to console
   NS_ConvertUTF8toUTF16 reportSpec(uri->GetSpecOrDefault());
@@ -691,7 +696,7 @@ void nsHTTPSOnlyUtils::LogMessage(const nsAString& aMessage, uint32_t aFlags,
   message.Append(aMessage);
 
   // Allow for easy distinction in devtools code.
-  nsCString category(aUseHttpsFirst ? "HTTPSFirst" : "HTTPSOnly");
+  auto category = aUseHttpsFirst ? "HTTPSFirst"_ns : "HTTPSOnly"_ns;
 
   uint64_t innerWindowId = aLoadInfo->GetInnerWindowID();
   if (innerWindowId > 0) {
@@ -701,7 +706,7 @@ void nsHTTPSOnlyUtils::LogMessage(const nsAString& aMessage, uint32_t aFlags,
   } else {
     // Send to browser console
     bool isPrivateWin = aLoadInfo->GetOriginAttributes().mPrivateBrowsingId > 0;
-    nsContentUtils::LogSimpleConsoleError(message, category.get(), isPrivateWin,
+    nsContentUtils::LogSimpleConsoleError(message, category, isPrivateWin,
                                           true /* from chrome context */,
                                           aFlags);
   }
@@ -995,8 +1000,7 @@ TestHTTPAnswerRunnable::Notify(nsITimer* aTimer) {
   }
 
   mozilla::OriginAttributes attrs = origLoadInfo->GetOriginAttributes();
-  RefPtr<nsIPrincipal> nullPrincipal =
-      mozilla::NullPrincipal::CreateWithInheritedAttributes(attrs);
+  RefPtr<nsIPrincipal> nullPrincipal = mozilla::NullPrincipal::Create(attrs);
 
   uint32_t loadFlags =
       nsIRequest::LOAD_ANONYMOUS | nsIRequest::INHIBIT_CACHING |
@@ -1034,7 +1038,8 @@ TestHTTPAnswerRunnable::Notify(nsITimer* aTimer) {
   nsCOMPtr<nsILoadInfo> loadInfo = testHTTPChannel->LoadInfo();
   uint32_t httpsOnlyStatus = loadInfo->GetHttpsOnlyStatus();
   httpsOnlyStatus |= nsILoadInfo::HTTPS_ONLY_EXEMPT |
-                     nsILoadInfo::HTTPS_ONLY_DO_NOT_LOG_TO_CONSOLE;
+                     nsILoadInfo::HTTPS_ONLY_DO_NOT_LOG_TO_CONSOLE |
+                     nsILoadInfo::HTTPS_ONLY_BYPASS_ORB;
   loadInfo->SetHttpsOnlyStatus(httpsOnlyStatus);
 
   testHTTPChannel->SetNotificationCallbacks(this);

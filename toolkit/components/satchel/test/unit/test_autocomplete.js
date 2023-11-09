@@ -90,8 +90,8 @@ add_test(function test0() {
 add_test(function test1() {
   do_log_info("Check initial state is as expected");
 
-  countEntries(null, null, function() {
-    countEntries("field1", null, function(count) {
+  countEntries(null, null, function () {
+    countEntries("field1", null, function (count) {
       Assert.ok(count > 0);
       run_next_test();
     });
@@ -360,4 +360,29 @@ add_test(function test_token_limit_DB() {
       }
     );
   });
+});
+
+add_test(async function can_search_escape_marker() {
+  await promiseUpdate({
+    op: "add",
+    fieldname: "field1",
+    value: "/* Further reading */ test",
+    timesUsed: 1,
+    firstUsed: now,
+    lastUsed: now,
+  });
+
+  fac.autoCompleteSearchAsync(
+    "field1",
+    "/* Further reading */ t",
+    null,
+    null,
+    null,
+    {
+      onSearchCompletion(aResults) {
+        Assert.equal(1, aResults.matchCount);
+        run_next_test();
+      },
+    }
+  );
 });

@@ -32,3 +32,13 @@ unified-extensions-context-menu-remove-extension =
     .label = Utwreiding fuortsmite
 unified-extensions-context-menu-report-extension =
     .label = Utwreiding rapportearje
+unified-extensions-context-menu-move-widget-up =
+    .label = Omheech ferpleatse
+unified-extensions-context-menu-move-widget-down =
+    .label = Omleech ferpleatse
+
+## Notifications
+
+unified-extensions-mb-quarantined-domain-title = Guon útwreidingen binne net tastien
+unified-extensions-mb-quarantined-domain-message = Om jo gegevens te beskermjen, binne mar inkelde útwreidingen dy’t kontrolearre wurde troch { -vendor-short-name } tastien op dizze website.
+unified-extensions-mb-quarantined-domain-message-2 = Om jo gegevens te beskermjen, kinne guon útwreidingen gjin gegevens op dizze side lêze of wizigje. Brûk de ynstellingen fan de útwreiding om dit ta te stean op siden dy’t beheind binne troch { -vendor-short-name }.

@@ -7,14 +7,13 @@
 
 "use strict";
 
-add_task(async function() {
+add_task(async function () {
   await pushPref("devtools.debugger.features.command-click", true);
   const dbg = await initDebugger("doc-command-click.html", "simple4.js");
 
   const source = findSource(dbg, "simple4.js");
 
   await selectSource(dbg, source);
-  await waitForSelectedSource(dbg, source);
 
   invokeInTab("funcA");
   await waitForPaused(dbg);

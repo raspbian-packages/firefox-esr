@@ -1,10 +1,10 @@
 # mypy: allow-untyped-defs
-
 import os
 import subprocess
 import sys
+from abc import ABC
 from collections import defaultdict
-from typing import Any, ClassVar, Dict, Type
+from typing import Any, ClassVar, Dict, Optional, Type
 from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
@@ -13,7 +13,7 @@ atom_reset = atoms["Reset"]
 enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest"}
 
 
-class Result:
+class Result(ABC):
     def __init__(self,
                  status,
                  message,
@@ -34,7 +34,7 @@ class Result:
         return f"<{self.__module__}.{self.__class__.__name__} {self.status}>"
 
 
-class SubtestResult:
+class SubtestResult(ABC):
     def __init__(self, name, status, message, stack=None, expected=None, known_intermittent=None):
         self.name = name
         if status not in self.statuses:
@@ -203,17 +203,17 @@ def server_protocol(manifest_item):
     return "http"
 
 
-class Test:
-
-    result_cls = None  # type: ClassVar[Type[Result]]
-    subtest_result_cls = None  # type: ClassVar[Type[SubtestResult]]
-    test_type = None  # type: ClassVar[str]
+class Test(ABC):
+    result_cls: ClassVar[Type[Result]]
+    subtest_result_cls: ClassVar[Optional[Type[SubtestResult]]] = None
+    test_type: ClassVar[str]
+    pac = None
 
     default_timeout = 10  # seconds
     long_timeout = 60  # seconds
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http", subdomain=False):
+                 timeout=None, path=None, protocol="http", subdomain=False, pac=None):
         self.url_base = url_base
         self.tests_root = tests_root
         self.url = url
@@ -226,6 +226,9 @@ class Test:
         self.environment = {"url_base": url_base,
                             "protocol": protocol,
                             "prefs": self.prefs}
+
+        if pac is not None:
+            self.environment["pac"] = urljoin(self.url, pac)
 
     def __eq__(self, other):
         if not isinstance(other, Test):
@@ -434,17 +437,6 @@ class Test:
         except KeyError:
             return []
 
-    def expect_any_subtest_status(self):
-        metadata = self._get_metadata()
-        if metadata is None:
-            return False
-        try:
-            # This key is used by the Blink CI to ignore subtest statuses
-            metadata.get("blink_expect_any_subtest_status")
-            return True
-        except KeyError:
-            return False
-
     def __repr__(self):
         return f"<{self.__module__}.{self.__class__.__name__} {self.id}>"
 
@@ -456,9 +448,9 @@ class TestharnessTest(Test):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
                  timeout=None, path=None, protocol="http", testdriver=False,
-                 jsshell=False, scripts=None, subdomain=False):
+                 jsshell=False, scripts=None, subdomain=False, pac=None):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      path, protocol, subdomain)
+                      path, protocol, subdomain, pac)
 
         self.testdriver = testdriver
         self.jsshell = jsshell
@@ -467,6 +459,7 @@ class TestharnessTest(Test):
     @classmethod
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
+        pac = manifest_item.pac
         testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
         jsshell = manifest_item.jsshell if hasattr(manifest_item, "jsshell") else False
         script_metadata = manifest_item.script_metadata or []
@@ -478,20 +471,13 @@ class TestharnessTest(Test):
                    inherit_metadata,
                    test_metadata,
                    timeout=timeout,
+                   pac=pac,
                    path=os.path.join(manifest_file.tests_root, manifest_item.path),
                    protocol=server_protocol(manifest_item),
                    testdriver=testdriver,
                    jsshell=jsshell,
                    scripts=scripts,
                    subdomain=manifest_item.subdomain)
-
-    @property
-    def id(self):
-        return self.url
-
-
-class ManualTest(Test):
-    test_type = "manual"
 
     @property
     def id(self):
@@ -710,7 +696,6 @@ class CrashTest(Test):
 manifest_test_cls = {"reftest": ReftestTest,
                      "print-reftest": PrintReftestTest,
                      "testharness": TestharnessTest,
-                     "manual": ManualTest,
                      "wdspec": WdspecTest,
                      "crashtest": CrashTest}
 

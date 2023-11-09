@@ -21,6 +21,10 @@ fxa-menu-turn-on-sync-default = Bật đồng bộ hóa
 
 fxa-menu-connect-another-device =
     .label = Kết nối thiết bị khác…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label = Gửi { $tabCount } thẻ đến thiết bị
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

@@ -22,16 +22,6 @@
 class nsPIDOMWindowInner;
 class nsContentPermissionRequestProxy;
 
-// Forward declare IPC::Principal here which is defined in
-// PermissionMessageUtils.h. Include this file will transitively includes
-// "windows.h" and it defines
-//   #define CreateEvent CreateEventW
-//   #define LoadImage LoadImageW
-// That will mess up windows build.
-namespace IPC {
-class Principal;
-}  // namespace IPC
-
 namespace mozilla::dom {
 
 class Element;
@@ -95,7 +85,7 @@ class nsContentPermissionUtils {
 };
 
 nsresult TranslateChoices(
-    JS::HandleValue aChoices,
+    JS::Handle<JS::Value> aChoices,
     const nsTArray<PermissionRequest>& aPermissionRequests,
     nsTArray<PermissionChoice>& aTranslatedChoices);
 
@@ -229,7 +219,7 @@ class RemotePermissionRequest final
   virtual ~RemotePermissionRequest();
 
   MOZ_CAN_RUN_SCRIPT
-  void DoAllow(JS::HandleValue aChoices);
+  void DoAllow(JS::Handle<JS::Value> aChoices);
   MOZ_CAN_RUN_SCRIPT
   void DoCancel();
 

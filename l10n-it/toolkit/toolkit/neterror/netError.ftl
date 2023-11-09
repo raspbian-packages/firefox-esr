@@ -26,8 +26,8 @@ neterror-return-to-previous-page-recommended-button = Torna indietro (consigliat
 neterror-try-again-button = Riprova
 neterror-add-exception-button = Continua sempre per questo sito
 neterror-settings-button = Modifica impostazioni DNS
-
 neterror-view-certificate-link = Visualizza certificato
+neterror-trr-continue-this-time = Continua questa volta
 neterror-disable-native-feedback-warning = Continua sempre
 
 ##
@@ -59,12 +59,12 @@ neterror-dns-not-found-hint-firewall = Controllare che { -brand-short-name } abb
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-trr-only-reason = { -brand-short-name } non può proteggere la richiesta relativa all’indirizzo di questo sito utilizzando il servizio di risoluzione dei nomi (DNS) che riteniamo attendibile. Motivo:
-neterror-dns-not-found-trr-only-attackers = Se si continua, un soggetto di terze parti potrebbe essere in grado di identificare quali siti visiti o farti aprire un sito non affidabile.
+neterror-dns-not-found-trr-third-party-warning2 = È possibile continuare con il servizio di risoluzione dei nomi (DNS) predefinito. Tuttavia, un soggetto di terze parti potrebbe essere in grado di identificare quali siti visiti.
 
 neterror-dns-not-found-trr-only-could-not-connect = { -brand-short-name } non è riuscito a connettersi a { $trrDomain }.
 neterror-dns-not-found-trr-only-timeout = La connessione a { $trrDomain } ha richiesto più tempo del previsto.
 neterror-dns-not-found-trr-offline = Nessuna connessione a Internet.
-neterror-dns-not-found-trr-unknown-host = { $trrDomain } non ha trovato un indirizzo per questo sito web.
+neterror-dns-not-found-trr-unknown-host2 = Il sito web non è stato trovato da { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Si è verificato un problema con { $trrDomain }.
 neterror-dns-not-found-trr-unknown-problem = Problema inatteso.
 
@@ -73,10 +73,8 @@ neterror-dns-not-found-trr-unknown-problem = Problema inatteso.
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } non può proteggere la richiesta relativa all’indirizzo di questo sito utilizzando il servizio di risoluzione dei nomi (DNS) che riteniamo attendibile. Motivo:
-neterror-dns-not-found-native-fallback-attackers = È possibile procedere utilizzando un servizio di risoluzione dei nomi non sicuro. Tuttavia, un soggetto di terze parti potrebbe essere in grado di identificare quali siti visiti o farti aprire un sito non affidabile.
-neterror-dns-not-found-native-fallback-heuristic = DNS over HTTPS è stato disattivato sulla tua rete.
-neterror-dns-not-found-native-fallback-not-confirmed = La connessione con { $trrDomain } non è ancora pronta.
-
+neterror-dns-not-found-native-fallback-heuristic = DNS su HTTPS è stato disattivato sulla tua rete.
+neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } non è riuscito a connettersi a { $trrDomain }.
 
 ##
 

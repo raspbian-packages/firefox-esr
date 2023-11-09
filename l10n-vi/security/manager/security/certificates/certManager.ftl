@@ -26,10 +26,6 @@ certmgr-people = Bạn có các tập tin chứng thực để nhận biết nh�
 certmgr-server = Các mục này xác định các ngoại lệ lỗi chứng chỉ máy chủ
 certmgr-ca = Bạn có những tập tin chứng thực để nhận biết các nhà thẩm định chứng thực này
 
-certmgr-edit-ca-cert =
-    .title = Chỉnh thiết lập độ tin cậy chứng chỉ CA
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Chỉnh thiết lập độ tin cậy chứng chỉ CA
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Chứng chỉ này có thể nhận diện người dùng email.
-
-certmgr-delete-cert =
-    .title = Xóa chứng nhận
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Xóa chứng nhận
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Máy chủ
-
-certmgr-override-lifetime =
-    .label = Chu kì
 
 certmgr-token-name =
     .label = Thiết bị bảo mật
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Số sê-ri
+
+certmgr-fingerprint-sha-256 =
+    .label = Vân tay SHA-256
 
 certmgr-view =
     .label = Xem…

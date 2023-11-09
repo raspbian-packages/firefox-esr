@@ -57,3 +57,18 @@ about-private-browsing-promo-close-button =
 
 ## Strings used in a “pin promotion” message, which prompts users to pin a private window
 
+about-private-browsing-pin-promo-header = Brabhsadh prìobhaideach ann am briogadh
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Cùm air an doca
+       *[other] Prìnich ri bàr nan saothair
+    }
+about-private-browsing-pin-promo-title = Gun eachdraidh ’s gun bhriosgaidean gan sàbhaladh, air an desktop fhèin. Dèan brabhsadh mar nach eil duine sam bith a’ cumail sùil ort.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Uam-sa brataichean nam briosgaidean!
+about-private-browsing-cookie-banners-promo-button = Nas lugha de bhrataichean bhriosgaidean
+about-private-browsing-cookie-banners-promo-message = Leig le { -brand-short-name } iarrtasan bhriosgaidean a fhreagairt leis fhèin airson ’s nach bris uiread a rudan a-steach ort is tu ri brabhsadh. Mas urrainn dha, diùltaidh { -brand-short-name } gach iarrtas.

@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Nodwedd Cymeradwy
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Pam ydw i'n gweld hyn
+
 cfr-doorhanger-extension-cancel-button = Nid Nawr
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Ychwanegu Nawr
     .accesskey = Y
+
 cfr-doorhanger-extension-manage-settings-button = Gosodiadau Argymell Rheoli
     .accesskey = R
+
 cfr-doorhanger-extension-never-show-recommendation = Peidio Dangos yr Argymhelliad i Mi
     .accesskey = P
+
 cfr-doorhanger-extension-learn-more-link = Dysgu rhagor
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = gan { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Argymhelliad
 cfr-doorhanger-extension-notification2 = Argymhelliad
     .tooltiptext = Argymhelliad Estyniad
     .a11y-announcement = Mae argymhelliad estyniad ar gael
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Argymhelliad
@@ -65,29 +73,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } defnyddiwr
     }
 
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = Gwaredu baneri cwcis!
-cfr-cookie-banner-handling-body = Caniatáu i { -brand-short-name } wrthod pob cais baner cwci yn awtomatig, pan fo modd. Fel arall, bydd pob cwci yn cael ei dderbyn i gau mwy fyth o faneri.
-cfr-cookie-banner-accept-button = Gwrthod Ceisiadau
-    .accesskey = G
-cfr-cookie-banner-reject-button = Nid Nawr
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-1 = Gweld llai o lamlenni cwcis
-cfr-cookie-banner-handling-body-variant-1 = Gadael i { -brand-short-name } ateb ffenestri llamlenni cwcis yn awtomatig er mwyn i chi fod yn rhydd i bori. Bydd { -brand-short-name } yn gwrthod pob cais os yn bosib, neu'n derbyn pob cais os nad.
-cfr-cookie-banner-accept-button-variant-1 = Cau Llamlenni
-    .accesskey = C
-cfr-cookie-banner-reject-button-variant-1 = Dim diolch
-    .accesskey = D
-cfr-cookie-banner-handling-header-variant-2 = Llai o Faneri Cwcis
-cfr-cookie-banner-handling-body-variant-2 = Caniatáu i { -brand-short-name } wrthod cais caniatâd cwci gwefan os yn bosibl neu dderbyn mynediad cwcis pan nad yw’n bosibl?
-cfr-cookie-banner-accept-button-variant-2 = Caniatáu
-    .accesskey = C
-cfr-cookie-banner-reject-button-variant-2 = Nid nawr
-    .accesskey = N
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Cydweddu eich nodau tudalen ym mhob man
@@ -108,9 +93,11 @@ cfr-protections-panel-link-text = Dysgu rhagor
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Nodwedd newydd:
+
 cfr-whatsnew-button =
     .label = Beth sy'n Newydd
     .tooltiptext = Beth sy'n Newydd
+
 cfr-whatsnew-release-notes-link-text = Darllenwch y nodiadau rhyddhau
 
 ## Enhanced Tracking Protection Milestones
@@ -143,13 +130,6 @@ cfr-doorhanger-doh-secondary-button = Analluogi
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = Mae eich preifatrwydd yn bwysig. Erbyn hyn mae { -brand-short-name } yn ynysu, neu'n creu blychau tywod er mwyn cadw gwefannau oddi wrth ei gilydd, sy'n ei gwneud hi'n anoddach i hacwyr ddwyn cyfrineiriau, rhifau cardiau credyd, a manylion sensitif arall, oddi arnoch.
-cfr-doorhanger-fission-header = Ynysu Gwefan
-cfr-doorhanger-fission-primary-button = Iawn, Wedi deall!
-    .accesskey = I
-cfr-doorhanger-fission-secondary-button = Dysgu rhagor
-    .accesskey = D
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Efallai na fydd fideos ar y wefan hon yn chwarae'n gywir ar y fersiwn hon o { -brand-short-name }. I gael cefnogaeth fideo lawn, diweddarwch { -brand-short-name } nawr.
@@ -158,11 +138,6 @@ cfr-doorhanger-video-support-primary-button = Diweddarwch Nawr
     .accesskey = D
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Dysgu rhagor
-    .title = Ehangu i ddysgu rhagor am y nodwedd hon
-spotlight-learn-more-expanded = Dysgu rhagor
-    .title = Cau
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -179,18 +154,6 @@ spotlight-public-wifi-vpn-link = Nid Nawr
     .accesskey = N
 
 ## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Rhowch brawf ar ein profiad
-    preifatrwydd mwyaf pwerus erioed
-spotlight-total-cookie-protection-body = Mae Total Cookie Protection yn atal tracwyr rhag defnyddio cwcis i'ch dilyn o amgylch y we.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = Mae { -brand-short-name } yn adeiladu ffens o amgylch cwcis, gan eu cyfyngu i'r wefan rydych chi arni fel na all tracwyr eu defnyddio i'ch dilyn chi. Gyda mynediad cynnar, byddwch yn helpu i wella'r nodwedd hon fel y gallwn barhau i adeiladu gwe well i bawb.
-spotlight-total-cookie-protection-primary-button = Cychwyn Total Cookie Protection
-spotlight-total-cookie-protection-secondary-button = Nid nawr
 
 ## Emotive Continuous Onboarding
 
@@ -220,11 +183,13 @@ spotlight-pin-secondary-button = Nid nawr
 
 mr2022-background-update-toast-title = { -brand-short-name } newydd. Yn fwy preifat. Llai o dracwyr. Dim cyfaddawdu.
 mr2022-background-update-toast-text = Rhowch gynnig ar y { -brand-short-name } mwyaf newydd nawr, wedi'i uwchraddio gyda'n diogelwch gwrth-dracio cryfaf eto.
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
 mr2022-background-update-toast-primary-button-label = Agorwch { -brand-shorter-name } Nawr
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -243,6 +208,7 @@ firefoxview-cfr-body-v2 = Cael tabiau sydd wedi'u cau'n ddiweddar nôl, a symud 
 ## Firefox View Spotlight
 
 firefoxview-spotlight-promo-title = Dywedwch helo wrth { -firefoxview-brand-name }
+
 # “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
 firefoxview-spotlight-promo-subtitle = Eisiau'r tab agored hwnnw ar eich ffôn? Gafaelwch ynddo. Oes angen y wefan hon rydych newydd ymweld â hi? Pwff, mae'n ôl gyda { -firefoxview-brand-name }.
 firefoxview-spotlight-promo-primarybutton = Dyma sut mae'n gweithio...
@@ -252,6 +218,7 @@ firefoxview-spotlight-promo-secondarybutton = Hepgor
 
 colorways-cfr-primarybutton = Dewis cyfuniad lliw
     .accesskey = D
+
 # "shades" refers to the different color options available to users in colorways.
 colorways-cfr-body = Lliwiwch eich porwr gyda lliwiau unigryw { -brand-short-name } wedi'u hysbrydoli gan leisiau a newidiodd ddiwylliant.
 colorways-cfr-header-28days = Mae cyfuniadau lliw Lleisiau Annibynnol yn dod i ben Ionawr 16
@@ -261,24 +228,11 @@ colorways-cfr-header-today = Mae cyfuniadau lliw Lleisiau Annibynnol yn dod i be
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = Gwaredu baneri cwcis!
-cfr-cookiebanner-body = Caniatáu i { -brand-short-name } wrthod pob cais baner cwci yn awtomatig pan fo modd.
-cfr-cookiebanner-accept-button = Cau baneri
-    .accesskey = C
-cfr-cookiebanner-reject-button = Nid Nawr
-    .accesskey = N
-cfr-cookiebanner-header-variant-1 = Gweld llai o lamlenni cwcis
-cfr-cookiebanner-body-variant-1 = Gadael i { -brand-short-name } ateb ffenestri llamlenni cwcis yn awtomatig er mwyn i chi fod yn rhydd i bori. Bydd { -brand-short-name } yn gwrthod pob cais os yn bosib.
-cfr-cookiebanner-accept-button-variant-1 = Cau Llamlenni
-    .accesskey = L
-cfr-cookiebanner-reject-button-variant-1 = Dim Diolch
-    .accesskey = D
-cfr-cookiebanner-header-variant-2 = Llai o Faneri Cwcis
-cfr-cookiebanner-body-variant-2 = Lleihewch nifer y baneri cwci rydych yn eu gweld drwy ganiatáu i { -brand-short-name } wrthod cais caniatâd cwci gwefan os yw'n bosibl.
-cfr-cookiebanner-accept-button-variant-2 = Caniatáu
-    .accesskey = C
-cfr-cookiebanner-reject-button-variant-2 = Nid Nawr
+cfr-cbh-header = Caniatáu i { -brand-short-name } wrthod baneri cwci?
+cfr-cbh-body = Gall { -brand-short-name } wrthod llawer o geisiadau baner cwci yn awtomatig.
+cfr-cbh-confirm-button = Gwrthod baneri cwci
+    .accesskey = G
+cfr-cbh-dismiss-button = Nid nawr
     .accesskey = N
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
@@ -286,3 +240,31 @@ cfr-cookiebanner-reject-button-variant-2 = Nid Nawr
 july-jam-headline = Rydyn ni yn eich cefnogi chi
 july-jam-body = Bob mis, mae { -brand-short-name } yn rhwystro 3,000+ o dracwyr fesul defnyddiwr ar gyfartaledd, gan roi mynediad diogel a chyflym i'r rhyngrwyd da i chi.
 july-jam-set-default-primary = Agor fy nolenni gyda { -brand-short-name }
+fox-doodle-pin-headline = Croeso nôl
+
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = Dyma neges atgoffa cyflym y gallwch chi gadw'ch hoff borwr annibynnol un clic yn unig i ffwrdd.
+fox-doodle-pin-primary = Agor fy nolenni gyda { -brand-short-name }
+fox-doodle-pin-secondary = Nid nawr
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>Mae'ch ffeiliau PDF nawr yn agor yn { -brand-short-name }.</strong> Golygwch neu llofnodwch ffurflenni o fewn eich porwr. I newid, chwiliwch am "PDF" yn y gosodiadau.
+set-default-pdf-handler-primary = Iawn
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = Dyfais newydd yn eich dyfodol?
+fxa-sync-cfr-body = Gwnewch yn siŵr fod eich nodau tudalen, cyfrineiriau a thabiau diweddaraf yn dod gyda chi unrhyw bryd y byddwch yn agor porwr { -brand-product-name } newydd.
+fxa-sync-cfr-primary = Dysgu rhagor
+    .accesskey = D
+fxa-sync-cfr-secondary = Atgoffwch fi yn nes ymlaen
+    .accesskey = A
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = Yn defnyddio dyfais hŷn?
+device-migration-fxa-spotlight-body = Gwnewch gopi wrth gefn o'ch data i wneud yn siŵr nad ydych chi'n colli manylion pwysig fel nodau tudalen a chyfrineiriau — yn enwedig os byddwch chi'n newid i ddyfais newydd.
+device-migration-fxa-spotlight-primary-button = Sut i wneud copi wrth gefn o fy nata
+device-migration-fxa-spotlight-link = Atgoffwch fi yn nes ymlaen

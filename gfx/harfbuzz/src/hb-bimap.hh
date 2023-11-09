@@ -39,6 +39,12 @@ struct hb_bimap_t
     back_map.reset ();
   }
 
+  void resize (unsigned pop)
+  {
+    forw_map.resize (pop);
+    back_map.resize (pop);
+  }
+
   bool in_error () const { return forw_map.in_error () || back_map.in_error (); }
 
   void set (hb_codepoint_t lhs, hb_codepoint_t rhs)
@@ -48,17 +54,18 @@ struct hb_bimap_t
     if (unlikely (rhs == HB_MAP_VALUE_INVALID)) { del (lhs); return; }
 
     forw_map.set (lhs, rhs);
-    if (in_error ()) return;
+    if (unlikely (in_error ())) return;
 
     back_map.set (rhs, lhs);
-    if (in_error ()) forw_map.del (lhs);
+    if (unlikely (in_error ())) forw_map.del (lhs);
   }
 
   hb_codepoint_t get (hb_codepoint_t lhs) const { return forw_map.get (lhs); }
   hb_codepoint_t backward (hb_codepoint_t rhs) const { return back_map.get (rhs); }
 
   hb_codepoint_t operator [] (hb_codepoint_t lhs) const { return get (lhs); }
-  bool has (hb_codepoint_t lhs, hb_codepoint_t *vp = nullptr) const { return forw_map.has (lhs, vp); }
+  bool has (hb_codepoint_t lhs) const { return forw_map.has (lhs); }
+
 
   void del (hb_codepoint_t lhs)
   {
@@ -72,13 +79,19 @@ struct hb_bimap_t
     back_map.clear ();
   }
 
-  bool is_empty () const { return get_population () == 0; }
+  bool is_empty () const { return forw_map.is_empty (); }
 
   unsigned int get_population () const { return forw_map.get_population (); }
+
 
   protected:
   hb_map_t  forw_map;
   hb_map_t  back_map;
+
+  public:
+  auto keys () const HB_AUTO_RETURN (+ forw_map.keys())
+  auto values () const HB_AUTO_RETURN (+ forw_map.values())
+  auto iter () const HB_AUTO_RETURN (+ forw_map.iter())
 };
 
 /* Inremental bimap: only lhs is given, rhs is incrementally assigned */
@@ -100,6 +113,9 @@ struct hb_inc_bimap_t : hb_bimap_t
 
   hb_codepoint_t skip ()
   { return next_value++; }
+
+  hb_codepoint_t skip (unsigned count)
+  { return next_value += count; }
 
   hb_codepoint_t get_next_value () const
   { return next_value; }

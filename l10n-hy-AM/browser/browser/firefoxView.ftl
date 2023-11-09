@@ -26,9 +26,15 @@ firefoxview-tabpickup-adddevice-primarybutton = Ստացեք { -brand-product-na
 firefoxview-tabpickup-synctabs-header = Միացնել ներդիրների համաժամացումը
 firefoxview-tabpickup-synctabs-learn-how = Իմանալ ինչպես
 firefoxview-tabpickup-synctabs-primarybutton = Համաժամեցված ներդիրները
+firefoxview-tabpickup-network-offline-header = Ստուգեք կապակցումը համացանցին
 firefoxview-tabpickup-network-offline-primarybutton = Կրկին փորձել
 firefoxview-tabpickup-sync-error-primarybutton = Կրկին փորձել
+firefoxview-tabpickup-sync-disconnected-header = Շարունակելու համար միացրեք համաժամացումը
+firefoxview-tabpickup-sync-disconnected-primarybutton = Միացրեք համաժամացումը կարգավորումներում
+firefoxview-tabpickup-password-locked-header = Ներդիրները դիտելու համար մուտքագրեք Հիմնական գաղտնաբառը
+firefoxview-tabpickup-password-locked-description = Ձեր ներդիրները ստանալու համար պետք է մուտքագրեք Հիմնական գաղտնաբառը { -brand-short-name }-ի համար:
 firefoxview-tabpickup-password-locked-link = Իմանալ ավելին
+firefoxview-tabpickup-password-locked-primarybutton = Մուտքագրել Հիմնական գաղտնաբառը
 firefoxview-tabpickup-signed-out-primarybutton = Մուտք գործել
 firefoxview-mobile-promo-header = Բերեք ներդիրները ձեր հեռախոսից կամ թաբլեթից
 firefoxview-mobile-confirmation-header = 🎉 Լավ է գնալ:
@@ -46,3 +52,25 @@ firefoxview-collapse-button-show =
     .title = Ցուցադրել ցուցակը
 firefoxview-collapse-button-hide =
     .title = Թաքցնել ցուցակը
+
+## History in this context refers to browser history
+
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+
+##
+
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+
+##
+

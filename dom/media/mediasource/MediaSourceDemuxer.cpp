@@ -32,6 +32,7 @@ MediaSourceDemuxer::MediaSourceDemuxer(AbstractThread* aAbstractMainThread)
 }
 
 constexpr TimeUnit MediaSourceDemuxer::EOS_FUZZ;
+constexpr TimeUnit MediaSourceDemuxer::EOS_FUZZ_START;
 
 RefPtr<MediaSourceDemuxer::InitPromise> MediaSourceDemuxer::Init() {
   RefPtr<MediaSourceDemuxer> self = this;
@@ -254,6 +255,7 @@ MediaSourceTrackDemuxer::MediaSourceTrackDemuxer(MediaSourceDemuxer* aParent,
                                                  TrackInfo::TrackType aType,
                                                  TrackBuffersManager* aManager)
     : mParent(aParent),
+      mTaskQueue(mParent->GetTaskQueue()),
       mType(aType),
       mMonitor("MediaSourceTrackDemuxer"),
       mManager(aManager),
@@ -271,7 +273,10 @@ MediaSourceTrackDemuxer::MediaSourceTrackDemuxer(MediaSourceDemuxer* aParent,
               // So we always seek 2112 frames
               ? (2112 * 1000000ULL /
                  mParent->GetTrackInfo(mType)->GetAsAudioInfo()->mRate)
-              : 0)) {}
+              : 0)) {
+  MOZ_ASSERT(mParent);
+  MOZ_ASSERT(mTaskQueue);
+}
 
 UniquePtr<TrackInfo> MediaSourceTrackDemuxer::GetInfo() const {
   return mParent->GetTrackInfo(mType)->Clone();
@@ -412,15 +417,20 @@ MediaSourceTrackDemuxer::DoGetSamples(int32_t aNumSamples) {
 
   MOZ_ASSERT(OnTaskQueue());
   if (mReset) {
-    // If a seek (or reset) was recently performed, we ensure that the data
+    // If a reset was recently performed, we ensure that the data
     // we are about to retrieve is still available.
     TimeIntervals buffered = mManager->Buffered(mType);
-    buffered.SetFuzz(MediaSourceDemuxer::EOS_FUZZ / 2);
-
     if (buffered.IsEmpty() && mManager->IsEnded()) {
       return SamplesPromise::CreateAndReject(NS_ERROR_DOM_MEDIA_END_OF_STREAM,
                                              __func__);
     }
+
+    // We use a larger fuzz to determine the presentation start
+    // time than the fuzz we use to determine acceptable gaps between
+    // frames. This is needed to fix embedded video issues as seen in the wild
+    // from different muxed stream start times.
+    // See: https://www.w3.org/TR/media-source-2/#presentation-start-time
+    buffered.SetFuzz(MediaSourceDemuxer::EOS_FUZZ_START);
     if (!buffered.ContainsWithStrictEnd(TimeUnit::Zero())) {
       return SamplesPromise::CreateAndReject(
           NS_ERROR_DOM_MEDIA_WAITING_FOR_DATA, __func__);
@@ -428,28 +438,34 @@ MediaSourceTrackDemuxer::DoGetSamples(int32_t aNumSamples) {
     mReset = false;
   }
   RefPtr<MediaRawData> sample;
+  MediaResult result = NS_OK;
   if (mNextSample) {
     sample = mNextSample.ref();
     mNextSample.reset();
   } else {
-    MediaResult result = NS_OK;
     sample = mManager->GetSample(mType, MediaSourceDemuxer::EOS_FUZZ, result);
-    if (!sample) {
-      if (result == NS_ERROR_DOM_MEDIA_END_OF_STREAM ||
-          result == NS_ERROR_DOM_MEDIA_WAITING_FOR_DATA) {
-        return SamplesPromise::CreateAndReject(
-            (result == NS_ERROR_DOM_MEDIA_END_OF_STREAM && mManager->IsEnded())
-                ? NS_ERROR_DOM_MEDIA_END_OF_STREAM
-                : NS_ERROR_DOM_MEDIA_WAITING_FOR_DATA,
-            __func__);
-      }
-      return SamplesPromise::CreateAndReject(result, __func__);
+  }
+  if (!sample) {
+    if (result == NS_ERROR_DOM_MEDIA_END_OF_STREAM ||
+        result == NS_ERROR_DOM_MEDIA_WAITING_FOR_DATA) {
+      return SamplesPromise::CreateAndReject(
+          (result == NS_ERROR_DOM_MEDIA_END_OF_STREAM && mManager->IsEnded())
+              ? NS_ERROR_DOM_MEDIA_END_OF_STREAM
+              : NS_ERROR_DOM_MEDIA_WAITING_FOR_DATA,
+          __func__);
     }
+    return SamplesPromise::CreateAndReject(result, __func__);
   }
   RefPtr<SamplesHolder> samples = new SamplesHolder;
   samples->AppendSample(sample);
   {
     MonitorAutoLock mon(mMonitor);  // spurious warning will be given
+    // Diagnostic asserts for bug 1810396
+    MOZ_DIAGNOSTIC_ASSERT(sample, "Invalid sample pointer found!");
+    MOZ_DIAGNOSTIC_ASSERT(sample->HasValidTime(), "Invalid sample time found!");
+    if (!sample) {
+      return SamplesPromise::CreateAndReject(NS_ERROR_NULL_POINTER, __func__);
+    }
     if (mNextRandomAccessPoint <= sample->mTime) {
       mNextRandomAccessPoint = mManager->GetNextRandomAccessPoint(
           mType, MediaSourceDemuxer::EOS_FUZZ);

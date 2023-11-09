@@ -26,10 +26,6 @@ certmgr-people = Imate digitalna potrdila, ki predstavljajo naslednje ljudi
 certmgr-server = Ti vnosi opredeljujejo izjeme napak strežniškega potrdila
 certmgr-ca = Imate digitalna potrdila, ki predstavljajo naslednje overitelje
 
-certmgr-edit-ca-cert =
-    .title = Urejanje nastavitev zaupanja overiteljem
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Urejanje nastavitev zaupanja overiteljem
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Ta digitalno potrdilo lahko predstavlja uporabnike e-pošte.
-
-certmgr-delete-cert =
-    .title = Izbriši digitalno potrdilo
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Izbriši digitalno potrdilo
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Strežnik
-
-certmgr-override-lifetime =
-    .label = Življenjska doba
 
 certmgr-token-name =
     .label = Varnostna naprava
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Serijska številka
+
+certmgr-fingerprint-sha-256 =
+    .label = Prstni odtis SHA-256
 
 certmgr-view =
     .label = Ogled …

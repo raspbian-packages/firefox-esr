@@ -6,7 +6,6 @@
 
 #include "mozilla/BasicEvents.h"
 #include "mozilla/EventDispatcher.h"
-#include "mozilla/EventStates.h"
 #include "mozilla/Maybe.h"
 #include "mozilla/dom/CustomElementRegistry.h"
 #include "mozilla/dom/HTMLFieldSetElement.h"
@@ -29,7 +28,7 @@ HTMLFieldSetElement::HTMLFieldSetElement(
   SetBarredFromConstraintValidation(true);
 
   // We start out enabled and valid.
-  AddStatesSilently(NS_EVENT_STATE_ENABLED | NS_EVENT_STATE_VALID);
+  AddStatesSilently(ElementState::ENABLED | ElementState::VALID);
 }
 
 HTMLFieldSetElement::~HTMLFieldSetElement() {
@@ -64,11 +63,11 @@ void HTMLFieldSetElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
   nsGenericHTMLFormControlElement::GetEventTargetParent(aVisitor);
 }
 
-nsresult HTMLFieldSetElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
-                                           const nsAttrValue* aValue,
-                                           const nsAttrValue* aOldValue,
-                                           nsIPrincipal* aSubjectPrincipal,
-                                           bool aNotify) {
+void HTMLFieldSetElement::AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
+                                       const nsAttrValue* aValue,
+                                       const nsAttrValue* aOldValue,
+                                       nsIPrincipal* aSubjectPrincipal,
+                                       bool aNotify) {
   if (aNameSpaceID == kNameSpaceID_None && aName == nsGkAtoms::disabled) {
     // This *has* to be called *before* calling FieldSetDisabledChanged on our
     // controls, as they may depend on our disabled state.
@@ -305,13 +304,13 @@ void HTMLFieldSetElement::UpdateValidity(bool aElementValidity) {
   }
 }
 
-EventStates HTMLFieldSetElement::IntrinsicState() const {
-  EventStates state = nsGenericHTMLFormControlElement::IntrinsicState();
+ElementState HTMLFieldSetElement::IntrinsicState() const {
+  ElementState state = nsGenericHTMLFormControlElement::IntrinsicState();
 
   if (mInvalidElementsCount) {
-    state |= NS_EVENT_STATE_INVALID;
+    state |= ElementState::INVALID;
   } else {
-    state |= NS_EVENT_STATE_VALID;
+    state |= ElementState::VALID;
   }
 
   return state;

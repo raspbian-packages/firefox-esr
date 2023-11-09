@@ -46,18 +46,16 @@ class SessionAccessibility final
 
   static void Init();
   static RefPtr<SessionAccessibility> GetInstanceFor(Accessible* aAccessible);
+  static RefPtr<SessionAccessibility> GetInstanceFor(PresShell* aPresShell);
 
   // Native implementations
   using Base::AttachNative;
   using Base::DisposeNative;
-  bool IsCacheEnabled();
   void GetNodeInfo(int32_t aID, mozilla::jni::Object::Param aNodeInfo);
   int GetNodeClassName(int32_t aID);
   void SetText(int32_t aID, jni::String::Param aText);
   void Click(int32_t aID);
-  void Pivot(int32_t aID, int32_t aGranularity, bool aForward, bool aInclusive);
-  bool CachedPivot(int32_t aID, int32_t aGranularity, bool aForward,
-                   bool aInclusive);
+  bool Pivot(int32_t aID, int32_t aGranularity, bool aForward, bool aInclusive);
   void ExploreByTouch(int32_t aID, float aX, float aY);
   void NavigateText(int32_t aID, int32_t aGranularity, int32_t aStartOffset,
                     int32_t aEndOffset, bool aForward, bool aSelect);
@@ -79,7 +77,7 @@ class SessionAccessibility final
                                      int32_t aCaretOffset);
   void SendTextTraversedEvent(Accessible* aAccessible, int32_t aStartOffset,
                               int32_t aEndOffset);
-  void SendTextChangedEvent(Accessible* aAccessible, const nsString& aStr,
+  void SendTextChangedEvent(Accessible* aAccessible, const nsAString& aStr,
                             int32_t aStart, uint32_t aLen, bool aIsInsert,
                             bool aFromUser);
   void SendSelectedEvent(Accessible* aAccessible, bool aSelected);
@@ -87,51 +85,22 @@ class SessionAccessibility final
   void SendWindowContentChangedEvent();
   void SendWindowStateChangedEvent(Accessible* aAccessible);
   void SendAnnouncementEvent(Accessible* aAccessible,
-                             const nsString& aAnnouncement, uint16_t aPriority);
+                             const nsAString& aAnnouncement,
+                             uint16_t aPriority);
 
-  // Cache methods
-  void ReplaceViewportCache(
-      const nsTArray<Accessible*>& aAccessibles,
-      const nsTArray<BatchData>& aData = nsTArray<BatchData>());
-
-  void ReplaceFocusPathCache(
-      const nsTArray<Accessible*>& aAccessibles,
-      const nsTArray<BatchData>& aData = nsTArray<BatchData>());
-
-  void UpdateCachedBounds(
-      const nsTArray<Accessible*>& aAccessibles,
-      const nsTArray<BatchData>& aData = nsTArray<BatchData>());
-
-  void UpdateAccessibleFocusBoundaries(Accessible* aFirst, Accessible* aLast);
-
-  Accessible* GetAccessibleByID(int32_t aID) const {
-    return mIDToAccessibleMap.Get(aID);
-  }
+  Accessible* GetAccessibleByID(int32_t aID) const;
 
   static const int32_t kNoID = -1;
   static const int32_t kUnsetID = 0;
 
   static void RegisterAccessible(Accessible* aAccessible);
   static void UnregisterAccessible(Accessible* aAccessible);
+  static void UnregisterAll(PresShell* aPresShell);
 
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(SessionAccessibility)
 
  private:
   ~SessionAccessibility() {}
-
-  mozilla::java::GeckoBundle::LocalRef ToBundle(Accessible* aAccessible,
-                                                bool aSmall = false);
-
-  mozilla::java::GeckoBundle::LocalRef ToBundle(
-      Accessible* aAccessible, const uint64_t aState,
-      const LayoutDeviceIntRect& aBounds, const uint8_t aActionCount,
-      const nsString& aName, const nsString& aTextValue,
-      const nsString& aDOMNodeID, const nsString& aDescription,
-      const double& aCurVal = UnspecifiedNaN<double>(),
-      const double& aMinVal = UnspecifiedNaN<double>(),
-      const double& aMaxVal = UnspecifiedNaN<double>(),
-      const double& aStep = UnspecifiedNaN<double>(),
-      AccAttributes* aAttributes = nullptr);
 
   void PopulateNodeInfo(Accessible* aAccessible,
                         mozilla::jni::Object::Param aNodeInfo);

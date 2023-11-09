@@ -46,6 +46,12 @@ options-inspector-draggable-properties-label = Größen mittels Klicken und Zieh
 options-inspector-draggable-properties-tooltip =
     .title = Klicken und ziehen, um Größen in der Regelansicht des Inspektors zu bearbeiten.
 
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Vereinfachte Hervorhebung mit prefers-reduced-motion verwenden
+options-inspector-simplified-highlighters-tooltip =
+    .title = Aktiviert vereinfachte Hervorhebung, wenn prefers-reduced-motion aktiviert ist. Dies zeichnet Linien statt ausgefüllter Rechtecke um hervorgehobene Elemente, um Blinkeffekte zu vermeiden.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Standardfarbeinheit
@@ -123,6 +129,11 @@ options-enable-chrome-tooltip =
 options-enable-remote-label = Externes Debugging aktivieren
 options-enable-remote-tooltip2 =
     .title = Das Aktivieren dieser Einstellung ermöglicht das externe Debuggen dieser Browser-Instanz außerhalb des Programms, ggf. auf einem anderen Gerät.
+
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = F12-Taste zum Öffnen oder Schließen von DevTools verwenden
+options-enable-f12-tooltip =
+    .title = Wenn Sie diese Option aktivieren, wird die F12-Taste zum Öffnen oder Schließen des DevTools-Werkzeugkastens verwendet.
 
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Benutzerdefinierte Formatierungen aktivieren

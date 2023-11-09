@@ -9,6 +9,7 @@
 
 #include "mozilla/Attributes.h"
 #include "mozilla/Decimal.h"
+#include "mozilla/Maybe.h"
 #include "mozilla/TextControlElement.h"
 #include "mozilla/TextControlState.h"
 #include "mozilla/UniquePtr.h"
@@ -169,6 +170,13 @@ class HTMLInputElement final : public TextControlElement,
                       const nsAString& aValue,
                       nsIPrincipal* aMaybeScriptedPrincipal,
                       nsAttrValue& aResult) override;
+
+  bool LastValueChangeWasInteractive() const {
+    return mLastValueChangeWasInteractive;
+  }
+
+  void GetLastInteractiveValue(nsAString&);
+
   nsChangeHint GetAttributeChangeHint(const nsAtom* aAttribute,
                                       int32_t aModType) const override;
   NS_IMETHOD_(bool) IsAttributeMapped(const nsAtom* aAttribute) const override;
@@ -190,8 +198,11 @@ class HTMLInputElement final : public TextControlElement,
   void FinishRangeThumbDrag(WidgetGUIEvent* aEvent = nullptr);
   MOZ_CAN_RUN_SCRIPT
   void CancelRangeThumbDrag(bool aIsForUserEvent = true);
+
+  enum class SnapToTickMarks : bool { No, Yes };
   MOZ_CAN_RUN_SCRIPT
-  void SetValueOfRangeForUserEvent(Decimal aValue);
+  void SetValueOfRangeForUserEvent(Decimal aValue,
+                                   SnapToTickMarks = SnapToTickMarks::No);
 
   nsresult BindToTree(BindContext&, nsINode& aParent) override;
   void UnbindFromTree(bool aNullParent = true) override;
@@ -201,12 +212,12 @@ class HTMLInputElement final : public TextControlElement,
 
   void DestroyContent() override;
 
-  EventStates IntrinsicState() const override;
+  ElementState IntrinsicState() const override;
 
   void SetLastValueChangeWasInteractive(bool);
 
   // TextControlElement
-  nsresult SetValueChanged(bool aValueChanged) override;
+  void SetValueChanged(bool aValueChanged) override;
   bool IsSingleLineTextControl() const override;
   bool IsTextArea() const override;
   bool IsPasswordTextControl() const override;
@@ -231,12 +242,13 @@ class HTMLInputElement final : public TextControlElement,
   void EnablePreview() override;
   bool IsPreviewEnabled() override;
   void InitializeKeyboardEventListeners() override;
-  void OnValueChanged(ValueChangeKind) override;
+  void OnValueChanged(ValueChangeKind, bool aNewValueEmpty,
+                      const nsAString* aKnownNewValue) override;
   void GetValueFromSetRangeText(nsAString& aValue) override;
   MOZ_CAN_RUN_SCRIPT nsresult
   SetValueFromSetRangeText(const nsAString& aValue) override;
   bool HasCachedSelection() override;
-  void SetRevealPassword(bool aValue);
+  MOZ_CAN_RUN_SCRIPT void SetRevealPassword(bool aValue);
   bool RevealPassword() const;
 
   /**
@@ -308,7 +320,8 @@ class HTMLInputElement final : public TextControlElement,
   Maybe<bool> HasPatternMismatch() const;
   bool IsRangeOverflow() const;
   bool IsRangeUnderflow() const;
-  bool HasStepMismatch(bool aUseZeroIfValueNaN = false) const;
+  bool ValueIsStepMismatch(const Decimal& aValue) const;
+  bool HasStepMismatch() const;
   bool HasBadInput() const;
   void UpdateTooLongValidityState();
   void UpdateTooShortValidityState();
@@ -444,12 +457,6 @@ class HTMLInputElement final : public TextControlElement,
 
   void GetAutocompleteInfo(Nullable<AutocompleteInfo>& aInfo);
 
-  bool Autofocus() const { return GetBoolAttr(nsGkAtoms::autofocus); }
-
-  void SetAutofocus(bool aValue, ErrorResult& aRv) {
-    SetHTMLBoolAttr(nsGkAtoms::autofocus, aValue, aRv);
-  }
-
   void GetCapture(nsAString& aValue);
   void SetCapture(const nsAString& aValue, ErrorResult& aRv) {
     SetHTMLAttr(nsGkAtoms::capture, aValue, aRv);
@@ -513,7 +520,7 @@ class HTMLInputElement final : public TextControlElement,
   bool IsDraggingRange() const { return mIsDraggingRange; }
   void SetIndeterminate(bool aValue);
 
-  nsGenericHTMLElement* GetList() const;
+  HTMLDataListElement* GetList() const;
 
   void GetMax(nsAString& aValue) { GetHTMLAttr(nsGkAtoms::max, aValue); }
   void SetMax(const nsAString& aValue, ErrorResult& aRv) {
@@ -835,7 +842,7 @@ class HTMLInputElement final : public TextControlElement,
    * that @required attribute applies and the attribute is set; in contrast,
    * Required() returns true whenever @required attribute is set.
    */
-  bool IsRequired() const { return State().HasState(NS_EVENT_STATE_REQUIRED); }
+  bool IsRequired() const { return State().HasState(ElementState::REQUIRED); }
 
   bool HasBeenTypePassword() const { return mHasBeenTypePassword; }
 
@@ -845,7 +852,12 @@ class HTMLInputElement final : public TextControlElement,
    *
    * @return whether the current value is the empty string.
    */
-  bool IsValueEmpty() const;
+  bool IsValueEmpty() const {
+    return State().HasState(ElementState::VALUE_EMPTY);
+  }
+
+  // Parse a simple (hex) color.
+  static mozilla::Maybe<nscolor> ParseSimpleColor(const nsAString& aColor);
 
  protected:
   MOZ_CAN_RUN_SCRIPT_BOUNDARY virtual ~HTMLInputElement();
@@ -930,28 +942,21 @@ class HTMLInputElement final : public TextControlElement,
   /**
    * Called when an attribute is about to be changed
    */
-  nsresult BeforeSetAttr(int32_t aNameSpaceID, nsAtom* aName,
-                         const nsAttrValueOrString* aValue,
-                         bool aNotify) override;
+  void BeforeSetAttr(int32_t aNameSpaceID, nsAtom* aName,
+                     const nsAttrValue* aValue, bool aNotify) override;
   /**
    * Called when an attribute has just been changed
    */
   MOZ_CAN_RUN_SCRIPT_BOUNDARY
-  nsresult AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
-                        const nsAttrValue* aValue, const nsAttrValue* aOldValue,
-                        nsIPrincipal* aSubjectPrincipal, bool aNotify) override;
+  void AfterSetAttr(int32_t aNameSpaceID, nsAtom* aName,
+                    const nsAttrValue* aValue, const nsAttrValue* aOldValue,
+                    nsIPrincipal* aSubjectPrincipal, bool aNotify) override;
 
   void BeforeSetForm(bool aBindToTree) override;
 
   void AfterClearForm(bool aUnbindOrDelete) override;
 
   void ResultForDialogSubmit(nsAString& aResult) override;
-
-  /**
-   * Dispatch a select event.
-   * XXX: This dispatches select event synchronously, see bug 1679474.
-   */
-  MOZ_CAN_RUN_SCRIPT void DispatchSelectEvent(nsPresContext* aPresContext);
 
   void SelectAll(nsPresContext* aPresContext);
   bool IsImage() const {
@@ -994,11 +999,6 @@ class HTMLInputElement final : public TextControlElement,
   MOZ_CAN_RUN_SCRIPT void MaybeSubmitForm(nsPresContext* aPresContext);
 
   /**
-   * Update mFileList with the currently selected file.
-   */
-  void UpdateFileList();
-
-  /**
    * Called after calling one of the SetFilesOrDirectories() functions.
    * This method can explore the directory recursively if needed.
    */
@@ -1026,7 +1026,7 @@ class HTMLInputElement final : public TextControlElement,
    * When the element isn't mutable (immutable), the value or checkedness
    * should not be changed by the user.
    *
-   * See: http://dev.w3.org/html5/spec/forms.html#concept-input-mutable
+   * See: https://html.spec.whatwg.org/#concept-fe-mutable
    */
   bool IsMutable() const;
 
@@ -1069,6 +1069,13 @@ class HTMLInputElement final : public TextControlElement,
   enum class ForValueGetter { No, Yes };
 
   /**
+   * If the input range has a list, this function will snap the given value to
+   * the nearest tick mark, but only if the given value is close enough to that
+   * tick mark.
+   */
+  void MaybeSnapToTickMark(Decimal& aValue);
+
+  /**
    * Sanitize the value of the element depending of its current type.
    * See:
    * http://www.whatwg.org/specs/web-apps/current-work/#value-sanitization-algorithm
@@ -1088,7 +1095,12 @@ class HTMLInputElement final : public TextControlElement,
   MOZ_CAN_RUN_SCRIPT
   nsresult SetDefaultValueAsValue();
 
-  void SetDirectionFromValue(bool aNotify);
+  /**
+   * Sets the direction from the input value. if aKnownValue is provided, it
+   * saves a GetValue call.
+   */
+  void SetDirectionFromValue(bool aNotify,
+                             const nsAString* aKnownValue = nullptr);
 
   /**
    * Return if an element should have a specific validity UI
@@ -1377,6 +1389,11 @@ class HTMLInputElement final : public TextControlElement,
    */
   nsresult MaybeInitPickers(EventChainPostVisitor& aVisitor);
 
+  /**
+   * Returns all valid colors in the <datalist> for the input with type=color.
+   */
+  nsTArray<nsString> GetColorsFromList();
+
   enum FilePickerType { FILE_PICKER_FILE, FILE_PICKER_DIRECTORY };
   nsresult InitFilePicker(FilePickerType aType);
   nsresult InitColorPicker();
@@ -1516,6 +1533,8 @@ class HTMLInputElement final : public TextControlElement,
   nsContentUtils::AutocompleteAttrState mAutocompleteAttrState;
   nsContentUtils::AutocompleteAttrState mAutocompleteInfoState;
   bool mDisabledChanged : 1;
+  // https://html.spec.whatwg.org/#concept-fe-dirty
+  // TODO: Maybe rename to match the spec?
   bool mValueChanged : 1;
   bool mLastValueChangeWasInteractive : 1;
   bool mCheckedChanged : 1;
@@ -1629,7 +1648,7 @@ class HTMLInputElement final : public TextControlElement,
                               nsIFilePicker* aFilePicker);
     NS_DECL_ISUPPORTS
 
-    NS_IMETHOD Done(int16_t aResult) override;
+    NS_IMETHOD Done(nsIFilePicker::ResultCode aResult) override;
 
    private:
     nsCOMPtr<nsIFilePicker> mFilePicker;

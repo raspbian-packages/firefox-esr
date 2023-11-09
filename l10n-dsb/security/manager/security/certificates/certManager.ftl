@@ -26,10 +26,6 @@ certmgr-people = Maśo certifikaty wó dataji, kótarež identificěruju toś ty
 certmgr-server = Toś te zapiski zmólkowe wuwześa serwerowego certifikata identificěruju
 certmgr-ca = Maśo certifikaty w dataji, kótarež identificěruju toś te certifikatowe awtority
 
-certmgr-edit-ca-cert =
-    .title = Nastajenja dowěrygódnosći certifikata certifikatoweje awtority wobźěłaś
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Nastajenja dowěrygódnosći certifikata certifikatoweje awtority wobźěłaś
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Toś ten certifikat móžo e-mailowych wužywarjow identificěrowaś.
-
-certmgr-delete-cert =
-    .title = Certifikat lašowaś
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Certifikat lašowaś
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Serwer
-
-certmgr-override-lifetime =
-    .label = Cas žywjenja
 
 certmgr-token-name =
     .label = Wěstotny rěd
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Serijowy numer
+
+certmgr-fingerprint-sha-256 =
+    .label = Palcowy wótśišć SHA-256
 
 certmgr-view =
     .label = Naglěd…

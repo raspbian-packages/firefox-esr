@@ -70,7 +70,6 @@ firefoxview-pickup-tabs-badge = Erabilitako azkena
 firefoxview-tabs-list-tab-button =
     .title = Ireki { $targetURI } fitxa berrian
 firefoxview-try-colorways-button = Probatu kolore-konbinazioak
-firefoxview-no-current-colorway-collection = Kolore-konbinazio berriak bidean dira
 firefoxview-change-colorway-button = Aldatu kolore-konbinazioa
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +81,58 @@ firefoxview-collapse-button-show =
     .title = Erakutsi zerrenda
 firefoxview-collapse-button-hide =
     .title = Ezkutatu zerrenda
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Historia
+    .title = Historia
+firefoxview-history-header = Historia
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Irekitako fitxak
+    .title = Irekitako fitxak
+firefoxview-opentabs-header = Irekitako fitxak
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Itxitako azken fitxak
+    .title = Itxitako azken fitxak
+firefoxview-recently-closed-header = Itxitako azken fitxak
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Beste gailuetako fitxak
+    .title = Beste gailuetako fitxak
+firefoxview-synced-tabs-header = Beste gailuetako fitxak
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Ikusi dena
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = { $winID } leihoa
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = { $winID } leihoa (unekoa)
+firefoxview-opentabs-focus-tab =
+    .title = Aldatu fitxa honetara
+firefoxview-show-more = Erakutsi gehiago
+firefoxview-show-less = Erakutsi gutxiago
+firefoxview-sort-history-by-date-label = Ordenatu dataren arabera
+firefoxview-sort-history-by-site-label = Ordenatu gunearen arabera
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Gaur - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Atzo - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Erakutsi historia guztia

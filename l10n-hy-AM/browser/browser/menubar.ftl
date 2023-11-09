@@ -38,9 +38,11 @@ menu-quit =
             [windows] ա
            *[other] Q
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Փակել { -brand-shorter-name }-ը
+
 menu-about =
     .label = { -brand-shorter-name }-ի մասին
     .accesskey = մ
@@ -214,8 +216,6 @@ menu-history-undo-menu =
     .label = Վերջին փակված ներդիրները
 menu-history-undo-window-menu =
     .label = Վերջին փակված պատուհանները
-menu-history-reopen-all-tabs = Վերաբացեք բոլոր ներդիրները
-menu-history-reopen-all-windows = Վերաբացեք բոլոր պատուհանները
 
 ## Bookmarks Menu
 
@@ -224,10 +224,6 @@ menu-bookmarks-menu =
     .accesskey = Է
 menu-bookmarks-manage =
     .label = Կառավարեք էջանիշները
-menu-bookmark-current-tab =
-    .label = Էջանշել ընթացիկ ներդիրը
-menu-bookmark-edit =
-    .label = Խմբագրել այս էջանիշը
 menu-bookmark-tab =
     .label = Էջանշել ընթացիկ ներդիրը…
 menu-edit-bookmark =
@@ -311,11 +307,17 @@ menu-help =
 menu-get-help =
     .label = Ստանալ օգնություն
     .accesskey = H
+menu-help-more-troubleshooting-info =
+    .label = Անսարքության տեղեկատվություն
+    .accesskey = T
 menu-help-report-site-issue =
     .label = Զեկուցել կայքի խնդրի մասին…
 menu-help-enter-troubleshoot-mode2 =
     .label = Խափանաշտկման կերպ…
     .accesskey = M
+menu-help-switch-device =
+    .label = Անցում նոր սարքի
+    .accesskey = N
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

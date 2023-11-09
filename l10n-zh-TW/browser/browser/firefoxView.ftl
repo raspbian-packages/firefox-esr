@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = 最近關閉的分頁
 firefoxview-closed-tabs-description2 = 重新開啟您最近在此視窗關閉的分頁。
 firefoxview-closed-tabs-placeholder-header = 沒有最近關閉的分頁
 firefoxview-closed-tabs-placeholder-body = 當您關閉此視窗中的分頁時，可以在此取回。
+firefoxview-closed-tabs-placeholder-body2 = 當您關閉分頁後，可以在此取回。
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = 最後開啟
 firefoxview-tabs-list-tab-button =
     .title = 用新分頁開啟 { $targetURI }
 firefoxview-try-colorways-button = 嘗試 Colorways
-firefoxview-no-current-colorway-collection = 新配色即將抵達
 firefoxview-change-colorway-button = 更改配色
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,63 @@ firefoxview-collapse-button-show =
     .title = 顯示清單
 firefoxview-collapse-button-hide =
     .title = 隱藏清單
+firefoxview-overview-nav = 近期瀏覽
+    .title = 近期瀏覽
+firefoxview-overview-header = 近期瀏覽
+    .title = 近期瀏覽
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = 瀏覽紀錄
+    .title = 瀏覽紀錄
+firefoxview-history-header = 瀏覽紀錄瀏覽紀錄
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = 開啟分頁
+    .title = 開啟分頁
+firefoxview-opentabs-header = 開啟分頁
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = 最近關閉的分頁
+    .title = 最近關閉的分頁
+firefoxview-recently-closed-header = 最近關閉的分頁
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = 來自其他裝置的分頁
+    .title = 來自其他裝置的分頁
+firefoxview-synced-tabs-header = 來自其他裝置的分頁
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = 檢視全部
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = 視窗 { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = 視窗 { $winID }（目前視窗）
+firefoxview-opentabs-focus-tab =
+    .title = 切換至此分頁
+firefoxview-show-more = 顯示更多
+firefoxview-show-less = 顯示更少
+firefoxview-sort-history-by-date-label = 依照日期排序
+firefoxview-sort-history-by-site-label = 依照網站排序
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = 今天 - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = 昨天 - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = 顯示所有瀏覽記錄
+firefoxview-view-more-browsing-history = 檢視更多瀏覽紀錄

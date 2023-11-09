@@ -10,11 +10,13 @@
 
 #include "jsapi.h"
 
+#include "builtin/Object.h"
 #include "js/CallAndConstruct.h"  // JS::Construct, JS::IsCallable
 #include "js/CharacterEncoding.h"
 #include "js/friend/ErrorMessages.h"  // js::GetErrorMessage, JSMSG_*
 #include "js/PropertyDescriptor.h"    // JS::FromPropertyDescriptor
 #include "vm/EqualityOperations.h"    // js::SameValue
+#include "vm/Interpreter.h"           // js::Call
 #include "vm/JSFunction.h"
 #include "vm/JSObject.h"
 #include "vm/PlainObject.h"  // js::PlainObject
@@ -178,7 +180,7 @@ JSObject* ScriptedProxyHandler::handlerObject(const JSObject* proxy) {
 // 7.3.9 GetMethod, reimplemented for proxy handler trap-getting to produce
 // better error messages.
 static bool GetProxyTrap(JSContext* cx, HandleObject handler,
-                         HandlePropertyName name, MutableHandleValue func) {
+                         Handle<PropertyName*> name, MutableHandleValue func) {
   // Steps 2, 5.
   if (!GetProperty(cx, handler, handler, name, func)) {
     return false;
@@ -1559,7 +1561,7 @@ bool js::proxy_revocable(JSContext* cx, unsigned argc, Value* vp) {
 
   revoker->initExtendedSlot(ScriptedProxyHandler::REVOKE_SLOT, proxyVal);
 
-  RootedPlainObject result(cx, NewPlainObject(cx));
+  Rooted<PlainObject*> result(cx, NewPlainObject(cx));
   if (!result) {
     return false;
   }

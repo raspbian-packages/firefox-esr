@@ -180,7 +180,7 @@ const char* const ApplicationReputationService::kBinaryFileExtensions[] = {
     //".app", exec  // Executable application
     ".applescript",
     //".application", exec // MS ClickOnce
-    ".appref-ms",  // MS ClickOnce
+    //".appref-ms", exec // MS ClickOnce
     //".arc",
     //".arj",
     ".as",  // Mac archive
@@ -276,9 +276,12 @@ const char* const ApplicationReputationService::kBinaryFileExtensions[] = {
     ".internetconnect",  // Configuration file for Apple system
     //".inx", // InstallShield
     ".iso",  // CD image
-    //".isp", exec // IIS config
-    //".isu", // InstallShield
-    //".jar", exec // Java
+             //".isp", exec // IIS config
+             //".isu", // InstallShield
+             //".jar", exec // Java
+#ifndef MOZ_ESR
+//".jnlp", exec // Java
+#endif
     //".job", // Windows
     //".jpg",
     //".jpeg",
@@ -507,11 +510,11 @@ const char* const ApplicationReputationService::kBinaryFileExtensions[] = {
     ".xar",   // MS Excel
     ".xbap",  // XAML Browser Application
     ".xht", ".xhtm", ".xhtml",
-    ".xip",     // Mac archive
-    ".xla",     // MS Excel
-    ".xlam",    // MS Excel
-    ".xldm",    // MS Excel
-    ".xll",     // MS Excel
+    ".xip",   // Mac archive
+    ".xla",   // MS Excel
+    ".xlam",  // MS Excel
+    ".xldm",  // MS Excel
+    //".xll", exec  // MS Excel
     ".xlm",     // MS Excel
     ".xls",     // MS Excel
     ".xlsb",    // MS Excel
@@ -1294,12 +1297,9 @@ nsresult PendingLookup::StartLookup() {
 
 nsresult PendingLookup::GetSpecHash(nsACString& aSpec,
                                     nsACString& hexEncodedHash) {
-  nsresult rv;
-
-  nsCOMPtr<nsICryptoHash> cryptoHash =
-      do_CreateInstance("@mozilla.org/security/hash;1", &rv);
-  NS_ENSURE_SUCCESS(rv, rv);
-  rv = cryptoHash->Init(nsICryptoHash::SHA256);
+  nsCOMPtr<nsICryptoHash> cryptoHash;
+  nsresult rv =
+      NS_NewCryptoHash(nsICryptoHash::SHA256, getter_AddRefs(cryptoHash));
   NS_ENSURE_SUCCESS(rv, rv);
 
   rv = cryptoHash->Update(

@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 page-title = اطلاعات رفع اشکال
-page-subtitle = این صفحه حاوی اطلاعات فنی است که امکان دارد هنگامی که به دنبال حل مشکلی هستید به شما کمک کند.  اگر به دنبال پاسخی برای پرسش‌های معمول دربارهٔ { -brand-short-name } هستید، از <a data-l10n-name="support-link">وب‌گاه پشتیبانی ما</a> بازدید نمایید.
+page-subtitle = این صفحه حاوی اطلاعات فنی است که امکان دارد هنگامی که به دنبال حل مشکلی هستید به شما کمک کند.  اگر به دنبال پاسخی برای پرسش‌های معمول دربارهٔ { -brand-short-name } هستید، از <a data-l10n-name="support-link">وبگاه پشتیبانی ما</a> بازدید نمایید.
 
 crashes-title = گزارش‌های فروپاشی
 crashes-id = شناسهٔ گزارش
@@ -147,6 +147,8 @@ media-device-channels = کانال‌ها
 media-device-rate = ارزیابی
 media-device-latency = تاخیر
 media-capabilities-title = قابلیت‌های رسانه
+
+## Codec support table
 
 ##
 

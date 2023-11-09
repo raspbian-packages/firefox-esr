@@ -100,6 +100,8 @@ static const RedirEntry kRedirMap[] = {
     {"license", "chrome://global/content/license.html",
      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
          nsIAboutModule::IS_SECURE_CHROME_UI},
+    {"logging", "chrome://global/content/aboutLogging.html",
+     nsIAboutModule::ALLOW_SCRIPT},
     {"logo", "chrome://branding/content/about.png",
      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
          // Linkable for testing reasons.
@@ -114,7 +116,7 @@ static const RedirEntry kRedirMap[] = {
          nsIAboutModule::IS_SECURE_CHROME_UI},
     {"mozilla", "chrome://global/content/mozilla.html",
      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT},
-    {"neterror", "chrome://global/content/netError.xhtml",
+    {"neterror", "chrome://global/content/aboutNetError.xhtml",
      nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
          nsIAboutModule::URI_CAN_LOAD_IN_CHILD | nsIAboutModule::ALLOW_SCRIPT |
          nsIAboutModule::HIDE_FROM_ABOUTABOUT},
@@ -155,6 +157,8 @@ static const RedirEntry kRedirMap[] = {
 #ifdef XP_WIN
     {"third-party", "chrome://global/content/aboutThirdParty.html",
      nsIAboutModule::ALLOW_SCRIPT},
+    {"windows-messages", "chrome://global/content/aboutWindowsMessages.html",
+     nsIAboutModule::ALLOW_SCRIPT},
 #endif
 #ifndef MOZ_GLEAN_ANDROID
     {"glean", "chrome://global/content/aboutGlean.html",
@@ -165,6 +169,11 @@ static const RedirEntry kRedirMap[] = {
 #endif
     {"telemetry", "chrome://global/content/aboutTelemetry.xhtml",
      nsIAboutModule::ALLOW_SCRIPT | nsIAboutModule::IS_SECURE_CHROME_UI},
+    {"translations", "chrome://global/content/translations/translations.html",
+     nsIAboutModule::ALLOW_SCRIPT |
+         nsIAboutModule::URI_SAFE_FOR_UNTRUSTED_CONTENT |
+         nsIAboutModule::URI_MUST_LOAD_IN_CHILD |
+         nsIAboutModule::HIDE_FROM_ABOUTABOUT},
     {"url-classifier", "chrome://global/content/aboutUrlClassifier.xhtml",
      nsIAboutModule::ALLOW_SCRIPT},
     {"webrtc", "chrome://global/content/aboutwebrtc/aboutWebrtc.html",

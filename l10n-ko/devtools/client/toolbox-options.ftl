@@ -46,6 +46,12 @@ options-inspector-draggable-properties-label = 클릭하고 드래그하여 크�
 options-inspector-draggable-properties-tooltip =
     .title = 검사기 규칙 보기에서 크기 값을 편집하려면 클릭하고 드래그하세요.
 
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = prefers-reduced-motion에 단순한 하이라이터 사용
+options-inspector-simplified-highlighters-tooltip =
+    .title = prefers-reduced-motion이 활성화되면 단순한 하이라이터를 활성화합니다. 깜박이는 효과를 피하기 위해 강조 표시된 요소 주위에 채워진 사각형 대신 선을 그립니다.
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = 기본 색상 단위
@@ -124,6 +130,11 @@ options-enable-remote-label = 원격 디버깅 사용
 options-enable-remote-tooltip2 =
     .title = 이 옵션을 켜면 이 브라우저 인스턴스를 원격으로 디버깅 할 수 있습니다
 
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = F12 키를 사용하여 개발자 도구를 열거나 닫음
+options-enable-f12-tooltip =
+    .title = 이 옵션을 켜면 F12 키가 바인딩되어 개발자 도구 상자를 열거나 닫습니다
+
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = 사용자 지정 포맷터 사용
 options-enable-custom-formatters-tooltip =
@@ -141,4 +152,3 @@ options-source-maps-tooltip =
 
 # The message shown for settings that trigger page reload
 options-context-triggers-page-refresh = * 현재 세션만 해당되며, 페이지를 새로 고침
-

@@ -29,7 +29,7 @@ typedef void* EGLSyncKHR;
 
 namespace mozilla {
 namespace gfx {
-class SourceSurface;
+class DataSourceSurface;
 }
 namespace layers {
 class SurfaceDescriptor;
@@ -94,6 +94,10 @@ class DMABufSurface {
 
   virtual DMABufSurfaceRGBA* GetAsDMABufSurfaceRGBA() { return nullptr; }
   virtual DMABufSurfaceYUV* GetAsDMABufSurfaceYUV() { return nullptr; }
+  virtual already_AddRefed<mozilla::gfx::DataSourceSurface>
+  GetAsSourceSurface() {
+    return nullptr;
+  }
 
   virtual mozilla::gfx::YUVColorSpace GetYUVColorSpace() {
     return mozilla::gfx::YUVColorSpace::Default;
@@ -127,6 +131,7 @@ class DMABufSurface {
   // So without any additional GlobalRefAdd()/GlobalRefRelease() calls
   // the IsGlobalRefSet() returns true if any other process use the surface.
   void GlobalRefCountCreate();
+  void GlobalRefCountDelete();
 
   // If global reference counter was created by GlobalRefCountCreate()
   // returns true when there's an active surface reference.
@@ -148,13 +153,11 @@ class DMABufSurface {
  protected:
   virtual bool Create(const mozilla::layers::SurfaceDescriptor& aDesc) = 0;
 
-  // Import global ref count from IPC by file descriptor.
+  // Import global ref count object from IPC by file descriptor.
+  // This adds global ref count reference to the surface.
   void GlobalRefCountImport(int aFd);
-  // Export global ref count by file descriptor. This adds global ref count
-  // reference to the surface.
-  // It's used when dmabuf surface is shared with another process via. IPC.
+  // Export global ref count object by file descriptor.
   int GlobalRefCountExport();
-  void GlobalRefCountDelete();
 
   void ReleaseDMABuf();
 
@@ -180,9 +183,9 @@ class DMABufSurface {
 
   int mBufferPlaneCount;
   int mDmabufFds[DMABUF_BUFFER_PLANES];
-  uint32_t mDrmFormats[DMABUF_BUFFER_PLANES];
-  uint32_t mStrides[DMABUF_BUFFER_PLANES];
-  uint32_t mOffsets[DMABUF_BUFFER_PLANES];
+  int32_t mDrmFormats[DMABUF_BUFFER_PLANES];
+  int32_t mStrides[DMABUF_BUFFER_PLANES];
+  int32_t mOffsets[DMABUF_BUFFER_PLANES];
 
   struct gbm_bo* mGbmBufferObject[DMABUF_BUFFER_PLANES];
   void* mMappedRegion[DMABUF_BUFFER_PLANES];
@@ -204,6 +207,10 @@ class DMABufSurfaceRGBA : public DMABufSurface {
  public:
   static already_AddRefed<DMABufSurfaceRGBA> CreateDMABufSurface(
       int aWidth, int aHeight, int aDMABufSurfaceFlags);
+
+  static already_AddRefed<DMABufSurface> CreateDMABufSurface(
+      mozilla::gl::GLContext* aGLContext, const EGLImageKHR aEGLImage,
+      int aWidth, int aHeight);
 
   bool Serialize(mozilla::layers::SurfaceDescriptor& aOutDescriptor);
 
@@ -250,10 +257,14 @@ class DMABufSurfaceRGBA : public DMABufSurface {
   DMABufSurfaceRGBA();
 
  private:
+  DMABufSurfaceRGBA(const DMABufSurfaceRGBA&) = delete;
+  DMABufSurfaceRGBA& operator=(const DMABufSurfaceRGBA&) = delete;
   ~DMABufSurfaceRGBA();
 
   bool Create(int aWidth, int aHeight, int aDMABufSurfaceFlags);
   bool Create(const mozilla::layers::SurfaceDescriptor& aDesc);
+  bool Create(mozilla::gl::GLContext* aGLContext, const EGLImageKHR aEGLImage,
+              int aWidth, int aHeight);
 
   bool ImportSurfaceDescriptor(const mozilla::layers::SurfaceDescriptor& aDesc);
 
@@ -280,13 +291,17 @@ class DMABufSurfaceYUV : public DMABufSurface {
   static already_AddRefed<DMABufSurfaceYUV> CreateYUVSurface(
       int aWidth, int aHeight, void** aPixelData = nullptr,
       int* aLineSizes = nullptr);
-
   static already_AddRefed<DMABufSurfaceYUV> CreateYUVSurface(
       const VADRMPRIMESurfaceDescriptor& aDesc, int aWidth, int aHeight);
+  static already_AddRefed<DMABufSurfaceYUV> CopyYUVSurface(
+      const VADRMPRIMESurfaceDescriptor& aVaDesc, int aWidth, int aHeight);
+  static void ReleaseVADRMPRIMESurfaceDescriptor(
+      VADRMPRIMESurfaceDescriptor& aDesc);
 
   bool Serialize(mozilla::layers::SurfaceDescriptor& aOutDescriptor);
 
   DMABufSurfaceYUV* GetAsDMABufSurfaceYUV() { return this; };
+  already_AddRefed<mozilla::gfx::DataSourceSurface> GetAsSourceSurface();
 
   int GetWidth(int aPlane = 0) { return mWidth[aPlane]; }
   int GetHeight(int aPlane = 0) { return mHeight[aPlane]; }
@@ -312,18 +327,28 @@ class DMABufSurfaceYUV : public DMABufSurface {
 
   bool UpdateYUVData(void** aPixelData, int* aLineSizes);
   bool UpdateYUVData(const VADRMPRIMESurfaceDescriptor& aDesc, int aWidth,
-                     int aHeight);
-
+                     int aHeight, bool aCopy);
   bool VerifyTextureCreation();
 
  private:
+  DMABufSurfaceYUV(const DMABufSurfaceYUV&) = delete;
+  DMABufSurfaceYUV& operator=(const DMABufSurfaceYUV&) = delete;
   ~DMABufSurfaceYUV();
 
   bool Create(const mozilla::layers::SurfaceDescriptor& aDesc);
   bool Create(int aWidth, int aHeight, void** aPixelData, int* aLineSizes);
-  bool CreateYUVPlane(int aPlane, int aWidth, int aHeight, int aDrmFormat);
+  bool CreateYUVPlane(int aPlane);
+  bool CreateLinearYUVPlane(int aPlane, int aWidth, int aHeight,
+                            int aDrmFormat);
   void UpdateYUVPlane(int aPlane, void* aPixelData, int aLineSize);
 
+  bool MoveYUVDataImpl(const VADRMPRIMESurfaceDescriptor& aDesc, int aWidth,
+                       int aHeight);
+  bool CopyYUVDataImpl(const VADRMPRIMESurfaceDescriptor& aDesc, int aWidth,
+                       int aHeight);
+
+  bool ImportPRIMESurfaceDescriptor(const VADRMPRIMESurfaceDescriptor& aDesc,
+                                    int aWidth, int aHeight);
   bool ImportSurfaceDescriptor(
       const mozilla::layers::SurfaceDescriptorDMABuf& aDesc);
 

@@ -45,7 +45,6 @@ function test_handler(metadata, response) {
   response.setStatusLine(metadata.httpVersion, 200, "OK");
 }
 
-let gIsFromCache = 0;
 function checkContent(request, buffer, context, isFromCache) {
   let isRacing = request.QueryInterface(Ci.nsICacheInfoChannel).isRacing();
   switch (gRequestCounter) {
@@ -87,25 +86,25 @@ function run_test() {
 let testGenerator = testSteps();
 function* testSteps() {
   // Store first version of the content in the cache.
-  var channel = make_channel("http://localhost:" + PORT + "/rcwn");
+  let channel = make_channel("http://localhost:" + PORT + "/rcwn");
   channel.asyncOpen(new ChannelListener(checkContent, null));
   yield undefined;
   equal(gRequestCounter, 1);
 
   // Simulate the network victory by setting high delay for the cache fetch and
   // triggering the network.
-  var channel = make_channel("http://localhost:" + PORT + "/rcwn");
+  channel = make_channel("http://localhost:" + PORT + "/rcwn");
   channel
     .QueryInterface(Ci.nsIRaceCacheWithNetwork)
     .test_delayCacheEntryOpeningBy(100000);
-  channel.asyncOpen(new ChannelListener(checkContent, null));
   // Trigger network after 50 ms.
   channel.QueryInterface(Ci.nsIRaceCacheWithNetwork).test_triggerNetwork(50);
+  channel.asyncOpen(new ChannelListener(checkContent, null));
   yield undefined;
   equal(gRequestCounter, 2);
 
   // Simulate navigation back by specifying VALIDATE_NEVER flag.
-  var channel = make_channel("http://localhost:" + PORT + "/rcwn");
+  channel = make_channel("http://localhost:" + PORT + "/rcwn");
   channel.loadFlags = Ci.nsIRequest.VALIDATE_NEVER;
   channel.asyncOpen(new ChannelListener(checkContent, null));
   yield undefined;

@@ -7,38 +7,65 @@
 
 "use strict";
 
-const { BrowserSearchTelemetry } = ChromeUtils.import(
-  "resource:///modules/BrowserSearchTelemetry.jsm"
-);
-const { SearchSERPTelemetry } = ChromeUtils.import(
-  "resource:///modules/SearchSERPTelemetry.jsm"
-);
+const { SearchSERPTelemetry, SearchSERPTelemetryUtils } =
+  ChromeUtils.importESModule("resource:///modules/SearchSERPTelemetry.sys.mjs");
 
+// Note: example.org is used for the SERP page, and example.com is used to serve
+// the ads. This is done to simulate different domains like the real servers.
 const TEST_PROVIDER_INFO = [
   {
     telemetryId: "example",
-    searchPageRegexp: /^http:\/\/mochi.test:.+\/browser\/browser\/components\/search\/test\/browser\/searchTelemetry(?:Ad)?.html/,
+    searchPageRegexp:
+      /^https:\/\/example.org\/browser\/browser\/components\/search\/test\/browser\/searchTelemetry(?:Ad)?.html/,
     queryParamName: "s",
     codeParamName: "abc",
     taggedCodes: ["ff"],
     followOnParamNames: ["a"],
     extraAdServersRegexps: [/^https:\/\/example\.com\/ad2?/],
+    components: [
+      {
+        type: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        default: true,
+      },
+    ],
+  },
+  {
+    telemetryId: "example-data-attributes",
+    searchPageRegexp:
+      /^https:\/\/example.org\/browser\/browser\/components\/search\/test\/browser\/searchTelemetryAd_dataAttributes(?:_none|_href)?.html/,
+    queryParamName: "s",
+    codeParamName: "abc",
+    taggedCodes: ["ff"],
+    adServerAttributes: ["xyz"],
+    extraAdServersRegexps: [/^https:\/\/example\.com\/ad/],
+    components: [
+      {
+        type: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        default: true,
+      },
+    ],
   },
   {
     telemetryId: "slow-page-load",
-    searchPageRegexp: /^http:\/\/mochi.test:.+\/browser\/browser\/components\/search\/test\/browser\/slow_loading_page_with_ads(_on_load_event)?.html/,
+    searchPageRegexp:
+      /^https:\/\/example.org\/browser\/browser\/components\/search\/test\/browser\/slow_loading_page_with_ads(_on_load_event)?.html/,
     queryParamName: "s",
     codeParamName: "abc",
     taggedCodes: ["ff"],
     followOnParamNames: ["a"],
     extraAdServersRegexps: [/^https:\/\/example\.com\/ad2?/],
+    components: [
+      {
+        type: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        default: true,
+      },
+    ],
   },
 ];
 
-function getPageUrl(useExample = false, useAdPage = false) {
-  let server = useExample ? "example.com" : "mochi.test:8888";
+function getPageUrl(useAdPage = false) {
   let page = useAdPage ? "searchTelemetryAd.html" : "searchTelemetry.html";
-  return `http://${server}/browser/browser/components/search/test/browser/${page}`;
+  return `https://example.org/browser/browser/components/search/test/browser/${page}`;
 }
 
 function getSERPUrl(page, organic = false) {
@@ -58,24 +85,28 @@ async function waitForIdle() {
   }
 }
 
-add_setup(async function() {
+add_setup(async function () {
   SearchSERPTelemetry.overrideSearchTelemetryForTests(TEST_PROVIDER_INFO);
   await waitForIdle();
   // Enable local telemetry recording for the duration of the tests.
   let oldCanRecord = Services.telemetry.canRecordExtended;
   Services.telemetry.canRecordExtended = true;
-  Services.prefs.setBoolPref("browser.search.log", true);
+  await SpecialPowers.pushPrefEnv({
+    set: [
+      ["browser.search.log", true],
+      ["browser.search.serpEventTelemetry.enabled", true],
+    ],
+  });
 
   registerCleanupFunction(async () => {
-    Services.prefs.clearUserPref("browser.search.log");
     SearchSERPTelemetry.overrideSearchTelemetryForTests();
     Services.telemetry.canRecordExtended = oldCanRecord;
-    Services.telemetry.clearScalars();
+    resetTelemetry();
   });
 });
 
 add_task(async function test_simple_search_page_visit() {
-  searchCounts.clear();
+  resetTelemetry();
 
   await BrowserTestUtils.withNewTab(
     {
@@ -84,18 +115,30 @@ add_task(async function test_simple_search_page_visit() {
     },
     async () => {
       await assertSearchSourcesTelemetry(
-        { "example.in-content:sap:ff": 1 },
+        {},
         {
           "browser.search.content.unknown": { "example:tagged:ff": 1 },
         }
       );
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
 });
 
 add_task(async function test_simple_search_page_visit_telemetry() {
-  searchCounts.clear();
-  Services.telemetry.clearScalars();
+  resetTelemetry();
 
   await BrowserTestUtils.withNewTab(
     {
@@ -119,6 +162,18 @@ add_task(async function test_simple_search_page_visit_telemetry() {
       Assert.notEqual(scalars[key].example, 0, "bandwidth logged");
     }
   );
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
 });
 
 add_task(async function test_follow_on_visit() {
@@ -129,10 +184,7 @@ add_task(async function test_follow_on_visit() {
     },
     async () => {
       await assertSearchSourcesTelemetry(
-        {
-          "example.in-content:sap:ff": 1,
-          "example.in-content:sap-follow-on:ff": 1,
-        },
+        {},
         {
           "browser.search.content.unknown": {
             "example:tagged:ff": 1,
@@ -142,42 +194,200 @@ add_task(async function test_follow_on_visit() {
       );
     }
   );
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
 });
 
 add_task(async function test_track_ad() {
-  Services.telemetry.clearScalars();
-  searchCounts.clear();
+  resetTelemetry();
 
   let tab = await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
-    getSERPUrl(getPageUrl(false, true))
+    getSERPUrl(getPageUrl(true))
   );
 
   await assertSearchSourcesTelemetry(
-    { "example.in-content:sap:ff": 1 },
+    {},
     {
       "browser.search.content.unknown": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 1 },
       "browser.search.withads.unknown": { "example:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
+
+  BrowserTestUtils.removeTab(tab);
+});
+
+add_task(async function test_track_ad_on_data_attributes() {
+  resetTelemetry();
+
+  let url =
+    getRootDirectory(gTestPath).replace(
+      "chrome://mochitests/content",
+      "https://example.org"
+    ) + "searchTelemetryAd_dataAttributes.html";
+
+  let tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    getSERPUrl(url)
+  );
+
+  await assertSearchSourcesTelemetry(
+    {},
+    {
+      "browser.search.content.unknown": {
+        "example-data-attributes:tagged:ff": 1,
+      },
+      "browser.search.withads.unknown": {
+        "example-data-attributes:tagged": 1,
+      },
+    }
+  );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example-data-attributes",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
+
+  BrowserTestUtils.removeTab(tab);
+});
+
+add_task(async function test_track_ad_on_data_attributes_and_hrefs() {
+  resetTelemetry();
+
+  let url =
+    getRootDirectory(gTestPath).replace(
+      "chrome://mochitests/content",
+      "https://example.org"
+    ) + "searchTelemetryAd_dataAttributes_href.html";
+
+  let tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    getSERPUrl(url)
+  );
+
+  await assertSearchSourcesTelemetry(
+    {},
+    {
+      "browser.search.content.unknown": {
+        "example-data-attributes:tagged:ff": 1,
+      },
+      "browser.search.withads.unknown": {
+        "example-data-attributes:tagged": 1,
+      },
+    }
+  );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example-data-attributes",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
+
+  BrowserTestUtils.removeTab(tab);
+});
+
+add_task(async function test_track_no_ad_on_data_attributes_and_hrefs() {
+  resetTelemetry();
+
+  let url =
+    getRootDirectory(gTestPath).replace(
+      "chrome://mochitests/content",
+      "https://example.org"
+    ) + "searchTelemetryAd_dataAttributes_none.html";
+
+  let tab = await BrowserTestUtils.openNewForegroundTab(
+    gBrowser,
+    getSERPUrl(url)
+  );
+
+  await assertSearchSourcesTelemetry(
+    {},
+    {
+      "browser.search.content.unknown": {
+        "example-data-attributes:tagged:ff": 1,
+      },
+    }
+  );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example-data-attributes",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
 
   BrowserTestUtils.removeTab(tab);
 });
 
 add_task(async function test_track_ad_on_DOMContentLoaded() {
-  Services.telemetry.clearScalars();
-  searchCounts.clear();
+  resetTelemetry();
 
   let url =
     getRootDirectory(gTestPath).replace(
       "chrome://mochitests/content",
-      "http://mochi.test:8888"
+      "https://example.org"
     ) + "slow_loading_page_with_ads.html";
 
   let observeAdPreviouslyRecorded = TestUtils.consoleMessageObserved(msg => {
-    return msg.wrappedJSObject.arguments[0].includes(
-      "Ad was previously reported for browser with URI"
+    return (
+      typeof msg.wrappedJSObject.arguments?.[0] == "string" &&
+      msg.wrappedJSObject.arguments[0].includes(
+        "Ad was previously reported for browser with URI"
+      )
     );
   });
 
@@ -191,25 +401,36 @@ add_task(async function test_track_ad_on_DOMContentLoaded() {
   await observeAdPreviouslyRecorded;
 
   await assertSearchSourcesTelemetry(
-    { "slow-page-load.in-content:sap:ff": 1 },
+    {},
     {
       "browser.search.content.unknown": { "slow-page-load:tagged:ff": 1 },
-      "browser.search.with_ads": { "slow-page-load:sap": 1 },
       "browser.search.withads.unknown": { "slow-page-load:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "slow-page-load",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
 
   BrowserTestUtils.removeTab(tab);
 });
 
 add_task(async function test_track_ad_on_load_event() {
-  Services.telemetry.clearScalars();
-  searchCounts.clear();
+  resetTelemetry();
 
   let url =
     getRootDirectory(gTestPath).replace(
       "chrome://mochitests/content",
-      "http://mochi.test:8888"
+      "https://example.org"
     ) + "slow_loading_page_with_ads_on_load_event.html";
 
   let tab = await BrowserTestUtils.openNewForegroundTab(
@@ -218,46 +439,68 @@ add_task(async function test_track_ad_on_load_event() {
   );
 
   await assertSearchSourcesTelemetry(
-    { "slow-page-load.in-content:sap:ff": 1 },
+    {},
     {
       "browser.search.content.unknown": { "slow-page-load:tagged:ff": 1 },
-      "browser.search.with_ads": { "slow-page-load:sap": 1 },
       "browser.search.withads.unknown": { "slow-page-load:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "slow-page-load",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
 
   BrowserTestUtils.removeTab(tab);
 });
 
 add_task(async function test_track_ad_organic() {
-  Services.telemetry.clearScalars();
-  searchCounts.clear();
+  resetTelemetry();
 
   let tab = await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
-    getSERPUrl(getPageUrl(false, true), true)
+    getSERPUrl(getPageUrl(true), true)
   );
 
   await assertSearchSourcesTelemetry(
-    { "example.in-content:organic:none": 1 },
+    {},
     {
       "browser.search.content.unknown": { "example:organic:none": 1 },
-      "browser.search.with_ads": { "example:organic": 1 },
       "browser.search.withads.unknown": { "example:organic": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "false",
+        partner_code: "",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
 
   BrowserTestUtils.removeTab(tab);
 });
 
 add_task(async function test_track_ad_new_window() {
-  searchCounts.clear();
-  Services.telemetry.clearScalars();
+  resetTelemetry();
 
   let win = await BrowserTestUtils.openNewBrowserWindow();
 
-  let url = getSERPUrl(getPageUrl(false, true));
-  BrowserTestUtils.loadURI(win.gBrowser.selectedBrowser, url);
+  let url = getSERPUrl(getPageUrl(true));
+  BrowserTestUtils.loadURIString(win.gBrowser.selectedBrowser, url);
   await BrowserTestUtils.browserLoaded(
     win.gBrowser.selectedBrowser,
     false,
@@ -265,45 +508,78 @@ add_task(async function test_track_ad_new_window() {
   );
 
   await assertSearchSourcesTelemetry(
-    { "example.in-content:sap:ff": 1 },
+    {},
     {
       "browser.search.content.unknown": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 1 },
       "browser.search.withads.unknown": { "example:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
 
   await BrowserTestUtils.closeWindow(win);
 });
 
 add_task(async function test_track_ad_pages_without_ads() {
   // Note: the above tests have already checked a page with no ad-urls.
-  searchCounts.clear();
-  Services.telemetry.clearScalars();
+  resetTelemetry();
 
   let tabs = [];
 
   tabs.push(
     await BrowserTestUtils.openNewForegroundTab(
       gBrowser,
-      getSERPUrl(getPageUrl(false, false))
+      getSERPUrl(getPageUrl(false))
     )
   );
   tabs.push(
     await BrowserTestUtils.openNewForegroundTab(
       gBrowser,
-      getSERPUrl(getPageUrl(false, true))
+      getSERPUrl(getPageUrl(true))
     )
   );
 
   await assertSearchSourcesTelemetry(
-    { "example.in-content:sap:ff": 2 },
+    {},
     {
       "browser.search.content.unknown": { "example:tagged:ff": 2 },
-      "browser.search.with_ads": { "example:sap": 1 },
       "browser.search.withads.unknown": { "example:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
 
   for (let tab of tabs) {
     BrowserTestUtils.removeTab(tab);
@@ -312,51 +588,76 @@ add_task(async function test_track_ad_pages_without_ads() {
 
 async function track_ad_click(testOrganic) {
   // Note: the above tests have already checked a page with no ad-urls.
-  searchCounts.clear();
-  Services.telemetry.clearScalars();
+  resetTelemetry();
 
-  let expectedScalarKeyOld = `example:${testOrganic ? "organic" : "sap"}`;
   let expectedScalarKey = `example:${testOrganic ? "organic" : "tagged"}`;
-  let expectedHistogramKey = `example.in-content:${
-    testOrganic ? "organic:none" : "sap:ff"
-  }`;
   let expectedContentScalarKey = `example:${
     testOrganic ? "organic:none" : "tagged:ff"
   }`;
+  let tagged = testOrganic ? "false" : "true";
+  let partnerCode = testOrganic ? "" : "ff";
 
   let tab = await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
-    getSERPUrl(getPageUrl(false, true), testOrganic)
+    getSERPUrl(getPageUrl(true), testOrganic)
   );
 
   await assertSearchSourcesTelemetry(
-    { [expectedHistogramKey]: 1 },
+    {},
     {
       "browser.search.content.unknown": { [expectedContentScalarKey]: 1 },
-      "browser.search.with_ads": { [expectedScalarKeyOld]: 1 },
       "browser.search.withads.unknown": {
         [expectedScalarKey.replace("sap", "tagged")]: 1,
       },
     }
   );
 
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged,
+        partner_code: partnerCode,
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
+  await promiseAdImpressionReceived(1);
+
   let pageLoadPromise = BrowserTestUtils.waitForLocationChange(gBrowser);
-  await SpecialPowers.spawn(tab.linkedBrowser, [], () => {
-    content.document.getElementById("ad1").click();
-  });
+  BrowserTestUtils.synthesizeMouseAtCenter("#ad1", {}, tab.linkedBrowser);
   await pageLoadPromise;
   await promiseWaitForAdLinkCheck();
 
   await assertSearchSourcesTelemetry(
-    { [expectedHistogramKey]: 1 },
+    {},
     {
       "browser.search.content.unknown": { [expectedContentScalarKey]: 1 },
-      "browser.search.with_ads": { [expectedScalarKeyOld]: 1 },
       "browser.search.withads.unknown": { [expectedScalarKey]: 1 },
-      "browser.search.ad_clicks": { [expectedScalarKeyOld]: 1 },
       "browser.search.adclicks.unknown": { [expectedScalarKey]: 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged,
+        partner_code: partnerCode,
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+  ]);
 
   // Now go back, and click again.
   pageLoadPromise = BrowserTestUtils.waitForLocationChange(gBrowser);
@@ -366,38 +667,97 @@ async function track_ad_click(testOrganic) {
 
   // We've gone back, so we register an extra display & if it is with ads or not.
   await assertSearchSourcesTelemetry(
-    { [expectedHistogramKey]: 2 },
+    {},
     {
       "browser.search.content.tabhistory": { [expectedContentScalarKey]: 1 },
       "browser.search.content.unknown": { [expectedContentScalarKey]: 1 },
-      "browser.search.with_ads": { [expectedScalarKeyOld]: 2 },
       "browser.search.withads.tabhistory": { [expectedScalarKey]: 1 },
       "browser.search.withads.unknown": { [expectedScalarKey]: 1 },
-      "browser.search.ad_clicks": { [expectedScalarKeyOld]: 1 },
       "browser.search.adclicks.unknown": { [expectedScalarKey]: 1 },
     }
   );
 
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged,
+        partner_code: partnerCode,
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+    {
+      impression: {
+        provider: "example",
+        tagged,
+        partner_code: partnerCode,
+        source: "tabhistory",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
+  await promiseAdImpressionReceived(2);
+
   pageLoadPromise = BrowserTestUtils.waitForLocationChange(gBrowser);
-  await SpecialPowers.spawn(tab.linkedBrowser, [], () => {
-    content.document.getElementById("ad1").click();
-  });
+  BrowserTestUtils.synthesizeMouseAtCenter("#ad1", {}, tab.linkedBrowser);
   await pageLoadPromise;
   await promiseWaitForAdLinkCheck();
 
   await assertSearchSourcesTelemetry(
-    { [expectedHistogramKey]: 2 },
+    {},
     {
       "browser.search.content.tabhistory": { [expectedContentScalarKey]: 1 },
       "browser.search.content.unknown": { [expectedContentScalarKey]: 1 },
-      "browser.search.with_ads": { [expectedScalarKeyOld]: 2 },
       "browser.search.withads.tabhistory": { [expectedScalarKey]: 1 },
       "browser.search.withads.unknown": { [expectedScalarKey]: 1 },
-      "browser.search.ad_clicks": { [expectedScalarKeyOld]: 2 },
       "browser.search.adclicks.tabhistory": { [expectedScalarKey]: 1 },
       "browser.search.adclicks.unknown": { [expectedScalarKey]: 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged,
+        partner_code: partnerCode,
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+    {
+      impression: {
+        provider: "example",
+        tagged,
+        partner_code: partnerCode,
+        source: "tabhistory",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+  ]);
 
   BrowserTestUtils.removeTab(tab);
 }
@@ -411,19 +771,31 @@ add_task(async function test_track_ad_click_organic() {
 });
 
 add_task(async function test_track_ad_click_with_location_change_other_tab() {
-  searchCounts.clear();
-  Services.telemetry.clearScalars();
-  const url = getSERPUrl(getPageUrl(false, true));
+  resetTelemetry();
+  const url = getSERPUrl(getPageUrl(true));
   let tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, url);
 
   await assertSearchSourcesTelemetry(
-    { "example.in-content:sap:ff": 1 },
+    {},
     {
       "browser.search.content.unknown": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 1 },
       "browser.search.withads.unknown": { "example:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+    },
+  ]);
+  await promiseAdImpressionReceived();
 
   const newTab = await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
@@ -433,21 +805,36 @@ add_task(async function test_track_ad_click_with_location_change_other_tab() {
   await BrowserTestUtils.switchTab(gBrowser, tab);
 
   let pageLoadPromise = BrowserTestUtils.waitForLocationChange(gBrowser);
-  await SpecialPowers.spawn(tab.linkedBrowser, [], () => {
-    content.document.getElementById("ad1").click();
-  });
+  BrowserTestUtils.synthesizeMouseAtCenter("#ad1", {}, tab.linkedBrowser);
   await pageLoadPromise;
 
   await assertSearchSourcesTelemetry(
-    { "example.in-content:sap:ff": 1 },
+    {},
     {
       "browser.search.content.unknown": { "example:tagged:ff": 1 },
-      "browser.search.with_ads": { "example:sap": 1 },
       "browser.search.withads.unknown": { "example:tagged": 1 },
-      "browser.search.ad_clicks": { "example:sap": 1 },
       "browser.search.adclicks.unknown": { "example:tagged": 1 },
     }
   );
+
+  assertImpressionEvents([
+    {
+      impression: {
+        provider: "example",
+        tagged: "true",
+        partner_code: "ff",
+        source: "unknown",
+        is_shopping_page: "false",
+        shopping_tab_displayed: "false",
+      },
+      engagements: [
+        {
+          action: SearchSERPTelemetryUtils.ACTIONS.CLICKED,
+          target: SearchSERPTelemetryUtils.COMPONENTS.AD_LINK,
+        },
+      ],
+    },
+  ]);
 
   BrowserTestUtils.removeTab(newTab);
   BrowserTestUtils.removeTab(tab);

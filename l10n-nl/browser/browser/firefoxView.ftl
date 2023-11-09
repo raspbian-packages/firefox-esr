@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Onlangs gesloten
 firefoxview-closed-tabs-description2 = Open pagina’s die u in dit venster hebt gesloten opnieuw.
 firefoxview-closed-tabs-placeholder-header = Geen onlangs gesloten tabbladen
 firefoxview-closed-tabs-placeholder-body = Wanneer u een tabblad in dit venster sluit, kunt u het hier ophalen.
+firefoxview-closed-tabs-placeholder-body2 = Wanneer u een tabblad sluit, kunt u het hier ophalen.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Laatst actief
 firefoxview-tabs-list-tab-button =
     .title = { $targetURI } openen in een nieuw tabblad
 firefoxview-try-colorways-button = Kleurstellingen proberen
-firefoxview-no-current-colorway-collection = Er zijn nieuwe kleurstellingen onderweg
 firefoxview-change-colorway-button = Kleurstelling wijzigen
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,63 @@ firefoxview-collapse-button-show =
     .title = Lijst tonen
 firefoxview-collapse-button-hide =
     .title = Lijst verbergen
+firefoxview-overview-nav = Onlangs bekeken
+    .title = Onlangs bekeken
+firefoxview-overview-header = Onlangs bekeken
+    .title = Onlangs bekeken
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Geschiedenis
+    .title = Geschiedenis
+firefoxview-history-header = Geschiedenis
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Open tabbladen
+    .title = Open tabbladen
+firefoxview-opentabs-header = Open tabbladen
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Onlangs gesloten tabbladen
+    .title = Onlangs gesloten tabbladen
+firefoxview-recently-closed-header = Onlangs gesloten tabbladen
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Tabbladen van andere apparaten
+    .title = Tabbladen van andere apparaten
+firefoxview-synced-tabs-header = Tabbladen van andere apparaten
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Alles bekijken
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Venster { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Venster { $winID } (huidige)
+firefoxview-opentabs-focus-tab =
+    .title = Wisselen naar dit tabblad
+firefoxview-show-more = Meer tonen
+firefoxview-show-less = Minder tonen
+firefoxview-sort-history-by-date-label = Sorteren op datum
+firefoxview-sort-history-by-site-label = Sorteren op website
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Vandaag – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Gisteren – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Alle geschiedenis tonen
+firefoxview-view-more-browsing-history = Meer navigatiegeschiedenis bekijken

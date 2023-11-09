@@ -21,12 +21,12 @@ newtab-search-box-search-button =
     .title = Sykje
     .aria-label = Sykje
 
-# Variables
-#  $engine (String): the name of the user's default search engine
+# Variables:
+#   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-text = Mei { $engine } sykje of fier adres yn
 newtab-search-box-handoff-text-no-engine = Fier sykterm of adres yn
-# Variables
-#  $engine (String): the name of the user's default search engine
+# Variables:
+#   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-input =
     .placeholder = Mei { $engine } sykje of fier adres yn
     .title = Mei { $engine } sykje of fier adres yn
@@ -92,7 +92,7 @@ newtab-dismiss-button-tooltip =
 
 # This tooltip is for the context menu of Pocket cards or Topsites
 # Variables:
-#  $title (String): The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
 newtab-menu-content-tooltip =
     .title = Menu iepenje
     .aria-label = Kontekstmenu foar { $title } iepenje
@@ -165,18 +165,18 @@ newtab-label-download = Download
 
 # This string is used in the story cards to indicate sponsored content
 # Variables:
-#  $sponsorOrSource (String): This is the name of a company or their domain
+#   $sponsorOrSource (string) - The name of a company or their domain
 newtab-label-sponsored = { $sponsorOrSource } · Sponsore
 
 # This string is used at the bottom of story cards to indicate sponsored content
 # Variables:
-#  $sponsor (String): This is the name of a sponsor
+#   $sponsor (string) - The name of a sponsor
 newtab-label-sponsored-by = Sponsore troch { $sponsor }
 
 # This string is used under the image of story cards to indicate source and time to read
 # Variables:
-#  $source (String): This is the name of a company or their domain
-#  $timeToRead (Number): This is the estimated number of minutes to read this story
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
 newtab-label-source-read-time = { $source } · { $timeToRead } min.
 
 ## Section Menu: These strings are displayed in the section context menu and are
@@ -205,7 +205,7 @@ newtab-section-expand-section-label =
 newtab-section-header-topsites = Topwebsites
 newtab-section-header-recent-activity = Resinte aktiviteit
 # Variables:
-#  $provider (String): Name of the corresponding content provider.
+#   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Oanrekommandearre troch { $provider }
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
@@ -214,7 +214,7 @@ newtab-empty-section-highlights = Start mei sneupen en wy toane jo guon moaie ar
 
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
-#  $provider (String): Name of the content provider for this section, e.g "Pocket".
+#   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Jo binne by. Kom letter werom foar mear ferhalen fan { $provider }. Kin jo net wachtsje? Selektearje in populêr ûnderwerp om mear ferhalen fan it ynternet te finen.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
@@ -237,24 +237,17 @@ newtab-pocket-cta-button = { -pocket-brand-name } brûke
 newtab-pocket-cta-text = Bewarje de ferhalen dy’t jo ynteressant fine yn { -pocket-brand-name }, en stimulearje jo tinzen mei boeiende lêsstof.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } is ûnderdiel fan de { -brand-product-name }-famylje
 
-# A save to Pocket button that shows over the card thumbnail on hover.
-newtab-pocket-save-to-pocket = Bewarje nei { -pocket-brand-name }
-newtab-pocket-saved-to-pocket = Bewarre nei { -pocket-brand-name }
-
-# This is a button shown at the bottom of the Pocket section that loads more stories when clicked.
-newtab-pocket-load-more-stories-button = Mear ferhalen lade
-
 ## Pocket Final Card Section.
 ## This is for the final card in the Pocket grid.
-
-newtab-pocket-last-card-title = Jo binne folslein by!
-newtab-pocket-last-card-desc = Kom letter werom foar mear.
-newtab-pocket-last-card-image =
-    .alt = Jo binne folslein by
 
 # A save to Pocket button that shows over the card thumbnail on hover.
 newtab-pocket-save = Bewarje
 newtab-pocket-saved = Bewarre
+
+## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
+
+newtab-pocket-onboarding-discover = Untdek it bêste fan ynternet
+newtab-pocket-onboarding-cta = { -pocket-brand-name } ferkent in breed skala oan publikaasjes om de meast ynformative, ynspirearjende en betroubere ynhâld streekrjocht nei jo { -brand-product-name }-browser te bringen.
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
@@ -266,6 +259,8 @@ newtab-error-fallback-refresh-link = Fernij de side om it opnij te probearjen.
 
 newtab-custom-shortcuts-title = Fluchkeppelingen
 newtab-custom-shortcuts-subtitle = Bewarre of besochte websites
+# Variables
+#   $num (number) - Number of rows to display
 newtab-custom-row-selector =
     { $num ->
         [one] { $num } rige

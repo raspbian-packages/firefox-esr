@@ -4,10 +4,12 @@
 
 #include "CCGCScheduler.h"
 
+#include "js/GCAPI.h"
 #include "mozilla/StaticPrefs_javascript.h"
 #include "mozilla/CycleCollectedJSRuntime.h"
 #include "mozilla/ProfilerMarkers.h"
 #include "mozilla/dom/ScriptSettings.h"
+#include "mozilla/PerfStats.h"
 #include "nsRefreshDriver.h"
 
 /*
@@ -183,7 +185,7 @@ struct CCIntervalMarker {
 
 namespace mozilla {
 
-void CCGCScheduler::NoteGCBegin() {
+void CCGCScheduler::NoteGCBegin(JS::GCReason aReason) {
   // Treat all GC as incremental here; non-incremental GC will just appear to
   // be one slice.
   mInIncrementalGC = true;
@@ -196,10 +198,20 @@ void CCGCScheduler::NoteGCBegin() {
   if (child) {
     child->StartedGC();
   }
+
+  // The reason might have come from mMajorReason, mEagerMajorGCReason, or
+  // in the case of an internally-generated GC, it might come from the
+  // internal logic (and be passed in here). It's easier to manage a single
+  // reason state variable, so merge all sources into mMajorGCReason.
+  MOZ_ASSERT(aReason != JS::GCReason::NO_REASON);
+  mMajorGCReason = aReason;
+  mEagerMajorGCReason = JS::GCReason::NO_REASON;
 }
 
 void CCGCScheduler::NoteGCEnd() {
   mMajorGCReason = JS::GCReason::NO_REASON;
+  mEagerMajorGCReason = JS::GCReason::NO_REASON;
+  mEagerMinorGCReason = JS::GCReason::NO_REASON;
 
   mInIncrementalGC = false;
   mCCBlockStart = TimeStamp();
@@ -219,6 +231,55 @@ void CCGCScheduler::NoteGCEnd() {
   if (child) {
     child->DoneGC();
   }
+}
+
+void CCGCScheduler::NoteGCSliceEnd(TimeStamp aStart, TimeStamp aEnd) {
+  if (mMajorGCReason == JS::GCReason::NO_REASON) {
+    // Internally-triggered GCs do not wait for the parent's permission to
+    // proceed. This flag won't be checked during an incremental GC anyway,
+    // but it better reflects reality.
+    mReadyForMajorGC = true;
+  }
+
+  // Subsequent slices should be INTER_SLICE_GC unless they are triggered by
+  // something else that provides its own reason.
+  mMajorGCReason = JS::GCReason::INTER_SLICE_GC;
+
+  MOZ_ASSERT(aEnd >= aStart);
+  TimeDuration sliceDuration = aEnd - aStart;
+  PerfStats::RecordMeasurement(PerfStats::Metric::MajorGC, sliceDuration);
+
+  // Compute how much GC time was spent in predicted-to-be-idle time. In the
+  // unlikely event that the slice started after the deadline had already
+  // passed, treat the entire slice as non-idle.
+  TimeDuration nonIdleDuration;
+  bool startedIdle = mTriggeredGCDeadline.isSome() &&
+                     !mTriggeredGCDeadline->IsNull() &&
+                     *mTriggeredGCDeadline > aStart;
+  if (!startedIdle) {
+    nonIdleDuration = sliceDuration;
+  } else {
+    if (*mTriggeredGCDeadline < aEnd) {
+      // Overran the idle deadline.
+      nonIdleDuration = aEnd - *mTriggeredGCDeadline;
+    }
+  }
+
+  PerfStats::RecordMeasurement(PerfStats::Metric::NonIdleMajorGC,
+                               nonIdleDuration);
+
+  // Note the GC_SLICE_DURING_IDLE previously had a different definition: it was
+  // a histogram of percentages of externally-triggered slices. It is now a
+  // histogram of percentages of all slices. That means that now you might have
+  // a 4ms internal slice (0% during idle) followed by a 16ms external slice
+  // (15ms during idle), whereas before this would show up as a single record of
+  // a single slice with 75% of its time during idle (15 of 20ms).
+  TimeDuration idleDuration = sliceDuration - nonIdleDuration;
+  uint32_t percent =
+      uint32_t(idleDuration.ToSeconds() / sliceDuration.ToSeconds() * 100);
+  Telemetry::Accumulate(Telemetry::GC_SLICE_DURING_IDLE, percent);
+
+  mTriggeredGCDeadline.reset();
 }
 
 void CCGCScheduler::NoteCCBegin(CCReason aReason, TimeStamp aWhen,
@@ -254,6 +315,7 @@ void CCGCScheduler::NoteCCEnd(const CycleCollectorResults& aResults,
 void CCGCScheduler::NoteWontGC() {
   mReadyForMajorGC = !mAskParentBeforeMajorGC;
   mMajorGCReason = JS::GCReason::NO_REASON;
+  mEagerMajorGCReason = JS::GCReason::NO_REASON;
   mWantAtLeastRegularGC = false;
   // Don't clear the WantFullGC state, we will do a full GC the next time a
   // GC happens for any other reason.
@@ -262,10 +324,17 @@ void CCGCScheduler::NoteWontGC() {
 bool CCGCScheduler::GCRunnerFired(TimeStamp aDeadline) {
   MOZ_ASSERT(!mDidShutdown, "GCRunner still alive during shutdown");
 
-  GCRunnerStep step = GetNextGCRunnerAction();
+  GCRunnerStep step = GetNextGCRunnerAction(aDeadline);
   switch (step.mAction) {
     case GCRunnerAction::None:
-      MOZ_CRASH("Unexpected GCRunnerAction");
+      KillGCRunner();
+      return false;
+
+    case GCRunnerAction::MinorGC:
+      JS::MaybeRunNurseryCollection(CycleCollectedJSRuntime::Get()->Runtime(),
+                                    step.mReason);
+      NoteMinorGCEnd();
+      return HasMoreIdleGCRunnerWork();
 
     case GCRunnerAction::WaitToMajorGC: {
       MOZ_ASSERT(!mHaveAskedParent, "GCRunner alive after asking the parent");
@@ -348,36 +417,14 @@ bool CCGCScheduler::GCRunnerFiredDoGC(TimeStamp aDeadline,
     }
   }
 
+  // Note that we are triggering the following GC slice and recording whether
+  // it started in idle time, for use in the callback at the end of the slice.
+  mTriggeredGCDeadline = Some(aDeadline);
+
   MOZ_ASSERT(mActiveIntersliceGCBudget);
   TimeStamp startTimeStamp = TimeStamp::Now();
   js::SliceBudget budget = ComputeInterSliceGCBudget(aDeadline, startTimeStamp);
-  TimeDuration duration = mGCUnnotifiedTotalTime;
   nsJSContext::RunIncrementalGCSlice(aStep.mReason, is_shrinking, budget);
-
-  mGCUnnotifiedTotalTime = TimeDuration();
-  TimeStamp now = TimeStamp::Now();
-  TimeDuration sliceDuration = now - startTimeStamp;
-  duration += sliceDuration;
-  if (duration.ToSeconds()) {
-    TimeDuration idleDuration;
-    if (!aDeadline.IsNull()) {
-      if (aDeadline < now) {
-        // This slice overflowed the idle period.
-        if (aDeadline > startTimeStamp) {
-          idleDuration = aDeadline - startTimeStamp;
-        }
-        // Otherwise the whole slice was done outside the idle period.
-      } else {
-        // Note, we don't want to use duration here, since it may contain
-        // data also from JS engine triggered GC slices.
-        idleDuration = sliceDuration;
-      }
-    }
-
-    uint32_t percent =
-        uint32_t(idleDuration.ToSeconds() / duration.ToSeconds() * 100);
-    Telemetry::Accumulate(Telemetry::GC_SLICE_DURING_IDLE, percent);
-  }
 
   // If the GC doesn't have any more work to do on the foreground thread (and
   // e.g. is waiting for background sweeping to finish) then return false to
@@ -495,6 +542,9 @@ void CCGCScheduler::PokeFullGC() {
 
 void CCGCScheduler::PokeGC(JS::GCReason aReason, JSObject* aObj,
                            TimeDuration aDelay) {
+  MOZ_ASSERT(aReason != JS::GCReason::NO_REASON);
+  MOZ_ASSERT(aReason != JS::GCReason::EAGER_NURSERY_COLLECTION);
+
   if (mDidShutdown) {
     return;
   }
@@ -510,7 +560,7 @@ void CCGCScheduler::PokeGC(JS::GCReason aReason, JSObject* aObj,
   }
 
   if (mGCRunner || mHaveAskedParent) {
-    // There's already a GC runner, there or will be, so just return.
+    // There's already a GC runner, or there will be, so just return.
     return;
   }
 
@@ -535,10 +585,32 @@ void CCGCScheduler::PokeGC(JS::GCReason aReason, JSObject* aObj,
   EnsureGCRunner(delay);
 }
 
+void CCGCScheduler::PokeMinorGC(JS::GCReason aReason) {
+  MOZ_ASSERT(aReason != JS::GCReason::NO_REASON);
+
+  if (mDidShutdown) {
+    return;
+  }
+
+  SetWantEagerMinorGC(aReason);
+
+  if (mGCRunner || mHaveAskedParent || mCCRunner) {
+    // There's already a runner, or there will be, so just return.
+    return;
+  }
+
+  // Immediately start looking for idle time to run the minor GC.
+  EnsureGCRunner(0);
+}
+
 void CCGCScheduler::EnsureGCRunner(TimeDuration aDelay) {
   if (mGCRunner) {
     return;
   }
+
+  TimeDuration minimumBudget = nsRefreshDriver::IsInHighRateMode()
+                                   ? TimeDuration::FromMilliseconds(1)
+                                   : mActiveIntersliceGCBudget;
 
   // Wait at most the interslice GC delay before forcing a run.
   mGCRunner = IdleTaskRunner::Create(
@@ -546,7 +618,7 @@ void CCGCScheduler::EnsureGCRunner(TimeDuration aDelay) {
       "CCGCScheduler::EnsureGCRunner", aDelay,
       TimeDuration::FromMilliseconds(
           StaticPrefs::javascript_options_gc_delay_interslice()),
-      mActiveIntersliceGCBudget, true, [this] { return mDidShutdown; },
+      minimumBudget, true, [this] { return mDidShutdown; },
       [this](uint32_t) {
         PROFILER_MARKER_UNTYPED("GC Interrupt", GCCC);
         mInterruptRequested = true;
@@ -601,13 +673,17 @@ void CCGCScheduler::KillGCRunner() {
 void CCGCScheduler::EnsureCCRunner(TimeDuration aDelay, TimeDuration aBudget) {
   MOZ_ASSERT(!mDidShutdown);
 
+  TimeDuration minimumBudget = nsRefreshDriver::IsInHighRateMode()
+                                   ? TimeDuration::FromMilliseconds(1)
+                                   : aBudget;
+
   if (!mCCRunner) {
     mCCRunner = IdleTaskRunner::Create(
-        CCRunnerFired, "EnsureCCRunner::CCRunnerFired", 0, aDelay, aBudget,
-        true, [this] { return mDidShutdown; });
+        CCRunnerFired, "EnsureCCRunner::CCRunnerFired", 0, aDelay,
+        minimumBudget, true, [this] { return mDidShutdown; });
   } else {
-    mCCRunner->SetMinimumUsefulBudget(aBudget.ToMilliseconds());
-    nsIEventTarget* target = mozilla::GetCurrentEventTarget();
+    mCCRunner->SetMinimumUsefulBudget(minimumBudget.ToMilliseconds());
+    nsIEventTarget* target = mozilla::GetCurrentSerialEventTarget();
     if (target) {
       mCCRunner->SetTimer(aDelay, target);
     }
@@ -840,6 +916,10 @@ CCRunnerStep CCGCScheduler::AdvanceCCRunner(TimeStamp aDeadline, TimeStamp aNow,
     return {CCRunnerAction::StopRunning, Yield};
   }
 
+  if (mEagerMinorGCReason != JS::GCReason::NO_REASON && !aDeadline.IsNull()) {
+    return {CCRunnerAction::MinorGC, Continue, mEagerMinorGCReason};
+  }
+
   switch (mCCRunnerState) {
       // ReducePurple: a GC ran (or we otherwise decided to try CC'ing). Wait
       // for some amount of time (kCCDelay, or less if incremental GC blocked
@@ -924,7 +1004,7 @@ CCRunnerStep CCGCScheduler::AdvanceCCRunner(TimeStamp aDeadline, TimeStamp aNow,
       // CycleCollecting: continue running slices until done.
     case CCRunnerState::CycleCollecting: {
       CCRunnerStep step{CCRunnerAction::CycleCollect, Yield};
-      step.mCCReason = mCCReason;
+      step.mParam.mCCReason = mCCReason;
       mCCReason = CCReason::SLICE;  // Set reason for following slices.
       return step;
     }
@@ -934,18 +1014,33 @@ CCRunnerStep CCGCScheduler::AdvanceCCRunner(TimeStamp aDeadline, TimeStamp aNow,
   };
 }
 
-GCRunnerStep CCGCScheduler::GetNextGCRunnerAction() const {
-  MOZ_ASSERT(mMajorGCReason != JS::GCReason::NO_REASON);
-
+GCRunnerStep CCGCScheduler::GetNextGCRunnerAction(TimeStamp aDeadline) const {
   if (InIncrementalGC()) {
+    MOZ_ASSERT(mMajorGCReason != JS::GCReason::NO_REASON);
     return {GCRunnerAction::GCSlice, mMajorGCReason};
   }
 
-  if (mReadyForMajorGC) {
-    return {GCRunnerAction::StartMajorGC, mMajorGCReason};
+  // Service a non-eager GC request first, even if it requires waiting.
+  if (mMajorGCReason != JS::GCReason::NO_REASON) {
+    return {mReadyForMajorGC ? GCRunnerAction::StartMajorGC
+                             : GCRunnerAction::WaitToMajorGC,
+            mMajorGCReason};
   }
 
-  return {GCRunnerAction::WaitToMajorGC, mMajorGCReason};
+  // Now for eager requests, which are ignored unless we're idle.
+  if (!aDeadline.IsNull()) {
+    if (mEagerMajorGCReason != JS::GCReason::NO_REASON) {
+      return {mReadyForMajorGC ? GCRunnerAction::StartMajorGC
+                               : GCRunnerAction::WaitToMajorGC,
+              mEagerMajorGCReason};
+    }
+
+    if (mEagerMinorGCReason != JS::GCReason::NO_REASON) {
+      return {GCRunnerAction::MinorGC, mEagerMinorGCReason};
+    }
+  }
+
+  return {GCRunnerAction::None, JS::GCReason::NO_REASON};
 }
 
 js::SliceBudget CCGCScheduler::ComputeForgetSkippableBudget(

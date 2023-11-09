@@ -46,6 +46,10 @@ options-inspector-draggable-properties-label = Eikutu ha embosyryry rehaijey hag
 options-inspector-draggable-properties-tooltip =
     .title = Eikutu ha embosyryry rehaijey hag̃ua tuichakue térã michĩngue moambuekuaáva renondépe
 
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Eipuru jehechaukaha’i prefers-reduced-motion ndive
+
 ## "Default Color Unit" options for the Inspector
 
 options-default-color-unit-label = Sa’y joja imarãva
@@ -124,6 +128,9 @@ options-enable-remote-label = Ñemopotĩ okayguáva myandy
 options-enable-remote-tooltip2 =
     .title = Emyandývo ko poravorã omoneĩta ndéve emopotĩvo ko kundahára reko oka guive
 
+# The label for checkbox that enables F12 as a shortcut to open DevTools
+options-enable-f12-label = Eipuru F12 embojuruja térã embogue hag̃ua DevTools
+
 # The label for checkbox that toggles custom formatters for objects
 options-enable-custom-formatters-label = Emyandy mopotĩeteha mba’eteéva
 options-enable-custom-formatters-tooltip =
@@ -141,4 +148,3 @@ options-source-maps-tooltip =
 
 # The message shown for settings that trigger page reload
 options-context-triggers-page-refresh = * Tembiapo ag̃agua añónte, emyenyhẽjey kuatiarogue
-

@@ -24,6 +24,12 @@ bookmark-overlay-folders-expander =
     .tooltiptextdown = { bookmark-overlay-folders-expander.tooltiptext }
     .tooltiptextup = Peida
 
+bookmark-overlay-folders-expander2 =
+    .tooltiptext = Näita kõiki järjehoidjate kaustu
+
+bookmark-overlay-folders-expander-hide =
+    .tooltiptext = Peida
+
 bookmark-overlay-new-folder-button =
     .label = Uus kaust
     .accesskey = U
@@ -39,6 +45,12 @@ bookmark-overlay-tags-expander =
     .tooltiptext = Näita kõiki silte
     .tooltiptextdown = { bookmark-overlay-tags-expander.tooltiptext }
     .tooltiptextup = Peida
+
+bookmark-overlay-tags-expander2 =
+    .tooltiptext = Näita kõiki silte
+
+bookmark-overlay-tags-expander-hide =
+    .tooltiptext = Peida
 
 bookmark-overlay-keyword-2 =
     .value = Võtmesõna

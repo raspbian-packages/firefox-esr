@@ -48,6 +48,17 @@ restart-later = Herbegin later
 ##   $name (String): name of the extension
 
 
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
+
 ## Preferences UI Search Results
 
 search-results-header = Soekresultate
@@ -96,6 +107,10 @@ browser-containers-settings =
     .accesskey = t
 
 containers-disable-alert-title = Sluit alle konteksoortjies?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] As konteksoortjies nou gedeaktiveer word, sal { $tabCount } konteksoortjie gesluit word. Wil u definitief konteksoortjies deaktiveer?
@@ -107,6 +122,9 @@ containers-disable-alert-ok-button =
         [one] Sluit { $tabCount } konteksoortjie
        *[other] Sluit { $tabCount } konteksoortjies
     }
+
+##
+
 containers-disable-alert-cancel-button = Hou geaktiveer
 
 containers-remove-alert-title = Verwyder dié konteks?
@@ -380,6 +398,10 @@ home-prefs-search-header =
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
 
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+
 # Variables:
 #  $provider (String): Name of the corresponding content provider, e.g "Pocket".
 home-prefs-recommended-by-header =
@@ -405,6 +427,7 @@ search-suggestions-header = Soekvoorstelle
 search-suggestions-option =
     .label = Verskaf soekvoorstelle
     .accesskey = s
+
 
 search-suggestions-cant-show = Soekvoorstelle sal nie in die liggingbalk gewys word nie omdat { -brand-short-name } opgestel is om nooit geskiedenis te onthou nie.
 
@@ -444,6 +467,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = Neem die Web saam
 
 # This message contains two links and two icon images.
@@ -458,14 +485,22 @@ sync-mobile-promo = Laai Firefox af vir <img data-l10n-name="android-icon"/> <a 
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Verander profielprent
 
 sync-manage-account = Bestuur rekening
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } is nie geverifieer nie.
 sync-signedin-login-failure = Meld aan om { $email } te herkoppel.
+
+##
 
 sync-remove-account =
     .label = Verwyder Rekening
@@ -517,6 +552,16 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = Stoor
     .accesskey = t
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Verifikasie is gestuur
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = 'n Verifikasieskakel is gestuur aan { $email }.
+sync-verification-not-sent-title = Kan nie bevestiging stuur nie
+sync-verification-not-sent-body = Ons kan nie tans 'n bevestigings-e-pos stuur nie. Probeer gerus later weer.
 
 ## Privacy Section
 
@@ -599,6 +644,9 @@ sitedata-header = Koekies en webwerf-data
 
 sitedata-learn-more = Meer inligting
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-locbar-history-option =
@@ -628,6 +676,8 @@ content-blocking-learn-more = Meer inligting
 content-blocking-all-cookies = Alle koekies
 content-blocking-cryptominers = Kriptomyners
 content-blocking-fingerprinters = Vingerafdrukkers
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-tracking-protection-option-all-windows =
     .label = In alle vensters
@@ -713,6 +763,9 @@ certs-enable-ocsp =
     .accesskey = B
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

@@ -4,8 +4,10 @@
 
 /* import-globals-from head_global.js */
 
-var { Log } = ChromeUtils.import("resource://gre/modules/Log.jsm");
-var { CommonUtils } = ChromeUtils.import("resource://services-common/utils.js");
+var { Log } = ChromeUtils.importESModule("resource://gre/modules/Log.sys.mjs");
+var { CommonUtils } = ChromeUtils.importESModule(
+  "resource://services-common/utils.sys.mjs"
+);
 var {
   HTTP_400,
   HTTP_401,
@@ -33,11 +35,11 @@ var {
   HttpError,
   HttpServer,
 } = ChromeUtils.import("resource://testing-common/httpd.js");
-var { getTestLogger, initTestLogging } = ChromeUtils.import(
-  "resource://testing-common/services/common/logging.js"
+var { getTestLogger, initTestLogging } = ChromeUtils.importESModule(
+  "resource://testing-common/services/common/logging.sys.mjs"
 );
-var { MockRegistrar } = ChromeUtils.import(
-  "resource://testing-common/MockRegistrar.jsm"
+var { MockRegistrar } = ChromeUtils.importESModule(
+  "resource://testing-common/MockRegistrar.sys.mjs"
 );
 var { NetUtil } = ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
 
@@ -87,7 +89,7 @@ function do_check_throws_message(aFunc, aResult) {
  * @usage _("Hello World") -> prints "Hello World"
  * @usage _(1, 2, 3) -> prints "1 2 3"
  */
-var _ = function(some, debug, text, to) {
+var _ = function (some, debug, text, to) {
   print(Array.from(arguments).join(" "));
 };
 
@@ -165,7 +167,7 @@ function writeBytesToOutputStream(outputStream, string) {
  * Ensure exceptions from inside callbacks leads to test failures.
  */
 function ensureThrows(func) {
-  return function() {
+  return function () {
     try {
       func.apply(this, arguments);
     } catch (ex) {
@@ -208,9 +210,6 @@ function uninstallFakePAC() {
 }
 
 function getUptakeTelemetrySnapshot(component, source) {
-  const { Services } = ChromeUtils.import(
-    "resource://gre/modules/Services.jsm"
-  );
   const TELEMETRY_CATEGORY_ID = "uptake.remotecontent.result";
   const snapshot = Services.telemetry.snapshotEvents(
     Ci.nsITelemetry.DATASET_ALL_CHANNELS,
@@ -239,8 +238,8 @@ function getUptakeTelemetrySnapshot(component, source) {
 }
 
 function checkUptakeTelemetry(snapshot1, snapshot2, expectedIncrements) {
-  const { UptakeTelemetry } = ChromeUtils.import(
-    "resource://services-common/uptake-telemetry.js"
+  const { UptakeTelemetry } = ChromeUtils.importESModule(
+    "resource://services-common/uptake-telemetry.sys.mjs"
   );
   const STATUSES = Object.values(UptakeTelemetry.STATUS);
   for (const status of STATUSES) {
@@ -252,8 +251,8 @@ function checkUptakeTelemetry(snapshot1, snapshot2, expectedIncrements) {
 }
 
 async function withFakeChannel(channel, f) {
-  const { Policy } = ChromeUtils.import(
-    "resource://services-common/uptake-telemetry.js"
+  const { Policy } = ChromeUtils.importESModule(
+    "resource://services-common/uptake-telemetry.sys.mjs"
   );
   let oldGetChannel = Policy.getChannel;
   Policy.getChannel = () => channel;

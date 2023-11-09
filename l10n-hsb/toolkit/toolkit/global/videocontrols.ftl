@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-videocontrols-scrubber =
-    .aria-label = Pozicija
 # This label is used by screenreaders and other assistive technology to indicate
 # to users how much of the video has been loaded from the network. It will be
 # followed by the percentage of the video that has loaded (e.g. "Loading: 13%").
@@ -36,21 +34,7 @@ videocontrols-picture-in-picture-label = Wobraz-we-wobrazu
 
 # This string is used as the label for a variation of the Picture-in-Picture video
 # toggle button when the mouse is hovering over the video.
-videocontrols-picture-in-picture-toggle-label = We „wobraz-we-wobrazu“ wobhladać
-
-# This string is used as part of a variation of the Picture-in-Picture video toggle
-# button. When using this variation, this string appears below the toggle when the
-# mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer = Wothrajće wideja w prědku, mjeztym zo něšto druheho w { -brand-short-name } činiće.
-
-# This string is used as the label for a variation of the Picture-in-Picture video
-# toggle button when the mouse is hovering over the video.
 videocontrols-picture-in-picture-toggle-label2 = Widejo wućahnyć
-
-# This string is used as part of a variation of the Picture-in-Picture video toggle
-# button. When using this variation, this string appears below the toggle when the
-# mouse hovers the toggle.
-videocontrols-picture-in-picture-explainer2 = Wjace wobrazowkow rěka wjace wjesela. Wothrajće tute widejo w modusu wobraz-we-wobrazu, mjeztym zo přehladujeće.
 
 videocontrols-picture-in-picture-explainer3 = Wjace wobrazowkow je wjace wjesela. Wothrajće tute widejo, hdyž druhe wěcy činiće.
 
@@ -75,3 +59,13 @@ videocontrols-status-picture-in-picture = Tute widejo so w modusu wobraz-we-wobr
 # duration video, $position would be "5:00" and the string which is
 # surrounded by <span> would be deleted, result string would be "5:00".
 videocontrols-position-and-duration-labels = { $position }<span data-l10n-name="position-duration-format"> / { $duration }</span>
+
+# This is a plain text version of the videocontrols-position-and-duration-labels
+# string, used by screenreaders.
+#
+# Variables:
+#   $position (String): The current media position
+#   $duration (String): The total video duration
+videocontrols-scrubber-position-and-duration =
+    .aria-label = Pozicija
+    .aria-valuetext = { $position } / { $duration }

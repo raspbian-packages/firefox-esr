@@ -181,8 +181,8 @@ void MacroAssemblerCompat::loadPrivate(const Address& src, Register dest) {
   loadPtr(src, dest);
 }
 
-void MacroAssemblerCompat::handleFailureWithHandlerTail(
-    Label* profilerExitTail) {
+void MacroAssemblerCompat::handleFailureWithHandlerTail(Label* profilerExitTail,
+                                                        Label* bailoutTail) {
   // Fail rather than silently create wrong code.
   MOZ_RELEASE_ASSERT(GetStackPointer64().Is(PseudoStackPointer64));
 
@@ -195,7 +195,7 @@ void MacroAssemblerCompat::handleFailureWithHandlerTail(
   Mov(x0, PseudoStackPointer64);
 
   // Call the handler.
-  using Fn = void (*)(ResumeFromException * rfe);
+  using Fn = void (*)(ResumeFromException* rfe);
   asMasm().setupUnalignedABICall(r1);
   asMasm().passABIArg(r0);
   asMasm().callWithABI<Fn, HandleException>(
@@ -234,10 +234,13 @@ void MacroAssemblerCompat::handleFailureWithHandlerTail(
 
   breakpoint();  // Invalid kind.
 
-  // No exception handler. Load the error value, load the new stack pointer,
-  // and return from the entry frame.
+  // No exception handler. Load the error value, restore state and return from
+  // the entry frame.
   bind(&entryFrame);
   moveValue(MagicValue(JS_ION_ERROR), JSReturnOperand);
+  loadPtr(
+      Address(PseudoStackPointer, ResumeFromException::offsetOfFramePointer()),
+      FramePointer);
   loadPtr(
       Address(PseudoStackPointer, ResumeFromException::offsetOfStackPointer()),
       PseudoStackPointer);
@@ -303,9 +306,6 @@ void MacroAssemblerCompat::handleFailureWithHandlerTail(
   syncStackPtr();
   loadValue(Address(FramePointer, BaselineFrame::reverseOffsetOfReturnValue()),
             JSReturnOperand);
-  movePtr(FramePointer, PseudoStackPointer);
-  syncStackPtr();
-  vixl::MacroAssembler::Pop(ARMRegister(FramePointer, 64));
   jump(&profilingInstrumentation);
 
   // Return the given value to the caller.
@@ -315,6 +315,9 @@ void MacroAssemblerCompat::handleFailureWithHandlerTail(
       JSReturnOperand);
   loadPtr(
       Address(PseudoStackPointer, offsetof(ResumeFromException, framePointer)),
+      FramePointer);
+  loadPtr(
+      Address(PseudoStackPointer, offsetof(ResumeFromException, stackPointer)),
       PseudoStackPointer);
   syncStackPtr();
 
@@ -325,12 +328,16 @@ void MacroAssemblerCompat::handleFailureWithHandlerTail(
   {
     Label skipProfilingInstrumentation;
     AbsoluteAddress addressOfEnabled(
-        GetJitContext()->runtime->geckoProfiler().addressOfEnabled());
+        asMasm().runtime()->geckoProfiler().addressOfEnabled());
     asMasm().branch32(Assembler::Equal, addressOfEnabled, Imm32(0),
                       &skipProfilingInstrumentation);
     jump(profilerExitTail);
     bind(&skipProfilingInstrumentation);
   }
+
+  movePtr(FramePointer, PseudoStackPointer);
+  syncStackPtr();
+  vixl::MacroAssembler::Pop(ARMRegister(FramePointer, 64));
 
   vixl::MacroAssembler::Pop(vixl::lr);
   syncStackPtr();
@@ -341,10 +348,12 @@ void MacroAssemblerCompat::handleFailureWithHandlerTail(
   bind(&bailout);
   Ldr(x2, MemOperand(PseudoStackPointer64,
                      ResumeFromException::offsetOfBailoutInfo()));
-  Ldr(x1,
-      MemOperand(PseudoStackPointer64, ResumeFromException::offsetOfTarget()));
+  Ldr(PseudoStackPointer64,
+      MemOperand(PseudoStackPointer64,
+                 ResumeFromException::offsetOfStackPointer()));
+  syncStackPtr();
   Mov(x0, 1);
-  Br(x1);
+  jump(bailoutTail);
 
   // If we are throwing and the innermost frame was a wasm frame, reset SP and
   // FP; SP is pointing to the unwound return address to the wasm entry, so
@@ -356,6 +365,7 @@ void MacroAssemblerCompat::handleFailureWithHandlerTail(
       MemOperand(PseudoStackPointer64,
                  ResumeFromException::offsetOfStackPointer()));
   syncStackPtr();
+  Mov(x23, int64_t(wasm::FailInstanceReg));
   ret();
 
   // Found a wasm catch handler, restore state and jump to it.
@@ -376,26 +386,16 @@ void MacroAssemblerCompat::handleFailureWithHandlerTail(
 
 void MacroAssemblerCompat::profilerEnterFrame(Register framePtr,
                                               Register scratch) {
-  profilerEnterFrame(RegisterOrSP(framePtr), scratch);
-}
-
-void MacroAssemblerCompat::profilerEnterFrame(RegisterOrSP framePtr,
-                                              Register scratch) {
   asMasm().loadJSContext(scratch);
   loadPtr(Address(scratch, offsetof(JSContext, profilingActivation_)), scratch);
-  if (IsHiddenSP(framePtr)) {
-    storeStackPtr(
-        Address(scratch, JitActivation::offsetOfLastProfilingFrame()));
-  } else {
-    storePtr(AsRegister(framePtr),
-             Address(scratch, JitActivation::offsetOfLastProfilingFrame()));
-  }
+  storePtr(framePtr,
+           Address(scratch, JitActivation::offsetOfLastProfilingFrame()));
   storePtr(ImmPtr(nullptr),
            Address(scratch, JitActivation::offsetOfLastProfilingCallSite()));
 }
 
 void MacroAssemblerCompat::profilerExitFrame() {
-  jump(GetJitContext()->runtime->jitRuntime()->getProfilerExitFrameTail());
+  jump(asMasm().runtime()->jitRuntime()->getProfilerExitFrameTail());
 }
 
 Assembler::Condition MacroAssemblerCompat::testStringTruthy(
@@ -1614,10 +1614,9 @@ uint32_t MacroAssembler::pushFakeReturnAddress(Register scratch) {
 }
 
 bool MacroAssemblerCompat::buildOOLFakeExitFrame(void* fakeReturnAddr) {
-  uint32_t descriptor = MakeFrameDescriptor(
-      asMasm().framePushed(), FrameType::IonJS, ExitFrameLayout::Size());
-  asMasm().Push(Imm32(descriptor));
+  asMasm().PushFrameDescriptor(FrameType::IonJS);
   asMasm().Push(ImmPtr(fakeReturnAddr));
+  asMasm().Push(FramePointer);
   return true;
 }
 
@@ -1671,11 +1670,9 @@ void MacroAssembler::moveValue(const Value& src, const ValueOperand& dest) {
 // Branch functions
 
 void MacroAssembler::loadStoreBuffer(Register ptr, Register buffer) {
-  if (ptr != buffer) {
-    movePtr(ptr, buffer);
-  }
-  orPtr(Imm32(gc::ChunkMask), buffer);
-  loadPtr(Address(buffer, gc::ChunkStoreBufferOffsetFromLastByte), buffer);
+  And(ARMRegister(buffer, 64), ARMRegister(ptr, 64),
+      Operand(int32_t(~gc::ChunkMask)));
+  loadPtr(Address(buffer, gc::ChunkStoreBufferOffset), buffer);
 }
 
 void MacroAssembler::branchPtrInNurseryChunk(Condition cond, Register ptr,
@@ -1686,11 +1683,10 @@ void MacroAssembler::branchPtrInNurseryChunk(Condition cond, Register ptr,
              ptr != ScratchReg2);  // Both may be used internally.
   MOZ_ASSERT(temp != ScratchReg && temp != ScratchReg2);
 
-  movePtr(ptr, temp);
-  orPtr(Imm32(gc::ChunkMask), temp);
-  branchPtr(InvertCondition(cond),
-            Address(temp, gc::ChunkStoreBufferOffsetFromLastByte), ImmWord(0),
-            label);
+  And(ARMRegister(temp, 64), ARMRegister(ptr, 64),
+      Operand(int32_t(~gc::ChunkMask)));
+  branchPtr(InvertCondition(cond), Address(temp, gc::ChunkStoreBufferOffset),
+            ImmWord(0), label);
 }
 
 void MacroAssembler::branchValueIsNurseryCell(Condition cond,
@@ -1717,11 +1713,9 @@ void MacroAssembler::branchValueIsNurseryCellImpl(Condition cond,
   branchTestGCThing(Assembler::NotEqual, value,
                     cond == Assembler::Equal ? &done : label);
 
-  unboxGCThingForGCBarrier(value, temp);
-  orPtr(Imm32(gc::ChunkMask), temp);
-  branchPtr(InvertCondition(cond),
-            Address(temp, gc::ChunkStoreBufferOffsetFromLastByte), ImmWord(0),
-            label);
+  getGCThingValueChunk(value, temp);
+  branchPtr(InvertCondition(cond), Address(temp, gc::ChunkStoreBufferOffset),
+            ImmWord(0), label);
 
   bind(&done);
 }
@@ -1741,27 +1735,11 @@ void MacroAssembler::branchTestValue(Condition cond, const ValueOperand& lhs,
 // Memory access primitives.
 template <typename T>
 void MacroAssembler::storeUnboxedValue(const ConstantOrRegister& value,
-                                       MIRType valueType, const T& dest,
-                                       MIRType slotType) {
+                                       MIRType valueType, const T& dest) {
+  MOZ_ASSERT(valueType < MIRType::Value);
+
   if (valueType == MIRType::Double) {
     boxDouble(value.reg().typedReg().fpu(), dest);
-    return;
-  }
-
-  // For known integers and booleans, we can just store the unboxed value if
-  // the slot has the same type.
-  if ((valueType == MIRType::Int32 || valueType == MIRType::Boolean) &&
-      slotType == valueType) {
-    if (value.constant()) {
-      Value val = value.value();
-      if (valueType == MIRType::Int32) {
-        store32(Imm32(val.toInt32()), dest);
-      } else {
-        store32(Imm32(val.toBoolean() ? 1 : 0), dest);
-      }
-    } else {
-      store32(value.reg().typedReg().gpr(), dest);
-    }
     return;
   }
 
@@ -1775,11 +1753,10 @@ void MacroAssembler::storeUnboxedValue(const ConstantOrRegister& value,
 
 template void MacroAssembler::storeUnboxedValue(const ConstantOrRegister& value,
                                                 MIRType valueType,
-                                                const Address& dest,
-                                                MIRType slotType);
+                                                const Address& dest);
 template void MacroAssembler::storeUnboxedValue(
     const ConstantOrRegister& value, MIRType valueType,
-    const BaseObjectElementIndex& dest, MIRType slotType);
+    const BaseObjectElementIndex& dest);
 
 void MacroAssembler::comment(const char* msg) { Assembler::comment(msg); }
 
@@ -2108,20 +2085,17 @@ void MacroAssembler::wasmStoreI64(const wasm::MemoryAccessDesc& access,
 
 void MacroAssembler::enterFakeExitFrameForWasm(Register cxreg, Register scratch,
                                                ExitFrameType type) {
-  // Wasm stubs use the native SP, not the PSP.  Setting up the fake exit
-  // frame leaves the SP mis-aligned, which is how we want it, but we must do
-  // that carefully.
+  // Wasm stubs use the native SP, not the PSP.
 
   linkExitFrame(cxreg, scratch);
 
   MOZ_RELEASE_ASSERT(sp.Is(GetStackPointer64()));
 
-  const ARMRegister tmp(scratch, 64);
-
-  vixl::UseScratchRegisterScope temps(this);
-  const ARMRegister tmp2 = temps.AcquireX();
-
-  Sub(sp, sp, 8);
+  // SP has to be 16-byte aligned when we do a load/store, so push |type| twice
+  // and then add 8 bytes to SP. This leaves SP unaligned.
+  move32(Imm32(int32_t(type)), scratch);
+  push(scratch, scratch);
+  Add(sp, sp, 8);
 
   // Despite the above assertion, it is possible for control to flow from here
   // to the code generated by
@@ -2131,10 +2105,6 @@ void MacroAssembler::enterFakeExitFrameForWasm(Register cxreg, Register scratch,
   // for safety.  Note we can't use initPseudoStackPtr here as that would
   // generate no instructions.
   Mov(PseudoStackPointer64, sp);
-
-  Mov(tmp, sp);  // SP may be unaligned, can't use it for memory op
-  Mov(tmp2, int32_t(type));
-  Str(tmp2, vixl::MemOperand(tmp, 0));
 }
 
 void MacroAssembler::widenInt32(Register r) {
@@ -2338,6 +2308,21 @@ static void StoreExclusive(MacroAssembler& masm, Scalar::Type type,
   }
 }
 
+static bool HasAtomicInstructions(MacroAssembler& masm) {
+  return masm.asVIXL().GetCPUFeatures()->Has(vixl::CPUFeatures::kAtomics);
+}
+
+static inline bool SupportedAtomicInstructionOperands(Scalar::Type type,
+                                                      Width targetWidth) {
+  if (targetWidth == Width::_32) {
+    return byteSize(type) <= 4;
+  }
+  if (targetWidth == Width::_64) {
+    return byteSize(type) == 8;
+  }
+  return false;
+}
+
 template <typename T>
 static void CompareExchange(MacroAssembler& masm,
                             const wasm::MemoryAccessDesc* access,
@@ -2346,15 +2331,46 @@ static void CompareExchange(MacroAssembler& masm,
                             Register oldval, Register newval, Register output) {
   MOZ_ASSERT(oldval != output && newval != output);
 
-  Label again;
-  Label done;
-
   vixl::UseScratchRegisterScope temps(&masm);
 
-  Register scratch2 = temps.AcquireX().asUnsized();
-  MemOperand ptr = ComputePointerForAtomic(masm, mem, scratch2);
+  Register ptrScratch = temps.AcquireX().asUnsized();
+  MemOperand ptr = ComputePointerForAtomic(masm, mem, ptrScratch);
 
   MOZ_ASSERT(ptr.base().asUnsized() != output);
+
+  if (HasAtomicInstructions(masm) &&
+      SupportedAtomicInstructionOperands(type, targetWidth)) {
+    masm.Mov(X(output), X(oldval));
+    // Capal is using same atomic mechanism as Ldxr/Stxr, and
+    // consider it is the same for "Inner Shareable" domain.
+    // Not updated gen_cmpxchg in GenerateAtomicOperations.py.
+    masm.memoryBarrierBefore(sync);
+    if (access) {
+      masm.append(*access, masm.currentOffset());
+    }
+    switch (byteSize(type)) {
+      case 1:
+        masm.Casalb(R(output, targetWidth), R(newval, targetWidth), ptr);
+        break;
+      case 2:
+        masm.Casalh(R(output, targetWidth), R(newval, targetWidth), ptr);
+        break;
+      case 4:
+      case 8:
+        masm.Casal(R(output, targetWidth), R(newval, targetWidth), ptr);
+        break;
+      default:
+        MOZ_CRASH("CompareExchange unsupported type");
+    }
+    masm.memoryBarrierAfter(sync);
+    SignOrZeroExtend(masm, type, targetWidth, output, output);
+    return;
+  }
+
+  // The target doesn't support atomics, so generate a LL-SC loop. This requires
+  // only AArch64 v8.0.
+  Label again;
+  Label done;
 
   // NOTE: the generated code must match the assembly code in gen_cmpxchg in
   // GenerateAtomicOperations.py
@@ -2382,12 +2398,42 @@ static void AtomicExchange(MacroAssembler& masm,
                            Register value, Register output) {
   MOZ_ASSERT(value != output);
 
-  Label again;
-
   vixl::UseScratchRegisterScope temps(&masm);
 
-  Register scratch2 = temps.AcquireX().asUnsized();
-  MemOperand ptr = ComputePointerForAtomic(masm, mem, scratch2);
+  Register ptrScratch = temps.AcquireX().asUnsized();
+  MemOperand ptr = ComputePointerForAtomic(masm, mem, ptrScratch);
+
+  if (HasAtomicInstructions(masm) &&
+      SupportedAtomicInstructionOperands(type, targetWidth)) {
+    // Swpal is using same atomic mechanism as Ldxr/Stxr, and
+    // consider it is the same for "Inner Shareable" domain.
+    // Not updated gen_exchange in GenerateAtomicOperations.py.
+    masm.memoryBarrierBefore(sync);
+    if (access) {
+      masm.append(*access, masm.currentOffset());
+    }
+    switch (byteSize(type)) {
+      case 1:
+        masm.Swpalb(R(value, targetWidth), R(output, targetWidth), ptr);
+        break;
+      case 2:
+        masm.Swpalh(R(value, targetWidth), R(output, targetWidth), ptr);
+        break;
+      case 4:
+      case 8:
+        masm.Swpal(R(value, targetWidth), R(output, targetWidth), ptr);
+        break;
+      default:
+        MOZ_CRASH("AtomicExchange unsupported type");
+    }
+    masm.memoryBarrierAfter(sync);
+    SignOrZeroExtend(masm, type, targetWidth, output, output);
+    return;
+  }
+
+  // The target doesn't support atomics, so generate a LL-SC loop. This requires
+  // only AArch64 v8.0.
+  Label again;
 
   // NOTE: the generated code must match the assembly code in gen_exchange in
   // GenerateAtomicOperations.py
@@ -2414,12 +2460,85 @@ static void AtomicFetchOp(MacroAssembler& masm,
   MOZ_ASSERT(value != temp);
   MOZ_ASSERT_IF(wantResult, output != temp);
 
-  Label again;
-
   vixl::UseScratchRegisterScope temps(&masm);
 
-  Register scratch2 = temps.AcquireX().asUnsized();
-  MemOperand ptr = ComputePointerForAtomic(masm, mem, scratch2);
+  Register ptrScratch = temps.AcquireX().asUnsized();
+  MemOperand ptr = ComputePointerForAtomic(masm, mem, ptrScratch);
+
+  if (HasAtomicInstructions(masm) &&
+      SupportedAtomicInstructionOperands(type, targetWidth) &&
+      !isFloatingType(type)) {
+    // LdXXXal/StXXXl is using same atomic mechanism as Ldxr/Stxr, and
+    // consider it is the same for "Inner Shareable" domain.
+    // Not updated gen_fetchop in GenerateAtomicOperations.py.
+    masm.memoryBarrierBefore(sync);
+
+#define FETCH_OP_CASE(op, arg)                                              \
+  if (access) {                                                             \
+    masm.append(*access, masm.currentOffset());                             \
+  }                                                                         \
+  switch (byteSize(type)) {                                                 \
+    case 1:                                                                 \
+      if (wantResult) {                                                     \
+        masm.Ld##op##alb(R(arg, targetWidth), R(output, targetWidth), ptr); \
+      } else {                                                              \
+        masm.St##op##lb(R(arg, targetWidth), ptr);                          \
+      }                                                                     \
+      break;                                                                \
+    case 2:                                                                 \
+      if (wantResult) {                                                     \
+        masm.Ld##op##alh(R(arg, targetWidth), R(output, targetWidth), ptr); \
+      } else {                                                              \
+        masm.St##op##lh(R(arg, targetWidth), ptr);                          \
+      }                                                                     \
+      break;                                                                \
+    case 4:                                                                 \
+    case 8:                                                                 \
+      if (wantResult) {                                                     \
+        masm.Ld##op##al(R(arg, targetWidth), R(output, targetWidth), ptr);  \
+      } else {                                                              \
+        masm.St##op##l(R(arg, targetWidth), ptr);                           \
+      }                                                                     \
+      break;                                                                \
+    default:                                                                \
+      MOZ_CRASH("AtomicFetchOp unsupported type");                          \
+  }
+
+    switch (op) {
+      case AtomicFetchAddOp:
+        FETCH_OP_CASE(add, value);
+        break;
+      case AtomicFetchSubOp: {
+        Register scratch = temps.AcquireX().asUnsized();
+        masm.Neg(X(scratch), X(value));
+        FETCH_OP_CASE(add, scratch);
+        break;
+      }
+      case AtomicFetchAndOp: {
+        Register scratch = temps.AcquireX().asUnsized();
+        masm.Eor(X(scratch), X(value), Operand(~0));
+        FETCH_OP_CASE(clr, scratch);
+        break;
+      }
+      case AtomicFetchOrOp:
+        FETCH_OP_CASE(set, value);
+        break;
+      case AtomicFetchXorOp:
+        FETCH_OP_CASE(eor, value);
+        break;
+    }
+    masm.memoryBarrierAfter(sync);
+    if (wantResult) {
+      SignOrZeroExtend(masm, type, targetWidth, output, output);
+    }
+    return;
+  }
+
+#undef FETCH_OP_CASE
+
+  // The target doesn't support atomics, so generate a LL-SC loop. This requires
+  // only AArch64 v8.0.
+  Label again;
 
   // NOTE: the generated code must match the assembly code in gen_fetchop in
   // GenerateAtomicOperations.py
@@ -2837,44 +2956,161 @@ void MacroAssembler::speculationBarrier() {
 
 void MacroAssembler::floorFloat32ToInt32(FloatRegister src, Register dest,
                                          Label* fail) {
-  floorf(src, dest, fail);
+  ARMFPRegister iFlt(src, 32);
+  ARMRegister o64(dest, 64);
+  ARMRegister o32(dest, 32);
+
+  Label handleZero;
+  Label fin;
+
+  // Handle ±0 and NaN first.
+  Fcmp(iFlt, 0.0);
+  B(Assembler::Equal, &handleZero);
+  // NaN is always a bail condition, just bail directly.
+  B(Assembler::Overflow, fail);
+
+  // Round towards negative infinity.
+  Fcvtms(o64, iFlt);
+
+  // Sign extend lower 32 bits to test if the result isn't an Int32.
+  Cmp(o64, Operand(o64, vixl::SXTW));
+  B(NotEqual, fail);
+
+  // Clear upper 32 bits.
+  Uxtw(o64, o64);
+  B(&fin);
+
+  bind(&handleZero);
+  // Move the top word of the float into the output reg, if it is non-zero,
+  // then the original value was -0.0.
+  Fmov(o32, iFlt);
+  Cbnz(o32, fail);
+  bind(&fin);
 }
 
 void MacroAssembler::floorDoubleToInt32(FloatRegister src, Register dest,
                                         Label* fail) {
-  floor(src, dest, fail);
+  ARMFPRegister iDbl(src, 64);
+  ARMRegister o64(dest, 64);
+  ARMRegister o32(dest, 32);
+
+  Label handleZero;
+  Label fin;
+
+  // Handle ±0 and NaN first.
+  Fcmp(iDbl, 0.0);
+  B(Assembler::Equal, &handleZero);
+  // NaN is always a bail condition, just bail directly.
+  B(Assembler::Overflow, fail);
+
+  // Round towards negative infinity.
+  Fcvtms(o64, iDbl);
+
+  // Sign extend lower 32 bits to test if the result isn't an Int32.
+  Cmp(o64, Operand(o64, vixl::SXTW));
+  B(NotEqual, fail);
+
+  // Clear upper 32 bits.
+  Uxtw(o64, o64);
+  B(&fin);
+
+  bind(&handleZero);
+  // Move the top word of the double into the output reg, if it is non-zero,
+  // then the original value was -0.0.
+  Fmov(o64, iDbl);
+  Cbnz(o64, fail);
+  bind(&fin);
 }
 
 void MacroAssembler::ceilFloat32ToInt32(FloatRegister src, Register dest,
                                         Label* fail) {
-  ceilf(src, dest, fail);
+  ARMFPRegister iFlt(src, 32);
+  ARMRegister o64(dest, 64);
+  ARMRegister o32(dest, 32);
+
+  Label handleZero;
+  Label fin;
+
+  // Round towards positive infinity.
+  Fcvtps(o64, iFlt);
+
+  // Sign extend lower 32 bits to test if the result isn't an Int32.
+  Cmp(o64, Operand(o64, vixl::SXTW));
+  B(NotEqual, fail);
+
+  // We have to check for (-1, -0] and NaN when the result is zero.
+  Cbz(o64, &handleZero);
+
+  // Clear upper 32 bits.
+  Uxtw(o64, o64);
+  B(&fin);
+
+  // Bail if the input is in (-1, -0] or NaN.
+  bind(&handleZero);
+  // Move the top word of the float into the output reg, if it is non-zero,
+  // then the original value wasn't +0.0.
+  Fmov(o32, iFlt);
+  Cbnz(o32, fail);
+  bind(&fin);
 }
 
 void MacroAssembler::ceilDoubleToInt32(FloatRegister src, Register dest,
                                        Label* fail) {
-  ceil(src, dest, fail);
+  ARMFPRegister iDbl(src, 64);
+  ARMRegister o64(dest, 64);
+  ARMRegister o32(dest, 32);
+
+  Label handleZero;
+  Label fin;
+
+  // Round towards positive infinity.
+  Fcvtps(o64, iDbl);
+
+  // Sign extend lower 32 bits to test if the result isn't an Int32.
+  Cmp(o64, Operand(o64, vixl::SXTW));
+  B(NotEqual, fail);
+
+  // We have to check for (-1, -0] and NaN when the result is zero.
+  Cbz(o64, &handleZero);
+
+  // Clear upper 32 bits.
+  Uxtw(o64, o64);
+  B(&fin);
+
+  // Bail if the input is in (-1, -0] or NaN.
+  bind(&handleZero);
+  // Move the top word of the double into the output reg, if it is non-zero,
+  // then the original value wasn't +0.0.
+  Fmov(o64, iDbl);
+  Cbnz(o64, fail);
+  bind(&fin);
 }
 
 void MacroAssembler::truncFloat32ToInt32(FloatRegister src, Register dest,
                                          Label* fail) {
-  const ARMFPRegister src32(src, 32);
+  ARMFPRegister src32(src, 32);
+  ARMRegister dest32(dest, 32);
+  ARMRegister dest64(dest, 64);
 
   Label done, zeroCase;
 
-  // Convert scalar to signed 32-bit fixed-point, rounding toward zero.
+  // Convert scalar to signed 64-bit fixed-point, rounding toward zero.
   // In the case of overflow, the output is saturated.
   // In the case of NaN and -0, the output is zero.
-  Fcvtzs(ARMRegister(dest, 32), src32);
+  Fcvtzs(dest64, src32);
 
   // If the output was zero, worry about special cases.
-  branch32(Assembler::Equal, dest, Imm32(0), &zeroCase);
+  Cbz(dest64, &zeroCase);
 
-  // Fail on overflow cases.
-  branch32(Assembler::Equal, dest, Imm32(INT_MAX), fail);
-  branch32(Assembler::Equal, dest, Imm32(INT_MIN), fail);
+  // Sign extend lower 32 bits to test if the result isn't an Int32.
+  Cmp(dest64, Operand(dest64, vixl::SXTW));
+  B(NotEqual, fail);
+
+  // Clear upper 32 bits.
+  Uxtw(dest64, dest64);
 
   // If the output was non-zero and wasn't saturated, just return it.
-  jump(&done);
+  B(&done);
 
   // Handle the case of a zero output:
   // 1. The input may have been NaN, requiring a failure.
@@ -2882,16 +3118,24 @@ void MacroAssembler::truncFloat32ToInt32(FloatRegister src, Register dest,
   {
     bind(&zeroCase);
 
-    // If input is a negative number that truncated to zero, the real
-    // output should be the non-integer -0.
-    // The use of "lt" instead of "lo" also catches unordered NaN input.
-    Fcmp(src32, 0.0f);
-    B(fail, vixl::lt);
+    // Combine test for negative and NaN values using a single bitwise
+    // operation.
+    //
+    // | Decimal number | Bitwise representation |
+    // |----------------|------------------------|
+    // | -0             | 8000'0000              |
+    // | +0             | 0000'0000              |
+    // | +1             | 3f80'0000              |
+    // |  NaN (or +Inf) | 7fyx'xxxx, y >= 8      |
+    // | -NaN (or -Inf) | ffyx'xxxx, y >= 8      |
+    //
+    // If any of two most significant bits is set, the number isn't in [0, 1).
+    // (Recall that floating point numbers, except for NaN, are strictly ordered
+    // when comparing their bitwise representation as signed integers.)
 
-    // Check explicitly for -0, bitwise.
-    Fmov(ARMRegister(dest, 32), src32);
-    branchTest32(Assembler::Signed, dest, dest, fail);
-    move32(Imm32(0), dest);
+    Fmov(dest32, src32);
+    Lsr(dest32, dest32, 30);
+    Cbnz(dest32, fail);
   }
 
   bind(&done);
@@ -2899,24 +3143,29 @@ void MacroAssembler::truncFloat32ToInt32(FloatRegister src, Register dest,
 
 void MacroAssembler::truncDoubleToInt32(FloatRegister src, Register dest,
                                         Label* fail) {
-  const ARMFPRegister src64(src, 64);
+  ARMFPRegister src64(src, 64);
+  ARMRegister dest64(dest, 64);
+  ARMRegister dest32(dest, 32);
 
   Label done, zeroCase;
 
-  // Convert scalar to signed 32-bit fixed-point, rounding toward zero.
+  // Convert scalar to signed 64-bit fixed-point, rounding toward zero.
   // In the case of overflow, the output is saturated.
   // In the case of NaN and -0, the output is zero.
-  Fcvtzs(ARMRegister(dest, 32), src64);
+  Fcvtzs(dest64, src64);
 
   // If the output was zero, worry about special cases.
-  branch32(Assembler::Equal, dest, Imm32(0), &zeroCase);
+  Cbz(dest64, &zeroCase);
 
-  // Fail on overflow cases.
-  branch32(Assembler::Equal, dest, Imm32(INT_MAX), fail);
-  branch32(Assembler::Equal, dest, Imm32(INT_MIN), fail);
+  // Sign extend lower 32 bits to test if the result isn't an Int32.
+  Cmp(dest64, Operand(dest64, vixl::SXTW));
+  B(NotEqual, fail);
+
+  // Clear upper 32 bits.
+  Uxtw(dest64, dest64);
 
   // If the output was non-zero and wasn't saturated, just return it.
-  jump(&done);
+  B(&done);
 
   // Handle the case of a zero output:
   // 1. The input may have been NaN, requiring a failure.
@@ -2924,16 +3173,24 @@ void MacroAssembler::truncDoubleToInt32(FloatRegister src, Register dest,
   {
     bind(&zeroCase);
 
-    // If input is a negative number that truncated to zero, the real
-    // output should be the non-integer -0.
-    // The use of "lt" instead of "lo" also catches unordered NaN input.
-    Fcmp(src64, 0.0);
-    B(fail, vixl::lt);
+    // Combine test for negative and NaN values using a single bitwise
+    // operation.
+    //
+    // | Decimal number | Bitwise representation |
+    // |----------------|------------------------|
+    // | -0             | 8000'0000'0000'0000    |
+    // | +0             | 0000'0000'0000'0000    |
+    // | +1             | 3ff0'0000'0000'0000    |
+    // |  NaN (or +Inf) | 7ffx'xxxx'xxxx'xxxx    |
+    // | -NaN (or -Inf) | fffx'xxxx'xxxx'xxxx    |
+    //
+    // If any of two most significant bits is set, the number isn't in [0, 1).
+    // (Recall that floating point numbers, except for NaN, are strictly ordered
+    // when comparing their bitwise representation as signed integers.)
 
-    // Check explicitly for -0, bitwise.
-    Fmov(ARMRegister(dest, 64), src64);
-    branchTestPtr(Assembler::Signed, dest, dest, fail);
-    movePtr(ImmPtr(0), dest);
+    Fmov(dest64, src64);
+    Lsr(dest64, dest64, 62);
+    Cbnz(dest64, fail);
   }
 
   bind(&done);
@@ -2941,10 +3198,11 @@ void MacroAssembler::truncDoubleToInt32(FloatRegister src, Register dest,
 
 void MacroAssembler::roundFloat32ToInt32(FloatRegister src, Register dest,
                                          FloatRegister temp, Label* fail) {
-  const ARMFPRegister src32(src, 32);
-  ScratchFloat32Scope scratch(*this);
+  ARMFPRegister src32(src, 32);
+  ARMRegister dest32(dest, 32);
+  ARMRegister dest64(dest, 64);
 
-  Label negative, done;
+  Label negative, saturated, done;
 
   // Branch to a slow path if input < 0.0 due to complicated rounding rules.
   // Note that Fcmp with NaN unsets the negative flag.
@@ -2957,30 +3215,21 @@ void MacroAssembler::roundFloat32ToInt32(FloatRegister src, Register dest,
   // 2. If < 0.5, round to integer with lower absolute value (so, down).
   // 3. If = 0.5, round to +Infinity (so, up).
   {
-    // Convert to signed 32-bit integer, rounding halfway cases away from zero.
+    // Convert to signed 64-bit integer, rounding halfway cases away from zero.
     // In the case of overflow, the output is saturated.
     // In the case of NaN and -0, the output is zero.
-    Fcvtas(ARMRegister(dest, 32), src32);
-    // If the output potentially saturated, fail.
-    branch32(Assembler::Equal, dest, Imm32(INT_MAX), fail);
+    Fcvtas(dest64, src32);
 
-    // If the result of the rounding was non-zero, return the output.
     // In the case of zero, the input may have been NaN or -0, which must bail.
-    branch32(Assembler::NotEqual, dest, Imm32(0), &done);
-    {
-      // If input is NaN, comparisons set the C and V bits of the NZCV flags.
-      Fcmp(src32, 0.0f);
-      B(fail, Assembler::Overflow);
+    Cbnz(dest64, &saturated);
 
-      // Move all 32 bits of the input into a scratch register to check for -0.
-      vixl::UseScratchRegisterScope temps(this);
-      const ARMRegister scratchGPR32 = temps.AcquireW();
-      Fmov(scratchGPR32, src32);
-      Cmp(scratchGPR32, vixl::Operand(uint32_t(0x80000000)));
-      B(fail, Assembler::Equal);
-    }
+    // Combine test for -0 and NaN values using a single bitwise operation.
+    // See truncFloat32ToInt32 for an explanation.
+    Fmov(dest32, src32);
+    Lsr(dest32, dest32, 30);
+    Cbnz(dest32, fail);
 
-    jump(&done);
+    B(&done);
   }
 
   // Handle the complicated case of a negative input.
@@ -2990,36 +3239,39 @@ void MacroAssembler::roundFloat32ToInt32(FloatRegister src, Register dest,
   // 3. If = 0.5, round to +Infinity (so, up).
   bind(&negative);
   {
-    // Inputs in [-0.5, 0) need 0.5 added; other negative inputs need
-    // the biggest double less than 0.5.
-    Label join;
-    loadConstantFloat32(GetBiggestNumberLessThan(0.5f), temp);
-    loadConstantFloat32(-0.5f, scratch);
-    branchFloat(Assembler::DoubleLessThan, src, scratch, &join);
-    loadConstantFloat32(0.5f, temp);
-    bind(&join);
+    // Inputs in [-0.5, 0) are rounded to -0. Fail.
+    loadConstantFloat32(-0.5f, temp);
+    branchFloat(Assembler::DoubleGreaterThanOrEqual, src, temp, fail);
 
+    // Other negative inputs need the biggest double less than 0.5 added.
+    loadConstantFloat32(GetBiggestNumberLessThan(0.5f), temp);
     addFloat32(src, temp);
+
     // Round all values toward -Infinity.
     // In the case of overflow, the output is saturated.
     // NaN and -0 are already handled by the "positive number" path above.
-    Fcvtms(ARMRegister(dest, 32), temp);
-    // If the output potentially saturated, fail.
-    branch32(Assembler::Equal, dest, Imm32(INT_MIN), fail);
-
-    // If output is zero, then the actual result is -0. Fail.
-    branchTest32(Assembler::Zero, dest, dest, fail);
+    Fcvtms(dest64, temp);
   }
+
+  bind(&saturated);
+
+  // Sign extend lower 32 bits to test if the result isn't an Int32.
+  Cmp(dest64, Operand(dest64, vixl::SXTW));
+  B(NotEqual, fail);
+
+  // Clear upper 32 bits.
+  Uxtw(dest64, dest64);
 
   bind(&done);
 }
 
 void MacroAssembler::roundDoubleToInt32(FloatRegister src, Register dest,
                                         FloatRegister temp, Label* fail) {
-  const ARMFPRegister src64(src, 64);
-  ScratchDoubleScope scratch(*this);
+  ARMFPRegister src64(src, 64);
+  ARMRegister dest64(dest, 64);
+  ARMRegister dest32(dest, 32);
 
-  Label negative, done;
+  Label negative, saturated, done;
 
   // Branch to a slow path if input < 0.0 due to complicated rounding rules.
   // Note that Fcmp with NaN unsets the negative flag.
@@ -3032,30 +3284,21 @@ void MacroAssembler::roundDoubleToInt32(FloatRegister src, Register dest,
   // 2. If < 0.5, round to integer with lower absolute value (so, down).
   // 3. If = 0.5, round to +Infinity (so, up).
   {
-    // Convert to signed 32-bit integer, rounding halfway cases away from zero.
+    // Convert to signed 64-bit integer, rounding halfway cases away from zero.
     // In the case of overflow, the output is saturated.
     // In the case of NaN and -0, the output is zero.
-    Fcvtas(ARMRegister(dest, 32), src64);
-    // If the output potentially saturated, fail.
-    branch32(Assembler::Equal, dest, Imm32(INT_MAX), fail);
+    Fcvtas(dest64, src64);
 
-    // If the result of the rounding was non-zero, return the output.
     // In the case of zero, the input may have been NaN or -0, which must bail.
-    branch32(Assembler::NotEqual, dest, Imm32(0), &done);
-    {
-      // If input is NaN, comparisons set the C and V bits of the NZCV flags.
-      Fcmp(src64, 0.0);
-      B(fail, Assembler::Overflow);
+    Cbnz(dest64, &saturated);
 
-      // Move all 64 bits of the input into a scratch register to check for -0.
-      vixl::UseScratchRegisterScope temps(this);
-      const ARMRegister scratchGPR64 = temps.AcquireX();
-      Fmov(scratchGPR64, src64);
-      Cmp(scratchGPR64, vixl::Operand(uint64_t(0x8000000000000000)));
-      B(fail, Assembler::Equal);
-    }
+    // Combine test for -0 and NaN values using a single bitwise operation.
+    // See truncDoubleToInt32 for an explanation.
+    Fmov(dest64, src64);
+    Lsr(dest64, dest64, 62);
+    Cbnz(dest64, fail);
 
-    jump(&done);
+    B(&done);
   }
 
   // Handle the complicated case of a negative input.
@@ -3065,26 +3308,28 @@ void MacroAssembler::roundDoubleToInt32(FloatRegister src, Register dest,
   // 3. If = 0.5, round to +Infinity (so, up).
   bind(&negative);
   {
-    // Inputs in [-0.5, 0) need 0.5 added; other negative inputs need
-    // the biggest double less than 0.5.
-    Label join;
-    loadConstantDouble(GetBiggestNumberLessThan(0.5), temp);
-    loadConstantDouble(-0.5, scratch);
-    branchDouble(Assembler::DoubleLessThan, src, scratch, &join);
-    loadConstantDouble(0.5, temp);
-    bind(&join);
+    // Inputs in [-0.5, 0) are rounded to -0. Fail.
+    loadConstantDouble(-0.5, temp);
+    branchDouble(Assembler::DoubleGreaterThanOrEqual, src, temp, fail);
 
+    // Other negative inputs need the biggest double less than 0.5 added.
+    loadConstantDouble(GetBiggestNumberLessThan(0.5), temp);
     addDouble(src, temp);
+
     // Round all values toward -Infinity.
     // In the case of overflow, the output is saturated.
     // NaN and -0 are already handled by the "positive number" path above.
-    Fcvtms(ARMRegister(dest, 32), temp);
-    // If the output potentially saturated, fail.
-    branch32(Assembler::Equal, dest, Imm32(INT_MIN), fail);
-
-    // If output is zero, then the actual result is -0. Fail.
-    branchTest32(Assembler::Zero, dest, dest, fail);
+    Fcvtms(dest64, temp);
   }
+
+  bind(&saturated);
+
+  // Sign extend lower 32 bits to test if the result isn't an Int32.
+  Cmp(dest64, Operand(dest64, vixl::SXTW));
+  B(NotEqual, fail);
+
+  // Clear upper 32 bits.
+  Uxtw(dest64, dest64);
 
   bind(&done);
 }

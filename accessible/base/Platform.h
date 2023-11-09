@@ -17,6 +17,7 @@
 
 #ifdef MOZ_WIDGET_COCOA
 #  include "mozilla/a11y/Role.h"
+#  include "nsTArray.h"
 #endif
 
 #if defined(XP_WIN)
@@ -57,11 +58,6 @@ bool ShouldA11yBeEnabled();
 #endif
 
 #if defined(XP_WIN)
-/*
- * Do we have AccessibleHandler.dll registered.
- */
-bool IsHandlerRegistered();
-
 /*
  * Name of platform service that instantiated accessibility
  */
@@ -110,7 +106,7 @@ void ProxyCaretMoveEvent(RemoteAccessible* aTarget,
 void ProxyCaretMoveEvent(RemoteAccessible* aTarget, int32_t aOffset,
                          bool aIsSelectionCollapsed, int32_t aGranularity);
 #endif
-void ProxyTextChangeEvent(RemoteAccessible* aTarget, const nsString& aStr,
+void ProxyTextChangeEvent(RemoteAccessible* aTarget, const nsAString& aStr,
                           int32_t aStart, uint32_t aLen, bool aIsInsert,
                           bool aFromUser);
 void ProxyShowHideEvent(RemoteAccessible* aTarget, RemoteAccessible* aParent,
@@ -133,13 +129,7 @@ void ProxyScrollingEvent(RemoteAccessible* aTarget, uint32_t aEventType,
                          uint32_t aMaxScrollX, uint32_t aMaxScrollY);
 
 void ProxyAnnouncementEvent(RemoteAccessible* aTarget,
-                            const nsString& aAnnouncement, uint16_t aPriority);
-
-class BatchData;
-
-void ProxyBatch(RemoteAccessible* aDocument, const uint64_t aBatchType,
-                const nsTArray<RemoteAccessible*>& aAccessibles,
-                const nsTArray<BatchData>& aData);
+                            const nsAString& aAnnouncement, uint16_t aPriority);
 
 bool LocalizeString(const nsAString& aToken, nsAString& aLocalized);
 #endif
@@ -149,7 +139,8 @@ class TextRangeData;
 void ProxyTextSelectionChangeEvent(RemoteAccessible* aTarget,
                                    const nsTArray<TextRangeData>& aSelection);
 
-void ProxyRoleChangedEvent(RemoteAccessible* aTarget, const a11y::role& aRole);
+void ProxyRoleChangedEvent(RemoteAccessible* aTarget, const a11y::role& aRole,
+                           uint8_t aRoleMapEntryIndex);
 #endif
 
 }  // namespace a11y

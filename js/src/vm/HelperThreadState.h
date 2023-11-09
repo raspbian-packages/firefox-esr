@@ -21,12 +21,13 @@
 
 #include "ds/Fifo.h"
 #include "frontend/CompilationStencil.h"  // CompilationStencil, CompilationGCOutput
+#include "frontend/FrontendContext.h"
 #include "js/CompileOptions.h"
-#include "js/experimental/JSStencil.h"
+#include "js/experimental/CompileScript.h"  // JS::CompilationStorage
+#include "js/experimental/JSStencil.h"      // JS::InstantiationStorage
 #include "js/HelperThreadAPI.h"
 #include "js/TypeDecls.h"
 #include "threading/ConditionVariable.h"
-#include "threading/Thread.h"
 #include "vm/HelperThreads.h"
 #include "vm/HelperThreadTask.h"
 #include "vm/JSContext.h"
@@ -34,9 +35,6 @@
 
 namespace js {
 
-class AutoLockHelperThreadState;
-class AutoUnlockHelperThreadState;
-class CompileError;
 struct ParseTask;
 struct DelazifyTask;
 struct FreeDelazifyTask;
@@ -47,10 +45,6 @@ namespace jit {
 class IonCompileTask;
 class IonFreeTask;
 }  // namespace jit
-
-namespace wasm {
-struct Tier2GeneratorTask;
-}  // namespace wasm
 
 enum class ParseTaskKind {
   // The output is CompilationStencil for script.
@@ -115,7 +109,6 @@ class GlobalHelperThreadState {
       Vector<js::UniquePtr<FreeDelazifyTask>, 1, SystemAllocPolicy>;
   typedef Vector<UniquePtr<SourceCompressionTask>, 0, SystemAllocPolicy>
       SourceCompressionTaskVector;
-  using GCParallelTaskList = mozilla::LinkedList<GCParallelTask>;
   typedef Vector<PromiseHelperTask*, 0, SystemAllocPolicy>
       PromiseHelperTaskVector;
   typedef Vector<JSContext*, 0, SystemAllocPolicy> ContextVector;
@@ -199,12 +192,11 @@ class GlobalHelperThreadState {
 
   bool useInternalThreadPool_ = true;
 
-  ParseTask* removeFinishedParseTask(JSContext* cx, ParseTaskKind kind,
-                                     JS::OffThreadToken* token);
+  ParseTask* removeFinishedParseTask(JSContext* cx, JS::OffThreadToken* token);
 
  public:
   void addSizeOfIncludingThis(JS::GlobalStats* stats,
-                              AutoLockHelperThreadState& lock) const;
+                              const AutoLockHelperThreadState& lock) const;
 
   size_t maxIonCompilationThreads() const;
   size_t maxWasmCompilationThreads() const;
@@ -339,12 +331,13 @@ class GlobalHelperThreadState {
     return compressionFinishedList_;
   }
 
-  GCParallelTaskList& gcParallelWorklist(const AutoLockHelperThreadState&) {
-    return gcParallelWorklist_;
-  }
+  GCParallelTaskList& gcParallelWorklist() { return gcParallelWorklist_; }
 
+  size_t getGCParallelThreadCount(const AutoLockHelperThreadState& lock) const {
+    return gcParallelThreadCount;
+  }
   void setGCParallelThreadCount(size_t count,
-                                const AutoLockHelperThreadState&) {
+                                const AutoLockHelperThreadState& lock) {
     MOZ_ASSERT(count >= 1);
     MOZ_ASSERT(count <= threadCount);
     gcParallelThreadCount = count;
@@ -405,30 +398,20 @@ class GlobalHelperThreadState {
       const AutoLockHelperThreadState& lock, bool checkExecutionStatus);
 
  private:
-  UniquePtr<ParseTask> finishParseTaskCommon(JSContext* cx, ParseTaskKind kind,
+  UniquePtr<ParseTask> finishParseTaskCommon(JSContext* cx,
                                              JS::OffThreadToken* token);
 
-  already_AddRefed<frontend::CompilationStencil> finishCompileToStencilTask(
-      JSContext* cx, ParseTaskKind kind, JS::OffThreadToken* token,
-      JS::InstantiationStorage* storage);
   bool finishMultiParseTask(JSContext* cx, ParseTaskKind kind,
                             JS::OffThreadToken* token,
                             mozilla::Vector<RefPtr<JS::Stencil>>* stencils);
 
  public:
-  void cancelParseTask(JSRuntime* rt, ParseTaskKind kind,
-                       JS::OffThreadToken* token);
+  void cancelParseTask(JSRuntime* rt, JS::OffThreadToken* token);
   void destroyParseTask(JSRuntime* rt, ParseTask* parseTask);
 
   void trace(JSTracer* trc);
 
-  already_AddRefed<frontend::CompilationStencil> finishCompileToStencilTask(
-      JSContext* cx, JS::OffThreadToken* token,
-      JS::InstantiationStorage* storage);
-  already_AddRefed<frontend::CompilationStencil>
-  finishCompileModuleToStencilTask(JSContext* cx, JS::OffThreadToken* token,
-                                   JS::InstantiationStorage* storage);
-  already_AddRefed<frontend::CompilationStencil> finishDecodeStencilTask(
+  already_AddRefed<frontend::CompilationStencil> finishStencilTask(
       JSContext* cx, JS::OffThreadToken* token,
       JS::InstantiationStorage* storage);
   bool finishMultiStencilsDecodeTask(
@@ -518,15 +501,6 @@ struct MOZ_RAII AutoSetContextRuntime {
   ~AutoSetContextRuntime() { TlsContext.get()->setRuntime(nullptr); }
 };
 
-struct OffThreadFrontendErrors {
-  OffThreadFrontendErrors() : overRecursed(false), outOfMemory(false) {}
-  // Any errors or warnings produced during compilation. These are reported
-  // when finishing the script.
-  Vector<UniquePtr<CompileError>, 0, SystemAllocPolicy> errors;
-  bool overRecursed;
-  bool outOfMemory;
-};
-
 struct ParseTask : public mozilla::LinkedListElement<ParseTask>,
                    public JS::OffThreadToken,
                    public HelperThreadTask {
@@ -549,15 +523,15 @@ struct ParseTask : public mozilla::LinkedListElement<ParseTask>,
   mozilla::Vector<RefPtr<JS::Stencil>> stencils;
 
   // The input of the compilation.
-  UniquePtr<frontend::CompilationInput> stencilInput_;
+  JS::CompilationStorage compileStorage_;
 
   // The output of the compilation/decode task.
   RefPtr<frontend::CompilationStencil> stencil_;
 
-  UniquePtr<frontend::CompilationGCOutput> gcOutput_;
+  JS::InstantiationStorage instantiationStorage_;
 
   // Record any errors happening while parsing or generating bytecode.
-  OffThreadFrontendErrors errors;
+  FrontendContext fc_;
 
   ParseTask(ParseTaskKind kind, JSContext* cx,
             JS::OffThreadCompileCallback callback, void* callbackData);
@@ -565,12 +539,12 @@ struct ParseTask : public mozilla::LinkedListElement<ParseTask>,
 
   bool init(JSContext* cx, const JS::ReadOnlyCompileOptions& options);
 
-  void moveGCOutputInto(JS::InstantiationStorage& storage);
+  void moveInstantiationStorageInto(JS::InstantiationStorage& storage);
 
   void activate(JSRuntime* rt);
   void deactivate(JSRuntime* rt);
 
-  virtual void parse(JSContext* cx) = 0;
+  virtual void parse(FrontendContext* fc) = 0;
 
   bool runtimeMatches(JSRuntime* rt) { return runtime == rt; }
 
@@ -609,6 +583,13 @@ struct DelazifyStrategy {
   // after this call.
   virtual void clear() = 0;
 
+  // Insert an index in the container of the delazification strategy. A strategy
+  // can choose to ignore the insertion of an index in its queue of function to
+  // delazify. Return false only in case of errors while inserting, and true
+  // otherwise.
+  [[nodiscard]] virtual bool insert(ScriptIndex index,
+                                    frontend::ScriptStencilRef& ref) = 0;
+
   // Add the inner functions of a delazified function. This function should only
   // be called with a function which has some bytecode associated with it, and
   // register functions which parent are already delazified.
@@ -616,9 +597,9 @@ struct DelazifyStrategy {
   // This function is called with the script index of:
   //  - top-level script, when starting the off-thread delazification.
   //  - functions added by `add` and delazified by `DelazifyTask`.
-  [[nodiscard]] virtual bool add(JSContext* cx,
-                                 const frontend::CompilationStencil& stencil,
-                                 ScriptIndex index) = 0;
+  [[nodiscard]] bool add(FrontendContext* fc,
+                         const frontend::CompilationStencil& stencil,
+                         ScriptIndex index);
 };
 
 // Delazify all functions using a Depth First traversal of the function-tree
@@ -638,9 +619,23 @@ struct DepthFirstDelazification final : public DelazifyStrategy {
   bool done() const override { return stack.empty(); }
   ScriptIndex next() override { return stack.popCopy(); }
   void clear() override { return stack.clear(); }
-  [[nodiscard]] bool add(JSContext* cx,
-                         const frontend::CompilationStencil& stencil,
-                         ScriptIndex index) override;
+  bool insert(ScriptIndex index, frontend::ScriptStencilRef&) override {
+    return stack.append(index);
+  }
+};
+
+// Delazify all functions using a traversal which select the largest function
+// first. The intent being that if the main thread races with the helper thread,
+// then the main thread should only have to parse small functions instead of the
+// large ones which would be prioritized by this delazification strategy.
+struct LargeFirstDelazification final : public DelazifyStrategy {
+  using SourceSize = uint32_t;
+  Vector<std::pair<SourceSize, ScriptIndex>, 0, SystemAllocPolicy> heap;
+
+  bool done() const override { return heap.empty(); }
+  ScriptIndex next() override;
+  void clear() override { return heap.clear(); }
+  bool insert(ScriptIndex, frontend::ScriptStencilRef&) override;
 };
 
 // Eagerly delazify functions, and send the result back to the runtime which
@@ -671,21 +666,35 @@ struct DelazifyTask : public mozilla::LinkedListElement<DelazifyTask>,
   frontend::CompilationStencilMerger merger;
 
   // Record any errors happening while parsing or generating bytecode.
-  OffThreadFrontendErrors errors_;
+  FrontendContext fc_;
 
   // Create a new DelazifyTask and initialize it.
+  //
+  // In case of early failure, no errors are reported, as a DelazifyTask is an
+  // optimization and the VM should remain working even without this
+  // optimization in place.
   static UniquePtr<DelazifyTask> Create(
-      JSContext* cx,
-      JSRuntime* runtime,
-      const JS::ContextOptions& contextOptions,
+      JSRuntime* runtime, const JS::ContextOptions& contextOptions,
       const JS::ReadOnlyCompileOptions& options,
       const frontend::CompilationStencil& stencil);
 
   DelazifyTask(JSRuntime* runtime, const JS::ContextOptions& options);
+  ~DelazifyTask();
 
   [[nodiscard]] bool init(
-      JSContext* cx, const JS::ReadOnlyCompileOptions& options,
+      const JS::ReadOnlyCompileOptions& options,
       UniquePtr<frontend::ExtensibleCompilationStencil>&& initial);
+
+  // This function is called by delazify task thread to know whether the task
+  // should be interrupted.
+  //
+  // A delazify task holds on a thread until all functions iterated over by the
+  // strategy. However, as a delazify task iterates over multiple functions, it
+  // can easily be interrupted at function boundaries.
+  //
+  // TODO: (Bug 1773683) Plug this with the mozilla::Task::RequestInterrupt
+  // function which is wrapping HelperThreads tasks within Mozilla.
+  bool isInterrupted() { return false; }
 
   bool runtimeMatches(JSRuntime* rt) { return runtime == rt; }
 

@@ -34,9 +34,11 @@ menu-quit =
             [windows] x
            *[other] Q
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = { -brand-shorter-name } မှ ထွက်ရန်
+
 menu-about =
     .label = { -brand-shorter-name } အကြောင်း
     .accesskey = A
@@ -112,7 +114,7 @@ menu-view-sidebar =
     .label = ဘေးတန်း
     .accesskey = e
 menu-view-bookmarks =
-    .label = မှတ်သားချက်များ
+    .label = စာမှတ်များ
 menu-view-history-button =
     .label = မှတ်တမ်း
 menu-view-synced-tabs-sidebar =
@@ -200,8 +202,6 @@ menu-history-undo-window-menu =
 menu-bookmarks-menu =
     .label = စာမှတ်များ
     .accesskey = B
-menu-bookmark-edit =
-    .label = ဒီစာမှတ်ကို ပြင်ဆင်မည်
 menu-bookmarks-all-tabs =
     .label = တပ်ဗ်အားလုံးကို မှတ်သားပါ...
 menu-bookmarks-toolbar =
@@ -209,7 +209,7 @@ menu-bookmarks-toolbar =
 menu-bookmarks-other =
     .label = အခြား မှတ်သားချက်များ
 menu-bookmarks-mobile =
-    .label = မိုဘိုင်းလ် စာအမှတ်များ
+    .label = မိုဘိုင်းလ် စာမှတ်များ
 
 ## Tools Menu
 

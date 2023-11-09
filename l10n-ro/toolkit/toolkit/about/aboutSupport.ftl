@@ -133,6 +133,8 @@ troubleshoot-mode-title = Diagnostică problemele
 restart-in-troubleshoot-mode-label = Mod de depanare…
 clear-startup-cache-title = Încearcă să golești cache-ul de pornire
 clear-startup-cache-label = Golește cache-ul de pornire…
+startup-cache-dialog-title2 = Repornești { -brand-short-name } pentru a goli cache-ul de pornire?
+startup-cache-dialog-body2 = Acest lucru nu va modifica setările și nu va elimina extensiile.
 restart-button-label = Repornește
 
 ## Media titles
@@ -156,6 +158,8 @@ media-device-latency = Latență
 media-capabilities-title = Capabilități media
 # List all the entries of the database.
 media-capabilities-enumerate = Enumeră baza de date
+
+## Codec support table
 
 ##
 

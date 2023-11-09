@@ -17,13 +17,15 @@ firefox-relay-must-login-to-fxa = Чтобы использовать { -relay-b
 firefox-relay-get-unlimited-masks =
     .label = Управление псевдонимами
     .accesskey = п
-firefox-relay-opt-in-title = Защитите свой адрес электронной почты
-firefox-relay-opt-in-subtitle = Добавить { -relay-brand-name }
-firefox-relay-generate-mask-title = Защитите свой адрес электронной почты
-firefox-relay-generate-mask-subtitle = Сгенерировать псевдоним { -relay-brand-short-name }
-firefox-relay-opt-in-confirmation-enable =
-    .label = Продолжить
-    .accesskey = ж
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Защитите свой адрес электронной почты:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = Используйте псевдонимы эл. почты { -relay-brand-name }
+firefox-relay-use-mask-title = Используйте псевдонимы эл. почты { -relay-brand-name }
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = Используйте псевдонимы электронной почты
+    .accesskey = в
 firefox-relay-opt-in-confirmation-disable =
     .label = Не показывать в следующий раз
     .accesskey = л

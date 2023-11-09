@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-sanitize-prefs =
-    .title = မှတ်တမ်း ရှင်းလင်းရန် အပြင်အဆင်များ
-    .style = width: 34em
-
 sanitize-prefs2 =
     .title = မှတ်တမ်း ရှင်းလင်းရန် အပြင်အဆင်များ
     .style = min-width: 34em
@@ -13,15 +9,15 @@ sanitize-prefs2 =
 sanitize-prefs-style =
     .style = width: 17em
 
-dialog-title =
+sanitize-dialog-title =
     .title = လတ်တလောမှတ်တမ်းကို ရှင်းလင်းရန်
-    .style = width: 34em
+    .style = min-width: 34em
 
 # When "Time range to clear" is set to "Everything", this message is used for the
 # title instead of dialog-title.
-dialog-title-everything =
+sanitize-dialog-title-everything =
     .title = မှတ်တမ်းအားလုံးကို ရှင်းပါမည်
-    .style = width: 34em
+    .style = min-width: 34em
 
 clear-data-settings-label = ပိတ်သည့်အခါ { -brand-short-name } နှင့်ဆိုင်သည့်အချက်အလက်များကို အလိုအလျောက် ရှင်းလင်းသင့်တယ်
 

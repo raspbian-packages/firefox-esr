@@ -22,8 +22,8 @@ firefoxview-tabpickup-description = Agorwch dudalennau o ddyfeisiau eraill.
 firefoxview-tabpickup-progress-label = { $percentValue }% wedi'i gwblhau
 firefoxview-tabpickup-step-signin-header = Symud yn rhwydd rhwng dyfeisiau
 firefoxview-tabpickup-step-signin-description = I ddefnyddio'ch tabiau ffôn yma, mewngofnodwch yn gyntaf neu greu cyfrif.
-firefoxview-tabpickup-step-signin-primarybutton = Parhau
-firefoxview-tabpickup-adddevice-header = Cydweddu { -brand-product-name } ar eich ffôn neu dabled
+firefoxview-tabpickup-step-signin-primarybutton = Ymlaen
+firefoxview-tabpickup-adddevice-header = Cydweddwch { -brand-product-name } ar eich ffôn neu dabled
 firefoxview-tabpickup-adddevice-description = Llwytho { -brand-product-name } ar gyfer ffôn symudol a mewngofnodi yno.
 firefoxview-tabpickup-adddevice-learn-how = Sut mae gwneud
 firefoxview-tabpickup-adddevice-primarybutton = Cael { -brand-product-name } ar gyfer symudol
@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Caewyd yn ddiweddar
 firefoxview-closed-tabs-description2 = Ail-agorwch dudalennau rydych wedi'u cau yn y ffenestr hon.
 firefoxview-closed-tabs-placeholder-header = Dim tabiau sydd wedi'u cau yn ddiweddar
 firefoxview-closed-tabs-placeholder-body = Pan fyddwch yn cau tab yn y ffenestr hon, gallwch chi ei nôl o'r fan hon.
+firefoxview-closed-tabs-placeholder-body2 = Pan fyddwch chi'n cau tab, gallwch chi ei nôl o fan hyn.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Gweithgaredd diwethaf
 firefoxview-tabs-list-tab-button =
     .title = Agor { $targetURI } mewn tab newydd
 firefoxview-try-colorways-button = Rhowch gynnig ar gyfuniadau lliw
-firefoxview-no-current-colorway-collection = Mae cyfuniadau lliw newydd ar y ffordd
 firefoxview-change-colorway-button = Newid y llwybr lliw
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Dangos rhestr
 firefoxview-collapse-button-hide =
     .title = Cuddio rhestr
+firefoxview-overview-nav = Pori diweddar
+    .title = Pori diweddar
+firefoxview-overview-header = Pori diweddar
+    .title = Pori diweddar
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Hanes
+    .title = Hanes
+firefoxview-history-header = Hanes
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Agor tabiau
+    .title = Agor tabiau
+firefoxview-opentabs-header = Agor tabiau
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Tabiau wedi’u cau’n ddiweddar
+    .title = Tabiau wedi’u cau’n ddiweddar
+firefoxview-recently-closed-header = Tabiau Wedi'u Cau'n Ddiweddar
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Tabiau o ddyfeisiau eraill
+    .title = Tabiau o ddyfeisiau eraill
+firefoxview-synced-tabs-header = Tabiau o ddyfeisiau eraill
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Gweld y cyfan
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Window { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Window { $winID } (Cyfredol)
+firefoxview-opentabs-focus-tab =
+    .title = Symud i'r tab hwn
+firefoxview-show-more = Dangos rhagor
+firefoxview-show-less = Dangos llai
+firefoxview-sort-history-by-date-label = Trefnu yn ôl dyddiad
+firefoxview-sort-history-by-site-label = Trefnu yn ôl gwefan
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Heddiw - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Ddoe - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Dangos yr holl hanes

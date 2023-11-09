@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = Priporočena možnost
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = Zakaj vidim to
+
 cfr-doorhanger-extension-cancel-button = Ne zdaj
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = Dodaj zdaj
     .accesskey = D
+
 cfr-doorhanger-extension-manage-settings-button = Upravljaj nastavitve priporočil
     .accesskey = U
+
 cfr-doorhanger-extension-never-show-recommendation = Ne prikazuj tega priporočila
     .accesskey = N
+
 cfr-doorhanger-extension-learn-more-link = Več o tem
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = — { $name }
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = Priporočilo
 cfr-doorhanger-extension-notification2 = Priporočilo
     .tooltiptext = Priporočilo razširitve
     .a11y-announcement = Na voljo je priporočilo razširitve
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = Priporočilo
@@ -61,24 +69,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } uporabnikov
     }
 
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = Pasice s piškotki, izginite!
-cfr-cookie-banner-handling-body = Dovoli { -brand-short-name(sklon: "dajalnik") }, da samodejno zavrne vse zahteve za shranjevanje piškotkov, kadar je to mogoče. V nasprotnem primeru bo sprejel vse piškotke in zaprl pasico.
-cfr-cookie-banner-reject-button = Ne zdaj
-    .accesskey = N
-cfr-cookie-banner-handling-body-variant-1 = Naj { -brand-short-name } namesto vas odgovarja na zahteve za shranjevanje piškotkov, vam pa omogoči nemoteno brskanje. { -brand-short-name } bo poskušal zavrniti vse zahteve, če to ne bo mogoče, pa jih bo sprejel.
-cfr-cookie-banner-reject-button-variant-1 = Ne, hvala
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-2 = Zmanjšanje števila pasic s piškotki
-cfr-cookie-banner-handling-body-variant-2 = Dovolite { -brand-short-name(sklon: "dajalnik") }, da zavrača zahteve spletnih mest za shranjevanje piškotkov, če to ni mogoče, pa jih sprejme?
-cfr-cookie-banner-accept-button-variant-2 = Dovoli
-    .accesskey = D
-cfr-cookie-banner-reject-button-variant-2 = Ne zdaj
-    .accesskey = N
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = Sinhronizirajte zaznamke povsod.
@@ -99,9 +89,11 @@ cfr-protections-panel-link-text = Več o tem
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = Novost:
+
 cfr-whatsnew-button =
     .label = Novosti
     .tooltiptext = Novosti
+
 cfr-whatsnew-release-notes-link-text = Preberite opombe ob izdaji
 
 ## Enhanced Tracking Protection Milestones
@@ -132,13 +124,6 @@ cfr-doorhanger-doh-secondary-button = Onemogoči
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = Vaša zasebnost je pomembna. { -brand-short-name } zdaj medsebojno izolira spletna mesta ali jih izvaja v peskovnikih, kar napadalcem otežuje krajo gesel, številk kreditnih kartic in ostalih občutljivih podatkov.
-cfr-doorhanger-fission-header = Izolacija mesta
-cfr-doorhanger-fission-primary-button = V redu, razumem
-    .accesskey = V
-cfr-doorhanger-fission-secondary-button = Več o tem
-    .accesskey = e
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = Videoposnetki na tem spletnem mestu se v tej različici { -brand-short-name(sklon: "rodilnik") } morda ne bodo predvajali pravilno. Za popolno podporo videoposnetkom posodobite { -brand-short-name(sklon: "tozilnik") } zdaj.
@@ -147,11 +132,6 @@ cfr-doorhanger-video-support-primary-button = Posodobi zdaj
     .accesskey = P
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = Več o tem
-    .title = Razširite, če želite izvedeti več o tej možnosti
-spotlight-learn-more-expanded = Več o tem
-    .title = Zapri
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -168,18 +148,6 @@ spotlight-public-wifi-vpn-link = Ne zdaj
     .accesskey = N
 
 ## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header =
-    Med prvimi preizkusite našo
-    najzmogljivejšo zaščito zasebnosti doslej
-spotlight-total-cookie-protection-body = Popolna zaščita pred piškotki preprečuje sledilcem, da bi vam po spletu sledili z uporabo piškotkov.
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } ograjuje piškotke znotraj spletnega mesta, na katerem se nahajate, tako da jih sledilci ne morejo uporabiti, da bi vam sledili. Z zgodnjim dostopom boste pomagali izboljšati to zmogljivost, da bomo lahko še naprej gradili boljši splet za vse.
-spotlight-total-cookie-protection-primary-button = Vključi popolno zaščito pred piškotki
-spotlight-total-cookie-protection-secondary-button = Ne zdaj
 
 ## Emotive Continuous Onboarding
 
@@ -209,11 +177,13 @@ spotlight-pin-secondary-button = Ne zdaj
 
 mr2022-background-update-toast-title = Novi { -brand-short-name }. Več zasebnosti. Manj sledenja. Brez kompromisov.
 mr2022-background-update-toast-text = Preizkusite najnovejši { -brand-short-name }, nadgrajen z našo najmočnejšo zaščito pred sledenjem doslej.
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
 mr2022-background-update-toast-primary-button-label = Odpri { -brand-shorter-name } zdaj
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -232,6 +202,7 @@ firefoxview-cfr-body-v2 = Obnovite nedavno zaprte zavihke in nemoteno preskakujt
 ## Firefox View Spotlight
 
 firefoxview-spotlight-promo-title = Spoznajte { -firefoxview-brand-name }
+
 # “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
 firefoxview-spotlight-promo-subtitle = Želite zavihek, ki ga imate odprtega na telefonu? Na dosegu roke. Potrebujete zavihek, ki ste ga pravkar zaprli? Čaka vas v { -firefoxview-brand-name }.
 firefoxview-spotlight-promo-primarybutton = Oglejte si, kako deluje
@@ -241,6 +212,7 @@ firefoxview-spotlight-promo-secondarybutton = Preskoči
 
 colorways-cfr-primarybutton = Izberi barvno kombinacijo
     .accesskey = I
+
 # "shades" refers to the different color options available to users in colorways.
 colorways-cfr-body = Obarvajte svoj brskalnik v ekskluzivne { -brand-short-name }ove odtenke, navdihnjene z glasovi, ki so spreminjali kulturo.
 colorways-cfr-header-28days = Barvne kombinacije Neodvisni glasovi potečejo 16. januarja
@@ -250,17 +222,11 @@ colorways-cfr-header-today = Barvne kombinacije Neodvisni glasovi potečejo dane
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = Pasice s piškotki, izginite!
-cfr-cookiebanner-reject-button = Ne zdaj
-    .accesskey = N
-cfr-cookiebanner-body-variant-1 = Naj { -brand-short-name } namesto vas odgovarja na zahteve za shranjevanje piškotkov, vam pa omogoči nemoteno brskanje. { -brand-short-name } bo poskušal zavrniti vse zahteve, če bo to mogoče.
-cfr-cookiebanner-reject-button-variant-1 = Ne, hvala
-    .accesskey = N
-cfr-cookiebanner-header-variant-2 = Zmanjšanje števila pasic s piškotki
-cfr-cookiebanner-accept-button-variant-2 = Dovoli
-    .accesskey = D
-cfr-cookiebanner-reject-button-variant-2 = Ne zdaj
+cfr-cbh-header = Dovolite { -brand-short-name(sklon: "dajalnik") }, da zavrača pasice s piškotki?
+cfr-cbh-body = { -brand-short-name } lahko samodejno zavrne številne zahteve za shranjevanje piškotkov.
+cfr-cbh-confirm-button = Zavračaj pasice s piškotki
+    .accesskey = Z
+cfr-cbh-dismiss-button = Ne zdaj
     .accesskey = N
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
@@ -268,3 +234,31 @@ cfr-cookiebanner-reject-button-variant-2 = Ne zdaj
 july-jam-headline = Stojimo vam ob strani
 july-jam-body = { -brand-short-name } vsak mesec v povprečju zavrne več kot 3000 sledilcev na uporabnika, s tem pa vam nudi varen in hiter dostop do najboljših mest na internetu.
 july-jam-set-default-primary = Odpiraj povezave v { -brand-short-name(sklon: "mestnik") }
+fox-doodle-pin-headline = Dobrodošli nazaj
+
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = Samo opomnik, da si lahko priljubljeni neodvisni brskalnik pripnete na doseg miške z enim klikom.
+fox-doodle-pin-primary = Odpiraj povezave v { -brand-short-name(sklon: "mestnik") }
+fox-doodle-pin-secondary = Ne zdaj
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>Datoteke PDF zdaj za vas odpira { -brand-short-name }.</strong> Sedaj lahko urejate in podpisujete obrazce neposredno v brskalniku. Če želite to spremeniti, v nastavitvah poiščite “PDF”.
+set-default-pdf-handler-primary = Razumem
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = Se vam obeta nov računalnik?
+fxa-sync-cfr-body = Naj vam bodo najnovejši zaznamki, gesla in zavihki pri roki vsakič, ko se preselite v nov brskalnik { -brand-product-name }.
+fxa-sync-cfr-primary = Več o tem
+    .accesskey = V
+fxa-sync-cfr-secondary = Opomni me pozneje
+    .accesskey = p
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = Uporabljate starejšo napravo?
+device-migration-fxa-spotlight-body = Varnostno kopirajte svoje podatke in poskrbite, da jih ne boste izgubili – še posebej, če boste zamenjali računalnik.
+device-migration-fxa-spotlight-primary-button = Kako varnostno kopirati podatke
+device-migration-fxa-spotlight-link = Opomni me pozneje

@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Iɣewwaṛen n tuqqna
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Iɣewwaṛen n tuqqna
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = k
     .tooltip = Aɣewwaṛ-a ad k-isesteb s wudem awurman deg iqeddacen n apruksi, anda awal uffir yekles. Ticki asesteb ur yeddi ara, ad k-d-nessuter awal uffir.
 
+connection-proxy-autologin-checkbox =
+    .label = Ur sutur ara asesteb ma yella awal uffir yettwakles
+    .accesskey = k
+    .tooltiptext = Aɣewwaṛ-a ad k-isesteb s wudem awurman deg iqeddacen n apruksi, anda awal uffir yekles. Ticki asesteb ur yeddi ara, ad k-d-nessuter awal uffir.
+
 connection-proxy-socks-remote-dns =
     .label = Apṛuksi DNS ticki SOCKS v5 yettwaseqdec
     .accesskey = d
-
-connection-dns-over-https =
-    .label = Rmed DNS Deg HTTPS
-    .accesskey = H
-
-connection-dns-over-https-url-resolver = Seqdec asaǧǧaw
-    .accesskey = S
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

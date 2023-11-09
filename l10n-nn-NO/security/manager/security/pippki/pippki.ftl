@@ -17,7 +17,7 @@ change-password-new = Nytt passord:
 change-password-reenter = Nytt passord (igjen):
 
 pippki-failed-pw-change = Klarte ikkje å endre passord.
-pippki-incorrect-pw = Du skreiv ikkje inn rett gjeldande passord. Prøv igjen.
+pippki-incorrect-pw = Du skreiv ikkje inn rett gjeldande passord. Prøv på nytt.
 pippki-pw-change-ok = Passordet er endra.
 
 pippki-pw-empty-warning = Lagra passord og private nøklar vil ikkje bli verna.
@@ -27,10 +27,6 @@ pippki-pw-not-wanted = Åtvaring! Du har valt å ikkje bruke eit passord. { pipp
 pippki-pw-change2empty-in-fips-mode = Du er i FIPS-modus. FIPS krev at du brukar eit primærpasssord.
 
 ## Reset Primary Password dialog
-
-reset-primary-password-window =
-    .title = Tilbakestill hovudpassordet
-    .style = width: 40em
 
 reset-primary-password-window2 =
     .title = Tilbakestill hovudpassordet
@@ -43,10 +39,6 @@ pippki-reset-password-confirmation-title = Tilbakestill hovudpassordet
 pippki-reset-password-confirmation-message = Hovudpassordet ditt er tilbakestilt.
 
 ## Downloading cert dialog
-
-download-cert-window =
-    .title = Lastar ned sertifikat
-    .style = width: 46em
 
 download-cert-window2 =
     .title = Lastar ned sertifikat
@@ -82,7 +74,8 @@ set-password-reminder = Viktig: Dersom du gløymer passordet til tryggingskopien
 
 ## Protected Auth dialog
 
-protected-auth-window =
-    .title = Godkjenning med verna symbol
-protected-auth-msg = Gjer vel og godkjenn symbolet. Godkjenningsmetoden er avhengig av type signeringseining
-protected-auth-token = Symbol:
+## Protected authentication alert
+
+# Variables:
+# $tokenName (String) - The name of the token to authenticate to (for example, "OS Client Cert Token (Modern)")
+protected-auth-alert = Godkjenn i samsvar med tryggingsmetoden «{ $tokenName }». Korleis du gjer det, er avhengig av metoden (til dømes ved bruk av fingeravtrykklesar eller ved å taste inn ein kode med eit tastatur).

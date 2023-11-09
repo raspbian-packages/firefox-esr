@@ -53,6 +53,17 @@ restart-later = પછી પુનઃશરૂ કરો
 ## Variables:
 ##   $name (String): name of the extension
 
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -116,6 +127,10 @@ browser-containers-settings =
     .accesskey = i
 
 containers-disable-alert-title = બધા કન્ટેઈનર ટૅબ્સ બંધ કરીએ?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] જો તમે હવે કન્ટેઈનર ટૅબ્સ અક્ષમ કરો છો, તો { $tabCount } કન્ટેનર ટેબ બંધ કરવામાં આવશે. શું તમે ખરેખર કન્ટેઈનર ટેબ્સને અક્ષમ કરવા માંગો છો?
@@ -127,6 +142,9 @@ containers-disable-alert-ok-button =
         [one] { $tabCount } કન્ટેઈનર ટૅબને બંધ કરો
        *[other] { $tabCount } કન્ટેનર ટૅબ્સને બંધ કરો
     }
+
+##
+
 containers-disable-alert-cancel-button = સક્ષમ રાખો
 
 containers-remove-alert-title = આ કન્ટેઈનર દૂર કરીએ?
@@ -406,11 +424,6 @@ home-restore-defaults =
     .label = મૂળભૂતને પુન:સંગ્રહો
     .accesskey = R
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Firefox મુખ્ય (મૂળભૂત)
-
 home-mode-choice-custom =
     .label = પોતાના URLs...
 
@@ -438,14 +451,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Firefox મુખ્ય સામગ્રી
-home-prefs-content-description = તમારી Firefox મુખ્ય સ્ક્રીન પર કઈ સામગ્રી તમે ઇચ્છો તે પસંદ કરો.
-
 home-prefs-search-header =
     .label = વેબ શોધ
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 # Variables:
 #  $provider (String): Name of the corresponding content provider, e.g "Pocket".
@@ -499,6 +513,7 @@ search-show-suggestions-url-bar-option =
     .label = સરનામાં બાર પરિણામોમાં શોધ સૂચનો બતાવો
     .accesskey = I
 
+
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -547,6 +562,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = તમારું વેબ તમારી સાથે રાખો
 
 # This message contains two links and two icon images.
@@ -561,14 +580,22 @@ sync-mobile-promo = ડાઉનલોડ કરો Firefox માટે <img da
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = પ્રોફાઇલ ચિત્ર બદલો
 
 sync-manage-account = ખાતાને સંચાલિત કરો
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } ચકાસેલ નથી.
 sync-signedin-login-failure = મહેરબાની કરીને ફરી જોડાણ માટે પ્રવેશો { $email }
+
+##
 
 sync-resend-verification =
     .label = ચકાસણી ફરી મોકલો
@@ -635,6 +662,16 @@ sync-device-name-save =
     .accesskey = v
 
 sync-connect-another-device = બીજા ઉપકરણ સાથે જોડાણ કરો
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = ચકાસણી મોકલી
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = એક ચકાસણી લિંક મોકલવામાં આવી છે { $email }.
+sync-verification-not-sent-title = ચકાસણી મોકલવામાં અસમર્થ
+sync-verification-not-sent-body = અમે આ સમયે ચકાસણી મેઇલ મોકલવામાં અસમર્થ છીએ, કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.
 
 ## Privacy Section
 
@@ -747,8 +784,6 @@ sitedata-block-desc = પ્રકાર અવરોધિત
 
 sitedata-option-block-unvisited =
     .label = નાજોયેલી વેબસાઈટની કૂકીઝ
-sitedata-option-block-all-third-party =
-    .label = બધી તૃતીય-પક્ષ કૂકીઝ (વેબસાઇટ્સ ને રોકી શકે છે)
 sitedata-option-block-all =
     .label = બધી કૂકીઝ (વેબસાઇટ્સને ને રોકી નાખશે)
 
@@ -759,6 +794,9 @@ sitedata-clear =
 sitedata-settings =
     .label = ડેટા સંચાલન કરો…
     .accesskey = M
+
+## Privacy Section - Cookie Banner Handling
+
 
 ## Privacy Section - Address Bar
 
@@ -799,7 +837,8 @@ enhanced-tracking-protection-setting-custom =
 ##
 
 content-blocking-all-cookies = બધી કૂકીઝ
-content-blocking-all-third-party-cookies = બધા તૃતીય પક્ષ કૂકીઝ
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-warning-title = હેડ્સ અપ!
 
@@ -943,6 +982,9 @@ certs-devices =
     .accesskey = D
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

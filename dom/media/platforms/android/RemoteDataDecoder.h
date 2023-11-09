@@ -8,7 +8,6 @@
 #include "AndroidDecoderModule.h"
 #include "SurfaceTexture.h"
 #include "TimeUnits.h"
-#include "mozilla/Maybe.h"
 #include "mozilla/Monitor.h"
 #include "mozilla/java/CodecProxyWrappers.h"
 
@@ -38,7 +37,7 @@ class RemoteDataDecoder : public MediaDataDecoder,
   }
 
  protected:
-  virtual ~RemoteDataDecoder() {}
+  virtual ~RemoteDataDecoder() = default;
   RemoteDataDecoder(MediaData::Type aType, const nsACString& aMimeType,
                     java::sdk::MediaFormat::Param aFormat,
                     const nsString& aDrmStubId);

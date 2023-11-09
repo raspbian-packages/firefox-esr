@@ -26,10 +26,6 @@ certmgr-people = Имате сертификате датотеке која и�
 certmgr-server = Ови уноси идентификују изузетке грешака сертификата сервера
 certmgr-ca = Имате сертификате датотеке која идентификује ова сертификациона тела
 
-certmgr-edit-ca-cert =
-    .title = Измени поставке поверења сертификационог тела
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Измени поставке поверења сертификационог тела
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Овај сертификат може да идентификује кориснике е-поште.
-
-certmgr-delete-cert =
-    .title = Избриши сертификат
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Избриши сертификат
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Сервер
-
-certmgr-override-lifetime =
-    .label = Животни век
 
 certmgr-token-name =
     .label = Безбедносни уређај
@@ -127,7 +116,7 @@ exception-mgr-cert-location-url =
 
 exception-mgr-cert-location-download =
     .label = Добави сертификат
-    .accesskey = В
+    .accesskey = Д
 
 exception-mgr-cert-status-view-cert =
     .label = Преглед…

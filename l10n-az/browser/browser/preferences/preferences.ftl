@@ -51,6 +51,17 @@ restart-later = Sonra yenidən başlat
 ## Variables:
 ##   $name (String): name of the extension
 
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -111,6 +122,10 @@ browser-containers-settings =
     .accesskey = i
 
 containers-disable-alert-title = Bütün konteyner vərəqlər qapatılsın?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] Əgər Konteyner Vərəqlərini indi söndürsəniz { $tabCount } konteyner vərəqi qapadılacaq. Konteyner Vərəqləri söndürmək istədiyinizə əminsiniz?
@@ -122,6 +137,9 @@ containers-disable-alert-ok-button =
         [one] { $tabCount } konteyner vərəqini qapat
        *[other] { $tabCount } konteyner vərəqini qapat
     }
+
+##
+
 containers-disable-alert-cancel-button = Açıq tut
 
 containers-remove-alert-title = Bu konteyner silinsin?
@@ -401,11 +419,6 @@ home-restore-defaults =
     .label = İlkin Seçənəkləri Bərpa et
     .accesskey = R
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Firefox Ana Səhifə (İlkin)
-
 home-mode-choice-custom =
     .label = Fərdi Ünvanlar…
 
@@ -433,14 +446,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Firefox Ev Məzmunu
-home-prefs-content-description = Firefox Evdə hansı məzmunları görmək istədiyinizi seçin.
-
 home-prefs-search-header =
     .label = Web Axtarış
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 # Variables:
 #  $provider (String): Name of the corresponding content provider, e.g "Pocket".
@@ -494,6 +508,7 @@ search-show-suggestions-url-bar-option =
     .label = Ünvan sətri nəticələrində axtarış təkliflərini göstər
     .accesskey = l
 
+
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -542,6 +557,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = Web-inizi özünüzlə gəzdirin
 
 # This message contains two links and two icon images.
@@ -556,14 +575,22 @@ sync-mobile-promo = Mobil cihazınızda sinronlaşdırmaq istəyirsinizsə <img 
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = Profil şəklini dəyiş
 
 sync-manage-account = Hesabı idarə et
     .accesskey = b
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } təsdiqlənməyib.
 sync-signedin-login-failure = Yenidən qoşulmaq üçün daxil olun { $email }
+
+##
 
 sync-resend-verification =
     .label = Təsdiqi təkrar göndər
@@ -630,6 +657,16 @@ sync-device-name-save =
     .accesskey = S
 
 sync-connect-another-device = Digər cihazı qoş
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Təsdiqləmə Göndərildi
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = Təsdiqləmə keçidi { $email } ünvanına göndərildi.
+sync-verification-not-sent-title = Təsdiqləmə göndərilə bilmədi
+sync-verification-not-sent-body = Hazırda təsdiqləmə e-poçtunu göndərə bilmirik. Lütfən daha sonra təkrar yoxlayın.
 
 ## Privacy Section
 
@@ -750,6 +787,9 @@ sitedata-settings =
     .label = Məlumatları idarə et…
     .accesskey = M
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-header = Ünvan Sətri
@@ -788,7 +828,7 @@ enhanced-tracking-protection-setting-custom =
 
 ##
 
-content-blocking-all-third-party-cookies = Bütün üçüncü tərəf çərəzləri
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-warning-title = Diqqət!
 
@@ -917,6 +957,9 @@ certs-devices =
     .accesskey = T
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

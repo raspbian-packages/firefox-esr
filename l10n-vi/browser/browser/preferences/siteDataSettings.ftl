@@ -8,7 +8,7 @@
 site-data-settings-window =
     .title = Quản lý cookie  và dữ liệu trang
 
-site-data-settings-description = Các trang web sau lưu trữ cookie và dữ liệu trang web trên máy tính của bạn. { -brand-short-name } lưu giữ dữ liệu từ các trang web có lưu trữ liên tục cho đến khi bạn xóa, xóa dữ liệu khỏi các trang web có bộ nhớ không liên tục khi cần thiết.
+site-data-settings-description = Các trang web sau lưu trữ cookie và dữ liệu trang web trên máy tính của bạn. { -brand-short-name } lưu giữ dữ liệu từ các trang web có lưu trữ liên tục cho đến khi bạn xóa, xóa dữ liệu khỏi các trang web với bộ nhớ không lâu dài khi cần thiết.
 
 site-data-search-textbox =
     .placeholder = Tìm kiếm trang web
@@ -40,7 +40,7 @@ site-data-settings-dialog =
 site-storage-usage =
     .value = { $value } { $unit }
 site-storage-persistent =
-    .value = { site-storage-usage.value } (Liên tục)
+    .value = { site-storage-usage.value } (Lâu dài)
 
 site-data-remove-all =
     .label = Xóa hết
@@ -59,7 +59,6 @@ site-data-removing-dialog =
 site-data-removing-header = Xóa cache và dữ liệu trang
 
 site-data-removing-desc = Xóa cookie và dữ liệu trang có thể khiến bạn bị đăng xuất khỏi trang web. Bạn có chắc chắn muốn thay đổi không?
-
 # Variables:
 #   $baseDomain (String) - The single domain for which data is being removed
 site-data-removing-single-desc = Xóa cookie và dữ liệu trang web có thể đăng xuất bạn khỏi các trang web. Bạn có chắc chắn muốn xóa cookie và dữ liệu trang web của <strong>{ $baseDomain }</strong> không?

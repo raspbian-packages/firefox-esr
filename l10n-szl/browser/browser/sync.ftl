@@ -21,6 +21,15 @@ fxa-menu-turn-on-sync-default = Załōncz synchronizacyjo
 
 fxa-menu-connect-another-device =
     .label = Połōncz inkszo maszina…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Poślij karta na maszina
+            [few] Poślij { $tabCount } katy na maszina
+           *[many] Poślij { $tabCount } kart na maszina
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

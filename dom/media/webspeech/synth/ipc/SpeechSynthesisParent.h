@@ -29,17 +29,18 @@ class SpeechSynthesisParent : public PSpeechSynthesisParent {
   SpeechSynthesisParent();
   virtual ~SpeechSynthesisParent();
   PSpeechSynthesisRequestParent* AllocPSpeechSynthesisRequestParent(
-      const nsString& aText, const nsString& aLang, const nsString& aUri,
+      const nsAString& aText, const nsAString& aLang, const nsAString& aUri,
       const float& aVolume, const float& aRate, const float& aPitch,
-      const bool& aIsChrome);
+      const bool& aShouldResistFingerprinting);
 
   bool DeallocPSpeechSynthesisRequestParent(
       PSpeechSynthesisRequestParent* aActor);
 
   mozilla::ipc::IPCResult RecvPSpeechSynthesisRequestConstructor(
-      PSpeechSynthesisRequestParent* aActor, const nsString& aText,
-      const nsString& aLang, const nsString& aUri, const float& aVolume,
-      const float& aRate, const float& aPitch, const bool& aIsChrome) override;
+      PSpeechSynthesisRequestParent* aActor, const nsAString& aText,
+      const nsAString& aLang, const nsAString& aUri, const float& aVolume,
+      const float& aRate, const float& aPitch,
+      const bool& aShouldResistFingerprinting) override;
 };
 
 class SpeechSynthesisRequestParent : public PSpeechSynthesisRequestParent {
@@ -70,8 +71,10 @@ class SpeechTaskParent : public nsSpeechTask {
   friend class SpeechSynthesisRequestParent;
 
  public:
-  SpeechTaskParent(float aVolume, const nsAString& aUtterance, bool aIsChrome)
-      : nsSpeechTask(aVolume, aUtterance, aIsChrome), mActor(nullptr) {}
+  SpeechTaskParent(float aVolume, const nsAString& aUtterance,
+                   bool aShouldResistFingerprinting)
+      : nsSpeechTask(aVolume, aUtterance, aShouldResistFingerprinting),
+        mActor(nullptr) {}
 
   nsresult DispatchStartImpl(const nsAString& aUri) override;
 

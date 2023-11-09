@@ -7,7 +7,7 @@
 
 "use strict";
 
-add_task(async function() {
+add_task(async function () {
   await pushPref("devtools.debugger.features.command-click", true);
   info(
     "Checking to see if command click will jump the debugger to another highlighted call."
@@ -17,7 +17,6 @@ add_task(async function() {
   const source = findSource(dbg, "simple4.js");
 
   await selectSource(dbg, source);
-  await waitForSelectedSource(dbg, source);
 
   invokeInTab("funcA");
   await waitForPaused(dbg);

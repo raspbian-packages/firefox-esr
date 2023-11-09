@@ -63,7 +63,6 @@ protections-panel-not-found-label = Ei havaittu
 ##
 
 protections-panel-settings-label = Suojauksen asetukset
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Suojausten yhteenveto
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Lomakkeet
 protections-panel-site-not-working-view-issue-list-payments = Maksut
 protections-panel-site-not-working-view-issue-list-comments = Kommentit
 protections-panel-site-not-working-view-issue-list-videos = Videot
+protections-panel-site-not-working-view-issue-list-fonts = Fontit
 
 protections-panel-site-not-working-view-send-report = Lähetä raportti
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Ilmoita rikkinäisestä sivustosta
 protections-panel-content-blocking-breakage-report-view-description = Joidenkin seuraimien estäminen saattaa aiheuttaa ongelmia joillain sivustoilla. Ilmoittamalla näistä ongelmista autat parantamaan { -brand-short-name }-selainta. Tämän raportin lähettäminen lähettää Mozillalle sivun osoitteen ja tietoja selaimesi asetuksista. <label data-l10n-name="learn-more">Lue lisää</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Joidenkin seuraimien estäminen saattaa aiheuttaa ongelmia joillain sivustoilla. Ilmoittamalla näistä ongelmista autat parantamaan { -brand-short-name }-selainta. Tämän raportin lähettäminen lähettää { -vendor-short-name }lle sivun osoitteen ja tietoja selaimesi asetuksista.
 protections-panel-content-blocking-breakage-report-view-collection-url = Osoite
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = Osoite
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Peruuta
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Lähetä ilmoitus
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Evästeilmoitusten vähennys
+protections-panel-cookie-banner-handling-enabled = Käytössä tällä sivustolla
+protections-panel-cookie-banner-handling-disabled = Ei käytössä tällä sivustolla
+protections-panel-cookie-banner-handling-undetected = Sivusto ei ole tuettu tällä hetkellä
+
+protections-panel-cookie-banner-view-title =
+    .title = Evästeilmoitusten vähennys
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Haluatko poistaa evästeilmoitusten vähennystoiminnon käytöstä sivustolla { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Haluatko ottaa evästeilmoitusten vähennystoiminnon käyttöön tällä sivustolla?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } poistaa tämän sivuston evästeet ja päivittää sivun. Kaikkien evästeiden poistaminen saattaa kirjata sinut ulos tai tyhjentää ostoskorit.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } pyrkii automaattisesti vastaamaan kieltävästi kaikkiin evästepyyntöihin tuetuilla sivustoilla.
+protections-panel-cookie-banner-view-cancel = Peruuta
+protections-panel-cookie-banner-view-turn-off = Poista käytöstä
+protections-panel-cookie-banner-view-turn-on = Ota käyttöön

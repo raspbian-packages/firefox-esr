@@ -35,15 +35,14 @@ using media::TimeUnit;
 
 AudioSink::AudioSink(AbstractThread* aThread,
                      MediaQueue<AudioData>& aAudioQueue, const AudioInfo& aInfo,
-                     AudioDeviceInfo* aAudioDevice)
-    : mInfo(aInfo),
-      mAudioDevice(aAudioDevice),
-      mPlaying(true),
+                     bool aShouldResistFingerprinting)
+    : mPlaying(true),
       mWritten(0),
       mErrored(false),
       mOwnerThread(aThread),
       mFramesParsed(0),
-      mOutputRate(DecideAudioPlaybackSampleRate(aInfo)),
+      mOutputRate(
+          DecideAudioPlaybackSampleRate(aInfo, aShouldResistFingerprinting)),
       mOutputChannels(DecideAudioPlaybackChannels(aInfo)),
       mAudibilityMonitor(
           mOutputRate,
@@ -99,7 +98,7 @@ AudioSink::~AudioSink() {
 }
 
 nsresult AudioSink::InitializeAudioStream(
-    const PlaybackParams& aParams,
+    const PlaybackParams& aParams, const RefPtr<AudioDeviceInfo>& aAudioDevice,
     AudioSink::InitializationType aInitializationType) {
   if (aInitializationType == AudioSink::InitializationType::UNMUTING) {
     // Consider the stream to be audible immediately, before initialization
@@ -127,7 +126,7 @@ nsresult AudioSink::InitializeAudioStream(
   MOZ_ASSERT(!mAudioStream);
   mAudioStream =
       new AudioStream(*this, mOutputRate, mOutputChannels, channelMap);
-  nsresult rv = mAudioStream->Init(mAudioDevice);
+  nsresult rv = mAudioStream->Init(aAudioDevice);
   if (NS_FAILED(rv)) {
     mAudioStream->Shutdown();
     mAudioStream = nullptr;
@@ -201,9 +200,9 @@ void AudioSink::ReenqueueUnplayedAudioDataIfNeeded() {
   mProcessedSPSCQueue->ResetThreadIds();
 
   // construct an AudioData
-  int sampleCount = mProcessedSPSCQueue->AvailableRead();
+  int sampleInRingbuffer = mProcessedSPSCQueue->AvailableRead();
 
-  if (!sampleCount) {
+  if (!sampleInRingbuffer) {
     return;
   }
 
@@ -217,44 +216,70 @@ void AudioSink::ReenqueueUnplayedAudioDataIfNeeded() {
     rate = mOutputRate;
   }
 
-  uint32_t frameCount = sampleCount / channelCount;
-  auto duration = FramesToTimeUnit(frameCount, rate);
-  if (!duration.IsValid()) {
-    NS_WARNING("Int overflow in AudioSink");
-    mErrored = true;
-    return;
-  }
+  uint32_t framesRemaining = sampleInRingbuffer / channelCount;
 
-  AlignedAudioBuffer queuedAudio(sampleCount);
-  DebugOnly<int> samplesRead =
-      mProcessedSPSCQueue->Dequeue(queuedAudio.Data(), sampleCount);
-  MOZ_ASSERT(samplesRead == sampleCount);
-
+  nsTArray<AlignedAudioBuffer> packetsToReenqueue;
+  RefPtr<AudioData> frontPacket = mAudioQueue.PeekFront();
+  uint32_t offset;
+  TimeUnit time;
+  uint32_t typicalPacketFrameCount;
   // Extrapolate mOffset, mTime from the front of the queue
   // We can't really find a good value for `mOffset`, so we take what we have
   // at the front of the queue.
   // For `mTime`, assume there hasn't been a discontinuity recently.
-  RefPtr<AudioData> frontPacket = mAudioQueue.PeekFront();
-  uint32_t offset;
-  TimeUnit time;
   if (!frontPacket) {
     // We do our best here, but it's not going to be perfect.
+    typicalPacketFrameCount = 1024;  // typical for e.g. AAC
     offset = 0;
-    time = std::max(GetPosition() - duration, TimeUnit::Zero());
+    time = GetPosition();
   } else {
+    typicalPacketFrameCount = frontPacket->Frames();
     offset = frontPacket->mOffset;
-    time = frontPacket->mTime - duration;
+    time = frontPacket->mTime;
   }
-  RefPtr<AudioData> data =
-      new AudioData(offset, time, std::move(queuedAudio), channelCount, rate);
-  MOZ_DIAGNOSTIC_ASSERT(duration == data->mDuration, "must be equal");
 
-  SINK_LOG(
-      "Muting: Pushing back %u frames (%lfms) from the ring buffer back into "
-      "the audio queue",
-      frameCount, static_cast<float>(frameCount) / rate);
+  // Extract all audio data from the ring buffer, we can only read the data from
+  // the most recent, so we reenqueue the data, packetized, in a temporary
+  // array.
+  while (framesRemaining) {
+    uint32_t packetFrameCount =
+        std::min(framesRemaining, typicalPacketFrameCount);
+    framesRemaining -= packetFrameCount;
 
-  mAudioQueue.PushFront(data);
+    int packetSampleCount = packetFrameCount * channelCount;
+    AlignedAudioBuffer packetData(packetSampleCount);
+    DebugOnly<int> samplesRead =
+        mProcessedSPSCQueue->Dequeue(packetData.Data(), packetSampleCount);
+    MOZ_ASSERT(samplesRead == packetSampleCount);
+
+    packetsToReenqueue.AppendElement(packetData);
+  }
+  // Reenqueue in the audio queue in correct order in the audio queue, starting
+  // with the end of the temporary array.
+  while (!packetsToReenqueue.IsEmpty()) {
+    auto packetData = packetsToReenqueue.PopLastElement();
+    uint32_t packetFrameCount = packetData.Length() / channelCount;
+    auto duration = TimeUnit(packetFrameCount, rate);
+    if (!duration.IsValid()) {
+      NS_WARNING("Int overflow in AudioSink");
+      mErrored = true;
+      return;
+    }
+    time -= duration;
+    RefPtr<AudioData> packet =
+        new AudioData(offset, time, std::move(packetData), channelCount, rate);
+    MOZ_DIAGNOSTIC_ASSERT(duration == packet->mDuration, "must be equal");
+
+    SINK_LOG(
+        "Muting: Pushing back %u frames (%lfms) from the ring buffer back into "
+        "the audio queue at pts %lf",
+        packetFrameCount, 1000 * static_cast<float>(packetFrameCount) / rate,
+        time.ToSeconds());
+    // The audio data's timestamp would be adjusted already if we're in looping,
+    // so we don't want to adjust them again.
+    mAudioQueue.PushFront(packet,
+                          MediaQueue<AudioData>::TimestampAdjustment::Disable);
+  }
 }
 
 Maybe<MozPromiseHolder<MediaSink::EndedPromise>> AudioSink::Shutdown(
@@ -270,7 +295,9 @@ Maybe<MozPromiseHolder<MediaSink::EndedPromise>> AudioSink::Shutdown(
   if (mAudioStream) {
     rv = mAudioStream->Shutdown(aShutdownCause);
     mAudioStream = nullptr;
-    ReenqueueUnplayedAudioDataIfNeeded();
+    if (aShutdownCause == ShutdownCause::Muting) {
+      ReenqueueUnplayedAudioDataIfNeeded();
+    }
   }
   mProcessedQueueFinished = true;
 
@@ -318,7 +345,8 @@ void AudioSink::SetPlaying(bool aPlaying) {
 }
 
 TimeUnit AudioSink::GetEndTime() const {
-  TimeUnit played = FramesToTimeUnit(mWritten, mOutputRate) + mStartTime;
+  uint64_t written = mWritten;
+  TimeUnit played = media::TimeUnit(written, mOutputRate) + mStartTime;
   if (!played.IsValid()) {
     NS_WARNING("Int overflow calculating audio end time");
     return TimeUnit::Zero();
@@ -344,11 +372,16 @@ uint32_t AudioSink::PopFrames(AudioDataValue* aBuffer, uint32_t aFrames,
 
   const int samplesToPop = static_cast<int>(aFrames * mOutputChannels);
   const int samplesRead = mProcessedSPSCQueue->Dequeue(aBuffer, samplesToPop);
+  auto sampleOut = samplesRead;
   MOZ_ASSERT(samplesRead % mOutputChannels == 0);
   mWritten += SampleToFrame(samplesRead);
   if (samplesRead != samplesToPop) {
     if (Ended()) {
       SINK_LOG("Last PopFrames -- Source ended.");
+    } else if (mTreatUnderrunAsSilence) {
+      SINK_LOG("Treat underrun frames (%u) as silence frames",
+               SampleToFrame(samplesToPop - samplesRead));
+      sampleOut = samplesToPop;
     } else {
       NS_WARNING("Underrun when popping samples from audiosink ring buffer.");
       TRACE_COMMENT("AudioSink::PopFrames", "Underrun %u frames missing",
@@ -363,11 +396,9 @@ uint32_t AudioSink::PopFrames(AudioDataValue* aBuffer, uint32_t aFrames,
   SINK_LOG_V("Popping %u frames. Remaining in ringbuffer %u / %u\n", aFrames,
              SampleToFrame(mProcessedSPSCQueue->AvailableRead()),
              SampleToFrame(mProcessedSPSCQueue->Capacity()));
+  CheckIsAudible(Span(aBuffer, sampleOut), mOutputChannels);
 
-  // Don't consider the silence added because of an underrun.
-  CheckIsAudible(Span(aBuffer, samplesRead), mOutputChannels);
-
-  return SampleToFrame(samplesRead);
+  return SampleToFrame(sampleOut);
 }
 
 bool AudioSink::Ended() const {
@@ -571,7 +602,7 @@ already_AddRefed<AudioData> AudioSink::CreateAudioFromBuffer(
   if (!frames) {
     return nullptr;
   }
-  auto duration = FramesToTimeUnit(frames, mOutputRate);
+  auto duration = media::TimeUnit(frames, mOutputRate);
   if (!duration.IsValid()) {
     NS_WARNING("Int overflow in AudioSink");
     mErrored = true;
@@ -623,6 +654,11 @@ void AudioSink::GetDebugInfo(dom::MediaSinkDebugInfo& aInfo) {
   aInfo.mAudioSinkWrapper.mAudioSink.mHasErrored = bool(mErrored);
   aInfo.mAudioSinkWrapper.mAudioSink.mPlaybackComplete =
       mAudioStream ? mAudioStream->IsPlaybackCompleted() : false;
+}
+
+void AudioSink::EnableTreatAudioUnderrunAsSilence(bool aEnabled) {
+  SINK_LOG("set mTreatUnderrunAsSilence=%d", aEnabled);
+  mTreatUnderrunAsSilence = aEnabled;
 }
 
 }  // namespace mozilla

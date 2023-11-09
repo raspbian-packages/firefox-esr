@@ -19,6 +19,7 @@
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/DocumentInlines.h"
 #include "mozilla/dom/BrowsingContextBinding.h"
+#include "mozilla/dom/ScreenBinding.h"
 #include "nsIWidget.h"
 #include "nsContentUtils.h"
 #include "mozilla/RelativeLuminanceUtils.h"
@@ -61,7 +62,7 @@ static nsSize GetSize(const Document& aDocument) {
 
 // A helper for three features below.
 static nsSize GetDeviceSize(const Document& aDocument) {
-  if (aDocument.ShouldResistFingerprinting()) {
+  if (aDocument.ShouldResistFingerprinting(RFPTarget::Unknown)) {
     return GetSize(aDocument);
   }
 
@@ -91,6 +92,11 @@ static nsSize GetDeviceSize(const Document& aDocument) {
   nsSize size;
   pc->DeviceContext()->GetDeviceSurfaceDimensions(size.width, size.height);
   return size;
+}
+
+bool Gecko_MediaFeatures_WindowsNonNativeMenus(const Document* aDocument) {
+  return LookAndFeel::WindowsNonNativeMenusEnabled() ||
+         aDocument->ShouldAvoidNativeTheme();
 }
 
 bool Gecko_MediaFeatures_IsResourceDocument(const Document* aDocument) {
@@ -125,12 +131,12 @@ void Gecko_MediaFeatures_GetDeviceSize(const Document* aDocument,
   *aHeight = size.height;
 }
 
-uint32_t Gecko_MediaFeatures_GetMonochromeBitsPerPixel(
+int32_t Gecko_MediaFeatures_GetMonochromeBitsPerPixel(
     const Document* aDocument) {
   // The default bits per pixel for a monochrome device. We could propagate this
   // further to nsIPrintSettings, but Gecko doesn't actually know this value
   // from the hardware, so it seems silly to do so.
-  static constexpr uint32_t kDefaultMonochromeBpp = 8;
+  static constexpr int32_t kDefaultMonochromeBpp = 8;
 
   nsPresContext* pc = aDocument->GetPresContext();
   if (!pc) {
@@ -145,7 +151,18 @@ uint32_t Gecko_MediaFeatures_GetMonochromeBitsPerPixel(
   return color ? 0 : kDefaultMonochromeBpp;
 }
 
-uint32_t Gecko_MediaFeatures_GetColorDepth(const Document* aDocument) {
+dom::ScreenColorGamut Gecko_MediaFeatures_ColorGamut(
+    const Document* aDocument) {
+  auto colorGamut = dom::ScreenColorGamut::Srgb;
+  if (!aDocument->ShouldResistFingerprinting(RFPTarget::Unknown)) {
+    if (auto* dx = GetDeviceContextFor(aDocument)) {
+      colorGamut = dx->GetColorGamut();
+    }
+  }
+  return colorGamut;
+}
+
+int32_t Gecko_MediaFeatures_GetColorDepth(const Document* aDocument) {
   if (Gecko_MediaFeatures_GetMonochromeBitsPerPixel(aDocument) != 0) {
     // If we're a monochrome device, then the color depth is zero.
     return 0;
@@ -153,9 +170,9 @@ uint32_t Gecko_MediaFeatures_GetColorDepth(const Document* aDocument) {
 
   // Use depth of 24 when resisting fingerprinting, or when we're not being
   // rendered.
-  uint32_t depth = 24;
+  int32_t depth = 24;
 
-  if (!aDocument->ShouldResistFingerprinting()) {
+  if (!aDocument->ShouldResistFingerprinting(RFPTarget::Unknown)) {
     if (nsDeviceContext* dx = GetDeviceContextFor(aDocument)) {
       depth = dx->GetDepth();
     }
@@ -181,7 +198,7 @@ float Gecko_MediaFeatures_GetResolution(const Document* aDocument) {
     return pc->GetOverrideDPPX();
   }
 
-  if (aDocument->ShouldResistFingerprinting()) {
+  if (aDocument->ShouldResistFingerprinting(RFPTarget::Unknown)) {
     return pc->DeviceContext()->GetFullZoom();
   }
   // Get the actual device pixel ratio, which also takes zoom into account.
@@ -260,10 +277,19 @@ bool Gecko_MediaFeatures_MatchesPlatform(StylePlatform aPlatform) {
 }
 
 bool Gecko_MediaFeatures_PrefersReducedMotion(const Document* aDocument) {
-  if (aDocument->ShouldResistFingerprinting()) {
+  if (aDocument->ShouldResistFingerprinting(
+          RFPTarget::CSSPrefersReducedMotion)) {
     return false;
   }
   return LookAndFeel::GetInt(LookAndFeel::IntID::PrefersReducedMotion, 0) == 1;
+}
+
+bool Gecko_MediaFeatures_PrefersReducedTransparency(const Document* aDocument) {
+  if (aDocument->ShouldResistFingerprinting(RFPTarget::Unknown)) {
+    return false;
+  }
+  return LookAndFeel::GetInt(LookAndFeel::IntID::PrefersReducedTransparency,
+                             0) == 1;
 }
 
 StylePrefersColorScheme Gecko_MediaFeatures_PrefersColorScheme(
@@ -279,7 +305,7 @@ StylePrefersColorScheme Gecko_MediaFeatures_PrefersColorScheme(
 // as a signal.
 StylePrefersContrast Gecko_MediaFeatures_PrefersContrast(
     const Document* aDocument) {
-  if (aDocument->ShouldResistFingerprinting()) {
+  if (aDocument->ShouldResistFingerprinting(RFPTarget::CSSPrefersContrast)) {
     return StylePrefersContrast::NoPreference;
   }
   const auto& prefs = PreferenceSheet::PrefsFor(*aDocument);
@@ -300,6 +326,23 @@ StylePrefersContrast Gecko_MediaFeatures_PrefersContrast(
   return StylePrefersContrast::Custom;
 }
 
+bool Gecko_MediaFeatures_InvertedColors(const Document* aDocument) {
+  if (aDocument->ShouldResistFingerprinting(RFPTarget::Unknown)) {
+    return false;
+  }
+  return LookAndFeel::GetInt(LookAndFeel::IntID::InvertedColors, 0) == 1;
+}
+
+StyleScripting Gecko_MediaFeatures_Scripting(const Document* aDocument) {
+  const auto* doc = aDocument;
+  if (aDocument->IsStaticDocument()) {
+    doc = aDocument->GetOriginalDocument();
+  }
+
+  return doc->IsScriptEnabled() ? StyleScripting::Enabled
+                                : StyleScripting::None;
+}
+
 StyleDynamicRange Gecko_MediaFeatures_DynamicRange(const Document* aDocument) {
   // Bug 1759772: Once HDR color is available, update each platform
   // LookAndFeel implementation to return StyleDynamicRange::High when
@@ -309,7 +352,7 @@ StyleDynamicRange Gecko_MediaFeatures_DynamicRange(const Document* aDocument) {
 
 StyleDynamicRange Gecko_MediaFeatures_VideoDynamicRange(
     const Document* aDocument) {
-  if (aDocument->ShouldResistFingerprinting()) {
+  if (aDocument->ShouldResistFingerprinting(RFPTarget::Unknown)) {
     return StyleDynamicRange::Standard;
   }
   // video-dynamic-range: high has 3 requirements:
@@ -350,7 +393,7 @@ static PointerCapabilities GetPointerCapabilities(const Document* aDocument,
 #else
       PointerCapabilities::Fine | PointerCapabilities::Hover;
 #endif
-  if (aDocument->ShouldResistFingerprinting()) {
+  if (aDocument->ShouldResistFingerprinting(RFPTarget::Unknown)) {
     return kDefaultCapabilities;
   }
 

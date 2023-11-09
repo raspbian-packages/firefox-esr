@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Nov zavihek
 tabbrowser-empty-private-tab-title = Nov zasebni zavihek
+
 tabbrowser-menuitem-close-tab =
     .label = Zapri zavihek
 tabbrowser-menuitem-close =
     .label = Zapri
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } – { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -143,6 +142,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Tega pogovornega okna ne prikazuj ve
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Dovoli takšnim obvestilom z { $domain }, da preklopijo na svoj zavihek
+
 tabbrowser-customizemode-tab-title = Prilagodi { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -161,3 +161,27 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Povrni glasnost zavihkov
     .accesskey = r
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Predvaja zvok
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label =
+        { $tabCount ->
+            [two] Prikaži oba dva zavihka
+            [few] Prikaži vse { $tabCount } zavihke
+           *[other] Prikaži vseh { $tabCount } zavihkov
+        }
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Utišaj zavihek
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Povrni glasnost zavihka
+tabbrowser-manager-close-tab =
+    .tooltiptext = Zapri zavihek

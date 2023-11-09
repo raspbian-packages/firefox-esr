@@ -180,7 +180,8 @@ class ScriptLoader final : public JS::loader::ScriptLoaderInterface {
    * @param aElement The element representing the script to be loaded and
    *        evaluated.
    */
-  bool ProcessScriptElement(nsIScriptElement* aElement);
+  bool ProcessScriptElement(nsIScriptElement* aElement,
+                            const nsAutoString& aTypeAttr);
 
   /**
    * Gets the currently executing script. This is useful if you want to
@@ -210,6 +211,7 @@ class ScriptLoader final : public JS::loader::ScriptLoaderInterface {
   ModuleLoader* GetModuleLoader() { return mModuleLoader; }
 
   void RegisterContentScriptModuleLoader(ModuleLoader* aLoader);
+  void RegisterShadowRealmModuleLoader(ModuleLoader* aLoader);
 
   /**
    *  Check whether to speculatively OMT parse scripts as soon as
@@ -275,12 +277,12 @@ class ScriptLoader final : public JS::loader::ScriptLoaderInterface {
                                  Document* aDocument, char16_t*& aBufOut,
                                  size_t& aLengthOut);
 
-  static inline nsresult ConvertToUTF16(nsIChannel* aChannel,
-                                        const uint8_t* aData, uint32_t aLength,
-                                        const nsAString& aHintCharset,
-                                        Document* aDocument,
-                                        JS::UniqueTwoByteChars& aBufOut,
-                                        size_t& aLengthOut) {
+  static nsresult ConvertToUTF16(nsIChannel* aChannel, const uint8_t* aData,
+                                 uint32_t aLength,
+                                 const nsAString& aHintCharset,
+                                 Document* aDocument,
+                                 JS::UniqueTwoByteChars& aBufOut,
+                                 size_t& aLengthOut) {
     char16_t* bufOut;
     nsresult rv = ConvertToUTF16(aChannel, aData, aLength, aHintCharset,
                                  aDocument, bufOut, aLengthOut);
@@ -314,6 +316,19 @@ class ScriptLoader final : public JS::loader::ScriptLoaderInterface {
                                 uint32_t aLength, const nsAString& aHintCharset,
                                 Document* aDocument, Utf8Unit*& aBufOut,
                                 size_t& aLengthOut);
+
+  static inline nsresult ConvertToUTF8(
+      nsIChannel* aChannel, const uint8_t* aData, uint32_t aLength,
+      const nsAString& aHintCharset, Document* aDocument,
+      UniquePtr<Utf8Unit[], JS::FreePolicy>& aBufOut, size_t& aLengthOut) {
+    Utf8Unit* bufOut;
+    nsresult rv = ConvertToUTF8(aChannel, aData, aLength, aHintCharset,
+                                aDocument, bufOut, aLengthOut);
+    if (NS_SUCCEEDED(rv)) {
+      aBufOut.reset(bufOut);
+    }
+    return rv;
+  };
 
   /**
    * Handle the completion of a stream.  This is called by the
@@ -391,7 +406,8 @@ class ScriptLoader final : public JS::loader::ScriptLoaderInterface {
                           const nsAString& aIntegrity, bool aScriptFromHead,
                           bool aAsync, bool aDefer, bool aNoModule,
                           bool aLinkPreload,
-                          const ReferrerPolicy aReferrerPolicy);
+                          const ReferrerPolicy aReferrerPolicy,
+                          uint64_t aEarlyHintPreloaderId);
 
   /**
    * Process a request that was deferred so that the script could be compiled
@@ -489,18 +505,28 @@ class ScriptLoader final : public JS::loader::ScriptLoaderInterface {
   /**
    * Start a load for aRequest's URI.
    */
-  nsresult StartLoad(ScriptLoadRequest* aRequest);
+  nsresult StartLoad(ScriptLoadRequest* aRequest,
+                     uint64_t aEarlyHintPreloaderId,
+                     const Maybe<nsAutoString>& aCharsetForPreload);
   /**
    * Start a load for a classic script URI.
    * Sets up the necessary security flags before calling StartLoadInternal.
    */
-  nsresult StartClassicLoad(ScriptLoadRequest* aRequest);
+  nsresult StartClassicLoad(ScriptLoadRequest* aRequest,
+                            uint64_t aEarlyHintPreloaderId,
+                            const Maybe<nsAutoString>& aCharsetForPreload);
 
   /**
    * Start a load for a module script URI.
+   *
+   * aCharsetForPreload is only needed when this load is a preload (via
+   * ScriptLoader::PreloadURI), because ScriptLoadRequest doesn't
+   * have this information.
    */
   nsresult StartLoadInternal(ScriptLoadRequest* aRequest,
-                             nsSecurityFlags securityFlags);
+                             nsSecurityFlags securityFlags,
+                             uint64_t aEarlyHintPreloaderId,
+                             const Maybe<nsAutoString>& aCharsetForPreload);
 
   /**
    * Abort the current stream, and re-start with a new load request from scratch
@@ -558,8 +584,18 @@ class ScriptLoader final : public JS::loader::ScriptLoaderInterface {
 
   void ReportPreloadErrorsToConsole(ScriptLoadRequest* aRequest);
 
-  nsresult AttemptAsyncScriptCompile(ScriptLoadRequest* aRequest,
-                                     bool* aCouldCompileOut);
+  nsresult AttemptOffThreadScriptCompile(ScriptLoadRequest* aRequest,
+                                         bool* aCouldCompileOut);
+
+  nsresult StartOffThreadCompilation(JSContext* aCx,
+                                     ScriptLoadRequest* aRequest,
+                                     JS::CompileOptions& aOptions,
+                                     Runnable* aRunnable,
+                                     JS::OffThreadToken** aTokenOut);
+
+  static void OffThreadCompilationCompleteCallback(JS::OffThreadToken* aToken,
+                                                   void* aCallbackData);
+
   nsresult ProcessRequest(ScriptLoadRequest* aRequest);
   nsresult CompileOffThreadOrProcessRequest(ScriptLoadRequest* aRequest);
   void FireScriptAvailable(nsresult aResult, ScriptLoadRequest* aRequest);
@@ -681,6 +717,8 @@ class ScriptLoader final : public JS::loader::ScriptLoaderInterface {
   // mLoadingAsyncRequests holds async requests while they're loading; when they
   // have been loaded they are moved to mLoadedAsyncRequests.
   ScriptLoadRequestList mLoadingAsyncRequests;
+  // mLoadedAsyncRequests holds async script requests and dynamic module import
+  // requests, which are processed in the same way.
   ScriptLoadRequestList mLoadedAsyncRequests;
   ScriptLoadRequestList mDeferRequests;
   ScriptLoadRequestList mXSLTRequests;
@@ -740,6 +778,7 @@ class ScriptLoader final : public JS::loader::ScriptLoaderInterface {
 
   RefPtr<ModuleLoader> mModuleLoader;
   nsTArray<RefPtr<ModuleLoader>> mWebExtModuleLoaders;
+  nsTArray<RefPtr<ModuleLoader>> mShadowRealmModuleLoaders;
 
   // Logging
  public:

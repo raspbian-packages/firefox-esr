@@ -582,7 +582,8 @@ static already_AddRefed<SourceSurface> GetSurfaceFromElement(
     nsIGlobalObject* aGlobal, ElementType& aElement, bool* aWriteOnly,
     const ImageBitmapOptions& aOptions, gfxAlphaType* aAlphaType,
     ErrorResult& aRv) {
-  uint32_t flags = nsLayoutUtils::SFE_WANT_FIRST_FRAME_IF_IMAGE;
+  uint32_t flags = nsLayoutUtils::SFE_WANT_FIRST_FRAME_IF_IMAGE |
+                   nsLayoutUtils::SFE_ORIENTATION_FROM_IMAGE;
 
   // by default surfaces have premultiplied alpha
   // attempt to get non premultiplied if required
@@ -595,8 +596,23 @@ static already_AddRefed<SourceSurface> GetSurfaceFromElement(
     flags |= nsLayoutUtils::SFE_NO_COLORSPACE_CONVERSION;
   }
 
-  SurfaceFromElementResult res =
-      nsLayoutUtils::SurfaceFromElement(&aElement, flags);
+  Maybe<int32_t> resizeWidth, resizeHeight;
+  if (aOptions.mResizeWidth.WasPassed()) {
+    if (!CheckedInt32(aOptions.mResizeWidth.Value()).isValid()) {
+      aRv.ThrowInvalidStateError("resizeWidth is too large");
+      return nullptr;
+    }
+    resizeWidth.emplace(aOptions.mResizeWidth.Value());
+  }
+  if (aOptions.mResizeHeight.WasPassed()) {
+    if (!CheckedInt32(aOptions.mResizeHeight.Value()).isValid()) {
+      aRv.ThrowInvalidStateError("resizeHeight is too large");
+      return nullptr;
+    }
+    resizeHeight.emplace(aOptions.mResizeHeight.Value());
+  }
+  SurfaceFromElementResult res = nsLayoutUtils::SurfaceFromElement(
+      &aElement, resizeWidth, resizeHeight, flags);
 
   RefPtr<SourceSurface> surface = res.GetSourceSurface();
   if (NS_WARN_IF(!surface)) {
@@ -1037,7 +1053,7 @@ already_AddRefed<ImageBitmap> ImageBitmap::CreateInternal(
     nsIGlobalObject* aGlobal, HTMLVideoElement& aVideoEl,
     const Maybe<IntRect>& aCropRect, const ImageBitmapOptions& aOptions,
     ErrorResult& aRv) {
-  aVideoEl.MarkAsContentSource(
+  aVideoEl.LogVisibility(
       mozilla::dom::HTMLVideoElement::CallerAPI::CREATE_IMAGEBITMAP);
 
   // Check network state.
@@ -1719,16 +1735,20 @@ JSObject* ImageBitmap::ReadStructuredClone(
 }
 
 /*static*/
-bool ImageBitmap::WriteStructuredClone(
+void ImageBitmap::WriteStructuredClone(
     JSStructuredCloneWriter* aWriter,
     nsTArray<RefPtr<DataSourceSurface>>& aClonedSurfaces,
-    ImageBitmap* aImageBitmap) {
+    ImageBitmap* aImageBitmap, ErrorResult& aRv) {
   MOZ_ASSERT(aWriter);
   MOZ_ASSERT(aImageBitmap);
 
+  if (aImageBitmap->IsWriteOnly()) {
+    return aRv.ThrowDataCloneError("Cannot clone ImageBitmap, is write-only");
+  }
+
   if (!aImageBitmap->mData) {
     // A closed image cannot be cloned.
-    return false;
+    return aRv.ThrowDataCloneError("Cannot clone ImageBitmap, is closed");
   }
 
   const uint32_t picRectX = BitwiseCast<uint32_t>(aImageBitmap->mPictureRect.x);
@@ -1747,17 +1767,18 @@ bool ImageBitmap::WriteStructuredClone(
       NS_WARN_IF(!JS_WriteUint32Pair(aWriter, picRectWidth, picRectHeight)) ||
       NS_WARN_IF(
           !JS_WriteUint32Pair(aWriter, alphaType, aImageBitmap->mWriteOnly))) {
-    return false;
+    return aRv.ThrowDataCloneError(
+        "Cannot clone ImageBitmap, failed to write params");
   }
 
   RefPtr<SourceSurface> surface = aImageBitmap->mData->GetAsSourceSurface();
   if (NS_WARN_IF(!surface)) {
-    return false;
+    return aRv.ThrowDataCloneError("Cannot clone ImageBitmap, no surface");
   }
 
   RefPtr<DataSourceSurface> snapshot = surface->GetDataSurface();
   if (NS_WARN_IF(!snapshot)) {
-    return false;
+    return aRv.ThrowDataCloneError("Cannot clone ImageBitmap, no data surface");
   }
 
   RefPtr<DataSourceSurface> dstDataSurface;
@@ -1767,18 +1788,18 @@ bool ImageBitmap::WriteStructuredClone(
     // directly, using ScopedMap to get stride.
     DataSourceSurface::ScopedMap map(snapshot, DataSourceSurface::READ);
     if (NS_WARN_IF(!map.IsMapped())) {
-      return false;
+      return aRv.ThrowDataCloneError(
+          "Cannot clone ImageBitmap, cannot map surface");
     }
 
     dstDataSurface = Factory::CreateDataSourceSurfaceWithStride(
         snapshot->GetSize(), snapshot->GetFormat(), map.GetStride(), true);
   }
   if (NS_WARN_IF(!dstDataSurface)) {
-    return false;
+    return aRv.ThrowDataCloneError("Cannot clone ImageBitmap, out of memory");
   }
   Factory::CopyDataSourceSurface(snapshot, dstDataSurface);
   aClonedSurfaces.AppendElement(dstDataSurface);
-  return true;
 }
 
 size_t ImageBitmap::GetAllocatedSize() const {

@@ -76,10 +76,10 @@ menu-file-close-tab =
     .label =
         { $tabCount ->
             [1] Cau Tab
-            [zero] Cau { $tabCount } Tab
+            [zero] Cau { $tabCount } Tabiau
             [one] Cau { $tabCount } Tab
             [two] Cau { $tabCount } Dab
-            [few] Cau { $tabCount } Thab
+            [few] Cau { $tabCount } Tab
             [many] Cau { $tabCount } Thab
            *[other] Cau { $tabCount } Tab
         }
@@ -179,7 +179,7 @@ menu-view-enter-full-screen =
     .label = Mynd i Sgrin Lawn
     .accesskey = S
 menu-view-exit-full-screen =
-    .label = Gadael Sgrin Lawn
+    .label = Gadael y Sgrin Lawn
     .accesskey = L
 menu-view-full-screen =
     .label = Sgrin Lawn
@@ -221,11 +221,9 @@ menu-history-restore-last-session =
 menu-history-hidden-tabs =
     .label = Tabiau Cudd
 menu-history-undo-menu =
-    .label = Tabiau Wedi eu Cau'n Ddiweddar
+    .label = Tabiau Wedi'u Cau'n Ddiweddar
 menu-history-undo-window-menu =
     .label = Ffenestri wedi eu Cau yn Ddiweddar
-menu-history-reopen-all-tabs = Ailagor Pob Tab
-menu-history-reopen-all-windows = Ailagor Pob Ffenestr
 
 ## Bookmarks Menu
 
@@ -234,14 +232,13 @@ menu-bookmarks-menu =
     .accesskey = T
 menu-bookmarks-manage =
     .label = Rheoli Nodau Tudalen
-menu-bookmark-current-tab =
-    .label = Gosod Nod Tudalen i'r Tab Cyfredol
-menu-bookmark-edit =
-    .label = Golygu'r Nod Tudalen
 menu-bookmark-tab =
     .label = Gosod Nod Tudalen i'r Tab Cyfredol…
 menu-edit-bookmark =
     .label = Golygu'r Nod Tudalen…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Chwilio'r Nodau Tudalen
 menu-bookmarks-all-tabs =
     .label = Nod Tudalen i Bob Tab…
 menu-bookmarks-toolbar =
@@ -257,7 +254,7 @@ menu-tools =
     .label = Offer
     .accesskey = f
 menu-tools-downloads =
-    .label = Llwytho i Lawr
+    .label = Llwythi i lawr
     .accesskey = L
 menu-tools-addons-and-themes =
     .label = Ychwanegion a Themâu
@@ -335,6 +332,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Diffodd y Modd Dartrys Problemau
     .accesskey = D
+menu-help-switch-device =
+    .label = Newid i Ddyfais Newydd
+    .accesskey = N
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

@@ -70,7 +70,6 @@ firefoxview-pickup-tabs-badge = Hendyramovéva
 firefoxview-tabs-list-tab-button =
     .title = Embojuruja { $targetURI } tendayke pyahúpe
 firefoxview-try-colorways-button = Eipuru sa’y ojueheguáva
-firefoxview-no-current-colorway-collection = Oĩma sa’y ojuehegua ipyahúva
 firefoxview-change-colorway-button = Emoambue sa’y ojueheguáva
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +81,62 @@ firefoxview-collapse-button-show =
     .title = Ehechauka tysýi
 firefoxview-collapse-button-hide =
     .title = Emokañy tysýi
+firefoxview-overview-nav = Ñeikundaha ramovéva
+    .title = Ñeikundaha ramovéva
+firefoxview-overview-header = Ñeikundaha ramovéva
+    .title = Ñeikundaha ramovéva
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Tembiasakue
+    .title = Tembiasakue
+firefoxview-history-header = Tembiasakue
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Tendayke ijurujáva
+    .title = Tendayke ijurujáva
+firefoxview-opentabs-header = Tendayke ijurujáva
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Tendayke oñembotyramóva
+    .title = Tendaykekuéra oñembotyramóva
+firefoxview-recently-closed-header = Tendaykekuéra oñembotyramóva
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Tendaykekuéra ambue mba’e’okagua
+    .title = Tendaykekuéra ambue mba’e’okagua
+firefoxview-synced-tabs-header = Tendaykekuéra ambue mba’e’okagua
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Ehechapa
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Ovetã { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Ovetã { $winID } (Ag̃agua)
+firefoxview-opentabs-focus-tab =
+    .title = Emoambue tendayképe
+firefoxview-show-more = Ehechaukave
+firefoxview-show-less = Ehechauka’ive
+firefoxview-sort-history-by-date-label = Arange rupive
+firefoxview-sort-history-by-site-label = Tenda rupive
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Ko’ára - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Kuehe - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Tembiasakue jehechaukapa

@@ -37,7 +37,7 @@ namespace InspectorUtils {
   sequence<DOMString> getCSSPropertyNames(optional PropertyNamesOptions options = {});
   sequence<PropertyPref> getCSSPropertyPrefs();
   [Throws] sequence<DOMString> getCSSValuesForProperty(UTF8String property);
-  [Throws] DOMString rgbToColorName(octet r, octet g, octet b);
+  DOMString rgbToColorName(octet r, octet g, octet b);
   InspectorRGBATuple? colorToRGBA(UTF8String colorString, optional Document? doc = null);
   boolean isValidCSSColor(UTF8String colorString);
   [Throws] sequence<DOMString> getSubpropertiesForCSSProperty(UTF8String property);
@@ -50,8 +50,9 @@ namespace InspectorUtils {
 
   boolean isIgnorableWhitespace(CharacterData dataNode);
   Node? getParentForNode(Node node, boolean showingAnonymousContent);
-  [NewObject] NodeList getChildrenForNode(Node node,
-                                          boolean showingAnonymousContent);
+  sequence<Node> getChildrenForNode(Node node,
+                                    boolean showingAnonymousContent,
+                                    boolean includeAssignedNodes);
   [Throws] boolean setContentState(Element element, unsigned long long state);
   [Throws] boolean removeContentState(
       Element element,
@@ -70,13 +71,13 @@ namespace InspectorUtils {
       optional boolean skipCollapsedWhitespace = true);
 
   sequence<DOMString> getCSSPseudoElementNames();
-  void addPseudoClassLock(Element element,
-                          DOMString pseudoClass,
-                          optional boolean enabled = true);
-  void removePseudoClassLock(Element element, DOMString pseudoClass);
+  undefined addPseudoClassLock(Element element,
+                               DOMString pseudoClass,
+                               optional boolean enabled = true);
+  undefined removePseudoClassLock(Element element, DOMString pseudoClass);
   boolean hasPseudoClassLock(Element element, DOMString pseudoClass);
-  void clearPseudoClassLocks(Element element);
-  [Throws] void parseStyleSheet(CSSStyleSheet sheet, UTF8String input);
+  undefined clearPseudoClassLocks(Element element);
+  [Throws] undefined parseStyleSheet(CSSStyleSheet sheet, UTF8String input);
   boolean isCustomElementName([LegacyNullToEmptyString] DOMString name,
                               DOMString? namespaceURI);
 

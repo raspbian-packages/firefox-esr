@@ -78,10 +78,6 @@ int32_t CompareCompatVersions(const nsACString& aOldCompatVersion,
 nsresult NS_CreateNativeAppSupport(nsINativeAppSupport** aResult);
 already_AddRefed<nsINativeAppSupport> NS_GetNativeAppSupport();
 
-nsresult NS_NewToolkitProfileService(nsIToolkitProfileService** aResult);
-
-nsresult NS_NewToolkitProfileFactory(nsIFactory** aResult);
-
 /**
  * Try to acquire exclusive access to the specified profile directory.
  *
@@ -143,8 +139,6 @@ namespace mozilla {
 namespace startup {
 Result<nsCOMPtr<nsIFile>, nsresult> GetIncompleteStartupFile(nsIFile* aProfLD);
 
-extern GeckoProcessType sChildProcessType;
-
 void IncreaseDescriptorLimits();
 }  // namespace startup
 
@@ -167,8 +161,6 @@ void MOZ_EXPORT __sanitizer_set_report_path(const char* path);
 void setASanReporterPath(nsIFile* aDir);
 #endif
 
-#ifdef MOZ_WAYLAND
 bool IsWaylandEnabled();
-#endif
 
 #endif  // nsAppRunner_h__

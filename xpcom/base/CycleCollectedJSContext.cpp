@@ -467,7 +467,7 @@ void CycleCollectedJSContext::AfterProcessTask(uint32_t aRecursionDepth) {
 
   // This should be a fast test so that it won't affect the next task
   // processing.
-  IsIdleGCTaskNeeded();
+  MaybePokeGC();
 }
 
 void CycleCollectedJSContext::AfterProcessMicrotasks() {
@@ -493,7 +493,9 @@ void CycleCollectedJSContext::AfterProcessMicrotasks() {
   JS::ClearKeptObjects(mJSContext);
 }
 
-void CycleCollectedJSContext::IsIdleGCTaskNeeded() const {
+void CycleCollectedJSContext::MaybePokeGC() {
+  // Worker-compatible check to see if we want to do an idle-time minor
+  // GC.
   class IdleTimeGCTaskRunnable : public mozilla::IdleRunnable {
    public:
     using mozilla::IdleRunnable::IdleRunnable;
@@ -853,6 +855,10 @@ void FinalizationRegistryCleanup::DoCleanup() {
   std::swap(callbacks.get(), mCallbacks.get());
 
   for (const Callback& callback : callbacks) {
+    JS::ExposeObjectToActiveJS(
+        JS_GetFunctionObject(callback.mCallbackFunction));
+    JS::ExposeObjectToActiveJS(callback.mIncumbentGlobal);
+
     JS::RootedObject functionObj(
         cx, JS_GetFunctionObject(callback.mCallbackFunction));
     JS::RootedObject globalObj(cx, JS::GetNonCCWObjectGlobal(functionObj));

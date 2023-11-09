@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, division
-
 import base64
 import datetime
 import json
@@ -12,20 +10,17 @@ import socket
 import sys
 import time
 import traceback
-
 from contextlib import contextmanager
 
 import six
 from six import reraise
 
-from . import errors
-from . import transport
+from . import errors, transport
 from .decorators import do_process_check
 from .geckoinstance import GeckoInstance
 from .keys import Keys
 from .timeout import Timeouts
 
-CHROME_ELEMENT_KEY = "chromeelement-9fc5-4b51-a3c8-01716eedeb04"
 FRAME_KEY = "frame-075b-4da1-b6ba-e579c2d3230a"
 WEB_ELEMENT_KEY = "element-6066-11e4-a52e-4f735466cecf"
 WEB_SHADOW_ROOT_KEY = "shadow-6066-11e4-a52e-4f735466cecf"
@@ -194,7 +189,7 @@ class Actions(object):
 class HTMLElement(object):
     """Represents a DOM Element."""
 
-    identifiers = (CHROME_ELEMENT_KEY, FRAME_KEY, WINDOW_KEY, WEB_ELEMENT_KEY)
+    identifiers = (FRAME_KEY, WINDOW_KEY, WEB_ELEMENT_KEY)
 
     def __init__(self, marionette, id, kind=WEB_ELEMENT_KEY):
         self.marionette = marionette
@@ -361,13 +356,25 @@ class HTMLElement(object):
             "WebDriver:GetShadowRoot", {"id": self.id}, key="value"
         )
 
+    @property
+    def computed_label(self):
+        """Gets the computed accessibility label of the current element"""
+        return self.marionette._send_message(
+            "WebDriver:GetComputedLabel", {"id": self.id}, key="value"
+        )
+
+    @property
+    def computed_role(self):
+        """Gets the computed accessibility role of the current element"""
+        return self.marionette._send_message(
+            "WebDriver:GetComputedRole", {"id": self.id}, key="value"
+        )
+
     @classmethod
     def _from_json(cls, json, marionette):
         if isinstance(json, dict):
             if WEB_ELEMENT_KEY in json:
                 return cls(marionette, json[WEB_ELEMENT_KEY], WEB_ELEMENT_KEY)
-            elif CHROME_ELEMENT_KEY in json:
-                return cls(marionette, json[CHROME_ELEMENT_KEY], CHROME_ELEMENT_KEY)
             elif FRAME_KEY in json:
                 return cls(marionette, json[FRAME_KEY], FRAME_KEY)
             elif WINDOW_KEY in json:
@@ -395,6 +402,32 @@ class ShadowRoot(object):
     def __hash__(self):
         # pylint --py3k: W1641
         return hash(self.id)
+
+    def find_element(self, method, target):
+        """Returns an ``HTMLElement`` instance that matches the specified
+        method and target, relative to the current shadow root.
+
+        For more details on this function, see the
+        :func:`~marionette_driver.marionette.Marionette.find_element` method
+        in the Marionette class.
+        """
+        body = {"shadowRoot": self.id, "value": target, "using": method}
+        return self.marionette._send_message(
+            "WebDriver:FindElementFromShadowRoot", body, key="value"
+        )
+
+    def find_elements(self, method, target):
+        """Returns a list of all ``HTMLElement`` instances that match the
+         specified method and target in the current shadow root.
+
+        For more details on this function, see the
+        :func:`~marionette_driver.marionette.Marionette.find_elements` method
+        in the Marionette class.
+        """
+        body = {"shadowRoot": self.id, "value": target, "using": method}
+        return self.marionette._send_message(
+            "WebDriver:FindElementsFromShadowRoot", body
+        )
 
     @classmethod
     def _from_json(cls, json, marionette):
@@ -562,6 +595,7 @@ class Marionette(object):
                 # hit an exception/died or the connection died. We can
                 # do no further server-side cleanup in this case.
                 pass
+
         if self.instance:
             # stop application and, if applicable, stop emulator
             self.instance.close(clean=True)
@@ -569,6 +603,7 @@ class Marionette(object):
                 raise errors.UnresponsiveInstanceException(
                     "Application clean-up has failed >2 consecutive times."
                 )
+
         self.cleanup_ran = True
 
     def __del__(self):
@@ -769,8 +804,8 @@ class Marionette(object):
         with self.using_context(self.CONTEXT_CHROME):
             self.execute_script(
                 """
-               const { Preferences } = ChromeUtils.import(
-                 "resource://gre/modules/Preferences.jsm"
+               const { Preferences } = ChromeUtils.importESModule(
+                 "resource://gre/modules/Preferences.sys.mjs"
                );
                Preferences.reset(arguments[0]);
                """,
@@ -796,8 +831,8 @@ class Marionette(object):
         with self.using_context(self.CONTEXT_CHROME):
             pref_value = self.execute_script(
                 """
-                const { Preferences } = ChromeUtils.import(
-                  "resource://gre/modules/Preferences.jsm"
+                const { Preferences } = ChromeUtils.importESModule(
+                  "resource://gre/modules/Preferences.sys.mjs"
                 );
 
                 let pref = arguments[0];
@@ -835,8 +870,8 @@ class Marionette(object):
 
             self.execute_script(
                 """
-                const { Preferences } = ChromeUtils.import(
-                  "resource://gre/modules/Preferences.jsm"
+                const { Preferences } = ChromeUtils.importESModule(
+                  "resource://gre/modules/Preferences.sys.mjs"
                 );
 
                 let pref = arguments[0];
@@ -976,19 +1011,23 @@ class Marionette(object):
         return self._send_message("Marionette:Quit", body)
 
     @do_process_check
-    def quit(self, clean=False, in_app=False, callback=None):
-        """Terminate the currently running instance.
+    def quit(self, clean=False, in_app=True, callback=None):
+        """
+        By default this method will trigger a normal shutdown of the currently running instance.
+        But it can also be used to force terminate the process.
 
         This command will delete the active marionette session. It also allows
         manipulation of eg. the profile data while the application is not running.
         To start the application again, :func:`start_session` has to be called.
 
-        :param clean: If False the same profile will be used after the next start of
-                      the application. Note that the in app initiated restart always
+        :param clean: If True a new profile will be used after the next start of
+                      the application. Note that the in_app initiated quit always
                       maintains the same profile.
+
         :param in_app: If True, marionette will cause a quit from within the
-                       browser. Otherwise the browser will be quit immediately
-                       by killing the process.
+                       application. Otherwise the application will be restarted
+                       immediately by killing the process.
+
         :param callback: If provided and `in_app` is True, the callback will
                          be used to trigger the shutdown.
 
@@ -1003,96 +1042,6 @@ class Marionette(object):
             )
 
         quit_details = {"cause": "shutdown", "forced": False}
-        if in_app:
-            if callback is not None and not callable(callback):
-                raise ValueError(
-                    "Specified callback '{}' is not callable".format(callback)
-                )
-
-            # Block Marionette from accepting new connections
-            self._send_message("Marionette:AcceptConnections", {"value": False})
-
-            try:
-                self.is_shutting_down = True
-                if callback is not None:
-                    callback()
-                else:
-                    quit_details = self._request_in_app_shutdown()
-
-            except IOError:
-                # A possible IOError should be ignored at this point, given that
-                # quit() could have been called inside of `using_context`,
-                # which wants to reset the context but fails sending the message.
-                pass
-
-            returncode = self.instance.runner.wait(timeout=self.shutdown_timeout)
-            if returncode is None:
-                # The process did not shutdown itself, so force-closing it.
-                self.cleanup()
-
-                message = "Process still running {}s after quit request"
-                raise IOError(message.format(self.shutdown_timeout))
-
-            self.is_shutting_down = False
-            self.delete_session(send_request=False)
-
-        else:
-            self.delete_session(send_request=False)
-            self.instance.close(clean=clean)
-
-            quit_details["forced"] = True
-
-        if quit_details.get("cause") not in (None, "shutdown"):
-            raise errors.MarionetteException(
-                "Unexpected shutdown reason '{}' for "
-                "quitting the process.".format(quit_details["cause"])
-            )
-
-        return quit_details
-
-    @do_process_check
-    def restart(
-        self, callback=None, clean=False, in_app=False, safe_mode=False, silent=False
-    ):
-        """
-        This will terminate the currently running instance, and spawn a new instance
-        with the same profile and then reuse the session id when creating a session again.
-
-        :param callback: If provided and `in_app` is True, the callback will be
-                         used to trigger the restart.
-
-        :param clean: If False the same profile will be used after the restart. Note
-                      that the in app initiated restart always maintains the same
-                      profile.
-
-        :param in_app: If True, marionette will cause a restart from within the
-                       browser. Otherwise the browser will be restarted immediately
-                       by killing the process.
-
-        :param safe_mode: Optional flag to indicate that the application has to
-            be restarted in safe mode.
-
-        :param silent: Optional flag to indicate that the application should
-            not open any window after a restart. Note that this flag is only
-            supported on MacOS.
-
-        :returns: A dictionary containing details of the application restart.
-                  The `cause` property reflects the reason, and `forced` indicates
-                  that something prevented the shutdown and the application had
-                  to be forced to shutdown.
-        """
-        if not self.instance:
-            raise errors.MarionetteException(
-                "restart() can only be called "
-                "on Gecko instances launched by Marionette"
-            )
-
-        context = self._send_message("Marionette:GetContext", key="value")
-        restart_details = {"cause": "restart", "forced": False}
-
-        # Safe mode and the silent flag require in_app restarts.
-        if safe_mode or silent:
-            in_app = True
 
         if in_app:
             if clean:
@@ -1112,6 +1061,115 @@ class Marionette(object):
                 self.is_shutting_down = True
                 if callback is not None:
                     callback()
+                    quit_details["in_app"] = True
+                else:
+                    quit_details = self._request_in_app_shutdown()
+
+            except IOError:
+                # A possible IOError should be ignored at this point, given that
+                # quit() could have been called inside of `using_context`,
+                # which wants to reset the context but fails sending the message.
+                pass
+
+            except Exception:
+                # For any other error assume the application is not going to shutdown.
+                # As such allow Marionette to accept new connections again.
+                self.is_shutting_down = False
+                self._send_message("Marionette:AcceptConnections", {"value": True})
+                raise
+
+            try:
+                self.delete_session(send_request=False)
+
+                # Try to wait for the process to end itself before force-closing it.
+                returncode = self.instance.runner.wait(timeout=self.shutdown_timeout)
+                if returncode is None:
+                    self.cleanup()
+
+                    message = "Process still running {}s after quit request"
+                    raise IOError(message.format(self.shutdown_timeout))
+
+            finally:
+                self.is_shutting_down = False
+
+        else:
+            self.delete_session(send_request=False)
+            self.instance.close(clean=clean)
+
+            quit_details.update({"in_app": False, "forced": True})
+
+        if quit_details.get("cause") not in (None, "shutdown"):
+            raise errors.MarionetteException(
+                "Unexpected shutdown reason '{}' for "
+                "quitting the process.".format(quit_details["cause"])
+            )
+
+        return quit_details
+
+    @do_process_check
+    def restart(
+        self, callback=None, clean=False, in_app=True, safe_mode=False, silent=False
+    ):
+        """
+        By default this method will restart the currently running instance by using the same
+        profile. But it can also be forced to terminate the currently running instance, and
+        to spawn a new instance with the same or different profile.
+
+        :param callback: If provided and `in_app` is True, the callback will be
+                         used to trigger the restart.
+
+        :param clean: If True a new profile will be used after the restart. Note
+                      that the in_app initiated restart always maintains the same
+                      profile.
+
+        :param in_app: If True, marionette will cause a restart from within the
+                       application. Otherwise the application will be restarted
+                       immediately by killing the process.
+
+        :param safe_mode: Optional flag to indicate that the application has to
+            be restarted in safe mode.
+
+        :param silent: Optional flag to indicate that the application should
+            not open any window after a restart. Note that this flag is only
+            supported on MacOS and requires "in_app" to be True.
+
+        :returns: A dictionary containing details of the application restart.
+                  The `cause` property reflects the reason, and `forced` indicates
+                  that something prevented the shutdown and the application had
+                  to be forced to shutdown.
+        """
+        if not self.instance:
+            raise errors.MarionetteException(
+                "restart() can only be called "
+                "on Gecko instances launched by Marionette"
+            )
+
+        context = self._send_message("Marionette:GetContext", key="value")
+        restart_details = {"cause": "restart", "forced": False}
+
+        # Safe mode and the silent flag require an in_app restart.
+        if (safe_mode or silent) and not in_app:
+            raise ValueError("An in_app restart is required for safe or silent mode")
+
+        if in_app:
+            if clean:
+                raise ValueError(
+                    "An in_app restart cannot be triggered with the clean flag set"
+                )
+
+            if callback is not None and not callable(callback):
+                raise ValueError(
+                    "Specified callback '{}' is not callable".format(callback)
+                )
+
+            # Block Marionette from accepting new connections
+            self._send_message("Marionette:AcceptConnections", {"value": False})
+
+            try:
+                self.is_shutting_down = True
+                if callback is not None:
+                    callback()
+                    restart_details["in_app"] = True
                 else:
                     flags = ["eRestart"]
                     if silent:
@@ -1170,7 +1228,7 @@ class Marionette(object):
             self.instance.restart(clean=clean)
             self.raise_for_port(timeout=self.DEFAULT_STARTUP_TIMEOUT)
 
-            restart_details["forced"] = True
+            restart_details.update({"in_app": False, "forced": True})
 
         if restart_details.get("cause") not in (None, "restart"):
             raise errors.MarionetteException(
@@ -1595,7 +1653,9 @@ class Marionette(object):
             for arg in args:
                 wrapped[arg] = self._to_json(args[arg])
         elif type(args) == HTMLElement:
-            wrapped = {WEB_ELEMENT_KEY: args.id, CHROME_ELEMENT_KEY: args.id}
+            wrapped = {WEB_ELEMENT_KEY: args.id}
+        elif type(args) == ShadowRoot:
+            wrapped = {WEB_SHADOW_ROOT_KEY: args.id}
         elif (
             isinstance(args, bool)
             or isinstance(args, six.string_types)

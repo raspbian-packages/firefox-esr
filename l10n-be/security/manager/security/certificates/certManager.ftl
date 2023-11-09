@@ -26,10 +26,6 @@ certmgr-people = Вы маеце сертыфікаты, якія вызнача
 certmgr-server = Гэтыя запісы вызначаюць выключэнні для памылак сертыфікатаў сервера
 certmgr-ca = Вы маеце сертыфікаты, якія вызначаюць наступныя сертыфікацыйныя ўстановы
 
-certmgr-edit-ca-cert =
-    .title = Рэдагаванне наладаў даверу да сертыфіката ЦС
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Рэдагаванне наладаў даверу да сертыфіката ЦС
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Гэты сертыфікат можа вызначаць карыстальнікаў пошты.
-
-certmgr-delete-cert =
-    .title = Выдаленне сертыфіката
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Выдаленне сертыфіката
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Сервер
-
-certmgr-override-lifetime =
-    .label = Час жыцця
 
 certmgr-token-name =
     .label = Прылада бяспекі
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Серыйны нумар
+
+certmgr-fingerprint-sha-256 =
+    .label = Адбітак SHA-256
 
 certmgr-view =
     .label = Прагляд…

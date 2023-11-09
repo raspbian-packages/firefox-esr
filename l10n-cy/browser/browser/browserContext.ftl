@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Gosod Nod Tudalen i'r Dudalen
-    .accesskey = N
-    .tooltiptext = Gosod nod tudalen i'r dudalen
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Gosod Nod i Dudalen
-    .accesskey = N
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Golygu Nod Tudalen
-    .accesskey = G
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Gosod Nod Tudalen i'r Dudalen
-    .accesskey = N
-    .tooltiptext = Gosod nod tudalen i'r dudalen ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Golygu'r Nod Tudalen
-    .accesskey = N
-    .tooltiptext = Golygu'r nod tudalen
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Golygu'r Nod Tudalen
-    .accesskey = N
-    .tooltiptext = Golygu'r nod tudalen ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Gosod Nod i Dudalen…
     .accesskey = N
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Agor Dolen mewn Ffenestr Breifat
     .accesskey = F
-
-main-context-menu-bookmark-link =
-    .label = Dolen Nod Tudalen
-    .accesskey = D
 
 main-context-menu-bookmark-link-2 =
     .label = Dolen Nod Tudalen
@@ -289,7 +247,7 @@ main-context-menu-media-video-fullscreen =
     .accesskey = S
 
 main-context-menu-media-video-leave-fullscreen =
-    .label = Gadael Sgrin Lawn
+    .label = Gadael y Sgrin Lawn
     .accesskey = S
 
 # This is used when right-clicking on a video in the
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Sain E-bost…
     .accesskey = S
 
-main-context-menu-plugin-play =
-    .label = Gweithredu'r ategyn
-    .accesskey = G
-
-main-context-menu-plugin-hide =
-    .label = Cuddio'r ategyn
-    .accesskey = C
-
 main-context-menu-save-to-pocket =
     .label = Cadw Tudalen i { -pocket-brand-name }
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = C
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Defnyddio Arallenw E-bost { -relay-brand-short-name }
+    .accesskey = D
 
 main-context-menu-suggest-strong-password =
     .label = Cynnig Cyfrinair Cryf...
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Ail-lwytho'r Ffrâm
     .accesskey = r
 
-main-context-menu-frame-bookmark =
-    .label = Gosod Nod Tudalen i'r Ffrâm
-    .accesskey = F
-
 main-context-menu-frame-add-bookmark =
     .label = Gosod Nod i Ffrâm…
     .accesskey = F
@@ -460,10 +410,6 @@ main-context-menu-frame-view-info =
     .label = Edrych ar Wybodaeth am y Ffrâm
     .accesskey = W
 
-main-context-menu-print-selection =
-    .label = Dewis Argraffu
-    .accesskey = A
-
 main-context-menu-print-selection-2 =
     .label = Argraffu'r Dewis…
     .accesskey = A
@@ -481,8 +427,8 @@ main-context-menu-take-frame-screenshot =
     .accesskey = L
 
 main-context-menu-view-page-source =
-    .label = Edrych ar God Gwreiddiol y Dudalen
-    .accesskey = G
+    .label = Darllen Cod Gwreiddiol y Dudalen
+    .accesskey = D
 
 main-context-menu-bidi-switch-text =
     .label = Newid Cyfeiriad Testun
@@ -493,7 +439,7 @@ main-context-menu-bidi-switch-page =
     .accesskey = N
 
 main-context-menu-inspect =
-    .label = Arsylwi
+    .label = Archwilio
     .accesskey = A
 
 main-context-menu-inspect-a11y-properties =

@@ -33,11 +33,11 @@ enum class FrameType;
 
 namespace wasm {
 
+class CallIndirectId;
 class Code;
 class CodeRange;
 class DebugFrame;
 class Instance;
-class TypeIdDesc;
 class Instance;
 
 struct CallableOffsets;
@@ -66,8 +66,8 @@ class WasmFrameIter {
   unsigned lineOrBytecode_;
   Frame* fp_;
   Instance* instance_;
-  uint8_t* unwoundIonCallerFP_;
-  jit::FrameType unwoundIonFrameType_;
+  uint8_t* unwoundCallerFP_;
+  mozilla::Maybe<jit::FrameType> unwoundJitFrameType_;
   Unwind unwind_;
   void** unwoundAddressOfReturnAddress_;
   uint8_t* resumePCinCurrentFrame_;
@@ -92,8 +92,9 @@ class WasmFrameIter {
   void** unwoundAddressOfReturnAddress() const;
   bool debugEnabled() const;
   DebugFrame* debugFrame() const;
-  jit::FrameType unwoundIonFrameType() const;
-  uint8_t* unwoundIonCallerFP() const { return unwoundIonCallerFP_; }
+  jit::FrameType unwoundJitFrameType() const;
+  bool hasUnwoundJitFrame() const;
+  uint8_t* unwoundCallerFP() const { return unwoundCallerFP_; }
   Frame* frame() const { return fp_; }
   Instance* instance() const { return instance_; }
 
@@ -111,13 +112,12 @@ enum class SymbolicAddress;
 class ExitReason {
  public:
   enum class Fixed : uint32_t {
-    None,             // default state, the pc is in wasm code
-    FakeInterpEntry,  // slow-path entry call from C++ WasmCall()
-    ImportJit,        // fast-path call directly into JIT code
-    ImportInterp,     // slow-path call into C++ Invoke()
-    BuiltinNative,    // fast-path call directly into native C++ code
-    Trap,             // call to trap handler
-    DebugTrap         // call to debug trap handler
+    None,           // default state, the pc is in wasm code
+    ImportJit,      // fast-path call directly into JIT code
+    ImportInterp,   // slow-path call into C++ Invoke()
+    BuiltinNative,  // fast-path call directly into native C++ code
+    Trap,           // call to trap handler
+    DebugTrap       // call to debug trap handler
   };
 
  private:
@@ -151,9 +151,6 @@ class ExitReason {
   bool isNative() const {
     return !isFixed() || fixed() == Fixed::BuiltinNative;
   }
-  bool isInterpEntry() const {
-    return isFixed() && fixed() == Fixed::FakeInterpEntry;
-  }
 
   uint32_t encode() const { return payload_; }
   Fixed fixed() const {
@@ -174,7 +171,9 @@ class ProfilingFrameIterator {
   uint8_t* callerFP_;
   void* callerPC_;
   void* stackAddress_;
-  uint8_t* unwoundIonCallerFP_;
+  // See JS::ProfilingFrameIterator::endStackAddress_ comment.
+  void* endStackAddress_ = nullptr;
+  uint8_t* unwoundJitCallerFP_;
   ExitReason exitReason_;
 
   void initFromExitFP(const Frame* fp);
@@ -196,17 +195,23 @@ class ProfilingFrameIterator {
                          const RegisterState& state);
 
   void operator++();
-  bool done() const { return !codeRange_ && exitReason_.isNone(); }
+
+  bool done() const {
+    MOZ_ASSERT_IF(!exitReason_.isNone(), codeRange_);
+    return !codeRange_;
+  }
 
   void* stackAddress() const {
     MOZ_ASSERT(!done());
     return stackAddress_;
   }
-  uint8_t* unwoundIonCallerFP() const {
+  uint8_t* unwoundJitCallerFP() const {
     MOZ_ASSERT(done());
-    return unwoundIonCallerFP_;
+    return unwoundJitCallerFP_;
   }
   const char* label() const;
+
+  void* endStackAddress() const { return endStackAddress_; }
 };
 
 // Prologue/epilogue code generation
@@ -225,10 +230,13 @@ void GenerateJitExitPrologue(jit::MacroAssembler& masm, unsigned framePushed,
 void GenerateJitExitEpilogue(jit::MacroAssembler& masm, unsigned framePushed,
                              CallableOffsets* offsets);
 
-void GenerateJitEntryPrologue(jit::MacroAssembler& masm, Offsets* offsets);
+void GenerateJitEntryPrologue(jit::MacroAssembler& masm,
+                              CallableOffsets* offsets);
+void GenerateJitEntryEpilogue(jit::MacroAssembler& masm,
+                              CallableOffsets* offsets);
 
 void GenerateFunctionPrologue(jit::MacroAssembler& masm,
-                              const TypeIdDesc& funcTypeId,
+                              const CallIndirectId& callIndirectId,
                               const mozilla::Maybe<uint32_t>& tier1FuncIndex,
                               FuncOffsets* offsets);
 void GenerateFunctionEpilogue(jit::MacroAssembler& masm, unsigned framePushed,

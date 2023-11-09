@@ -30,48 +30,21 @@
 
 namespace js {
 
-using JSFunctionVector = GCVector<JSFunction*, 0, SystemAllocPolicy>;
+using JSObjectVector = GCVector<JSObject*, 0, SystemAllocPolicy>;
 
 class WasmMemoryObject;
-using GCPtrWasmMemoryObject = GCPtr<WasmMemoryObject*>;
-using RootedWasmMemoryObject = Rooted<WasmMemoryObject*>;
-using HandleWasmMemoryObject = Handle<WasmMemoryObject*>;
-using MutableHandleWasmMemoryObject = MutableHandle<WasmMemoryObject*>;
-
 class WasmModuleObject;
-using RootedWasmModuleObject = Rooted<WasmModuleObject*>;
-using HandleWasmModuleObject = Handle<WasmModuleObject*>;
-using MutableHandleWasmModuleObject = MutableHandle<WasmModuleObject*>;
-
 class WasmInstanceObject;
-using WasmInstanceObjectVector = GCVector<WasmInstanceObject*>;
-using RootedWasmInstanceObject = Rooted<WasmInstanceObject*>;
-using HandleWasmInstanceObject = Handle<WasmInstanceObject*>;
-using MutableHandleWasmInstanceObject = MutableHandle<WasmInstanceObject*>;
-
 class WasmTableObject;
-using WasmTableObjectVector = GCVector<WasmTableObject*, 0, SystemAllocPolicy>;
-using RootedWasmTableObject = Rooted<WasmTableObject*>;
-using HandleWasmTableObject = Handle<WasmTableObject*>;
-using MutableHandleWasmTableObject = MutableHandle<WasmTableObject*>;
-
 class WasmGlobalObject;
+class WasmTagObject;
+class WasmExceptionObject;
+
+using WasmInstanceObjectVector = GCVector<WasmInstanceObject*>;
+using WasmTableObjectVector = GCVector<WasmTableObject*, 0, SystemAllocPolicy>;
 using WasmGlobalObjectVector =
     GCVector<WasmGlobalObject*, 0, SystemAllocPolicy>;
-using RootedWasmGlobalObject = Rooted<WasmGlobalObject*>;
-
-class WasmTagObject;
-using GCPtrWasmTagObject = GCPtr<WasmTagObject*>;
 using WasmTagObjectVector = GCVector<WasmTagObject*, 0, SystemAllocPolicy>;
-using RootedWasmTagObject = Rooted<WasmTagObject*>;
-using HandleWasmTagObject = Handle<WasmTagObject*>;
-
-class WasmExceptionObject;
-using RootedWasmExceptionObject = Rooted<WasmExceptionObject*>;
-
-class RttValue;
-using HandleRttValue = Handle<RttValue*>;
-using MutableHandleRttValue = MutableHandle<RttValue*>;
 
 namespace wasm {
 
@@ -107,11 +80,6 @@ using MutableElemSegment = RefPtr<ElemSegment>;
 using SharedElemSegment = RefPtr<const ElemSegment>;
 using ElemSegmentVector = Vector<SharedElemSegment, 0, SystemAllocPolicy>;
 
-struct ExceptionTag;
-using SharedExceptionTag = RefPtr<ExceptionTag>;
-using SharedExceptionTagVector =
-    Vector<SharedExceptionTag, 0, SystemAllocPolicy>;
-
 class Val;
 using ValVector = GCVector<Val, 0, SystemAllocPolicy>;
 
@@ -121,12 +89,9 @@ using ValVector = GCVector<Val, 0, SystemAllocPolicy>;
 using Uint32Vector = Vector<uint32_t, 8, SystemAllocPolicy>;
 
 using Bytes = Vector<uint8_t, 0, SystemAllocPolicy>;
-using UniqueBytes = UniquePtr<Bytes>;
-using UniqueConstBytes = UniquePtr<const Bytes>;
 using UTF8Bytes = Vector<char, 0, SystemAllocPolicy>;
 using InstanceVector = Vector<Instance*, 0, SystemAllocPolicy>;
 using UniqueCharsVector = Vector<UniqueChars, 0, SystemAllocPolicy>;
-using RenumberVector = Vector<uint32_t, 0, SystemAllocPolicy>;
 
 }  // namespace wasm
 }  // namespace js

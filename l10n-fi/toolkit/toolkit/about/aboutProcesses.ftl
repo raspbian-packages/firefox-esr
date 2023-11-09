@@ -126,6 +126,10 @@ about-processes-frame-name-many = Alikehykset ({ $number }): { $shortUrl }
 
 ## Utility process actor names
 
+about-processes-utility-actor-audio-decoder-generic = Yleinen äänidekooderi
+about-processes-utility-actor-audio-decoder-applemedia = Apple Media -äänidekooderi
+about-processes-utility-actor-audio-decoder-wmf = Windows Media Framework -äänidekooderi
+
 ## Displaying CPU (percentage and total)
 ## Variables:
 ##    $percent (Number) The percentage of CPU used by the process or thread.

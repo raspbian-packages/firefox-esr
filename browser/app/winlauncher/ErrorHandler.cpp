@@ -71,6 +71,8 @@ static bool gForceEventLog = false;
 
 namespace {
 
+constexpr wchar_t kEventSourceName[] = L"" MOZ_APP_DISPLAYNAME " Launcher";
+
 struct EventSourceDeleter {
   using pointer = HANDLE;
 
@@ -90,7 +92,8 @@ struct SerializedEventData {
 static void PostErrorToLog(const mozilla::LauncherError& aError) {
   // This is very bare-bones; just enough to spit out an HRESULT to the
   // Application event log.
-  EventLog log(::RegisterEventSourceW(nullptr, L"Firefox"));
+  EventLog log(::RegisterEventSourceW(nullptr, kEventSourceName));
+
   if (!log) {
     return;
   }
@@ -149,7 +152,7 @@ class TempFileWriter final : public mozilla::JSONWriteFunc {
 
   explicit operator bool() const { return !mFailed; }
 
-  void Write(const mozilla::Span<const char>& aStr) override {
+  void Write(const mozilla::Span<const char>& aStr) final {
     if (mFailed) {
       return;
     }
@@ -620,12 +623,8 @@ static bool PrepPing(const PingThreadContext& aContext, const std::wstring& aId,
 }
 
 static bool DoSendPing(const PingThreadContext& aContext) {
-  auto writeFunc = mozilla::MakeUnique<TempFileWriter>();
-  if (!(*writeFunc)) {
-    return false;
-  }
-
-  mozilla::JSONWriter json(std::move(writeFunc));
+  TempFileWriter tempFile;
+  mozilla::JSONWriter json(tempFile);
 
   UUID uuid;
   if (::UuidCreate(&uuid) != RPC_S_OK) {
@@ -647,11 +646,6 @@ static bool DoSendPing(const PingThreadContext& aContext) {
   }
 
   // Obtain the name of the temp file that we have written
-  TempFileWriter& tempFile = *static_cast<TempFileWriter*>(json.WriteFunc());
-  if (!tempFile) {
-    return false;
-  }
-
   const std::wstring& fileName = tempFile.GetFileName();
 
   // Using the path to our executable binary, construct the path to

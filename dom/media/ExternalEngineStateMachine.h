@@ -72,7 +72,7 @@ class ExternalEngineStateMachine final
       dom::MediaDecoderStateMachineDebugInfo& aInfo) override {
     // This debug info doesn't fit in this scenario because most decoding
     // details are only visible inside the external engine.
-    return GenericPromise::CreateAndReject(NS_ERROR_FAILURE, __func__);
+    return GenericPromise::CreateAndResolve(true, __func__);
   }
 
   void NotifyEvent(ExternalEngineEvent aEvent) {
@@ -81,8 +81,18 @@ class ExternalEngineStateMachine final
         "ExternalEngineStateMachine::NotifyEvent",
         [self = RefPtr{this}, aEvent] { self->NotifyEventInternal(aEvent); }));
   }
+  void NotifyError(const MediaResult& aError) {
+    // On the engine manager thread.
+    Unused << OwnerThread()->Dispatch(NS_NewRunnableFunction(
+        "ExternalEngineStateMachine::NotifyError",
+        [self = RefPtr{this}, aError] { self->NotifyErrorInternal(aError); }));
+  }
 
   const char* GetStateStr() const;
+
+  RefPtr<SetCDMPromise> SetCDMProxy(CDMProxy* aProxy) override;
+
+  bool IsCDMProxySupported(CDMProxy* aProxy) override;
 
  private:
   ~ExternalEngineStateMachine() = default;
@@ -99,6 +109,7 @@ class ExternalEngineStateMachine final
       RunningEngine,
       SeekingData,
       ShutdownEngine,
+      RecoverEngine,
     };
     struct InitEngine {
       InitEngine() = default;
@@ -139,6 +150,10 @@ class ExternalEngineStateMachine final
         mSeekJob.RejectIfExists(aCallSite);
       }
       bool IsSeeking() const { return mSeekRequest.Exists(); }
+      media::TimeUnit GetTargetTime() const {
+        return mSeekJob.mTarget ? mSeekJob.mTarget->GetTime()
+                                : media::TimeUnit::Invalid();
+      }
       // Set it to true when starting seeking, and would be set to false after
       // receiving engine's `seeked` event. Used on thhe task queue only.
       bool mWaitingEngineSeeked = false;
@@ -146,7 +161,12 @@ class ExternalEngineStateMachine final
       MozPromiseRequestHolder<MediaFormatReader::SeekPromise> mSeekRequest;
       SeekJob mSeekJob;
     };
-    struct ShutdownEngine {};
+    struct ShutdownEngine {
+      RefPtr<ShutdownPromise> mShutdown;
+    };
+    // This state is used to recover the media engine after the MF CDM process
+    // crashes.
+    struct RecoverEngine : public InitEngine {};
 
     StateObject() : mData(InitEngine()), mName(State::InitEngine){};
     explicit StateObject(ReadingMetadata&& aArg)
@@ -157,15 +177,24 @@ class ExternalEngineStateMachine final
         : mData(std::move(aArg)), mName(State::SeekingData){};
     explicit StateObject(ShutdownEngine&& aArg)
         : mData(std::move(aArg)), mName(State::ShutdownEngine){};
+    explicit StateObject(RecoverEngine&& aArg)
+        : mData(std::move(aArg)), mName(State::RecoverEngine){};
 
     bool IsInitEngine() const { return mData.is<InitEngine>(); }
     bool IsReadingMetadata() const { return mData.is<ReadingMetadata>(); }
     bool IsRunningEngine() const { return mData.is<RunningEngine>(); }
     bool IsSeekingData() const { return mData.is<SeekingData>(); }
     bool IsShutdownEngine() const { return mData.is<ShutdownEngine>(); }
+    bool IsRecoverEngine() const { return mData.is<RecoverEngine>(); }
 
     InitEngine* AsInitEngine() {
-      return IsInitEngine() ? &mData.as<InitEngine>() : nullptr;
+      if (IsInitEngine()) {
+        return &mData.as<InitEngine>();
+      }
+      if (IsRecoverEngine()) {
+        return &mData.as<RecoverEngine>();
+      }
+      return nullptr;
     }
     ReadingMetadata* AsReadingMetadata() {
       return IsReadingMetadata() ? &mData.as<ReadingMetadata>() : nullptr;
@@ -173,18 +202,21 @@ class ExternalEngineStateMachine final
     SeekingData* AsSeekingData() {
       return IsSeekingData() ? &mData.as<SeekingData>() : nullptr;
     }
+    ShutdownEngine* AsShutdownEngine() {
+      return IsShutdownEngine() ? &mData.as<ShutdownEngine>() : nullptr;
+    }
 
     Variant<InitEngine, ReadingMetadata, RunningEngine, SeekingData,
-            ShutdownEngine>
+            ShutdownEngine, RecoverEngine>
         mData;
     State mName;
   } mState;
   using State = StateObject::State;
 
   void NotifyEventInternal(ExternalEngineEvent aEvent);
+  void NotifyErrorInternal(const MediaResult& aError);
 
   RefPtr<ShutdownPromise> Shutdown() override;
-  RefPtr<ShutdownPromise> ShutdownInternal();
 
   void SetPlaybackRate(double aPlaybackRate) override;
   void BufferedRangeUpdated() override;
@@ -198,12 +230,14 @@ class ExternalEngineStateMachine final
   void SetCanPlayThrough(bool aCanPlayThrough) override {}
   void SetFragmentEndTime(const media::TimeUnit& aFragmentEndTime) override {}
 
+  void InitEngine();
   void OnEngineInitSuccess();
   void OnEngineInitFailure();
 
   void ReadMetadata();
   void OnMetadataRead(MetadataHolder&& aMetadata);
   void OnMetadataNotRead(const MediaResult& aError);
+  bool IsFormatSupportedByExternalEngine(const MediaInfo& aInfo);
 
   // Functions for handling external engine event.
   void OnLoadedFirstFrame();
@@ -238,11 +272,26 @@ class ExternalEngineStateMachine final
 
   void MaybeFinishWaitForData();
 
+  void SetBlankVideoToVideoContainer();
+
+  media::TimeUnit GetVideoThreshold();
+
+  bool ShouldRunEngineUpdateForRequest();
+
+  void UpdateSecondaryVideoContainer() override;
+
+  void RecoverFromCDMProcessCrashIfNeeded();
+
   UniquePtr<ExternalPlaybackEngine> mEngine;
 
   bool mHasEnoughAudio = false;
   bool mHasEnoughVideo = false;
   bool mSentPlaybackEndedEvent = false;
+  bool mHasReceivedFirstDecodedVideoFrame = false;
+
+  // Only used if setting CDM happens before the engine finishes initialization.
+  MozPromiseHolder<SetCDMPromise> mSetCDMProxyPromise;
+  MozPromiseRequestHolder<SetCDMPromise> mSetCDMProxyRequest;
 };
 
 class ExternalPlaybackEngine {
@@ -269,6 +318,7 @@ class ExternalPlaybackEngine {
   virtual media::TimeUnit GetCurrentPosition() = 0;
   virtual void NotifyEndOfStream(TrackInfo::TrackType aType) = 0;
   virtual void SetMediaInfo(const MediaInfo& aInfo) = 0;
+  virtual bool SetCDMProxy(CDMProxy* aProxy) = 0;
 
   ExternalEngineStateMachine* const MOZ_NON_OWNING_REF mOwner;
 };

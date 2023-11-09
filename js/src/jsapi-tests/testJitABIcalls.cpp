@@ -8,6 +8,8 @@
 #include "mozilla/FloatingPoint.h"
 #include "mozilla/IntegerTypeTraits.h"
 
+#include <iterator>
+
 #include "jit/ABIFunctions.h"
 #include "jit/IonAnalysis.h"
 #include "jit/Linker.h"
@@ -442,7 +444,7 @@ IntTypeOf_t<Type> ConvertToInt(Type v) {
 // Check if the raw values of arguments are equal to the numbers given in the
 // std::integer_sequence given as the first argument.
 template <typename... Args, typename Int, Int... Val>
-NO_ARGS_CHECKS bool CheckArgsEqual(JSAPITest* instance, int lineno,
+NO_ARGS_CHECKS bool CheckArgsEqual(JSAPIRuntimeTest* instance, int lineno,
                                    std::integer_sequence<Int, Val...>,
                                    Args... args) {
   return (instance->checkEqual(ConvertToInt<Args>(args), IntTypeOf_t<Args>(Val),
@@ -473,7 +475,7 @@ struct DefineCheckArgs;
 
 template <typename Res, typename... Args>
 struct DefineCheckArgs<Res (*)(Args...)> {
-  void set_instance(JSAPITest* instance, bool* reportTo) {
+  void set_instance(JSAPIRuntimeTest* instance, bool* reportTo) {
     MOZ_ASSERT((!instance_) != (!instance));
     instance_ = instance;
     MOZ_ASSERT((!reportTo_) != (!reportTo));
@@ -583,10 +585,10 @@ struct DefineCheckArgs<Res (*)(Args...)> {
         {ArgsFillBits::table, ArgsFillBits::size, CheckArgsFillBits},
     };
     const Test* tests = testsWithoutBoolArgs;
-    size_t numTests = sizeof(testsWithoutBoolArgs) / sizeof(Test);
+    size_t numTests = std::size(testsWithoutBoolArgs);
     if (AnyBool_v<Args...>) {
       tests = testsWithBoolArgs;
-      numTests = sizeof(testsWithBoolArgs) / sizeof(Test);
+      numTests = std::size(testsWithBoolArgs);
     }
 
     for (size_t i = 0; i < numTests; i++) {
@@ -607,17 +609,17 @@ struct DefineCheckArgs<Res (*)(Args...)> {
   // As we are checking specific function signature, we cannot add extra
   // parameters, thus we rely on static variables to pass the value of the
   // instance that we are testing.
-  static JSAPITest* instance_;
+  static JSAPIRuntimeTest* instance_;
   static bool* reportTo_;
 };
 
 template <typename Res, typename... Args>
-JSAPITest* DefineCheckArgs<Res (*)(Args...)>::instance_ = nullptr;
+JSAPIRuntimeTest* DefineCheckArgs<Res (*)(Args...)>::instance_ = nullptr;
 
 template <typename Res, typename... Args>
 bool* DefineCheckArgs<Res (*)(Args...)>::reportTo_ = nullptr;
 
-// This is a child class of JSAPITest, which is used behind the scenes to
+// This is a child class of JSAPIRuntimeTest, which is used behind the scenes to
 // register test cases in jsapi-tests. Each instance of it creates a new test
 // case. This class is specialized with the type of the function to check, and
 // initialized with the name of the function with the given signature.
@@ -626,7 +628,7 @@ bool* DefineCheckArgs<Res (*)(Args...)>::reportTo_ = nullptr;
 // signature and checks that the JIT interpretation of arguments location
 // matches the C++ interpretation. If it differs, the test case will fail.
 template <typename Sig>
-class JitABICall final : public JSAPITest, public DefineCheckArgs<Sig> {
+class JitABICall final : public JSAPIRuntimeTest, public DefineCheckArgs<Sig> {
  public:
   explicit JitABICall(const char* name) : name_(name) { reuseGlobal = true; }
   virtual const char* name() override { return name_; }
@@ -634,7 +636,9 @@ class JitABICall final : public JSAPITest, public DefineCheckArgs<Sig> {
     bool result = true;
     this->set_instance(this, &result);
 
-    StackMacroAssembler masm(cx);
+    TempAllocator temp(&cx->tempLifoAlloc());
+    JitContext jcx(cx);
+    StackMacroAssembler masm(cx, temp);
     AutoCreatedBy acb(masm, __func__);
     PrepareJit(masm);
 
@@ -660,6 +664,9 @@ class JitABICall final : public JSAPITest, public DefineCheckArgs<Sig> {
     Register base = t1;
     regs.take(base);
 #elif defined(JS_CODEGEN_LOONG64)
+    Register base = t0;
+    regs.take(base);
+#elif defined(JS_CODEGEN_RISCV64)
     Register base = t0;
     regs.take(base);
 #else

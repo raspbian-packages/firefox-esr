@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Aldoni legosignon por tiu ĉi paĝo
-    .accesskey = l
-    .tooltiptext = Aldoni legosignon por tiu ĉi paĝo
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Aldoni paĝon al legosignoj
-    .accesskey = A
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Modifi legosignon
-    .accesskey = M
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Aldoni legosignon por tiu ĉi paĝo
-    .accesskey = l
-    .tooltiptext = Aldoni legosignon por tiu ĉi paĝo ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Redakti tiun ĉi legosignon
-    .accesskey = l
-    .tooltiptext = Redakti tiun ĉi legosignon
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Redakti tiun ĉi legosignon
-    .accesskey = l
-    .tooltiptext = Redakti tiun ĉi legosignon ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Aldoni paĝon al legosignoj…
     .accesskey = p
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Malfermi ligilon en nova privata fenestro
     .accesskey = p
-
-main-context-menu-bookmark-link =
-    .label = Aldoni legosignon por ligilo
-    .accesskey = A
 
 main-context-menu-bookmark-link-2 =
     .label = Aldoni ligilon al legosignoj…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Sendi sonon retpoŝte…
     .accesskey = S
 
-main-context-menu-plugin-play =
-    .label = Aktivigi tiun ĉi kromprogramon
-    .accesskey = A
-
-main-context-menu-plugin-hide =
-    .label = Kaŝi tiun ĉi kromprogramon
-    .accesskey = K
-
 main-context-menu-save-to-pocket =
     .label = Konservi paĝon en { -pocket-brand-name }
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = p
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Uzi retpoŝtan maskon de { -relay-brand-short-name }
+    .accesskey = r
 
 main-context-menu-suggest-strong-password =
     .label = Sugesti fortan pasvorton…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Reŝargi kadron
     .accesskey = R
 
-main-context-menu-frame-bookmark =
-    .label = Aldoni legosignon por tiu ĉi kadro
-    .accesskey = l
-
 main-context-menu-frame-add-bookmark =
     .label = Aldoni kadron al legosignoj…
     .accesskey = k
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Vidi informon de kadro
     .accesskey = i
-
-main-context-menu-print-selection =
-    .label = Presi elektaĵon
-    .accesskey = e
 
 main-context-menu-print-selection-2 =
     .label = Presi elektaĵon…

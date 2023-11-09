@@ -4,7 +4,7 @@ add_task(async function test() {
   // of idle-daily).
   Services.prefs.setCharPref("places.frecency.decayRate", "1.0");
   let tab = await BrowserTestUtils.openNewForegroundTab(gBrowser);
-  registerCleanupFunction(async function() {
+  registerCleanupFunction(async function () {
     Services.prefs.clearUserPref("places.frecency.decayRate");
     BrowserTestUtils.removeTab(tab);
     await PlacesUtils.history.clear();
@@ -13,7 +13,11 @@ add_task(async function test() {
   // First add a visit to the page, this will ensure that later we skip
   // updating the frecency for a newly not-found page.
   await PlacesTestUtils.addVisits({ uri: TEST_URL });
-  let frecency = await PlacesTestUtils.fieldInDB(TEST_URL, "frecency");
+  let frecency = await PlacesTestUtils.getDatabaseValue(
+    "moz_places",
+    "frecency",
+    { url: TEST_URL }
+  );
   is(frecency, 100, "Check initial frecency");
 
   // Used to verify errors are not marked as typed.
@@ -29,21 +33,27 @@ add_task(async function test() {
     }
     PlacesObservers.addListener(["page-visited"], onVisits);
   });
-  BrowserTestUtils.loadURI(gBrowser.selectedBrowser, TEST_URL);
+  BrowserTestUtils.loadURIString(gBrowser.selectedBrowser, TEST_URL);
   await promiseVisit;
 
   is(
-    await PlacesTestUtils.fieldInDB(TEST_URL, "frecency"),
+    await PlacesTestUtils.getDatabaseValue("moz_places", "frecency", {
+      url: TEST_URL,
+    }),
     frecency,
     "Frecency should be unchanged"
   );
   is(
-    await PlacesTestUtils.fieldInDB(TEST_URL, "hidden"),
+    await PlacesTestUtils.getDatabaseValue("moz_places", "hidden", {
+      url: TEST_URL,
+    }),
     0,
     "Page should not be hidden"
   );
   is(
-    await PlacesTestUtils.fieldInDB(TEST_URL, "typed"),
+    await PlacesTestUtils.getDatabaseValue("moz_places", "typed", {
+      url: TEST_URL,
+    }),
     0,
     "page should not be marked as typed"
   );

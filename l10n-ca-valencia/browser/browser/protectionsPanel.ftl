@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Informeu sobre un lloc que no funciona
 protections-panel-content-blocking-breakage-report-view-description = El bloqueig d'alguns elements de seguiment pot causar problemes en alguns llocs web. Notificar estos problemes ajuda a millorar el { -brand-short-name } per a tothom. Juntament amb l'informe, també s'enviarà a Mozilla un URL i informació de la configuració del vostre navegador. <label data-l10n-name="learn-more">Més informació</label>
+protections-panel-content-blocking-breakage-report-view-description2 = El bloqueig d'alguns elements de seguiment pot causar problemes en alguns llocs web. Notificar estos problemes ajuda a millorar el { -brand-short-name } per a tothom. Juntament amb l'informe, també s'enviarà a { -vendor-short-name } un URL i informació de la configuració del vostre navegador.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,6 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Cancel·la
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Envia l'informe
+
+# Cookie Banner Handling
+

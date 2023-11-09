@@ -20,7 +20,6 @@ styleeditor-save-button = Speichern
     .accesskey = S
 styleeditor-options-button =
     .tooltiptext = Einstellungen für Stilbearbeitung
-styleeditor-media-rules = @media-Regeln
 styleeditor-at-rules = @-Regeln
 styleeditor-editor-textbox =
     .data-placeholder = CSS hier eingeben.
@@ -41,3 +40,12 @@ styleeditor-go-to-line =
     .accesskey = G
 # Label displayed when searching a term that is not found in any stylesheet path
 styleeditor-stylesheet-all-filtered = Es wurde kein passendes Stil-Dokument gefunden.
+
+# This string is shown in the style sheets list
+# Variables:
+#   $ruleCount (Integer) - The number of rules in the stylesheet.
+styleeditor-stylesheet-rule-count =
+    { $ruleCount ->
+        [one] { $ruleCount } Regel.
+       *[other] { $ruleCount } Regeln.
+    }

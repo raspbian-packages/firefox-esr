@@ -50,16 +50,14 @@ nsSHEntry::nsSHEntry(const nsSHEntry& aOther)
       mURI(aOther.mURI),
       mOriginalURI(aOther.mOriginalURI),
       mResultPrincipalURI(aOther.mResultPrincipalURI),
+      mUnstrippedURI(aOther.mUnstrippedURI),
       mReferrerInfo(aOther.mReferrerInfo),
       mTitle(aOther.mTitle),
       mPostData(aOther.mPostData),
-      mLoadType(0)  // XXX why not copy?
-      ,
+      mLoadType(0),  // XXX why not copy?
       mID(aOther.mID),
-      mScrollPositionX(0)  // XXX why not copy?
-      ,
-      mScrollPositionY(0)  // XXX why not copy?
-      ,
+      mScrollPositionX(0),  // XXX why not copy?
+      mScrollPositionY(0),  // XXX why not copy?
       mParent(aOther.mParent),
       mStateData(aOther.mStateData),
       mSrcdocData(aOther.mSrcdocData),
@@ -150,6 +148,19 @@ nsSHEntry::SetResultPrincipalURI(nsIURI* aResultPrincipalURI) {
 }
 
 NS_IMETHODIMP
+nsSHEntry::GetUnstrippedURI(nsIURI** aUnstrippedURI) {
+  *aUnstrippedURI = mUnstrippedURI;
+  NS_IF_ADDREF(*aUnstrippedURI);
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsSHEntry::SetUnstrippedURI(nsIURI* aUnstrippedURI) {
+  mUnstrippedURI = aUnstrippedURI;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
 nsSHEntry::GetLoadReplace(bool* aLoadReplace) {
   *aLoadReplace = mLoadReplace;
   return NS_OK;
@@ -229,6 +240,12 @@ nsSHEntry::GetPostData(nsIInputStream** aResult) {
 NS_IMETHODIMP
 nsSHEntry::SetPostData(nsIInputStream* aPostData) {
   mPostData = aPostData;
+  return NS_OK;
+}
+
+NS_IMETHODIMP
+nsSHEntry::GetHasPostData(bool* aResult) {
+  *aResult = !!mPostData;
   return NS_OK;
 }
 
@@ -362,18 +379,16 @@ nsSHEntry::SetContentType(const nsACString& aContentType) {
 }
 
 NS_IMETHODIMP
-nsSHEntry::Create(nsIURI* aURI, const nsAString& aTitle,
-                  nsIInputStream* aInputStream, uint32_t aCacheKey,
-                  const nsACString& aContentType,
-                  nsIPrincipal* aTriggeringPrincipal,
-                  nsIPrincipal* aPrincipalToInherit,
-                  nsIPrincipal* aPartitionedPrincipalToInherit,
-                  nsIContentSecurityPolicy* aCsp, const nsID& aDocShellID,
-                  bool aDynamicCreation, nsIURI* aOriginalURI,
-                  nsIURI* aResultPrincipalURI, bool aLoadReplace,
-                  nsIReferrerInfo* aReferrerInfo, const nsAString& aSrcdocData,
-                  bool aSrcdocEntry, nsIURI* aBaseURI, bool aSaveLayoutState,
-                  bool aExpired, bool aUserActivation) {
+nsSHEntry::Create(
+    nsIURI* aURI, const nsAString& aTitle, nsIInputStream* aInputStream,
+    uint32_t aCacheKey, const nsACString& aContentType,
+    nsIPrincipal* aTriggeringPrincipal, nsIPrincipal* aPrincipalToInherit,
+    nsIPrincipal* aPartitionedPrincipalToInherit,
+    nsIContentSecurityPolicy* aCsp, const nsID& aDocShellID,
+    bool aDynamicCreation, nsIURI* aOriginalURI, nsIURI* aResultPrincipalURI,
+    nsIURI* aUnstrippedURI, bool aLoadReplace, nsIReferrerInfo* aReferrerInfo,
+    const nsAString& aSrcdocData, bool aSrcdocEntry, nsIURI* aBaseURI,
+    bool aSaveLayoutState, bool aExpired, bool aUserActivation) {
   MOZ_ASSERT(
       aTriggeringPrincipal,
       "need a valid triggeringPrincipal to create a session history entry");
@@ -412,6 +427,7 @@ nsSHEntry::Create(nsIURI* aURI, const nsAString& aTitle,
 
   mOriginalURI = aOriginalURI;
   mResultPrincipalURI = aResultPrincipalURI;
+  mUnstrippedURI = aUnstrippedURI;
   mLoadReplace = aLoadReplace;
   mReferrerInfo = aReferrerInfo;
 
@@ -887,6 +903,9 @@ nsSHEntry::CreateLoadInfo(nsDocShellLoadState** aLoadState) {
   emplacedResultPrincipalURI.emplace(std::move(resultPrincipalURI));
   loadState->SetMaybeResultPrincipalURI(emplacedResultPrincipalURI);
 
+  nsCOMPtr<nsIURI> unstrippedURI = GetUnstrippedURI();
+  loadState->SetUnstrippedURI(unstrippedURI);
+
   loadState->SetLoadReplace(GetLoadReplace());
   nsCOMPtr<nsIInputStream> postData = GetPostData();
   loadState->SetPostDataStream(postData);
@@ -1101,12 +1120,12 @@ nsSHEntry::GetBfcacheID(uint64_t* aBFCacheID) {
 }
 
 NS_IMETHODIMP
-nsSHEntry::GetWireframe(JSContext* aCx, JS::MutableHandleValue aOut) {
+nsSHEntry::GetWireframe(JSContext* aCx, JS::MutableHandle<JS::Value> aOut) {
   aOut.set(JS::NullValue());
   return NS_OK;
 }
 
 NS_IMETHODIMP
-nsSHEntry::SetWireframe(JSContext* aCx, JS::HandleValue aArg) {
+nsSHEntry::SetWireframe(JSContext* aCx, JS::Handle<JS::Value> aArg) {
   return NS_ERROR_NOT_IMPLEMENTED;
 }

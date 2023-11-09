@@ -4,23 +4,21 @@ const BASE_PROBE_NAME = "browser.engagement.navigation.";
 const SCALAR_CONTEXT_MENU = BASE_PROBE_NAME + "contextmenu";
 const SCALAR_ABOUT_NEWTAB = BASE_PROBE_NAME + "about_newtab";
 
-add_setup(async function() {
+add_setup(async function () {
   // Create two new search engines. Mark one as the default engine, so
   // the test don't crash. We need to engines for this test as the searchbar
   // in content doesn't display the default search engine among the one-off engines.
-  await SearchTestUtils.installSearchExtension({
-    name: "MozSearch",
-    keyword: "mozalias",
-  });
+  await SearchTestUtils.installSearchExtension(
+    {
+      name: "MozSearch",
+      keyword: "mozalias",
+    },
+    { setAsDefault: true }
+  );
   await SearchTestUtils.installSearchExtension({
     name: "MozSearch2",
     keyword: "mozalias2",
   });
-
-  // Make the first engine the default search engine.
-  let engineDefault = Services.search.getEngineByName("MozSearch");
-  let originalEngine = await Services.search.getDefault();
-  await Services.search.setDefault(engineDefault);
 
   // Move the second engine at the beginning of the one-off list.
   let engineOneOff = Services.search.getEngineByName("MozSearch2");
@@ -33,9 +31,7 @@ add_setup(async function() {
   // Enable event recording for the events tested here.
   Services.telemetry.setEventRecordingEnabled("navigation", true);
 
-  // Make sure to restore the engine once we're done.
-  registerCleanupFunction(async function() {
-    await Services.search.setDefault(originalEngine);
+  registerCleanupFunction(async function () {
     await PlacesUtils.history.clear();
     Services.telemetry.setEventRecordingEnabled("navigation", false);
     Services.telemetry.canRecordExtended = oldCanRecord;
@@ -46,9 +42,8 @@ add_task(async function test_context_menu() {
   // Let's reset the Telemetry data.
   Services.telemetry.clearScalars();
   Services.telemetry.clearEvents();
-  let search_hist = TelemetryTestUtils.getAndClearKeyedHistogram(
-    "SEARCH_COUNTS"
-  );
+  let search_hist =
+    TelemetryTestUtils.getAndClearKeyedHistogram("SEARCH_COUNTS");
 
   // Open a new tab with a page containing some text.
   let tab = await BrowserTestUtils.openNewForegroundTab(
@@ -57,7 +52,7 @@ add_task(async function test_context_menu() {
   );
 
   info("Select all the text in the page.");
-  await SpecialPowers.spawn(tab.linkedBrowser, [""], async function() {
+  await SpecialPowers.spawn(tab.linkedBrowser, [""], async function () {
     return new Promise(resolve => {
       content.document.addEventListener("selectionchange", () => resolve(), {
         once: true,
@@ -81,7 +76,7 @@ add_task(async function test_context_menu() {
     "id",
     "context-searchselect"
   )[0];
-  searchItem.click();
+  contextMenu.activateItem(searchItem);
 
   info("Validate the search metrics.");
 
@@ -135,16 +130,16 @@ add_task(async function test_about_newtab() {
   // Let's reset the counts.
   Services.telemetry.clearScalars();
   Services.telemetry.clearEvents();
-  let search_hist = TelemetryTestUtils.getAndClearKeyedHistogram(
-    "SEARCH_COUNTS"
-  );
+  Services.fog.testResetFOG();
+  let search_hist =
+    TelemetryTestUtils.getAndClearKeyedHistogram("SEARCH_COUNTS");
 
   let tab = await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
     "about:newtab",
     false
   );
-  await SpecialPowers.spawn(tab.linkedBrowser, [], async function() {
+  await SpecialPowers.spawn(tab.linkedBrowser, [], async function () {
     await ContentTaskUtils.waitForCondition(() => !content.document.hidden);
   });
 
@@ -189,6 +184,19 @@ add_task(async function test_about_newtab() {
       },
     ],
     { category: "navigation", method: "search" }
+  );
+
+  // Also also check Glean events.
+  const record = Glean.newtabSearch.issued.testGetValue();
+  Assert.ok(!!record, "Must have recorded a search issuance");
+  Assert.equal(record.length, 1, "One search, one event");
+  Assert.deepEqual(
+    {
+      search_access_point: "about_newtab",
+      telemetry_id: "other-MozSearch",
+    },
+    record[0].extra,
+    "Must have recorded the expected information."
   );
 
   BrowserTestUtils.removeTab(tab);

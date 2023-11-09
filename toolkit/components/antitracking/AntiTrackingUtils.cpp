@@ -19,13 +19,16 @@
 #include "mozilla/net/NeckoChannelParams.h"
 #include "mozilla/PermissionManager.h"
 #include "mozIThirdPartyUtil.h"
+#include "nsEffectiveTLDService.h"
 #include "nsGlobalWindowInner.h"
 #include "nsIChannel.h"
+#include "nsICookieService.h"
 #include "nsIHttpChannel.h"
 #include "nsIPermission.h"
 #include "nsIURI.h"
 #include "nsNetUtil.h"
 #include "nsPIDOMWindow.h"
+#include "nsRFPService.h"
 #include "nsSandboxFlags.h"
 #include "nsScriptSecurityManager.h"
 #include "PartitioningExceptionList.h"
@@ -84,7 +87,7 @@ already_AddRefed<nsIURI> AntiTrackingUtils::MaybeGetDocumentURIBeingLoaded(
     // coming from an OnStopRequest notification, which might mean that our
     // document may still be in the loading process, so we may need to pass in
     // the uriBeingLoaded argument explicitly.
-    rv = aChannel->GetURI(getter_AddRefs(uriBeingLoaded));
+    rv = NS_GetFinalChannelURI(aChannel, getter_AddRefs(uriBeingLoaded));
     if (NS_WARN_IF(NS_FAILED(rv))) {
       return nullptr;
     }
@@ -119,6 +122,28 @@ bool AntiTrackingUtils::CreateStoragePermissionKey(nsIPrincipal* aPrincipal,
   }
 
   CreateStoragePermissionKey(origin, aKey);
+  return true;
+}
+
+// static
+bool AntiTrackingUtils::CreateStorageRequestPermissionKey(
+    nsIURI* aURI, nsACString& aPermissionKey) {
+  MOZ_ASSERT(aPermissionKey.IsEmpty());
+  RefPtr<nsEffectiveTLDService> eTLDService =
+      nsEffectiveTLDService::GetInstance();
+  if (!eTLDService) {
+    return false;
+  }
+  nsCString site;
+  nsresult rv = eTLDService->GetSite(aURI, site);
+  if (NS_FAILED(rv)) {
+    return false;
+  }
+  static const nsLiteralCString prefix =
+      nsLiteralCString("AllowStorageAccessRequest^");
+  aPermissionKey.SetCapacity(prefix.Length() + site.Length());
+  aPermissionKey.Append(prefix);
+  aPermissionKey.Append(site);
   return true;
 }
 
@@ -862,4 +887,13 @@ void AntiTrackingUtils::UpdateAntiTrackingInfoForChannel(nsIChannel* aChannel) {
   nsCOMPtr<nsIURI> uri;
   Unused << aChannel->GetURI(getter_AddRefs(uri));
   net::CookieJarSettings::Cast(cookieJarSettings)->SetPartitionKey(uri);
+
+  // Generate the fingerprinting randomization key for top-level loads. The key
+  // will automatically be propagated to sub loads.
+  auto RFPRandomKey =
+      nsRFPService::GenerateKey(uri, NS_UsePrivateBrowsing(aChannel));
+  if (RFPRandomKey) {
+    net::CookieJarSettings::Cast(cookieJarSettings)
+        ->SetFingerprintingRandomizationKey(RFPRandomKey.ref());
+  }
 }

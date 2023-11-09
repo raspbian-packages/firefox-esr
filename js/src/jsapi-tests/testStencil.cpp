@@ -11,6 +11,7 @@
 
 #include "frontend/CompilationStencil.h"
 #include "js/CompilationAndEvaluation.h"
+#include "js/experimental/CompileScript.h"
 #include "js/experimental/JSStencil.h"
 #include "js/Modules.h"
 #include "js/OffThreadScriptCompilation.h"
@@ -97,7 +98,7 @@ bool basic_test(const CharT* chars) {
   // Link and evaluate the module graph. The link step used to be call
   // "instantiate" but is unrelated to the concept in Stencil with same name.
   JS::RootedValue rval(cx);
-  CHECK(JS::ModuleInstantiate(cx, moduleObject));
+  CHECK(JS::ModuleLink(cx, moduleObject));
   CHECK(JS::ModuleEvaluate(cx, moduleObject, &rval));
   CHECK(!rval.isUndefined());
 
@@ -248,6 +249,16 @@ BEGIN_TEST(testStencil_Transcode) {
       CHECK(res == JS::TranscodeResult::Ok);
     }
 
+    {
+      JS::FrontendContext* fc = JS::NewFrontendContext();
+      JS::DecodeOptions decodeOptions;
+      JS::TranscodeRange range(buffer.begin(), buffer.length());
+      JS::TranscodeResult res =
+          JS::DecodeStencil(fc, decodeOptions, range, getter_AddRefs(stencil));
+      CHECK(res == JS::TranscodeResult::Ok);
+      JS::DestroyFrontendContext(fc);
+    }
+
     // Delete the buffer to verify that the decoded stencil has no dependency
     // to the buffer.
     memset(buffer.begin(), 0, buffer.length());
@@ -351,7 +362,7 @@ BEGIN_TEST(testStencil_OffThread) {
     lock.wait();
   }
 
-  RefPtr<JS::Stencil> stencil = JS::FinishCompileToStencilOffThread(cx, token);
+  RefPtr<JS::Stencil> stencil = JS::FinishOffThreadStencil(cx, token);
   CHECK(stencil);
 
   JS::InstantiateOptions instantiateOptions(options);
@@ -402,7 +413,7 @@ BEGIN_TEST(testStencil_OffThreadWithInstantiationStorage) {
 
   JS::Rooted<JS::InstantiationStorage> storage(cx);
   RefPtr<JS::Stencil> stencil =
-      JS::FinishCompileToStencilOffThread(cx, token, storage.address());
+      JS::FinishOffThreadStencil(cx, token, storage.address());
   CHECK(stencil);
 
   JS::InstantiateOptions instantiateOptions(options);
@@ -450,8 +461,7 @@ BEGIN_TEST(testStencil_OffThreadModule) {
     lock.wait();
   }
 
-  RefPtr<JS::Stencil> stencil =
-      JS::FinishCompileModuleToStencilOffThread(cx, token);
+  RefPtr<JS::Stencil> stencil = JS::FinishOffThreadStencil(cx, token);
   CHECK(stencil);
 
   JS::InstantiateOptions instantiateOptions(options);
@@ -460,7 +470,7 @@ BEGIN_TEST(testStencil_OffThreadModule) {
   CHECK(moduleObject);
 
   JS::RootedValue rval(cx);
-  CHECK(JS::ModuleInstantiate(cx, moduleObject));
+  CHECK(JS::ModuleLink(cx, moduleObject));
   CHECK(JS::ModuleEvaluate(cx, moduleObject, &rval));
   CHECK(!rval.isUndefined());
 
@@ -506,7 +516,7 @@ BEGIN_TEST(testStencil_OffThreadModuleWithInstantiationStorage) {
 
   JS::Rooted<JS::InstantiationStorage> storage(cx);
   RefPtr<JS::Stencil> stencil =
-      JS::FinishCompileModuleToStencilOffThread(cx, token, storage.address());
+      JS::FinishOffThreadStencil(cx, token, storage.address());
   CHECK(stencil);
 
   JS::InstantiateOptions instantiateOptions(options);
@@ -516,7 +526,7 @@ BEGIN_TEST(testStencil_OffThreadModuleWithInstantiationStorage) {
   CHECK(moduleObject);
 
   JS::RootedValue rval(cx);
-  CHECK(JS::ModuleInstantiate(cx, moduleObject));
+  CHECK(JS::ModuleLink(cx, moduleObject));
   CHECK(JS::ModuleEvaluate(cx, moduleObject, &rval));
   CHECK(!rval.isUndefined());
 
@@ -586,7 +596,7 @@ BEGIN_TEST(testStencil_OffThreadDecode) {
     }
   }
 
-  RefPtr<JS::Stencil> stencil = JS::FinishDecodeStencilOffThread(cx, token);
+  RefPtr<JS::Stencil> stencil = JS::FinishOffThreadStencil(cx, token);
   CHECK(stencil);
 
   CHECK(!JS::StencilIsBorrowed(stencil));
@@ -669,7 +679,7 @@ BEGIN_TEST(testStencil_OffThreadDecodeWithInstantiationStorage) {
 
   JS::Rooted<JS::InstantiationStorage> storage(cx);
   RefPtr<JS::Stencil> stencil =
-      JS::FinishDecodeStencilOffThread(cx, token, storage.address());
+      JS::FinishOffThreadStencil(cx, token, storage.address());
   CHECK(stencil);
 
   CHECK(!JS::StencilIsBorrowed(stencil));
@@ -751,7 +761,7 @@ BEGIN_TEST(testStencil_OffThreadDecodeBorrow) {
     }
   }
 
-  RefPtr<JS::Stencil> stencil = JS::FinishDecodeStencilOffThread(cx, token);
+  RefPtr<JS::Stencil> stencil = JS::FinishOffThreadStencil(cx, token);
   CHECK(stencil);
 
   CHECK(JS::StencilIsBorrowed(stencil));
@@ -842,7 +852,7 @@ BEGIN_TEST(testStencil_OffThreadDecodePinned) {
     }
   }
 
-  RefPtr<JS::Stencil> stencil = JS::FinishDecodeStencilOffThread(cx, token);
+  RefPtr<JS::Stencil> stencil = JS::FinishOffThreadStencil(cx, token);
   CHECK(stencil);
 
   CHECK(JS::StencilIsBorrowed(stencil));

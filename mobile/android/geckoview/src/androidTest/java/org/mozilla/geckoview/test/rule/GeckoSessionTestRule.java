@@ -9,9 +9,13 @@ import static org.junit.Assert.fail;
 
 import android.app.Instrumentation;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Pair;
@@ -42,6 +46,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -72,6 +79,7 @@ import org.mozilla.geckoview.GeckoSession.HistoryDelegate;
 import org.mozilla.geckoview.GeckoSession.MediaDelegate;
 import org.mozilla.geckoview.GeckoSession.NavigationDelegate;
 import org.mozilla.geckoview.GeckoSession.PermissionDelegate;
+import org.mozilla.geckoview.GeckoSession.PrintDelegate;
 import org.mozilla.geckoview.GeckoSession.ProgressDelegate;
 import org.mozilla.geckoview.GeckoSession.PromptDelegate;
 import org.mozilla.geckoview.GeckoSession.ScrollDelegate;
@@ -86,6 +94,7 @@ import org.mozilla.geckoview.WebExtension;
 import org.mozilla.geckoview.WebExtensionController;
 import org.mozilla.geckoview.WebNotificationDelegate;
 import org.mozilla.geckoview.WebPushDelegate;
+import org.mozilla.geckoview.test.GeckoViewTestActivity;
 import org.mozilla.geckoview.test.util.Environment;
 import org.mozilla.geckoview.test.util.RuntimeCreator;
 import org.mozilla.geckoview.test.util.TestServer;
@@ -135,7 +144,7 @@ public class GeckoSessionTestRule implements TestRule {
     displayTexture.setDefaultBufferSize(x, y);
 
     final Surface displaySurface = new Surface(displayTexture);
-    display.surfaceChanged(displaySurface, x, y);
+    display.surfaceChanged(new GeckoDisplay.SurfaceInfo.Builder(displaySurface).size(x, y).build());
 
     mDisplays.put(session, display);
     mDisplayTextures.put(session, displayTexture);
@@ -358,7 +367,9 @@ public class GeckoSessionTestRule implements TestRule {
   @Target(ElementType.METHOD)
   @Retention(RetentionPolicy.RUNTIME)
   public @interface IgnoreCrash {
-    /** @return True if content crashes should be ignored, false otherwise. Default is true. */
+    /**
+     * @return True if content crashes should be ignored, false otherwise. Default is true.
+     */
     boolean value() default true;
   }
 
@@ -758,6 +769,7 @@ public class GeckoSessionTestRule implements TestRule {
     DEFAULT_DELEGATES.add(MediaSession.Delegate.class);
     DEFAULT_DELEGATES.add(NavigationDelegate.class);
     DEFAULT_DELEGATES.add(PermissionDelegate.class);
+    DEFAULT_DELEGATES.add(PrintDelegate.class);
     DEFAULT_DELEGATES.add(ProgressDelegate.class);
     DEFAULT_DELEGATES.add(PromptDelegate.class);
     DEFAULT_DELEGATES.add(ScrollDelegate.class);
@@ -789,6 +801,7 @@ public class GeckoSessionTestRule implements TestRule {
           MediaSession.Delegate,
           NavigationDelegate,
           PermissionDelegate,
+          PrintDelegate,
           ProgressDelegate,
           PromptDelegate,
           ScrollDelegate,
@@ -1372,13 +1385,13 @@ public class GeckoSessionTestRule implements TestRule {
 
   protected void cleanupExtensions() throws Throwable {
     final WebExtensionController controller = getRuntime().getWebExtensionController();
-    final List<WebExtension> list = waitForResult(controller.list());
+    final List<WebExtension> list = waitForResult(controller.list(), env.getDefaultTimeoutMillis());
 
     boolean hasTestSupport = false;
     // Uninstall any left-over extensions
     for (final WebExtension extension : list) {
       if (!extension.id.equals(RuntimeCreator.TEST_SUPPORT_EXTENSION_ID)) {
-        waitForResult(controller.uninstall(extension));
+        waitForResult(controller.uninstall(extension), env.getDefaultTimeoutMillis());
       } else {
         hasTestSupport = true;
       }
@@ -2067,6 +2080,217 @@ public class GeckoSessionTestRule implements TestRule {
     session.getPanZoomController().onTouchEvent(moveEvent);
   }
 
+  /**
+   * Simulates a press to the Home button, causing the application to go to onPause. NB: Some time
+   * must elapse for the event to fully occur.
+   *
+   * @param context starting the Home intent
+   */
+  public void simulatePressHome(Context context) {
+    Intent intent = new Intent();
+    intent.setAction(Intent.ACTION_MAIN);
+    intent.addCategory(Intent.CATEGORY_HOME);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    context.startActivity(intent);
+  }
+
+  /**
+   * Simulates returningGeckoViewTestActivity to the foreground. Activity must already be in use.
+   * NB: Some time must elapse for the event to fully occur.
+   *
+   * @param context starting the intent
+   */
+  public void requestActivityToForeground(Context context) {
+    Intent notificationIntent = new Intent(context, GeckoViewTestActivity.class);
+    notificationIntent.setAction(Intent.ACTION_MAIN);
+    notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    context.startActivity(notificationIntent);
+  }
+
+  /**
+   * Mock Location Provider can be used in testing for creating mock locations. NB: Likely also need
+   * to set test setting geo.provider.testing to false to prevent network geolocation from
+   * interfering when using.
+   */
+  public class MockLocationProvider {
+
+    private final LocationManager locationManager;
+    private final String mockProviderName;
+    private boolean isActiveTestProvider = false;
+    private double mockLatitude;
+    private double mockLongitude;
+    private float mockAccuracy = .000001f;
+    private boolean doContinuallyPost;
+
+    @Nullable private ScheduledExecutorService executor;
+
+    /**
+     * Mock Location Provider adds a test provider to the location manager and controls sending mock
+     * locations. Use @{@link #postLocation()} to post the location to the location manager.
+     * Use @{@link #removeMockLocationProvider()} to remove the location provider to clean-up the
+     * test harness. Default accuracy is .000001f.
+     *
+     * @param locationManager location manager to accept the locations
+     * @param mockProviderName location provider that will use this location
+     * @param mockLatitude initial latitude in degrees that @{@link #postLocation()} will use
+     * @param mockLongitude initial longitude in degrees that @{@link #postLocation()} will use
+     * @param doContinuallyPost when posting a location, continue to post every 3s to keep location
+     *     current
+     */
+    public MockLocationProvider(
+        LocationManager locationManager,
+        String mockProviderName,
+        double mockLatitude,
+        double mockLongitude,
+        boolean doContinuallyPost) {
+      this.locationManager = locationManager;
+      this.mockProviderName = mockProviderName;
+      this.mockLatitude = mockLatitude;
+      this.mockLongitude = mockLongitude;
+      this.doContinuallyPost = doContinuallyPost;
+      addMockLocationProvider();
+    }
+
+    /** Adds a mock location provider that can have locations manually set. */
+    private void addMockLocationProvider() {
+      // Ensures that only one location provider with this name exists
+      removeMockLocationProvider();
+      locationManager.addTestProvider(
+          mockProviderName,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          false,
+          Criteria.POWER_LOW,
+          Criteria.ACCURACY_FINE);
+      locationManager.setTestProviderEnabled(mockProviderName, true);
+      isActiveTestProvider = true;
+    }
+
+    /**
+     * Removes the location provider. Recommend calling when ending test to prevent the mock
+     * provider remaining as a test provider.
+     */
+    public void removeMockLocationProvider() {
+      stopPostingLocation();
+      try {
+        locationManager.removeTestProvider(mockProviderName);
+      } catch (Exception e) {
+        // Throws an exception if there is no provider with that name
+      }
+      isActiveTestProvider = false;
+    }
+
+    /**
+     * Sets the mock location on MockLocationProvider, that will be used by @{@link #postLocation()}
+     *
+     * @param latitude latitude in degrees to mock
+     * @param longitude longitude in degrees to mock
+     */
+    public void setMockLocation(double latitude, double longitude) {
+      mockLatitude = latitude;
+      mockLongitude = longitude;
+    }
+
+    /**
+     * Sets the mock location on a MockLocationProvider, that will be used by @{@link
+     * #postLocation()} . Note, changing the accuracy can affect the importance of the mock provider
+     * compared to other location providers.
+     *
+     * @param latitude latitude in degrees to mock
+     * @param longitude longitude in degrees to mock
+     * @param accuracy horizontal accuracy in meters to mock
+     */
+    public void setMockLocation(double latitude, double longitude, float accuracy) {
+      mockLatitude = latitude;
+      mockLongitude = longitude;
+      mockAccuracy = accuracy;
+    }
+
+    /**
+     * When doContinuallyPost is set to true, @{@link #postLocation()} will post the location to the
+     * location manager every 3s. When set to false, @{@link #postLocation()} will only post the
+     * location once. Purpose is to prevent the location from becoming stale.
+     *
+     * @param doContinuallyPost setting for continually posting the location after calling @{@link
+     *     #postLocation()}
+     */
+    public void setDoContinuallyPost(boolean doContinuallyPost) {
+      this.doContinuallyPost = doContinuallyPost;
+    }
+
+    /**
+     * Shutsdown and removes the executor created by @{@link #postLocation()} when @{@link
+     * #doContinuallyPost is true} to stop posting the location.
+     */
+    public void stopPostingLocation() {
+      if (executor != null) {
+        executor.shutdown();
+        executor = null;
+      }
+    }
+
+    /**
+     * Posts the set location to the system location manager. If @{@link #doContinuallyPost} is
+     * true, the location will be posted every 3s by an executor, otherwise will post once.
+     */
+    public void postLocation() {
+      if (!isActiveTestProvider) {
+        throw new IllegalStateException("The mock test provider is not active.");
+      }
+
+      // Ensure the thread that was posting a location (if applicable) is stopped.
+      stopPostingLocation();
+
+      // Set Location
+      Location location = new Location(mockProviderName);
+      location.setAccuracy(mockAccuracy);
+      location.setLatitude(mockLatitude);
+      location.setLongitude(mockLongitude);
+      location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+      location.setTime(System.currentTimeMillis());
+      locationManager.setTestProviderLocation(mockProviderName, location);
+      Log.i(
+          LOGTAG,
+          mockProviderName
+              + " is posting location, lat: "
+              + mockLatitude
+              + " lon: "
+              + mockLongitude
+              + " acc: "
+              + mockAccuracy);
+      // Continually post location
+      if (doContinuallyPost) {
+        executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(
+            new Runnable() {
+              @Override
+              public void run() {
+                location.setElapsedRealtimeNanos(SystemClock.elapsedRealtimeNanos());
+                location.setTime(System.currentTimeMillis());
+                locationManager.setTestProviderLocation(mockProviderName, location);
+                Log.i(
+                    LOGTAG,
+                    mockProviderName
+                        + " is posting location, lat: "
+                        + mockLatitude
+                        + " lon: "
+                        + mockLongitude
+                        + " acc: "
+                        + mockAccuracy);
+              }
+            },
+            0,
+            3,
+            TimeUnit.SECONDS);
+      }
+    }
+  }
+
   Map<GeckoSession, WebExtension.Port> mPorts = new HashMap<>();
 
   private class MessageDelegate implements WebExtension.MessageDelegate, WebExtension.PortDelegate {
@@ -2230,6 +2454,14 @@ public class GeckoSessionTestRule implements TestRule {
   public boolean getActive(final @NonNull GeckoSession session) {
     final Boolean isActive = (Boolean) webExtensionApiCall(session, "GetActive", null);
     return isActive;
+  }
+
+  public void triggerCookieBannerDetected(final @NonNull GeckoSession session) {
+    webExtensionApiCall(session, "TriggerCookieBannerDetected", null);
+  }
+
+  public void triggerCookieBannerHandled(final @NonNull GeckoSession session) {
+    webExtensionApiCall(session, "TriggerCookieBannerHandled", null);
   }
 
   private Object waitForMessage(final WebExtension.Port port, final String id) {
@@ -2486,6 +2718,11 @@ public class GeckoSessionTestRule implements TestRule {
     webExtensionApiCall("CrashGpuProcess", null);
   }
 
+  /** Clears sites from the HSTS list. */
+  public void clearHSTSState() {
+    webExtensionApiCall("ClearHSTSState", null);
+  }
+
   private Object webExtensionApiCall(
       final @NonNull String apiName, final @NonNull SetArgs argsSetter) {
     return webExtensionApiCall(null, apiName, argsSetter);
@@ -2587,7 +2824,9 @@ public class GeckoSessionTestRule implements TestRule {
     }
   }
 
-  /** @see #addExternalDelegateUntilTestEnd(Class, DelegateRegistrar, DelegateRegistrar, Object) */
+  /**
+   * @see #addExternalDelegateUntilTestEnd(Class, DelegateRegistrar, DelegateRegistrar, Object)
+   */
   public <T> void addExternalDelegateUntilTestEnd(
       @NonNull final KClass<T> delegate,
       @NonNull final DelegateRegistrar<T> register,
@@ -2651,9 +2890,22 @@ public class GeckoSessionTestRule implements TestRule {
    * @return The value of the completed {@link GeckoResult}.
    */
   public <T> T waitForResult(@NonNull final GeckoResult<T> result) throws Throwable {
+    return waitForResult(result, mTimeoutMillis);
+  }
+
+  /**
+   * This is similar to waitForResult with specific timeout.
+   *
+   * @param result A {@link GeckoResult} instance.
+   * @param timeout timeout in milliseconds
+   * @param <T> The type of the value held by the {@link GeckoResult}
+   * @return The value of the completed {@link GeckoResult}.
+   */
+  private <T> T waitForResult(@NonNull final GeckoResult<T> result, final long timeout)
+      throws Throwable {
     beforeWait();
     try {
-      return UiThreadUtils.waitForResult(result, mTimeoutMillis);
+      return UiThreadUtils.waitForResult(result, timeout);
     } catch (final Throwable e) {
       throw unwrapRuntimeException(e);
     } finally {

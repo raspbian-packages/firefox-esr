@@ -4,10 +4,19 @@
 
 # Variables:
 #  $retriesLeft (Number): number of tries left
-webauthn-pin-invalid-prompt =
+webauthn-pin-invalid-long-prompt =
     { $retriesLeft ->
-        [0] ¡PIN incorrecto! Ingrese el PIN correcto para el dispositivo.
-        [one] ¡PIN incorrecto! Ingrese el PIN correcto para el dispositivo. Queda { $retriesLeft } intento restante.
-       *[other] ¡PIN incorrecto! Ingrese el PIN correcto para el dispositivo. Quedan { $retriesLeft } intentos restantes.
+        [one] PIN incorrecto. Le queda { $retriesLeft } intento antes de perder permanentemente el acceso a las credenciales en este dispositivo.
+       *[other] PIN incorrecto. Le quedan { $retriesLeft } intentos antes de perder permanentemente el acceso a las credenciales en este dispositivo.
     }
+webauthn-pin-invalid-short-prompt = PIN incorrecto. Pruebe de nuevo
 webauthn-pin-required-prompt = Ingrese el PIN del dispositivo.
+
+# Variables:
+#  $retriesLeft (Number): number of tries left
+webauthn-uv-invalid-long-prompt =
+    { $retriesLeft ->
+        [one] Falló la verificación de usuario. Queda { $retriesLeft } intento restante. Pruebe nuevamente.
+       *[other] Falló la verificación de usuario. Quedan { $retriesLeft } intentos restantes. Pruebe nuevamente.
+    }
+webauthn-uv-invalid-short-prompt = Falló la verificación de usuario. Pruebe nuevamente.

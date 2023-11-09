@@ -8,7 +8,26 @@ Releases
    :glob:
    :hidden:
 
+   nss_3_90_0.rst
+   nss_3_89_1.rst
+   nss_3_89.rst
+   nss_3_88_1.rst
+   nss_3_88.rst
+   nss_3_87_1.rst
+   nss_3_87.rst
+   nss_3_86.rst
+   nss_3_85.rst
+   nss_3_84.rst
+   nss_3_83.rst
+   nss_3_82.rst
+   nss_3_81.rst
+   nss_3_80.rst
+   nss_3_79_4.rst
+   nss_3_79_3.rst
+   nss_3_79_2.rst
+   nss_3_79_1.rst
    nss_3_79.rst
+   nss_3_78_1.rst
    nss_3_78.rst
    nss_3_77.rst
    nss_3_76_1.rst
@@ -23,6 +42,7 @@ Releases
    nss_3_70.rst
    nss_3_69_1.rst
    nss_3_69.rst
+   nss_3_68_4.rst
    nss_3_68_3.rst
    nss_3_68_2.rst
    nss_3_68_1.rst
@@ -34,29 +54,42 @@ Releases
 
 .. note::
 
-   **NSS 3.79** is the latest version of NSS.
-   Complete release notes are available here: :ref:`mozilla_projects_nss_nss_3_79_release_notes`
-
-   **NSS 3.68.4** is the latest LTS version of NSS.
-   Complete release notes are available here: :ref:`mozilla_projects_nss_nss_3_68_4_release_notes`
+   **NSS 3.90.0 (ESR)** is the latest version of NSS.
+   Complete release notes are available here: :ref:`mozilla_projects_nss_nss_3_90_0_release_notes`
 
 
 .. container::
 
-   Changes in 3.79 included in this release:
+   Changes in 3.90.0 included in this release:
 
-   - Bug 205717 - Use PK11_GetSlotInfo instead of raw C_GetSlotInfo calls.
-   - Bug 1766907 - Update mercurial in clang-format docker image.
-   - Bug 1454072 - Use of uninitialized pointer in lg_init after alloc fail.
-   - Bug 1769295 - selfserv and tstclnt should use PR_GetPrefLoopbackAddrInfo.
-   - Bug 1753315 - Add SECMOD_LockedModuleHasRemovableSlots.
-   - Bug 1387919 - Fix secasn1d parsing of indefinite SEQUENCE inside indefinite GROUP.
-   - Bug 1765753 - Added RFC8422 compliant TLS <= 1.2 undefined/compressed ECPointFormat extension alerts.
-   - Bug 1765753 - TLS 1.3 Server: Send protocol_version alert on unsupported ClientHello.legacy_version.
-   - Bug 1764788 - Correct invalid record inner and outer content type alerts.
-   - Bug 1757075 - NSS does not properly import or export pkcs12 files with large passwords and pkcs5v2 encoding.
-   - Bug 1766978 - improve error handling after nssCKFWInstance_CreateObjectHandle.
-   - Bug 1767590 - Initialize pointers passed to NSS_CMSDigestContext_FinishMultiple.
-   - Bug 1769302 - NSS 3.79 should depend on NSPR 4.34   
-
-
+   - Bug 1623338 - ride along: remove a duplicated doc page
+   - Bug 1623338 - remove a reference to IRC
+   - Bug 1831983 - clang-format lib/freebl/stubs.c
+   - Bug 1831983 - Add a constant time select function
+   - Bug 1774657 - Updating an old dbm with lots of certs with keys to sql results in a database that is slow to access.
+   - Bug 1830973 - output early build errors by default
+   - Bug 1804505 - Update the technical constraints for KamuSM
+   - Bug 1822921 - Add BJCA Global Root CA1 and CA2 root certificates
+   - Bug 1790763 - Enable default UBSan Checks
+   - Bug 1786018 - Add explicit handling of zero length records
+   - Bug 1829391 - Tidy up DTLS ACK Error Handling Path
+   - Bug 1786018 - Refactor zero length record tests
+   - Bug 1829112 - Fix compiler warning via correct assert
+   - Bug 1755267 - run linux tests on nss-t/t-linux-xlarge-gcp
+   - Bug 1806496 - In FIPS mode, nss should reject RSASSA-PSS salt lengths larger than the output size of the hash function used, or provide an indicator
+   - Bug 1784163 - Fix reading raw negative numbers
+   - Bug 1748237 - Repairing unreachable code in clang built with gyp
+   - Bug 1783647 - Integrate Vale Curve25519
+   - Bug 1799468 - Removing unused flags for Hacl*
+   - Bug 1748237 - Adding a better error message
+   - Bug 1727555 - Update HACL* till 51a72a953a4ee6f91e63b2816ae5c4e62edf35d6
+   - Bug 1782980 - Fall back to the softokn when writing certificate trust
+   - Bug 1806010 - FIPS-104-3 requires we restart post programmatically
+   - Bug 1826650 - cmd/ecperf: fix dangling pointer warning on gcc 13
+   - Bug 1818766 - Update ACVP dockerfile for compatibility with debian package changes
+   - Bug 1815796 - Add a CI task for tracking ECCKiila code status, update whitespace in ECCKiila files
+   - Bug 1819958 - Removed deprecated sprintf function and replaced with snprintf
+   - Bug 1822076 - fix rst warnings in nss doc
+   - Bug 1821997 - Fix incorrect pygment style
+   - Bug 1821292 - Change GYP directive to apply across platforms
+   - Add libsmime3 abi-check exception for NSS_CMSSignerInfo_GetDigestAlgTag

@@ -40,7 +40,7 @@ class nsICookieJarSettings;
 class nsIDownloadObserver;
 class nsIEventTarget;
 class nsIFileProtocolHandler;
-class nsIFileStream;
+class nsIFileRandomAccessStream;
 class nsIHttpChannel;
 class nsIInputStream;
 class nsIInputStreamPump;
@@ -49,7 +49,9 @@ class nsIOutputStream;
 class nsIParentChannel;
 class nsIPersistentProperties;
 class nsIProxyInfo;
+class nsIRandomAccessStream;
 class nsIRequestObserver;
+class nsISerialEventTarget;
 class nsIStreamListener;
 class nsIStreamLoader;
 class nsIStreamLoaderObserver;
@@ -59,6 +61,7 @@ class nsIIncrementalStreamLoaderObserver;
 namespace mozilla {
 class Encoding;
 class OriginAttributes;
+class OriginTrials;
 namespace dom {
 class ClientInfo;
 class PerformanceStorage;
@@ -187,7 +190,8 @@ nsresult NS_NewChannelInternal(
     nsILoadGroup* aLoadGroup = nullptr,
     nsIInterfaceRequestor* aCallbacks = nullptr,
     nsLoadFlags aLoadFlags = nsIRequest::LOAD_NORMAL,
-    nsIIOService* aIoService = nullptr, uint32_t aSandboxFlags = 0);
+    nsIIOService* aIoService = nullptr, uint32_t aSandboxFlags = 0,
+    bool aSkipCheckForBrokenURLOrZeroSized = false);
 
 // See NS_NewChannelInternal for usage and argument description
 nsresult NS_NewChannelInternal(
@@ -244,7 +248,8 @@ nsresult NS_NewChannel(
     nsILoadGroup* aLoadGroup = nullptr,
     nsIInterfaceRequestor* aCallbacks = nullptr,
     nsLoadFlags aLoadFlags = nsIRequest::LOAD_NORMAL,
-    nsIIOService* aIoService = nullptr, uint32_t aSandboxFlags = 0);
+    nsIIOService* aIoService = nullptr, uint32_t aSandboxFlags = 0,
+    bool aSkipCheckForBrokenURLOrZeroSized = false);
 
 // See NS_NewChannelInternal for usage and argument description
 nsresult NS_NewChannel(
@@ -255,7 +260,8 @@ nsresult NS_NewChannel(
     nsILoadGroup* aLoadGroup = nullptr,
     nsIInterfaceRequestor* aCallbacks = nullptr,
     nsLoadFlags aLoadFlags = nsIRequest::LOAD_NORMAL,
-    nsIIOService* aIoService = nullptr, uint32_t aSandboxFlags = 0);
+    nsIIOService* aIoService = nullptr, uint32_t aSandboxFlags = 0,
+    bool aSkipCheckForBrokenURLOrZeroSized = false);
 
 // See NS_NewChannelInternal for usage and argument description
 nsresult NS_NewChannel(
@@ -268,7 +274,8 @@ nsresult NS_NewChannel(
     nsILoadGroup* aLoadGroup = nullptr,
     nsIInterfaceRequestor* aCallbacks = nullptr,
     nsLoadFlags aLoadFlags = nsIRequest::LOAD_NORMAL,
-    nsIIOService* aIoService = nullptr, uint32_t aSandboxFlags = 0);
+    nsIIOService* aIoService = nullptr, uint32_t aSandboxFlags = 0,
+    bool aSkipCheckForBrokenURLOrZeroSized = false);
 
 nsresult NS_GetIsDocumentChannel(nsIChannel* aChannel, bool* aIsDocument);
 
@@ -340,11 +347,10 @@ nsresult NS_NewInputStreamChannel(nsIChannel** outChannel, nsIURI* aUri,
                                   nsContentPolicyType aContentPolicyType,
                                   bool aIsSrcdocChannel = false);
 
-nsresult NS_NewInputStreamPump(nsIInputStreamPump** aResult,
-                               already_AddRefed<nsIInputStream> aStream,
-                               uint32_t aSegsize = 0, uint32_t aSegcount = 0,
-                               bool aCloseWhenDone = false,
-                               nsIEventTarget* aMainThreadTarget = nullptr);
+nsresult NS_NewInputStreamPump(
+    nsIInputStreamPump** aResult, already_AddRefed<nsIInputStream> aStream,
+    uint32_t aSegsize = 0, uint32_t aSegcount = 0, bool aCloseWhenDone = false,
+    nsISerialEventTarget* aMainThreadTarget = nullptr);
 
 nsresult NS_NewLoadGroup(nsILoadGroup** result, nsIRequestObserver* obs);
 
@@ -508,13 +514,14 @@ nsresult NS_NewSafeLocalFileOutputStream(nsIOutputStream** result,
                                          int32_t perm = -1,
                                          int32_t behaviorFlags = 0);
 
-nsresult NS_NewLocalFileStream(nsIFileStream** result, nsIFile* file,
-                               int32_t ioFlags = -1, int32_t perm = -1,
-                               int32_t behaviorFlags = 0);
+nsresult NS_NewLocalFileRandomAccessStream(nsIRandomAccessStream** result,
+                                           nsIFile* file, int32_t ioFlags = -1,
+                                           int32_t perm = -1,
+                                           int32_t behaviorFlags = 0);
 
-mozilla::Result<nsCOMPtr<nsIFileStream>, nsresult> NS_NewLocalFileStream(
-    nsIFile* file, int32_t ioFlags = -1, int32_t perm = -1,
-    int32_t behaviorFlags = 0);
+mozilla::Result<nsCOMPtr<nsIRandomAccessStream>, nsresult>
+NS_NewLocalFileRandomAccessStream(nsIFile* file, int32_t ioFlags = -1,
+                                  int32_t perm = -1, int32_t behaviorFlags = 0);
 
 [[nodiscard]] nsresult NS_NewBufferedInputStream(
     nsIInputStream** aResult, already_AddRefed<nsIInputStream> aInputStream,
@@ -800,25 +807,13 @@ bool NS_IsInternalSameURIRedirect(nsIChannel* aOldChannel,
 bool NS_IsHSTSUpgradeRedirect(nsIChannel* aOldChannel, nsIChannel* aNewChannel,
                               uint32_t aFlags);
 
+bool NS_ShouldRemoveAuthHeaderOnRedirect(nsIChannel* aOldChannel,
+                                         nsIChannel* aNewChannel,
+                                         uint32_t aFlags);
+
 nsresult NS_LinkRedirectChannels(uint64_t channelId,
                                  nsIParentChannel* parentChannel,
                                  nsIChannel** _result);
-
-/**
- * Helper function which checks whether the channel can be
- * openend using Open() or has to fall back to opening
- * the channel using Open().
- */
-nsresult NS_MaybeOpenChannelUsingOpen(nsIChannel* aChannel,
-                                      nsIInputStream** aStream);
-
-/**
- * Helper function which checks whether the channel can be
- * openend using AsyncOpen() or has to fall back to opening
- * the channel using AsyncOpen().
- */
-nsresult NS_MaybeOpenChannelUsingAsyncOpen(nsIChannel* aChannel,
-                                           nsIStreamListener* aListener);
 
 /**
  * Returns nsILoadInfo::EMBEDDER_POLICY_REQUIRE_CORP if `aHeader` is
@@ -827,7 +822,8 @@ nsresult NS_MaybeOpenChannelUsingAsyncOpen(nsIChannel* aChannel,
  * See: https://mikewest.github.io/corpp/#parsing
  */
 nsILoadInfo::CrossOriginEmbedderPolicy
-NS_GetCrossOriginEmbedderPolicyFromHeader(const nsACString& aHeader);
+NS_GetCrossOriginEmbedderPolicyFromHeader(
+    const nsACString& aHeader, bool aIsOriginTrialCoepCredentiallessEnabled);
 
 /** Given the first (disposition) token from a Content-Disposition header,
  * tell whether it indicates the content is inline or attachment
@@ -1012,6 +1008,9 @@ struct LinkHeader {
 
   LinkHeader();
   void Reset();
+
+  nsresult NewResolveHref(nsIURI** aOutURI, nsIURI* aBaseURI) const;
+
   bool operator==(const LinkHeader& rhs) const;
 };
 
@@ -1040,13 +1039,12 @@ enum ASDestination : uint8_t {
 
 void ParseAsValue(const nsAString& aValue, nsAttrValue& aResult);
 nsContentPolicyType AsValueToContentPolicy(const nsAttrValue& aValue);
+bool IsScriptLikeOrInvalid(const nsAString& aAs);
 
 bool CheckPreloadAttrs(const nsAttrValue& aAs, const nsAString& aType,
                        const nsAString& aMedia,
                        mozilla::dom::Document* aDocument);
 void WarnIgnoredPreload(const mozilla::dom::Document&, nsIURI&);
-}  // namespace net
-}  // namespace mozilla
 
 /**
  * Returns true if the |aInput| in is part of the root domain of |aHost|.
@@ -1057,9 +1055,14 @@ void WarnIgnoredPreload(const mozilla::dom::Document&, nsIURI&);
  * @param aInput The host to be analyzed.
  * @param aHost  The host to compare to.
  */
-nsresult NS_HasRootDomain(const nsACString& aInput, const nsACString& aHost,
-                          bool* aResult);
+nsresult HasRootDomain(const nsACString& aInput, const nsACString& aHost,
+                       bool* aResult);
 
 void CheckForBrokenChromeURL(nsILoadInfo* aLoadInfo, nsIURI* aURI);
+
+bool IsCoepCredentiallessEnabled(bool aIsOriginTrialCoepCredentiallessEnabled);
+
+}  // namespace net
+}  // namespace mozilla
 
 #endif  // !nsNetUtil_h__

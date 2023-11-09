@@ -15,16 +15,12 @@
 #include "mozilla/Maybe.h"
 #include "mozilla/ReverseIterator.h"
 #include "mozilla/Sprintf.h"
-#include "mozilla/Vector.h"
 
-#include <algorithm>
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
-#include <type_traits>
 
 #include "jsapi.h"
-#include "jsnum.h"
 #include "jstypes.h"
 
 #include "frontend/BytecodeCompiler.h"
@@ -36,11 +32,11 @@
 #include "js/experimental/PCCountProfiling.h"  // JS::{Start,Stop}PCCountProfiling, JS::PurgePCCounts, JS::GetPCCountScript{Count,Summary,Contents}
 #include "js/friend/DumpFunctions.h"           // js::DumpPC, js::DumpScript
 #include "js/friend/ErrorMessages.h"           // js::GetErrorMessage, JSMSG_*
+#include "js/Printer.h"
 #include "js/Printf.h"
 #include "js/Symbol.h"
 #include "util/DifferentialTesting.h"
 #include "util/Memory.h"
-#include "util/StringBuffer.h"
 #include "util/Text.h"
 #include "vm/BuiltinObjectKind.h"
 #include "vm/BytecodeIterator.h"  // for AllBytecodesIterable
@@ -52,9 +48,9 @@
 #include "vm/JSContext.h"
 #include "vm/JSFunction.h"
 #include "vm/JSObject.h"
+#include "vm/JSONPrinter.h"
 #include "vm/JSScript.h"
 #include "vm/Opcodes.h"
-#include "vm/Printer.h"
 #include "vm/Realm.h"
 #include "vm/Shape.h"
 #include "vm/ToSource.h"       // js::ValueToSource
@@ -62,9 +58,7 @@
 
 #include "gc/GC-inl.h"
 #include "vm/BytecodeIterator-inl.h"
-#include "vm/BytecodeLocation-inl.h"
 #include "vm/JSContext-inl.h"
-#include "vm/JSObject-inl.h"
 #include "vm/JSScript-inl.h"
 #include "vm/Realm-inl.h"
 
@@ -1200,7 +1194,7 @@ static UniqueChars ToDisassemblySource(JSContext* cx, HandleValue v) {
   return QuoteString(cx, str);
 }
 
-static bool ToDisassemblySource(JSContext* cx, HandleScope scope,
+static bool ToDisassemblySource(JSContext* cx, Handle<Scope*> scope,
                                 UniqueChars* bytes) {
   UniqueChars source = JS_smprintf("%s {", ScopeKindString(scope->kind()));
   if (!source) {
@@ -1342,11 +1336,12 @@ static bool DecompileAtPCForStackDump(
     JSContext* cx, HandleScript script,
     const OffsetAndDefIndex& offsetAndDefIndex, Sprinter* sp);
 
-static bool PrintShapeProperties(JSContext* cx, Sprinter* sp, Shape* shape) {
+static bool PrintShapeProperties(JSContext* cx, Sprinter* sp,
+                                 SharedShape* shape) {
   // Add all property keys to a vector to allow printing them in property
   // definition order.
   Vector<PropertyKey> props(cx);
-  for (ShapePropertyIter<NoGC> iter(shape); !iter.done(); iter++) {
+  for (SharedShapePropertyIter<NoGC> iter(shape); !iter.done(); iter++) {
     if (!props.append(iter->key())) {
       return false;
     }
@@ -1476,7 +1471,7 @@ static unsigned Disassemble1(JSContext* cx, HandleScript script, jsbytecode* pc,
     }
 
     case JOF_SCOPE: {
-      RootedScope scope(cx, script->getScope(pc));
+      Rooted<Scope*> scope(cx, script->getScope(pc));
       UniqueChars bytes;
       if (!ToDisassemblySource(cx, scope, &bytes)) {
         return 0;
@@ -1566,7 +1561,7 @@ static unsigned Disassemble1(JSContext* cx, HandleScript script, jsbytecode* pc,
     }
 
     case JOF_SHAPE: {
-      Shape* shape = script->getShape(pc);
+      SharedShape* shape = script->getShape(pc);
       if (!sp->put(" ")) {
         return 0;
       }
@@ -1886,7 +1881,7 @@ bool ExpressionDecompiler::decompilePC(jsbytecode* pc, uint8_t defIndex) {
     case JSOp::GetProp:
     case JSOp::GetBoundName: {
       bool hasDelete = op == JSOp::DelProp || op == JSOp::StrictDelProp;
-      RootedAtom prop(cx, loadAtom(pc));
+      Rooted<JSAtom*> prop(cx, loadAtom(pc));
       MOZ_ASSERT(prop);
       return (hasDelete ? write("(delete ") : true) &&
              decompilePCForStackOperand(pc, -1) &&
@@ -1896,7 +1891,7 @@ bool ExpressionDecompiler::decompilePC(jsbytecode* pc, uint8_t defIndex) {
              (hasDelete ? write(")") : true);
     }
     case JSOp::GetPropSuper: {
-      RootedAtom prop(cx, loadAtom(pc));
+      Rooted<JSAtom*> prop(cx, loadAtom(pc));
       return write("super.") && quote(prop, '\0');
     }
     case JSOp::SetElem:
@@ -1954,8 +1949,10 @@ bool ExpressionDecompiler::decompilePC(jsbytecode* pc, uint8_t defIndex) {
     case JSOp::NewTarget:
       return write("new.target");
     case JSOp::Call:
+    case JSOp::CallContent:
     case JSOp::CallIgnoresRv:
-    case JSOp::CallIter: {
+    case JSOp::CallIter:
+    case JSOp::CallContentIter: {
       uint16_t argc = GET_ARGC(pc);
       return decompilePCForStackOperand(pc, -int32_t(argc + 2)) &&
              write(argc ? "(...)" : "()");
@@ -2001,7 +1998,8 @@ bool ExpressionDecompiler::decompilePC(jsbytecode* pc, uint8_t defIndex) {
     case JSOp::StrictSpreadEval:
       return write("eval(...)");
 
-    case JSOp::New: {
+    case JSOp::New:
+    case JSOp::NewContent: {
       uint16_t argc = GET_ARGC(pc);
       return write("(new ") &&
              decompilePCForStackOperand(pc, -int32_t(argc + 3)) &&
@@ -2430,7 +2428,7 @@ static bool DecompileExpressionFromStack(JSContext* cx, int spindex,
   FrameIter frameIter(cx);
 
   if (frameIter.done() || !frameIter.hasScript() ||
-      frameIter.realm() != cx->realm()) {
+      frameIter.realm() != cx->realm() || frameIter.inPrologue()) {
     return true;
   }
 
@@ -2446,11 +2444,6 @@ static bool DecompileExpressionFromStack(JSContext* cx, int spindex,
   jsbytecode* valuepc = frameIter.pc();
 
   MOZ_ASSERT(script->containsPC(valuepc));
-
-  // Give up if in prologue.
-  if (valuepc < script->main()) {
-    return true;
-  }
 
   LifoAllocScope allocScope(&cx->tempLifoAlloc());
   BytecodeParser parser(cx, allocScope.alloc(), frameIter.script());
@@ -2546,7 +2539,8 @@ static bool DecompileArgumentFromStack(JSContext* cx, int formalIndex,
 
   /* Don't handle getters, setters or calls from fun.call/fun.apply. */
   JSOp op = JSOp(*current);
-  if (op != JSOp::Call && op != JSOp::CallIgnoresRv && op != JSOp::New) {
+  if (op != JSOp::Call && op != JSOp::CallContent &&
+      op != JSOp::CallIgnoresRv && op != JSOp::New && op != JSOp::NewContent) {
     return true;
   }
 
@@ -2560,7 +2554,7 @@ static bool DecompileArgumentFromStack(JSContext* cx, int formalIndex,
     return false;
   }
 
-  bool pushedNewTarget = op == JSOp::New;
+  bool pushedNewTarget = op == JSOp::New || op == JSOp::NewContent;
   int formalStackIndex = parser.stackDepthAtPC(current) - GET_ARGC(current) -
                          pushedNewTarget + formalIndex;
   MOZ_ASSERT(formalStackIndex >= 0);
@@ -2741,11 +2735,17 @@ JSString* JS::GetPCCountScriptSummary(JSContext* cx, size_t index) {
 
   json.beginObject();
 
-  RootedString filename(cx, NewStringCopyZ<CanGC>(cx, script->filename()));
-  if (!filename) {
+  Rooted<JSString*> filenameStr(cx);
+  if (const char* filename = script->filename()) {
+    filenameStr =
+        JS_NewStringCopyUTF8N(cx, JS::UTF8Chars(filename, strlen(filename)));
+  } else {
+    filenameStr = JS_GetEmptyString(cx);
+  }
+  if (!filenameStr) {
     return nullptr;
   }
-  if (!JSONStringProperty(sp, json, "file", filename)) {
+  if (!JSONStringProperty(sp, json, "file", filenameStr)) {
     return nullptr;
   }
   json.property("line", script->lineno());
@@ -2923,7 +2923,7 @@ static bool GetPCCountJSON(JSContext* cx, const ScriptAndCounts& sac,
 
   json.endObject();
 
-  return true;
+  return !sp.hadOutOfMemory();
 }
 
 JSString* JS::GetPCCountScriptContents(JSContext* cx, size_t index) {

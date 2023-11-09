@@ -8,6 +8,7 @@
 #include "ARIAMap.h"
 #include "nsAccUtils.h"
 #include "DocAccessible-inl.h"
+#include "EventTree.h"
 #include "Role.h"
 
 #include "nsIFrame.h"
@@ -25,7 +26,7 @@ using namespace mozilla::a11y;
 
 HTMLImageMapAccessible::HTMLImageMapAccessible(nsIContent* aContent,
                                                DocAccessible* aDoc)
-    : ImageAccessibleWrap(aContent, aDoc) {
+    : ImageAccessible(aContent, aDoc) {
   mType = eImageMapType;
 
   UpdateChildAreas(false);
@@ -37,29 +38,12 @@ HTMLImageMapAccessible::HTMLImageMapAccessible(nsIContent* aContent,
 role HTMLImageMapAccessible::NativeRole() const { return roles::IMAGE_MAP; }
 
 ////////////////////////////////////////////////////////////////////////////////
-// HTMLImageMapAccessible: HyperLinkAccessible
-
-uint32_t HTMLImageMapAccessible::AnchorCount() { return ChildCount(); }
-
-LocalAccessible* HTMLImageMapAccessible::AnchorAt(uint32_t aAnchorIndex) {
-  return LocalChildAt(aAnchorIndex);
-}
-
-already_AddRefed<nsIURI> HTMLImageMapAccessible::AnchorURIAt(
-    uint32_t aAnchorIndex) const {
-  LocalAccessible* area = LocalChildAt(aAnchorIndex);
-  if (!area) return nullptr;
-
-  nsIContent* linkContent = area->GetContent();
-  return linkContent && linkContent->IsElement()
-             ? linkContent->AsElement()->GetHrefURI()
-             : nullptr;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // HTMLImageMapAccessible: public
 
 void HTMLImageMapAccessible::UpdateChildAreas(bool aDoFireEvents) {
+  if (!mContent || !mContent->GetPrimaryFrame()) {
+    return;
+  }
   nsImageFrame* imageFrame = do_QueryFrame(mContent->GetPrimaryFrame());
 
   // If image map is not initialized yet then we trigger one time more later.

@@ -38,9 +38,11 @@ menu-quit =
             [windows] S
            *[other] S
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Encerrar { -brand-shorter-name }
+
 menu-about =
     .label = Sobre o { -brand-shorter-name }
     .accesskey = S
@@ -161,7 +163,7 @@ menu-view-page-style-no-style =
     .label = Sem estilo
     .accesskey = m
 menu-view-page-basic-style =
-    .label = Estilo de página básico
+    .label = Estilo básico de página
     .accesskey = b
 menu-view-repair-text-encoding =
     .label = Reparar codificação de texto
@@ -219,8 +221,6 @@ menu-history-undo-menu =
     .label = Abas fechadas recentemente
 menu-history-undo-window-menu =
     .label = Janelas fechadas recentemente
-menu-history-reopen-all-tabs = Reabrir todas as abas
-menu-history-reopen-all-windows = Reabrir todas as janelas
 
 ## Bookmarks Menu
 
@@ -229,14 +229,13 @@ menu-bookmarks-menu =
     .accesskey = v
 menu-bookmarks-manage =
     .label = Gerenciar favoritos
-menu-bookmark-current-tab =
-    .label = Adicionar aba atual aos favoritos
-menu-bookmark-edit =
-    .label = Editar este favorito
 menu-bookmark-tab =
     .label = Adicionar aba atual aos favoritos…
 menu-edit-bookmark =
     .label = Editar este favorito…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Pesquisar nos favoritos
 menu-bookmarks-all-tabs =
     .label = Adicionar todas as abas…
 menu-bookmarks-toolbar =
@@ -330,6 +329,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Desativar modo de solução de problemas
     .accesskey = m
+menu-help-switch-device =
+    .label = Mudança para outro dispositivo
+    .accesskey = M
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

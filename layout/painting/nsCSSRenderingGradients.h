@@ -30,11 +30,12 @@ class DisplayListBuilder;
 // a color.
 struct ColorStop {
   ColorStop() : mPosition(0), mIsMidpoint(false) {}
-  ColorStop(double aPosition, bool aIsMidPoint, const gfx::sRGBColor& aColor)
+  ColorStop(double aPosition, bool aIsMidPoint,
+            const StyleAbsoluteColor& aColor)
       : mPosition(aPosition), mIsMidpoint(aIsMidPoint), mColor(aColor) {}
   double mPosition;  // along the gradient line; 0=start, 1=end
   bool mIsMidpoint;
-  gfx::sRGBColor mColor;
+  StyleAbsoluteColor mColor;
 };
 
 class nsCSSGradientRenderer final {

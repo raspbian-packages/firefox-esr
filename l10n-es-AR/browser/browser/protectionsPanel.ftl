@@ -63,7 +63,6 @@ protections-panel-not-found-label = Ninguno detectado
 ##
 
 protections-panel-settings-label = Configuración de protección
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Panel de protecciones
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formularios
 protections-panel-site-not-working-view-issue-list-payments = Pagos
 protections-panel-site-not-working-view-issue-list-comments = Comentarios
 protections-panel-site-not-working-view-issue-list-videos = Videos
+protections-panel-site-not-working-view-issue-list-fonts = Tipografía
 
 protections-panel-site-not-working-view-send-report = Enviar informe
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Informar de un sitio que no se carga
 protections-panel-content-blocking-breakage-report-view-description = El bloqueo de ciertos rastreadores puede causar problemas con algunos sitios web. Informar sobre estos problemas ayuda a que { -brand-short-name } sea mejor para todos. Al enviar este informe, se enviará a Mozilla una URL e información sobre la configuración de su navegador. <label data-l10n-name="learn-more">Aprender más</label>
+protections-panel-content-blocking-breakage-report-view-description2 = El bloqueo de ciertos rastreadores puede causar problemas con algunos sitios web. Informar sobre estos problemas ayuda a que { -brand-short-name } sea mejor para todos. Al enviar este informe, se enviará a { -vendor-short-name } una URL e información sobre la configuración de su navegador.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Cancelar
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Enviar informe
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Reducción de mensajes de cookies
+protections-panel-cookie-banner-handling-enabled = Activada para este sitio
+protections-panel-cookie-banner-handling-disabled = Desactivada para este sitio
+protections-panel-cookie-banner-handling-undetected = El sitio actualmente no es compatible
+
+protections-panel-cookie-banner-view-title =
+    .title = Reducción de mensajes de cookies
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = ¿Desactivar la reducción de mensajes de cookies para { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = ¿Activar la reducción de mensajes de cookies para este sitio?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } eliminará las cookies de este sitio y actualizará la página. Eliminar todas las cookies puede cerrar su sesión o vaciar los carritos de compras.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } intenta rechazar automáticamente todas las solicitudes de cookies en los sitios compatibles.
+protections-panel-cookie-banner-view-cancel = Cancelar
+protections-panel-cookie-banner-view-turn-off = Desactivar
+protections-panel-cookie-banner-view-turn-on = Activar

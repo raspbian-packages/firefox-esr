@@ -9,6 +9,7 @@
 
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/ScriptLoadContext.h"
+#include "mozilla/dom/WorkerLoadContext.h"
 #include "mozilla/dom/ScriptSettings.h"
 #include "mozilla/HoldDropJSObjects.h"
 #include "mozilla/StaticPrefs_dom.h"
@@ -34,18 +35,13 @@ namespace JS::loader {
 
 NS_IMPL_CYCLE_COLLECTION(ScriptFetchOptions, mTriggeringPrincipal, mElement)
 
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(ScriptFetchOptions, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(ScriptFetchOptions, Release)
-
 ScriptFetchOptions::ScriptFetchOptions(
     mozilla::CORSMode aCORSMode, mozilla::dom::ReferrerPolicy aReferrerPolicy,
     nsIPrincipal* aTriggeringPrincipal, mozilla::dom::Element* aElement)
     : mCORSMode(aCORSMode),
       mReferrerPolicy(aReferrerPolicy),
       mTriggeringPrincipal(aTriggeringPrincipal),
-      mElement(aElement) {
-  MOZ_ASSERT(mTriggeringPrincipal);
-}
+      mElement(aElement) {}
 
 ScriptFetchOptions::~ScriptFetchOptions() = default;
 
@@ -54,6 +50,7 @@ ScriptFetchOptions::~ScriptFetchOptions() = default;
 //////////////////////////////////////////////////////////////
 
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(ScriptLoadRequest)
+  NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(ScriptLoadRequest)
@@ -98,13 +95,7 @@ ScriptLoadRequest::ScriptLoadRequest(ScriptKind aKind, nsIURI* aURI,
   }
 }
 
-ScriptLoadRequest::~ScriptLoadRequest() {
-  if (IsMarkedForBytecodeEncoding()) {
-    DropBytecodeCacheReferences();
-  }
-  mLoadContext = nullptr;
-  DropJSObjects(this);
-}
+ScriptLoadRequest::~ScriptLoadRequest() { DropJSObjects(this); }
 
 void ScriptLoadRequest::SetReady() {
   MOZ_ASSERT(!IsReadyToRun());
@@ -113,7 +104,7 @@ void ScriptLoadRequest::SetReady() {
 
 void ScriptLoadRequest::Cancel() {
   mState = State::Canceled;
-  if (HasLoadContext()) {
+  if (HasScriptLoadContext()) {
     GetScriptLoadContext()->MaybeCancelOffThreadScript();
   }
 }
@@ -127,6 +118,10 @@ bool ScriptLoadRequest::HasScriptLoadContext() const {
   return HasLoadContext() && mLoadContext->IsWindowContext();
 }
 
+bool ScriptLoadRequest::HasWorkerLoadContext() const {
+  return HasLoadContext() && mLoadContext->IsWorkerContext();
+}
+
 mozilla::dom::ScriptLoadContext* ScriptLoadRequest::GetScriptLoadContext() {
   MOZ_ASSERT(mLoadContext);
   return mLoadContext->AsWindowContext();
@@ -136,6 +131,16 @@ mozilla::loader::ComponentLoadContext*
 ScriptLoadRequest::GetComponentLoadContext() {
   MOZ_ASSERT(mLoadContext);
   return mLoadContext->AsComponentContext();
+}
+
+mozilla::dom::WorkerLoadContext* ScriptLoadRequest::GetWorkerLoadContext() {
+  MOZ_ASSERT(mLoadContext);
+  return mLoadContext->AsWorkerContext();
+}
+
+mozilla::dom::WorkletLoadContext* ScriptLoadRequest::GetWorkletLoadContext() {
+  MOZ_ASSERT(mLoadContext);
+  return mLoadContext->AsWorkletContext();
 }
 
 ModuleLoadRequest* ScriptLoadRequest::AsModuleRequest() {
@@ -151,6 +156,20 @@ const ModuleLoadRequest* ScriptLoadRequest::AsModuleRequest() const {
 void ScriptLoadRequest::SetBytecode() {
   MOZ_ASSERT(IsUnknownDataType());
   mDataType = DataType::eBytecode;
+}
+
+bool ScriptLoadRequest::IsUTF8ParsingEnabled() {
+  if (HasLoadContext()) {
+    if (mLoadContext->IsWindowContext()) {
+      return mozilla::StaticPrefs::
+          dom_script_loader_external_scripts_utf8_parsing_enabled();
+    }
+    if (mLoadContext->IsWorkerContext()) {
+      return mozilla::StaticPrefs::
+          dom_worker_script_loader_utf8_parsing_enabled();
+    }
+  }
+  return false;
 }
 
 void ScriptLoadRequest::ClearScriptSource() {
@@ -177,7 +196,7 @@ bool ScriptLoadRequest::IsMarkedForBytecodeEncoding() const {
 nsresult ScriptLoadRequest::GetScriptSource(JSContext* aCx,
                                             MaybeSourceText* aMaybeSource) {
   // If there's no script text, we try to get it from the element
-  if (HasLoadContext() && GetScriptLoadContext()->mIsInline) {
+  if (HasScriptLoadContext() && GetScriptLoadContext()->mIsInline) {
     nsAutoString inlineData;
     GetScriptLoadContext()->GetScriptElement()->GetScriptText(inlineData);
 

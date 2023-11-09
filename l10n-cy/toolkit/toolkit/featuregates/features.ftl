@@ -12,7 +12,7 @@ experimental-features-css-masonry-description = Yn galluogi cefnogaeth i nodwedd
 # by various online articles and is technical in nature.
 experimental-features-web-gpu2 =
     .label = Web API: WebGPU
-experimental-features-web-gpu-description2 = Mae'r API newydd hwn yn darparu cefnogaeth lefel isel ar gyfer perfformio cyfrifiant a rendro graffeg gan ddefnyddio <a data-l10n-name="wikipedia">Uned Prosesu Graffeg (GPU)</a> dyfais neu gyfrifiadur y defnyddiwr. Mae'r <a data-l10n-name="spec">fanyleb </a> yn dal i fod yn waith ar y gweill. Gweler <a data-l10n-name="bugzilla">bug 1602129</a> am fwy o fanylion.
+experimental-features-web-gpu-description3 = Mae <a data-l10n-name="wikipedia-webgpu">WebGPU API</a> yn darparu cymorth lefel isel ar gyfer cyflawni rendrad cyfrifiant a graffeg gan ddefnyddio'r <a data-l10n-name="wikipedia-gpu">Prosesu Graffeg Uned (GPU)</a> o ddyfais neu gyfrifiadur y defnyddiwr. Mae fersiwn cyntaf y <a data-l10n-name="spec">fanyleb</a> bron â chael ei gwblhau. Gweler <a data-l10n-name="bugzilla">bug 1616739</a> am ragor o fanylion.
 
 # The title of the experiment should be kept in English as it may be referenced
 # by various online articles and is technical in nature.
@@ -20,20 +20,10 @@ experimental-features-media-jxl =
     .label = Cyfryngau: JPEG XL
 experimental-features-media-jxl-description = Gyda'r nodwedd hon wedi'i galluogi, mae { -brand-short-name } yn cefnogi fformat JPEG XL (JXL). Mae hwn yn fformat ffeil delwedd amgen sy'n cefnogi trosglwyddo  heb golled o ffeiliau JPEG traddodiadol. Darllenwch <a data-l10n-name="bugzilla">bug 1539075</a> am ragor o fanylion.
 
-# The title of the experiment should be kept in English as it may be referenced
-# by various online articles and is technical in nature.
-experimental-features-css-constructable-stylesheets =
-    .label = CSS: Constructable Stylesheets
-experimental-features-css-constructable-stylesheets-description = Mae ychwanegu adeiladwr at y rhyngwyneb <a data-l10n-name="mdn-cssstylesheet">CSSStyleSheet</a> yn ogystal ag amrywiaeth o newidiadau cysylltiedig yn ei gwneud hi'n bosibl creu taflenni arddull newydd yn uniongyrchol heb orfod ychwanegu'r ddalen at yr HTML. Mae hyn yn ei gwneud hi'n llawer haws creu taflenni arddull y mae modd eu hailddefnyddio i'w defnyddio gyda <a data-l10n-name="mdn-shadowdom">Shadow DOM</a>. Gweler <a data-l10n-name="bugzilla">bug 1520690</a> am fwy o fanylion.
-
 experimental-features-devtools-compatibility-panel =
     .label = Developer Tools: Compatibility Panel
 experimental-features-devtools-compatibility-panel-description = Panel ochr ar gyfer yr Arolygydd Tudalen sy'n dangos gwybodaeth i chi sy'n manylu ar statws cydnawsedd traws-borwr eich ap. Gweler <a data-l10n-name="bugzilla">bug 1584464</a> am fwy o fanylion.
 
-# Do not translate 'SameSite', 'Lax' and 'None'.
-experimental-features-cookie-samesite-lax-by-default2 =
-    .label = Cwcis: SameSite=Lax by default
-experimental-features-cookie-samesite-lax-by-default2-description = Trin cwcis fel “SameSite = Lax” by default os nad oes priodoledd “SameSite” wedi'i nodi. Rhaid i ddatblygwyr ddewis y cyflwr cyfredol o ddefnydd anghyfyngedig trwy ddewis yn benodol “SameSite = None”.
 
 # Do not translate 'SameSite', 'Lax' and 'None'.
 experimental-features-cookie-samesite-none-requires-secure2 =
@@ -45,12 +35,6 @@ experimental-features-cookie-samesite-none-requires-secure2-description = Mae cw
 experimental-features-abouthome-startup-cache =
     .label = about:home startup cache
 experimental-features-abouthome-startup-cache-description = Storfa ar gyfer y ddogfen gychwynnol about:home sy'n cael ei llwytho yn ragosodedig wrth gychwyn. Pwrpas y storfa yw gwella perfformiad cychwyn.
-
-# The title of the experiment should be kept in English as it may be referenced
-# by various online articles and is technical in nature.
-experimental-features-cookie-samesite-schemeful =
-    .label = Cookies: Schemeful SameSite
-experimental-features-cookie-samesite-schemeful-description = Trin cwcis o'r un parth, ond gyda gwahanol gynlluniau (e.e. http://example.com a https://example.com) fel traws-gwefan yn lle'r un wefan. Yn gwella diogelwch, ond o bosibl yn cyflwyno toriadau.
 
 # "Service Worker" is an API name and is usually not translated.
 experimental-features-devtools-serviceworker-debugger-support =
@@ -72,7 +56,3 @@ experimental-features-js-warp-description = Galluogi Warp, project i wella perff
 experimental-features-ime-search =
     .label = Bar Cyfeiriadau: dangos canlyniadau wrth ddefnyddio'r IME
 experimental-features-ime-search-description = Offeryn yw IME (Golygydd Dull Mewnbwn) sy'n eich galluogi i nodi symbolau cymhleth, fel y rhai sy'n cael eu ddefnyddio mewn ieithoedd ysgrifenedig yn Nwyrain Asia neu India, gan ddefnyddio bysellfwrdd safonol. Bydd galluogi'r arbrawf hwn yn cadw'r panel bar cyfeiriadau ar agor, dangos canlyniadau chwilio ac awgrymiadau, tra'n defnyddio IME i fewnbynnu testun. Sylwch y gallai'r IME ddangos panel sy'n ymdrin â chanlyniadau'r bar cyfeiriad, felly mae'r dewis hwn yn cael ei awgrymu ar gyfer IME sydd ddim yn defnyddio'r math hwn o banel.
-
-experimental-features-accessibility-cache =
-    .label = Storfa hygyrchedd
-experimental-features-accessibility-cache-description = Yn cadw'r holl wybodaeth hygyrchedd o bob dogfen ym mhrif broses { -brand-short-name }. Mae hyn yn gwella perfformiad ar gyfer darllenwyr sgrin a rhaglenni eraill sy'n defnyddio APIs hygyrchedd.

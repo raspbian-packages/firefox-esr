@@ -69,7 +69,7 @@ policy-DisablePrimaryPasswordCreation = Jak to je aktywne, to niy idzie zrychtow
 
 policy-DisablePasswordReveal = Zakazowanie pokazowanio haseł we spamiyntanych danych logowanio.
 
-policy-DisablePocket = Zastawianie funkcyje spamiyntowanio strōn w usudze Pocket.
+policy-DisablePocket2 = Zastawianie funkcyje spamiyntowanio strōn w usudze { -pocket-brand-name }.
 
 policy-DisablePrivateBrowsing = Zastawianie prywatnego przeglōndanio.
 
@@ -111,10 +111,6 @@ policy-Extensions = Instalacyjo, ôdinstalacyjo abo szperowanie rozszyrzyń. Ôp
 policy-ExtensionSettings = Regiyruj wszyskimi aspektami instalacyje rozszyrzyń.
 
 policy-ExtensionUpdate = Załōnczynie abo wyłōnczynie autōmatycznych aktualizacyji rozszyrzyń.
-
-policy-FirefoxHome = Nastawianie Firefox Home.
-
-policy-FlashPlugin = Zgoda abo zakoz używanio rozszyrzynio Flash.
 
 policy-Handlers = Nastawianie bazowych aplikacyji do ôbsugi typōw zbiorōw.
 
@@ -185,9 +181,6 @@ policy-SearchBar = Nastawianie bazowego placu ôd poska szukanio. Używocz durch
 policy-SearchEngines = Sztalowanie wyszukowarki. Te prawidło je dostympne ino do wersyje ESR (Extended Support Release).
 
 policy-SearchSuggestEnabled = Załōnczanie abo zastawianie doradōw szukanio.
-
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Instalacyjo modułōw PKCS #11.
 
 policy-ShowHomeButton = Pokoż dōmowy knefel na posku z noczyniami.
 

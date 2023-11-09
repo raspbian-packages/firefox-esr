@@ -1,10 +1,3 @@
-const { FileUtils } = ChromeUtils.import(
-  "resource://gre/modules/FileUtils.jsm"
-);
-const { DownloadLastDir } = ChromeUtils.import(
-  "resource://gre/modules/DownloadLastDir.jsm"
-);
-
 /**
  * Tests how the browser remembers the last download folder
  * from download to download, with a particular emphasis
@@ -14,7 +7,7 @@ add_task(async function test_downloads_last_dir_toggle() {
   let tmpDir = FileUtils.getDir("TmpD", [], true);
   let dir1 = newDirectory();
 
-  registerCleanupFunction(function() {
+  registerCleanupFunction(function () {
     Services.prefs.clearUserPref("browser.download.lastDir");
     dir1.remove(true);
   });

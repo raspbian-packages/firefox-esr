@@ -2,8 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-videocontrols-scrubber =
-    .aria-label = Местоположение
 # This label is used by screenreaders and other assistive technology to indicate
 # to users how much of the video has been loaded from the network. It will be
 # followed by the percentage of the video that has loaded (e.g. "Loading: 13%").
@@ -34,10 +32,6 @@ videocontrols-closed-caption-off =
 # the mouse is hovering it.
 videocontrols-picture-in-picture-label = Картина в картината
 
-# This string is used as the label for a variation of the Picture-in-Picture video
-# toggle button when the mouse is hovering over the video.
-videocontrols-picture-in-picture-toggle-label = Гледайте като картина в картината
-
 videocontrols-error-aborted = Зареждането на видео спря.
 videocontrols-error-network = Зареждането на видео е прекъснато поради мрежова грешка.
 videocontrols-error-decode = Видеото не може да бъде възпроизведено, защото файлът е развален.
@@ -59,3 +53,13 @@ videocontrols-status-picture-in-picture = Видеоклипът се възпр
 # duration video, $position would be "5:00" and the string which is
 # surrounded by <span> would be deleted, result string would be "5:00".
 videocontrols-position-and-duration-labels = { $position }<span data-l10n-name="position-duration-format"> / { $duration }</span>
+
+# This is a plain text version of the videocontrols-position-and-duration-labels
+# string, used by screenreaders.
+#
+# Variables:
+#   $position (String): The current media position
+#   $duration (String): The total video duration
+videocontrols-scrubber-position-and-duration =
+    .aria-label = Местоположение
+    .aria-valuetext = { $position } / { $duration }

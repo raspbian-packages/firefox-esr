@@ -2,7 +2,7 @@ var timer;
 var callback;
 
 function handleRequest(request, response) {
-  if (request.queryString.indexOf("trigger") != -1) {
+  if (request.queryString.includes("trigger")) {
     setState("triggered", "triggered");
     response.setHeader("Cache-Control", "no-cache", false);
     response.setHeader("Content-Type", "text/javascript; charset=utf-8", false);
@@ -18,7 +18,7 @@ function handleRequest(request, response) {
     response.bodyOutputStream.flush();
     timer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
 
-    callback = function() {
+    callback = function () {
       if (getState("triggered") == "triggered") {
         response.write("<td>B</td></tr></table>");
         response.finish();

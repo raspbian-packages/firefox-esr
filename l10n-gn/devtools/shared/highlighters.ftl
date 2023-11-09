@@ -56,3 +56,7 @@ remote-node-picker-notice-action-touch = Eikutu mba’epuru eiporavo hag̃ua moa
 # clicks on the "Pick an element from the page" in about:devtools-toolbox inspector panel,
 # when debugging a remote page.
 remote-node-picker-notice-hide-button = Moñemi
+
+# Text displayed in a button inside the "simple-highlighters-message" toolbox
+# notification. "Settings" here refers to the DevTools settings panel.
+simple-highlighters-settings-button = Embojuruja Ñemboheko

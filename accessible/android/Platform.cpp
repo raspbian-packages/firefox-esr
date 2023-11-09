@@ -9,7 +9,6 @@
 #include "SessionAccessibility.h"
 #include "mozilla/a11y/RemoteAccessible.h"
 #include "mozilla/Components.h"
-#include "mozilla/StaticPrefs_accessibility.h"
 #include "nsIAccessibleEvent.h"
 #include "nsIAccessiblePivot.h"
 #include "nsIStringBundle.h"
@@ -64,8 +63,8 @@ void a11y::PlatformInit() {
   }
 
   // Preload any roles that have localized versions
-#define ROLE(geckoRole, stringRole, atkRole, macRole, macSubrole, msaaRole, \
-             ia2Role, androidClass, nameRule)                               \
+#define ROLE(geckoRole, stringRole, ariaRole, atkRole, macRole, macSubrole, \
+             msaaRole, ia2Role, androidClass, nameRule)                     \
   rv = stringBundle->GetStringFromName(stringRole, localizedStr);           \
   if (NS_SUCCEEDED(rv)) {                                                   \
     sLocalizedStrings.InsertOrUpdate(u##stringRole##_ns, localizedStr);     \
@@ -97,9 +96,7 @@ void a11y::ProxyEvent(RemoteAccessible* aTarget, uint32_t aEventType) {
       sessionAcc->SendFocusEvent(aTarget);
       break;
     case nsIAccessibleEvent::EVENT_REORDER:
-      if (StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-        sessionAcc->SendWindowContentChangedEvent();
-      }
+      sessionAcc->SendWindowContentChangedEvent();
       break;
     default:
       break;
@@ -148,9 +145,9 @@ void a11y::ProxyCaretMoveEvent(RemoteAccessible* aTarget, int32_t aOffset,
   }
 }
 
-void a11y::ProxyTextChangeEvent(RemoteAccessible* aTarget, const nsString& aStr,
-                                int32_t aStart, uint32_t aLen, bool aIsInsert,
-                                bool aFromUser) {
+void a11y::ProxyTextChangeEvent(RemoteAccessible* aTarget,
+                                const nsAString& aStr, int32_t aStart,
+                                uint32_t aLen, bool aIsInsert, bool aFromUser) {
   RefPtr<SessionAccessibility> sessionAcc =
       SessionAccessibility::GetInstanceFor(aTarget);
 
@@ -214,43 +211,13 @@ void a11y::ProxyScrollingEvent(RemoteAccessible* aTarget, uint32_t aEventType,
 }
 
 void a11y::ProxyAnnouncementEvent(RemoteAccessible* aTarget,
-                                  const nsString& aAnnouncement,
+                                  const nsAString& aAnnouncement,
                                   uint16_t aPriority) {
   RefPtr<SessionAccessibility> sessionAcc =
       SessionAccessibility::GetInstanceFor(aTarget);
 
   if (sessionAcc) {
     sessionAcc->SendAnnouncementEvent(aTarget, aAnnouncement, aPriority);
-  }
-}
-
-void a11y::ProxyBatch(RemoteAccessible* aDocument, const uint64_t aBatchType,
-                      const nsTArray<RemoteAccessible*>& aAccessibles,
-                      const nsTArray<BatchData>& aData) {
-  RefPtr<SessionAccessibility> sessionAcc =
-      SessionAccessibility::GetInstanceFor(aDocument);
-  if (!sessionAcc) {
-    return;
-  }
-
-  nsTArray<Accessible*> accessibles(aAccessibles.Length());
-  for (size_t i = 0; i < aAccessibles.Length(); i++) {
-    accessibles.AppendElement(aAccessibles.ElementAt(i));
-  }
-
-  switch (aBatchType) {
-    case DocAccessibleWrap::eBatch_Viewport:
-      sessionAcc->ReplaceViewportCache(accessibles, aData);
-      break;
-    case DocAccessibleWrap::eBatch_FocusPath:
-      sessionAcc->ReplaceFocusPathCache(accessibles, aData);
-      break;
-    case DocAccessibleWrap::eBatch_BoundsUpdate:
-      sessionAcc->UpdateCachedBounds(accessibles, aData);
-      break;
-    default:
-      MOZ_ASSERT_UNREACHABLE("Unknown batch type.");
-      break;
   }
 }
 

@@ -7,17 +7,10 @@
 
 const CC = Components.Constructor;
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "AppConstants",
-  "resource://gre/modules/AppConstants.jsm"
-);
-
-ChromeUtils.defineModuleGetter(
-  this,
-  "WindowsVersionInfo",
-  "resource://gre/modules/components-utils/WindowsVersionInfo.jsm"
-);
+ChromeUtils.defineESModuleGetters(this, {
+  WindowsVersionInfo:
+    "resource://gre/modules/components-utils/WindowsVersionInfo.sys.mjs",
+});
 
 let expectedResults;
 
@@ -132,7 +125,12 @@ const CONST_VENDOR = "";
 const CONST_VENDORSUB = "";
 
 const appVersion = parseInt(Services.appinfo.version);
-const spoofedVersion = AppConstants.platform == "android" ? "102" : appVersion;
+const rvVersion =
+  parseInt(
+    Services.prefs.getIntPref("network.http.useragent.forceRVOnly", 0),
+    0
+  ) || appVersion;
+const spoofedVersion = AppConstants.platform == "android" ? "115" : appVersion;
 
 const LEGACY_UA_GECKO_TRAIL = "20100101";
 
@@ -155,13 +153,13 @@ const SPOOFED_UA_GECKO_TRAIL = {
 async function testUserAgentHeader() {
   const BASE =
     "http://mochi.test:8888/browser/browser/components/resistfingerprinting/test/browser/";
-  const TEST_TARGET_URL = `${BASE}browser_navigator_header.sjs?`;
+  const TEST_TARGET_URL = `${BASE}file_navigator_header.sjs?`;
   let tab = await BrowserTestUtils.openNewForegroundTab(
     gBrowser,
     TEST_TARGET_URL
   );
 
-  let result = await SpecialPowers.spawn(tab.linkedBrowser, [], function() {
+  let result = await SpecialPowers.spawn(tab.linkedBrowser, [], function () {
     return content.document.body.textContent;
   });
 
@@ -181,7 +179,7 @@ async function testNavigator() {
     TEST_PATH + "file_navigator.html"
   );
 
-  let result = await SpecialPowers.spawn(tab.linkedBrowser, [], function() {
+  let result = await SpecialPowers.spawn(tab.linkedBrowser, [], function () {
     return content.document.getElementById("result").innerHTML;
   });
 
@@ -269,14 +267,14 @@ async function testWorkerNavigator() {
   let result = await SpecialPowers.spawn(
     tab.linkedBrowser,
     [],
-    async function() {
+    async function () {
       let worker = new content.SharedWorker(
         "file_navigatorWorker.js",
         "WorkerNavigatorTest"
       );
 
       let res = await new Promise(resolve => {
-        worker.port.onmessage = function(e) {
+        worker.port.onmessage = function (e) {
           resolve(e.data);
         };
       });
@@ -346,7 +344,7 @@ async function testWorkerNavigator() {
 add_task(async function setupDefaultUserAgent() {
   let defaultUserAgent = `Mozilla/5.0 (${
     DEFAULT_UA_OS[AppConstants.platform]
-  }; rv:${appVersion}.0) Gecko/${
+  }; rv:${rvVersion}.0) Gecko/${
     DEFAULT_UA_GECKO_TRAIL[AppConstants.platform]
   } Firefox/${appVersion}.0`;
   expectedResults = {
@@ -372,31 +370,29 @@ add_task(async function setupRFPExemptions() {
   await SpecialPowers.pushPrefEnv({
     set: [
       ["privacy.resistFingerprinting", true],
-      ["privacy.resistFingerprinting.testGranularityMask", 4],
-      ["privacy.resistFingerprinting.exemptedDomains", "example.net"],
+      [
+        "privacy.resistFingerprinting.exemptedDomains",
+        "example.net, mochi.test",
+      ],
     ],
   });
 
-  let spoofedGeckoTrail = SPOOFED_UA_GECKO_TRAIL[AppConstants.platform];
-
-  let spoofedUserAgentNavigator = `Mozilla/5.0 (${
-    SPOOFED_UA_NAVIGATOR_OS[AppConstants.platform]
-  }; rv:${spoofedVersion}.0) Gecko/${spoofedGeckoTrail} Firefox/${spoofedVersion}.0`;
-
-  let spoofedUserAgentHeader = `Mozilla/5.0 (${
-    SPOOFED_UA_HTTPHEADER_OS[AppConstants.platform]
-  }; rv:${spoofedVersion}.0) Gecko/${spoofedGeckoTrail} Firefox/${spoofedVersion}.0`;
+  let defaultUserAgent = `Mozilla/5.0 (${
+    DEFAULT_UA_OS[AppConstants.platform]
+  }; rv:${rvVersion}.0) Gecko/${
+    DEFAULT_UA_GECKO_TRAIL[AppConstants.platform]
+  } Firefox/${appVersion}.0`;
 
   expectedResults = {
-    testDesc: "spoofed",
-    appVersion: SPOOFED_APPVERSION[AppConstants.platform],
+    testDesc: "RFP Exempted Domain",
+    appVersion: DEFAULT_APPVERSION[AppConstants.platform],
     hardwareConcurrency: navigator.hardwareConcurrency,
     mimeTypesLength: 2,
-    oscpu: SPOOFED_OSCPU[AppConstants.platform],
-    platform: SPOOFED_PLATFORM[AppConstants.platform],
+    oscpu: DEFAULT_OSCPU[AppConstants.platform],
+    platform: DEFAULT_PLATFORM[AppConstants.platform],
     pluginsLength: 5,
-    userAgentNavigator: spoofedUserAgentNavigator,
-    userAgentHeader: spoofedUserAgentHeader,
+    userAgentNavigator: defaultUserAgent,
+    userAgentHeader: defaultUserAgent,
   };
 
   await testNavigator();
@@ -418,11 +414,11 @@ add_task(async function setupResistFingerprinting() {
 
   let spoofedUserAgentNavigator = `Mozilla/5.0 (${
     SPOOFED_UA_NAVIGATOR_OS[AppConstants.platform]
-  }; rv:${spoofedVersion}.0) Gecko/${spoofedGeckoTrail} Firefox/${spoofedVersion}.0`;
+  }; rv:${rvVersion}.0) Gecko/${spoofedGeckoTrail} Firefox/${appVersion}.0`;
 
   let spoofedUserAgentHeader = `Mozilla/5.0 (${
     SPOOFED_UA_HTTPHEADER_OS[AppConstants.platform]
-  }; rv:${spoofedVersion}.0) Gecko/${spoofedGeckoTrail} Firefox/${spoofedVersion}.0`;
+  }; rv:${rvVersion}.0) Gecko/${spoofedGeckoTrail} Firefox/${appVersion}.0`;
 
   expectedResults = {
     testDesc: "spoofed",

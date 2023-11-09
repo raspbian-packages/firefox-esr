@@ -55,3 +55,6 @@ screenshots-private-window-error-details = Wódajśo pšosym wobuznosći. Źěł
 
 screenshots-generic-error-title = Hopla! { -screenshots-brand-name } njeźěła.
 screenshots-generic-error-details = Njejsmy se wěste, což jo se stało. Cośo hyšći raz wopytaś abo cośo drugi bok fotografěrowaś?
+
+screenshots-too-large-error-title = Wašo foto wobrazowki jo se pśirězało, dokulaž jo było pśewjelike
+screenshots-too-large-error-details = Wopytajśo, region wubraś, kótaryž jo mjeńšy ako 32.700 pikselow na jogo nejdelšem boku abo 124.900.000 pikselow na jogo cełkownej płoninje.

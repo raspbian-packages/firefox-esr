@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Yhteysasetukset
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Yhteysasetukset
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = Ä
     .tooltip = Kirjautuminen välityspalvelimelle tapahtuu automaattisesti jos salasana palvelimelle on tallennettu. Kirjautumistietoja kysytään jos automaattinen kirjautuminen epäonnistuu.
 
+connection-proxy-autologin-checkbox =
+    .label = Älä kysy kirjautumistietoja jos salasana on tallennettu
+    .accesskey = Ä
+    .tooltiptext = Kirjautuminen välityspalvelimelle tapahtuu automaattisesti jos salasana palvelimelle on tallennettu. Kirjautumistietoja kysytään jos automaattinen kirjautuminen epäonnistuu.
+
 connection-proxy-socks-remote-dns =
     .label = Käytä välityspalvelinta DNS:lle käytettäessä SOCKS v5:tä
     .accesskey = E
-
-connection-dns-over-https =
-    .label = Käytä DNS:ää HTTPS:n välityksellä
-    .accesskey = H
-
-connection-dns-over-https-url-resolver = Käytä palveluntarjoajaa
-    .accesskey = p
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

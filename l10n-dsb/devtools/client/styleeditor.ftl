@@ -20,7 +20,6 @@ styleeditor-save-button = Składowaś
     .accesskey = S
 styleeditor-options-button =
     .tooltiptext = Nastajenja stilowego editora
-styleeditor-media-rules = pšawidła @media
 styleeditor-at-rules = @-pšawidła
 styleeditor-editor-textbox =
     .data-placeholder = Zapišćo how CSS.
@@ -41,3 +40,14 @@ styleeditor-go-to-line =
     .accesskey = l
 # Label displayed when searching a term that is not found in any stylesheet path
 styleeditor-stylesheet-all-filtered = Pśigódna stilowa pśedłoga njejo se namakała.
+
+# This string is shown in the style sheets list
+# Variables:
+#   $ruleCount (Integer) - The number of rules in the stylesheet.
+styleeditor-stylesheet-rule-count =
+    { $ruleCount ->
+        [one] { $ruleCount } pšawidło.
+        [two] { $ruleCount } pšawidle.
+        [few] { $ruleCount } pšawidła.
+       *[other] { $ruleCount } pšawidłow.
+    }

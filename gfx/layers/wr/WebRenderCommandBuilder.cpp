@@ -6,13 +6,13 @@
 
 #include "WebRenderCommandBuilder.h"
 
-#include "Layers.h"
 #include "mozilla/AutoRestore.h"
 #include "mozilla/DebugOnly.h"
 #include "mozilla/EffectCompositor.h"
 #include "mozilla/ProfilerLabels.h"
 #include "mozilla/StaticPrefs_gfx.h"
 #include "mozilla/SVGGeometryFrame.h"
+#include "mozilla/SVGImageFrame.h"
 #include "mozilla/UniquePtr.h"
 #include "mozilla/gfx/2D.h"
 #include "mozilla/gfx/Logging.h"
@@ -37,6 +37,8 @@
 #include "nsTHashSet.h"
 #include "WebRenderCanvasRenderer.h"
 
+#include <cstdint>
+
 namespace mozilla {
 namespace layers {
 
@@ -54,6 +56,14 @@ static void GP(const char* fmt, ...) {
     vprintf(fmt, args);
 #endif
   va_end(args);
+}
+
+bool FitsInt32(const float aVal) {
+  // Although int32_t min and max can't be represented exactly with floats, the
+  // cast truncates towards zero which is what we want here.
+  const float min = static_cast<float>(std::numeric_limits<int32_t>::min());
+  const float max = static_cast<float>(std::numeric_limits<int32_t>::max());
+  return aVal > min && aVal < max;
 }
 
 // XXX: problems:
@@ -405,8 +415,8 @@ struct DIGroup {
       aData->mRect = transformedRect.Intersect(mClippedImageBounds);
       GP("CGC %s %d %d %d %d\n", aItem->Name(), clippedBounds.x,
          clippedBounds.y, clippedBounds.width, clippedBounds.height);
-      GP("%d %d,  %f %f\n", mVisibleRect.TopLeft().x, mVisibleRect.TopLeft().y,
-         aMatrix._11, aMatrix._22);
+      GP("%d %d,  %f %f\n", mVisibleRect.TopLeft().x.value,
+         mVisibleRect.TopLeft().y.value, aMatrix._11, aMatrix._22);
       GP("mRect %d %d %d %d\n", aData->mRect.x, aData->mRect.y,
          aData->mRect.width, aData->mRect.height);
       InvalidateRect(aData->mRect);
@@ -646,10 +656,14 @@ struct DIGroup {
 
     RefPtr<gfx::DrawTarget> dt = gfx::Factory::CreateRecordingDrawTarget(
         recorder, dummyDt, mLayerBounds.ToUnknownRect());
-    // Setup the gfxContext
-    RefPtr<gfxContext> context = gfxContext::CreateOrNull(dt);
-    context->SetMatrix(Matrix::Scaling(mScale).PostTranslate(
-        mResidualOffset.x, mResidualOffset.y));
+    if (!dt || !dt->IsValid()) {
+      gfxCriticalNote << "Failed to create drawTarget for blob image";
+      return;
+    }
+
+    gfxContext context(dt);
+    context.SetMatrix(Matrix::Scaling(mScale).PostTranslate(mResidualOffset.x,
+                                                            mResidualOffset.y));
 
     GP("mInvalidRect: %d %d %d %d\n", mInvalidRect.x, mInvalidRect.y,
        mInvalidRect.width, mInvalidRect.height);
@@ -663,7 +677,7 @@ struct DIGroup {
       return;
     }
 
-    PaintItemRange(aGrouper, aStartItem, aEndItem, context, recorder,
+    PaintItemRange(aGrouper, aStartItem, aEndItem, &context, recorder,
                    rootManager, aResources);
 
     // XXX: set this correctly perhaps using
@@ -712,8 +726,8 @@ struct DIGroup {
                                           PixelCastJustification::LayerIsImage);
 
       auto bottomRight = dirtyRect.BottomRight();
-      GP("check invalid %d %d - %d %d\n", bottomRight.x, bottomRight.y,
-         dtSize.width, dtSize.height);
+      GP("check invalid %d %d - %d %d\n", bottomRight.x.value,
+         bottomRight.y.value, dtSize.width, dtSize.height);
       GP("Update Blob %d %d %d %d\n", mInvalidRect.x, mInvalidRect.y,
          mInvalidRect.width, mInvalidRect.height);
       if (!aResources.UpdateBlobImage(
@@ -795,8 +809,8 @@ struct DIGroup {
         continue;
       }
 
-      GP("paint check invalid %d %d - %d %d\n", bottomRight.x, bottomRight.y,
-         size.width, size.height);
+      GP("paint check invalid %d %d - %d %d\n", bottomRight.x.value,
+         bottomRight.y.value, size.width, size.height);
       // skip empty items
       if (bounds.IsEmpty()) {
         continue;
@@ -928,16 +942,12 @@ void Grouper::PaintContainerItem(DIGroup* aGroup, nsDisplayItem* aItem,
         if (aDirty) {
           // We don't currently support doing invalidation inside 3d transforms.
           // For now just paint it as a single item.
-          nsRect buildingRect = aItem->GetBuildingRect();
-          aItem->SetBuildingRect(aItem->GetClippedBounds(mDisplayListBuilder));
-
           aItem->AsPaintedDisplayItem()->Paint(mDisplayListBuilder, aContext);
           TakeExternalSurfaces(aRecorder, aData->mExternalSurfaces,
                                aRootManager, aResources);
-          aItem->SetBuildingRect(buildingRect);
         }
         aContext->GetDrawTarget()->FlushItem(aItemBounds);
-      } else {
+      } else if (!trans2d.IsSingular()) {
         aContext->Multiply(ThebesMatrix(trans2d));
         aGroup->PaintItemRange(this, aChildren->begin(), aChildren->end(),
                                aContext, aRecorder, aRootManager, aResources);
@@ -1004,9 +1014,6 @@ void Grouper::PaintContainerItem(DIGroup* aGroup, nsDisplayItem* aItem,
     case DisplayItemType::TYPE_MASK: {
       GP("Paint Mask\n");
       auto maskItem = static_cast<nsDisplayMasksAndClipPaths*>(aItem);
-      nsRect buildingRect = maskItem->GetBuildingRect();
-      maskItem->SetBuildingRect(
-          maskItem->GetClippedBounds(mDisplayListBuilder));
       if (maskItem->IsValidMask()) {
         maskItem->PaintWithContentsPaintCallback(
             mDisplayListBuilder, aContext, [&] {
@@ -1023,7 +1030,6 @@ void Grouper::PaintContainerItem(DIGroup* aGroup, nsDisplayItem* aItem,
                              aResources);
         aContext->GetDrawTarget()->FlushItem(aItemBounds);
       }
-      maskItem->SetBuildingRect(buildingRect);
       break;
     }
     case DisplayItemType::TYPE_FILTER: {
@@ -1039,12 +1045,10 @@ void Grouper::PaintContainerItem(DIGroup* aGroup, nsDisplayItem* aItem,
         nsRegion visible(aItem->GetClippedBounds(mDisplayListBuilder));
         nsRect buildingRect = aItem->GetBuildingRect();
         visible.And(visible, buildingRect);
-        aItem->SetBuildingRect(visible.GetBounds());
 
         filterItem->Paint(mDisplayListBuilder, aContext);
         TakeExternalSurfaces(aRecorder, aData->mExternalSurfaces, aRootManager,
                              aResources);
-        aItem->SetBuildingRect(buildingRect);
       }
       aContext->GetDrawTarget()->FlushItem(aItemBounds);
       break;
@@ -1126,6 +1130,42 @@ static ItemActivity HasActiveChildren(
   return activity;
 }
 
+static ItemActivity AssessBounds(const StackingContextHelper& aSc,
+                                 nsDisplayListBuilder* aDisplayListBuilder,
+                                 nsDisplayItem* aItem,
+                                 bool aHasActivePrecedingSibling) {
+  // Arbitrary threshold up for adjustments. What we want to avoid here
+  // is alternating between active and non active items and create a lot
+  // of overlapping blobs, so we only make images active if they are
+  // costly enough that it's worth the risk of having more layers. As we
+  // move more blob items into wr display items it will become less of a
+  // concern.
+  constexpr float largeish = 512;
+
+  bool snap = false;
+  nsRect bounds = aItem->GetBounds(aDisplayListBuilder, &snap);
+
+  float appUnitsPerDevPixel =
+      static_cast<float>(aItem->Frame()->PresContext()->AppUnitsPerDevPixel());
+
+  float width =
+      static_cast<float>(bounds.width) * aSc.GetInheritedScale().xScale;
+  float height =
+      static_cast<float>(bounds.height) * aSc.GetInheritedScale().yScale;
+
+  // Webrender doesn't handle primitives smaller than a pixel well, so
+  // avoid making them active.
+  if (width >= appUnitsPerDevPixel && height >= appUnitsPerDevPixel) {
+    if (aHasActivePrecedingSibling || width > largeish || height > largeish) {
+      return ItemActivity::Should;
+    }
+
+    return ItemActivity::Could;
+  }
+
+  return ItemActivity::No;
+}
+
 // This function decides whether we want to treat this item as "active", which
 // means that it's a container item which we will turn into a WebRender
 // StackingContext, or whether we treat it as "inactive" and include it inside
@@ -1176,26 +1216,22 @@ static ItemActivity IsItemProbablyActive(
     }
     case DisplayItemType::TYPE_SVG_GEOMETRY: {
       auto* svgItem = static_cast<DisplaySVGGeometry*>(aItem);
+      if (StaticPrefs::gfx_webrender_svg_shapes() && aUniformlyScaled &&
+          svgItem->ShouldBeActive(aBuilder, aResources, aSc, aManager,
+                                  aDisplayListBuilder)) {
+        return AssessBounds(aSc, aDisplayListBuilder, aItem,
+                            aHasActivePrecedingSibling);
+      }
+
+      return ItemActivity::No;
+    }
+    case DisplayItemType::TYPE_SVG_IMAGE: {
+      auto* svgItem = static_cast<DisplaySVGImage*>(aItem);
       if (StaticPrefs::gfx_webrender_svg_images() && aUniformlyScaled &&
           svgItem->ShouldBeActive(aBuilder, aResources, aSc, aManager,
                                   aDisplayListBuilder)) {
-        bool snap = false;
-        auto bounds = aItem->GetBounds(aDisplayListBuilder, &snap);
-
-        // Arbitrary threshold up for adjustments. What we want to avoid here
-        // is alternating between active and non active items and create a lot
-        // of overlapping blobs, so we only make images active if they are
-        // costly enough that it's worth the risk of having more layers. As we
-        // move more blob items into wr dislplay items it will become less of a
-        // concern.
-        int32_t largeish = 512;
-
-        if (aHasActivePrecedingSibling || bounds.width > largeish ||
-            bounds.height > largeish) {
-          return ItemActivity::Should;
-        }
-
-        return ItemActivity::Could;
+        return AssessBounds(aSc, aDisplayListBuilder, aItem,
+                            aHasActivePrecedingSibling);
       }
 
       return ItemActivity::No;
@@ -1647,8 +1683,9 @@ void WebRenderCommandBuilder::DoGroupingForDisplayList(
     }
 
     if (group.mResidualOffset != residualOffset) {
-      GP(" Residual Offset %f %f -> %f %f\n", group.mResidualOffset.x,
-         group.mResidualOffset.y, residualOffset.x, residualOffset.y);
+      GP(" Residual Offset %f %f -> %f %f\n", group.mResidualOffset.x.value,
+         group.mResidualOffset.y.value, residualOffset.x.value,
+         residualOffset.y.value);
     }
 
     group.ClearItems();
@@ -1921,15 +1958,18 @@ void WebRenderCommandBuilder::CreateWebRenderCommandsFromDisplayList(
         aBuilder.Dump(mDumpIndent + 1, Some(mBuilderDumpIndex), Nothing());
   }
 
+  FlattenedDisplayListIterator iter(aDisplayListBuilder, aDisplayList);
+  if (!iter.HasNext()) {
+    return;
+  }
+
   mDumpIndent++;
   if (aNewClipList) {
     mClipManager.BeginList(aSc);
   }
 
-  bool apzEnabled = mManager->AsyncPanZoomEnabled();
-
-  FlattenedDisplayListIterator iter(aDisplayListBuilder, aDisplayList);
-  while (iter.HasNext()) {
+  const bool apzEnabled = mManager->AsyncPanZoomEnabled();
+  do {
     nsDisplayItem* item = iter.GetNextItem();
 
     DisplayItemType itemType = item->GetType();
@@ -2147,7 +2187,7 @@ void WebRenderCommandBuilder::CreateWebRenderCommandsFromDisplayList(
         }
       }
     }
-  }
+  } while (iter.HasNext());
 
   mDumpIndent--;
   if (aNewClipList) {
@@ -2259,36 +2299,17 @@ bool WebRenderCommandBuilder::PushImageProvider(
   return true;
 }
 
-void WebRenderCommandBuilder::PushInProcessImage(
-    nsDisplayItem* aItem, const CompositableHandle& aHandle,
-    mozilla::wr::DisplayListBuilder& aBuilder,
-    mozilla::wr::IpcResourceUpdateQueue& aResources,
-    const StackingContextHelper& aSc,
-    const LayoutDeviceRect& aAsyncImageBounds) {
-  RefPtr<WebRenderInProcessImageData> imageData =
-      CreateOrRecycleWebRenderUserData<WebRenderInProcessImageData>(aItem);
-  MOZ_ASSERT(imageData);
-
-  auto rendering = wr::ToImageRendering(aItem->Frame()->UsedImageRendering());
-  LayoutDeviceRect scBounds(LayoutDevicePoint(0, 0), aAsyncImageBounds.Size());
-  imageData->CreateWebRenderCommands(aBuilder, aHandle, aSc, aAsyncImageBounds,
-                                     scBounds, VideoInfo::Rotation::kDegree_0,
-                                     rendering, wr::MixBlendMode::Normal,
-                                     !aItem->BackfaceIsHidden());
-}
-
 static void PaintItemByDrawTarget(nsDisplayItem* aItem, gfx::DrawTarget* aDT,
                                   const LayoutDevicePoint& aOffset,
                                   const IntRect& visibleRect,
                                   nsDisplayListBuilder* aDisplayListBuilder,
                                   const gfx::MatrixScales& aScale,
                                   Maybe<gfx::DeviceColor>& aHighlight) {
-  MOZ_ASSERT(aDT);
+  MOZ_ASSERT(aDT && aDT->IsValid());
 
   // XXX Why is this ClearRect() needed?
   aDT->ClearRect(Rect(visibleRect));
-  RefPtr<gfxContext> context = gfxContext::CreateOrNull(aDT);
-  MOZ_ASSERT(context);
+  gfxContext context(aDT);
 
   switch (aItem->GetType()) {
     case DisplayItemType::TYPE_SVG_WRAPPER:
@@ -2302,12 +2323,12 @@ static void PaintItemByDrawTarget(nsDisplayItem* aItem, gfx::DrawTarget* aDT,
         break;
       }
 
-      context->SetMatrix(context->CurrentMatrix().PreScale(aScale).PreTranslate(
+      context.SetMatrix(context.CurrentMatrix().PreScale(aScale).PreTranslate(
           -aOffset.x, -aOffset.y));
       if (aDisplayListBuilder->IsPaintingToWindow()) {
         aItem->Frame()->AddStateBits(NS_FRAME_PAINTED_THEBES);
       }
-      aItem->AsPaintedDisplayItem()->Paint(aDisplayListBuilder, context);
+      aItem->AsPaintedDisplayItem()->Paint(aDisplayListBuilder, &context);
       break;
   }
 
@@ -2414,11 +2435,7 @@ WebRenderCommandBuilder::GenerateFallbackData(
                            ? itemBounds
                            : aItem->GetClippedBounds(aDisplayListBuilder);
 
-  nsRegion visibleRegion(paintBounds);
   nsRect buildingRect = aItem->GetBuildingRect();
-  aItem->SetBuildingRect(paintBounds);
-  auto resetBuildingRect =
-      MakeScopeExit([&]() { aItem->SetBuildingRect(buildingRect); });
 
   const int32_t appUnitsPerDevPixel =
       aItem->Frame()->PresContext()->AppUnitsPerDevPixel();
@@ -2439,6 +2456,12 @@ WebRenderCommandBuilder::GenerateFallbackData(
 
   auto trans =
       ViewAs<LayerPixel>(aSc.GetSnappingSurfaceTransform().GetTranslation());
+
+  if (!FitsInt32(trans.X()) || !FitsInt32(trans.Y())) {
+    // The translation overflowed int32_t.
+    return nullptr;
+  }
+
   auto snappedTrans = LayerIntPoint::Floor(trans);
   LayerPoint residualOffset = trans - snappedTrans;
 
@@ -2771,17 +2794,19 @@ Maybe<wr::ImageMask> WebRenderCommandBuilder::BuildWrMaskImage(
         BackendType::SKIA, IntSize(1, 1), SurfaceFormat::A8);
     RefPtr<DrawTarget> dt = Factory::CreateRecordingDrawTarget(
         recorder, dummyDt, IntRect(IntPoint(0, 0), size));
+    if (!dt || !dt->IsValid()) {
+      gfxCriticalNote << "Failed to create drawTarget for blob mask image";
+      return Nothing();
+    }
 
-    RefPtr<gfxContext> context = gfxContext::CreateOrNull(dt);
-    MOZ_ASSERT(context);
-
-    context->SetMatrix(context->CurrentMatrix()
-                           .PreTranslate(-itemRect.x, -itemRect.y)
-                           .PreScale(scale));
+    gfxContext context(dt);
+    context.SetMatrix(context.CurrentMatrix()
+                          .PreTranslate(-itemRect.x, -itemRect.y)
+                          .PreScale(scale));
 
     bool maskPainted = false;
     bool maskIsComplete = aMaskItem->PaintMask(
-        aDisplayListBuilder, context, shouldHandleOpacity, &maskPainted);
+        aDisplayListBuilder, &context, shouldHandleOpacity, &maskPainted);
     if (!maskPainted) {
       return Nothing();
     }
@@ -2800,7 +2825,7 @@ Maybe<wr::ImageMask> WebRenderCommandBuilder::BuildWrMaskImage(
     //   SVG 1.1 say that if we fail to resolve a mask, we should draw the
     //   object unmasked so return Nothing().
     if (!maskIsComplete &&
-        (aMaskItem->Frame()->GetStateBits() & NS_FRAME_SVG_LAYOUT)) {
+        aMaskItem->Frame()->HasAnyStateBits(NS_FRAME_SVG_LAYOUT)) {
       return Nothing();
     }
 
@@ -2848,7 +2873,6 @@ Maybe<wr::ImageMask> WebRenderCommandBuilder::BuildWrMaskImage(
   wr::ImageMask imageMask;
   imageMask.image = wr::AsImageKey(maskData->mBlobKey.value());
   imageMask.rect = wr::ToLayoutRect(imageRect);
-  imageMask.repeat = false;
   return Some(imageMask);
 }
 

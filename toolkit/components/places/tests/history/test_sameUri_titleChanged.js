@@ -4,11 +4,8 @@
 add_task(async function test() {
   let uri = "http://test.com/";
 
-  const promiseTitleChangedNotifications = PlacesTestUtils.waitForNotification(
-    "page-title-changed",
-    () => true,
-    "places"
-  );
+  const promiseTitleChangedNotifications =
+    PlacesTestUtils.waitForNotification("page-title-changed");
 
   // This repeats the url on purpose, don't merge it into a single place entry.
   await PlacesTestUtils.addVisits([

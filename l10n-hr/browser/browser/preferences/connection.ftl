@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Postavke spajanja
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Postavke spajanja
     .style =
@@ -81,16 +73,14 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Ova opcija vas neprimjetno prijavljuje na proxije kada imate spremljene njihove lozinke. Ako prijava ne uspije, bit ćete obaviješteni.
 
+connection-proxy-autologin-checkbox =
+    .label = Ne pitaj za prijavu ako je lozinka spremljena
+    .accesskey = i
+    .tooltiptext = Ova opcija vas neprimjetno prijavljuje na proxije kada imate spremljene njihove lozinke. Ako prijava ne uspije, bit ćete obaviješteni.
+
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS kad se koristi SOCKS v5
     .accesskey = d
-
-connection-dns-over-https =
-    .label = Aktiviraj DNS preko HTTPS-a
-    .accesskey = O
-
-connection-dns-over-https-url-resolver = Koristi pružatelja usluge
-    .accesskey = p
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

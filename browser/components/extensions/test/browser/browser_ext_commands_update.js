@@ -2,16 +2,11 @@
 /* vim: set sts=2 sw=2 et tw=80: */
 "use strict";
 
-ChromeUtils.defineModuleGetter(
-  this,
-  "ExtensionSettingsStore",
-  "resource://gre/modules/ExtensionSettingsStore.jsm"
-);
-ChromeUtils.defineModuleGetter(
-  this,
-  "AddonManager",
-  "resource://gre/modules/AddonManager.jsm"
-);
+ChromeUtils.defineESModuleGetters(this, {
+  AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
+  ExtensionSettingsStore:
+    "resource://gre/modules/ExtensionSettingsStore.sys.mjs",
+});
 
 function enableAddon(addon) {
   return new Promise(resolve => {
@@ -65,7 +60,7 @@ add_task(async function test_update_defined_command() {
     useAddonManager: "permanent",
     manifest: {
       version: "1.0",
-      applications: { gecko: { id: "commands@mochi.test" } },
+      browser_specific_settings: { gecko: { id: "commands@mochi.test" } },
       commands: {
         foo: {
           suggested_key: {
@@ -341,7 +336,7 @@ add_task(async function test_update_defined_command() {
     useAddonManager: "permanent",
     manifest: {
       version: "1.0",
-      applications: { gecko: { id: "commands@mochi.test" } },
+      browser_specific_settings: { gecko: { id: "commands@mochi.test" } },
       commands: {
         foo: {
           suggested_key: {
@@ -395,7 +390,7 @@ add_task(async function updateSidebarCommand() {
         </body></html>
       `,
 
-      "sidebar.js": function() {
+      "sidebar.js": function () {
         window.onload = () => {
           browser.test.sendMessage("sidebar");
         };

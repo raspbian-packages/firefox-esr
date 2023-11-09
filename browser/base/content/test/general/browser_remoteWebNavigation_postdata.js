@@ -12,8 +12,8 @@ function makeInputStream(aString) {
 
 add_task(async function test_remoteWebNavigation_postdata() {
   let { HttpServer } = ChromeUtils.import("resource://testing-common/httpd.js");
-  let { CommonUtils } = ChromeUtils.import(
-    "resource://services-common/utils.js"
+  let { CommonUtils } = ChromeUtils.importESModule(
+    "resource://services-common/utils.sys.mjs"
   );
 
   let server = new HttpServer();
@@ -46,7 +46,7 @@ add_task(async function test_remoteWebNavigation_postdata() {
   BrowserTestUtils.removeTab(gBrowser.selectedTab);
 
   await new Promise(resolve => {
-    server.stop(function() {
+    server.stop(function () {
       resolve();
     });
   });

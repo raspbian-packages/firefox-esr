@@ -11,12 +11,13 @@ about-logins-page-title = Credenziali e password
 
 # "Google Play" and "App Store" are both branding and should not be translated
 
-login-filter =
-    .placeholder = Cerca nelle credenziali
+about-logins-login-filter =
+   .placeholder = Cerca nelle credenziali
+   .key = F
 
-create-login-button = Inserisci nuove credenziali
 create-new-login-button =
   .title = Inserisci nuove credenziali
+
 fxaccounts-sign-in-text = Ritrova le tue password su tutti i tuoi dispositivi
 fxaccounts-sign-in-sync-button = Accedi per sincronizzare
 fxaccounts-avatar-button =
@@ -43,6 +44,13 @@ about-logins-menu-menuitem-help = Supporto
 login-list =
     .aria-label = Credenziali corrispondenti ai criteri di ricerca
 login-list-count = { $count } credenziali
+
+login-list-filtered-count =
+  { $total ->
+      [one] { $count } di { $total } credenziale
+     *[other] { $count } di { $total } credenziali
+  }
+
 login-list-sort-label-text = Ordina per:
 login-list-name-option = Nome (A-Z)
 login-list-name-reverse-option = Nome (Z-A)
@@ -105,18 +113,15 @@ login-item-copied-password-button-text = Copiata.
 login-item-save-changes-button = Salva modifiche
 login-item-save-new-button = Salva
 login-item-cancel-button = Annulla
-login-item-time-changed = Ultima modifica: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Data creazione: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Ultimo utilizzo: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
 
 ## The date is displayed in a timeline showing the password evolution.
 ## A label is displayed under the date to describe the type of change.
 ## (e.g. updated, created, etc.)
 
 login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
-login-item-timeline-action-created = Creata
-login-item-timeline-action-updated = Aggiornata
-login-item-timeline-action-used = Utilizzata
+login-item-timeline-action-created = Creazione
+login-item-timeline-action-updated = Aggiornamento
+login-item-timeline-action-used = Utilizzo
 
 ## OS Authentication dialog
 
@@ -171,6 +176,9 @@ about-logins-confirm-remove-dialog-title = Rimuovere queste credenziali?
 confirm-delete-dialog-message = Questa operazione non può essere annullata.
 about-logins-confirm-remove-dialog-confirm-button = Rimuovi
 
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
   { $count ->
      [1] Rimuovi
@@ -195,6 +203,8 @@ about-logins-confirm-remove-all-sync-dialog-title =
 
 about-logins-confirm-remove-all-sync-dialog-message = Questa operazione rimuoverà le credenziali salvate in { -brand-short-name } su tutti i dispositivi sincronizzati con l’{ -fxaccount-brand-name }. Anche i relativi avvisi sulle violazioni verranno rimossi. Non sarà possibile annullare questa operazione.
 
+##
+
 about-logins-confirm-export-dialog-title = Esportazione credenziali e password
 about-logins-confirm-export-dialog-message = Le password verranno salvate come testo leggibile (ad esempio “Password123”). Chiunque abbia accesso al file esportato potrà vederle.
 about-logins-confirm-export-dialog-confirm-button = Esporta…
@@ -214,7 +224,6 @@ about-logins-breach-alert-date = Questa violazione si è verificata il giorno { 
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Apri { $hostname }
-about-logins-breach-alert-learn-more-link = Ulteriori informazioni
 
 ## Vulnerable Password notification
 

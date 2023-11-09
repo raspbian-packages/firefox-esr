@@ -56,7 +56,7 @@ class XULTreeGridAccessible : public XULTreeAccessible, public TableAccessible {
   virtual ~XULTreeGridAccessible();
 
   // XULTreeAccessible
-  virtual already_AddRefed<LocalAccessible> CreateTreeItemAccessible(
+  virtual already_AddRefed<XULTreeItemAccessibleBase> CreateTreeItemAccessible(
       int32_t aRow) const override;
 };
 
@@ -125,7 +125,7 @@ class XULTreeGridCellAccessible : public LeafAccessible,
   virtual nsRect BoundsInAppUnits() const override;
   virtual nsIntRect BoundsInCSSPixels() const override;
   virtual ENameValueFlag Name(nsString& aName) const override;
-  virtual LocalAccessible* FocusedChild() override;
+  virtual Accessible* FocusedChild() override;
   virtual already_AddRefed<AccAttributes> NativeAttributes() override;
   virtual int32_t IndexInParent() const override;
   virtual Relation RelationByType(RelationType aType) const override;

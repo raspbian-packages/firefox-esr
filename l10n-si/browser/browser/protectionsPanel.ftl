@@ -52,7 +52,7 @@ protections-panel-content-blocking-fingerprinters-label = ඇඟිලි සට
 ##   These strings are used in the header labels of each of these sections.
 
 protections-panel-blocking-label = අවහිර කළ
-protections-panel-not-blocking-label = ඉඩ දුන්
+protections-panel-not-blocking-label = ඉඩ දී ඇත
 protections-panel-not-found-label = අනාවරණ නැත
 
 ##
@@ -69,6 +69,7 @@ protections-panel-site-not-working-view-issue-list-forms = ආකෘති
 protections-panel-site-not-working-view-issue-list-payments = ගෙවීම්
 protections-panel-site-not-working-view-issue-list-comments = අදහස්
 protections-panel-site-not-working-view-issue-list-videos = දෘශ්‍යක
+protections-panel-site-not-working-view-issue-list-fonts = අකුරු
 
 protections-panel-site-not-working-view-send-report = වාර්තාවක් යවන්න
 
@@ -96,3 +97,17 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = අවලංගු කරන්න
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = වාර්තාව යවන්න
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = දත්තකඩ පතාක අවකරණය
+protections-panel-cookie-banner-handling-enabled = මෙම අඩවියට සක්‍රියයි
+protections-panel-cookie-banner-handling-disabled = මෙම අඩවියට අක්‍රියයි
+protections-panel-cookie-banner-handling-undetected = අඩවියට සහාය නොදක්වයි
+
+protections-panel-cookie-banner-view-title =
+    .title = දත්තකඩ පතාක අවකරණය
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } සහාය දක්වන අඩවිවල තිබෙන සියළුම දත්තකඩ ඉල්ලීම් ස්වයංක්‍රීයව ප්‍රතික්‍ෂේප කිරීමට උත්සාහ කරයි.
+protections-panel-cookie-banner-view-cancel = අවලංගු
+protections-panel-cookie-banner-view-turn-off = අක්‍රිය කරන්න
+protections-panel-cookie-banner-view-turn-on = සක්‍රිය කරන්න

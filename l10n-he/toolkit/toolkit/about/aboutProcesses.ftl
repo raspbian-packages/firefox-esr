@@ -123,11 +123,12 @@ about-processes-frame-name-many = מסגרות משנה ({ $number }): { $shortU
 
 ## Utility process actor names
 
-about-processes-utility-actor-audio-decoder = מפענח אודיו
-
 about-processes-utility-actor-audio-decoder-generic = מפענח שמע גנרי
 about-processes-utility-actor-audio-decoder-applemedia = מפענח שמע של אפל מדיה
 about-processes-utility-actor-audio-decoder-wmf = מפענח שמע של Windows Media Framework
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = JavaScript Oracle
+about-processes-utility-actor-windows-utils = Windows Utils
 
 ## Displaying CPU (percentage and total)
 ## Variables:

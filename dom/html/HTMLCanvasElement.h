@@ -42,6 +42,7 @@ class SharedSurfaceTextureClient;
 class WebRenderCanvasData;
 }  // namespace layers
 namespace gfx {
+class DrawTarget;
 class SourceSurface;
 class VRLayerChild;
 }  // namespace gfx
@@ -113,7 +114,6 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
   enum { DEFAULT_CANVAS_WIDTH = 300, DEFAULT_CANVAS_HEIGHT = 150 };
 
   typedef layers::CanvasRenderer CanvasRenderer;
-  typedef layers::Layer Layer;
   typedef layers::LayerManager LayerManager;
   typedef layers::WebRenderCanvasData WebRenderCanvasData;
 
@@ -163,8 +163,6 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
 
     SetHTMLBoolAttr(nsGkAtoms::moz_opaque, aValue, aRv);
   }
-  already_AddRefed<nsISupports> MozGetIPCContext(const nsAString& aContextId,
-                                                 ErrorResult& aRv);
   PrintCallback* GetMozPrintCallback() const;
   void SetMozPrintCallback(PrintCallback* aCallback);
 
@@ -216,8 +214,14 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
   bool GetIsOpaque();
   virtual bool GetOpaqueAttr() override;
 
+  /**
+   * Retrieve a snapshot of the internal surface, returning the alpha type if
+   * requested. An optional target may be supplied for which the snapshot will
+   * be optimized for, if possible.
+   */
   virtual already_AddRefed<gfx::SourceSurface> GetSurfaceSnapshot(
-      gfxAlphaType* aOutAlphaType = nullptr);
+      gfxAlphaType* aOutAlphaType = nullptr,
+      gfx::DrawTarget* aTarget = nullptr);
 
   /*
    * Register a FrameCaptureListener with this canvas.
@@ -261,8 +265,6 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
 
   virtual nsresult Clone(dom::NodeInfo*, nsINode** aResult) const override;
   nsresult CopyInnerTo(HTMLCanvasElement* aDest);
-
-  void GetEventTargetParent(EventChainPreVisitor& aVisitor) override;
 
   static void MapAttributesIntoRule(const nsMappedAttributes* aAttributes,
                                     MappedDeclarations&);
@@ -323,14 +325,14 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
                          const JS::Value& aEncoderOptions, nsAString& aDataURL);
   MOZ_CAN_RUN_SCRIPT void CallPrintCallback();
 
-  virtual nsresult AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
-                                const nsAttrValue* aValue,
-                                const nsAttrValue* aOldValue,
-                                nsIPrincipal* aSubjectPrincipal,
-                                bool aNotify) override;
-  virtual nsresult OnAttrSetButNotChanged(int32_t aNamespaceID, nsAtom* aName,
-                                          const nsAttrValueOrString& aValue,
-                                          bool aNotify) override;
+  virtual void AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
+                            const nsAttrValue* aValue,
+                            const nsAttrValue* aOldValue,
+                            nsIPrincipal* aSubjectPrincipal,
+                            bool aNotify) override;
+  virtual void OnAttrSetButNotChanged(int32_t aNamespaceID, nsAtom* aName,
+                                      const nsAttrValueOrString& aValue,
+                                      bool aNotify) override;
 
  public:
   ClientWebGLContext* GetWebGLContext();
@@ -338,10 +340,9 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
 
   bool IsOffscreen() const { return !!mOffscreenCanvas; }
   OffscreenCanvas* GetOffscreenCanvas() const { return mOffscreenCanvas; }
+  void FlushOffscreenCanvas();
 
   layers::ImageContainer* GetImageContainer() const { return mImageContainer; }
-
-  layers::CompositableHandle GetCompositableHandle() const;
 
  protected:
   bool mResetLayer;
@@ -370,7 +371,7 @@ class HTMLCanvasElement final : public nsGenericHTMLElement,
   RefPtr<nsIPrincipal> mExpandedReader;
 
   // Determines if the caller should be able to read the content.
-  bool CallerCanRead(JSContext* aCx) const;
+  bool CallerCanRead(nsIPrincipal* aPrincipal) const;
 
   bool IsPrintCallbackDone();
 

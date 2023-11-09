@@ -38,9 +38,11 @@ menu-quit =
             [windows] F
            *[other] F
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Fini { -brand-shorter-name }
+
 menu-about =
     .label = Pri { -brand-shorter-name }
     .accesskey = P
@@ -220,8 +222,6 @@ menu-history-undo-menu =
     .label = Antaŭ nelonge fermitaj langetoj
 menu-history-undo-window-menu =
     .label = Antaŭ nelonge fermitaj fenestroj
-menu-history-reopen-all-tabs = Remalfermi ĉiujn langetojn
-menu-history-reopen-all-windows = Remalfermi ĉiujn fenestrojn
 
 ## Bookmarks Menu
 
@@ -230,10 +230,6 @@ menu-bookmarks-menu =
     .accesskey = L
 menu-bookmarks-manage =
     .label = Administri legosignojn
-menu-bookmark-current-tab =
-    .label = Aldoni legosignon por la nuna langeto
-menu-bookmark-edit =
-    .label = Redakti tiun ĉi legosignon
 menu-bookmark-tab =
     .label = Aldoni legosignon por la nuna langeto…
 menu-edit-bookmark =
@@ -331,6 +327,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Malŝalti problemsolvan reĝimon
     .accesskey = p
+menu-help-switch-device =
+    .label = Iro al nova aparato
+    .accesskey = I
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

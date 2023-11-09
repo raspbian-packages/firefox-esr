@@ -29,9 +29,6 @@
 using namespace mozilla;
 using namespace mozilla::a11y;
 
-template <typename String>
-static void EscapeAttributeChars(String& aStr);
-
 ////////////////////////////////////////////////////////////////////////////////
 // ia2Accessible
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,12 +74,9 @@ ia2Accessible::get_nRelations(long* aNRelations) {
   if (!aNRelations) return E_INVALIDARG;
   *aNRelations = 0;
 
-  if (!Acc()) {
-    return CO_E_OBJNOTCONNECTED;
-  }
-  AccessibleWrap* acc = LocalAcc();
+  Accessible* acc = Acc();
   if (!acc) {
-    return E_NOTIMPL;  // XXX Not supported for RemoteAccessible yet.
+    return CO_E_OBJNOTCONNECTED;
   }
 
   for (uint32_t idx = 0; idx < ArrayLength(sRelationTypePairs); idx++) {
@@ -100,12 +94,9 @@ ia2Accessible::get_relation(long aRelationIndex,
   if (!aRelation || aRelationIndex < 0) return E_INVALIDARG;
   *aRelation = nullptr;
 
-  if (!Acc()) {
-    return CO_E_OBJNOTCONNECTED;
-  }
-  AccessibleWrap* acc = LocalAcc();
+  Accessible* acc = Acc();
   if (!acc) {
-    return E_NOTIMPL;  // XXX Not supported for RemoteAccessible yet.
+    return CO_E_OBJNOTCONNECTED;
   }
 
   long relIdx = 0;
@@ -118,8 +109,6 @@ ia2Accessible::get_relation(long aRelationIndex,
         new ia2AccessibleRelation(relationType, &rel);
     if (ia2Relation->HasTargets()) {
       if (relIdx == aRelationIndex) {
-        MsaaAccessible* msaa = static_cast<MsaaAccessible*>(this);
-        msaa->AssociateCOMObjectForDisconnection(ia2Relation);
         ia2Relation.forget(aRelation);
         return S_OK;
       }
@@ -138,12 +127,9 @@ ia2Accessible::get_relations(long aMaxRelations,
   if (!aRelation || !aNRelations || aMaxRelations <= 0) return E_INVALIDARG;
   *aNRelations = 0;
 
-  if (!Acc()) {
-    return CO_E_OBJNOTCONNECTED;
-  }
-  AccessibleWrap* acc = LocalAcc();
+  Accessible* acc = Acc();
   if (!acc) {
-    return E_NOTIMPL;  // XXX Not supported for RemoteAccessible yet.
+    return CO_E_OBJNOTCONNECTED;
   }
 
   for (uint32_t idx = 0;
@@ -156,8 +142,6 @@ ia2Accessible::get_relations(long aMaxRelations,
     RefPtr<ia2AccessibleRelation> ia2Rel =
         new ia2AccessibleRelation(relationType, &rel);
     if (ia2Rel->HasTargets()) {
-      MsaaAccessible* msaa = static_cast<MsaaAccessible*>(this);
-      msaa->AssociateCOMObjectForDisconnection(ia2Rel);
       ia2Rel.forget(aRelation + (*aNRelations));
       (*aNRelations)++;
     }
@@ -173,8 +157,8 @@ ia2Accessible::role(long* aRole) {
   Accessible* acc = Acc();
   if (!acc) return CO_E_OBJNOTCONNECTED;
 
-#define ROLE(_geckoRole, stringRole, atkRole, macRole, macSubrole, msaaRole, \
-             ia2Role, androidClass, nameRule)                                \
+#define ROLE(_geckoRole, stringRole, ariaRole, atkRole, macRole, macSubrole, \
+             msaaRole, ia2Role, androidClass, nameRule)                      \
   case roles::_geckoRole:                                                    \
     *aRole = ia2Role;                                                        \
     break;
@@ -399,12 +383,9 @@ ia2Accessible::get_locale(IA2Locale* aLocale) {
   // Two-letter primary codes are reserved for [ISO639] language abbreviations.
   // Any two-letter subcode is understood to be a [ISO3166] country code.
 
-  if (!Acc()) {
-    return CO_E_OBJNOTCONNECTED;
-  }
-  AccessibleWrap* acc = LocalAcc();
+  Accessible* acc = Acc();
   if (!acc) {
-    return E_NOTIMPL;  // XXX Not supported for RemoteAccessible yet.
+    return CO_E_OBJNOTCONNECTED;
   }
 
   nsAutoString lang;
@@ -515,17 +496,14 @@ ia2Accessible::get_relationTargetsOfType(BSTR aType, long aMaxTargets,
   }
   if (!relationType) return E_INVALIDARG;
 
-  if (!Acc()) {
+  Accessible* acc = Acc();
+  if (!acc) {
     return CO_E_OBJNOTCONNECTED;
   }
-  AccessibleWrap* acc = LocalAcc();
-  if (!acc) {
-    return E_NOTIMPL;  // XXX Not supported for RemoteAccessible yet.
-  }
 
-  nsTArray<LocalAccessible*> targets;
+  nsTArray<Accessible*> targets;
   Relation rel = acc->RelationByType(*relationType);
-  LocalAccessible* target = nullptr;
+  Accessible* target = nullptr;
   while (
       (target = rel.Next()) &&
       (aMaxTargets == 0 || static_cast<long>(targets.Length()) < aMaxTargets)) {
@@ -538,9 +516,7 @@ ia2Accessible::get_relationTargetsOfType(BSTR aType, long aMaxTargets,
   if (!*aTargets) return E_OUTOFMEMORY;
 
   for (int32_t i = 0; i < *aNTargets; i++) {
-    RefPtr<IAccessible2> target;
-    targets[i]->GetNativeInterface(getter_AddRefs(target));
-    target.forget(&(*aTargets)[i]);
+    (*aTargets)[i] = MsaaAccessible::NativeAccessible(targets[i]);
   }
 
   return S_OK;
@@ -589,10 +565,9 @@ ia2Accessible::get_selectionRanges(IA2Range** aRanges, long* aNRanges) {
 ////////////////////////////////////////////////////////////////////////////////
 // Helpers
 
-template <typename String>
-static inline void EscapeAttributeChars(String& aStr) {
+static inline void EscapeAttributeChars(nsString& aStr) {
   int32_t offset = 0;
-  static const char kCharsToEscape[] = ":;=,\\";
+  static const char16_t kCharsToEscape[] = u":;=,\\";
   while ((offset = aStr.FindCharInSet(kCharsToEscape, offset)) != kNotFound) {
     aStr.Insert('\\', offset);
     offset += 2;

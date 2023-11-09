@@ -63,7 +63,6 @@ protections-panel-not-found-label = Niewykryte
 ##
 
 protections-panel-settings-label = Ustawienia ochrony
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Panel ochrony
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = formularzami
 protections-panel-site-not-working-view-issue-list-payments = płatnościami
 protections-panel-site-not-working-view-issue-list-comments = komentarzami
 protections-panel-site-not-working-view-issue-list-videos = filmami
+protections-panel-site-not-working-view-issue-list-fonts = czcionkami
 
 protections-panel-site-not-working-view-send-report = Wyślij zgłoszenie
 
@@ -100,7 +100,8 @@ protections-panel-content-blocking-manage-settings =
 
 protections-panel-content-blocking-breakage-report-view =
     .title = Zgłoś niepoprawnie działającą stronę
-protections-panel-content-blocking-breakage-report-view-description = Blokowanie pewnych elementów śledzących może powodować problemy z niektórymi stronami. Zgłaszając problemy, pomagasz ulepszać program { -brand-short-name } (adres odwiedzanej strony oraz informacje o ustawieniach przeglądarki zostaną przesłane do Mozilli). <label data-l10n-name="learn-more">Więcej informacji</label>
+protections-panel-content-blocking-breakage-report-view-description = Blokowanie pewnych elementów śledzących może powodować problemy z niektórymi stronami. Zgłaszając problemy, pomagasz ulepszać { -brand-short-name(case: "acc") } (adres odwiedzanej strony oraz informacje o ustawieniach przeglądarki zostaną przesłane do Mozilli). <label data-l10n-name="learn-more">Więcej informacji</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Blokowanie pewnych elementów śledzących może powodować problemy z niektórymi stronami. Zgłaszając problemy, pomagasz ulepszać { -brand-short-name(case: "acc") } (adres odwiedzanej strony oraz informacje o ustawieniach przeglądarki zostaną przesłane do { -vendor-short-name(case: "gen") }).
 protections-panel-content-blocking-breakage-report-view-collection-url = Adres URL problematycznej strony
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = Adres URL problematycznej strony
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Anuluj
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Wyślij zgłoszenie
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Ograniczanie informacji o ciasteczkach
+protections-panel-cookie-banner-handling-enabled = Włączone na tej witrynie
+protections-panel-cookie-banner-handling-disabled = Wyłączone na tej witrynie
+protections-panel-cookie-banner-handling-undetected = Witryna obecnie nie jest obsługiwana
+
+protections-panel-cookie-banner-view-title =
+    .title = Ograniczanie informacji o ciasteczkach
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Wyłączyć ograniczanie informacji o ciasteczkach na witrynie { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Włączyć ograniczanie informacji o ciasteczkach na tej witrynie?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } usunie ciasteczka tej witryny i odświeży stronę. Usunięcie wszystkich ciasteczek może spowodować wylogowanie ze strony lub opróżnienie koszyka w sklepie.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } próbuje automatycznie odrzucać wszystkie prośby o akceptację ciasteczek na obsługiwanych witrynach.
+protections-panel-cookie-banner-view-cancel = Anuluj
+protections-panel-cookie-banner-view-turn-off = Wyłącz
+protections-panel-cookie-banner-view-turn-on = Włącz

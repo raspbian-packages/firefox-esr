@@ -13,6 +13,9 @@ about-webrtc-document-title = WebRTC आंतरिक
 # translated. This string is used as a title for a file save dialog box.
 about-webrtc-save-page-dialog-title = वेबआरटीसी: के बारे में सहेजे जैसे
 
+## These labels are for a disclosure which contains the information for closed PeerConnection sections
+
+
 ## AEC is an abbreviation for Acoustic Echo Cancellation.
 
 about-webrtc-aec-logging-msg-label = AEC लागिंग
@@ -20,7 +23,13 @@ about-webrtc-aec-logging-off-state-label = AEC लागिंग करना �
 about-webrtc-aec-logging-on-state-label = AEC लॉगिंग को बंद करें
 about-webrtc-aec-logging-on-state-msg = एईसी लॉगिंग सक्रिय है (कॉलर से कुछ समय बात करें और फिर कैप्चर को बंद करें)
 
+about-webrtc-aec-logging-toggled-on-state-msg = एईसी लॉगिंग सक्रिय है (कॉलर से कुछ समय बात करें और फिर कैप्चर को बंद करें)
+# Variables:
+#  $path (String) - The path to which the aec log file is saved.
+about-webrtc-aec-logging-toggled-off-state-msg = कैप्चर लॉग फ़ाइल { $path } में पाया जा सकता हैं
+
 ##
+
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
 # an abbreviation for Identifier. This string should not normally be translated
@@ -89,6 +98,11 @@ about-webrtc-log-show-msg = लॉग दिखाएँ
 about-webrtc-log-hide-msg = लॉग छुपाएँ
     .title = इस विभाग को समेटनें के लिए क्लिक करें
 
+about-webrtc-log-section-show-msg = लॉग दिखाएँ
+    .title = विभाग फैलाने के लिये क्लिक करें
+about-webrtc-log-section-hide-msg = लॉग छुपाएँ
+    .title = इस विभाग को समेटनें के लिए क्लिक करें
+
 ## These are used to display a header for a PeerConnection.
 ## Variables:
 ##  $browser-id (Number) - A numeric id identifying the browser tab for the PeerConnection.
@@ -98,6 +112,11 @@ about-webrtc-log-hide-msg = लॉग छुपाएँ
 
 about-webrtc-connection-open = [ { $browser-id } | { $id } ] { $url } { $now }
 about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (बंद) { $now }
+
+## These are used to indicate what direction media is flowing.
+## Variables:
+##  $codecs - a list of media codecs
+
 
 ##
 
@@ -110,10 +129,18 @@ about-webrtc-raw-cand-show-msg = अनुभवहीन उम्मीदव�
     .title = विभाग फैलाने के लिये क्लिक करें
 about-webrtc-raw-cand-hide-msg = अनुभवहीन उम्मीदवार छिपाएँ
     .title = इस विभाग को समेटनें के लिए क्लिक करें
+about-webrtc-raw-cand-section-show-msg = अनुभवहीन उम्मीदवार दिखाएँ
+    .title = विभाग फैलाने के लिये क्लिक करें
+about-webrtc-raw-cand-section-hide-msg = अनुभवहीन उम्मीदवार छिपाएँ
+    .title = इस विभाग को समेटनें के लिए क्लिक करें
 about-webrtc-priority = प्राथमिकता
 about-webrtc-fold-show-msg = विवरण दिखाएँ
     .title = विभाग फैलाने के लिये क्लिक करें
 about-webrtc-fold-hide-msg = विवरण छिपाएँ
+    .title = इस विभाग को समेटनें के लिए क्लिक करें
+about-webrtc-fold-default-show-msg = विवरण दिखाएँ
+    .title = विभाग फैलाने के लिये क्लिक करें
+about-webrtc-fold-default-hide-msg = विवरण छिपाएँ
     .title = इस विभाग को समेटनें के लिए क्लिक करें
 about-webrtc-decoder-label = डीकोडर
 about-webrtc-encoder-label = कूटलेखित्र
@@ -124,6 +151,10 @@ about-webrtc-height-px = ऊंचाई (px)
 about-webrtc-estimated-framerate = अनुमानित फ्रेमरेट
 
 ## SSRCs are identifiers that represent endpoints in an RTP stream
+
+
+## These are displayed on the button that shows or hides the
+## PeerConnection configuration disclosure
 
 
 ##
@@ -141,6 +172,10 @@ about-webrtc-save-page-msg = { $path } को पृष्ठ सहेज ग�
 about-webrtc-debug-mode-off-state-msg = ट्रेस लॉग { $path } पर पाया जा सकता हैं
 about-webrtc-debug-mode-on-state-msg = दोषसुधार मोड सक्रिय, { $path } पर ट्रेस लॉग
 about-webrtc-aec-logging-off-state-msg = कैप्चर लॉग फ़ाइल { $path } में पाया जा सकता हैं
+
+about-webrtc-save-page-complete-msg = { $path } को पृष्ठ सहेज गया:
+about-webrtc-debug-mode-toggled-off-state-msg = ट्रेस लॉग { $path } पर पाया जा सकता हैं
+about-webrtc-debug-mode-toggled-on-state-msg = दोषसुधार मोड सक्रिय, { $path } पर ट्रेस लॉग
 
 ##
 
@@ -182,6 +217,14 @@ about-webrtc-sdp-set-at-timestamp-remote = दूरस्थ SDP को टा�
 #  $timestamp (Number) - The Unix Epoch time at which the SDP was set.
 #  $relative-timestamp (Number) - The timestamp relative to the timestamp of the earliest received SDP.
 about-webrtc-sdp-set-timestamp = टाइमस्टैम्प { NUMBER($timestamp, useGrouping: "false") } (+ { $relative-timestamp } ms)
+
+## These are displayed on the button that shows or hides the SDP information disclosure
+
+
+## These are displayed on the button that shows or hides the Media Context information disclosure.
+## The Media Context is the set of preferences and detected capabilities that informs
+## the negotiated CODEC settings.
+
 
 ##
 

@@ -1,6 +1,5 @@
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-const { RemoteSettings } = ChromeUtils.import(
-  "resource://services-settings/remote-settings.js"
+const { RemoteSettings } = ChromeUtils.importESModule(
+  "resource://services-settings/remote-settings.sys.mjs"
 );
 
 let client;

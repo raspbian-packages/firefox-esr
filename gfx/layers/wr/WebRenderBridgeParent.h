@@ -118,7 +118,7 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
       const uint64_t& aFwdTransactionId, const TransactionId& aTransactionId,
       const bool& aContainsSVGGroup, const VsyncId& aVsyncId,
       const TimeStamp& aVsyncStartTime, const TimeStamp& aRefreshStartTime,
-      const TimeStamp& aTxnStartTime, const nsCString& aTxnURL,
+      const TimeStamp& aTxnStartTime, const nsACString& aTxnURL,
       const TimeStamp& aFwdTime,
       nsTArray<CompositionPayload>&& aPayloads) override;
   mozilla::ipc::IPCResult RecvEmptyTransaction(
@@ -127,26 +127,28 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
       nsTArray<OpDestroy>&& aToDestroy, const uint64_t& aFwdTransactionId,
       const TransactionId& aTransactionId, const VsyncId& aVsyncId,
       const TimeStamp& aVsyncStartTime, const TimeStamp& aRefreshStartTime,
-      const TimeStamp& aTxnStartTime, const nsCString& aTxnURL,
+      const TimeStamp& aTxnStartTime, const nsACString& aTxnURL,
       const TimeStamp& aFwdTime,
       nsTArray<CompositionPayload>&& aPayloads) override;
   mozilla::ipc::IPCResult RecvSetFocusTarget(
       const FocusTarget& aFocusTarget) override;
   mozilla::ipc::IPCResult RecvParentCommands(
+      const wr::IdNamespace& aIdNamespace,
       nsTArray<WebRenderParentCommand>&& commands) override;
-  mozilla::ipc::IPCResult RecvGetSnapshot(PTextureParent* aTexture,
+  mozilla::ipc::IPCResult RecvGetSnapshot(NotNull<PTextureParent*> aTexture,
                                           bool* aNeedsYFlip) override;
 
   mozilla::ipc::IPCResult RecvSetLayersObserverEpoch(
       const LayersObserverEpoch& aChildEpoch) override;
 
   mozilla::ipc::IPCResult RecvClearCachedResources() override;
+  mozilla::ipc::IPCResult RecvClearAnimationResources() override;
   mozilla::ipc::IPCResult RecvInvalidateRenderedFrame() override;
   mozilla::ipc::IPCResult RecvScheduleComposite(
       const wr::RenderReasons& aReasons) override;
   mozilla::ipc::IPCResult RecvCapture() override;
   mozilla::ipc::IPCResult RecvStartCaptureSequence(
-      const nsCString& path, const uint32_t& aFlags) override;
+      const nsACString& path, const uint32_t& aFlags) override;
   mozilla::ipc::IPCResult RecvStopCaptureSequence() override;
   mozilla::ipc::IPCResult RecvSyncWithCompositor() override;
 
@@ -203,7 +205,7 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
       const wr::Epoch& aWrEpoch, TransactionId aTransactionId,
       bool aContainsSVGGroup, const VsyncId& aVsyncId,
       const TimeStamp& aVsyncStartTime, const TimeStamp& aRefreshStartTime,
-      const TimeStamp& aTxnStartTime, const nsCString& aTxnURL,
+      const TimeStamp& aTxnStartTime, const nsACString& aTxnURL,
       const TimeStamp& aFwdTime, const bool aIsFirstPaint,
       nsTArray<CompositionPayload>&& aPayloads,
       const bool aUseForTelemetry = true);
@@ -217,7 +219,7 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
   void NotifySceneBuiltForEpoch(const wr::Epoch& aEpoch,
                                 const TimeStamp& aEndTime);
 
-  void CompositeIfNeeded();
+  void RetrySkippedComposite();
 
   TextureFactoryIdentifier GetTextureFactoryIdentifier();
 
@@ -288,13 +290,6 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
 
   void BeginRecording(const TimeStamp& aRecordingStart);
 
-  /**
-   * Write the frames collected since the call to BeginRecording to disk.
-   *
-   * If there is not currently a recorder, this is a no-op.
-   */
-  RefPtr<wr::WebRenderAPI::WriteCollectedFramesPromise> WriteCollectedFrames();
-
 #if defined(MOZ_WIDGET_ANDROID)
   /**
    * Request a screengrab for android
@@ -303,13 +298,9 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
   void MaybeCaptureScreenPixels();
 #endif
   /**
-   * Return the frames collected since the call to BeginRecording encoded
-   * as data URIs.
-   *
-   * If there is not currently a recorder, this is a no-op and the promise will
-   * be rejected.
+   * Stop recording and the frames collected since the call to BeginRecording
    */
-  RefPtr<wr::WebRenderAPI::GetCollectedFramesPromise> GetCollectedFrames();
+  RefPtr<wr::WebRenderAPI::EndRecordingPromise> EndRecording();
 
   void DisableNativeCompositor();
   void AddPendingScrollPayload(CompositionPayload& aPayload,
@@ -319,6 +310,8 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
       const VsyncId& aCompositeStartId);
 
   RefPtr<WebRenderBridgeParentRef> GetWebRenderBridgeParentRef();
+
+  void FlushPendingWrTransactionEventsWithWait();
 
  private:
   class ScheduleSharedSurfaceRelease;
@@ -431,7 +424,7 @@ class WebRenderBridgeParent final : public PWebRenderBridgeParent,
                          const TimeStamp& aVsyncStartTime,
                          const TimeStamp& aRefreshStartTime,
                          const TimeStamp& aTxnStartTime,
-                         const nsCString& aTxnURL, const TimeStamp& aFwdTime,
+                         const nsACString& aTxnURL, const TimeStamp& aFwdTime,
                          const bool aIsFirstPaint, const bool aUseForTelemetry,
                          nsTArray<CompositionPayload>&& aPayloads)
         : mEpoch(aEpoch),

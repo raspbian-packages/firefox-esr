@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Nýlega lokað
 firefoxview-closed-tabs-description2 = Opnaðu aftur síður sem þú hefur lokað í þessum glugga.
 firefoxview-closed-tabs-placeholder-header = Engir nýlega lokaðir flipar
 firefoxview-closed-tabs-placeholder-body = Þegar þú lokar flipa í þessum glugga geturðu sótt hann hingað.
+firefoxview-closed-tabs-placeholder-body2 = Þegar þú lokar flipa geturðu sótt hann hingað.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Síðasta virkni
 firefoxview-tabs-list-tab-button =
     .title = Opna { $targetURI } í nýjum flipa
 firefoxview-try-colorways-button = Prófaðu litasettin
-firefoxview-no-current-colorway-collection = Ný litasett eru á leiðinni
 firefoxview-change-colorway-button = Breyta litasetti
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Birta lista
 firefoxview-collapse-button-hide =
     .title = Fela lista
+firefoxview-overview-nav = Nýlegt vafur
+    .title = Nýlegt vafur
+firefoxview-overview-header = Nýlegt vafur
+    .title = Nýlegt vafur
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Ferill
+    .title = Ferill
+firefoxview-history-header = Ferill
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Opna flipa
+    .title = Opna flipa
+firefoxview-opentabs-header = Opna flipa
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Nýlega lokaðir flipar
+    .title = Nýlega lokaðir flipar
+firefoxview-recently-closed-header = Nýlega lokaðir flipar
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Flipar frá öðrum tækjum
+    .title = Flipar frá öðrum tækjum
+firefoxview-synced-tabs-header = Flipar frá öðrum tækjum
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Skoða allt
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Gluggi { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Gluggi { $winID } (núverandi)
+firefoxview-opentabs-focus-tab =
+    .title = Skipta yfir á þennan flipa
+firefoxview-show-more = Sýna meira
+firefoxview-show-less = Sýna minna
+firefoxview-sort-history-by-date-label = Raða eftir dagsetningu
+firefoxview-sort-history-by-site-label = Raða eftir vefsvæðum
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Í dag - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Í gær - { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Birta allan vafurferil

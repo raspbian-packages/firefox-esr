@@ -29,10 +29,6 @@ third-party-tag-background = Pozadk
     .title =
         Tutón modul njeje nałoženje blokował, dokelž je so w pozadku
         začitał.
-third-party-unsigned-icon =
-    .title = Tutón modul njeje signowany
-third-party-warning-icon =
-    .title = { -brand-short-name } je w kodźe z tutoho modula spadnył
 third-party-icon-unsigned =
     .title = Tutón modul njeje signowany
     .alt = Tutón modul njeje signowany
@@ -43,6 +39,9 @@ third-party-status-loaded = Začitany
 third-party-status-blocked = Zablokowany
 third-party-status-redirected = Dalesposrědkowany
 third-party-button-copy-to-clipboard = Hrube daty do mjezyskłada kopěrować
+third-party-loading-data =
+    .alt = Systemowe informacije so čitaja…
+    .title = Systemowe informacije so čitaja…
 third-party-button-reload = Ze systemowymi informacijemi znowa začitać
     .title = Ze systemowymi informacijemi znowa začitać
 third-party-button-open =
@@ -53,12 +52,33 @@ third-party-button-to-block =
 third-party-button-to-unblock =
     .title = Tuchwilu zablokowany. Klikńće, zo byšće zablokowanje zběhnył.
     .aria-label = Tuchwilu zablokowany. Klikńće, zo byšće zablokowanje zběhnył.
+third-party-button-to-unblock-disabled =
+    .title =
+        Je tuchwilu jako zablokowane markěrowane, hačrunjež lisćina blokowanjow za tute
+        přewjedźenje { -brand-short-name } je znjemóžnjena Klikńće, zo byšće blokowanje skónčił.
+    .aria-label =
+        Je tuchwilu jako zablokowane markěrowane, hačrunjež lisćina blokowanjow za tute
+        přewjedźenje { -brand-short-name } je znjemóžnjena Klikńće, zo byšće blokowanje skónčił.
+third-party-button-to-block-module = Tutón modul blokować
+    .title = Tutón modul blokować
+    .aria-label = Tutón modul blokować
+third-party-button-to-unblock-module = Tutón modul hižo njeblokować
+    .title = Je tuchwilu zablokowany. Klikńće, zo byšće blokowanje zběhnył.
+    .aria-label = Je tuchwilu zablokowany. Klikńće, zo byšće blokowanje zběhnył.
+third-party-button-to-unblock-module-disabled = Tutón modul hižo njebokować (lisćina blokowanjow tuchwilu znjemóžnjena)
+    .title =
+        Tuchwilu jako zablokowany markěrowany, hačrunjež lisćina blokowanja je za tute wuwjedźenje
+        { -brand-short-name } znjemóžnjena. Klikńće, zo byšće blokowanje skónčił.
+    .aria-label =
+        Tuchwilu jako zablokowany markěrowany, hačrunjež lisćina blokowanja je za tute wuwjedźenje
+        { -brand-short-name } znjemóžnjena. Klikńće, zo byšće blokowanje skónčił.
 third-party-button-expand =
     .title = Nadrobne informacije pokazać
 third-party-button-collapse =
     .title = Nadrobne informacije schować
+third-party-blocking-requires-restart = Zo by so modul třećeho poskićowarja blokował, dyrbi so { -brand-short-name }  znowa startować.
 third-party-should-restart-title = { -brand-short-name } znowa startować
-third-party-should-restart-ok = { -brand-short-name } nětko znowa startować
+third-party-restart-now = Nětko znowa startować
 third-party-restart-later = Pozdźišo znowa startować
 third-party-blocked-by-builtin =
     .title = Přez { -brand-short-name } zablokowany

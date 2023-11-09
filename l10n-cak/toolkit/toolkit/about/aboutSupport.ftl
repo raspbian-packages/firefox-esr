@@ -55,12 +55,14 @@ app-basics-enabled-plugins = Tzijon taq nak'ab'äl
 app-basics-build-config = Runuk'ulem Molïk
 app-basics-user-agent = Rub'anel ri winäq
 app-basics-os = OS
+app-basics-os-theme = Ruwachinel Samajel Q'inoj
 # Rosetta is Apple's translation process to run apps containing x86_64
 # instructions on Apple Silicon. This should remain in English.
 app-basics-rosetta = Xtzalq'omïx Rosetta
 app-basics-memory-use = Rokisaxik rupam rujolom
 app-basics-performance = Rub'eyal nisamäj
 app-basics-service-workers = Samajela' pa samaj tz'ib'an kib'i'
+app-basics-third-party = Kiperaj aj rox Winäq
 app-basics-profiles = Taq ruwäch b'i'aj
 app-basics-launcher-process-status = Rub'anik K'aqonel
 app-basics-multi-process-support = Rutzuwach k'ïy tajin
@@ -71,6 +73,11 @@ app-basics-location-service-key-google = Google K'ojlib'äl Ewan Rutzij Samaj
 app-basics-safebrowsing-key-google = Google Safebrowsing Key
 app-basics-key-mozilla = Mozilla k'ojlib'äl ewan rutzij samaj
 app-basics-safe-mode = Ütz rub'anikil
+
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
 
 show-dir-label =
     { PLATFORM() ->
@@ -106,6 +113,13 @@ graphics-window-protocol = Rub'eyal Tzuwäch
 # Desktop environment in use on Linux (e.g. GNOME, KDE, XFCE, etc).
 graphics-desktop-environment = Ruk'ojlib'al Ajkematz'ib'
 place-database-title = Taq kik'ojlem cholxe'el tzij
+place-database-stats = Kimolob'a'
+place-database-stats-show = Kek'ut pe ri taq molob'a'
+place-database-stats-hide = Rewaxik molajilab'äl
+place-database-stats-entity = Moloj
+place-database-stats-count = Ajilab'äl
+place-database-stats-size-kib = Nimilem (KiB)
+place-database-stats-size-perc = Nimilem (%)
 place-database-integrity = Ch'ajch'ojri'ïl
 place-database-verify-integrity = Tinik'öx ch'ajch'ojri'ïl
 a11y-title = Okel
@@ -125,7 +139,6 @@ sandbox-sys-call-tid = TID
 sandbox-sys-call-proc-type = Ruwa tajinïk
 sandbox-sys-call-number = Syscall
 sandbox-sys-call-args = Taq rutzijol
-
 troubleshoot-mode-title = Kenik'öx taq k'ayewal
 restart-in-troubleshoot-mode-label = Kib'anikil taq K'ayewal…
 clear-startup-cache-title = Titojtob'ëx niyuj ri rujumej ruyakoj tikirib'äl
@@ -155,6 +168,8 @@ media-device-latency = Rub'anikil k'o wi
 media-capabilities-title = Kisamaj K'oxom
 # List all the entries of the database.
 media-capabilities-enumerate = Ticholajïx cholxe'el
+
+## Codec support table
 
 ##
 
@@ -331,7 +346,6 @@ launcher-process-status-unknown = Man etaman ta täq rub'anikil
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
 multi-process-windows = { $remoteWindows }/{ $totalWindows }
-
 # Variables
 # $fissionWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
@@ -340,6 +354,7 @@ fission-status-experiment-control = Xchup ruma ri tojtob'enel
 fission-status-experiment-treatment = Xtzij ruma ri tojtob'enel
 fission-status-disabled-by-e10s-env = Xchup ruma ri k'ojlib'äl
 fission-status-enabled-by-env = Xtzij ruma ri k'ojlib'äl
+fission-status-disabled-by-env = Xchup ruma ri k'ojlib'äl
 fission-status-enabled-by-default = Xtzij wi pe
 fission-status-disabled-by-default = Xchup wi pe
 fission-status-enabled-by-user-pref = Xtzij ruma ri okisanel

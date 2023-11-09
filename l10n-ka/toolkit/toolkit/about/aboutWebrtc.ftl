@@ -11,7 +11,10 @@ about-webrtc-document-title = WebRTC – შიდა მონაცემე�
 
 # "about:webrtc" is a internal browser URL and should not be
 # translated. This string is used as a title for a file save dialog box.
-about-webrtc-save-page-dialog-title = about:webrtc-ს შენახვა როგორც
+about-webrtc-save-page-dialog-title = შეინახოს about:webrtc, როგორც
+
+## These labels are for a disclosure which contains the information for closed PeerConnection sections
+
 
 ## AEC is an abbreviation for Acoustic Echo Cancellation.
 
@@ -20,10 +23,16 @@ about-webrtc-aec-logging-off-state-label = AEC-აღრიცხვის დ�
 about-webrtc-aec-logging-on-state-label = AEC-აღრიცხვის შეჩერება
 about-webrtc-aec-logging-on-state-msg = AEC-აღრიცხვა ამოქმედებულია (ელაპარაკეთ აბონენტს რამდენიმე წუთით და შემდეგ შეწყვიტეთ ჩაწერა)
 
+about-webrtc-aec-logging-toggled-on-state-msg = AEC-აღრიცხვა ამოქმედებულია (ელაპარაკეთ აბონენტს რამდენიმე წუთით და შემდეგ შეწყვიტეთ ჩაწერა)
+# Variables:
+#  $path (String) - The path to which the aec log file is saved.
+about-webrtc-aec-logging-toggled-off-state-msg = ჩაწერის აღრიცხვის ფაილების მდებარეობა: { $path }
+
+##
+
 # The autorefresh checkbox causes the page to autorefresh its content when checked
 about-webrtc-auto-refresh-label = თვითგანახლება
 
-##
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
 # an abbreviation for Identifier. This string should not normally be translated
@@ -62,8 +71,6 @@ about-webrtc-ice-pair-bytes-sent = გაგზავნილი ბაიტ�
 about-webrtc-ice-pair-bytes-received = მიღებული ბაიტები:
 about-webrtc-ice-component-id = კომპონენტის ID
 
-## "Avg." is an abbreviation for Average. These are used as data labels.
-
 ## These adjectives are used to label a line of statistics collected for a peer
 ## connection. The data represents either the local or remote end of the
 ## connection.
@@ -95,6 +102,11 @@ about-webrtc-log-show-msg = ჩანაწერების ჩვენებ
 about-webrtc-log-hide-msg = ჩანაწერების დამალვა
     .title = დააწკაპეთ, ამ განყოფილების ასაკეცად
 
+about-webrtc-log-section-show-msg = ჩანაწერების ჩვენება
+    .title = დააწკაპეთ, ამ განყოფილების გასაშლელად
+about-webrtc-log-section-hide-msg = ჩანაწერების დამალვა
+    .title = დააწკაპეთ, ამ განყოფილების ასაკეცად
+
 ## These are used to display a header for a PeerConnection.
 ## Variables:
 ##  $browser-id (Number) - A numeric id identifying the browser tab for the PeerConnection.
@@ -104,6 +116,11 @@ about-webrtc-log-hide-msg = ჩანაწერების დამალვ
 
 about-webrtc-connection-open = [ { $browser-id } | { $id } ] { $url } { $now }
 about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (დახურული) { $now }
+
+## These are used to indicate what direction media is flowing.
+## Variables:
+##  $codecs - a list of media codecs
+
 
 ##
 
@@ -116,10 +133,18 @@ about-webrtc-raw-cand-show-msg = ნედლი კანდიდატებ�
     .title = დააწკაპეთ, ამ განყოფილების გასაშლელად
 about-webrtc-raw-cand-hide-msg = ნედლი კანდიდატების დამალვა
     .title = დააწკაპეთ, ამ განყოფილების ასაკეცად
+about-webrtc-raw-cand-section-show-msg = ნედლი კანდიდატების ჩვენება
+    .title = დააწკაპეთ, ამ განყოფილების გასაშლელად
+about-webrtc-raw-cand-section-hide-msg = ნედლი კანდიდატების დამალვა
+    .title = დააწკაპეთ, ამ განყოფილების ასაკეცად
 about-webrtc-priority = პრიორიტეტი
 about-webrtc-fold-show-msg = ვრცლად ჩვენება
     .title = დააწკაპეთ, ამ განყოფილების გასაშლელად
 about-webrtc-fold-hide-msg = შემოკლებულად ჩვენება
+    .title = დააწკაპეთ, ამ განყოფილების ასაკეცად
+about-webrtc-fold-default-show-msg = ვრცლად ჩვენება
+    .title = დააწკაპეთ, ამ განყოფილების გასაშლელად
+about-webrtc-fold-default-hide-msg = შემოკლებულად ჩვენება
     .title = დააწკაპეთ, ამ განყოფილების ასაკეცად
 about-webrtc-dropped-frames-label = გამოტოვებული კადრები:
 about-webrtc-discarded-packets-label = უარყოფილი პაკეტები:
@@ -142,6 +167,12 @@ about-webrtc-last-frame-timestamp = ბოლო კადრის მიღე
 about-webrtc-local-receive-ssrc = ადგილობრივად მიღებული SSRC
 # This is an SSRC on the remote side of the connection that is sending RTP
 about-webrtc-remote-send-ssrc = დაშორებულად გაგზავნილი SSRC
+
+## These are displayed on the button that shows or hides the
+## PeerConnection configuration disclosure
+
+about-webrtc-pc-configuration-show-msg = გამართვის ჩვენება
+about-webrtc-pc-configuration-hide-msg = გამართვის დამალვა
 
 ##
 
@@ -193,6 +224,10 @@ about-webrtc-save-page-msg = გვერდი შეინახა აქ: { 
 about-webrtc-debug-mode-off-state-msg = კვალის აღრიცხვის ნახვა შეგიძლიათ აქ: { $path }
 about-webrtc-debug-mode-on-state-msg = გამართვის რეჟიმი ამოქმედებულია, აღრიცხვის მდებარეობა: { $path }
 about-webrtc-aec-logging-off-state-msg = ჩაწერის აღრიცხვის ფაილების მდებარეობა: { $path }
+
+about-webrtc-save-page-complete-msg = გვერდი შეინახა აქ: { $path }
+about-webrtc-debug-mode-toggled-off-state-msg = კვალის აღრიცხვის ნახვა შეგიძლიათ აქ: { $path }
+about-webrtc-debug-mode-toggled-on-state-msg = გამართვის რეჟიმი ამოქმედებულია, აღრიცხვის მდებარეობა: { $path }
 
 ##
 
@@ -270,6 +305,16 @@ about-webrtc-sdp-set-at-timestamp-remote = მიეთითოს დაშო
 #  $timestamp (Number) - The Unix Epoch time at which the SDP was set.
 #  $relative-timestamp (Number) - The timestamp relative to the timestamp of the earliest received SDP.
 about-webrtc-sdp-set-timestamp = დროის ნიშნული { NUMBER($timestamp, useGrouping: "false") } (+ { $relative-timestamp } მწმ)
+
+## These are displayed on the button that shows or hides the SDP information disclosure
+
+about-webrtc-show-msg-sdp = გამოჩნდეს SDP
+about-webrtc-hide-msg-sdp = დაიმალოს SDP
+
+## These are displayed on the button that shows or hides the Media Context information disclosure.
+## The Media Context is the set of preferences and detected capabilities that informs
+## the negotiated CODEC settings.
+
 
 ##
 

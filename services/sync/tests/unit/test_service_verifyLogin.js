@@ -1,10 +1,12 @@
 /* Any copyright is dedicated to the Public Domain.
    http://creativecommons.org/publicdomain/zero/1.0/ */
 
-const { Service } = ChromeUtils.import("resource://services-sync/service.js");
+const { Service } = ChromeUtils.importESModule(
+  "resource://services-sync/service.sys.mjs"
+);
 
 function login_handling(handler) {
-  return function(request, response) {
+  return function (request, response) {
     if (has_hawk_header(request)) {
       handler(request, response);
     } else {
@@ -76,13 +78,13 @@ add_task(async function test_verifyLogin() {
     Service._updateCachedURLs();
     Assert.ok(!Service.status.enforceBackoff);
     let backoffInterval;
-    Svc.Obs.add("weave:service:backoff:interval", function observe(
-      subject,
-      data
-    ) {
-      Svc.Obs.remove("weave:service:backoff:interval", observe);
-      backoffInterval = subject;
-    });
+    Svc.Obs.add(
+      "weave:service:backoff:interval",
+      function observe(subject, data) {
+        Svc.Obs.remove("weave:service:backoff:interval", observe);
+        backoffInterval = subject;
+      }
+    );
     Assert.equal(false, await Service.verifyLogin());
     Assert.ok(Service.status.enforceBackoff);
     Assert.equal(backoffInterval, 42);

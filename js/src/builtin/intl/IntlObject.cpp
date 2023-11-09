@@ -12,6 +12,7 @@
 #include "mozilla/intl/Calendar.h"
 #include "mozilla/intl/Collator.h"
 #include "mozilla/intl/Currency.h"
+#include "mozilla/intl/Locale.h"
 #include "mozilla/intl/MeasureUnitGenerated.h"
 #include "mozilla/intl/TimeZone.h"
 
@@ -22,19 +23,12 @@
 #include <string_view>
 
 #include "builtin/Array.h"
-#include "builtin/intl/Collator.h"
 #include "builtin/intl/CommonFunctions.h"
-#include "builtin/intl/DateTimeFormat.h"
 #include "builtin/intl/FormatBuffer.h"
-#include "builtin/intl/LanguageTag.h"
-#include "builtin/intl/NumberFormat.h"
 #include "builtin/intl/NumberingSystemsGenerated.h"
-#include "builtin/intl/PluralRules.h"
-#include "builtin/intl/RelativeTimeFormat.h"
 #include "builtin/intl/SharedIntlData.h"
 #include "builtin/intl/StringAsciiChars.h"
 #include "ds/Sort.h"
-#include "js/CharacterEncoding.h"
 #include "js/Class.h"
 #include "js/friend/ErrorMessages.h"  // js::GetErrorMessage, JSMSG_*
 #include "js/GCAPI.h"
@@ -45,7 +39,6 @@
 #include "vm/GlobalObject.h"
 #include "vm/JSAtom.h"
 #include "vm/JSContext.h"
-#include "vm/JSObject.h"
 #include "vm/PlainObject.h"  // js::PlainObject
 #include "vm/StringType.h"
 #include "vm/WellKnownAtom.h"  // js_*_str
@@ -90,7 +83,7 @@ bool js::intl_GetCalendarInfo(JSContext* cx, unsigned argc, Value* vp) {
     return false;
   }
 
-  RootedArrayObject weekendArray(cx, NewDenseEmptyArray(cx));
+  Rooted<ArrayObject*> weekendArray(cx, NewDenseEmptyArray(cx));
   if (!weekendArray) {
     return false;
   }
@@ -144,8 +137,8 @@ using SupportedLocaleKind = js::intl::SharedIntlData::SupportedLocaleKind;
 
 // 9.2.2 BestAvailableLocale ( availableLocales, locale )
 static JS::Result<JSLinearString*> BestAvailableLocale(
-    JSContext* cx, SupportedLocaleKind kind, HandleLinearString locale,
-    HandleLinearString defaultLocale) {
+    JSContext* cx, SupportedLocaleKind kind, Handle<JSLinearString*> locale,
+    Handle<JSLinearString*> defaultLocale) {
   // In the spec, [[availableLocales]] is formally a list of all available
   // locales. But in our implementation, it's an *incomplete* list, not
   // necessarily including the default locale (and all locales implied by it,
@@ -176,7 +169,7 @@ static JS::Result<JSLinearString*> BestAvailableLocale(
   };
 
   // Step 1.
-  RootedLinearString candidate(cx, locale);
+  Rooted<JSLinearString*> candidate(cx, locale);
 
   // Step 2.
   while (true) {
@@ -254,7 +247,7 @@ bool js::intl_BestAvailableLocale(JSContext* cx, unsigned argc, Value* vp) {
     }
   }
 
-  RootedLinearString locale(cx, args[1].toString()->ensureLinear(cx));
+  Rooted<JSLinearString*> locale(cx, args[1].toString()->ensureLinear(cx));
   if (!locale) {
     return false;
   }
@@ -314,7 +307,7 @@ bool js::intl_BestAvailableLocale(JSContext* cx, unsigned argc, Value* vp) {
 
   MOZ_ASSERT(args[2].isNull() || args[2].isString());
 
-  RootedLinearString defaultLocale(cx);
+  Rooted<JSLinearString*> defaultLocale(cx);
   if (args[2].isString()) {
     defaultLocale = args[2].toString()->ensureLinear(cx);
     if (!defaultLocale) {
@@ -339,7 +332,7 @@ bool js::intl_supportedLocaleOrFallback(JSContext* cx, unsigned argc,
   CallArgs args = CallArgsFromVp(argc, vp);
   MOZ_ASSERT(args.length() == 1);
 
-  RootedLinearString locale(cx, args[0].toString()->ensureLinear(cx));
+  Rooted<JSLinearString*> locale(cx, args[0].toString()->ensureLinear(cx));
   if (!locale) {
     return false;
   }
@@ -359,7 +352,7 @@ bool js::intl_supportedLocaleOrFallback(JSContext* cx, unsigned argc,
                      tag.Canonicalize().isOk();
   }
 
-  RootedLinearString candidate(cx);
+  Rooted<JSLinearString*> candidate(cx);
   if (!canParseLocale) {
     candidate = NewStringCopyZ<CanGC>(cx, intl::LastDitchLocale());
     if (!candidate) {
@@ -407,13 +400,13 @@ bool js::intl_supportedLocaleOrFallback(JSContext* cx, unsigned argc,
   // That implies we must ignore any candidate which isn't supported by all
   // Intl service constructors.
 
-  RootedLinearString supportedCollator(cx);
+  Rooted<JSLinearString*> supportedCollator(cx);
   JS_TRY_VAR_OR_RETURN_FALSE(
       cx, supportedCollator,
       BestAvailableLocale(cx, SupportedLocaleKind::Collator, candidate,
                           nullptr));
 
-  RootedLinearString supportedDateTimeFormat(cx);
+  Rooted<JSLinearString*> supportedDateTimeFormat(cx);
   JS_TRY_VAR_OR_RETURN_FALSE(
       cx, supportedDateTimeFormat,
       BestAvailableLocale(cx, SupportedLocaleKind::DateTimeFormat, candidate,
@@ -524,7 +517,7 @@ static ArrayObject* CreateArrayFromSortedList(
 
   size_t length = std::size(list);
 
-  RootedArrayObject array(cx, NewDenseFullyAllocatedArray(cx, length));
+  Rooted<ArrayObject*> array(cx, NewDenseFullyAllocatedArray(cx, length));
   if (!array) {
     return nullptr;
   }
@@ -746,8 +739,8 @@ static ArrayObject* AvailableTimeZones(JSContext* cx) {
   }
   auto iter = iterResult.unwrap();
 
-  RootedAtom validatedTimeZone(cx);
-  RootedAtom ianaTimeZone(cx);
+  Rooted<JSAtom*> validatedTimeZone(cx);
+  Rooted<JSAtom*> ianaTimeZone(cx);
   for (; !iter.done(); iter.next()) {
     validatedTimeZone = iter.get();
 
@@ -874,11 +867,7 @@ static const JSPropertySpec intl_static_properties[] = {
     JS_STRING_SYM_PS(toStringTag, "Intl", JSPROP_READONLY), JS_PS_END};
 
 static JSObject* CreateIntlObject(JSContext* cx, JSProtoKey key) {
-  Handle<GlobalObject*> global = cx->global();
-  RootedObject proto(cx, GlobalObject::getOrCreateObjectPrototype(cx, global));
-  if (!proto) {
-    return nullptr;
-  }
+  RootedObject proto(cx, &cx->global()->getObjectPrototype());
 
   // The |Intl| object is just a plain object with some "static" function
   // properties and some constructor properties.

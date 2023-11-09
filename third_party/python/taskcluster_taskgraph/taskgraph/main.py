@@ -2,7 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+import argparse
 import atexit
+import json
+import logging
 import os
 import re
 import shutil
@@ -10,9 +13,6 @@ import subprocess
 import sys
 import tempfile
 import traceback
-import argparse
-import logging
-import json
 from collections import namedtuple
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
@@ -47,7 +47,9 @@ def argument(*args, **kwargs):
 
 def format_taskgraph_labels(taskgraph):
     return "\n".join(
-        taskgraph.tasks[index].label for index in taskgraph.graph.visit_postorder()
+        sorted(
+            taskgraph.tasks[index].label for index in taskgraph.graph.visit_postorder()
+        )
     )
 
 
@@ -163,7 +165,7 @@ def dump_output(out, path=None, params_spec=None):
         fh = open(path, "w")
     else:
         print(
-            "Dumping result with parameters from {}:".format(params_name),
+            f"Dumping result with parameters from {params_name}:",
             file=sys.stderr,
         )
     print(out + "\n", file=fh)
@@ -343,7 +345,7 @@ def show_taskgraph(options):
         logging.root.setLevel(logging.DEBUG)
 
     repo = None
-    cur_ref = None
+    cur_rev = None
     diffdir = None
     output_file = options["output_file"]
 
@@ -361,16 +363,16 @@ def show_taskgraph(options):
         # as best we can after we're done. In all known cases, using
         # branch or bookmark (which are both available on the VCS object)
         # as `branch` is preferable to a specific revision.
-        cur_ref = repo.branch or repo.head_ref[:12]
+        cur_rev = repo.branch or repo.head_rev[:12]
 
         diffdir = tempfile.mkdtemp()
         atexit.register(
             shutil.rmtree, diffdir
         )  # make sure the directory gets cleaned up
         options["output_file"] = os.path.join(
-            diffdir, f"{options['graph_attr']}_{cur_ref}"
+            diffdir, f"{options['graph_attr']}_{cur_rev}"
         )
-        print(f"Generating {options['graph_attr']} @ {cur_ref}", file=sys.stderr)
+        print(f"Generating {options['graph_attr']} @ {cur_rev}", file=sys.stderr)
 
     parameters: List[Any[str, Parameters]] = options.pop("parameters")
     if not parameters:
@@ -418,33 +420,33 @@ def show_taskgraph(options):
                 del sys.modules[mod]
 
         if options["diff"] == "default":
-            base_ref = repo.base_ref
+            base_rev = repo.base_rev
         else:
-            base_ref = options["diff"]
+            base_rev = options["diff"]
 
         try:
-            repo.update(base_ref)
-            base_ref = repo.head_ref[:12]
+            repo.update(base_rev)
+            base_rev = repo.head_rev[:12]
             options["output_file"] = os.path.join(
-                diffdir, f"{options['graph_attr']}_{base_ref}"
+                diffdir, f"{options['graph_attr']}_{base_rev}"
             )
-            print(f"Generating {options['graph_attr']} @ {base_ref}", file=sys.stderr)
+            print(f"Generating {options['graph_attr']} @ {base_rev}", file=sys.stderr)
             generate_taskgraph(options, parameters, logdir)
         finally:
-            repo.update(cur_ref)
+            repo.update(cur_rev)
 
         # Generate diff(s)
         diffcmd = [
             "diff",
             "-U20",
             "--report-identical-files",
-            f"--label={options['graph_attr']}@{base_ref}",
-            f"--label={options['graph_attr']}@{cur_ref}",
+            f"--label={options['graph_attr']}@{base_rev}",
+            f"--label={options['graph_attr']}@{cur_rev}",
         ]
 
         for spec in parameters:
-            base_path = os.path.join(diffdir, f"{options['graph_attr']}_{base_ref}")
-            cur_path = os.path.join(diffdir, f"{options['graph_attr']}_{cur_ref}")
+            base_path = os.path.join(diffdir, f"{options['graph_attr']}_{base_rev}")
+            cur_path = os.path.join(diffdir, f"{options['graph_attr']}_{cur_rev}")
 
             params_name = None
             if len(parameters) > 1:
@@ -486,7 +488,7 @@ def show_taskgraph(options):
             )
 
     if len(parameters) > 1:
-        print("See '{}' for logs".format(logdir), file=sys.stderr)
+        print(f"See '{logdir}' for logs", file=sys.stderr)
 
 
 @command("build-image", help="Build a Docker image")
@@ -501,7 +503,7 @@ def show_taskgraph(options):
     metavar="context.tar",
 )
 def build_image(args):
-    from taskgraph.docker import build_image, build_context
+    from taskgraph.docker import build_context, build_image
 
     if args["context_only"] is None:
         build_image(args["image_name"], args["tag"], os.environ)
@@ -594,6 +596,15 @@ def image_digest(args):
 )
 @argument("--base-repository", required=True, help='URL for "base" repository to clone')
 @argument(
+    "--base-ref", default="", help='Reference of the revision in the "base" repository'
+)
+@argument(
+    "--base-rev",
+    default="",
+    help="Taskgraph decides what to do based on the revision range between "
+    "`--base-rev` and `--head-rev`. Value is determined automatically if not provided",
+)
+@argument(
     "--head-repository",
     required=True,
     help='URL for "head" repository to fetch revision from',
@@ -671,10 +682,10 @@ def action_callback(options):
 @argument("--input", default=None, help="Action input (.yml or .json)")
 @argument("callback", default=None, help="Action callback name (Python function name)")
 def test_action_callback(options):
-    import taskgraph.parameters
     import taskgraph.actions
-    from taskgraph.util import yaml
+    import taskgraph.parameters
     from taskgraph.config import load_graph_config
+    from taskgraph.util import yaml
 
     def load_data(filename):
         with open(filename) as f:

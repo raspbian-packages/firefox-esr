@@ -49,6 +49,7 @@
 #  include "updaterfileutils_osx.h"
 #endif  // XP_MACOSX
 
+#include "mozilla/CmdLineAndEnvUtils.h"
 #include "mozilla/UniquePtr.h"
 #ifdef XP_WIN
 #  include "mozilla/Maybe.h"
@@ -2632,23 +2633,21 @@ static void UpdateThreadFunc(void* param) {
     }
 
     if (rv == OK) {
-      if (rv == OK) {
-        NS_tchar updateSettingsPath[MAXPATHLEN];
-        NS_tsnprintf(updateSettingsPath,
-                     sizeof(updateSettingsPath) / sizeof(updateSettingsPath[0]),
+      NS_tchar updateSettingsPath[MAXPATHLEN];
+      NS_tsnprintf(updateSettingsPath,
+                   sizeof(updateSettingsPath) / sizeof(updateSettingsPath[0]),
 #  ifdef XP_MACOSX
-                     NS_T("%s/Contents/Resources/update-settings.ini"),
+                   NS_T("%s/Contents/Resources/update-settings.ini"),
 #  else
-                     NS_T("%s/update-settings.ini"),
+                   NS_T("%s/update-settings.ini"),
 #  endif
-                     gInstallDirPath);
-        MARChannelStringTable MARStrings;
-        if (ReadMARChannelIDs(updateSettingsPath, &MARStrings) != OK) {
-          rv = UPDATE_SETTINGS_FILE_CHANNEL;
-        } else {
-          rv = gArchiveReader.VerifyProductInformation(
-              MARStrings.MARChannelID.get(), MOZ_APP_VERSION);
-        }
+                   gInstallDirPath);
+      MARChannelStringTable MARStrings;
+      if (ReadMARChannelIDs(updateSettingsPath, &MARStrings) != OK) {
+        rv = UPDATE_SETTINGS_FILE_CHANNEL;
+      } else {
+        rv = gArchiveReader.VerifyProductInformation(
+            MARStrings.MARChannelID.get(), MOZ_APP_VERSION);
       }
     }
 #endif
@@ -2828,20 +2827,8 @@ bool ShouldRunSilently(int argc, NS_tchar** argv) {
   // task. The CheckArg semantics aren't reproduced in full here,
   // there's e.g. no check for a parameter and no case-insensitive comparison.
   for (int i = 1; i < argc; ++i) {
-    NS_tchar* arg = argv[i];
-
-    // As in CheckArgs, accept -, --, or / (also incidentally /-)
-    if (*arg == '-'
-#  if defined(XP_WIN)
-        || *arg == '/'
-#  endif
-    ) {
-      ++arg;
-
-      if (*arg == '-') {
-        ++arg;
-      }
-
+    if (const auto option = mozilla::internal::ReadAsOption(argv[i])) {
+      const NS_tchar* arg = option.value();
       if (NS_tstrcmp(arg, NS_T("backgroundtask")) == 0) {
         return true;
       }

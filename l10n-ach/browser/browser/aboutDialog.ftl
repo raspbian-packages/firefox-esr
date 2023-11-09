@@ -16,8 +16,15 @@ update-updateButton =
     .accesskey = R
 
 update-checkingForUpdates = Roto pi ngec manyen…
-update-downloading = <img data-l10n-name="icon"/>Tye kagamo ngec — <label data-l10n-name="download-status"/>
-update-downloading-message = Gamo ngec manyen — <label data-l10n-name="download-status"/>
+
+## Variables:
+##   $transfer (string) - Transfer progress.
+
+settings-update-downloading = <img data-l10n-name="icon"/>Tye kagamo ngec — <label data-l10n-name="download-status">{ $transfer }</label>
+aboutdialog-update-downloading = Gamo ngec manyen — <label data-l10n-name="download-status">{ $transfer }</label>
+
+##
+
 update-applying = Tye kaketo ngec manyen…
 
 update-failed = Keto ngec manyen pe olare. <label data-l10n-name="failed-link">Gam kite manyen loyo</label>
@@ -27,13 +34,21 @@ update-adminDisabled = Ngat ma loyo nyonyo ni ojuko ngec manyen woko
 update-noUpdatesFound = { -brand-short-name } tye kakare
 update-otherInstanceHandlingUpdates = { -brand-short-name } tye ka keto ngec manyen ki ka mukene
 
-update-manual = Ngec manyen nonge i <label data-l10n-name="manual-link"/>
+## Variables:
+##   $displayUrl (String): URL to page with download instructions. Example: www.mozilla.org/firefox/nightly/
+
+aboutdialog-update-manual-with-link = Ngec manyen nonge i <label data-l10n-name="manual-link">{ $displayUrl }</label>
+settings-update-manual-with-link = Ngec manyen nonge i <a data-l10n-name="manual-link">{ $displayUrl }</a>
 
 update-unsupported = Pe i twero mede ki keto ngec manyen i nyonyo man. <label data-l10n-name="unsupported-link">Nong ngec mapol</label>
 
 update-restarting = Tye ka cake odoco...
 
-channel-description = Kombedi i tye i <label data-l10n-name="current-channel"></label> yo ngec manyen.{ " " }
+##
+
+# Variables:
+#   $channel (String): description of the update channel (e.g. "release", "beta", "nightly" etc.)
+aboutdialog-channel-description = Kombedi i tye i <label data-l10n-name="current-channel">{ $channel }</label> yo ngec manyen.
 
 warningDesc-version = { -brand-short-name } obedo me atemo dok romo yenge.
 

@@ -8,6 +8,7 @@
 #define mozilla_dom_workerscope_h__
 
 #include "js/TypeDecls.h"
+#include "js/loader/ModuleLoaderBase.h"
 #include "mozilla/Assertions.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/DOMEventTargetHelper.h"
@@ -19,6 +20,7 @@
 #include "mozilla/dom/AnimationFrameProvider.h"
 #include "mozilla/dom/ImageBitmapBinding.h"
 #include "mozilla/dom/ImageBitmapSource.h"
+#include "mozilla/dom/PerformanceWorker.h"
 #include "mozilla/dom/SafeRefPtr.h"
 #include "mozilla/dom/WorkerPrivate.h"
 #include "nsCOMPtr.h"
@@ -57,6 +59,7 @@ class DOMString;
 class DebuggerNotificationManager;
 enum class EventCallbackDebuggerNotificationType : uint8_t;
 class EventHandlerNonNull;
+class FontFaceSet;
 class Function;
 class IDBFactory;
 class OnErrorEventHandlerNonNull;
@@ -97,7 +100,8 @@ class WorkerGlobalScopeBase : public DOMEventTargetHelper,
                                                          DOMEventTargetHelper)
 
   WorkerGlobalScopeBase(WorkerPrivate* aWorkerPrivate,
-                        UniquePtr<ClientSource> aClientSource);
+                        UniquePtr<ClientSource> aClientSource,
+                        bool aShouldResistFingerprinting);
 
   virtual bool WrapGlobalObject(JSContext* aCx,
                                 JS::MutableHandle<JSObject*> aReflector) = 0;
@@ -115,9 +119,7 @@ class WorkerGlobalScopeBase : public DOMEventTargetHelper,
 
   bool IsSharedMemoryAllowed() const final;
 
-  bool ShouldResistFingerprinting() const final;
-
-  uint32_t GetPrincipalHashValue() const final;
+  bool ShouldResistFingerprinting(RFPTarget aTarget) const final;
 
   OriginTrials Trials() const final;
 
@@ -126,6 +128,8 @@ class WorkerGlobalScopeBase : public DOMEventTargetHelper,
   Maybe<ClientInfo> GetClientInfo() const final;
 
   Maybe<ServiceWorkerDescriptor> GetController() const final;
+
+  mozilla::Result<mozilla::ipc::PrincipalInfo, nsresult> GetStorageKey() final;
 
   virtual void Control(const ServiceWorkerDescriptor& aServiceWorker);
 
@@ -153,9 +157,20 @@ class WorkerGlobalScopeBase : public DOMEventTargetHelper,
 
   Console* GetConsoleIfExists() const { return mConsole; }
 
-  uint64_t WindowID() const;
+  void InitModuleLoader(JS::loader::ModuleLoaderBase* aModuleLoader) {
+    if (!mModuleLoader) {
+      mModuleLoader = aModuleLoader;
+    }
+  }
 
-  void NoteTerminating() { StartDying(); }
+  // The nullptr here is not used, but is required to make the override method
+  // have the same signature as other GetModuleLoader methods on globals.
+  JS::loader::ModuleLoaderBase* GetModuleLoader(
+      JSContext* aCx = nullptr) override {
+    return mModuleLoader;
+  };
+
+  uint64_t WindowID() const;
 
   // Usually global scope dies earlier than the WorkerPrivate, but if we see
   // it leak at least we can tell it to not carry away a dead pointer.
@@ -179,8 +194,10 @@ class WorkerGlobalScopeBase : public DOMEventTargetHelper,
 
  private:
   RefPtr<Console> mConsole;
+  RefPtr<JS::loader::ModuleLoaderBase> mModuleLoader;
   const UniquePtr<ClientSource> mClientSource;
   nsCOMPtr<nsISerialEventTarget> mSerialEventTarget;
+  bool mShouldResistFingerprinting;
 #ifdef DEBUG
   PRThread* mWorkerThreadUsedOnlyForAssert;
 #endif
@@ -211,6 +228,10 @@ class WorkerGlobalScope : public WorkerGlobalScopeBase {
 
   using WorkerGlobalScopeBase::WorkerGlobalScopeBase;
 
+  void NoteTerminating();
+
+  void NoteShuttingDown();
+
   // nsIGlobalObject implementation
   RefPtr<ServiceWorkerRegistration> GetServiceWorkerRegistration(
       const ServiceWorkerRegistrationDescriptor& aDescriptor) const final;
@@ -225,6 +246,8 @@ class WorkerGlobalScope : public WorkerGlobalScopeBase {
   Maybe<EventCallbackDebuggerNotificationType> GetDebuggerNotificationType()
       const final;
 
+  mozilla::dom::StorageManager* GetStorageManager() final;
+
   // WorkerGlobalScope WebIDL implementation
   WorkerGlobalScope* Self() { return this; }
 
@@ -233,6 +256,9 @@ class WorkerGlobalScope : public WorkerGlobalScopeBase {
   already_AddRefed<WorkerNavigator> Navigator();
 
   already_AddRefed<WorkerNavigator> GetExistingNavigator() const;
+
+  FontFaceSet* GetFonts(ErrorResult&);
+  FontFaceSet* GetFonts() final { return GetFonts(IgnoreErrors()); }
 
   void ImportScripts(JSContext* aCx, const Sequence<nsString>& aScriptURLs,
                      ErrorResult& aRv);
@@ -309,7 +335,8 @@ class WorkerGlobalScope : public WorkerGlobalScopeBase {
 
   bool IsSecureContext() const;
 
-  already_AddRefed<IDBFactory> GetIndexedDB(ErrorResult& aErrorResult);
+  already_AddRefed<IDBFactory> GetIndexedDB(JSContext* aCx,
+                                            ErrorResult& aErrorResult);
 
   already_AddRefed<cache::CacheStorage> GetCaches(ErrorResult& aRv);
 
@@ -347,6 +374,7 @@ class WorkerGlobalScope : public WorkerGlobalScopeBase {
   RefPtr<Crypto> mCrypto;
   RefPtr<WorkerLocation> mLocation;
   RefPtr<WorkerNavigator> mNavigator;
+  RefPtr<FontFaceSet> mFontFaceSet;
   RefPtr<Performance> mPerformance;
   RefPtr<IDBFactory> mIndexedDB;
   RefPtr<cache::CacheStorage> mCacheStorage;
@@ -365,7 +393,8 @@ class DedicatedWorkerGlobalScope final
 
   DedicatedWorkerGlobalScope(WorkerPrivate* aWorkerPrivate,
                              UniquePtr<ClientSource> aClientSource,
-                             const nsString& aName);
+                             const nsString& aName,
+                             bool aShouldResistFingerprinting);
 
   bool WrapGlobalObject(JSContext* aCx,
                         JS::MutableHandle<JSObject*> aReflector) override;
@@ -409,7 +438,8 @@ class SharedWorkerGlobalScope final
  public:
   SharedWorkerGlobalScope(WorkerPrivate* aWorkerPrivate,
                           UniquePtr<ClientSource> aClientSource,
-                          const nsString& aName);
+                          const nsString& aName,
+                          bool aShouldResistFingerprinting);
 
   bool WrapGlobalObject(JSContext* aCx,
                         JS::MutableHandle<JSObject*> aReflector) override;
@@ -430,7 +460,8 @@ class ServiceWorkerGlobalScope final : public WorkerGlobalScope {
 
   ServiceWorkerGlobalScope(
       WorkerPrivate* aWorkerPrivate, UniquePtr<ClientSource> aClientSource,
-      const ServiceWorkerRegistrationDescriptor& aRegistrationDescriptor);
+      const ServiceWorkerRegistrationDescriptor& aRegistrationDescriptor,
+      bool aShouldResistFingerprinting);
 
   bool WrapGlobalObject(JSContext* aCx,
                         JS::MutableHandle<JSObject*> aReflector) override;

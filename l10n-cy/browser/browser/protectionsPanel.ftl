@@ -12,8 +12,8 @@ protections-panel-sitefixedsendreport-label = Gwefan wedi'i thrwsio? Anfon adrod
 
 protections-popup-footer-protection-label-strict = Llym
     .label = Llym
-protections-popup-footer-protection-label-custom = Cyfaddasu
-    .label = Cyfaddasu
+protections-popup-footer-protection-label-custom = Cyfaddas
+    .label = Cyfaddas
 protections-popup-footer-protection-label-standard = Safonol
     .label = Safonol
 
@@ -63,7 +63,6 @@ protections-panel-not-found-label = Heb Ganfod Dim
 ##
 
 protections-panel-settings-label = Gosodiadau Diogelu
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Bwrdd Gwaith Diogelwch
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Ffurflenni
 protections-panel-site-not-working-view-issue-list-payments = Taliadau
 protections-panel-site-not-working-view-issue-list-comments = Sylwadau
 protections-panel-site-not-working-view-issue-list-videos = Fideos
+protections-panel-site-not-working-view-issue-list-fonts = Ffontiau
 
 protections-panel-site-not-working-view-send-report = Anfon adroddiad
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Adrodd ar Wefan wedi Torri
 protections-panel-content-blocking-breakage-report-view-description = Gall rhwystro cynnwys achosi problemau gyda rai gwefannau. Pan fyddwch yn cyflwyno adroddiad ar broblemau, byddwch yn helpu gwneud { -brand-short-name } yn well i bawb. (Bydd hyn yn anfon yr URL yn ogystal â gwybodaeth am osodiadau eich porwr i Mozilla. <label data-l10n-name="learn-more">Dysgu rhagor</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Gall rhwystro cynnwys achosi problemau gyda rai gwefannau. Pan fyddwch yn cyflwyno adroddiad ar broblemau, byddwch yn helpu gwneud { -brand-short-name } yn well i bawb. (Bydd hyn yn anfon yr URL yn ogystal â gwybodaeth am osodiadau eich porwr i { -vendor-short-name }.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Diddymu
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Anfon Adroddiad
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Llai o Faneri Cwcis
+protections-panel-cookie-banner-handling-enabled = Ymlaen ar gyfer y wefan hon
+protections-panel-cookie-banner-handling-disabled = Diffodd ar gyfer y wefan hon
+protections-panel-cookie-banner-handling-undetected = Nid yw’r wefan yn cael ei chefnogi ar hyn o bryd
+
+protections-panel-cookie-banner-view-title =
+    .title = Llai o Faneri Cwcis
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Diffodd Llai o Faneri Cwcis ar { $host }?
+protections-panel-cookie-banner-view-turn-on-for-site = Troi Llai o Faneri Cwcis ymlaen ar y wefan hon?
+protections-panel-cookie-banner-view-cookie-clear-warning = Bydd { -brand-short-name } yn clirio cwcis y wefan hon ac yn adnewyddu’r dudalen. Gall clirio pob cwci eich allgofnodi neu wagio eich certiau siopa.
+protections-panel-cookie-banner-view-turn-on-description = Mae { -brand-short-name } yn ceisio gwrthod yn awtomatig pob cais cwci ar wefannau sy’n cael eu cefnogi.
+protections-panel-cookie-banner-view-cancel = Diddymu
+protections-panel-cookie-banner-view-turn-off = Diffodd
+protections-panel-cookie-banner-view-turn-on = Troi Ymlaen

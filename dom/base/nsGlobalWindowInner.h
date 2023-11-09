@@ -10,8 +10,6 @@
 #include "nsPIDOMWindow.h"
 
 #include "nsHashKeys.h"
-#include "nsRefPtrHashtable.h"
-#include "nsInterfaceHashtable.h"
 
 // Local Includes
 // Helper Classes
@@ -36,29 +34,21 @@
 #include "mozilla/dom/DebuggerNotificationManager.h"
 #include "mozilla/dom/GamepadHandle.h"
 #include "mozilla/dom/Location.h"
-#include "mozilla/dom/NavigatorBinding.h"
 #include "mozilla/dom/StorageEvent.h"
-#include "mozilla/dom/StorageEventBinding.h"
-#include "mozilla/dom/UnionTypes.h"
 #include "mozilla/CallState.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/LinkedList.h"
-#include "mozilla/OwningNonNull.h"
 #include "mozilla/StorageAccess.h"
 #include "mozilla/TimeStamp.h"
 #include "nsWrapperCacheInlines.h"
 #include "mozilla/dom/EventTarget.h"
 #include "mozilla/dom/WindowBinding.h"
 #include "mozilla/dom/WindowProxyHolder.h"
-#include "mozilla/glean/bindings/Glean.h"
-#include "mozilla/glean/bindings/GleanPings.h"
 #include "Units.h"
-#include "nsComponentManagerUtils.h"
 #include "nsCheapSets.h"
 #include "mozilla/dom/ImageBitmapBinding.h"
 #include "mozilla/dom/ImageBitmapSource.h"
 #include "mozilla/UniquePtr.h"
-#include "nsRefreshObservers.h"
 #include "nsThreadUtils.h"
 
 class nsIArray;
@@ -67,7 +57,6 @@ class nsIContent;
 class nsICSSDeclaration;
 class nsIDocShellTreeOwner;
 class nsIDOMWindowUtils;
-class nsDOMOfflineResourceList;
 class nsIScrollableFrame;
 class nsIControllers;
 class nsIScriptContext;
@@ -98,6 +87,11 @@ class PromiseDocumentFlushedResolver;
 namespace mozilla {
 class AbstractThread;
 class ErrorResult;
+
+namespace glean {
+class Glean;
+class GleanPings;
+}  // namespace glean
 
 namespace hal {
 enum class ScreenOrientation : uint32_t;
@@ -130,16 +124,15 @@ struct RequestInit;
 class RequestOrUSVString;
 class SharedWorker;
 class Selection;
+struct SizeToContentConstraints;
 class WebTaskScheduler;
 class WebTaskSchedulerMainThread;
 class SpeechSynthesis;
 class Timeout;
-class U2F;
 class VisualViewport;
 class VRDisplay;
 enum class VRDisplayEventReason : uint8_t;
 class VREventObserver;
-class WakeLock;
 struct WindowPostMessageOptions;
 class Worklet;
 namespace cache {
@@ -251,9 +244,10 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
   }
 
   // nsIGlobalObject
-  bool ShouldResistFingerprinting() const final;
-  uint32_t GetPrincipalHashValue() const final;
+  bool ShouldResistFingerprinting(
+      RFPTarget aTarget = RFPTarget::Unknown) const final;
   mozilla::OriginTrials Trials() const final;
+  mozilla::dom::FontFaceSet* GetFonts() final;
 
   JSObject* GetGlobalJSObject() final { return GetWrapper(); }
   JSObject* GetGlobalJSObjectPreserveColor() const final {
@@ -266,6 +260,11 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
   // non-virtual.
   bool HasJSGlobal() const { return GetGlobalJSObjectPreserveColor(); }
 
+  mozilla::Result<mozilla::ipc::PrincipalInfo, nsresult> GetStorageKey()
+      override;
+
+  mozilla::dom::StorageManager* GetStorageManager() override;
+
   void TraceGlobalJSObject(JSTracer* aTrc);
 
   virtual nsresult EnsureScriptEnvironment() override;
@@ -276,6 +275,8 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
 
   // nsIScriptObjectPrincipal
   virtual nsIPrincipal* GetPrincipal() override;
+
+  virtual nsIPrincipal* GetEffectiveCookiePrincipal() override;
 
   virtual nsIPrincipal* GetEffectiveStoragePrincipal() override;
 
@@ -414,6 +415,8 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
   static bool DeviceSensorsEnabled(JSContext*, JSObject*);
 
   static bool ContentPropertyEnabled(JSContext* aCx, JSObject*);
+
+  static bool CachesEnabled(JSContext* aCx, JSObject*);
 
   bool DoResolve(
       JSContext* aCx, JS::Handle<JSObject*> aObj, JS::Handle<jsid> aId,
@@ -638,7 +641,7 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
                  mozilla::ErrorResult& aError);
   void SetOpener(JSContext* aCx, JS::Handle<JS::Value> aOpener,
                  mozilla::ErrorResult& aError);
-  void GetEvent(JSContext* aCx, JS::MutableHandle<JS::Value> aRetval);
+  void GetEvent(mozilla::dom::OwningEventOrUndefined& aRetval);
   mozilla::dom::Nullable<mozilla::dom::WindowProxyHolder> GetParent(
       mozilla::ErrorResult& aError);
   nsPIDOMWindowOuter* GetInProcessScriptableParent() override;
@@ -647,9 +650,6 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
   mozilla::dom::Nullable<mozilla::dom::WindowProxyHolder> Open(
       const nsAString& aUrl, const nsAString& aName, const nsAString& aOptions,
       mozilla::ErrorResult& aError);
-  nsDOMOfflineResourceList* GetApplicationCache(mozilla::ErrorResult& aError);
-  nsDOMOfflineResourceList* GetApplicationCache() override;
-
   int16_t Orientation(mozilla::dom::CallerType aCallerType);
 
   already_AddRefed<mozilla::dom::Console> GetConsole(JSContext* aCx,
@@ -658,9 +658,8 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
   // https://w3c.github.io/webappsec-secure-contexts/#dom-window-issecurecontext
   bool IsSecureContext() const;
 
-  void GetSidebar(mozilla::dom::OwningExternalOrWindowProxy& aResult,
-                  mozilla::ErrorResult& aRv);
-  mozilla::dom::External* GetExternal(mozilla::ErrorResult& aRv);
+  void GetSidebar(mozilla::dom::OwningExternalOrWindowProxy& aResult);
+  mozilla::dom::External* External();
 
   mozilla::dom::Worklet* GetPaintWorklet(mozilla::ErrorResult& aRv);
 
@@ -689,10 +688,10 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
       const mozilla::dom::RequestOrUSVString& aInput,
       const mozilla::dom::RequestInit& aInit,
       mozilla::dom::CallerType aCallerType, mozilla::ErrorResult& aRv);
-  void Print(mozilla::ErrorResult& aError);
-  mozilla::dom::Nullable<mozilla::dom::WindowProxyHolder> PrintPreview(
-      nsIPrintSettings*, nsIWebProgressListener*, nsIDocShell*,
-      mozilla::ErrorResult&);
+  MOZ_CAN_RUN_SCRIPT void Print(mozilla::ErrorResult& aError);
+  MOZ_CAN_RUN_SCRIPT mozilla::dom::Nullable<mozilla::dom::WindowProxyHolder>
+  PrintPreview(nsIPrintSettings*, nsIWebProgressListener*, nsIDocShell*,
+               mozilla::ErrorResult&);
   void PostMessageMoz(JSContext* aCx, JS::Handle<JS::Value> aMessage,
                       const nsAString& aTargetOrigin,
                       const mozilla::dom::Sequence<JSObject*>& aTransfer,
@@ -746,7 +745,8 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
   mozilla::dom::Storage* GetSessionStorage(mozilla::ErrorResult& aError);
   mozilla::dom::Storage* GetLocalStorage(mozilla::ErrorResult& aError);
   mozilla::dom::Selection* GetSelection(mozilla::ErrorResult& aError);
-  mozilla::dom::IDBFactory* GetIndexedDB(mozilla::ErrorResult& aError);
+  mozilla::dom::IDBFactory* GetIndexedDB(JSContext* aCx,
+                                         mozilla::ErrorResult& aError);
   already_AddRefed<nsICSSDeclaration> GetComputedStyle(
       mozilla::dom::Element& aElt, const nsAString& aPseudoElt,
       mozilla::ErrorResult& aError) override;
@@ -803,6 +803,9 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
                         mozilla::ErrorResult& aError) {
     return GetScreenX(aCallerType, aError);
   }
+
+  double ScreenEdgeSlopX() const;
+  double ScreenEdgeSlopY() const;
 
   int32_t GetScreenTop(mozilla::dom::CallerType aCallerType,
                        mozilla::ErrorResult& aError) {
@@ -861,8 +864,9 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
       mozilla::ErrorResult& aError);
   void SizeToContent(mozilla::dom::CallerType aCallerType,
                      mozilla::ErrorResult& aError);
+  void SizeToContentConstrained(const mozilla::dom::SizeToContentConstraints&,
+                                mozilla::ErrorResult&);
   mozilla::dom::Crypto* GetCrypto(mozilla::ErrorResult& aError);
-  mozilla::dom::U2F* GetU2f(mozilla::ErrorResult& aError);
   nsIControllers* GetControllers(mozilla::ErrorResult& aError);
   nsresult GetControllers(nsIControllers** aControllers) override;
   mozilla::dom::Element* GetRealFrameElement(mozilla::ErrorResult& aError);
@@ -1052,8 +1056,6 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
                       mozilla::dom::CallerType aCallerType,
                       mozilla::ErrorResult& aError);
 
-  RefPtr<mozilla::dom::WakeLock> mWakeLock;
-
   friend class HashchangeCallback;
   friend class mozilla::dom::BarProp;
 
@@ -1201,8 +1203,6 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
   static void NotifyDOMWindowThawed(nsGlobalWindowInner* aWindow);
 
   virtual void UpdateParentTarget() override;
-
-  void InitializeShowFocusRings();
 
   // Clear the document-dependent slots on our JS wrapper.  Inner windows only.
   void ClearDocumentDependentSlots(JSContext* aCx);
@@ -1440,7 +1440,6 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
 
   RefPtr<nsGlobalWindowObserver> mObserver;
   RefPtr<mozilla::dom::Crypto> mCrypto;
-  RefPtr<mozilla::dom::U2F> mU2F;
   RefPtr<mozilla::dom::cache::CacheStorage> mCacheStorage;
   RefPtr<mozilla::dom::Console> mConsole;
   RefPtr<mozilla::dom::Worklet> mPaintWorklet;
@@ -1462,6 +1461,7 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
   // The document's principals and CSP are only stored if
   // FreeInnerObjects has been called.
   nsCOMPtr<nsIPrincipal> mDocumentPrincipal;
+  nsCOMPtr<nsIPrincipal> mDocumentCookiePrincipal;
   nsCOMPtr<nsIPrincipal> mDocumentStoragePrincipal;
   nsCOMPtr<nsIPrincipal> mDocumentPartitionedPrincipal;
   nsCOMPtr<nsIContentSecurityPolicy> mDocumentCsp;
@@ -1499,8 +1499,6 @@ class nsGlobalWindowInner final : public mozilla::dom::EventTarget,
 #ifdef DEBUG
   nsCOMPtr<nsIURI> mLastOpenedURI;
 #endif
-
-  RefPtr<nsDOMOfflineResourceList> mApplicationCache;
 
   RefPtr<mozilla::dom::IDBFactory> mIndexedDB;
 

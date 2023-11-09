@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
+from . import __version__
 from . import metrics
 from . import pings
 from . import tags
@@ -60,8 +61,22 @@ def rust_datatypes_filter(value):
                 yield "]"
             elif value is None:
                 yield "None"
+            # `CowStr` is a `str`, so needs to be before next case
+            elif isinstance(value, metrics.CowString):
+                yield f'::std::borrow::Cow::from("{value.inner}")'
             elif isinstance(value, str):
                 yield f'"{value}".into()'
+            elif isinstance(value, metrics.Rate):
+                yield "CommonMetricData("
+                first = True
+                for arg_name in util.common_metric_args:
+                    if hasattr(value, arg_name):
+                        if not first:
+                            yield ", "
+                        yield f"{util.camelize(arg_name)} = "
+                        yield from self.iterencode(getattr(value, arg_name))
+                        first = False
+                yield ")"
             else:
                 yield from super().iterencode(value)
 
@@ -85,19 +100,21 @@ def type_name(obj):
     """
 
     if getattr(obj, "labeled", False):
-        return "LabeledMetric<Labeled{}>".format(class_name(obj.type))
+        return "LabeledMetric<{}>".format(class_name(obj.type))
     generate_enums = getattr(obj, "_generate_enums", [])  # Extra Keys? Reasons?
     if len(generate_enums):
+        generic = None
         for name, suffix in generate_enums:
-            if not len(getattr(obj, name)) and suffix == "Keys":
-                return class_name(obj.type) + "<NoExtraKeys>"
+            if len(getattr(obj, name)):
+                generic = util.Camelize(obj.name) + suffix
             else:
-                # we always use the `extra` suffix,
-                # because we only expose the new event API
-                suffix = "Extra"
-                return "{}<{}>".format(
-                    class_name(obj.type), util.Camelize(obj.name) + suffix
-                )
+                if isinstance(obj, metrics.Event):
+                    generic = "NoExtra"
+                else:
+                    generic = "No" + suffix
+
+        return "{}<{}>".format(class_name(obj.type), generic)
+
     return class_name(obj.type)
 
 
@@ -193,7 +210,9 @@ def output_rust(
     with filepath.open("w", encoding="utf-8") as fd:
         fd.write(
             template.render(
+                parser_version=__version__,
                 categories=categories,
-                extra_args=util.metric_args,
+                extra_metric_args=util.extra_metric_args,
+                common_metric_args=util.common_metric_args,
             )
         )

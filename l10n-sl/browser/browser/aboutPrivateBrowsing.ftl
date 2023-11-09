@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] Pripni v opravilno vrstico
     }
 about-private-browsing-pin-promo-title = Brez shranjenih piškotkov ali zgodovine, neposredno z namizja. Brskajte, kot da nihče ne gleda.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Pasice s piškotki, izginite!
+about-private-browsing-cookie-banners-promo-button = Zmanjšajte število pasic s piškotki
+about-private-browsing-cookie-banners-promo-message = Naj { -brand-short-name } namesto vas odgovarja na zahteve za shranjevanje piškotkov, vam pa omogoči nemoteno brskanje. { -brand-short-name } bo poskušal zavrniti vse zahteve, če bo to mogoče.

@@ -38,6 +38,7 @@
 #include "mozilla/TimeStamp.h"
 #include "mozilla/Unused.h"
 #include "mozilla/Vector.h"
+#include "mozilla/dom/Promise.h"
 #include "mozilla/net/SocketProcessParent.h"
 #include "mozpkix/pkixnss.h"
 #include "nsAppDirectoryServiceDefs.h"
@@ -185,9 +186,10 @@ bool EnsureNSSInitializedChromeOrContent() {
 
     // Forward to the main thread synchronously.
     mozilla::SyncRunnable::DispatchToThread(
-        mainThread, new SyncRunnable(NS_NewRunnableFunction(
-                        "EnsureNSSInitializedChromeOrContent",
-                        []() { EnsureNSSInitializedChromeOrContent(); })));
+        mainThread,
+        NS_NewRunnableFunction("EnsureNSSInitializedChromeOrContent", []() {
+          EnsureNSSInitializedChromeOrContent();
+        }));
 
     return initialized;
   }
@@ -286,8 +288,7 @@ nsNSSComponent::nsNSSComponent()
       mLoadableCertsLoaded(false),
       mLoadableCertsLoadedResult(NS_ERROR_FAILURE),
       mMutex("nsNSSComponent.mMutex"),
-      mMitmDetecionEnabled(false),
-      mLoadLoadableCertsTaskDispatched(false) {
+      mMitmDetecionEnabled(false) {
   MOZ_LOG(gPIPNSSLog, LogLevel::Debug, ("nsNSSComponent::ctor\n"));
   MOZ_RELEASE_ASSERT(NS_IsMainThread());
 
@@ -302,9 +303,8 @@ nsNSSComponent::~nsNSSComponent() {
 
   // All cleanup code requiring services needs to happen in xpcom_shutdown
 
-  ShutdownNSS();
+  PrepareForShutdown();
   SharedSSLState::GlobalCleanup();
-  RememberCertErrorsTable::Cleanup();
   --mInstanceCount;
 
   MOZ_LOG(gPIPNSSLog, LogLevel::Debug, ("nsNSSComponent::dtor finished\n"));
@@ -846,46 +846,6 @@ void AsyncLoadOrUnloadOSClientCertsModule(bool load) {
   }
 }
 
-NS_IMETHODIMP
-nsNSSComponent::HasActiveSmartCards(bool* result) {
-  NS_ENSURE_ARG_POINTER(result);
-
-  BlockUntilLoadableCertsLoaded();
-
-#ifndef MOZ_NO_SMART_CARDS
-  AutoSECMODListReadLock secmodLock;
-  SECMODModuleList* list = SECMOD_GetDefaultModuleList();
-  while (list) {
-    SECMODModule* module = list->module;
-    if (SECMOD_LockedModuleHasRemovableSlots(module)) {
-      *result = true;
-      return NS_OK;
-    }
-    for (int i = 0; i < module->slotCount; i++) {
-      if (!PK11_IsFriendly(module->slots[i])) {
-        *result = true;
-        return NS_OK;
-      }
-    }
-    list = list->next;
-  }
-#endif
-  *result = false;
-  return NS_OK;
-}
-
-NS_IMETHODIMP
-nsNSSComponent::HasUserCertsInstalled(bool* result) {
-  NS_ENSURE_ARG_POINTER(result);
-
-  // FindClientCertificatesWithPrivateKeys won't ever return an empty list, so
-  // all we need to do is check if this is null or not.
-  UniqueCERTCertList certList(FindClientCertificatesWithPrivateKeys());
-  *result = !!certList;
-
-  return NS_OK;
-}
-
 nsresult nsNSSComponent::BlockUntilLoadableCertsLoaded() {
   MonitorAutoLock rootsLoadedLock(mLoadableCertsLoadedMonitor);
   while (!mLoadableCertsLoaded) {
@@ -1198,19 +1158,15 @@ nsresult CommonInit() {
   DisableMD5();
 
   mozilla::pkix::RegisterErrorTable();
-
   SharedSSLState::GlobalInit();
-  RememberCertErrorsTable::Init();
-
   SetValidationOptionsCommon();
 
   return NS_OK;
 }
 
-void NSSShutdownForSocketProcess() {
+void PrepareForShutdownInSocketProcess() {
   MOZ_ASSERT(XRE_IsSocketProcess());
   SharedSSLState::GlobalCleanup();
-  RememberCertErrorsTable::Cleanup();
 }
 
 bool HandleTLSPrefChange(const nsCString& prefName) {
@@ -1418,25 +1374,6 @@ void nsNSSComponent::setValidationOptions(
     Telemetry::Accumulate(Telemetry::CERT_OCSP_REQUIRED, ocspRequired);
   }
 
-  CertVerifier::SHA1Mode sha1Mode = static_cast<CertVerifier::SHA1Mode>(
-      StaticPrefs::security_pki_sha1_enforcement_level());
-  switch (sha1Mode) {
-    case CertVerifier::SHA1Mode::Allowed:
-    case CertVerifier::SHA1Mode::Forbidden:
-    case CertVerifier::SHA1Mode::UsedToBeBefore2016ButNowIsForbidden:
-    case CertVerifier::SHA1Mode::ImportedRoot:
-    case CertVerifier::SHA1Mode::ImportedRootOrBefore2016:
-      break;
-    default:
-      sha1Mode = CertVerifier::SHA1Mode::Allowed;
-      break;
-  }
-
-  // Convert a previously-available setting to a safe one.
-  if (sha1Mode == CertVerifier::SHA1Mode::UsedToBeBefore2016ButNowIsForbidden) {
-    sha1Mode = CertVerifier::SHA1Mode::Forbidden;
-  }
-
   NetscapeStepUpPolicy netscapeStepUpPolicy = static_cast<NetscapeStepUpPolicy>(
       StaticPrefs::security_pki_netscape_step_up_policy());
   switch (netscapeStepUpPolicy) {
@@ -1474,7 +1411,7 @@ void nsNSSComponent::setValidationOptions(
                                  softTimeout, hardTimeout);
 
   mDefaultCertVerifier = new SharedCertVerifier(
-      odc, osc, softTimeout, hardTimeout, certShortLifetimeInDays, sha1Mode,
+      odc, osc, softTimeout, hardTimeout, certShortLifetimeInDays,
       netscapeStepUpPolicy, ctMode, crliteMode, mEnterpriseCerts);
 }
 
@@ -1491,7 +1428,7 @@ void nsNSSComponent::UpdateCertVerifierWithEnterpriseRoots() {
       oldCertVerifier->mOCSPStrict ? CertVerifier::ocspStrict
                                    : CertVerifier::ocspRelaxed,
       oldCertVerifier->mOCSPTimeoutSoft, oldCertVerifier->mOCSPTimeoutHard,
-      oldCertVerifier->mCertShortLifetimeInDays, oldCertVerifier->mSHA1Mode,
+      oldCertVerifier->mCertShortLifetimeInDays,
       oldCertVerifier->mNetscapeStepUpPolicy, oldCertVerifier->mCTMode,
       oldCertVerifier->mCRLiteMode, mEnterpriseCerts);
 }
@@ -1989,29 +1926,13 @@ nsresult nsNSSComponent::InitializeNSS() {
       return rv;
     }
 
-    mLoadLoadableCertsTaskDispatched = true;
     return NS_OK;
   }
 }
 
-void nsNSSComponent::ShutdownNSS() {
-  MOZ_LOG(gPIPNSSLog, LogLevel::Debug, ("nsNSSComponent::ShutdownNSS\n"));
+void nsNSSComponent::PrepareForShutdown() {
+  MOZ_LOG(gPIPNSSLog, LogLevel::Debug, ("nsNSSComponent::PrepareForShutdown"));
   MOZ_RELEASE_ASSERT(NS_IsMainThread());
-
-  bool loadLoadableCertsTaskDispatched;
-  {
-    MutexAutoLock lock(mMutex);
-    loadLoadableCertsTaskDispatched = mLoadLoadableCertsTaskDispatched;
-  }
-  // We have to block until the load loadable certs task has completed, because
-  // otherwise we might try to unload the loaded modules while the loadable
-  // certs loading thread is setting up EV information, which can cause
-  // it to fail to find the roots it is expecting. However, if initialization
-  // failed, we won't have dispatched the load loadable certs background task.
-  // In that case, we don't want to block on an event that will never happen.
-  if (loadLoadableCertsTaskDispatched) {
-    Unused << BlockUntilLoadableCertsLoaded();
-  }
 
   PK11_SetPasswordFunc((PK11PasswordFunc) nullptr);
 
@@ -2192,6 +2113,11 @@ nsresult nsNSSComponent::Init() {
 
   Telemetry::AutoScalarTimer<Telemetry::ScalarID::NETWORKING_NSS_INITIALIZATION>
       timer;
+  uint32_t zero = 0;  // Directly using 0 makes the call to ScalarSet ambiguous.
+  Telemetry::ScalarSet(Telemetry::ScalarID::SECURITY_CLIENT_AUTH_CERT_USAGE,
+                       u"requested"_ns, zero);
+  Telemetry::ScalarSet(Telemetry::ScalarID::SECURITY_CLIENT_AUTH_CERT_USAGE,
+                       u"sent"_ns, zero);
 
   MOZ_LOG(gPIPNSSLog, LogLevel::Debug, ("Beginning NSS initialization\n"));
 
@@ -2273,7 +2199,7 @@ nsNSSComponent::Observe(nsISupports* aSubject, const char* aTopic,
       nsCRT::strcmp(aTopic, NS_XPCOM_SHUTDOWN_OBSERVER_ID) == 0) {
     MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
             ("receiving profile change or XPCOM shutdown notification"));
-    ShutdownNSS();
+    PrepareForShutdown();
   } else if (nsCRT::strcmp(aTopic, NS_PREFBRANCH_PREFCHANGE_TOPIC_ID) == 0) {
     bool clearSessionCache = true;
     NS_ConvertUTF16toUTF8 prefName(someData);
@@ -2288,7 +2214,6 @@ nsNSSComponent::Observe(nsISupports* aSubject, const char* aTopic,
                prefName.EqualsLiteral("security.ssl.enable_ocsp_must_staple") ||
                prefName.EqualsLiteral(
                    "security.pki.certificate_transparency.mode") ||
-               prefName.EqualsLiteral("security.pki.sha1_enforcement_level") ||
                prefName.EqualsLiteral("security.pki.netscape_step_up_policy") ||
                prefName.EqualsLiteral(
                    "security.OCSP.timeoutMilliseconds.soft") ||
@@ -2489,6 +2414,49 @@ nsNSSComponent::ClearSSLExternalAndInternalSessionCache() {
   return NS_OK;
 }
 
+NS_IMETHODIMP
+nsNSSComponent::AsyncClearSSLExternalAndInternalSessionCache(
+    JSContext* aCx, ::mozilla::dom::Promise** aPromise) {
+  MOZ_ASSERT(XRE_IsParentProcess());
+  if (!XRE_IsParentProcess()) {
+    return NS_ERROR_NOT_AVAILABLE;
+  }
+
+  nsIGlobalObject* globalObject = xpc::CurrentNativeGlobal(aCx);
+  if (NS_WARN_IF(!globalObject)) {
+    return NS_ERROR_FAILURE;
+  }
+
+  ErrorResult result;
+  RefPtr<mozilla::dom::Promise> promise =
+      mozilla::dom::Promise::Create(globalObject, result);
+  if (NS_WARN_IF(result.Failed())) {
+    return result.StealNSResult();
+  }
+
+  if (mozilla::net::nsIOService::UseSocketProcess() &&
+      mozilla::net::gIOService) {
+    mozilla::net::gIOService->CallOrWaitForSocketProcess(
+        [p = RefPtr{promise}]() {
+          Unused << mozilla::net::SocketProcessParent::GetSingleton()
+                        ->SendClearSessionCache()
+                        ->Then(
+                            GetCurrentSerialEventTarget(), __func__,
+                            [promise = RefPtr{p}] {
+                              promise->MaybeResolveWithUndefined();
+                            },
+                            [promise = RefPtr{p}] {
+                              promise->MaybeReject(NS_ERROR_UNEXPECTED);
+                            });
+        });
+  } else {
+    promise->MaybeResolveWithUndefined();
+  }
+  DoClearSSLExternalAndInternalSessionCache();
+  promise.forget(aPromise);
+  return NS_OK;
+}
+
 namespace mozilla {
 namespace psm {
 
@@ -2534,11 +2502,6 @@ static inline void CopyCertificatesTo(UniqueCERTCertList& from,
 // the client auth data callback, and NSS ignores any errors returned by the
 // callback.
 UniqueCERTCertList FindClientCertificatesWithPrivateKeys() {
-  TimeStamp begin(TimeStamp::Now());
-  auto exitTelemetry = MakeScopeExit([&] {
-    Telemetry::AccumulateTimeDelta(Telemetry::CLIENT_CERTIFICATE_SCAN_TIME,
-                                   begin, TimeStamp::Now());
-  });
   MOZ_LOG(gPIPNSSLog, LogLevel::Debug,
           ("FindClientCertificatesWithPrivateKeys"));
 

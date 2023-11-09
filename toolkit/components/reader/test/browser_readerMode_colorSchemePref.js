@@ -10,11 +10,6 @@ const TEST_PATH = getRootDirectory(gTestPath).replace(
 );
 
 async function testColorScheme(aPref, aExpectation) {
-  // Enable this preference so we can test the new behavior for the color scheme.
-  await SpecialPowers.pushPrefEnv({
-    set: [["reader.improvements_H12022.enabled", true]],
-  });
-
   // Set the browser content theme to light or dark.
   Services.prefs.setIntPref("browser.theme.content-theme", aPref);
 
@@ -31,7 +26,7 @@ async function testColorScheme(aPref, aExpectation) {
   // reader mode color scheme preference pre-selected.
   await BrowserTestUtils.withNewTab(
     TEST_PATH + "readerModeArticle.html",
-    async function(browser) {
+    async function (browser) {
       let pageShownPromise = BrowserTestUtils.waitForContentEvent(
         browser,
         "AboutReaderContentReady"
@@ -60,7 +55,7 @@ async function testColorScheme(aPref, aExpectation) {
  * Test that opening reader mode maintains the correct color scheme preference
  * until the user manually sets a different color scheme.
  */
-add_task(async function() {
+add_task(async function () {
   await testColorScheme(0, "auto");
   await testColorScheme(1, "auto");
   await testColorScheme(0, "light");

@@ -60,6 +60,17 @@ restart-later = Рестартирај подоцна
 ##   $name (String): name of the extension
 
 
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
+
 ## Preferences UI Search Results
 
 search-results-header = Резултати од пребарувањето
@@ -91,11 +102,17 @@ browser-containers-settings =
 
 containers-disable-alert-title = Да ги затворам сите контејнерски јазичиња?
 
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-ok-button =
     { $tabCount ->
         [one] Затвори { $tabCount } контејнерско јазиче
        *[other] Затвори { $tabCount } контејнерски јазичиња
     }
+
+##
+
 containers-disable-alert-cancel-button = Задржи овозможено
 
 containers-remove-cancel-button = Не го бриши овој контејнер
@@ -312,6 +329,10 @@ home-prefs-shortcuts-header =
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
 
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+
 home-prefs-recommended-by-header =
     .label = Препорачано од { $provider }
 
@@ -336,6 +357,7 @@ search-engine-default-header = Основен пребарувач
 search-suggestions-option =
     .label = Прикажувај предлог-пребарувања
     .accesskey = s
+
 
 search-suggestions-cant-show = Предлог-пребарувањата нема да се прикажуваат во резултатите во адресната лента бидејќи { -brand-short-name } е прилагоден никогаш да не ја снима историјата на прелистување.
 
@@ -380,7 +402,21 @@ containers-remove-button =
 ## more discrete ("signed in" no longer means "and sync is connected").
 
 
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
+
 ## Firefox Account - Signed in
+
+
+## Firefox account - Signed in
+
+
+## Variables
+## $email (string) - Email used for Firefox account
+
+
+##
 
 
 ## Sync section - enabling or disabling sync.
@@ -412,6 +448,16 @@ sync-device-name-header = Име на уред
 sync-device-name-cancel =
     .label = Откажи
     .accesskey = к
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = Барањето за потврда е испратено
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = Врска за потврда беше испратена на { $email }.
+sync-verification-not-sent-title = Не можам да испратам барање за потврда
+sync-verification-not-sent-body = Не сме во можност да испратиме барање за потврда преку е-пошта во овој момент. Ве молиме обидете се подоцна повторно.
 
 ## Privacy Section
 
@@ -470,6 +516,9 @@ history-clear-on-close-settings =
 ## Privacy Section - Site Data
 
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 
@@ -481,6 +530,9 @@ history-clear-on-close-settings =
 
 
 ##
+
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 
 ## Privacy Section - Tracking
@@ -524,6 +576,9 @@ certs-header = Сертификати
 ## Privacy Section - HTTPS-Only
 
 httpsonly-learn-more = Дознајте повеќе
+
+## DoH Section
+
 
 ## The following strings are used in the Download section of settings
 

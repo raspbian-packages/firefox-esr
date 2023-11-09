@@ -30,6 +30,7 @@
 #include "mozilla/widget/ScreenManager.h"
 #include "mozilla/Atomics.h"
 #include "mozilla/WindowsProcessMitigations.h"
+#include "mozilla/WindowsVersion.h"
 
 #ifdef MOZ_BACKGROUNDTASKS
 #  include "mozilla/BackgroundTasks.h"
@@ -584,6 +585,10 @@ nsresult nsAppShell::Init() {
 #endif  // defined(ACCESSIBILITY)
   }
 
+  if (!WinUtils::GetTimezoneName(mTimezoneName)) {
+    NS_WARNING("Unable to get system timezone name, timezone may be invalid\n");
+  }
+
   return nsBaseAppShell::Init();
 }
 
@@ -738,6 +743,24 @@ bool nsAppShell::ProcessNextNativeEvent(bool mayWait) {
           continue;
         }
 #endif
+
+        // Windows documentation suggets that WM_SETTINGSCHANGE is the message
+        // to watch for timezone changes, but experimentation showed that it
+        // doesn't fire on changing the timezone, but that WM_TIMECHANGE does,
+        // even if there's no immediate effect on the clock (e.g., changing
+        // from Pacific Daylight at UTC-7 to Arizona at UTC-7).
+        if (msg.message == WM_TIMECHANGE) {
+          // The message may not give us sufficient information to determine
+          // if the timezone changed, so keep track of it ourselves.
+          wchar_t systemTimezone[128];
+          bool getSystemTimeSucceeded =
+              WinUtils::GetTimezoneName(systemTimezone);
+          if (getSystemTimeSucceeded && wcscmp(systemTimezone, mTimezoneName)) {
+            nsBaseAppShell::OnSystemTimezoneChange();
+
+            wcscpy_s(mTimezoneName, 128, systemTimezone);
+          }
+        }
 
         ::TranslateMessage(&msg);
         ::DispatchMessageW(&msg);

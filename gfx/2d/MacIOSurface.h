@@ -50,6 +50,7 @@ class MacIOSurface final
   typedef mozilla::gfx::BackendType BackendType;
   typedef mozilla::gfx::IntSize IntSize;
   typedef mozilla::gfx::YUVColorSpace YUVColorSpace;
+  typedef mozilla::gfx::ColorSpace2 ColorSpace2;
   typedef mozilla::gfx::TransferFunction TransferFunction;
   typedef mozilla::gfx::ColorRange ColorRange;
   typedef mozilla::gfx::ColorDepth ColorDepth;
@@ -113,12 +114,6 @@ class MacIOSurface final
   }
   YUVColorSpace GetYUVColorSpace() const { return mColorSpace; }
   bool IsFullRange() const {
-#  if !defined(MAC_OS_VERSION_10_13) || \
-      MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_VERSION_10_13
-    enum : OSType{
-        kCVPixelFormatType_420YpCbCr10BiPlanarFullRange = 'xf20',
-    };
-#  endif
     OSType format = GetPixelFormat();
     return (format == kCVPixelFormatType_420YpCbCr8BiPlanarFullRange ||
             format == kCVPixelFormatType_420YpCbCr10BiPlanarFullRange);
@@ -153,6 +148,8 @@ class MacIOSurface final
   CFTypeRefPtr<IOSurfaceRef> GetIOSurfaceRef() { return mIOSurfaceRef; }
 
   void SetColorSpace(mozilla::gfx::ColorSpace2) const;
+
+  ColorSpace2 mColorPrimaries = ColorSpace2::UNKNOWN;
 
  private:
   CFTypeRefPtr<IOSurfaceRef> mIOSurfaceRef;

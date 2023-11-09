@@ -57,8 +57,6 @@ class PuppetWidget : public nsBaseWidget,
   typedef nsBaseWidget Base;
 
   // The width and height of the "widget" are clamped to this.
-  static const size_t kMaxDimension;
-
  public:
   explicit PuppetWidget(BrowserChild* aBrowserChild);
 
@@ -73,15 +71,15 @@ class PuppetWidget : public nsBaseWidget,
   using nsBaseWidget::Create;  // for Create signature not overridden here
   virtual nsresult Create(nsIWidget* aParent, nsNativeWidget aNativeParent,
                           const LayoutDeviceIntRect& aRect,
-                          nsWidgetInitData* aInitData = nullptr) override;
+                          widget::InitData* aInitData = nullptr) override;
   void InfallibleCreate(nsIWidget* aParent, nsNativeWidget aNativeParent,
                         const LayoutDeviceIntRect& aRect,
-                        nsWidgetInitData* aInitData = nullptr);
+                        widget::InitData* aInitData = nullptr);
 
   void InitIMEState();
 
   virtual already_AddRefed<nsIWidget> CreateChild(
-      const LayoutDeviceIntRect& aRect, nsWidgetInitData* aInitData = nullptr,
+      const LayoutDeviceIntRect& aRect, widget::InitData* aInitData = nullptr,
       bool aForceUseIWidgetParent = false) override;
 
   virtual void Destroy() override;
@@ -89,12 +87,6 @@ class PuppetWidget : public nsBaseWidget,
   virtual void Show(bool aState) override;
 
   virtual bool IsVisible() const override { return mVisible; }
-
-  virtual void ConstrainPosition(bool /*ignored aAllowSlop*/, int32_t* aX,
-                                 int32_t* aY) override {
-    *aX = kMaxDimension;
-    *aY = kMaxDimension;
-  }
 
   // Widget position is controlled by the parent process via BrowserChild.
   virtual void Move(double aX, double aY) override {}
@@ -138,7 +130,7 @@ class PuppetWidget : public nsBaseWidget,
     return GetWindowPosition();
   }
 
-  int32_t RoundsWidgetCoordinatesTo() override;
+  int32_t RoundsWidgetCoordinatesTo() override { return mRounding; }
 
   void InitEvent(WidgetGUIEvent& aEvent,
                  LayoutDeviceIntPoint* aPoint = nullptr);
@@ -171,8 +163,8 @@ class PuppetWidget : public nsBaseWidget,
   // same-process subdocuments, we force the widget here to be
   // transparent, which in turn will cause layout to use a transparent
   // backstop background color.
-  virtual nsTransparencyMode GetTransparencyMode() override {
-    return eTransparencyTransparent;
+  virtual TransparencyMode GetTransparencyMode() override {
+    return TransparencyMode::Transparent;
   }
 
   virtual WindowRenderer* GetWindowRenderer() override;
@@ -184,8 +176,6 @@ class PuppetWidget : public nsBaseWidget,
   // new layer manager without changing the state of the widget.
   bool CreateRemoteLayerManager(
       const std::function<bool(WebRenderLayerManager*)>& aInitializeFunc);
-
-  bool HasWindowRenderer() { return !!mWindowRenderer; }
 
   virtual void SetInputContext(const InputContext& aContext,
                                const InputContextAction& aAction) override;
@@ -203,12 +193,8 @@ class PuppetWidget : public nsBaseWidget,
 
   virtual void SetCursor(const Cursor&) override;
 
-  // Gets the DPI of the screen corresponding to this widget.
-  // Contacts the parent process which gets the DPI from the
-  // proper widget there. TODO: Handle DPI changes that happen
-  // later on.
-  virtual float GetDPI() override;
-  virtual double GetDefaultScaleInternal() override;
+  float GetDPI() override { return mDPI; }
+  double GetDefaultScaleInternal() override { return mDefaultScale; }
 
   virtual bool NeedsPaint() override;
 
@@ -387,10 +373,10 @@ class PuppetWidget : public nsBaseWidget,
   NativeIMEContext mNativeIMEContext;
   ContentCacheInChild mContentCache;
 
-  // The DPI of the screen corresponding to this widget
-  float mDPI;
-  int32_t mRounding;
-  double mDefaultScale;
+  // The DPI of the parent widget containing this widget.
+  float mDPI = GetFallbackDPI();
+  int32_t mRounding = 1;
+  double mDefaultScale = GetFallbackDefaultScale().scale;
 
   ScreenIntMargin mSafeAreaInsets;
 

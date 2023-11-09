@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = Activar la sincronisaziun
 
 fxa-menu-connect-another-device =
     .label = Colliar in auter apparat…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Trametter il tab ad in apparat
+           *[other] Trametter { $tabCount } tabs ad in apparat
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

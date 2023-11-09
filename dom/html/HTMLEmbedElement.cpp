@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "mozilla/EventStates.h"
 #include "mozilla/dom/BindContext.h"
 #include "mozilla/dom/HTMLEmbedElement.h"
 #include "mozilla/dom/HTMLEmbedElementBinding.h"
@@ -33,7 +32,7 @@ HTMLEmbedElement::HTMLEmbedElement(
   SetIsNetworkCreated(aFromParser == FROM_PARSER_NETWORK);
 
   // By default we're in the loading state
-  AddStatesSilently(NS_EVENT_STATE_LOADING);
+  AddStatesSilently(ElementState::LOADING);
 }
 
 HTMLEmbedElement::~HTMLEmbedElement() {
@@ -85,14 +84,13 @@ void HTMLEmbedElement::UnbindFromTree(bool aNullParent) {
   nsGenericHTMLElement::UnbindFromTree(aNullParent);
 }
 
-nsresult HTMLEmbedElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
-                                        const nsAttrValue* aValue,
-                                        const nsAttrValue* aOldValue,
-                                        nsIPrincipal* aSubjectPrincipal,
-                                        bool aNotify) {
+void HTMLEmbedElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
+                                    const nsAttrValue* aValue,
+                                    const nsAttrValue* aOldValue,
+                                    nsIPrincipal* aSubjectPrincipal,
+                                    bool aNotify) {
   if (aValue) {
-    nsresult rv = AfterMaybeChangeAttr(aNamespaceID, aName, aNotify);
-    NS_ENSURE_SUCCESS(rv, rv);
+    AfterMaybeChangeAttr(aNamespaceID, aName, aNotify);
   }
 
   if (aNamespaceID == kNameSpaceID_None &&
@@ -106,41 +104,37 @@ nsresult HTMLEmbedElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
       aNamespaceID, aName, aValue, aOldValue, aSubjectPrincipal, aNotify);
 }
 
-nsresult HTMLEmbedElement::OnAttrSetButNotChanged(
-    int32_t aNamespaceID, nsAtom* aName, const nsAttrValueOrString& aValue,
-    bool aNotify) {
-  nsresult rv = AfterMaybeChangeAttr(aNamespaceID, aName, aNotify);
-  NS_ENSURE_SUCCESS(rv, rv);
-
+void HTMLEmbedElement::OnAttrSetButNotChanged(int32_t aNamespaceID,
+                                              nsAtom* aName,
+                                              const nsAttrValueOrString& aValue,
+                                              bool aNotify) {
+  AfterMaybeChangeAttr(aNamespaceID, aName, aNotify);
   return nsGenericHTMLElement::OnAttrSetButNotChanged(aNamespaceID, aName,
                                                       aValue, aNotify);
 }
 
-nsresult HTMLEmbedElement::AfterMaybeChangeAttr(int32_t aNamespaceID,
-                                                nsAtom* aName, bool aNotify) {
-  if (aNamespaceID == kNameSpaceID_None) {
-    if (aName == nsGkAtoms::src) {
-      // If aNotify is false, we are coming from the parser or some such place;
-      // we'll get bound after all the attributes have been set, so we'll do the
-      // object load from BindToTree.
-      // Skip the LoadObject call in that case.
-      // We also don't want to start loading the object when we're not yet in
-      // a document, just in case that the caller wants to set additional
-      // attributes before inserting the node into the document.
-      if (aNotify && IsInComposedDoc() && !BlockEmbedOrObjectContentLoading()) {
-        nsContentUtils::AddScriptRunner(NS_NewRunnableFunction(
-            "HTMLEmbedElement::LoadObject",
-            [self = RefPtr<HTMLEmbedElement>(this), aNotify]() {
-              if (self->IsInComposedDoc()) {
-                self->LoadObject(aNotify, true);
-              }
-            }));
-        return NS_OK;
-      }
-    }
+void HTMLEmbedElement::AfterMaybeChangeAttr(int32_t aNamespaceID, nsAtom* aName,
+                                            bool aNotify) {
+  if (aNamespaceID != kNameSpaceID_None || aName != nsGkAtoms::src) {
+    return;
   }
-
-  return NS_OK;
+  // If aNotify is false, we are coming from the parser or some such place;
+  // we'll get bound after all the attributes have been set, so we'll do the
+  // object load from BindToTree.
+  // Skip the LoadObject call in that case.
+  // We also don't want to start loading the object when we're not yet in
+  // a document, just in case that the caller wants to set additional
+  // attributes before inserting the node into the document.
+  if (!aNotify || !IsInComposedDoc() || BlockEmbedOrObjectContentLoading()) {
+    return;
+  }
+  nsContentUtils::AddScriptRunner(NS_NewRunnableFunction(
+      "HTMLEmbedElement::LoadObject",
+      [self = RefPtr<HTMLEmbedElement>(this), aNotify]() {
+        if (self->IsInComposedDoc()) {
+          self->LoadObject(aNotify, true);
+        }
+      }));
 }
 
 bool HTMLEmbedElement::IsHTMLFocusable(bool aWithMouse, bool* aIsFocusable,
@@ -234,7 +228,7 @@ void HTMLEmbedElement::StartObjectLoad(bool aNotify, bool aForceLoad) {
   SetIsNetworkCreated(false);
 }
 
-EventStates HTMLEmbedElement::IntrinsicState() const {
+ElementState HTMLEmbedElement::IntrinsicState() const {
   return nsGenericHTMLElement::IntrinsicState() | ObjectState();
 }
 

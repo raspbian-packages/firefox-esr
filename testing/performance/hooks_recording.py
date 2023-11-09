@@ -1,22 +1,26 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-from __future__ import absolute_import
-
 import json
 import os
 import platform
 from pathlib import Path
 
-from mozperftest.test.browsertime import add_options, add_option
+from mozperftest.test.browsertime import add_option, add_options
 
+# Uncomment the manual_login line if you need to do a manual login.
+# The extra browsertime arguments get overwritten below so they
+# need to be set here. The value is the time you need to do a login.
 options = [
     ("pageCompleteWaitTime", "10000"),
+    # ("browsertime.manual_login", 100000),
 ]
 
 next_site = None
 
 RECORDING_LIST = Path(Path(__file__).parent, "pageload_sites.json")
+
+SCM_1_LOGIN_SITES = ("facebook", "netflix")
 
 
 def before_iterations(kw):
@@ -58,6 +62,27 @@ def before_iterations(kw):
                     f"because login info cannot be obtained."
                 )
 
+        # When pushing to Try, only attempt login recording using the
+        # taskcluster secrets that are associated with SCM level 1 as defined
+        # in `SCM_LVL_1_SITES`.
+        if test.get("login"):
+            if "MOZ_AUTOMATION" in os.environ.keys():
+                if (
+                    os.environ.get("MOZ_SCM_LEVEL") == 1
+                    and test.get("name") not in SCM_1_LOGIN_SITES
+                ):
+                    print(
+                        f"Skipping login test `{test.get('name')}` "
+                        f"Because SCM = `{os.environ.get('MOZ_SCM_LEVEL') }`"
+                        f"and there is no secret available at this level"
+                    )
+                    return False
+                return True
+            elif "RAPTOR_LOGINS" in os.environ:
+                # Leave it to the user to have properly set up a local json file with
+                # the login websites of interest
+                return True
+
         return record
 
     sites = [test_site for test_site in site_list if __should_record(test_site)]
@@ -93,7 +118,7 @@ def before_runs(env):
             app_name = "firefox"
 
         name = [
-            "mitm7",
+            "mitm8",
             platform_name,
             "gve" if app_name == "geckoview_example" else app_name,
             test_site["name"],
@@ -107,11 +132,14 @@ def before_runs(env):
             recording_file,
         )
 
-        add_option(env, "browsertime.url", test_site.get("test_url"), overwrite=True)
+        add_options(env, options, overwrite=True)
+        add_option(env, "browsertime.url", test_site.get("test_url"))
         add_option(env, "browsertime.screenshot", "true")
         add_option(env, "browsertime.testName", test_site.get("name"))
         add_option(env, "browsertime.testType", test_site.get("type", "pageload"))
-        add_option(env, "browsertime.login", test_site.get("login", "false"))
+        add_option(
+            env, "browsertime.login", "true" if test_site.get("login") else "false"
+        )
 
         prefs = test_site.get("preferences", {})
         for pref, val in prefs.items():
@@ -123,6 +151,17 @@ def before_runs(env):
 
         inject_deterministic = test_site.get("inject_deterministic", True)
         env.set_arg("proxy-deterministic", inject_deterministic)
+
+        dismiss_cookie_prompt = test_site.get("dismiss_cookie_prompt", [])
+        if dismiss_cookie_prompt:
+            parsed_cmds = [
+                ":::".join([str(i) for i in item])
+                for item in dismiss_cookie_prompt
+                if item
+            ]
+            add_option(
+                env, "browsertime.dismiss_cookie_prompt", ";;;".join(parsed_cmds)
+            )
 
         cmds = test_site.get("test_cmds", [])
         if cmds:

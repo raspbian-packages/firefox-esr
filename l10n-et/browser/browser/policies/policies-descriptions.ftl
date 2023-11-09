@@ -71,7 +71,7 @@ policy-DisablePrimaryPasswordCreation = If true, a Primary Password can’t be c
 
 policy-DisablePasswordReveal = Do not allow passwords to be revealed in saved logins.
 
-policy-DisablePocket = Disable the feature to save webpages to Pocket.
+policy-DisablePocket2 = Disable the feature to save webpages to { -pocket-brand-name }.
 
 policy-DisablePrivateBrowsing = Disable Private Browsing.
 
@@ -115,10 +115,6 @@ policy-Extensions = Install, uninstall or lock extensions. The Install option ta
 policy-ExtensionSettings = Manage all aspects of extension installation.
 
 policy-ExtensionUpdate = Enable or disable automatic extension updates.
-
-policy-FirefoxHome = Configure Firefox Home.
-
-policy-FlashPlugin = Allow or deny usage of the Flash plugin.
 
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Force direct intranet site navigation instead of searching when typing single word entries in the address bar.
 
@@ -191,9 +187,6 @@ policy-SearchBar = Set the default location of the search bar. The user is still
 policy-SearchEngines = Configure search engine settings. This policy is only available on the Extended Support Release (ESR) version.
 
 policy-SearchSuggestEnabled = Enable or disable search suggestions.
-
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Install PKCS #11 modules.
 
 policy-ShowHomeButton = Show the home button on the toolbar.
 

@@ -67,7 +67,7 @@ class nsDNSService final : public mozilla::net::DNSServiceBase,
   friend class DNSServiceWrapper;
 
   nsresult DeprecatedSyncResolve(
-      const nsACString& aHostname, uint32_t flags,
+      const nsACString& aHostname, nsIDNSService::DNSFlags flags,
       const mozilla::OriginAttributes& aOriginAttributes,
       nsIDNSRecord** result);
 
@@ -77,24 +77,27 @@ class nsDNSService final : public mozilla::net::DNSServiceBase,
   void ReadPrefs(const char* name) override;
   static already_AddRefed<nsDNSService> GetSingleton();
 
-  uint16_t GetAFForLookup(const nsACString& host, uint32_t flags);
+  uint16_t GetAFForLookup(const nsACString& host,
+                          nsIDNSService::DNSFlags flags);
 
   nsresult PreprocessHostname(bool aLocalDomain, const nsACString& aInput,
                               nsIIDNService* aIDN, nsACString& aACE);
 
   nsresult AsyncResolveInternal(
-      const nsACString& aHostname, uint16_t type, uint32_t flags,
+      const nsACString& aHostname, uint16_t type, nsIDNSService::DNSFlags flags,
       nsIDNSAdditionalInfo* aInfo, nsIDNSListener* aListener,
       nsIEventTarget* target_,
       const mozilla::OriginAttributes& aOriginAttributes,
       nsICancelable** result);
 
   nsresult CancelAsyncResolveInternal(
-      const nsACString& aHostname, uint16_t aType, uint32_t aFlags,
-      nsIDNSAdditionalInfo* aInfo, nsIDNSListener* aListener, nsresult aReason,
+      const nsACString& aHostname, uint16_t aType,
+      nsIDNSService::DNSFlags aFlags, nsIDNSAdditionalInfo* aInfo,
+      nsIDNSListener* aListener, nsresult aReason,
       const mozilla::OriginAttributes& aOriginAttributes);
 
-  nsresult ResolveInternal(const nsACString& aHostname, uint32_t flags,
+  nsresult ResolveInternal(const nsACString& aHostname,
+                           nsIDNSService::DNSFlags flags,
                            const mozilla::OriginAttributes& aOriginAttributes,
                            nsIDNSRecord** result);
 
@@ -125,7 +128,6 @@ class nsDNSService final : public mozilla::net::DNSServiceBase,
   uint32_t mResCacheExpiration = 0;
   uint32_t mResCacheGrace = 0;
   bool mResolverPrefsUpdated = false;
-  bool mODoHActivated = false;
   nsClassHashtable<nsCStringHashKey, nsTArray<nsCString>> mFailedSVCDomainNames;
 };
 

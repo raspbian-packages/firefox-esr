@@ -38,9 +38,11 @@ menu-quit =
             [windows] F
            *[other] F
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Anef { -brand-shorter-name }
+
 menu-about =
     .label = Ɣef { -brand-shorter-name }
     .accesskey = Γ
@@ -220,8 +222,6 @@ menu-history-undo-menu =
     .label = Accaren imedlen melmi kan
 menu-history-undo-window-menu =
     .label = Isfuyla imedlen melmi kan
-menu-history-reopen-all-tabs = Ales tawaledyawt n meṛṛa accaren
-menu-history-reopen-all-windows = Ales tawaledyawt n meṛṛa isfuyla
 
 ## Bookmarks Menu
 
@@ -230,10 +230,6 @@ menu-bookmarks-menu =
     .accesskey = r
 menu-bookmarks-manage =
     .label = Sefrek ticraḍ n yisebtar
-menu-bookmark-current-tab =
-    .label = Creḍ iccer amiran
-menu-bookmark-edit =
-    .label = Ẓreg tacreḍṭ n usebter-a
 menu-bookmark-tab =
     .label = Iccer amiran n tecreḍt n usebter…
 menu-edit-bookmark =
@@ -330,6 +326,9 @@ menu-help-enter-troubleshoot-mode2 =
     .accesskey = A
 menu-help-exit-troubleshoot-mode =
     .label = Sens askar n ferru n wuguren
+    .accesskey = A
+menu-help-switch-device =
+    .label = Uɣal ɣer yibenk amaynut
     .accesskey = A
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.

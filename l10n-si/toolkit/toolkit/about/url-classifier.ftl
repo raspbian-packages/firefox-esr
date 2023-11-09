@@ -5,10 +5,14 @@
 url-classifier-title = ඒ.ස.නි. වර්ගීකාරක තොරතුරු
 url-classifier-search-title = සොයන්න
 url-classifier-search-result-title = ප්‍රතිඵල
+# Variables:
+#   $uri (string) - URI of blocked page
 url-classifier-search-result-uri = ඒ.ස.හ.: { $uri }
+# Variables:
+#   $list (string) - List of tables where the page is blocked
 url-classifier-search-result-list = වගු ලේඛනය: { $list }
 url-classifier-search-input = ඒ.ස.නි.
-url-classifier-search-error-invalid-url = වැරදි ඒ.ස.නි.
+url-classifier-search-error-invalid-url = ඒ.ස.නි. වැරදිය
 url-classifier-search-error-no-features = කිසිදු විශේෂාංගයක් තෝරා නැත
 url-classifier-search-btn = සෙවීම අරඹන්න
 url-classifier-search-features = විශේෂාංග
@@ -46,5 +50,9 @@ url-classifier-disabled = අබලයි
 url-classifier-updating = යාවත්කාල වෙමින්
 url-classifier-cannot-update = යාවත්කාල කළ නොහැකිය
 url-classifier-success = සාර්ථකයි
+
+## Variables
+##   $error (string) - Error message
+
 url-classifier-update-error = යාවත්කාල දෝෂය ({ $error })
 url-classifier-download-error = බාගැනීමේ දෝෂය ({ $error })

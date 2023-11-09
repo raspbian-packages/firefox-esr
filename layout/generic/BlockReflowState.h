@@ -134,23 +134,29 @@ class BlockReflowState {
       nscoord aBCoord, nscoord aBSize,
       nsFloatManager::SavedState* aState) const;
 
-  /*
-   * The following functions all return true if they were able to place the
-   * float, false if the float did not fit in available space.
-   *
-   * Note: if these functions return false, then the float's position and size
-   * should be considered stale/invalid (until the float is successfully
-   * placed).
-   */
+  // @return true if AddFloat was able to place the float; false if the float
+  // did not fit in available space.
+  //
+  // Note: if it returns false, then the float's position and size should be
+  // considered stale/invalid (until the float is successfully placed).
   bool AddFloat(nsLineLayout* aLineLayout, nsIFrame* aFloat,
                 nscoord aAvailableISize);
 
-  bool FlowAndPlaceFloat(nsIFrame* aFloat);
+  enum class PlaceFloatResult : uint8_t {
+    Placed,
+    ShouldPlaceBelowCurrentLine,
+    ShouldPlaceInNextContinuation,
+  };
+  // @param aAvailableISizeInCurrentLine the available inline-size of the
+  //        current line if current line is not empty.
+  PlaceFloatResult FlowAndPlaceFloat(
+      nsIFrame* aFloat, mozilla::Maybe<nscoord> aAvailableISizeInCurrentLine =
+                            mozilla::Nothing());
 
   void PlaceBelowCurrentLineFloats(nsLineBox* aLine);
 
   // Returns the first coordinate >= aBCoord that clears the
-  // floats indicated by aBreakType and has enough inline size between floats
+  // floats indicated by aClearType and has enough inline size between floats
   // (or no floats remaining) to accomodate aFloatAvoidingBlock.
   enum class ClearFloatsResult : uint8_t {
     BCoordNoChange,
@@ -158,7 +164,7 @@ class BlockReflowState {
     FloatsPushedOrSplit,
   };
   std::tuple<nscoord, ClearFloatsResult> ClearFloats(
-      nscoord aBCoord, StyleClear aBreakType,
+      nscoord aBCoord, StyleClear aClearType,
       nsIFrame* aFloatAvoidingBlock = nullptr);
 
   nsFloatManager* FloatManager() const {
@@ -195,13 +201,11 @@ class BlockReflowState {
       nsIFrame* aFloatAvoidingBlock,
       const nsFlowAreaRect& aFloatAvailableSpace) const;
 
-  bool IsAdjacentWithTop() const {
-    return mBCoord == mBorderPadding.BStart(mReflowInput.GetWritingMode());
-  }
+  // True if the current block-direction coordinate, for placing the children
+  // within the content area, is still adjacent with the block-start of the
+  // content area.
+  bool IsAdjacentWithBStart() const { return mBCoord == ContentBStart(); }
 
-  /**
-   * Return mBlock's computed physical border+padding with GetSkipSides applied.
-   */
   const LogicalMargin& BorderPadding() const { return mBorderPadding; }
 
   // Reconstruct the previous block-end margin that goes before |aLine|.
@@ -220,6 +224,8 @@ class BlockReflowState {
   LogicalRect ComputeBlockAvailSpace(nsIFrame* aFrame,
                                      const nsFlowAreaRect& aFloatAvailableSpace,
                                      bool aBlockAvoidsFloats);
+
+  LogicalSize ComputeAvailableSizeForFloat() const;
 
   void RecoverStateFrom(nsLineList::iterator aLine, nscoord aDeltaBCoord);
 
@@ -337,13 +343,12 @@ class BlockReflowState {
   // The current block-direction coordinate in the block
   nscoord mBCoord;
 
-  // mBlock's computed physical border+padding with GetSkipSides applied.
+  // mBlock's computed logical border+padding with pre-reflow skip sides applied
+  // (See the constructor and nsIFrame::PreReflowBlockLevelLogicalSkipSides).
   LogicalMargin mBorderPadding;
 
   // The overflow areas of all floats placed so far
   OverflowAreas mFloatOverflowAreas;
-
-  nsFloatCacheFreeList mFloatCacheFreeList;
 
   // Previous child. This is used when pulling up a frame to update
   // the sibling list.
@@ -366,13 +371,13 @@ class BlockReflowState {
   // The list of floats that are "current-line" floats. These are
   // added to the line after the line has been reflowed, to keep the
   // list fiddling from being N^2.
-  nsFloatCacheFreeList mCurrentLineFloats;
+  nsTArray<nsIFrame*> mCurrentLineFloats;
 
   // The list of floats which are "below current-line"
   // floats. These are reflowed/placed after the line is reflowed
   // and placed. Again, this is done to keep the list fiddling from
   // being N^2.
-  nsFloatCacheFreeList mBelowCurrentLineFloats;
+  nsTArray<nsIFrame*> mBelowCurrentLineFloats;
 
   // The list of floats that are waiting on a break opportunity in order to be
   // placed, since we're on a nowrap context.
@@ -384,7 +389,9 @@ class BlockReflowState {
 
   Flags mFlags;
 
-  StyleClear mFloatBreakType;
+  // Cache the result of nsBlockFrame::FindTrailingClear() from mBlock's
+  // prev-in-flows. See nsBlockFrame::ReflowPushedFloats().
+  StyleClear mTrailingClearFromPIF;
 
   // The amount of computed content block-size "consumed" by our previous
   // continuations.

@@ -17,15 +17,16 @@ class ChildProfilerController;
 
 class RDDParent final : public PRDDParent {
  public:
+  NS_INLINE_DECL_REFCOUNTING(RDDParent, final)
+
   RDDParent();
-  ~RDDParent();
 
   static RDDParent* GetSingleton();
 
   ipc::AsyncBlockers& AsyncShutdownService() { return mShutdownBlockers; }
 
-  bool Init(base::ProcessId aParentPid, const char* aParentBuildID,
-            mozilla::ipc::ScopedPort aPort);
+  bool Init(mozilla::ipc::UntypedEndpoint&& aEndpoint,
+            const char* aParentBuildID);
 
   mozilla::ipc::IPCResult RecvInit(nsTArray<GfxVarUpdate>&& vars,
                                    const Maybe<ipc::FileDescriptor>& aBrokerFd,
@@ -64,7 +65,11 @@ class RDDParent final : public PRDDParent {
   mozilla::ipc::IPCResult RecvTestTriggerMetrics(
       TestTriggerMetricsResolver&& aResolve);
 
+  mozilla::ipc::IPCResult RecvTestTelemetryProbes();
+
  private:
+  ~RDDParent();
+
   const TimeStamp mLaunchTime;
   RefPtr<ChildProfilerController> mProfilerController;
   ipc::AsyncBlockers mShutdownBlockers;

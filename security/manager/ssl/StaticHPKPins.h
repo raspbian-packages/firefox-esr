@@ -71,6 +71,14 @@ static const char kDigiCert_Global_Root_G3Fingerprint[] =
 static const char kDigiCert_High_Assurance_EV_Root_CAFingerprint[] =
   "WoiWRyIOVNa9ihaBciRSC7XHjliYS9VwUGOIud4PB18=";
 
+/* DigiCert TLS ECC P384 Root G5 */
+static const char kDigiCert_TLS_ECC_P384_Root_G5Fingerprint[] =
+  "oC+voZLIy4HLE0FVT5wFtxzKKokLDRKY1oNkfJYe+98=";
+
+/* DigiCert TLS RSA4096 Root G5 */
+static const char kDigiCert_TLS_RSA4096_Root_G5Fingerprint[] =
+  "ape1HIIZ6T5d7GS61YBs3rD4NVvkfnVwELcCRW4Bqv0=";
+
 /* DigiCert Trusted Root G4 */
 static const char kDigiCert_Trusted_Root_G4Fingerprint[] =
   "Wd8xe/qfTwq3ylFNd3IpaqLHZbh2ZNCLluVzmeNkcpw=";
@@ -102,14 +110,6 @@ static const char kFacebookBackupFingerprint[] =
 /* GOOGLE_PIN_DigiCertECCSecureServerCA */
 static const char kGOOGLE_PIN_DigiCertECCSecureServerCAFingerprint[] =
   "PZXN3lRAy+8tBKk2Ox6F7jIlnzr2Yzmwqc3JnyfXoCw=";
-
-/* GOOGLE_PIN_DigiCertTLSECCP384RootG5 */
-static const char kGOOGLE_PIN_DigiCertTLSECCP384RootG5Fingerprint[] =
-  "oC+voZLIy4HLE0FVT5wFtxzKKokLDRKY1oNkfJYe+98=";
-
-/* GOOGLE_PIN_DigiCertTLSRSA4096RootG5 */
-static const char kGOOGLE_PIN_DigiCertTLSRSA4096RootG5Fingerprint[] =
-  "ape1HIIZ6T5d7GS61YBs3rD4NVvkfnVwELcCRW4Bqv0=";
 
 /* GOOGLE_PIN_GTSCA1O1 */
 static const char kGOOGLE_PIN_GTSCA1O1Fingerprint[] =
@@ -280,7 +280,9 @@ static const StaticFingerprints kPinset_google_root_pems = {
 static const char* const kPinset_mozilla_services_Data[] = {
   kISRG_Root_X1Fingerprint,
   kDigiCert_High_Assurance_EV_Root_CAFingerprint,
+  kDigiCert_TLS_RSA4096_Root_G5Fingerprint,
   kDigiCert_Global_Root_G2Fingerprint,
+  kDigiCert_TLS_ECC_P384_Root_G5Fingerprint,
   kDigiCert_Global_Root_CAFingerprint,
 };
 static const StaticFingerprints kPinset_mozilla_services = {
@@ -344,13 +346,13 @@ static const char* const kPinset_facebook_Data[] = {
   kDigiCert_Trusted_Root_G4Fingerprint,
   kDigiCert_High_Assurance_EV_Root_CAFingerprint,
   kGlobalSign_Root_CA___R6Fingerprint,
-  kGOOGLE_PIN_DigiCertTLSRSA4096RootG5Fingerprint,
+  kDigiCert_TLS_RSA4096_Root_G5Fingerprint,
   kGlobalSign_Root_CA___R3Fingerprint,
   kISRG_Root_X2Fingerprint,
   kGOOGLE_PIN_SymantecClass3EVG3Fingerprint,
   kCOMODO_RSA_Certification_AuthorityFingerprint,
   kDigiCert_Global_Root_G2Fingerprint,
-  kGOOGLE_PIN_DigiCertTLSECCP384RootG5Fingerprint,
+  kDigiCert_TLS_ECC_P384_Root_G5Fingerprint,
   kFacebookBackupFingerprint,
   kDigiCert_Global_Root_CAFingerprint,
   kGlobalSign_Root_R46Fingerprint,
@@ -877,4 +879,4 @@ static const TransportSecurityPreload kPublicKeyPinningPreloadList[] = {
 
 static const int32_t kUnknownId = -1;
 
-static const PRTime kPreloadPKPinsExpirationTime = INT64_C(1696243547739000);
+static const PRTime kPreloadPKPinsExpirationTime = INT64_C(1703501428788000);

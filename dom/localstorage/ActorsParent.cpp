@@ -271,8 +271,6 @@ static const uint32_t kUsageFileCookie = 0x420a420a;
  */
 const uint32_t kFlushTimeoutMs = 5000;
 
-const char kPrivateBrowsingObserverTopic[] = "last-pb-context-exited";
-
 const bool kDefaultShadowWrites = false;
 const uint32_t kDefaultSnapshotPrefill = 16384;
 const uint32_t kDefaultSnapshotGradualPrefill = 4096;
@@ -335,8 +333,6 @@ const uint32_t kPreparedDatastoreTimeoutMs = 20000;
 
 // Shadow database Write Ahead Log's maximum size is 512KB
 const uint32_t kShadowMaxWALSize = 512 * 1024;
-
-const uint32_t kShadowJournalSizeLimit = kShadowMaxWALSize * 3;
 
 bool IsOnGlobalConnectionThread();
 
@@ -815,15 +811,10 @@ nsresult SetShadowJournalMode(mozIStorageConnection* aConnection) {
 
     MOZ_ASSERT(pageSize >= 512 && pageSize <= 65536);
 
+    // Note there is a default journal_size_limit set by mozStorage.
     QM_TRY(MOZ_TO_RESULT(aConnection->ExecuteSimpleSQL(
         "PRAGMA wal_autocheckpoint = "_ns +
         IntToCString(static_cast<int32_t>(kShadowMaxWALSize / pageSize)))));
-
-    // Set the maximum WAL log size to reduce footprint on mobile (large empty
-    // WAL files will be truncated)
-    QM_TRY(MOZ_TO_RESULT(
-        aConnection->ExecuteSimpleSQL("PRAGMA journal_size_limit = "_ns +
-                                      IntToCString(kShadowJournalSizeLimit))));
   } else {
     QM_TRY(MOZ_TO_RESULT(
         aConnection->ExecuteSimpleSQL(journalModeQueryStart + "truncate"_ns)));
@@ -1187,7 +1178,7 @@ class DatastoreOperationBase : public Runnable {
  protected:
   DatastoreOperationBase()
       : Runnable("dom::DatastoreOperationBase"),
-        mOwningEventTarget(GetCurrentEventTarget()),
+        mOwningEventTarget(GetCurrentSerialEventTarget()),
         mResultCode(NS_OK),
         mMayProceedOnNonOwningThread(true),
         mMayProceed(true) {}
@@ -1567,7 +1558,7 @@ class Datastore final
 
   void NoteInactiveDatabase(Database* aDatabase);
 
-  void GetSnapshotLoadInfo(const nsString& aKey, bool& aAddKeyToUnknownItems,
+  void GetSnapshotLoadInfo(const nsAString& aKey, bool& aAddKeyToUnknownItems,
                            nsTHashtable<nsStringHashKey>& aLoadedItems,
                            nsTArray<LSItemInfo>& aItemInfos,
                            uint32_t& aNextLoadIndex,
@@ -1577,7 +1568,7 @@ class Datastore final
 
   const nsTArray<LSItemInfo>& GetOrderedItems() const { return mOrderedItems; }
 
-  void GetItem(const nsString& aKey, LSValue& aValue) const;
+  void GetItem(const nsAString& aKey, LSValue& aValue) const;
 
   void GetKeys(nsTArray<nsString>& aKeys) const;
 
@@ -1828,13 +1819,13 @@ class Database final
   mozilla::ipc::IPCResult RecvAllowToClose() override;
 
   PBackgroundLSSnapshotParent* AllocPBackgroundLSSnapshotParent(
-      const nsString& aDocumentURI, const nsString& aKey,
+      const nsAString& aDocumentURI, const nsAString& aKey,
       const bool& aIncreasePeakUsage, const int64_t& aMinSize,
       LSSnapshotInitInfo* aInitInfo) override;
 
   mozilla::ipc::IPCResult RecvPBackgroundLSSnapshotConstructor(
-      PBackgroundLSSnapshotParent* aActor, const nsString& aDocumentURI,
-      const nsString& aKey, const bool& aIncreasePeakUsage,
+      PBackgroundLSSnapshotParent* aActor, const nsAString& aDocumentURI,
+      const nsAString& aKey, const bool& aIncreasePeakUsage,
       const int64_t& aMinSize, LSSnapshotInitInfo* aInitInfo) override;
 
   bool DeallocPBackgroundLSSnapshotParent(
@@ -2058,7 +2049,7 @@ class Snapshot final : public PBackgroundLSSnapshotParent {
   mozilla::ipc::IPCResult RecvLoaded() override;
 
   mozilla::ipc::IPCResult RecvLoadValueAndMoreItems(
-      const nsString& aKey, LSValue* aValue,
+      const nsAString& aKey, LSValue* aValue,
       nsTArray<LSItemInfo>* aItemInfos) override;
 
   mozilla::ipc::IPCResult RecvLoadKeys(nsTArray<nsString>* aKeys) override;
@@ -2604,7 +2595,6 @@ class ArchivedOriginScope {
 };
 
 class QuotaClient final : public mozilla::dom::quota::Client {
-  class Observer;
   class MatchFunction;
 
   static QuotaClient* sInstance;
@@ -2613,8 +2603,6 @@ class QuotaClient final : public mozilla::dom::quota::Client {
 
  public:
   QuotaClient();
-
-  static nsresult Initialize();
 
   static QuotaClient* GetInstance() {
     AssertIsOnBackgroundThread();
@@ -2651,6 +2639,8 @@ class QuotaClient final : public mozilla::dom::quota::Client {
   void OnOriginClearCompleted(PersistenceType aPersistenceType,
                               const nsACString& aOrigin) override;
 
+  void OnRepositoryClearCompleted(PersistenceType aPersistenceType) override;
+
   void ReleaseIOThreadObjects() override;
 
   void AbortOperationsForLocks(
@@ -2679,23 +2669,6 @@ class QuotaClient final : public mozilla::dom::quota::Client {
   nsresult PerformDelete(mozIStorageConnection* aConnection,
                          const nsACString& aSchemaName,
                          ArchivedOriginScope* aArchivedOriginScope) const;
-};
-
-class QuotaClient::Observer final : public nsIObserver {
- public:
-  static nsresult Initialize();
-
- private:
-  Observer() { MOZ_ASSERT(NS_IsMainThread()); }
-
-  ~Observer() { MOZ_ASSERT(NS_IsMainThread()); }
-
-  nsresult Init();
-
-  nsresult Shutdown();
-
-  NS_DECL_ISUPPORTS
-  NS_DECL_NSIOBSERVER
 };
 
 class QuotaClient::MatchFunction final : public mozIStorageFunction {
@@ -3197,8 +3170,6 @@ void InitializeLocalStorage() {
     QM_WARNONLY_TRY(OkIf(ss));
   }
 
-  QM_WARNONLY_TRY(QM_TO_RESULT(QuotaClient::Initialize()));
-
   Preferences::RegisterCallbackAndCall(ShadowWritesPrefChangedCallback,
                                        kShadowWritesPref);
 
@@ -3514,22 +3485,6 @@ bool DeallocPBackgroundLSSimpleRequestParent(
   // Transfer ownership back from IPDL.
   RefPtr<LSSimpleRequestBase> actor =
       dont_AddRef(static_cast<LSSimpleRequestBase*>(aActor));
-
-  return true;
-}
-
-bool RecvLSClearPrivateBrowsing() {
-  AssertIsOnBackgroundThread();
-
-  gPrivateDatastores = nullptr;
-
-  if (gDatastores) {
-    for (const auto& datastore : gDatastores->Values()) {
-      if (datastore->PrivateBrowsingId()) {
-        datastore->Clear(nullptr);
-      }
-    }
-  }
 
   return true;
 }
@@ -4054,9 +4009,10 @@ nsresult Connection::EnsureStorageConnection() {
   MOZ_ASSERT(quotaManager);
 
   if (!mDatabaseWasNotAvailable || mHasCreatedDatabase) {
+    MOZ_ASSERT(mOriginMetadata.mPersistenceType == PERSISTENCE_TYPE_DEFAULT);
+
     QM_TRY_INSPECT(const auto& directoryEntry,
-                   quotaManager->GetDirectoryForOrigin(PERSISTENCE_TYPE_DEFAULT,
-                                                       Origin()));
+                   quotaManager->GetOriginDirectory(mOriginMetadata));
 
     QM_TRY(MOZ_TO_RESULT(directoryEntry->Append(
         NS_LITERAL_STRING_FROM_CSTRING(LS_DIRECTORY_NAME))));
@@ -4640,7 +4596,7 @@ void Datastore::NoteInactiveDatabase(Database* aDatabase) {
   }
 }
 
-void Datastore::GetSnapshotLoadInfo(const nsString& aKey,
+void Datastore::GetSnapshotLoadInfo(const nsAString& aKey,
                                     bool& aAddKeyToUnknownItems,
                                     nsTHashtable<nsStringHashKey>& aLoadedItems,
                                     nsTArray<LSItemInfo>& aItemInfos,
@@ -4840,7 +4796,7 @@ void Datastore::GetSnapshotLoadInfo(const nsString& aKey,
   aLoadState = loadState;
 }
 
-void Datastore::GetItem(const nsString& aKey, LSValue& aValue) const {
+void Datastore::GetItem(const nsAString& aKey, LSValue& aValue) const {
   AssertIsOnBackgroundThread();
   MOZ_ASSERT(!mClosed);
 
@@ -5525,7 +5481,7 @@ mozilla::ipc::IPCResult Database::RecvAllowToClose() {
 }
 
 PBackgroundLSSnapshotParent* Database::AllocPBackgroundLSSnapshotParent(
-    const nsString& aDocumentURI, const nsString& aKey,
+    const nsAString& aDocumentURI, const nsAString& aKey,
     const bool& aIncreasePeakUsage, const int64_t& aMinSize,
     LSSnapshotInitInfo* aInitInfo) {
   AssertIsOnBackgroundThread();
@@ -5547,8 +5503,8 @@ PBackgroundLSSnapshotParent* Database::AllocPBackgroundLSSnapshotParent(
 }
 
 mozilla::ipc::IPCResult Database::RecvPBackgroundLSSnapshotConstructor(
-    PBackgroundLSSnapshotParent* aActor, const nsString& aDocumentURI,
-    const nsString& aKey, const bool& aIncreasePeakUsage,
+    PBackgroundLSSnapshotParent* aActor, const nsAString& aDocumentURI,
+    const nsAString& aKey, const bool& aIncreasePeakUsage,
     const int64_t& aMinSize, LSSnapshotInitInfo* aInitInfo) {
   AssertIsOnBackgroundThread();
   MOZ_ASSERT_IF(aIncreasePeakUsage, aMinSize >= 0);
@@ -5906,7 +5862,7 @@ mozilla::ipc::IPCResult Snapshot::RecvLoaded() {
 }
 
 mozilla::ipc::IPCResult Snapshot::RecvLoadValueAndMoreItems(
-    const nsString& aKey, LSValue* aValue, nsTArray<LSItemInfo>* aItemInfos) {
+    const nsAString& aKey, LSValue* aValue, nsTArray<LSItemInfo>* aItemInfos) {
   AssertIsOnBackgroundThread();
   MOZ_ASSERT(aValue);
   MOZ_ASSERT(aItemInfos);
@@ -6527,7 +6483,7 @@ mozilla::ipc::IPCResult LSRequestBase::RecvCancel() {
   }
 
   IProtocol* mgr = Manager();
-  if (!PBackgroundLSRequestParent::Send__delete__(this, NS_ERROR_FAILURE)) {
+  if (!PBackgroundLSRequestParent::Send__delete__(this, NS_ERROR_ABORT)) {
     return IPC_FAIL(mgr, "Send__delete__ failed!");
   }
 
@@ -6691,6 +6647,8 @@ nsresult PrepareDatastoreOp::Start() {
   MOZ_ASSERT(!QuotaClient::IsShuttingDownOnBackgroundThread());
   MOZ_ASSERT(MayProceed());
 
+  QM_TRY(QuotaManager::EnsureCreated());
+
   const LSRequestCommonParams& commonParams =
       mForPreload
           ? mParams.get_LSRequestPreloadDatastoreParams().commonParams()
@@ -6706,8 +6664,9 @@ nsresult PrepareDatastoreOp::Start() {
     MOZ_ASSERT(storagePrincipalInfo.type() ==
                PrincipalInfo::TContentPrincipalInfo);
 
-    PrincipalMetadata principalMetadata =
-        QuotaManager::GetInfoFromValidatedPrincipalInfo(storagePrincipalInfo);
+    QM_TRY_UNWRAP(auto principalMetadata,
+                  QuotaManager::Get()->GetInfoFromValidatedPrincipalInfo(
+                      storagePrincipalInfo));
 
     mOriginMetadata.mSuffix = std::move(principalMetadata.mSuffix);
     mOriginMetadata.mGroup = std::move(principalMetadata.mGroup);
@@ -6715,7 +6674,12 @@ nsresult PrepareDatastoreOp::Start() {
     // LSRequestBase::Dispatch to synchronously run LSRequestBase::StartRequest
     // through LSRequestBase::Run.
     mMainThreadOrigin = std::move(principalMetadata.mOrigin);
-    mOriginMetadata.mPersistenceType = PERSISTENCE_TYPE_DEFAULT;
+    mOriginMetadata.mStorageOrigin =
+        std::move(principalMetadata.mStorageOrigin);
+    mOriginMetadata.mIsPrivate = principalMetadata.mIsPrivate;
+    mOriginMetadata.mPersistenceType = principalMetadata.mIsPrivate
+                                           ? PERSISTENCE_TYPE_PRIVATE
+                                           : PERSISTENCE_TYPE_DEFAULT;
   }
 
   mState = State::Nesting;
@@ -6874,11 +6838,12 @@ nsresult PrepareDatastoreOp::BeginDatastorePreparationInternal() {
     return NS_OK;
   }
 
-  QM_TRY(QuotaManager::EnsureCreated());
+  QuotaManager* quotaManager = QuotaManager::Get();
+  MOZ_ASSERT(quotaManager);
 
   // Open directory
-  mPendingDirectoryLock = QuotaManager::Get()->CreateDirectoryLock(
-      PERSISTENCE_TYPE_DEFAULT, mOriginMetadata,
+  mPendingDirectoryLock = quotaManager->CreateDirectoryLock(
+      mOriginMetadata.mPersistenceType, mOriginMetadata,
       mozilla::dom::quota::Client::LS,
       /* aExclusive */ false);
 
@@ -6991,9 +6956,11 @@ nsresult PrepareDatastoreOp::DatabaseWork() {
                               .map([](const auto& res) { return res.first; }));
           }
 
+          MOZ_ASSERT(mOriginMetadata.mPersistenceType ==
+                     PERSISTENCE_TYPE_DEFAULT);
+
           QM_TRY_UNWRAP(auto directoryEntry,
-                        quotaManager->GetDirectoryForOrigin(
-                            PERSISTENCE_TYPE_DEFAULT, Origin()));
+                        quotaManager->GetOriginDirectory(mOriginMetadata));
 
           quotaManager->EnsureQuotaForOrigin(mOriginMetadata);
 
@@ -8328,18 +8295,6 @@ QuotaClient::~QuotaClient() {
   sInstance = nullptr;
 }
 
-// static
-nsresult QuotaClient::Initialize() {
-  MOZ_ASSERT(NS_IsMainThread());
-
-  nsresult rv = Observer::Initialize();
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
-
-  return NS_OK;
-}
-
 mozilla::dom::quota::Client::Type QuotaClient::GetType() {
   return QuotaClient::LS;
 }
@@ -8349,13 +8304,13 @@ Result<UsageInfo, nsresult> QuotaClient::InitOrigin(
     const AtomicBool& aCanceled) {
   AssertIsOnIOThread();
   MOZ_ASSERT(aPersistenceType == PERSISTENCE_TYPE_DEFAULT);
+  MOZ_ASSERT(aOriginMetadata.mPersistenceType == aPersistenceType);
 
   QuotaManager* quotaManager = QuotaManager::Get();
   MOZ_ASSERT(quotaManager);
 
   QM_TRY_INSPECT(const auto& directory,
-                 quotaManager->GetDirectoryForOrigin(aPersistenceType,
-                                                     aOriginMetadata.mOrigin));
+                 quotaManager->GetOriginDirectory(aOriginMetadata));
 
   MOZ_ASSERT(directory);
 
@@ -8663,6 +8618,10 @@ void QuotaClient::OnOriginClearCompleted(PersistenceType aPersistenceType,
   AssertIsOnIOThread();
 }
 
+void QuotaClient::OnRepositoryClearCompleted(PersistenceType aPersistenceType) {
+  AssertIsOnIOThread();
+}
+
 void QuotaClient::ReleaseIOThreadObjects() {
   AssertIsOnIOThread();
 
@@ -8939,87 +8898,6 @@ nsresult QuotaClient::PerformDelete(
 
   QM_TRY(MOZ_TO_RESULT(stmt->Execute()));
 
-  return NS_OK;
-}
-
-// static
-nsresult QuotaClient::Observer::Initialize() {
-  MOZ_ASSERT(NS_IsMainThread());
-
-  RefPtr<Observer> observer = new Observer();
-
-  QM_TRY(MOZ_TO_RESULT(observer->Init()));
-
-  return NS_OK;
-}
-
-nsresult QuotaClient::Observer::Init() {
-  MOZ_ASSERT(NS_IsMainThread());
-
-  nsCOMPtr<nsIObserverService> obs = services::GetObserverService();
-  if (NS_WARN_IF(!obs)) {
-    return NS_ERROR_FAILURE;
-  }
-
-  nsresult rv = obs->AddObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID, false);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
-
-  rv = obs->AddObserver(this, kPrivateBrowsingObserverTopic, false);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    obs->RemoveObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID);
-    return rv;
-  }
-
-  return NS_OK;
-}
-
-nsresult QuotaClient::Observer::Shutdown() {
-  MOZ_ASSERT(NS_IsMainThread());
-
-  nsCOMPtr<nsIObserverService> obs = services::GetObserverService();
-  if (NS_WARN_IF(!obs)) {
-    return NS_ERROR_FAILURE;
-  }
-
-  MOZ_ALWAYS_SUCCEEDS(obs->RemoveObserver(this, kPrivateBrowsingObserverTopic));
-  MOZ_ALWAYS_SUCCEEDS(obs->RemoveObserver(this, NS_XPCOM_SHUTDOWN_OBSERVER_ID));
-
-  // In general, the instance will have died after the latter removal call, so
-  // it's not safe to do anything after that point.
-  // However, Shutdown is currently called from Observe which is called by the
-  // Observer Service which holds a strong reference to the observer while the
-  // Observe method is being called.
-
-  return NS_OK;
-}
-
-NS_IMPL_ISUPPORTS(QuotaClient::Observer, nsIObserver)
-
-NS_IMETHODIMP
-QuotaClient::Observer::Observe(nsISupports* aSubject, const char* aTopic,
-                               const char16_t* aData) {
-  MOZ_ASSERT(NS_IsMainThread());
-
-  if (!strcmp(aTopic, kPrivateBrowsingObserverTopic)) {
-    PBackgroundChild* const backgroundActor =
-        BackgroundChild::GetOrCreateForCurrentThread();
-    QM_TRY(OkIf(backgroundActor), NS_ERROR_FAILURE);
-
-    QM_TRY(OkIf(backgroundActor->SendLSClearPrivateBrowsing()),
-           NS_ERROR_FAILURE);
-
-    return NS_OK;
-  }
-
-  if (!strcmp(aTopic, NS_XPCOM_SHUTDOWN_OBSERVER_ID)) {
-    QM_TRY(MOZ_TO_RESULT(Shutdown()));
-
-    return NS_OK;
-  }
-
-  NS_WARNING("Unknown observer topic!");
   return NS_OK;
 }
 

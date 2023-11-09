@@ -21,6 +21,15 @@ fxa-menu-turn-on-sync-default = Activează sincronizarea
 
 fxa-menu-connect-another-device =
     .label = Conectează alt dispozitiv…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Trimite fila către un dispozitiv
+            [few] Trimite { $tabCount } file către un dispozitiv
+           *[other] Trimite { $tabCount } de file către un dispozitiv
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

@@ -28,12 +28,12 @@ findbar-case-sensitive =
     .tooltiptext = Chwilio gyda sensitifrwydd maint nodau
 
 findbar-match-diacritics =
-    .label = Diacritig cyfatebol
+    .label = Diacritigau Cyfatebol
     .accesskey = i
     .tooltiptext = Gwahaniaethu rhwng nodau acennog a nodau sylfaenol, (e.e. wrth chwilio am “resume”, ni fydd “résumé” yn cael ei gynnig)
 
 findbar-entire-word =
-    .label = Geiriau Llawn
+    .label = Geiriau Cyfan
     .accesskey = G
     .tooltiptext = Chwilio'r geiriau llawn yn unig
 
@@ -54,7 +54,7 @@ findbar-case-sensitive-status =
 findbar-match-diacritics-status =
     .value = (Diacritig cyfatebol)
 findbar-entire-word-status =
-    .value = (Geiriau llawn yn unig)
+    .value = (Geiriau cyfan yn unig)
 
 # Variables:
 #   $current (Number): Index of the currently selected match

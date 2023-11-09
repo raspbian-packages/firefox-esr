@@ -209,6 +209,10 @@ monitor-partial-breaches-title =
        *[other] { $numBreachesResolved } fuadenn war { $numBreaches } merket evel stouvet.
     }
 
+# Variables:
+# $percentageResolved (Number) - Percentage of breaches marked as resolved by a user on Monitor.
+monitor-partial-breaches-percentage = { $percentageResolved }% echu
+
 monitor-partial-breaches-motivation-title-start = Ul loc'hadenn vat!
 monitor-partial-breaches-motivation-title-middle = Kendalc'hit ganti!
 monitor-partial-breaches-motivation-title-end = Tost echu! Kendalc'hit!

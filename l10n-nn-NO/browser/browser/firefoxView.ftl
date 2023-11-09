@@ -35,10 +35,10 @@ firefoxview-tabpickup-fxa-admin-disabled-header = Organisasjonen din har deaktiv
 firefoxview-tabpickup-fxa-admin-disabled-description = { -brand-short-name } kan ikkje synkronisere faner mellom einingar fordi administratoren din har deaktivert synkronisering.
 firefoxview-tabpickup-network-offline-header = Sjekk internettilkoplinga di
 firefoxview-tabpickup-network-offline-description = Dersom du brukar ein brannmur eller proxy, sjekk at { -brand-short-name } har tilgangsløyve til nettet.
-firefoxview-tabpickup-network-offline-primarybutton = Prøv igjen
+firefoxview-tabpickup-network-offline-primarybutton = Prøv på nytt
 firefoxview-tabpickup-sync-error-header = Vi har problem med å synkronisere
-firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name } kan ikkje nå synkroniseringstenesta akkurat no. Prøv igjen litt seinare.
-firefoxview-tabpickup-sync-error-primarybutton = Prøv igjen
+firefoxview-tabpickup-generic-sync-error-description = { -brand-short-name } kan ikkje nå synkroniseringstenesta akkurat no. Prøv på nytt litt seinare.
+firefoxview-tabpickup-sync-error-primarybutton = Prøv på nytt
 firefoxview-tabpickup-sync-disconnected-header = Slå på synkronisering for å halde fram
 firefoxview-tabpickup-sync-disconnected-description = For å få tilgang til fanene dine må du aktivere synkronisering i { -brand-short-name }.
 firefoxview-tabpickup-sync-disconnected-primarybutton = Slå på synkronisering i innstillingane
@@ -81,3 +81,56 @@ firefoxview-collapse-button-show =
     .title = Vis liste
 firefoxview-collapse-button-hide =
     .title = Skjul liste
+firefoxview-overview-nav = Nyleg besøkt
+    .title = Nyleg besøkt
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Historikk
+    .title = Historikk
+firefoxview-history-header = Historikk
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Opne faner
+    .title = Opne faner
+firefoxview-opentabs-header = Opne faner
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Nyleg attlatne faner
+    .title = Nyleg attlatne faner
+firefoxview-recently-closed-header = Nyleg attlatne faner
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Faner frå andre einingar
+    .title = Faner frå andre einingar
+firefoxview-synced-tabs-header = Faner frå andre einingar
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Vis alle
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Vindauge { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Vindauge { $winID } (gjeldande)
+firefoxview-opentabs-focus-tab =
+    .title = Byt til denne fana
+firefoxview-show-more = Vis meir
+firefoxview-show-less = Vis mindre
+firefoxview-sort-history-by-date-label = Sorter etter dato
+firefoxview-sort-history-by-site-label = Sorter etter nettstad
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+
+##
+
+firefoxview-show-all-history = Vis all historikk

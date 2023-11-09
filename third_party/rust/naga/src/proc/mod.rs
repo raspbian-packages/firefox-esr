@@ -52,6 +52,12 @@ impl From<super::StorageFormat> for super::ScalarKind {
             Sf::Rgba32Uint => Sk::Uint,
             Sf::Rgba32Sint => Sk::Sint,
             Sf::Rgba32Float => Sk::Float,
+            Sf::R16Unorm => Sk::Float,
+            Sf::R16Snorm => Sk::Float,
+            Sf::Rg16Unorm => Sk::Float,
+            Sf::Rg16Snorm => Sk::Float,
+            Sf::Rgba16Unorm => Sk::Float,
+            Sf::Rgba16Snorm => Sk::Float,
         }
     }
 }
@@ -63,6 +69,15 @@ impl super::ScalarValue {
             Self::Sint(_) => super::ScalarKind::Sint,
             Self::Float(_) => super::ScalarKind::Float,
             Self::Bool(_) => super::ScalarKind::Bool,
+        }
+    }
+}
+
+impl super::ScalarKind {
+    pub const fn is_numeric(self) -> bool {
+        match self {
+            crate::ScalarKind::Sint | crate::ScalarKind::Uint | crate::ScalarKind::Float => true,
+            crate::ScalarKind::Bool => false,
         }
     }
 }
@@ -88,11 +103,9 @@ impl super::TypeInner {
         }
     }
 
-    pub fn try_size(
-        &self,
-        constants: &super::Arena<super::Constant>,
-    ) -> Result<u32, crate::arena::BadHandle> {
-        Ok(match *self {
+    /// Get the size of this type.
+    pub fn size(&self, constants: &super::Arena<super::Constant>) -> u32 {
+        match *self {
             Self::Scalar { kind: _, width } | Self::Atomic { kind: _, width } => width as u32,
             Self::Vector {
                 size,
@@ -104,10 +117,7 @@ impl super::TypeInner {
                 columns,
                 rows,
                 width,
-            } => {
-                let aligned_rows = if rows > crate::VectorSize::Bi { 4 } else { 2 };
-                columns as u32 * aligned_rows * width as u32
-            }
+            } => Alignment::from(rows) * width as u32 * columns as u32,
             Self::Pointer { .. } | Self::ValuePointer { .. } => POINTER_SPAN,
             Self::Array {
                 base: _,
@@ -116,8 +126,7 @@ impl super::TypeInner {
             } => {
                 let count = match size {
                     super::ArraySize::Constant(handle) => {
-                        let constant = constants.try_get(handle)?;
-                        constant.to_array_length().unwrap_or(1)
+                        constants[handle].to_array_length().unwrap_or(1)
                     }
                     // A dynamically-sized array has to have at least one element
                     super::ArraySize::Dynamic => 1,
@@ -125,14 +134,12 @@ impl super::TypeInner {
                 count * stride
             }
             Self::Struct { span, .. } => span,
-            Self::Image { .. } | Self::Sampler { .. } | Self::BindingArray { .. } => 0,
-        })
-    }
-
-    /// Get the size of this type. Panics if the `constants` doesn't contain
-    /// a referenced handle. This may not happen in a properly validated IR module.
-    pub fn size(&self, constants: &super::Arena<super::Constant>) -> u32 {
-        self.try_size(constants).unwrap()
+            Self::Image { .. }
+            | Self::Sampler { .. }
+            | Self::AccelerationStructure
+            | Self::RayQuery
+            | Self::BindingArray { .. } => 0,
+        }
     }
 
     /// Return the canonical form of `self`, or `None` if it's already in
@@ -222,6 +229,7 @@ impl super::MathFunction {
             Self::Min => 2,
             Self::Max => 2,
             Self::Clamp => 3,
+            Self::Saturate => 1,
             // trigonometry
             Self::Cos => 1,
             Self::Cosh => 1,
@@ -275,6 +283,8 @@ impl super::MathFunction {
             Self::Transpose => 1,
             Self::Determinant => 1,
             // bits
+            Self::CountTrailingZeros => 1,
+            Self::CountLeadingZeros => 1,
             Self::CountOneBits => 1,
             Self::ReverseBits => 1,
             Self::ExtractBits => 3,
@@ -382,7 +392,6 @@ impl crate::Constant {
     /// `OpArrayType` referring to an inappropriate `OpConstant`). So we return
     /// `Option` and let the caller sort things out.
     pub(crate) fn to_array_length(&self) -> Option<u32> {
-        use std::convert::TryInto;
         match self.inner {
             crate::ConstantInner::Scalar { value, width: _ } => match value {
                 crate::ScalarValue::Uint(value) => value.try_into().ok(),

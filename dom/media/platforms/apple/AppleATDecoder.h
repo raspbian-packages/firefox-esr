@@ -35,6 +35,8 @@ class AppleATDecoder final : public MediaDataDecoder,
     return "apple coremedia decoder"_ns;
   }
 
+  nsCString GetCodecName() const override;
+
   // Callbacks also need access to the config.
   const AudioInfo mConfig;
 
@@ -68,6 +70,8 @@ class AppleATDecoder final : public MediaDataDecoder,
   nsresult GetImplicitAACMagicCookie(const MediaRawData* aSample);
   nsresult SetupChannelLayout();
   uint32_t mParsedFramesForAACMagicCookie;
+  uint32_t mEncoderDelay = 0;
+  uint64_t mTotalMediaFrames = 0;
   bool mErrored;
 };
 

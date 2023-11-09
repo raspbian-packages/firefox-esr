@@ -66,6 +66,7 @@
 
 use crate::applicable_declarations::ApplicableDeclarationBlock;
 use crate::bloom::StyleBloom;
+use crate::computed_value_flags::ComputedValueFlags;
 use crate::context::{SharedStyleContext, StyleContext};
 use crate::dom::{SendElement, TElement};
 use crate::properties::ComputedValues;
@@ -75,7 +76,7 @@ use crate::stylist::Stylist;
 use crate::values::AtomIdent;
 use atomic_refcell::{AtomicRefCell, AtomicRefMut};
 use owning_ref::OwningHandle;
-use selectors::matching::{VisitedHandlingMode, NeedsSelectorFlags};
+use selectors::matching::{NeedsSelectorFlags, VisitedHandlingMode};
 use selectors::NthIndexCache;
 use servo_arc::Arc;
 use smallbitvec::SmallBitVec;
@@ -84,7 +85,7 @@ use std::marker::PhantomData;
 use std::mem::{self, ManuallyDrop};
 use std::ops::Deref;
 use std::ptr::NonNull;
-use uluru::{Entry, LRUCache};
+use uluru::LRUCache;
 
 mod checks;
 
@@ -275,11 +276,13 @@ pub struct StyleSharingCandidate<E: TElement> {
     /// The element.
     element: E,
     validation_data: ValidationData,
+    considered_relative_selector: bool,
 }
 
 struct FakeCandidate {
     _element: usize,
     _validation_data: ValidationData,
+    _considered_relative_selector: bool,
 }
 
 impl<E: TElement> Deref for StyleSharingCandidate<E> {
@@ -434,12 +437,7 @@ impl<E: TElement> StyleSharingTarget<E> {
             self.element.traversal_parent()
         );
 
-        cache.share_style_if_possible(
-            shared_context,
-            bloom_filter,
-            nth_index_cache,
-            self,
-        )
+        cache.share_style_if_possible(shared_context, bloom_filter, nth_index_cache, self)
     }
 
     /// Gets the validation data used to match against this target, if any.
@@ -449,7 +447,7 @@ impl<E: TElement> StyleSharingTarget<E> {
 }
 
 struct SharingCacheBase<Candidate> {
-    entries: LRUCache<[Entry<Candidate>; SHARING_CACHE_SIZE]>,
+    entries: LRUCache<Candidate, SHARING_CACHE_SIZE>,
 }
 
 impl<Candidate> Default for SharingCacheBase<Candidate> {
@@ -471,13 +469,19 @@ impl<Candidate> SharingCacheBase<Candidate> {
 }
 
 impl<E: TElement> SharingCache<E> {
-    fn insert(&mut self, element: E, validation_data_holder: Option<&mut StyleSharingTarget<E>>) {
+    fn insert(
+        &mut self,
+        element: E,
+        considered_relative_selector: bool,
+        validation_data_holder: Option<&mut StyleSharingTarget<E>>,
+    ) {
         let validation_data = match validation_data_holder {
             Some(v) => v.take_validation_data(),
             None => ValidationData::default(),
         };
         self.entries.insert(StyleSharingCandidate {
             element,
+            considered_relative_selector,
             validation_data,
         });
     }
@@ -589,8 +593,8 @@ impl<E: TElement> StyleSharingCache<E> {
             },
         };
 
-        if element.is_in_native_anonymous_subtree() {
-            debug!("Failing to insert into the cache: NAC");
+        if !element.matches_user_and_content_rules() {
+            debug!("Failing to insert into the cache: no tree rules:");
             return;
         }
 
@@ -614,6 +618,22 @@ impl<E: TElement> StyleSharingCache<E> {
         //     a sequential task and an additional traversal.
         if element.has_animations(shared_context) {
             debug!("Failing to insert to the cache: running animations");
+            return;
+        }
+
+        // If this element was considered for matching a relative selector, we can't
+        // share style, as that requires evaluating the relative selector in the
+        // first place. A couple notes:
+        // - This means that a document that contains a standalone `:has()`
+        //   rule would basically turn style sharing off.
+        // - Since the flag is set on the element, we may be overly pessimistic:
+        //   For example, given `<div class="foo"><div class="bar"></div></div>`,
+        //   if we run into a `.foo:has(.bar) .baz` selector, we refuse any selector
+        //   matching `.foo`, even if `:has()` may not even be used. Ideally we'd
+        //   have something like `RelativeSelectorConsidered::RightMost`, but the
+        //   element flag is required for invalidation, and this reduces more tracking.
+        if element.anchors_relative_selector() {
+            debug!("Failing to insert to the cache: may anchor relative selector");
             return;
         }
 
@@ -647,7 +667,15 @@ impl<E: TElement> StyleSharingCache<E> {
             self.clear();
             self.dom_depth = dom_depth;
         }
-        self.cache_mut().insert(*element, validation_data_holder);
+        self.cache_mut().insert(
+            *element,
+            style
+                .style
+                .0
+                .flags
+                .intersects(ComputedValueFlags::CONSIDERED_RELATIVE_SELECTOR),
+            validation_data_holder,
+        );
     }
 
     /// Clear the style sharing candidate cache.
@@ -679,8 +707,8 @@ impl<E: TElement> StyleSharingCache<E> {
             return None;
         }
 
-        if target.is_in_native_anonymous_subtree() {
-            debug!("{:?} Cannot share style: NAC", target.element);
+        if !target.matches_user_and_content_rules() {
+            debug!("{:?} Cannot share style: content rules", target.element);
             return None;
         }
 
@@ -704,7 +732,7 @@ impl<E: TElement> StyleSharingCache<E> {
         nth_index_cache: &mut NthIndexCache,
         shared_context: &SharedStyleContext,
     ) -> Option<ResolvedElementStyles> {
-        debug_assert!(!target.is_in_native_anonymous_subtree());
+        debug_assert!(target.matches_user_and_content_rules());
 
         // Check that we have the same parent, or at least that the parents
         // share styles and permit sharing across their children. The latter
@@ -767,8 +795,8 @@ impl<E: TElement> StyleSharingCache<E> {
             return None;
         }
 
-        if target.matches_user_and_author_rules() !=
-            candidate.element.matches_user_and_author_rules()
+        if target.matches_user_and_content_rules() !=
+            candidate.element.matches_user_and_content_rules()
         {
             trace!("Miss: User and Author Rules");
             return None;
@@ -800,21 +828,10 @@ impl<E: TElement> StyleSharingCache<E> {
             return None;
         }
 
-        if !checks::revalidate(
-            target,
-            candidate,
-            shared,
-            bloom,
-            nth_index_cache,
-        ) {
+        if !checks::revalidate(target, candidate, shared, bloom, nth_index_cache) {
             trace!("Miss: Revalidation");
             return None;
         }
-
-        debug_assert!(target.has_current_styles_for_traversal(
-            &candidate.element.borrow_data().unwrap(),
-            shared.traversal_flags,
-        ));
 
         debug!(
             "Sharing allowed between {:?} and {:?}",

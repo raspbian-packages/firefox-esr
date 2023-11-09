@@ -69,7 +69,7 @@ policy-DisablePrimaryPasswordCreation = Kung true, hindi maaaring makagawa ng Pr
 
 policy-DisablePasswordReveal = Huwag payagang mailantad ang mga password sa mga naka-save na login.
 
-policy-DisablePocket = Huwag paganahin ang tampok na makapag-save ng mga webpage sa Pocket.
+policy-DisablePocket2 = Huwag paganahin ang tampok na makapag-save ng mga webpage sa { -pocket-brand-name }.
 
 policy-DisablePrivateBrowsing = Huwag paganahin ang Pribadong Pagba-browse.
 
@@ -111,10 +111,6 @@ policy-Extensions = Mag-install, mag-uninstall, o mag-lock ng mga extension. Ang
 policy-ExtensionSettings = I-manage ang lahat ng aspeto ng pag-install ng mga extension.
 
 policy-ExtensionUpdate = I-enable o i-disable ang kusang pag-update ng mga extension.
-
-policy-FirefoxHome = I-configure ang Firefox Home.
-
-policy-FlashPlugin = Payagan o pagbawalan ang paggamit ng Flash plugin.
 
 policy-Handlers = I-configure ang mga default application handler.
 
@@ -183,9 +179,6 @@ policy-SearchBar = I-set ang default location ng search bar. Pinapayagan pa rin 
 policy-SearchEngines = I-configure ang mga setting ng search engine. Ang policy na ito ay matatagpuan lamang sa Extended Support Release (ESR) version.
 
 policy-SearchSuggestEnabled = I-enable o i-disable ang mga search suggestion.
-
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Ikabit ang mga PKCS #11 module.
 
 policy-ShowHomeButton = Ipakita ang home button sa toolbar.
 

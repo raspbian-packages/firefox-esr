@@ -6,11 +6,16 @@ addons-page-title = Eklenti Yöneticisi
 search-header =
     .placeholder = addons.mozilla.org’da ara
     .searchbuttonlabel = Ara
-search-header-shortcut =
-    .key = f
+
+## Variables
+##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
+
 list-empty-get-extensions-message = Uzantıları ve temaları <a data-l10n-name="get-extensions">{ $domain }</a> adresinden indirebilirsiniz.
 list-empty-get-dictionaries-message = Sözlükleri <a data-l10n-name="get-extensions">{ $domain }</a> adresinden indirebilirsiniz.
 list-empty-get-language-packs-message = Dil paketlerini <a data-l10n-name="get-extensions">{ $domain }</a> adresinden indirebilirsiniz.
+
+##
+
 list-empty-installed =
     .value = Bu türden kurulmuş bir eklentiniz yok
 list-empty-available-updates =
@@ -144,7 +149,7 @@ addon-category-sitepermission-title =
     .title = Site İzinleri
 # String displayed in about:addons in the Site Permissions section
 # Variables:
-#  $host (string): DNS host name for which the webextension enables permissions
+#  $host (string) - DNS host name for which the webextension enables permissions
 addon-sitepermission-host = { $host } site izinleri
 
 ## These are global warnings
@@ -156,6 +161,7 @@ extensions-warning-check-compatibility-button = Etkinleştir
 extensions-warning-update-security = Eklenti güncelleme güvenliği denetimi devre dışı. Güncellemelerle tehlikeye düşebilirsiniz.
 extensions-warning-update-security-button = Etkinleştir
     .title = Eklenti güncelleme güvenliği denetimini devreye sok
+extensions-warning-imported-addons = Lütfen { -brand-short-name } tarayıcınıza aktarılan uzantıların kurulumunu bitirin.
 
 ## Strings connected to add-on updates
 
@@ -224,6 +230,8 @@ shortcuts-duplicate-warning-message = { $shortcut } birden fazla yerde kısayol 
 # Variables:
 #   $addon (string) - Name of the add-on
 shortcuts-exists = { $addon } tarafından zaten kullanılıyor
+# Variables:
+#   $numberToShow (number) - Number of other elements available to show
 shortcuts-card-expand-button =
     { $numberToShow ->
         [one] { $numberToShow } tane daha göster
@@ -287,17 +295,7 @@ permissions-addon-button = İzinler
 extension-enabled-heading = Etkin
 extension-disabled-heading = Devre dışı
 theme-enabled-heading = Etkin
-theme-disabled-heading = Devre dışı
 theme-disabled-heading2 = Kayıtlı temalar
-theme-monochromatic-heading = Renk kuşakları
-theme-monochromatic-subheading = { -brand-product-name } tarayıcınızdan yepyeni renk kuşakları. Sadece kısıtlı bir süre için.
-# Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
-theme-colorways-button = Renk kuşaklarını deneyin
-# Refers to the button label for the colorways card when a user has a colorway theme enabled.
-theme-colorways-button-colorway-enabled = Renk kuşağını değiştir
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
-colorway-collection-expiry-label = Son kullanma tarihi: { DATETIME($expiryDate, month: "long", day: "numeric") }
 plugin-enabled-heading = Etkin
 plugin-disabled-heading = Devre dışı
 dictionary-enabled-heading = Etkin
@@ -346,6 +344,10 @@ addon-detail-updates-radio-on = Açık
 addon-detail-updates-radio-off = Kapalı
 addon-detail-update-check-label = Güncellemeleri denetle
 install-update-button = Güncelle
+# aria-label associated to the updates row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-updates =
+    .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
@@ -354,6 +356,20 @@ addon-badge-private-browsing-allowed2 =
 addon-detail-private-browsing-help = İzin verirseniz bu uzantı, gizli gezinti sırasında çevrimiçi etkinliklerinize erişebilir. <a data-l10n-name="learn-more">Daha fazla bilgi alın</a>
 addon-detail-private-browsing-allow = İzin ver
 addon-detail-private-browsing-disallow = İzin verme
+# aria-label associated to the private browsing row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-private-browsing =
+    .aria-label = { detail-private-browsing-label }
+
+## "sites with restrictions" (internally called "quarantined") are special domains
+## where add-ons are normally blocked for security reasons.
+
+# Used as label and tooltip text on the radio inputs associated to the quarantined domains UI controls.
+addon-detail-quarantined-domains-allow = İzin ver
+addon-detail-quarantined-domains-disallow = İzin verme
+# aria-label associated to the quarantined domains exempt row to help screen readers to announce the group.
+addon-detail-group-label-quarantined-domains =
+    .aria-label = { addon-detail-quarantined-domains-label }
 
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
@@ -382,6 +398,8 @@ addon-permissions-optional = Ek işlevler için isteğe bağlı izinler:
 addon-permissions-learnmore = İzinler hakkında daha fazla bilgi alın
 recommended-extensions-heading = Önerilen uzantılar
 recommended-themes-heading = Önerilen temalar
+# Variables:
+#   $hostname (string) - Host where the permissions are granted
 addon-sitepermissions-required = <span data-l10n-name="hostname">{ $hostname }</span> sitesine aşağıdaki izinleri verir:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
@@ -406,10 +424,10 @@ addon-page-options-button =
 
 ## Detail notifications
 ## Variables:
-##   $name (String): name of the add-on.
+##   $name (string) - Name of the add-on.
 
 # Variables:
-#   $version (String): application version.
+#   $version (string) - Application version.
 details-notification-incompatible = { $name } eklentisi { -brand-short-name } { $version } ile uyumsuz.
 details-notification-incompatible-link = Daha fazla bilgi
 details-notification-unsigned-and-disabled = { $name } { -brand-short-name } üzerinde kullanım için doğrulanamadı ve etkisizleştirildi.

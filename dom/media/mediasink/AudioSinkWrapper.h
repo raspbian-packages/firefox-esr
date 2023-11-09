@@ -48,9 +48,11 @@ class AudioSinkWrapper : public MediaSink {
   template <typename Function>
   AudioSinkWrapper(AbstractThread* aOwnerThread,
                    MediaQueue<AudioData>& aAudioQueue, const Function& aFunc,
-                   double aVolume, double aPlaybackRate, bool aPreservesPitch)
+                   double aVolume, double aPlaybackRate, bool aPreservesPitch,
+                   RefPtr<AudioDeviceInfo> aAudioDevice)
       : mOwnerThread(aOwnerThread),
         mCreator(new CreatorImpl<Function>(aFunc)),
+        mAudioDevice(std::move(aAudioDevice)),
         mIsStarted(false),
         mParams(aVolume, aPlaybackRate, aPreservesPitch),
         // Give an invalid value to facilitate debug if used before playback
@@ -80,9 +82,13 @@ class AudioSinkWrapper : public MediaSink {
   bool IsStarted() const override;
   bool IsPlaying() const override;
 
+  const AudioDeviceInfo* AudioDevice() const override { return mAudioDevice; }
+
   void Shutdown() override;
 
   void GetDebugInfo(dom::MediaSinkDebugInfo& aInfo) override;
+
+  void EnableTreatAudioUnderrunAsSilence(bool aEnabled) override;
 
  private:
   // The clock that was in use for the previous position query, allowing to
@@ -128,6 +134,9 @@ class AudioSinkWrapper : public MediaSink {
   const RefPtr<AbstractThread> mOwnerThread;
   UniquePtr<Creator> mCreator;
   UniquePtr<AudioSink> mAudioSink;
+  // The output device this AudioSink is playing data to. The system's default
+  // device is used if this is null.
+  const RefPtr<AudioDeviceInfo> mAudioDevice;
   // Will only exist when media has an audio track.
   RefPtr<EndedPromise> mEndedPromise;
   MozPromiseHolder<EndedPromise> mEndedPromiseHolder;
@@ -141,6 +150,10 @@ class AudioSinkWrapper : public MediaSink {
   bool mAudioEnded;
   MozPromiseRequestHolder<EndedPromise> mAudioSinkEndedPromise;
   MediaQueue<AudioData>& mAudioQueue;
+
+  // True if we'd like to treat underrun as silent frames. But that can only be
+  // applied in the special situation for seamless looping.
+  bool mTreatUnderrunAsSilence = false;
 };
 
 }  // namespace mozilla

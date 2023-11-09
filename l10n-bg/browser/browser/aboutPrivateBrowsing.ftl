@@ -57,3 +57,17 @@ about-private-browsing-promo-close-button =
 
 ## Strings used in a “pin promotion” message, which prompts users to pin a private window
 
+about-private-browsing-pin-promo-link-text =
+    { PLATFORM() ->
+        [macos] Запазване в док-а
+       *[other] Закачане към лентата със задачи
+    }
+about-private-browsing-pin-promo-title = Без запазени бисквитки или история, направо от работния плот. Разглеждайте свободно!
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Банерите за бисквитките изчезнаха!
+about-private-browsing-cookie-banners-promo-button = Намаляване на банерите за бисквитки
+about-private-browsing-cookie-banners-promo-message = Нека { -brand-short-name } автоматично отговаря на изскачащите прозорци на бисквитките вместо вас, за да можете да се върнете към разглеждането без разсейване. { -brand-short-name } ще отхвърли всички заявки, ако е възможно.

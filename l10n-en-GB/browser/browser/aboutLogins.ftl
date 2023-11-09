@@ -4,11 +4,14 @@
 # NOTE: New strings should use the about-logins- prefix.
 
 about-logins-page-title = Logins & Passwords
-login-filter =
+
+about-logins-login-filter =
     .placeholder = Search Logins
-create-login-button = Create New Login
+    .key = F
+
 create-new-login-button =
     .title = Create new login
+
 fxaccounts-sign-in-text = Get your passwords on your other devices
 fxaccounts-sign-in-sync-button = Sign in to synchronise
 fxaccounts-avatar-button =
@@ -34,10 +37,20 @@ about-logins-menu-menuitem-help = Help
 
 login-list =
     .aria-label = Logins matching search query
+# Variables
+#   $count (number) - Number of logins
 login-list-count =
     { $count ->
         [one] { $count } login
        *[other] { $count } logins
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count =
+    { $total ->
+        [one] { $count } of { $total } login
+       *[other] { $count } of { $total } logins
     }
 login-list-sort-label-text = Sort by:
 login-list-name-option = Name (A-Z)
@@ -98,14 +111,13 @@ login-item-copied-password-button-text = Copied!
 login-item-save-changes-button = Save Changes
 login-item-save-new-button = Save
 login-item-cancel-button = Cancel
-login-item-time-changed = Last modified: { DATETIME($timeChanged, day: "numeric", month: "long", year: "numeric") }
-login-item-time-created = Created: { DATETIME($timeCreated, day: "numeric", month: "long", year: "numeric") }
-login-item-time-used = Last used: { DATETIME($timeUsed, day: "numeric", month: "long", year: "numeric") }
 
 ## The date is displayed in a timeline showing the password evolution.
 ## A label is displayed under the date to describe the type of change.
 ## (e.g. updated, created, etc.)
 
+# Variables
+#   $datetime (date) - Event date
 login-item-timeline-point-date = { DATETIME($datetime, day: "numeric", month: "short", year: "numeric") }
 login-item-timeline-action-created = Created
 login-item-timeline-action-updated = Updated
@@ -124,16 +136,19 @@ about-logins-edit-login-os-auth-dialog-message-win = To edit your login, enter y
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-edit-login-os-auth-dialog-message-macosx = edit the saved login
+
 # This message can be seen when attempting to reveal a password in about:logins on Windows.
 about-logins-reveal-password-os-auth-dialog-message-win = To view your password, enter your Windows login credentials. This helps protect the security of your accounts.
 # This message can be seen when attempting to reveal a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-reveal-password-os-auth-dialog-message-macosx = reveal the saved password
+
 # This message can be seen when attempting to copy a password in about:logins on Windows.
 about-logins-copy-password-os-auth-dialog-message-win = To copy your password, enter your Windows login credentials. This helps protect the security of your accounts.
 # This message can be seen when attempting to copy a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-copy-password-os-auth-dialog-message-macosx = copy the saved password
+
 # This message can be seen when attempting to export a password in about:logins on Windows.
 about-logins-export-password-os-auth-dialog-message-win = To export your logins, enter your Windows login credentials. This helps protect the security of your accounts.
 # This message can be seen when attempting to export a password in about:logins
@@ -152,19 +167,26 @@ master-password-reload-button =
 confirmation-dialog-cancel-button = Cancel
 confirmation-dialog-dismiss-button =
     .title = Cancel
+
 about-logins-confirm-remove-dialog-title = Remove this login?
 confirm-delete-dialog-message = This action cannot be undone.
 about-logins-confirm-remove-dialog-confirm-button = Remove
+
+## Variables
+##   $count (number) - Number of items
+
 about-logins-confirm-remove-all-dialog-confirm-button-label =
     { $count ->
         [1] Remove
        *[other] Remove All
     }
+
 about-logins-confirm-remove-all-dialog-checkbox-label =
     { $count ->
         [1] Yes, remove this login
        *[other] Yes, remove these logins
     }
+
 about-logins-confirm-remove-all-dialog-title =
     { $count ->
         [one] Remove { $count } login?
@@ -175,6 +197,7 @@ about-logins-confirm-remove-all-dialog-message =
         [1] This will remove the login you’ve saved to { -brand-short-name } and any breach alerts that appear here. You won’t be able to undo this action.
        *[other] This will remove the logins you’ve saved to { -brand-short-name } and any breach alerts that appear here. You won’t be able to undo this action.
     }
+
 about-logins-confirm-remove-all-sync-dialog-title =
     { $count ->
         [one] Remove { $count } login from all devices?
@@ -185,11 +208,16 @@ about-logins-confirm-remove-all-sync-dialog-message =
         [1] This will remove the login you’ve saved to { -brand-short-name } on all devices synced to your { -fxaccount-brand-name }. This will also remove breach alerts that appear here. You won’t be able to undo this action.
        *[other] This will remove all logins you’ve saved to { -brand-short-name } on all devices synced to your { -fxaccount-brand-name }. This will also remove breach alerts that appear here. You won’t be able to undo this action.
     }
+
+##
+
 about-logins-confirm-export-dialog-title = Export logins and passwords
 about-logins-confirm-export-dialog-message = Your passwords will be saved as readable text (e.g., BadP@ssw0rd) so anyone who can open the exported file can view them.
 about-logins-confirm-export-dialog-confirm-button = Export…
+
 about-logins-alert-import-title = Import Complete
 about-logins-alert-import-message = View detailed Import Summary
+
 confirm-discard-changes-dialog-title = Discard unsaved changes?
 confirm-discard-changes-dialog-message = All unsaved changes will be lost.
 confirm-discard-changes-dialog-confirm-button = Discard
@@ -202,7 +230,6 @@ about-logins-breach-alert-date = This breach occurred on { DATETIME($date, day: 
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-breach-alert-link = Go to { $hostname }
-about-logins-breach-alert-learn-more-link = Learn more
 
 ## Vulnerable Password notification
 
@@ -220,6 +247,7 @@ about-logins-vulnerable-alert-learn-more-link = Learn more
 # Variables:
 #   $loginTitle (String) - The title of the website associated with the login.
 about-logins-error-message-duplicate-login-with-link = An entry for { $loginTitle } with that username already exists. <a data-l10n-name="duplicate-link">Go to existing entry?</a>
+
 # This is a generic error message.
 about-logins-error-message-default = An error occurred while trying to save this password.
 
@@ -268,10 +296,12 @@ about-logins-import-dialog-items-added =
     { $count ->
        *[other] <span>New logins added:</span> <span data-l10n-name="count">{ $count }</span>
     }
+
 about-logins-import-dialog-items-modified =
     { $count ->
        *[other] <span>Existing logins updated:</span> <span data-l10n-name="count">{ $count }</span>
     }
+
 about-logins-import-dialog-items-no-change =
     { $count ->
        *[other] <span>Duplicate logins found:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(not imported)</span>
@@ -281,6 +311,7 @@ about-logins-import-dialog-items-error =
        *[other] <span>Errors:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(not imported)</span>
     }
 about-logins-import-dialog-done = Done
+
 about-logins-import-dialog-error-title = Import Error
 about-logins-import-dialog-error-conflicting-values-title = Multiple Conflicting Values for One Login
 about-logins-import-dialog-error-conflicting-values-description = For example: multiple usernames, passwords, URLs, etc. for one login.
@@ -294,8 +325,10 @@ about-logins-import-dialog-error-no-logins-imported = No logins have been import
 about-logins-import-dialog-error-learn-more = Learn more
 about-logins-import-dialog-error-try-import-again = Try Import Again…
 about-logins-import-dialog-error-cancel = Cancel
+
 about-logins-import-report-title = Import Summary
 about-logins-import-report-description = Logins and passwords imported to { -brand-short-name }.
+
 #
 # Variables:
 #  $number (number) - The number of the row

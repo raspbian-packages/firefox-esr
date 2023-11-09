@@ -2,11 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
-
 import time
 
-from marionette_driver import By, expected, Wait
+from marionette_driver import By, Wait, expected
 from marionette_harness import MarionetteTestCase, WindowManagerMixin
 
 
@@ -75,9 +73,6 @@ class TestSafeBrowsingNotificationBar(WindowManagerMixin, MarionetteTestCase):
         with self.marionette.using_context("chrome"):
             self.marionette.execute_script(
                 """
-              const { Services } = ChromeUtils.import(
-                "resource://gre/modules/Services.jsm"
-              );
               let uri = Services.io.newURI(arguments[0], null, null);
               let principal = Services.scriptSecurityManager.createContentPrincipal(uri, {});
               Services.perms.removeFromPrincipal(principal, arguments[1]);

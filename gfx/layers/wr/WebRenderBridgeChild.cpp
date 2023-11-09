@@ -176,7 +176,7 @@ void WebRenderBridgeChild::ProcessWebRenderParentCommands() {
   MOZ_ASSERT(!mDestroyed);
 
   if (!mParentCommands.IsEmpty()) {
-    this->SendParentCommands(mParentCommands);
+    this->SendParentCommands(mIdNamespace, mParentCommands);
     mParentCommands.Clear();
   }
 }
@@ -361,12 +361,9 @@ void WebRenderBridgeChild::Connect(CompositableClient* aCompositable,
   MOZ_ASSERT(!mDestroyed);
   MOZ_ASSERT(aCompositable);
 
-  static uint64_t sNextID = 1;
-  uint64_t id = sNextID++;
+  CompositableHandle handle = CompositableHandle::GetNext();
+  mCompositables.InsertOrUpdate(uint64_t(handle), aCompositable);
 
-  mCompositables.InsertOrUpdate(id, aCompositable);
-
-  CompositableHandle handle(id);
   aCompositable->InitIPDL(handle);
   SendNewCompositable(handle, aCompositable->GetTextureInfo());
 }
@@ -394,7 +391,7 @@ void WebRenderBridgeChild::ReleaseCompositable(
 }
 
 bool WebRenderBridgeChild::DestroyInTransaction(PTextureChild* aTexture) {
-  return AddOpDestroy(OpDestroy(aTexture));
+  return AddOpDestroy(OpDestroy(WrapNotNull(aTexture)));
 }
 
 bool WebRenderBridgeChild::DestroyInTransaction(
@@ -416,7 +413,7 @@ void WebRenderBridgeChild::RemoveTextureFromCompositable(
 
   AddWebRenderParentCommand(CompositableOperation(
       aCompositable->GetIPCHandle(),
-      OpRemoveTexture(nullptr, aTexture->GetIPDLActor())));
+      OpRemoveTexture(WrapNotNull(aTexture->GetIPDLActor()))));
 }
 
 void WebRenderBridgeChild::UseTextures(
@@ -437,22 +434,32 @@ void WebRenderBridgeChild::UseTextures(
                        GetIPCChannel());
     bool readLocked = t.mTextureClient->OnForwardedToHost();
 
-    textures.AppendElement(
-        TimedTexture(nullptr, t.mTextureClient->GetIPDLActor(), t.mTimeStamp,
-                     t.mPictureRect, t.mFrameID, t.mProducerID, readLocked));
+    textures.AppendElement(TimedTexture(
+        WrapNotNull(t.mTextureClient->GetIPDLActor()), t.mTimeStamp,
+        t.mPictureRect, t.mFrameID, t.mProducerID, readLocked));
     GetCompositorBridgeChild()->HoldUntilCompositableRefReleasedIfNecessary(
         t.mTextureClient);
-
-    auto fenceFd = t.mTextureClient->GetInternalData()->GetAcquireFence();
-    if (fenceFd.IsValid()) {
-      AddWebRenderParentCommand(CompositableOperation(
-          aCompositable->GetIPCHandle(),
-          OpDeliverAcquireFence(nullptr, t.mTextureClient->GetIPDLActor(),
-                                fenceFd)));
-    }
   }
   AddWebRenderParentCommand(CompositableOperation(aCompositable->GetIPCHandle(),
                                                   OpUseTexture(textures)));
+}
+
+void WebRenderBridgeChild::UseRemoteTexture(CompositableClient* aCompositable,
+                                            const RemoteTextureId aTextureId,
+                                            const RemoteTextureOwnerId aOwnerId,
+                                            const gfx::IntSize aSize,
+                                            const TextureFlags aFlags) {
+  AddWebRenderParentCommand(CompositableOperation(
+      aCompositable->GetIPCHandle(),
+      OpUseRemoteTexture(aTextureId, aOwnerId, aSize, aFlags)));
+}
+
+void WebRenderBridgeChild::EnableRemoteTexturePushCallback(
+    CompositableClient* aCompositable, const RemoteTextureOwnerId aOwnerId,
+    const gfx::IntSize aSize, const TextureFlags aFlags) {
+  AddWebRenderParentCommand(CompositableOperation(
+      aCompositable->GetIPCHandle(),
+      OpEnableRemoteTexturePushCallback(aOwnerId, aSize, aFlags)));
 }
 
 void WebRenderBridgeChild::UpdateFwdTransactionId() {

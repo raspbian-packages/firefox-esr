@@ -6,11 +6,16 @@ addons-page-title = Quản lí tiện ích
 search-header =
     .placeholder = Tìm kiếm addons.mozilla.org
     .searchbuttonlabel = Tìm kiếm
-search-header-shortcut =
-    .key = f
+
+## Variables
+##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
+
 list-empty-get-extensions-message = Tải tiện ích mở rộng và chủ đề trên <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-dictionaries-message = Tải từ điển trên <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-language-packs-message = Tải gói ngôn ngữ trên <a data-l10n-name="get-extensions">{ $domain }</a>
+
+##
+
 list-empty-installed =
     .value = Bạn không có tiện ích nào thuộc kiểu này được cài đặt
 list-empty-available-updates =
@@ -144,7 +149,7 @@ addon-category-sitepermission-title =
     .title = Quyền hạn trang web
 # String displayed in about:addons in the Site Permissions section
 # Variables:
-#  $host (string): DNS host name for which the webextension enables permissions
+#  $host (string) - DNS host name for which the webextension enables permissions
 addon-sitepermission-host = Quyền hạn trang web cho { $host }
 
 ## These are global warnings
@@ -156,6 +161,8 @@ extensions-warning-check-compatibility-button = Bật
 extensions-warning-update-security = Việc kiểm tra tính an toàn của các cập nhật tiện ích đã bị vô hiệu hóa. Bạn có thể bị tổn hại nếu cập nhật.
 extensions-warning-update-security-button = Bật
     .title = Kích hoạt kiểm tra tính bảo mật của cập nhật cho tiện ích
+extensions-warning-imported-addons = Vui lòng hoàn tất việc cài đặt các tiện ích mở rộng đã được nhập vào { -brand-short-name }.
+extensions-warning-imported-addons-button = Cài đặt tiện ích mở rộng
 
 ## Strings connected to add-on updates
 
@@ -224,6 +231,8 @@ shortcuts-duplicate-warning-message = { $shortcut } đang được sử dụng l
 # Variables:
 #   $addon (string) - Name of the add-on
 shortcuts-exists = Đã được sử dụng bởi { $addon }
+# Variables:
+#   $numberToShow (number) - Number of other elements available to show
 shortcuts-card-expand-button =
     { $numberToShow ->
        *[other] Hiển thị { $numberToShow } khác
@@ -292,17 +301,7 @@ permissions-addon-button = Quyền hạn
 extension-enabled-heading = Đã bật
 extension-disabled-heading = Đã vô hiệu hóa
 theme-enabled-heading = Đã bật
-theme-disabled-heading = Đã tắt
 theme-disabled-heading2 = Chủ đề đã lưu
-theme-monochromatic-heading = Màu
-theme-monochromatic-subheading = Các phối màu mới sống động từ { -brand-product-name }. Có sẵn trong một thời gian giới hạn.
-# Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
-theme-colorways-button = Thử đường màu
-# Refers to the button label for the colorways card when a user has a colorway theme enabled.
-theme-colorways-button-colorway-enabled = Thay đổi phối màu
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
-colorway-collection-expiry-label = Hết hạn vào { DATETIME($expiryDate, month: "long", day: "numeric") }
 plugin-enabled-heading = Đã bật
 plugin-disabled-heading = Đã tắt
 dictionary-enabled-heading = Đã bật
@@ -350,6 +349,10 @@ addon-detail-updates-radio-on = Bật
 addon-detail-updates-radio-off = Tắt
 addon-detail-update-check-label = Kiểm tra cập nhật
 install-update-button = Cập nhật
+# aria-label associated to the updates row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-updates =
+    .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
@@ -358,6 +361,24 @@ addon-badge-private-browsing-allowed2 =
 addon-detail-private-browsing-help = Khi được cho phép, tiện ích mở rộng sẽ có quyền truy cập vào các hoạt động trực tuyến của bạn trong khi duyệt web riêng tư. <a data-l10n-name="learn-more">Tìm hiểu thêm</a>
 addon-detail-private-browsing-allow = Cho phép
 addon-detail-private-browsing-disallow = Không cho phép
+# aria-label associated to the private browsing row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-private-browsing =
+    .aria-label = { detail-private-browsing-label }
+
+## "sites with restrictions" (internally called "quarantined") are special domains
+## where add-ons are normally blocked for security reasons.
+
+# Used as a description for the option to allow or block an add-on on quarantined domains.
+addon-detail-quarantined-domains-label = Chạy trên trang web bị hạn chế
+# Used as help text part of the quarantined domains UI controls row.
+addon-detail-quarantined-domains-help = Khi được phép, tiện ích mở rộng sẽ có quyền truy cập vào các trang web bị hạn chế bởi { -vendor-short-name }. Chỉ cho phép nếu bạn tin tưởng tiện ích mở rộng này.
+# Used as label and tooltip text on the radio inputs associated to the quarantined domains UI controls.
+addon-detail-quarantined-domains-allow = Cho phép
+addon-detail-quarantined-domains-disallow = Không cho phép
+# aria-label associated to the quarantined domains exempt row to help screen readers to announce the group.
+addon-detail-group-label-quarantined-domains =
+    .aria-label = { addon-detail-quarantined-domains-label }
 
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
@@ -386,6 +407,8 @@ addon-permissions-optional = Các quyền tùy chọn cho chức năng được 
 addon-permissions-learnmore = Tìm hiểu thêm về quyền hạn
 recommended-extensions-heading = Tiện ích mở rộng được đề xuất
 recommended-themes-heading = Chủ đề được đề xuất
+# Variables:
+#   $hostname (string) - Host where the permissions are granted
 addon-sitepermissions-required = Cấp các khả năng sau cho <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
@@ -410,10 +433,10 @@ addon-page-options-button =
 
 ## Detail notifications
 ## Variables:
-##   $name (String): name of the add-on.
+##   $name (string) - Name of the add-on.
 
 # Variables:
-#   $version (String): application version.
+#   $version (string) - Application version.
 details-notification-incompatible = { $name } không tương thích với { -brand-short-name } { $version }.
 details-notification-incompatible-link = Thông tin chi tiết
 details-notification-unsigned-and-disabled = Không thể kiểm tra tính tương thích của { $name } với { -brand-short-name } nên nó đã bị vô hiệu hóa.

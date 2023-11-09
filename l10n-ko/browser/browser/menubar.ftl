@@ -38,9 +38,11 @@ menu-quit =
             [windows] x
            *[other] Q
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = { -brand-shorter-name } 종료
+
 menu-about =
     .label = { -brand-shorter-name } 정보
     .accesskey = A
@@ -131,7 +133,7 @@ menu-view-customize-toolbar2 =
     .label = 도구 모음 사용자 지정…
     .accesskey = C
 menu-view-sidebar =
-    .label = 탐색창
+    .label = 사이드바
     .accesskey = e
 menu-view-bookmarks =
     .label = 북마크
@@ -219,8 +221,6 @@ menu-history-undo-menu =
     .label = 최근에 닫은 탭
 menu-history-undo-window-menu =
     .label = 최근에 닫은 창
-menu-history-reopen-all-tabs = 모든 탭 다시 열기
-menu-history-reopen-all-windows = 모든 창 다시 열기
 
 ## Bookmarks Menu
 
@@ -229,14 +229,13 @@ menu-bookmarks-menu =
     .accesskey = B
 menu-bookmarks-manage =
     .label = 북마크 관리
-menu-bookmark-current-tab =
-    .label = 현재 탭 북마크
-menu-bookmark-edit =
-    .label = 이 북마크 편집
 menu-bookmark-tab =
     .label = 현재 탭 북마크…
 menu-edit-bookmark =
     .label = 이 북마크 편집…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = 북마크 검색
 menu-bookmarks-all-tabs =
     .label = 모든 탭 북마크…
 menu-bookmarks-toolbar =
@@ -330,6 +329,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = 문제 해결 모드 끄기
     .accesskey = M
+menu-help-switch-device =
+    .label = 새 기기로 전환
+    .accesskey = N
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

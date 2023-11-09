@@ -6,11 +6,16 @@ addons-page-title = Rheolwr Ychwanegion
 search-header =
     .placeholder = Search addons.mozilla.org
     .searchbuttonlabel = Chwilio
-search-header-shortcut =
-    .key = f
+
+## Variables
+##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
+
 list-empty-get-extensions-message = Cewch estyniadau a themâu yn <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-dictionaries-message = Cael geiriaduron o <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-language-packs-message = Cael pecynnau iaith o <a data-l10n-name="get-extensions">{ $domain }</a>
+
+##
+
 list-empty-installed =
     .value = Nid oes gennych ychwanegion o'r math yma wedi eu gosod
 list-empty-available-updates =
@@ -44,7 +49,7 @@ detail-contributions-button = Cyfrannu
 detail-update-type =
     .value = Diweddariadau Awtomatig
 detail-update-default =
-    .label = Rhagosodedig
+    .label = Rhagosodiad
     .tooltiptext = Gosod diweddariadau'n awtomatig os mai dyna yw'r rhagosodedig
 detail-update-automatic =
     .label = Ymlaen
@@ -141,7 +146,7 @@ addon-category-sitepermission-title =
     .title = Caniatâd Gwefan
 # String displayed in about:addons in the Site Permissions section
 # Variables:
-#  $host (string): DNS host name for which the webextension enables permissions
+#  $host (string) - DNS host name for which the webextension enables permissions
 addon-sitepermission-host = Caniatâd Gwefan { $host }
 
 ## These are global warnings
@@ -153,6 +158,8 @@ extensions-warning-check-compatibility-button = Galluogi
 extensions-warning-update-security = Mae gwirio diogelwch diweddariad wedi ei analluogi. Efallai eich bod o dan fygythiad gan ddiweddariad.
 extensions-warning-update-security-button = Galluogi
     .title = Galluogi gwirio diogelwch diweddariad ychwanegyn
+extensions-warning-imported-addons = Gorffennwch osod yr estyniadau a fewnforiwyd i { -brand-short-name }.
+extensions-warning-imported-addons-button = Gosod Estyniadau
 
 ## Strings connected to add-on updates
 
@@ -221,6 +228,8 @@ shortcuts-duplicate-warning-message = Mae { $shortcut } yn cael ei ddefnyddio fe
 # Variables:
 #   $addon (string) - Name of the add-on
 shortcuts-exists = Ar waith eisoes gan { $addon }
+# Variables:
+#   $numberToShow (number) - Number of other elements available to show
 shortcuts-card-expand-button =
     { $numberToShow ->
         [zero] Dangos { $numberToShow } yn Rhagor
@@ -275,7 +284,7 @@ report-addon-button = Adrodd
 remove-addon-button = Tynnu
 # The link will always be shown after the other text.
 remove-addon-disabled-button = Methu ei Dynnu <a data-l10n-name="link"> Pam? </a>
-disable-addon-button = Analluogu
+disable-addon-button = Analluogi
 enable-addon-button = Galluogi
 # This is used for the toggle on the extension card, it's a checkbox and this
 # is always its label.
@@ -292,17 +301,7 @@ permissions-addon-button = Caniatâd
 extension-enabled-heading = Galluogwyd
 extension-disabled-heading = Analluogwyd
 theme-enabled-heading = Galluogwyd
-theme-disabled-heading = Analluogwyd
 theme-disabled-heading2 = Themâu wedi'u Cadw
-theme-monochromatic-heading = Cyfuniadau lliw
-theme-monochromatic-subheading = Cyfuniadau lliw newydd bywiog gan { -brand-product-name }. Ar gael am gyfnod cyfyngedig.
-# Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
-theme-colorways-button = Rhowch gynnig ar Gyfuniadau Lliw
-# Refers to the button label for the colorways card when a user has a colorway theme enabled.
-theme-colorways-button-colorway-enabled = Newid Cyfuniad Lliw
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
-colorway-collection-expiry-label = Yn dod i ben{ DATETIME($expiryDate, month: "long", day: "numeric") }
 plugin-enabled-heading = Galluogwyd
 plugin-disabled-heading = Analluogwyd
 dictionary-enabled-heading = Galluogwyd
@@ -320,7 +319,7 @@ addon-detail-homepage-label = Tudalen Cartref
 addon-detail-rating-label = Graddio
 # Message for add-ons with a staged pending update.
 install-postponed-message = Bydd yr estyniad hwn yn cael ei ddiweddaru pan fydd { -brand-short-name } yn ailgychwyn.
-install-postponed-button = Diweddaru Nawr
+install-postponed-button = Diweddarwch Nawr
 # The average rating that the add-on has received.
 # Variables:
 #   $rating (number) - A number between 0 and 5. The translation should show at most one digit after the comma.
@@ -350,11 +349,15 @@ addon-detail-reviews-link =
 pending-uninstall-description = Mae <span data-l10n-name="addon-name">{ $addon }</span> wedi ei dynnu.
 pending-uninstall-undo-button = Dadwneud
 addon-detail-updates-label = Caniatáu diweddariadau awtomatig
-addon-detail-updates-radio-default = Rhagosodedig
+addon-detail-updates-radio-default = Rhagosodiad
 addon-detail-updates-radio-on = Ymlaen
 addon-detail-updates-radio-off = Diffodd
 addon-detail-update-check-label = Gwirio am Ddiweddariadau
 install-update-button = Diweddaru
+# aria-label associated to the updates row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-updates =
+    .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
@@ -363,6 +366,24 @@ addon-badge-private-browsing-allowed2 =
 addon-detail-private-browsing-help = Pan mae'n cael ei ganiatáu, bydd yr estyniad ar gael i'ch gweithgareddau ar-lein tra byddwch yn pori'n breifat. <a data-l10n-name="learn-more"> Gwybod rhagor</a>
 addon-detail-private-browsing-allow = Caniatáu
 addon-detail-private-browsing-disallow = Peidio â Chaniatáu
+# aria-label associated to the private browsing row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-private-browsing =
+    .aria-label = { detail-private-browsing-label }
+
+## "sites with restrictions" (internally called "quarantined") are special domains
+## where add-ons are normally blocked for security reasons.
+
+# Used as a description for the option to allow or block an add-on on quarantined domains.
+addon-detail-quarantined-domains-label = Rhedeg ar wefannau gyda chyfyngiadau
+# Used as help text part of the quarantined domains UI controls row.
+addon-detail-quarantined-domains-help = Pan yn cael ei ganiatáu, bydd gan yr estyniad fynediad i wefannau sy'n cael eu cyfyngu gan { -vendor-short-name }. Caniatewch dim ond os ydych chi'n ymddiried yn yr estyniad hwn.
+# Used as label and tooltip text on the radio inputs associated to the quarantined domains UI controls.
+addon-detail-quarantined-domains-allow = Caniatáu
+addon-detail-quarantined-domains-disallow = Peidio Caniatáu
+# aria-label associated to the quarantined domains exempt row to help screen readers to announce the group.
+addon-detail-group-label-quarantined-domains =
+    .aria-label = { addon-detail-quarantined-domains-label }
 
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
@@ -383,7 +404,7 @@ addon-badge-verified2 =
 
 available-updates-heading = Diweddariadau ar Gael
 recent-updates-heading = Diweddariadau Diweddar
-release-notes-loading = Llwytho…
+release-notes-loading = Yn llwytho…
 release-notes-error = Ymddiheuriadau ond bu gwall llwytho'r nodiadau ryddhau.
 addon-permissions-empty = Nid oes angen unrhyw ganiatâd ar yr estyniad hwn
 addon-permissions-required = Caniatâd angenrheidiol y swyddogaethau craidd:
@@ -391,6 +412,8 @@ addon-permissions-optional = Caniatâd dewisol ar gyfer y swyddogaethau ychwaneg
 addon-permissions-learnmore = Dysgu rhagor am ganiatâd
 recommended-extensions-heading = Estyniadau Cymeradwy
 recommended-themes-heading = Themâu Cymeradwy
+# Variables:
+#   $hostname (string) - Host where the permissions are granted
 addon-sitepermissions-required = Yn caniatáu'r galluoedd canlynol i <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
@@ -415,12 +438,12 @@ addon-page-options-button =
 
 ## Detail notifications
 ## Variables:
-##   $name (String): name of the add-on.
+##   $name (string) - Name of the add-on.
 
 # Variables:
-#   $version (String): application version.
+#   $version (string) - Application version.
 details-notification-incompatible = Mae { $name } yn anghydnaws â { -brand-short-name } { $version }.
-details-notification-incompatible-link = Rhagor o wybodaeth
+details-notification-incompatible-link = Rhagor o Wybodaeth
 details-notification-unsigned-and-disabled = Nid oedd modd dilysu { $name } i'w ddefnyddio yn { -brand-short-name } ac mae wedi ei analluogi.
 details-notification-unsigned-and-disabled-link = Rhagor o Wybodaeth
 details-notification-unsigned = Nid oedd modd dilysu { $name } i'w defnyddio yn { -brand-short-name }. Cymerwch ofal.

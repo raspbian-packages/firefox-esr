@@ -28,10 +28,6 @@ pippki-pw-change2empty-in-fips-mode = Βρίσκεστε σε λειτουργί
 
 ## Reset Primary Password dialog
 
-reset-primary-password-window =
-    .title = Επαναφορά κύριου κωδικού πρόσβασης
-    .style = width: 40em
-
 reset-primary-password-window2 =
     .title = Επαναφορά κύριου κωδικού πρόσβασης
     .style = min-width: 40em
@@ -43,10 +39,6 @@ pippki-reset-password-confirmation-title = Επαναφορά κύριου κω�
 pippki-reset-password-confirmation-message = Έγινε επαναφορά του κύριου κωδικού πρόσβασής σας.
 
 ## Downloading cert dialog
-
-download-cert-window =
-    .title = Λήψη πιστοποιητικού
-    .style = width: 46em
 
 download-cert-window2 =
     .title = Λήψη πιστοποιητικού
@@ -82,7 +74,8 @@ set-password-reminder = Προειδοποίηση: Αν ξεχάσετε τον
 
 ## Protected Auth dialog
 
-protected-auth-window =
-    .title = Προστατευμένη πιστοποίηση με διακριτικό
-protected-auth-msg = Παρακαλώ πιστοποιήστε το διακριτικό. Η μέθοδος πιστοποίησης εξαρτάται από το είδος του διακριτικού.
-protected-auth-token = Διακριτικό:
+## Protected authentication alert
+
+# Variables:
+# $tokenName (String) - The name of the token to authenticate to (for example, "OS Client Cert Token (Modern)")
+protected-auth-alert = Πραγματοποιήστε έλεγχο ταυτότητας στο διακριτικό «{ $tokenName }». Ο τρόπος ταυτοποίησης εξαρτάται από το διακριτικό (για παράδειγμα, με συσκευή ανάγνωσης δακτυλικών αποτυπωμάτων ή εισαγωγή κωδικού με πληκτρολόγιο).

@@ -13,6 +13,7 @@
 
 #include "nsITheme.h"
 #include "ThemeCocoa.h"
+#include "mozilla/dom/RustTypes.h"
 
 @class MOZCellDrawWindow;
 @class MOZCellDrawView;
@@ -22,7 +23,6 @@ class nsDeviceContext;
 struct SegmentedControlRenderSettings;
 
 namespace mozilla {
-class EventStates;
 namespace gfx {
 class DrawTarget;
 }  // namespace gfx
@@ -167,15 +167,14 @@ class nsNativeThemeCocoa : public mozilla::widget::ThemeCocoa {
   };
 
   enum Widget : uint8_t {
-    eColorFill,      // mozilla::gfx::sRGBColor
-    eMenuIcon,       // MenuIconParams
-    eMenuItem,       // MenuItemParams
-    eMenuSeparator,  // MenuItemParams
-    eCheckbox,       // CheckboxOrRadioParams
-    eRadio,          // CheckboxOrRadioParams
-    eButton,         // ButtonParams
-    eDropdown,       // DropdownParams
-    eFocusOutline,
+    eColorFill,       // mozilla::gfx::sRGBColor
+    eMenuIcon,        // MenuIconParams
+    eMenuItem,        // MenuItemParams
+    eMenuSeparator,   // MenuItemParams
+    eCheckbox,        // CheckboxOrRadioParams
+    eRadio,           // CheckboxOrRadioParams
+    eButton,          // ButtonParams
+    eDropdown,        // DropdownParams
     eSpinButtons,     // SpinButtonParams
     eSpinButtonUp,    // SpinButtonParams
     eSpinButtonDown,  // SpinButtonParams
@@ -195,7 +194,6 @@ class nsNativeThemeCocoa : public mozilla::widget::ThemeCocoa {
     eActiveSourceListSelection,    // bool
     eInactiveSourceListSelection,  // bool
     eTabPanel,
-    eResizer
   };
 
   struct WidgetInfo {
@@ -223,7 +221,6 @@ class nsNativeThemeCocoa : public mozilla::widget::ThemeCocoa {
     static WidgetInfo Dropdown(const DropdownParams& aParams) {
       return WidgetInfo(Widget::eDropdown, aParams);
     }
-    static WidgetInfo FocusOutline() { return WidgetInfo(Widget::eFocusOutline, false); }
     static WidgetInfo SpinButtons(const SpinButtonParams& aParams) {
       return WidgetInfo(Widget::eSpinButtons, aParams);
     }
@@ -269,7 +266,6 @@ class nsNativeThemeCocoa : public mozilla::widget::ThemeCocoa {
       return WidgetInfo(Widget::eInactiveSourceListSelection, aParams);
     }
     static WidgetInfo TabPanel(bool aParams) { return WidgetInfo(Widget::eTabPanel, aParams); }
-    static WidgetInfo Resizer(bool aParams) { return WidgetInfo(Widget::eResizer, aParams); }
 
     template <typename T>
     T Params() const {
@@ -314,10 +310,7 @@ class nsNativeThemeCocoa : public mozilla::widget::ThemeCocoa {
   virtual bool GetWidgetOverflow(nsDeviceContext* aContext, nsIFrame* aFrame,
                                  StyleAppearance aAppearance, nsRect* aOverflowRect) override;
 
-  NS_IMETHOD GetMinimumWidgetSize(nsPresContext* aPresContext, nsIFrame* aFrame,
-                                  StyleAppearance aAppearance,
-                                  mozilla::LayoutDeviceIntSize* aResult,
-                                  bool* aIsOverridable) override;
+  LayoutDeviceIntSize GetMinimumWidgetSize(nsPresContext*, nsIFrame*, StyleAppearance) override;
   NS_IMETHOD WidgetStateChanged(nsIFrame* aFrame, StyleAppearance aAppearance, nsAtom* aAttribute,
                                 bool* aShouldRepaint, const nsAttrValue* aOldValue) override;
   NS_IMETHOD ThemeChanged() override;
@@ -341,21 +334,21 @@ class nsNativeThemeCocoa : public mozilla::widget::ThemeCocoa {
   LayoutDeviceIntMargin DirectionAwareMargin(const LayoutDeviceIntMargin& aMargin,
                                              nsIFrame* aFrame);
   nsIFrame* SeparatorResponsibility(nsIFrame* aBefore, nsIFrame* aAfter);
-  ControlParams ComputeControlParams(nsIFrame* aFrame, mozilla::EventStates aEventState);
-  MenuIconParams ComputeMenuIconParams(nsIFrame* aParams, mozilla::EventStates aEventState,
+  ControlParams ComputeControlParams(nsIFrame* aFrame, mozilla::dom::ElementState aEventState);
+  MenuIconParams ComputeMenuIconParams(nsIFrame* aParams, mozilla::dom::ElementState aEventState,
                                        MenuIcon aIcon);
-  MenuItemParams ComputeMenuItemParams(nsIFrame* aFrame, mozilla::EventStates aEventState,
+  MenuItemParams ComputeMenuItemParams(nsIFrame* aFrame, mozilla::dom::ElementState aEventState,
                                        bool aIsChecked);
-  SegmentParams ComputeSegmentParams(nsIFrame* aFrame, mozilla::EventStates aEventState,
+  SegmentParams ComputeSegmentParams(nsIFrame* aFrame, mozilla::dom::ElementState aEventState,
                                      SegmentType aSegmentType);
-  TextFieldParams ComputeTextFieldParams(nsIFrame* aFrame, mozilla::EventStates aEventState);
-  ProgressParams ComputeProgressParams(nsIFrame* aFrame, mozilla::EventStates aEventState,
+  TextFieldParams ComputeTextFieldParams(nsIFrame* aFrame, mozilla::dom::ElementState aEventState);
+  ProgressParams ComputeProgressParams(nsIFrame* aFrame, mozilla::dom::ElementState aEventState,
                                        bool aIsHorizontal);
   MeterParams ComputeMeterParams(nsIFrame* aFrame);
   TreeHeaderCellParams ComputeTreeHeaderCellParams(nsIFrame* aFrame,
-                                                   mozilla::EventStates aEventState);
+                                                   mozilla::dom::ElementState aEventState);
   mozilla::Maybe<ScaleParams> ComputeHTMLScaleParams(nsIFrame* aFrame,
-                                                     mozilla::EventStates aEventState);
+                                                     mozilla::dom::ElementState aEventState);
 
   // HITheme drawing routines
   void DrawMeter(CGContextRef context, const HIRect& inBoxRect, const MeterParams& aParams);
@@ -377,7 +370,7 @@ class nsNativeThemeCocoa : public mozilla::widget::ThemeCocoa {
   void DrawHelpButton(CGContextRef cgContext, const HIRect& inBoxRect,
                       ControlParams aControlParams);
   void DrawDisclosureButton(CGContextRef cgContext, const HIRect& inBoxRect,
-                            ControlParams aControlParams, NSCellStateValue aState);
+                            ControlParams aControlParams, NSControlStateValue aState);
   NSString* GetMenuIconName(const MenuIconParams& aParams);
   NSSize GetMenuIconSize(MenuIcon aIcon);
   void DrawMenuIcon(CGContextRef cgContext, const CGRect& aRect, const MenuIconParams& aParams);
@@ -390,7 +383,6 @@ class nsNativeThemeCocoa : public mozilla::widget::ThemeCocoa {
   void DrawButton(CGContextRef context, const HIRect& inBoxRect, const ButtonParams& aParams);
   void DrawTreeHeaderCell(CGContextRef context, const HIRect& inBoxRect,
                           const TreeHeaderCellParams& aParams);
-  void DrawFocusOutline(CGContextRef cgContext, const HIRect& inBoxRect);
   void DrawDropdown(CGContextRef context, const HIRect& inBoxRect, const DropdownParams& aParams);
   HIThemeButtonDrawInfo SpinButtonDrawInfo(ThemeButtonKind aKind, const SpinButtonParams& aParams);
   void DrawSpinButtons(CGContextRef context, const HIRect& inBoxRect,
@@ -399,7 +391,6 @@ class nsNativeThemeCocoa : public mozilla::widget::ThemeCocoa {
                       const SpinButtonParams& aParams);
   void DrawToolbar(CGContextRef cgContext, const CGRect& inBoxRect, bool aIsMain);
   void DrawStatusBar(CGContextRef cgContext, const HIRect& inBoxRect, bool aIsMain);
-  void DrawResizer(CGContextRef cgContext, const HIRect& aRect, bool aIsRTL);
   void DrawMultilineTextField(CGContextRef cgContext, const CGRect& inBoxRect, bool aIsFocused);
   void DrawSourceListSelection(CGContextRef aContext, const CGRect& aRect, bool aWindowIsActive,
                                bool aSelectionIsActive);

@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Ny fane
 tabbrowser-empty-private-tab-title = Ny privat fane
+
 tabbrowser-menuitem-close-tab =
     .label = Lukk fane
 tabbrowser-menuitem-close =
     .label = Lukk
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -121,6 +120,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ikke vis denne dialogen igjen.
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Tillat lignende varsler fra { $domain } å ta deg til fanen deres
+
 tabbrowser-customizemode-tab-title = Tilpass { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -139,3 +139,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Lyd på i faner
     .accesskey = a
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Spiller av lyd
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = List alle { $tabCount } faner
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Skru av fanelyd
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Skru på fanelyd
+tabbrowser-manager-close-tab =
+    .tooltiptext = Lukk fane

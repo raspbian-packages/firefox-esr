@@ -26,6 +26,8 @@ videocontrols-exitfullscreen-button =
     .aria-label = 全画面表示を解除
 videocontrols-casting-button-label =
     .aria-label = 画面に映す
+# .offlabel is processed by the video control custom element to be used
+# as a text-track label
 videocontrols-closed-caption-off =
     .offlabel = オフ
 # This string is used as part of the Picture-in-Picture video toggle button when
@@ -65,3 +67,12 @@ videocontrols-status-picture-in-picture = この動画はピクチャーイン�
 # duration video, $position would be "5:00" and the string which is
 # surrounded by <span> would be deleted, result string would be "5:00".
 videocontrols-position-and-duration-labels = { $position }<span data-l10n-name="position-duration-format"> / { $duration }</span>
+# This is a plain text version of the videocontrols-position-and-duration-labels
+# string, used by screenreaders.
+#
+# Variables:
+#   $position (String): The current media position
+#   $duration (String): The total video duration
+videocontrols-scrubber-position-and-duration =
+    .aria-label = 再生位置
+    .aria-valuetext = { $position } / { $duration }

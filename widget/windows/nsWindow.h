@@ -33,6 +33,7 @@
 #include "mozilla/TimeStamp.h"
 #include "mozilla/webrender/WebRenderTypes.h"
 #include "mozilla/dom/MouseEventBinding.h"
+#include "mozilla/DataMutex.h"
 #include "mozilla/UniquePtr.h"
 #include "nsMargin.h"
 #include "nsRegionFwd.h"
@@ -63,6 +64,7 @@ class nsIRollupListener;
 class imgIContainer;
 
 namespace mozilla {
+class WidgetMouseEvent;
 namespace widget {
 class NativeKey;
 class InProcessWinCompositorWidget;
@@ -94,6 +96,11 @@ IVirtualDesktopManager : public IUnknown {
   virtual HRESULT STDMETHODCALLTYPE MoveWindowToDesktop(
       __RPC__in HWND topLevelWindow, __RPC__in REFGUID desktopId) = 0;
 };
+
+#ifdef __MINGW32__
+__CRT_UUID_DECL(IVirtualDesktopManager, 0xa5cd92ff, 0x29be, 0x454c, 0x8d, 0x04,
+                0xd8, 0x28, 0x79, 0xfb, 0x3f, 0x1b)
+#endif
 
 /**
  * Native WIN32 window wrapper.
@@ -161,7 +168,7 @@ class nsWindow final : public nsBaseWidget {
   [[nodiscard]] nsresult Create(nsIWidget* aParent,
                                 nsNativeWidget aNativeParent,
                                 const LayoutDeviceIntRect& aRect,
-                                nsWidgetInitData* aInitData = nullptr) override;
+                                InitData* aInitData = nullptr) override;
   void Destroy() override;
   void SetParent(nsIWidget* aNewParent) override;
   nsIWidget* GetParent(void) override;
@@ -178,19 +185,16 @@ class nsWindow final : public nsBaseWidget {
 
   void Show(bool aState) override;
   bool IsVisible() const override;
-  void ConstrainPosition(bool aAllowSlop, int32_t* aX, int32_t* aY) override;
+  void ConstrainPosition(DesktopIntPoint&) override;
   void SetSizeConstraints(const SizeConstraints& aConstraints) override;
   void LockAspectRatio(bool aShouldLock) override;
   const SizeConstraints GetSizeConstraints() override;
-  void SetWindowMouseTransparent(bool aIsTransparent) override;
+  void SetInputRegion(const InputRegion&) override;
   void Move(double aX, double aY) override;
   void Resize(double aWidth, double aHeight, bool aRepaint) override;
   void Resize(double aX, double aY, double aWidth, double aHeight,
               bool aRepaint) override;
   mozilla::Maybe<bool> IsResizingNativeWidget() override;
-  [[nodiscard]] nsresult BeginResizeDrag(mozilla::WidgetGUIEvent* aEvent,
-                                         int32_t aHorizontal,
-                                         int32_t aVertical) override;
   void PlaceBehind(nsTopLevelWidgetZPlacement aPlacement, nsIWidget* aWidget,
                    bool aActivate) override;
   void SetSizeMode(nsSizeMode aMode) override;
@@ -219,19 +223,16 @@ class nsWindow final : public nsBaseWidget {
                   bool aIncludeChildren = false);
   void Invalidate(const LayoutDeviceIntRect& aRect) override;
   void* GetNativeData(uint32_t aDataType) override;
-  void SetNativeData(uint32_t aDataType, uintptr_t aVal) override;
   void FreeNativeData(void* data, uint32_t aDataType) override;
   nsresult SetTitle(const nsAString& aTitle) override;
   void SetIcon(const nsAString& aIconSpec) override;
   LayoutDeviceIntPoint WidgetToScreenOffset() override;
-  LayoutDeviceIntSize ClientToWindowSize(
-      const LayoutDeviceIntSize& aClientSize) override;
+  LayoutDeviceIntMargin ClientToWindowMargin() override;
   nsresult DispatchEvent(mozilla::WidgetGUIEvent* aEvent,
                          nsEventStatus& aStatus) override;
   void EnableDragDrop(bool aEnable) override;
-  void CaptureMouse(bool aCapture) override;
-  void CaptureRollupEvents(nsIRollupListener* aListener,
-                           bool aDoCapture) override;
+  void CaptureMouse(bool aCapture);
+  void CaptureRollupEvents(bool aDoCapture) override;
   [[nodiscard]] nsresult GetAttention(int32_t aCycleCount) override;
   bool HasPendingInputEvent() override;
   WindowRenderer* GetWindowRenderer() override;
@@ -272,10 +273,10 @@ class nsWindow final : public nsBaseWidget {
                        const InputContextAction& aAction) override;
   InputContext GetInputContext() override;
   TextEventDispatcherListener* GetNativeTextEventDispatcherListener() override;
-  void SetTransparencyMode(nsTransparencyMode aMode) override;
-  nsTransparencyMode GetTransparencyMode() override;
+  void SetTransparencyMode(TransparencyMode aMode) override;
+  TransparencyMode GetTransparencyMode() override;
   void UpdateOpaqueRegion(const LayoutDeviceIntRegion& aOpaqueRegion) override;
-  nsresult SetNonClientMargins(LayoutDeviceIntMargin& aMargins) override;
+  nsresult SetNonClientMargins(const LayoutDeviceIntMargin&) override;
   void SetResizeMargin(mozilla::LayoutDeviceIntCoord aResizeMargin) override;
   void SetDrawsInTitlebar(bool aState) override;
   void UpdateWindowDraggingRegion(
@@ -284,7 +285,8 @@ class nsWindow final : public nsBaseWidget {
   void UpdateThemeGeometries(
       const nsTArray<ThemeGeometry>& aThemeGeometries) override;
   uint32_t GetMaxTouchPoints() const override;
-  void SetWindowClass(const nsAString& xulWinType) override;
+  void SetWindowClass(const nsAString& xulWinType, const nsAString& xulWinClass,
+                      const nsAString& xulWinName) override;
 
   /**
    * Event helpers
@@ -308,16 +310,13 @@ class nsWindow final : public nsBaseWidget {
    * Window utilities
    */
   nsWindow* GetTopLevelWindow(bool aStopOnDialogOrPopup);
-  WNDPROC GetPrevWindowProc() { return mPrevWndProc; }
+  WNDPROC GetPrevWindowProc() { return mPrevWndProc.valueOr(nullptr); }
   WindowHook& GetWindowHook() { return mWindowHook; }
   nsWindow* GetParentWindow(bool aIncludeOwner);
-  // Get an array of all nsWindow*s on the main thread.
-  static nsTArray<nsWindow*> EnumAllWindows();
 
   /**
    * Misc.
    */
-  bool AutoErase(HDC dc);
   bool WidgetTypeSupportsAcceleration() override;
 
   void ForcePresent();
@@ -332,6 +331,8 @@ class nsWindow final : public nsBaseWidget {
   static void SetIsRestoringSession(const bool aIsRestoringSession) {
     sIsRestoringSession = aIsRestoringSession;
   }
+
+  bool IsRTL() const { return mIsRTL; }
 
   /**
    * AssociateDefaultIMC() associates or disassociates the default IMC for
@@ -460,8 +461,14 @@ class nsWindow final : public nsBaseWidget {
     explicit FrameState(nsWindow* aWindow);
 
     void ConsumePreXULSkeletonState(bool aWasMaximized);
-    void EnsureSizeMode(nsSizeMode aMode);
-    void EnsureFullscreenMode(bool aFullScreen);
+
+    // Whether we should call ShowWindow with the relevant size mode if needed.
+    // We want to avoid that when Windows is already performing the change for
+    // us (via the SWP_FRAMECHANGED messages).
+    enum class DoShowWindow : bool { No, Yes };
+
+    void EnsureSizeMode(nsSizeMode, DoShowWindow = DoShowWindow::Yes);
+    void EnsureFullscreenMode(bool, DoShowWindow = DoShowWindow::Yes);
     void OnFrameChanging();
     void OnFrameChanged();
 
@@ -470,14 +477,23 @@ class nsWindow final : public nsBaseWidget {
     void CheckInvariant() const;
 
    private:
-    void SetSizeModeInternal(nsSizeMode aMode);
+    void SetSizeModeInternal(nsSizeMode, DoShowWindow);
 
     nsSizeMode mSizeMode = nsSizeMode_Normal;
+    // XXX mLastSizeMode is rather bizarre and needs some documentation.
     nsSizeMode mLastSizeMode = nsSizeMode_Normal;
-    nsSizeMode mOldSizeMode = nsSizeMode_Normal;
+    // The old size mode before going into fullscreen mode. This should never
+    // be nsSizeMode_Fullscreen.
+    nsSizeMode mPreFullscreenSizeMode = nsSizeMode_Normal;
+    // Whether we're in fullscreen. We need to keep this state out of band,
+    // rather than just using mSizeMode, because a window can be minimized
+    // while fullscreen, and we don't store the fullscreen state anywhere else.
     bool mFullscreenMode = false;
     nsWindow* mWindow;
   };
+
+  // Manager for taskbar-hiding. No persistent state.
+  class TaskbarConcealer;
 
   // A magic number to identify the FAKETRACKPOINTSCROLLABLE window created
   // when the trackpoint hack is enabled.
@@ -514,8 +530,6 @@ class nsWindow final : public nsBaseWidget {
                                               LPARAM lParam);
   static VOID CALLBACK HookTimerForPopups(HWND hwnd, UINT uMsg, UINT idEvent,
                                           DWORD dwTime);
-  static BOOL CALLBACK EnumAllChildWindProc(HWND aWnd, LPARAM aParam);
-  static BOOL CALLBACK EnumAllThreadWindowProc(HWND aWnd, LPARAM aParam);
 
   /**
    * Window utilities
@@ -525,10 +539,10 @@ class nsWindow final : public nsBaseWidget {
 
   WPARAM wParamFromGlobalMouseState();
 
-  void SubclassWindow(BOOL bState);
+  bool AssociateWithNativeWindow();
+  void DissociateFromNativeWindow();
   bool CanTakeFocus();
-  bool UpdateNonClientMargins(int32_t aSizeMode = -1,
-                              bool aReflowWindow = true);
+  bool UpdateNonClientMargins(bool aReflowWindow = true);
   void UpdateDarkModeToolbar();
   void UpdateGetWindowInfoCaptionStatus(bool aActiveCaption);
   void ResetLayout();
@@ -536,15 +550,16 @@ class nsWindow final : public nsBaseWidget {
   HRGN ExcludeNonClientFromPaintRegion(HRGN aRegion);
   static const wchar_t* GetMainWindowClass();
   bool HasGlass() const {
-    return mTransparencyMode == eTransparencyGlass ||
-           mTransparencyMode == eTransparencyBorderlessGlass;
+    return mTransparencyMode == TransparencyMode::BorderlessGlass;
   }
   HWND GetOwnerWnd() const { return ::GetWindow(mWnd, GW_OWNER); }
   bool IsOwnerForegroundWindow() const {
     HWND owner = GetOwnerWnd();
     return owner && owner == ::GetForegroundWindow();
   }
-  bool IsPopup() const { return mWindowType == eWindowType_popup; }
+  bool IsForegroundWindow() const { return mWnd == ::GetForegroundWindow(); }
+  bool IsPopup() const { return mWindowType == WindowType::Popup; }
+  bool IsCloaked() const { return mIsCloaked; }
 
   /**
    * Event processing helpers
@@ -585,13 +600,13 @@ class nsWindow final : public nsBaseWidget {
    */
   void OnDestroy() override;
   bool OnResize(const LayoutDeviceIntSize& aSize);
-  void OnSizeModeChange(nsSizeMode aSizeMode);
+  void OnSizeModeChange();
   bool OnGesture(WPARAM wParam, LPARAM lParam);
   bool OnTouch(WPARAM wParam, LPARAM lParam);
   bool OnHotKey(WPARAM wParam, LPARAM lParam);
   bool OnPaint(HDC aDC, uint32_t aNestingLevel);
+  void OnWindowPosChanging(WINDOWPOS* info);
   void OnWindowPosChanged(WINDOWPOS* wp);
-  void OnWindowPosChanging(LPWINDOWPOS& info);
   void OnSysColorChanged();
   void OnDPIChanged(int32_t x, int32_t y, int32_t width, int32_t height);
   bool OnPointerEvents(UINT msg, WPARAM wParam, LPARAM lParam);
@@ -607,7 +622,7 @@ class nsWindow final : public nsBaseWidget {
   DWORD WindowStyle();
   DWORD WindowExStyle();
 
-  static const wchar_t* ChooseWindowClass(nsWindowType, bool aForMenupopupFrame);
+  static const wchar_t* ChooseWindowClass(WindowType, bool aForMenupopupFrame);
   // This method registers the given window class, and returns the class name.
   static const wchar_t* RegisterWindowClass(const wchar_t* aClassName,
                                             UINT aExtraStyle, LPWSTR aIconID);
@@ -633,8 +648,8 @@ class nsWindow final : public nsBaseWidget {
   /**
    * Window transparency helpers
    */
-  void SetWindowTranslucencyInner(nsTransparencyMode aMode);
-  nsTransparencyMode GetWindowTranslucencyInner() const {
+  void SetWindowTranslucencyInner(TransparencyMode aMode);
+  TransparencyMode GetWindowTranslucencyInner() const {
     return mTransparencyMode;
   }
   void UpdateGlass();
@@ -675,6 +690,7 @@ class nsWindow final : public nsBaseWidget {
 
   void AsyncUpdateWorkspaceID(Desktop& aDesktop);
 
+  // See bug 603793
   static bool HasBogusPopupsDropShadowOnMultiMonitor();
 
   static void InitMouseWheelScrollData();
@@ -687,28 +703,33 @@ class nsWindow final : public nsBaseWidget {
                         POINTER_FLAGS aFlags, uint32_t aPressure = 1024,
                         uint32_t aOrientation = 90);
 
-  void OnFullscreenWillChange(bool aFullScreen);
-  void OnFullscreenChanged(bool aFullScreen);
+  void OnFullscreenChanged(nsSizeMode aOldSizeMode, bool aFullScreen);
+  void TryDwmResizeHack();
+
+  static void OnCloakEvent(HWND aWnd, bool aCloaked);
+  void OnCloakChanged(bool aCloaked);
+
+#ifdef DEBUG
+  virtual nsresult SetHiDPIMode(bool aHiDPI) override;
+  virtual nsresult RestoreHiDPIMode() override;
+#endif
+
+  // Get the orientation of the hidden taskbar, on the screen that this window
+  // is on, or Nothing if taskbar isn't hidden.
+  mozilla::Maybe<UINT> GetHiddenTaskbarEdge();
 
   static bool sTouchInjectInitialized;
   static InjectTouchInputPtr sInjectTouchFuncPtr;
   static uint32_t sInstanceCount;
-  static TriStateBool sCanQuit;
   static nsWindow* sCurrentWindow;
-  static BOOL sIsOleInitialized;
+  static bool sIsOleInitialized;
   static Cursor sCurrentCursor;
-  static bool sSwitchKeyboardLayout;
   static bool sJustGotDeactivate;
   static bool sJustGotActivate;
   static bool sIsInMouseCapture;
-  static bool sHaveInitializedPrefs;
   static bool sIsRestoringSession;
-  static bool sFirstTopLevelWindowCreated;
 
-  // Always use the helper method to read this property.  See bug 603793.
-  static TriStateBool sHasBogusPopupsDropShadowOnMultiMonitor;
-
-  // Hook Data Memebers for Dropdowns. sProcessHook Tells the
+  // Hook Data Members for Dropdowns. sProcessHook Tells the
   // hook methods whether they should be processing the hook
   // messages.
   static HHOOK sMsgFilterHook;
@@ -719,15 +740,9 @@ class nsWindow final : public nsBaseWidget {
   static HWND sRollupMsgWnd;
   static UINT sHookTimerId;
 
-  // Mouse Clicks - static variable definitions for figuring
-  // out 1 - 3 Clicks.
-  static POINT sLastMousePoint;
+  // Used to prevent dispatching mouse events that do not originate from user
+  // input.
   static POINT sLastMouseMovePoint;
-  static LONG sLastMouseDownTime;
-  static LONG sLastClickCount;
-  static BYTE sLastMouseButton;
-
-  static bool sNeedsToInitMouseWheelSettings;
 
   nsClassHashtable<nsUint32HashKey, PointerInfo> mActivePointers;
 
@@ -743,14 +758,14 @@ class nsWindow final : public nsBaseWidget {
   nsIntPoint mLastPoint;
   HWND mWnd = nullptr;
   HWND mTransitionWnd = nullptr;
-  WNDPROC mPrevWndProc = nullptr;
+  mozilla::Maybe<WNDPROC> mPrevWndProc;
   HBRUSH mBrush;
   IMEContext mDefaultIMC;
   HDEVNOTIFY mDeviceNotifyHandle = nullptr;
   bool mIsTopWidgetWindow = false;
   bool mInDtor = false;
   bool mIsVisible = false;
-  bool mPainting = false;
+  bool mIsCloaked = false;
   bool mTouchWindow = false;
   bool mDisplayPanFeedback = false;
   bool mHideChrome = false;
@@ -764,6 +779,7 @@ class nsWindow final : public nsBaseWidget {
   bool mIsShowingPreXULSkeletonUI = false;
   bool mResizable = false;
   bool mForMenupopupFrame = false;
+  bool mIsPerformingDwmFlushHack = false;
   DWORD_PTR mOldStyle = 0;
   DWORD_PTR mOldExStyle = 0;
   nsNativeDragTarget* mNativeDragTarget = nullptr;
@@ -775,6 +791,13 @@ class nsWindow final : public nsBaseWidget {
   HICON mIconBig = nullptr;
   HWND mLastKillFocusWindow = nullptr;
   PlatformCompositorWidgetDelegate* mCompositorWidgetDelegate = nullptr;
+
+  LayoutDeviceIntMargin NonClientSizeMargin() const {
+    return NonClientSizeMargin(mNonClientOffset);
+  }
+  LayoutDeviceIntMargin NonClientSizeMargin(
+      const LayoutDeviceIntMargin& aNonClientOffset) const;
+  LayoutDeviceIntMargin NormalWindowNonClientOffset() const;
 
   // Non-client margin settings
   // Pre-calculated outward offset applied to default frames
@@ -816,7 +839,7 @@ class nsWindow final : public nsBaseWidget {
   ResizeState mResizeState = NOT_RESIZING;
 
   // Transparency
-  nsTransparencyMode mTransparencyMode = eTransparencyOpaque;
+  TransparencyMode mTransparencyMode = TransparencyMode::Opaque;
   nsIntRegion mPossiblyTransparentRegion;
   MARGINS mGlassMargins = {0, 0, 0, 0};
 
@@ -825,13 +848,15 @@ class nsWindow final : public nsBaseWidget {
 
   // Weak ref to the nsITaskbarWindowPreview associated with this window
   nsWeakPtr mTaskbarPreview = nullptr;
+
+  // The input region that determines whether mouse events should be ignored
+  // and pass through to the window below. This is currently only used for
+  // popups.
+  InputRegion mInputRegion;
+
   // True if the taskbar (possibly through the tab preview) tells us that the
   // icon has been created on the taskbar.
   bool mHasTaskbarIconBeenCreated = false;
-
-  // Indicates that mouse events should be ignored and pass through to the
-  // window below. This is currently only used for popups.
-  bool mMouseTransparent = false;
 
   // Whether we're in the process of sending a WM_SETTEXT ourselves
   bool mSendingSetText = false;
@@ -848,8 +873,8 @@ class nsWindow final : public nsBaseWidget {
   // The location of the window buttons in the window.
   mozilla::Maybe<LayoutDeviceIntRect> mWindowButtonsRect;
 
-  // Caching for hit test results
-  POINT mCachedHitTestPoint = {0, 0};
+  // Caching for hit test results (in client coordinates)
+  LayoutDeviceIntPoint mCachedHitTestPoint;
   TimeStamp mCachedHitTestTime;
 
   RefPtr<mozilla::widget::InProcessWinCompositorWidget> mBasicLayersSurface;
@@ -868,6 +893,28 @@ class nsWindow final : public nsBaseWidget {
   // process after the Compositor is created
   bool mRequestFxrOutputPending = false;
 
+  // A stack based class used in DispatchMouseEvent() to tell whether we should
+  // NOT open context menu when we receives WM_CONTEXTMENU after the
+  // DispatchMouseEvent calls.
+  // This class now works only in the case where a mouse up event happened in
+  // the overscroll gutter.
+  class MOZ_STACK_CLASS ContextMenuPreventer final {
+   public:
+    explicit ContextMenuPreventer(nsWindow* aWindow)
+        : mWindow(aWindow), mNeedsToPreventContextMenu(false){};
+    ~ContextMenuPreventer() {
+      mWindow->mNeedsToPreventContextMenu = mNeedsToPreventContextMenu;
+    }
+    void Update(const mozilla::WidgetMouseEvent& aEvent,
+                const nsIWidget::ContentAndAPZEventStatus& aEventStatus);
+
+   private:
+    nsWindow* mWindow;
+    bool mNeedsToPreventContextMenu = false;
+  };
+  friend class ContextMenuPreventer;
+  bool mNeedsToPreventContextMenu = false;
+
   mozilla::UniquePtr<mozilla::widget::DirectManipulationOwner> mDmOwner;
 
   // Client rect for minimize, maximize and close buttons.
@@ -877,7 +924,13 @@ class nsWindow final : public nsBaseWidget {
 
   mozilla::DataMutex<Desktop> mDesktopId;
 
+  // If set, indicates the edge of the NC region we should clear to black
+  // on next paint.  One of: ABE_TOP, ABE_BOTTOM, ABE_LEFT or ABE_RIGHT.
+  mozilla::Maybe<UINT> mClearNCEdge;
+
   friend class nsWindowGfx;
+
+  static constexpr int kHiddenTaskbarSize = 2;
 };
 
 #endif  // WIDGET_WINDOWS_NSWINDOW_H_

@@ -12,25 +12,33 @@ cfr-doorhanger-feature-heading = ਸਿਫ਼ਾਰਸ਼ੀ ਫੀਚਰ
 
 cfr-doorhanger-extension-sumo-link =
     .tooltiptext = ਮੈਨੂੰ ਇਹ ਕਿਉਂ ਦਿਖਾਈ ਦੇ ਰਿਹਾ ਹੈ
+
 cfr-doorhanger-extension-cancel-button = ਹੁਣ ਨਹੀਂ
     .accesskey = N
+
 cfr-doorhanger-extension-ok-button = ਹੁਣੇ ਜੋੜੋ
     .accesskey = A
+
 cfr-doorhanger-extension-manage-settings-button = ਸਿਫਾਰਸ਼ੀ ਸੈਟਿੰਗਾਂ ਦਾ ਬੰਦੋਬਸਤ ਕਰੋ
     .accesskey = M
+
 cfr-doorhanger-extension-never-show-recommendation = ਇਹ ਸਿਫਾਰਸ਼ ਮੈਨੂੰ ਨਾ ਦਿਖਾਓ
     .accesskey = S
+
 cfr-doorhanger-extension-learn-more-link = ਹੋਰ ਸਿੱਖੋ
+
 # This string is used on a new line below the add-on name
 # Variables:
 #   $name (String) - Add-on author name
 cfr-doorhanger-extension-author = { $name } ਰਾਹੀਂ
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-extension-notification = ਸਿਫ਼ਾਰਸ਼ੀ
 cfr-doorhanger-extension-notification2 = ਸਿਫਾਰਸ਼ੀ
     .tooltiptext = ਇਕਸਟੈਨਸ਼ਨ ਸਿਫਾਰਸ਼ਾਂ
     .a11y-announcement = ਇਕਸਟੈਨਸ਼ਨ ਸਿਫਾਰਸ਼ਾਂ ਮੌਜੂਦ ਹਨ
+
 # This is a notification displayed in the address bar.
 # When clicked it opens a panel with a message for the user.
 cfr-doorhanger-feature-notification = ਸਿਫਾਰਸ਼ੀ
@@ -57,28 +65,6 @@ cfr-doorhanger-extension-total-users =
        *[other] { $total } ਵਰਤੋਂਕਾਰ
     }
 
-## Cookie Banner Handling Onboarding
-
-# Simplified version of the headline if the original text doesn't work
-# in your language: `See fewer cookie requests`.
-cfr-cookie-banner-handling-header = ਕੂਕੀ ਬੈਨਰ ਕਰੋ ਰਵਾਨਾ!
-cfr-cookie-banner-handling-body = ਜਦੋਂ ਵੀ ਸੰਭਵ ਹੋਵੇ ਤਾਂ { -brand-short-name } ਨੂੰ ਆਪਣੇ-ਆਪ ਹੀ ਸਾਰੀਆਂ ਕੂਕੀ ਬੈਨਰ ਬੇਨਤੀਆਂ ਰੱਦ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਨਹੀਂ ਤਾਂ ਹੋਰ ਬੈਨਰਾਂ ਨੂੰ ਖਾਰਜ ਕਰਨ ਵਾਸਤੇ ਸਾਰੇ ਕੂਕੀਜ਼ ਨੂੰ ਮਨਜ਼ੂਰ ਕੀਤਾ ਜਾਵੇਗਾ।
-cfr-cookie-banner-accept-button = ਬੇਨਤੀਆਂ ਖ਼ਾਰਜ ਕਰੋ
-    .accesskey = D
-cfr-cookie-banner-reject-button = ਹੁਣੇ ਨਹੀਂ
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-1 = ਹੋਰ ਘੱਟ ਕੂਕੀ ਪੌਪ-ਅੱਪ ਵੇਖੋ
-cfr-cookie-banner-accept-button-variant-1 = ਪੌਪ-ਅੱਪ ਖ਼ਾਰਜ ਕਰੋ
-    .accesskey = D
-cfr-cookie-banner-reject-button-variant-1 = ਨਹੀਂ, ਧੰਨਵਾਦ
-    .accesskey = N
-cfr-cookie-banner-handling-header-variant-2 = ਕੂਕੀ ਬੈਨਰ ਘਟਾਉਣਾ
-cfr-cookie-banner-handling-body-variant-2 = { -brand-short-name } ਨੂੰ ਜਦ ਵੀ ਮੌਕੇ ਹੋਵੇ ਤਾਂ ਸਾਈਟ ਦੇ ਕੂਕੀ ਸਹਿਮਤੀ ਬੇਨਤੀ ਲਈ ਰੱਦ ਕਰਨ ਜਾਂ ਜੇ ਨਾ ਹੋ ਸਕੇ ਤਾਂ ਕੂਕੀ ਪਹੁੰਚ ਨੂੰ ਮਨਜ਼ੂਰ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣੀ ਹੈ?
-cfr-cookie-banner-accept-button-variant-2 = ਮਨਜ਼ੂਰ
-    .accesskey = A
-cfr-cookie-banner-reject-button-variant-2 = ਹੁਣੇ ਨਹੀਂ
-    .accesskey = N
-
 ## Firefox Accounts Message
 
 cfr-doorhanger-bookmark-fxa-header = ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਹਰ ਥਾਂ ਉੱਤੇ ਸਿੰਕ ਕਰੋ।
@@ -99,9 +85,11 @@ cfr-protections-panel-link-text = ਹੋਰ ਜਾਣੋ
 # This string is used by screen readers to offer a text based alternative for
 # the notification icon
 cfr-badge-reader-label-newfeature = ਨਵਾਂ ਫੀਚਰ
+
 cfr-whatsnew-button =
     .label = ਨਵਾਂ ਕੀ ਹੈ
     .tooltiptext = ਨਵਾਂ ਕੀ ਹੈ
+
 cfr-whatsnew-release-notes-link-text = ਰੀਲਿਜ਼ ਨੋਟਿਸ ਪੜ੍ਹੋ
 
 ## Enhanced Tracking Protection Milestones
@@ -129,13 +117,6 @@ cfr-doorhanger-doh-secondary-button = ਅਸਮਰੱਥ ਕਰੋ
 
 ## Fission Experiment Message
 
-cfr-doorhanger-fission-body-approved = ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਪਹਿਲਾਂ ਹੈ। { -brand-short-name } ਹੁਣ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਇੱਕ ਦੂਜੇ ਤੋਂ ਪੂਰੀ ਤਰ੍ਹਾਂ ਅਲਹਿਦਾ ਕਰ ਦਿੰਦਾ ਹੈ, ਜਿਸ ਨਾਲ ਹੈਕਰਾਂ ਲਈ ਪਾਸਵਰਡ, ਕਰੈਡਿਟ ਕਾਰਡ ਨੰਬਰ ਤੇ ਹੋਰ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਣਕਾਰੀ ਚੋਰੀ ਕਰਨਾ ਔਖਾ ਹੋ ਜਾਂਦਾ ਹੈ।
-cfr-doorhanger-fission-header = ਸਾਈਟ ਅਲਹਿਦਗੀ
-cfr-doorhanger-fission-primary-button = ਠੀਕ ਹੈ, ਸਮਝ ਗਏ
-    .accesskey = O
-cfr-doorhanger-fission-secondary-button = ਹੋਰ ਜਾਣੋ
-    .accesskey = L
-
 ## Full Video Support CFR message
 
 cfr-doorhanger-video-support-body = ਇਸ ਸਾਈਟ ਤੋਂ ਵੀਡੀਓ ਨੂੰ { -brand-short-name } ਦੇ ਇਸ ਵਰਜ਼ਨ ਉੱਤੇ ਠੀਕ ਤਰ੍ਹਾਂ ਸ਼ਾਇਦ ਚਲਾਇਆ ਨਾ ਜਾ ਸਕੇ। ਪੂਰੇ ਵੀਡੀਓ ਸਹਿਯੋਗ ਲਈ { -brand-short-name } ਨੂੰ ਹੁਣੇ ਅੱਪਡੇਟ ਕਰੋ।
@@ -144,11 +125,6 @@ cfr-doorhanger-video-support-primary-button = ਹੁਣੇ ਅੱਪਡੇਟ �
     .accesskey = U
 
 ## Spotlight modal shared strings
-
-spotlight-learn-more-collapsed = ਹੋਰ ਜਾਣੋ
-    .title = ਫ਼ੀਚਰ ਬਾਰੇ ਹੋਰ ਜਾਣਨ ਲਈ ਫੈਲਾਓ
-spotlight-learn-more-expanded = ਹੋਰ ਜਾਣੋ
-    .title = ਬੰਦ ਕਰੋ
 
 ## VPN promotion dialog for public Wi-Fi users
 ##
@@ -165,16 +141,6 @@ spotlight-public-wifi-vpn-link = ਹੁਣੇ ਨਹੀਂ
     .accesskey = N
 
 ## Total Cookie Protection Rollout
-
-# "Test pilot" is used as a verb. Possible alternatives: "Be the first to try",
-# "Join an early experiment". This header text can be explicitly wrapped.
-spotlight-total-cookie-protection-header = ਸਾਡੇ ਸਭ ਤੋਂ ਜ਼ਬਰਦਸਤ ਪਰਦੇਦਾਰੀ ਤਜਰਬੇ ਨੂੰ ਵਰਤ ਕੇ ਵੇਖੋ
-spotlight-total-cookie-protection-body = ਪੂਰੀ ਕੂਕੀਜ਼ ਸੁਰੱਖਿਆ ਟਰੈਕਾਂ ਨੂੰ ਕੂਕੀਜ਼ ਵਰਤ ਕੇ ਵੈੱਬ ਨੂੰ ਤੁਹਾਡਾ ਪਿੱਛਾ ਕਰਨ ਤੋਂ ਰੋਕਦੀ ਹੈ।
-# "Early access" for this feature rollout means it's a "feature preview" or
-# "soft launch" as not everybody will get it yet.
-spotlight-total-cookie-protection-expanded = { -brand-short-name } ਕੂਕੀਜ਼ ਦੇ ਦੁਆਲੇ ਵਾੜ ਲਾ ਦਿੰਦਾ ਹੈ, ਜਿਸ ਨਾਲ ਉਹ ਤੁਹਾਡੇ ਵਲੋਂ ਖੋਲ੍ਹੀ ਸਾਈਟ ਤੱਕ ਹੀ ਸੀਮਿਤ ਰਹਿ ਜਾਂਦੇ ਹਨ, ਇਸਕਰਕੇ ਟਰੈਕਰ ਉਹਨਾਂ ਨੂੰ ਤੁਹਾਡਾ ਪਿੱਛਾ ਕਰਨ ਲਈ ਨਹੀਂ ਵਰਤ ਸਕਦੇ ਹਨ। ਇਹ ਪਹਿਲਾਂ ਦੀ ਪਹੁੰਚ ਨਾਲ ਤੁਸੀਂ ਇਹ ਫ਼ੀਚਰ ਨੂੰ ਸੰਵਾਰਨ ਲਈ ਮਦਦ ਸਕਦੇ ਹੋ ਤਾ ਕਿ ਅਸੀਂ ਹਰ ਕਿਸੇ ਲਈ ਵੈੱਬ ਨੂੰ ਹੋਰ ਵੀ ਵਧੀਆ ਬਣਾ ਸਕੀੇਏ।
-spotlight-total-cookie-protection-primary-button = ਪੂਰੀ ਕੂਕੀ ਸੁਰੱਖਿਆ ਚਾਲੂ ਕਰੋ
-spotlight-total-cookie-protection-secondary-button = ਹੁਣੇ ਨਹੀਂ
 
 ## Emotive Continuous Onboarding
 
@@ -204,11 +170,13 @@ spotlight-pin-secondary-button = ਹੁਣੇ ਨਹੀਂ
 
 mr2022-background-update-toast-title = ਨਵਾਂ{ -brand-short-name }। ਵੱਧ ਪ੍ਰਾਈਵੇਟ। ਘੱਟ ਟਰੈਕਰ। ਕੋਈ ਸਮਝੌਤਾ ਨਹੀਂ।
 mr2022-background-update-toast-text = ਹੁਣ ਨਵੇਂ { -brand-short-name } ਵਰਤ ਕੇ ਵੇਖੋ, ਸਾਡੇ ਹਾਲੇ ਤੱਕ ਦੇ ਸਭ ਤੋਂ ਮਜ਼ਬੂਤ ਟਰੈਕਿੰਗ-ਰੋਧੀ ਸੁਰੱਖਿਆ ਲਈ ਅੱਪਗਰੇਡ ਕਰੋ।
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
 # using a variable font like Arial): the button can only fit 1-2
 # additional characters, exceeding characters will be truncated.
 mr2022-background-update-toast-primary-button-label = ਹੁਣੇ { -brand-shorter-name } ਖੋਲ੍ਹੋ
+
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it using a
 # variable font like Arial): the button can only fit 1-2 additional characters,
@@ -227,6 +195,7 @@ firefoxview-cfr-body-v2 = ਹਾਲ ਵਿੱਚ ਖੋਲ੍ਹੀਆਂ ਟੈ
 ## Firefox View Spotlight
 
 firefoxview-spotlight-promo-title = { -firefoxview-brand-name } ਨੂੰ ਮਿਲੋ
+
 # “Poof” refers to the expression to convey when something or someone suddenly disappears, or in this case, reappears. For example, “Poof, it’s gone.”
 firefoxview-spotlight-promo-subtitle = ਆਪਣੇ ਫ਼ੋਨ ਉੱਤੇ ਉਹ ਟੈਬ ਖੋਲ੍ਹਣੀ ਚਾਹੁੰਦੇ ਹੋ? ਇਹ ਲਵੋ। ਬੱਸ ਉਹ ਹੁਣੇ ਖੋਲ੍ਹੀ ਸਾਈਟ ਚਾਹੀਦੀ ਹੈ, { -firefoxview-brand-name } ਨਾਲ ਵਾਪਸ ਲਵੋ।
 firefoxview-spotlight-promo-primarybutton = ਵੇਖੋ ਕਿ ਇਹ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ
@@ -236,6 +205,7 @@ firefoxview-spotlight-promo-secondarybutton = ਛੱਡੋ
 
 colorways-cfr-primarybutton = ਰੰਗ-ਢੰਗ ਚੁਣੋ
     .accesskey = C
+
 # "shades" refers to the different color options available to users in colorways.
 colorways-cfr-body = ਸਭਿਆਚਾਰ ਬਦਲਣ ਵਾਲੀਆਂ ਆਵਾਜ਼ਾਂ ਤੋਂ ਪ੍ਰੇਰਿਤ ਕਰਨ ਵਾਲੇ ਰੰਗਾਂ ਨਾਲ { -brand-short-name } ਰਾਹੀਂ ਆਪਣੇ ਬਰਾਊਜ਼ਰ ਵਿੱਚ ਭਰੋ।
 colorways-cfr-header-28days = ਆਜ਼ਾਦ ਆਵਾਜ਼ ਰੰਗ=ਢੰਗ ਦੀ ਮਿਆਦ ਜਨਵਰੀ 16 ਨੂੰ ਪੁੱਗੇਗੀ
@@ -245,22 +215,11 @@ colorways-cfr-header-today = ਆਜ਼ਾਦ ਆਵਾਜ਼ ਰੰਗ=ਢੰਗ ਦ�
 
 ## Cookie Banner Handling CFR
 
-# Alternate headline for localization: "See fewer cookie requests"
-cfr-cookiebanner-header = ਕੂਕੀ ਬੈਨਰ ਕਰੋ ਰਵਾਨਾ!
-cfr-cookiebanner-body = ਜਦੋਂ ਵੀ ਸੰਭਵ ਹੋਵੇ ਤਾਂ { -brand-short-name } ਨੂੰ ਸਾਰੀਆਂ ਕੂਕੀ ਬੈਨਰ ਬੇਨਤੀਆਂ ਨੂੰ ਆਪਣੇ-ਆਪ ਰੱਦ ਕਰਨ ਦਿਓ।
-cfr-cookiebanner-accept-button = ਬੈਨਰਾਂ ਨੂੰ ਖ਼ਾਰਜ ਕਰੋ
-    .accesskey = D
-cfr-cookiebanner-reject-button = ਹੁਣੇ ਨਹੀਂ
-    .accesskey = N
-cfr-cookiebanner-header-variant-1 = ਘੱਟ ਕੂਕੀ ਪੌਪ-ਅੱਪ ਵੇਖੋ
-cfr-cookiebanner-accept-button-variant-1 = ਪੌਪ-ਅੱਪ ਖ਼ਾਰਜ ਕਰੋ
-    .accesskey = D
-cfr-cookiebanner-reject-button-variant-1 = ਨਹੀਂ, ਧੰਨਵਾਦ
-    .accesskey = N
-cfr-cookiebanner-header-variant-2 = ਕੂਕੀ ਬੈਨਰ ਘਟਾਉਣਾ
-cfr-cookiebanner-accept-button-variant-2 = ਮਨਜ਼ੂਰ
-    .accesskey = A
-cfr-cookiebanner-reject-button-variant-2 = ਹੁਣੇ ਨਹੀਂ
+cfr-cbh-header = { -brand-short-name } ਨੂੰ ਕੂਕੀਜ਼ ਬੈਨਰ ਖ਼ਾਰਜ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣੀ ਹੈ?
+cfr-cbh-body = { -brand-short-name } ਆਪਣੇ-ਆਪ ਹੀ ਕਈ ਕੂਕੀਜ਼ ਬੈਨਰ ਬੇਨਤੀਆਂ ਨੂੰ ਰੱਦ ਕਰ ਸਕਦਾ ਹੈ।
+cfr-cbh-confirm-button = ਕੂਕੀਜ਼ ਬੈਨਰ ਖ਼ਾਰਜ ਕਰੋ
+    .accesskey = R
+cfr-cbh-dismiss-button = ਹੁਣੇ ਨਹੀਂ
     .accesskey = N
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
@@ -268,3 +227,31 @@ cfr-cookiebanner-reject-button-variant-2 = ਹੁਣੇ ਨਹੀਂ
 july-jam-headline = ਅਸੀਂ ਤੁਹਾਡੇ ਲਈ ਢਾਲ ਬਣ ਕੇ ਖੜ੍ਹੇ ਹਾਂ
 july-jam-body = ਹਰ ਮਹੀਨੇ { -brand-short-name } ਹਰ ਵਰਤੋਂਕਾਰ ਲਈ ਔਸਤਨ 3,000+  ਟਰੈਕਾਂ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾ ਕੇ ਤੁਹਾਨੂੰ ਸੁਰੱਖਿਅਤ, ਤੇਜ਼ ਇੰਟਰਨੈੱਟ ਪਹੁੰਚਾਉਣ ਲਈ ਮਦਦ ਕਰਦਾ ਹੈ।
 july-jam-set-default-primary = ਮੇਰੇ ਲਿੰਕ { -brand-short-name } ਨਾਲ ਖੋਲ੍ਹੋ
+fox-doodle-pin-headline = ਫਿਰ ਜੀ ਆਇਆਂ ਨੂੰ
+
+# “indie” is short for the term “independent”.
+# In this instance, free from outside influence or control.
+fox-doodle-pin-body = ਤੁਹਾਨੂੰ ਯਾਦ ਕਰਵਾਉਣਾ ਚਾਹੁੰਦੇ ਹਾਂ ਕਿ ਤੁੁਹਾਡਾ ਆਜ਼ਾਦ ਬਰਾਊਜ਼ਰ ਸਿਰਫ਼ ਇੱਕ ਕਲਿੱਕ ਜਿੰਨੀ ਦੂਰ ਹੈ।
+fox-doodle-pin-primary = ਮੇਰੇ ਲਿੰਕ { -brand-short-name } ਨਾਲ ਖੋਲ੍ਹੋ
+fox-doodle-pin-secondary = ਹੁਣੇ ਨਹੀਂ
+
+## These strings are used in the Set Firefox as Default PDF Handler for Existing Users experiment
+
+set-default-pdf-handler-headline = <strong>ਤੁਹਾਡੇ PDF ਹੁਣ { -brand-short-name } ਵਿੱਚ ਖੁੱਲ੍ਹਦੇ ਹਨ।</strong> ਫ਼ਾਰਮਾਂ ਨੂੰ ਸਿੱਧਾ ਆਪਣੇ ਬਰਾਊਜ਼ਰ ਵਿੱਚ ਸੋਧੋ ਜਾਂ ਉਹਨਾਂ ਉੱਤੇ ਦਸਤਖਤ ਕਰੋ। ਬਦਲਣ ਲਈ ਸੈਟਿੰਗਾਂ ਵਿੱਚ “PDF” ਖੋਜੋ।
+set-default-pdf-handler-primary = ਸਮਝੇ
+
+## FxA sync CFR
+
+fxa-sync-cfr-header = ਤੁਹਾਡੇ ਭਵਿੱਖ ਲਈ ਨਵਾਂ ਡਿਵਾਈਸ?
+fxa-sync-cfr-body = ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਨਵੇਂ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਟੈਬਾਂ ਤੁਹਾਡੇ ਵਲੋਂ ਨਵੇਂ { -brand-product-name } ਬਰਾਊਜ਼ਰ ਖੋਲ੍ਹਣ ਦੌਰਾਨ ਮਿਲ ਰਹੇ ਹਨ।
+fxa-sync-cfr-primary = ਹੋਰ ਜਾਣੋ
+    .accesskey = L
+fxa-sync-cfr-secondary = ਮੈਨੂੰ ਬਾਅਦ ਵਿੱਚ ਚੇਤੇ ਕਰਵਾਓ
+    .accesskey = R
+
+## Device Migration FxA Spotlight
+
+device-migration-fxa-spotlight-header = ਪੁਰਾਣਾ ਡਿਵਾਈਸ ਵਰਤ ਰਹੇ ਹੋ?
+device-migration-fxa-spotlight-body = ਆਪਣੇ ਡਿਵਾਈਸ ਦਾ ਬੈਕਅੱਪ ਲੈਣਾ ਨਾ ਭੁੱਲੋ ਤਾਂ ਕਿ ਖਾਸ ਕਰਕੇ ਨਵੇਂ ਡਿਵਾਈਸ ਉੱਤੇ ਬਦਲਣ ਦੇ ਦੌਰਾਨ ਬੁੱਕਮਾਰਕ ਅਤੇ ਪਾਸਵਰਡਾਂ ਵਰਗੀਆਂ ਖਾਸ ਜਾਣਕਾਰੀਆਂ ਗੁੰਮ ਨਾ ਜਾਣ।
+device-migration-fxa-spotlight-primary-button = ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਕਿਵੇਂ ਲਈਏ
+device-migration-fxa-spotlight-link = ਮੈਨੂੰ ਬਾਅਦ ਵਿੱਚ ਚੇਤੇ ਕਰਵਾਓ

@@ -59,6 +59,7 @@ firefoxview-closed-tabs-title = Récemment fermés
 firefoxview-closed-tabs-description2 = Rouvrez des pages que vous avez fermées dans cette fenêtre.
 firefoxview-closed-tabs-placeholder-header = Aucun onglet récemment fermé
 firefoxview-closed-tabs-placeholder-body = Si vous avez fermé un onglet de cette fenêtre, vous pouvez le récupérer ici.
+firefoxview-closed-tabs-placeholder-body2 = Si vous avez fermé un onglet, vous pouvez le récupérer ici.
 # Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 firefoxview-closed-tabs-dismiss-tab =
@@ -70,7 +71,6 @@ firefoxview-pickup-tabs-badge = Dernier onglet actif
 firefoxview-tabs-list-tab-button =
     .title = Ouvrir { $targetURI } dans un nouvel onglet
 firefoxview-try-colorways-button = Essayer les coloris
-firefoxview-no-current-colorway-collection = De nouveaux coloris seront bientôt disponibles
 firefoxview-change-colorway-button = Changer de coloris
 # Variables:
 #  $intensity (String): Colorway intensity
@@ -82,3 +82,62 @@ firefoxview-collapse-button-show =
     .title = Afficher la liste
 firefoxview-collapse-button-hide =
     .title = Masquer la liste
+firefoxview-overview-nav = Navigation récente
+    .title = Navigation récente
+firefoxview-overview-header = Navigation récente
+    .title = Navigation récente
+
+## History in this context refers to browser history
+
+firefoxview-history-nav = Historique
+    .title = Historique
+firefoxview-history-header = Historique
+
+## Open Tabs in this context refers to all open tabs in the browser
+
+firefoxview-opentabs-nav = Onglets ouverts
+    .title = Onglets ouverts
+firefoxview-opentabs-header = Onglets ouverts
+
+## Recently closed tabs in this context refers to recently closed tabs from all windows
+
+firefoxview-recently-closed-nav = Onglets récemment fermés
+    .title = Onglets récemment fermés
+firefoxview-recently-closed-header = Onglets récemment fermés
+
+## Tabs from other devices refers in this context refers to synced tabs from other devices
+
+firefoxview-synced-tabs-nav = Onglets d’autres appareils
+    .title = Onglets d’autres appareils
+firefoxview-synced-tabs-header = Onglets d’autres appareils
+
+##
+
+# Used for a link in collapsible cards, in the 'Recent browsing' page of Firefox View
+firefoxview-view-all-link = Tout afficher
+# Variables:
+#   $winID (Number) - The index of the owner window for this set of tabs
+firefoxview-opentabs-window-header =
+    .title = Fenêtre { $winID }
+# Variables:
+#   $winID (Number) - The index of the owner window (which is currently focused) for this set of tabs
+firefoxview-opentabs-current-window-header =
+    .title = Fenêtre { $winID } (actuelle)
+firefoxview-opentabs-focus-tab =
+    .title = Basculer vers cet onglet
+firefoxview-show-more = En afficher plus
+firefoxview-show-less = En afficher moins
+firefoxview-sort-history-by-date-label = Trier par date
+firefoxview-sort-history-by-site-label = Trier par site
+
+## Variables:
+##   $date (string) - Date to be formatted based on locale
+
+firefoxview-history-date-today = Aujourd’hui – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-yesterday = Hier – { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-this-month = { DATETIME($date, dateStyle: "full") }
+firefoxview-history-date-prev-month = { DATETIME($date, month: "long", year: "numeric") }
+
+##
+
+firefoxview-show-all-history = Afficher tout l’historique

@@ -137,6 +137,7 @@ void DocumentL10n::TriggerInitialTranslation() {
   ErrorResult rv;
   promises.AppendElement(TranslateDocument(rv));
   if (NS_WARN_IF(rv.Failed())) {
+    rv.SuppressException();
     InitialTranslationCompleted(false);
     mReady->MaybeRejectWithUndefined();
     return;
@@ -149,12 +150,7 @@ void DocumentL10n::TriggerInitialTranslation() {
     return;
   }
 
-  DOMLocalization::ConnectRoot(*documentElement, rv);
-  if (NS_WARN_IF(rv.Failed())) {
-    InitialTranslationCompleted(false);
-    mReady->MaybeRejectWithUndefined();
-    return;
-  }
+  DOMLocalization::ConnectRoot(*documentElement);
 
   AutoEntryScript aes(mGlobal, "DocumentL10n InitialTranslation");
   RefPtr<Promise> promise = Promise::All(aes.cx(), promises, rv);
@@ -285,18 +281,18 @@ void DocumentL10n::MaybeRecordTelemetry() {
 
   nsCString key;
 
-  if (documentURI.Find("chrome://browser/content/browser.xhtml") == 0) {
+  if (documentURI.Find(u"chrome://browser/content/browser.xhtml") == 0) {
     if (mIsFirstBrowserWindow) {
       key = "browser_first_window";
       mIsFirstBrowserWindow = false;
     } else {
       key = "browser_new_window";
     }
-  } else if (documentURI.Find("about:home") == 0) {
+  } else if (documentURI.Find(u"about:home") == 0) {
     key = "about:home";
-  } else if (documentURI.Find("about:newtab") == 0) {
+  } else if (documentURI.Find(u"about:newtab") == 0) {
     key = "about:newtab";
-  } else if (documentURI.Find("about:preferences") == 0) {
+  } else if (documentURI.Find(u"about:preferences") == 0) {
     key = "about:preferences";
   } else {
     return;
@@ -322,12 +318,13 @@ void DocumentL10n::InitialTranslationCompleted(bool aL10nCached) {
 
   MaybeRecordTelemetry();
 
-  mDocument->InitialTranslationCompleted(aL10nCached);
+  RefPtr<Document> doc = mDocument;
+  doc->InitialTranslationCompleted(aL10nCached);
 
   // In XUL scenario contentSink is nullptr.
   if (mContentSink) {
-    mContentSink->InitialTranslationCompleted();
-    mContentSink = nullptr;
+    nsCOMPtr<nsIContentSink> sink = mContentSink.forget();
+    sink->InitialTranslationCompleted();
   }
 
   // From now on, the state of Localization is unconditionally
@@ -342,7 +339,7 @@ void DocumentL10n::ConnectRoot(nsINode& aNode, bool aTranslate,
       RefPtr<Promise> promise = TranslateFragment(aNode, aRv);
     }
   }
-  DOMLocalization::ConnectRoot(aNode, aRv);
+  DOMLocalization::ConnectRoot(aNode);
 }
 
 Promise* DocumentL10n::Ready() { return mReady; }

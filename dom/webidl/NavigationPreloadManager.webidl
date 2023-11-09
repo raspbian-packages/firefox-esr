@@ -7,15 +7,15 @@
  * https://w3c.github.io/ServiceWorker/#navigation-preload-manager
  */
 
-[Pref="dom.serviceWorkers.navigationPreload.enabled", SecureContext,
+[Func="NavigationPreloadManager::IsEnabled", SecureContext,
  Exposed=(Window,Worker)]
 interface NavigationPreloadManager {
   [NewObject]
-  Promise<void> enable();
+  Promise<undefined> enable();
   [NewObject]
-  Promise<void> disable();
+  Promise<undefined> disable();
   [NewObject]
-  Promise<void> setHeaderValue(ByteString value);
+  Promise<undefined> setHeaderValue(ByteString value);
   [NewObject]
   Promise<NavigationPreloadState> getState();
 };

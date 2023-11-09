@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = Agiuntar in segnapagina per la pagina
-    .accesskey = t
-    .tooltiptext = Agiuntar in segnapagina
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = Agiuntar in segnapagina per la pagina
-    .accesskey = n
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = Modifitgar il segnapagina
-    .accesskey = M
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = Agiuntar in segnapagina per la pagina
-    .accesskey = t
-    .tooltiptext = Agiuntar in segnapagina ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = Modifitgar quest segnapagina
-    .accesskey = t
-    .tooltiptext = Modifitgar quest segnapagina
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = Modifitgar quest segnapagina
-    .accesskey = t
-    .tooltiptext = Modifitgar quest segnapagina ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = Agiuntar in segnapagina per la pagina…
     .accesskey = n
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = Avrir la colliaziun en ina nova fanestra privata
     .accesskey = P
-
-main-context-menu-bookmark-link =
-    .label = Agiuntar in segnapagina per la colliaziun
-    .accesskey = A
 
 main-context-menu-bookmark-link-2 =
     .label = Agiuntar in segnapagina per la colliaziun…
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = Trametter l'audio per e-mail…
     .accesskey = a
 
-main-context-menu-plugin-play =
-    .label = Activar quest plug-in
-    .accesskey = c
-
-main-context-menu-plugin-hide =
-    .label = Zuppentar quest plug-in
-    .accesskey = p
-
 main-context-menu-save-to-pocket =
     .label = Memorisar la pagina en { -pocket-brand-name }
     .accesskey = k
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = o
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = Utilisar in alias dad e-mail da { -relay-brand-short-name }
+    .accesskey = e
 
 main-context-menu-suggest-strong-password =
     .label = Proponer in ferm pled-clav…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = Chargiar danovamain il frame
     .accesskey = r
 
-main-context-menu-frame-bookmark =
-    .label = Agiuntar in segnapagina per il frame
-    .accesskey = A
-
 main-context-menu-frame-add-bookmark =
     .label = Agiuntar in segnapagina per il frame…
     .accesskey = n
@@ -459,10 +409,6 @@ main-context-menu-frame-view-source =
 main-context-menu-frame-view-info =
     .label = Mussar infurmaziuns davart il frame
     .accesskey = i
-
-main-context-menu-print-selection =
-    .label = Stampar la selecziun
-    .accesskey = r
 
 main-context-menu-print-selection-2 =
     .label = Stampar la selecziun…

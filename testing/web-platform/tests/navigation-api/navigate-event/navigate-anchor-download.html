@@ -14,7 +14,7 @@ for (const [tag, download_attr] of tests) {
     navigation.onnavigate = t.step_func_done(e => {
       assert_equals(e.navigationType, "push");
       assert_true(e.cancelable);
-      assert_true(e.canTransition);
+      assert_true(e.canIntercept);
       assert_false(e.userInitiated);
       assert_false(e.hashChange);
       assert_equals(e.downloadRequest, download_attr);
@@ -22,8 +22,8 @@ for (const [tag, download_attr] of tests) {
       assert_equals(new URL(e.destination.url).pathname,
                     "/navigation-api/navigate-event/foo.html");
       assert_false(e.destination.sameDocument);
-      assert_equals(e.destination.key, null);
-      assert_equals(e.destination.id, null);
+      assert_equals(e.destination.key, "");
+      assert_equals(e.destination.id, "");
       assert_equals(e.destination.index, -1);
       e.preventDefault();
     });

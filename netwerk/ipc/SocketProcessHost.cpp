@@ -165,9 +165,8 @@ void SocketProcessHost::InitAfterConnect(bool aSucceeded) {
     return;
   }
 
-  mSocketProcessParent = MakeUnique<SocketProcessParent>(this);
-  DebugOnly<bool> rv = mSocketProcessParent->Open(
-      TakeInitialPort(), base::GetProcId(GetChildProcessHandle()));
+  mSocketProcessParent = MakeRefPtr<SocketProcessParent>(this);
+  DebugOnly<bool> rv = TakeInitialEndpoint().Bind(mSocketProcessParent.get());
   MOZ_ASSERT(rv);
 
   SocketPorcessInitAttributes attributes;

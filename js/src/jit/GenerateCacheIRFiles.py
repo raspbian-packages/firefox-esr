@@ -4,10 +4,11 @@
 
 # This script generates jit/CacheIROpsGenerated.h from CacheIROps.yaml
 
-import buildconfig
-import yaml
-import six
 from collections import OrderedDict
+
+import buildconfig
+import six
+import yaml
 from mozbuild.preprocessor import Preprocessor
 
 HEADER_TEMPLATE = """\
@@ -80,9 +81,9 @@ arg_writer_info = {
     "ObjectField": ("JSObject*", "writeObjectField"),
     "StringField": ("JSString*", "writeStringField"),
     "AtomField": ("JSAtom*", "writeStringField"),
-    "PropertyNameField": ("PropertyName*", "writeStringField"),
     "SymbolField": ("JS::Symbol*", "writeSymbolField"),
     "BaseScriptField": ("BaseScript*", "writeBaseScriptField"),
+    "JitCodeField": ("JitCode*", "writeJitCodeField"),
     "RawInt32Field": ("uint32_t", "writeRawInt32Field"),
     "RawPointerField": ("const void*", "writeRawPointerField"),
     "IdField": ("jsid", "writeIdField"),
@@ -105,6 +106,7 @@ arg_writer_info = {
     "JSNativeImm": ("JSNative", "writeJSNativeImm"),
     "StaticStringImm": ("const char*", "writeStaticStringImm"),
     "AllocKindImm": ("gc::AllocKind", "writeAllocKindImm"),
+    "CompletionKindImm": ("CompletionKind", "writeCompletionKindImm"),
 }
 
 
@@ -178,9 +180,9 @@ arg_reader_info = {
     "ObjectField": ("uint32_t", "Offset", "reader.stubOffset()"),
     "StringField": ("uint32_t", "Offset", "reader.stubOffset()"),
     "AtomField": ("uint32_t", "Offset", "reader.stubOffset()"),
-    "PropertyNameField": ("uint32_t", "Offset", "reader.stubOffset()"),
     "SymbolField": ("uint32_t", "Offset", "reader.stubOffset()"),
     "BaseScriptField": ("uint32_t", "Offset", "reader.stubOffset()"),
+    "JitCodeField": ("uint32_t", "Offset", "reader.stubOffset()"),
     "RawInt32Field": ("uint32_t", "Offset", "reader.stubOffset()"),
     "RawPointerField": ("uint32_t", "Offset", "reader.stubOffset()"),
     "IdField": ("uint32_t", "Offset", "reader.stubOffset()"),
@@ -203,6 +205,7 @@ arg_reader_info = {
     "JSNativeImm": ("JSNative", "", "reinterpret_cast<JSNative>(reader.pointer())"),
     "StaticStringImm": ("const char*", "", "reinterpret_cast<char*>(reader.pointer())"),
     "AllocKindImm": ("gc::AllocKind", "", "reader.allocKind()"),
+    "CompletionKindImm": ("CompletionKind", "", "reader.completionKind()"),
 }
 
 
@@ -262,9 +265,9 @@ arg_spewer_method = {
     "ObjectField": "spewField",
     "StringField": "spewField",
     "AtomField": "spewField",
-    "PropertyNameField": "spewField",
     "SymbolField": "spewField",
     "BaseScriptField": "spewField",
+    "JitCodeField": "spewField",
     "RawInt32Field": "spewField",
     "RawPointerField": "spewField",
     "IdField": "spewField",
@@ -287,6 +290,7 @@ arg_spewer_method = {
     "JSNativeImm": "spewJSNativeImm",
     "StaticStringImm": "spewStaticStringImm",
     "AllocKindImm": "spewAllocKindImm",
+    "CompletionKindImm": "spewCompletionKindImm",
 }
 
 
@@ -397,9 +401,9 @@ arg_length = {
     "ObjectField": 1,
     "StringField": 1,
     "AtomField": 1,
-    "PropertyNameField": 1,
     "SymbolField": 1,
     "BaseScriptField": 1,
+    "JitCodeField": 1,
     "RawInt32Field": 1,
     "RawPointerField": 1,
     "RawInt64Field": 1,
@@ -422,6 +426,7 @@ arg_length = {
     "JSNativeImm": "sizeof(uintptr_t)",
     "StaticStringImm": "sizeof(uintptr_t)",
     "AllocKindImm": 1,
+    "CompletionKindImm": 1,
 }
 
 

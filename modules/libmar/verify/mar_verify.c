@@ -224,8 +224,8 @@ int mar_extract_and_verify_signatures(MarFile* mar,
     }
     signatureAlgorithmIDs[i] = ntohl(signatureAlgorithmIDs[i]);
 
-    if (mar_read_buffer(mar, &signatureLen, &mar_position,
-                        sizeof(uint32_t)) != 0) {
+    if (mar_read_buffer(mar, &signatureLen, &mar_position, sizeof(uint32_t)) !=
+        0) {
       fprintf(stderr, "ERROR: Could not read signatures length.\n");
       return CryptoX_Error;
     }
@@ -307,10 +307,9 @@ int mar_extract_and_verify_signatures(MarFile* mar,
  * @return  CryptoX_Success on success, *numVerified == signatureCount.
  */
 CryptoX_Result mar_verify_extracted_signatures(
-      MarFile* mar, CryptoX_ProviderHandle provider, CryptoX_PublicKey* keys,
-      const uint8_t* const* extractedSignatures,
-      uint32_t signatureCount,
-      uint32_t* numVerified) {
+    MarFile* mar, CryptoX_ProviderHandle provider, CryptoX_PublicKey* keys,
+    const uint8_t* const* extractedSignatures, uint32_t signatureCount,
+    uint32_t* numVerified) {
   CryptoX_SignatureHandle signatureHandles[MAX_SIGNATURES];
   char buf[BLOCKSIZE];
   uint32_t signatureLengths[MAX_SIGNATURES];

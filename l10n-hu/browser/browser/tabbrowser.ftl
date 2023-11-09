@@ -4,19 +4,18 @@
 
 tabbrowser-empty-tab-title = Új lap
 tabbrowser-empty-private-tab-title = Új privát lap
+
 tabbrowser-menuitem-close-tab =
     .label = Lap bezárása
 tabbrowser-menuitem-close =
     .label = Bezárás
+
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } – { $containerName }
-# Variables:
-#   $title (String): the title of the current tab.
-tabbrowser-tab-tooltip =
-    .label = { $title }
+
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -121,6 +120,7 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ne jelenjen meg többet ez a párbes
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Engedélyezés, hogy a(z) { $domain } oldalról érkező ilyen értesítések a saját lapjukra vigyenek
+
 tabbrowser-customizemode-tab-title = { -brand-short-name } testreszabása
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -139,3 +139,22 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Lapok visszahangosítása
     .accesskey = v
+
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = Hang lejátszása
+
+## Ctrl-Tab dialog
+
+# Variables:
+#   $tabCount (Number): The number of tabs in the current browser window. It will always be 2 at least.
+tabbrowser-ctrl-tab-list-all-tabs =
+    .label = Minden lap ({ $tabCount }) felsorolása
+
+## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Lap némítása
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Lap visszahangosítása
+tabbrowser-manager-close-tab =
+    .tooltiptext = Lap bezárása

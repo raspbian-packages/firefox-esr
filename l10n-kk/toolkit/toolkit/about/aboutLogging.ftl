@@ -2,25 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
--profiler-brand-name = Firefox профильдеушісі
 # This is the title of the page
 about-logging-title = Журналдау туралы
 about-logging-page-title = Журналдау басқарушысы
 about-logging-current-log-file = Ағымдағы журналдау файлы:
-about-logging-current-log-modules = Ағымдағы журналдау модульдері:
 about-logging-new-log-file = Жаңа журнал файлы:
 about-logging-currently-enabled-log-modules = Ағымдағы уақытта іске қосылған журнал модульдері:
 about-logging-log-tutorial = Бұл құралды қолдану нұсқаулығын <a data-l10n-name="logging">HTTP Logging</a> адресінен қараңыз.
@@ -41,13 +26,22 @@ about-logging-logging-to-profiler = { -profiler-brand-name } ішіне журн
 about-logging-no-log-modules = Ешнәрсе
 about-logging-no-log-file = Ешнәрсе
 about-logging-logging-preset-selector-text = Журналдаудың алдын ала орнатуы:
+about-logging-with-profiler-stacks-checkbox = Журнал хабарламалары үшін стек трассировкасын іске қосу
 
 ## Logging presets
 
 about-logging-preset-networking-label = Желі
 about-logging-preset-networking-description = Желі мәселелерін диагностикалау үшін журналдау модульдері
+about-logging-preset-networking-cookie-label = Cookie файлдары
+about-logging-preset-networking-cookie-description = Cookie файлдары мәселелерін диагностикалау үшін журналдау модульдері
+about-logging-preset-networking-websocket-label = WebSockets
+about-logging-preset-networking-websocket-description = WebSocket мәселелерін диагностикалау үшін журналдау модульдері
+about-logging-preset-networking-http3-label = HTTP/3
+about-logging-preset-networking-http3-description = HTTP/3 және QUIC мәселелерін диагностикалау үшін журналдау модульдері
 about-logging-preset-media-playback-label = Медианы ойнату
 about-logging-preset-media-playback-description = Медиа ойнату мәселелерін диагностикалау үшін журналдау модульдері (видео конференция мәселелері емес)
+about-logging-preset-webrtc-label = WebRTC
+about-logging-preset-webrtc-description = WebRTC қоңырауларын диагностикалау үшін журналдау модульдері
 about-logging-preset-custom-label = Таңдауыңызша
 about-logging-preset-custom-description = Журналдау модульдері қолмен таңдалған
 # Error handling

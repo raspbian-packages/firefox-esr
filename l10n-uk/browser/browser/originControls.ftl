@@ -10,12 +10,19 @@
 
 origin-controls-no-access =
     .label = Розширення не може читати й змінювати дані
+
+origin-controls-quarantined =
+    .label = Розширенню не дозволено читати та змінювати дані
+
 origin-controls-options =
     .label = Розширення може читати й змінювати дані:
+
 origin-controls-option-all-domains =
     .label = На всіх сайтах
+
 origin-controls-option-when-clicked =
     .label = Лише після натискання
+
 # This string denotes an option that grants the extension access to
 # the current site whenever they visit it.
 # Variables:
@@ -27,11 +34,19 @@ origin-controls-option-always-on =
 ## messages. They currently appear in the unified extensions panel.
 
 origin-controls-state-no-access = Не може читати й змінювати дані на цьому сайті
+
+origin-controls-state-quarantined = Не дозволено { -vendor-short-name } на цьому сайті
+
 origin-controls-state-always-on = Завжди може читати й змінювати дані на цьому сайті
+
 origin-controls-state-when-clicked = Для читання й зміни даних необхідний дозвіл
+
 origin-controls-state-hover-run-visit-only = Виконати лише для цього відвідування
+
 origin-controls-state-runnable-hover-open = Відкрити розширення
+
 origin-controls-state-runnable-hover-run = Запустити розширення
+
 origin-controls-state-temporary-access = Може читати й змінювати дані для цього відвідування
 
 ## Extension's toolbar button.
@@ -41,6 +56,7 @@ origin-controls-state-temporary-access = Може читати й змінюва
 origin-controls-toolbar-button =
     .label = { $extensionTitle }
     .tooltiptext = { $extensionTitle }
+
 # Extension's toolbar button when permission is needed.
 # Note that the new line is intentionally part of the tooltip.
 origin-controls-toolbar-button-permission-needed =
@@ -48,3 +64,11 @@ origin-controls-toolbar-button-permission-needed =
     .tooltiptext =
         { $extensionTitle }
         Потрібен дозвіл
+
+# Extension's toolbar button when quarantined.
+# Note that the new line is intentionally part of the tooltip.
+origin-controls-toolbar-button-quarantined =
+    .label = { $extensionTitle }
+    .tooltiptext =
+        { $extensionTitle }
+        Не дозволено { -vendor-short-name } на цьому сайті

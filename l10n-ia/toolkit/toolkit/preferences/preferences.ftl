@@ -9,9 +9,8 @@ failed-pp-change = Impossibile cambiar le contrasigno primari.
 incorrect-pp = Tu non ha inserite le contrasigno primari correcte actual. Tenta ancora.
 pp-change-ok = Contrasigno primari cambiate con bon successo.
 
-pp-empty-warning = Tu contrasignos e claves private reservate non essera plus protegite.
-pp-erased-ok = Tu ha delite tu contrasigno primari. { pp-empty-warning }
-pp-not-wanted = Attention! Tu ha decidite non usar un contrasigno primari. { pp-empty-warning }
+settings-pp-erased-ok = Tu ha delite tu Contrasigno primari. Le contrasignos stockate e le claves private de certificato gerite per { -brand-short-name } non sera protegite.
+settings-pp-not-wanted = Advertimento! Tu ha decidite non usar un Contrasigno primari. Le contrasignos stockate e le claves private de certificato gerite per { -brand-short-name } non sera protegite.
 
 pp-change2empty-in-fips-mode = Tu es actualmente in modo FIPS. Tal modo require un contrasigno primari non vacue.
 pw-change-success-title = Contrasigno cambiate con bon successo
@@ -37,4 +36,4 @@ remove-info =
 remove-primary-password-warning1 = Tu contrasigno primari servi a proteger le informationes sensibile como credentiales e contrasignos.
 remove-primary-password-warning2 = Si tu remove tu contrasigno primari, tu informationes non essera plus protegite si tu computator es compromittite.
 remove-password-old-password =
-    .value = Actual contrasigno:
+    .value = Contrasigno actual:

@@ -15,6 +15,8 @@ printui-sheets-count =
     }
 
 printui-page-range-all = Tot
+printui-page-range-odd = Senar
+printui-page-range-even = Parell
 printui-page-range-custom = Personalitzat
 printui-page-range-label = Pàgines
 printui-page-range-picker =

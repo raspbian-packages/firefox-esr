@@ -6,7 +6,6 @@
 #ifndef ProxyAutoConfigChild_h__
 #define ProxyAutoConfigChild_h__
 
-#include <functional>
 #include "mozilla/LinkedList.h"
 #include "mozilla/net/PProxyAutoConfigChild.h"
 #include "mozilla/StaticPtr.h"
@@ -19,7 +18,7 @@ class ProxyAutoConfig;
 
 class ProxyAutoConfigChild final : public PProxyAutoConfigChild {
  public:
-  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(ProxyAutoConfigChild)
+  NS_INLINE_DECL_THREADSAFE_REFCOUNTING(ProxyAutoConfigChild, final)
 
   static bool Create(Endpoint<PProxyAutoConfigChild>&& aEndpoint);
   static bool CreatePACThread();
@@ -28,12 +27,12 @@ class ProxyAutoConfigChild final : public PProxyAutoConfigChild {
   ProxyAutoConfigChild();
 
   void ActorDestroy(ActorDestroyReason aWhy) override;
-  mozilla::ipc::IPCResult RecvConfigurePAC(const nsCString& aPACURI,
-                                           const nsCString& aPACScriptData,
+  mozilla::ipc::IPCResult RecvConfigurePAC(const nsACString& aPACURI,
+                                           const nsACString& aPACScriptData,
                                            const bool& aIncludePath,
                                            const uint32_t& aExtraHeapSize);
   mozilla::ipc::IPCResult RecvGetProxyForURI(
-      const nsCString& aTestURI, const nsCString& aTestHost,
+      const nsACString& aTestURI, const nsACString& aTestHost,
       GetProxyForURIResolver&& aResolver);
 
   void Destroy();
@@ -60,7 +59,7 @@ class ProxyAutoConfigChild final : public PProxyAutoConfigChild {
                           GetProxyForURIResolver&& aResolver)
         : mURI(aTestURI), mHost(aTestHost), mResolver(std::move(aResolver)) {}
 
-    void Resolve(nsresult aStatus, const nsCString& aResult);
+    void Resolve(nsresult aStatus, const nsACString& aResult);
     const nsCString& URI() const { return mURI; }
     const nsCString& Host() const { return mHost; }
 

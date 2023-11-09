@@ -24,6 +24,12 @@ bookmark-overlay-folders-expander =
     .tooltiptextdown = { bookmark-overlay-folders-expander.tooltiptext }
     .tooltiptextup = සඟවන්න
 
+bookmark-overlay-folders-expander2 =
+    .tooltiptext = සියළු පොත්යොමු බහාලුම් පෙන්වන්න
+
+bookmark-overlay-folders-expander-hide =
+    .tooltiptext = සඟවන්න
+
 bookmark-overlay-new-folder-button =
     .label = නව බහාලුම
     .accesskey = o
@@ -39,6 +45,12 @@ bookmark-overlay-tags-expander =
     .tooltiptext = සියළු අනන්‍යන පෙන්වන්න
     .tooltiptextdown = { bookmark-overlay-tags-expander.tooltiptext }
     .tooltiptextup = සඟවන්න
+
+bookmark-overlay-tags-expander2 =
+    .tooltiptext = සියළු අනන්‍යන පෙන්වන්න
+
+bookmark-overlay-tags-expander-hide =
+    .tooltiptext = සඟවන්න
 
 bookmark-overlay-keyword-2 =
     .value = මූලපදය

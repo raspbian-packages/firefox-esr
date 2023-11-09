@@ -167,10 +167,12 @@ void SessionStoreChild::UpdateEventTargets() {
   }
 }
 
-void SessionStoreChild::UpdateSessionStore(bool aSessionHistoryUpdate) {
+void SessionStoreChild::UpdateSessionStore(bool aSessionHistoryUpdate,
+                                           const MaybeSessionStoreZoom& aZoom) {
   if (!mSessionStoreListener) {
     // This is the case when we're shutting down, and expect a final update.
-    Unused << SendSessionStoreUpdate(Nothing(), Nothing(), false, 0);
+    SessionStoreUpdate(Nothing(), Nothing(), Nothing(), aSessionHistoryUpdate,
+                       0);
     return;
   }
 
@@ -186,8 +188,8 @@ void SessionStoreChild::UpdateSessionStore(bool aSessionHistoryUpdate) {
     privatedMode.emplace(store->GetPrivateModeEnabled());
   }
 
-  Unused << SendSessionStoreUpdate(
-      docShellCaps, privatedMode,
+  SessionStoreUpdate(
+      docShellCaps, privatedMode, aZoom,
       store->GetAndClearSHistoryChanged() || aSessionHistoryUpdate,
       mSessionStoreListener->GetEpoch());
 }
@@ -207,8 +209,6 @@ void SessionStoreChild::UpdateSHistoryChanges() {
 mozilla::ipc::IPCResult SessionStoreChild::RecvFlushTabState(
     FlushTabStateResolver&& aResolver) {
   if (mSessionStoreChangeListener) {
-    mSessionStoreChangeListener->CollectWireframe();
-
     mSessionStoreChangeListener->FlushSessionStore();
   }
   aResolver(true);
@@ -216,7 +216,46 @@ mozilla::ipc::IPCResult SessionStoreChild::RecvFlushTabState(
   return IPC_OK();
 }
 
+void SessionStoreChild::SessionStoreUpdate(
+    const Maybe<nsCString>& aDocShellCaps, const Maybe<bool>& aPrivatedMode,
+    const MaybeSessionStoreZoom& aZoom, const bool aNeedCollectSHistory,
+    const uint32_t& aEpoch) {
+  if (XRE_IsContentProcess()) {
+    Unused << SendSessionStoreUpdate(aDocShellCaps, aPrivatedMode, aZoom,
+                                     aNeedCollectSHistory, aEpoch);
+  } else if (SessionStoreParent* sessionStoreParent =
+                 static_cast<SessionStoreParent*>(
+                     InProcessChild::ParentActorFor(this))) {
+    sessionStoreParent->SessionStoreUpdate(aDocShellCaps, aPrivatedMode, aZoom,
+                                           aNeedCollectSHistory, aEpoch);
+  }
+}
+
+void SessionStoreChild::IncrementalSessionStoreUpdate(
+    const MaybeDiscarded<BrowsingContext>& aBrowsingContext,
+    const Maybe<FormData>& aFormData, const Maybe<nsPoint>& aScrollPosition,
+    uint32_t aEpoch) {
+  if (XRE_IsContentProcess()) {
+    Unused << SendIncrementalSessionStoreUpdate(aBrowsingContext, aFormData,
+                                                aScrollPosition, aEpoch);
+  } else if (SessionStoreParent* sessionStoreParent =
+                 static_cast<SessionStoreParent*>(
+                     InProcessChild::ParentActorFor(this))) {
+    sessionStoreParent->IncrementalSessionStoreUpdate(
+        aBrowsingContext, aFormData, aScrollPosition, aEpoch);
+  }
+}
+
+void SessionStoreChild::ResetSessionStore(
+    const MaybeDiscarded<BrowsingContext>& aBrowsingContext, uint32_t aEpoch) {
+  if (XRE_IsContentProcess()) {
+    Unused << SendResetSessionStore(aBrowsingContext, aEpoch);
+  } else if (SessionStoreParent* sessionStoreParent =
+                 static_cast<SessionStoreParent*>(
+                     InProcessChild::ParentActorFor(this))) {
+    sessionStoreParent->ResetSessionStore(aBrowsingContext, aEpoch);
+  }
+}
+
 NS_IMPL_CYCLE_COLLECTION(SessionStoreChild, mSessionStoreListener,
                          mSessionStoreChangeListener)
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(SessionStoreChild, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(SessionStoreChild, Release)

@@ -96,44 +96,6 @@ main-context-menu-page-save =
 
 ## Simple menu items
 
-main-context-menu-bookmark-add =
-    .aria-label = יצירת סימנייה לדף זה
-    .accesskey = ס
-    .tooltiptext = יצירת סימנייה לדף זה
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-edit-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-add-mac =
-    .label = הוספת העמוד לסימניות
-    .accesskey = ע
-
-# This menuitem is only visible on macOS
-# Cannot be shown at the same time as main-context-menu-bookmark-add-mac,
-# so should probably have the same access key if possible.
-main-context-menu-bookmark-edit-mac =
-    .label = עריכת סימנייה
-    .accesskey = ס
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the add bookmark command.
-main-context-menu-bookmark-add-with-shortcut =
-    .aria-label = יצירת סימנייה לדף זה
-    .accesskey = ס
-    .tooltiptext = יצירת סימנייה לדף זה ({ $shortcut })
-
-main-context-menu-bookmark-change =
-    .aria-label = עריכת סימנייה זו
-    .accesskey = ס
-    .tooltiptext = עריכת סימנייה זו
-
-# Variables
-#   $shortcut (String) - A keyboard shortcut for the edit bookmark command.
-main-context-menu-bookmark-change-with-shortcut =
-    .aria-label = עריכת סימנייה זו
-    .accesskey = ס
-    .tooltiptext = עריכת סימנייה זו ({ $shortcut })
-
 main-context-menu-bookmark-page =
     .aria-label = הוספת העמוד לסימניות…
     .accesskey = ע
@@ -191,10 +153,6 @@ main-context-menu-open-link-new-window =
 main-context-menu-open-link-new-private-window =
     .label = פתיחת קישור בחלון פרטי חדש
     .accesskey = פ
-
-main-context-menu-bookmark-link =
-    .label = יצירת סימנייה לקישור
-    .accesskey = ס
 
 main-context-menu-bookmark-link-2 =
     .label = יצירת סימנייה לקישור
@@ -370,14 +328,6 @@ main-context-menu-audio-email =
     .label = שליחת אודיו בדוא״ל…
     .accesskey = א
 
-main-context-menu-plugin-play =
-    .label = הפעלת תוסף חיצוני זה
-    .accesskey = ת
-
-main-context-menu-plugin-hide =
-    .label = הסתרת תוסף חיצוני זה
-    .accesskey = ס
-
 main-context-menu-save-to-pocket =
     .label = שמירת דף אל { -pocket-brand-name }
     .accesskey = ש
@@ -399,6 +349,10 @@ main-context-menu-use-saved-password =
     .accesskey = ש
 
 ##
+
+main-context-menu-use-relay-mask =
+    .label = שימוש במסיכת דוא״ל של { -relay-brand-short-name }
+    .accesskey = ד
 
 main-context-menu-suggest-strong-password =
     .label = קבלת הצעה לססמה חזקה…
@@ -436,10 +390,6 @@ main-context-menu-frame-reload =
     .label = טעינת מסגרת מחדש
     .accesskey = ט
 
-main-context-menu-frame-bookmark =
-    .label = יצירת סימנייה למסגרת זו
-    .accesskey = מ
-
 main-context-menu-frame-add-bookmark =
     .label = הוספת המסגרת לסימניות…
     .accesskey = מ
@@ -458,10 +408,6 @@ main-context-menu-frame-view-source =
 
 main-context-menu-frame-view-info =
     .label = הצגת מידע על המסגרת
-    .accesskey = ד
-
-main-context-menu-print-selection =
-    .label = הדפסת הקטע הנבחר
     .accesskey = ד
 
 main-context-menu-print-selection-2 =

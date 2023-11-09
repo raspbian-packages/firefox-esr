@@ -17,9 +17,6 @@ NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_WITH_JS_MEMBERS(
     (mPosition, mLinearVelocity, mLinearAcceleration, mOrientation,
      mAngularVelocity, mAngularAcceleration))
 
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(Pose, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(Pose, Release)
-
 Pose::Pose(nsISupports* aParent)
     : mParent(aParent),
       mPosition(nullptr),
@@ -53,7 +50,7 @@ void Pose::SetFloat32Array(JSContext* aJSContext, nsWrapperCache* creator,
   } else {
     JS::AutoCheckCannotGC nogc;
     bool isShared = false;
-    JS::RootedObject obj(aJSContext, aObj.get());
+    JS::Rooted<JSObject*> obj(aJSContext, aObj.get());
     float* data = JS_GetFloat32ArrayData(obj, &isShared, nogc);
     if (data) {
       memcpy(data, aVal, aValLength * sizeof(float));

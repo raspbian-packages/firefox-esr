@@ -69,19 +69,30 @@ void HTMLDialogElement::Close(
   eventDispatcher->PostDOMEvent();
 }
 
-void HTMLDialogElement::Show() {
+void HTMLDialogElement::Show(ErrorResult& aError) {
   if (Open()) {
-    return;
+    if (!IsInTopLayer()) {
+      return;
+    }
+    return aError.ThrowInvalidStateError(
+        "Cannot call show() on an open modal dialog.");
   }
+
+  if (IsPopoverOpen()) {
+    return aError.ThrowInvalidStateError(
+        "Dialog element is already an open popover.");
+  }
+
   SetOpen(true, IgnoreErrors());
 
   StorePreviouslyFocusedElement();
 
+  OwnerDoc()->HideAllPopoversWithoutRunningScript();
   FocusDialog();
 }
 
 bool HTMLDialogElement::IsInTopLayer() const {
-  return State().HasState(NS_EVENT_STATE_MODAL_DIALOG);
+  return State().HasState(ElementState::MODAL);
 }
 
 void HTMLDialogElement::AddToTopLayerIfNeeded() {
@@ -115,13 +126,21 @@ void HTMLDialogElement::UnbindFromTree(bool aNullParent) {
 }
 
 void HTMLDialogElement::ShowModal(ErrorResult& aError) {
+  if (Open()) {
+    if (IsInTopLayer()) {
+      return;
+    }
+    return aError.ThrowInvalidStateError(
+        "Cannot call showModal() on an open non-modal dialog.");
+  }
+
   if (!IsInComposedDoc()) {
     return aError.ThrowInvalidStateError("Dialog element is not connected");
   }
 
-  if (Open()) {
+  if (IsPopoverOpen()) {
     return aError.ThrowInvalidStateError(
-        "Dialog element already has an 'open' attribute");
+        "Dialog element is already an open popover.");
   }
 
   AddToTopLayerIfNeeded();
@@ -130,6 +149,7 @@ void HTMLDialogElement::ShowModal(ErrorResult& aError) {
 
   StorePreviouslyFocusedElement();
 
+  OwnerDoc()->HideAllPopoversWithoutRunningScript();
   FocusDialog();
 
   aError.SuppressException();
@@ -139,70 +159,19 @@ void HTMLDialogElement::FocusDialog() {
   // 1) If subject is inert, return.
   // 2) Let control be the first descendant element of subject, in tree
   // order, that is not inert and has the autofocus attribute specified.
-  if (RefPtr<Document> doc = GetComposedDoc()) {
+  RefPtr<Document> doc = OwnerDoc();
+  if (IsInComposedDoc()) {
     doc->FlushPendingNotifications(FlushType::Frames);
   }
 
-  Element* controlCandidate = nullptr;
-  for (auto* child = GetFirstChild(); child; child = child->GetNextNode(this)) {
-    auto* element = Element::FromNode(child);
-    if (!element) {
-      continue;
-    }
-    nsIFrame* frame = element->GetPrimaryFrame();
-    if (!frame || !frame->IsFocusable()) {
-      continue;
-    }
-    if (element->HasAttr(nsGkAtoms::autofocus)) {
-      // Find the first descendant of element of subject that this not inert and
-      // has autofocus attribute.
-      controlCandidate = element;
-      break;
-    }
-    if (!controlCandidate) {
-      // If there isn't one, then let control be the first non-inert descendant
-      // element of subject, in tree order.
-      controlCandidate = element;
-    }
-  }
+  RefPtr<Element> control = GetFocusDelegate(false /* aWithMouse */);
 
   // If there isn't one of those either, then let control be subject.
-  if (!controlCandidate) {
-    controlCandidate = this;
+  if (!control) {
+    control = this;
   }
 
-  RefPtr<Element> control = controlCandidate;
-
-  // 3) Run the focusing steps for control.
-  ErrorResult rv;
-  nsIFrame* frame = control->GetPrimaryFrame();
-  if (frame && frame->IsFocusable()) {
-    control->Focus(FocusOptions(), CallerType::NonSystem, rv);
-    if (rv.Failed()) {
-      return;
-    }
-  } else if (IsInTopLayer()) {
-    if (RefPtr<nsFocusManager> fm = nsFocusManager::GetFocusManager()) {
-      // Clear the focus which ends up making the body gets focused
-      nsCOMPtr<nsPIDOMWindowOuter> outerWindow = OwnerDoc()->GetWindow();
-      fm->ClearFocus(outerWindow);
-    }
-  }
-
-  // 4) Let topDocument be the active document of control's node document's
-  // browsing context's top-level browsing context.
-  // 5) If control's node document's origin is not the same as the origin of
-  // topDocument, then return.
-  BrowsingContext* bc = control->OwnerDoc()->GetBrowsingContext();
-  if (bc && bc->SameOriginWithTop()) {
-    if (nsCOMPtr<nsIDocShell> docShell = bc->Top()->GetDocShell()) {
-      if (Document* topDocument = docShell->GetExtantDocument()) {
-        // 6) Empty topDocument's autofocus candidates.
-        // 7) Set topDocument's autofocus processed flag to true.
-        topDocument->SetAutoFocusFired();
-      }
-    }
-  }
+  FocusCandidate(*control, IsInTopLayer());
 }
 
 void HTMLDialogElement::QueueCancelDialog() {

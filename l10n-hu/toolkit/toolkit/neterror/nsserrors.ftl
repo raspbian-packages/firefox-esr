@@ -2,23 +2,14 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 # DO NOT ADD THINGS OTHER THAN ERROR MESSAGES HERE.
 # This file gets parsed into a JS dictionary of all known error message ids in
 # gen_aboutneterror_codes.py . If we end up needing fluent attributes or
 # refactoring them in some way, the script will need updating.
 
-# Variables:
-# $hostname (String) - Hostname of the website with SSL error.
-# $errorMessage (String) - Error message corresponding to the type of error we are experiencing.
-ssl-connection-error = Hiba történt a következőhöz csatlakozáskor: { $hostname }. { $errorMessage }
-
-# Variables:
-# $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
-cert-error-code-prefix = Hibakód: { $error }
-
 psmerr-ssl-disabled = Nem lehet biztonságosan kapcsolódni, mert az SSL protokoll le van tiltva.
 psmerr-ssl2-disabled = Nem lehet biztonságosan kapcsolódni, mert a hely az SSL protokoll egy régi, nem biztonságos verzióját használja.
-
 # This is a multi-line message.
 psmerr-hostreusedissuerandserial =
     Érvénytelen tanúsítványt kapott.  Lépjen kapcsolatba a kiszolgáló adminisztrátorával vagy e-mailes kapcsolattartójával, és adja meg a következő információkat: 
@@ -110,7 +101,7 @@ ssl-error-token-insertion-removal = PKCS#11 token lett beszúrva vagy eltávolí
 ssl-error-token-slot-not-found = Nem található PKCS#11 token a kívánt művelet elvégzésére.
 ssl-error-no-compression-overlap = Nem lehet biztonságosan kommunikálni a partnerrel: nincs közös tömörítő algoritmus.
 ssl-error-handshake-not-completed = Nem lehet egy másik SSL-kézfogást kezdeményezni, amíg az aktuális kézfogás nem fejeződik be.
-ssl-error-bad-handshake-hash-value = Helytelen kézfogási hash-értékek érkeztek a partnertől.
+ssl-error-bad-handshake-hash-value = Helytelen kézfogási ujjlenyomat-értékek érkeztek a partnertől.
 ssl-error-cert-kea-mismatch = A rendelkezésre álló tanúsítvány nem használható a kiválasztott kulcskicserélő algoritmussal.
 ssl-error-no-trusted-ssl-client-ca = Nincs az SSL-ügyfél hitelesítésére megbízható hitelesítésszolgáltató.
 ssl-error-session-not-found = Az ügyfél SSL-munkamenet-azonosítója nem található a kiszolgáló munkamenet-gyorsítótárában.
@@ -131,7 +122,7 @@ ssl-error-unsupported-extension-alert = Az SSL-partner nem támogatja a kért TL
 ssl-error-certificate-unobtainable-alert = Az SSL-partner nem tudja letölteni az Ön tanúsítványát a megadott URL-ről.
 ssl-error-unrecognized-name-alert = Az SSL-partnernek nincs tanúsítványa a kért DNS-névhez.
 ssl-error-bad-cert-status-response-alert = Az SSL-patner nem kapott OCSP-választ a tanúsítványára.
-ssl-error-bad-cert-hash-value-alert = Az SSL-partner rossz hash-értéket jelzett a tanúsítványhoz.
+ssl-error-bad-cert-hash-value-alert = Az SSL-partner hibás ujjlenyomat-értéket jelzett a tanúsítványhoz.
 ssl-error-rx-unexpected-new-session-ticket = Az SSL egy váratlan New Session Ticket kézfogási üzenetet kapott.
 ssl-error-rx-malformed-new-session-ticket = Az SSL egy rosszul formázott New Session Ticket kézfogási üzenetet kapott.
 ssl-error-decompression-failure = Az SSL egy tömörített rekordot kapott, amit nem sikerült kicsomagolni.
@@ -149,7 +140,7 @@ ssl-error-rx-malformed-hello-verify-request = Az SSL rosszul formázott Hello Ve
 ssl-error-rx-unexpected-hello-verify-request = Az SSL váratlan Hello Verify Request kézfogásüzenetet kapott.
 ssl-error-feature-not-supported-for-version = Az SSL funkció nem támogatott a protokollverzióhoz.
 ssl-error-rx-unexpected-cert-status = Az SSL váratlan tanúsítványstátusz kézfogásüzenetet kapott.
-ssl-error-unsupported-hash-algorithm = A TLS partner nem támogatott hash algoritmust használt.
+ssl-error-unsupported-hash-algorithm = A TLS partner nem támogatott ujjlenyomat-készítési algoritmust használt.
 ssl-error-digest-failure = A kivonatoló függvény sikertelen.
 ssl-error-incorrect-signature-algorithm = A digitálisan aláírt elemben helytelen aláírási algoritmus van megadva.
 ssl-error-next-protocol-no-callback = A következő protokollegyeztetési kiterjesztés be lett kapcsolva, de a visszahívás törölve lett a szükségessé válása előtt.
@@ -158,9 +149,10 @@ ssl-error-inappropriate-fallback-alert = A kiszolgáló visszautasította a kéz
 ssl-error-weak-server-cert-key = A kiszolgáló tanúsítványa túl gyenge nyilvános kulcsot tartalmazott.
 ssl-error-rx-short-dtls-read = Nincs elég hely a pufferben a DTLS rekordnak.
 ssl-error-no-supported-signature-algorithm = Nem lett beállítva támogatott TLS aláírási algoritmus.
-ssl-error-unsupported-signature-algorithm = A partner az aláírási és hash algoritmusok nem támogatott kombinációját használta.
+ssl-error-unsupported-signature-algorithm = A partner az aláírási és ujjlenyomat-készítési algoritmusok nem támogatott kombinációját használta.
 ssl-error-missing-extended-master-secret = A partner megfelelő extended_master_secret kiterjesztés nélkül próbálta folytatni.
 ssl-error-unexpected-extended-master-secret = A partner egy váratlan extended_master_secret kiterjesztéssel próbálta folytatni.
+
 sec-error-io = I/O hiba történt a biztonsági hitelesítés közben.
 sec-error-library-failure = biztonsági könyvtár hibája.
 sec-error-bad-data = biztonsági könyvtár: rossz adatok érkeztek.
@@ -211,14 +203,6 @@ sec-error-pkcs7-keyalg-mismatch = Nem sikerült visszafejteni: a kulcstitkosít�
 sec-error-pkcs7-bad-signature = Nem sikerült az aláírás-ellenőrzés: nem található aláíró, túl sok aláíró van, illetve az adatok nem megfelelőek vagy sérültek.
 sec-error-unsupported-keyalg = Nem támogatott vagy ismeretlen kulcsalgoritmus.
 sec-error-decryption-disallowed = Nem sikerült visszafejteni: a titkosítás nem engedélyezett algoritmust vagy kulcsméretet használ.
-xp-sec-fortezza-bad-card = A Fortezza kártya nem lett megfelelően inicializálva. Vegye ki, és juttassa vissza a kibocsátóhoz.
-xp-sec-fortezza-no-card = Nem található Fortezza kártya
-xp-sec-fortezza-none-selected = Nincs kiválasztva Fortezza kártya
-xp-sec-fortezza-more-info = Válasszon egy személyiséget, amelyről információt szeretne
-xp-sec-fortezza-person-not-found = A személyiség nem található
-xp-sec-fortezza-no-more-info = Nincs több információ a személyiségről
-xp-sec-fortezza-bad-pin = Érvénytelen PIN
-xp-sec-fortezza-person-error = Nem sikerült inicializálni a Fortezza-személyiségeket.
 sec-error-no-krl = A hely tanúsítványához nem található KRL.
 sec-error-krl-expired = A hely tanúsítványának KRL-je lejárt.
 sec-error-krl-bad-signature = A hely tanúsítványa KRL-jének aláírása érvénytelen.
@@ -233,9 +217,6 @@ sec-error-cert-nickname-collision = Ezen a néven már létezik tanúsítvány.
 sec-error-key-nickname-collision = Ezen a néven már létezik kulcs.
 sec-error-safe-not-created = hiba a biztonságos objektum létrehozásakor
 sec-error-baggage-not-created = hiba a baggage objektum létrehozásakor
-xp-java-remove-principal-error = Nem sikerült eltávolítani az egyszerű nevet
-xp-java-delete-privilege-error = Nem sikerült törölni a jogosultságot
-xp-java-cert-not-exists-error = Ehhez az egyszerű névhez nem tartozik tanúsítvány
 sec-error-bad-export-algorithm = A szükséges algoritmus nem engedélyezett.
 sec-error-exporting-certificates = Hiba történt a tanúsítványok exportálásakor.
 sec-error-importing-certificates = Hiba történt a tanúsítványok importálásakor.
@@ -338,6 +319,7 @@ sec-error-locked-password = A jelszó zárolva van.
 sec-error-unknown-pkcs11-error = Ismeretlen PKCS #11 hiba.
 sec-error-bad-crl-dp-url = Érvénytelen vagy nem támogatott URL a CRL terjesztési pont nevében.
 sec-error-cert-signature-algorithm-disabled = A tanúsítvány egy nem biztonságos, és emiatt letiltott aláírási algoritmussal lett aláírva.
+
 mozilla-pkix-error-key-pinning-failure = A kiszolgáló a kulcsrögzítést (HPKP) használja, de nem hozható létre a rögzítési készletnek megfelelő megbízható tanúsítványlánc. A kulcsrögzítés irányelvsértései nem bírálhatók felül.
 mozilla-pkix-error-ca-cert-used-as-end-entity = A kiszolgáló által használt tanúsítvány alapvető megszorítások kiterjesztése hitelesítésszolgáltatóként azonosítja. A megfelelően kibocsátott tanúsítványok esetén ennek nem így kell lennie.
 mozilla-pkix-error-inadequate-key-size = A kiszolgáló által bemutatott tanúsítvány kulcsmérete túl kicsi biztonságos kapcsolat létrehozásához.
@@ -352,3 +334,16 @@ mozilla-pkix-error-invalid-integer-encoding = A kiszolgáló egy egész szám é
 mozilla-pkix-error-empty-issuer-name = A kiszolgáló által bemutatott tanúsítványban a kibocsátó megkülönböztető neve üres.
 mozilla-pkix-error-additional-policy-constraint-failed = Egy további házirendmegszorítás lett megsértve a tanúsítvány érvényesítésekor.
 mozilla-pkix-error-self-signed-cert = A tanúsítvány nem megbízható, mert a saját kibocsátója által van aláírva.
+
+xp-java-remove-principal-error = Nem sikerült eltávolítani az egyszerű nevet
+xp-java-delete-privilege-error = Nem sikerült törölni a jogosultságot
+xp-java-cert-not-exists-error = Ehhez az egyszerű névhez nem tartozik tanúsítvány
+
+xp-sec-fortezza-bad-card = A Fortezza kártya nem lett megfelelően inicializálva. Vegye ki, és juttassa vissza a kibocsátóhoz.
+xp-sec-fortezza-no-card = Nem található Fortezza kártya
+xp-sec-fortezza-none-selected = Nincs kiválasztva Fortezza kártya
+xp-sec-fortezza-more-info = Válasszon egy személyiséget, amelyről információt szeretne
+xp-sec-fortezza-person-not-found = A személyiség nem található
+xp-sec-fortezza-no-more-info = Nincs több információ a személyiségről
+xp-sec-fortezza-bad-pin = Érvénytelen PIN
+xp-sec-fortezza-person-error = Nem sikerült inicializálni a Fortezza-személyiségeket.

@@ -9,6 +9,7 @@
 #include "GLContext.h"
 #include "GLScreenBuffer.h"
 #include "mozilla/layers/CompositorBridgeChild.h"
+#include "mozilla/StaticPrefs_webgl.h"
 #include "SharedSurfaceGL.h"
 #include "WebRenderBridgeChild.h"
 
@@ -42,17 +43,25 @@ bool WebRenderCanvasRendererAsync::CreateCompositable() {
     mCanvasClient = new CanvasClient(GetForwarder(), compositableFlags);
     mCanvasClient->Connect();
   }
+  return true;
+}
 
-  if (!mPipelineId) {
-    // Alloc async image pipeline id.
-    mPipelineId = Some(
-        mManager->WrBridge()->GetCompositorBridgeChild()->GetNextPipelineId());
-    mManager->AddPipelineIdForCompositable(
-        mPipelineId.ref(), mCanvasClient->GetIPCHandle(),
-        CompositableHandleOwner::WebRenderBridge);
+void WebRenderCanvasRendererAsync::EnsurePipeline() {
+  MOZ_ASSERT(mCanvasClient);
+  if (!mCanvasClient) {
+    return;
   }
 
-  return true;
+  if (mPipelineId) {
+    return;
+  }
+
+  // Alloc async image pipeline id.
+  mPipelineId = Some(
+      mManager->WrBridge()->GetCompositorBridgeChild()->GetNextPipelineId());
+  mManager->AddPipelineIdForCompositable(
+      mPipelineId.ref(), mCanvasClient->GetIPCHandle(),
+      CompositableHandleOwner::WebRenderBridge);
 }
 
 void WebRenderCanvasRendererAsync::ClearCachedResources() {

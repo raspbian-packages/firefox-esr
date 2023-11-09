@@ -219,8 +219,6 @@ menu-history-undo-menu =
     .label = Thẻ mới đóng gần đây
 menu-history-undo-window-menu =
     .label = Các cửa sổ mới đóng
-menu-history-reopen-all-tabs = Mở lại tất cả các thẻ
-menu-history-reopen-all-windows = Mở lại tất cả các cửa sổ
 
 ## Bookmarks Menu
 
@@ -229,14 +227,13 @@ menu-bookmarks-menu =
     .accesskey = B
 menu-bookmarks-manage =
     .label = Quản lý dấu trang
-menu-bookmark-current-tab =
-    .label = Đánh dấu thẻ hiện tại
-menu-bookmark-edit =
-    .label = Chỉnh sửa dấu trang này
 menu-bookmark-tab =
     .label = Đánh dấu thẻ hiện tại…
 menu-edit-bookmark =
     .label = Chỉnh sửa dấu trang này…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Tìm kiếm dấu trang
 menu-bookmarks-all-tabs =
     .label = Đánh dấu tất cả các thẻ…
 menu-bookmarks-toolbar =
@@ -330,6 +327,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Tắt chế độ xử lý sự cố
     .accesskey = M
+menu-help-switch-device =
+    .label = Chuyển sang một thiết bị mới
+    .accesskey = N
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

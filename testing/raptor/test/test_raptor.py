@@ -1,18 +1,16 @@
-from __future__ import absolute_import, unicode_literals
-
 import os
 import sys
 import threading
 import time
 import traceback
 from unittest import mock
-import pytest
 from unittest.mock import Mock
-from six import reraise
 
 import mozunit
+import pytest
 from mozprofile import BaseProfile
 from mozrunner.errors import RunnerNotStartedError
+from six import reraise
 
 # need this so the raptor unit tests can find output & filter classes
 here = os.path.abspath(os.path.dirname(__file__))
@@ -20,13 +18,12 @@ raptor_dir = os.path.join(os.path.dirname(here), "raptor")
 sys.path.insert(0, raptor_dir)
 
 
-from browsertime import BrowsertimeDesktop, BrowsertimeAndroid
+from browsertime import BrowsertimeAndroid, BrowsertimeDesktop
 from webextension import (
-    WebExtensionFirefox,
-    WebExtensionDesktopChrome,
     WebExtensionAndroid,
+    WebExtensionDesktopChrome,
+    WebExtensionFirefox,
 )
-
 
 DEFAULT_TIMEOUT = 125
 
@@ -68,7 +65,16 @@ class TestBrowserThread(threading.Thread):
 )
 def test_build_profile(options, perftest_class, app_name, get_prefs):
     options["app"] = app_name
+
+    # We need to do the mock ourselves because of how the perftest_class
+    # is being defined
+    original_get = perftest_class.get_browser_meta
+    perftest_class.get_browser_meta = mock.MagicMock()
+    perftest_class.get_browser_meta.return_value = (app_name, "100")
+
     perftest_instance = perftest_class(**options)
+    perftest_class.get_browser_meta = original_get
+
     assert isinstance(perftest_instance.profile, BaseProfile)
     if app_name != "firefox":
         return
@@ -333,7 +339,7 @@ def test_compute_process_timeout(
     browsertime = ConcreteBrowsertime(
         post_startup_delay=DEFAULT_TIMEOUT, **browsertime_options
     )
-    bt_timeout = browsertime._compute_process_timeout(mock_test, timeout)
+    bt_timeout = browsertime._compute_process_timeout(mock_test, timeout, [])
     assert bt_timeout == expected_timeout
 
 
@@ -342,9 +348,18 @@ def test_compute_process_timeout(
     [["127.0.0.1", True, False], ["localhost", False, True]],
 )
 def test_android_reverse_ports(host, playback, benchmark):
+    original_get = WebExtensionAndroid.get_browser_meta
+    WebExtensionAndroid.get_browser_meta = mock.MagicMock()
+    WebExtensionAndroid.get_browser_meta.return_value = ("app", "version")
+
     raptor = WebExtensionAndroid(
-        "geckoview", "org.mozilla.geckoview_example", host=host
+        "geckoview",
+        "org.mozilla.geckoview_example",
+        host=host,
+        extra_prefs={},
     )
+    WebExtensionAndroid.get_browser_meta = original_get
+
     if benchmark:
         benchmark_mock = mock.patch("raptor.raptor.benchmark.Benchmark")
         raptor.benchmark = benchmark_mock
@@ -369,9 +384,17 @@ def test_android_reverse_ports(host, playback, benchmark):
 
 
 def test_android_reverse_ports_non_local_host():
+    original_get = WebExtensionAndroid.get_browser_meta
+    WebExtensionAndroid.get_browser_meta = mock.MagicMock()
+    WebExtensionAndroid.get_browser_meta.return_value = ("app", "version")
+
     raptor = WebExtensionAndroid(
-        "geckoview", "org.mozilla.geckoview_example", host="192.168.100.10"
+        "geckoview",
+        "org.mozilla.geckoview_example",
+        host="192.168.100.10",
+        extra_prefs={},
     )
+    WebExtensionAndroid.get_browser_meta = original_get
 
     raptor.set_reverse_port = Mock()
     raptor.set_reverse_ports()

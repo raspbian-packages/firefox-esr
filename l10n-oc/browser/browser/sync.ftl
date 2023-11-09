@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = Activar la sincronizacion
 
 fxa-menu-connect-another-device =
     .label = Connectar un autre periferic…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Enviar l’onglet a un periferic
+           *[other] Enviar { $tabCount } onglets al periferic
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

@@ -16,10 +16,10 @@
 #include "jit/JitRuntime.h"
 #include "jit/MIR.h"
 #include "jit/MIRGraph.h"
+#include "jit/ReciprocalMulConstants.h"
 #include "vm/JSContext.h"
 #include "vm/Realm.h"
 #include "vm/Shape.h"
-#include "vm/TraceLogging.h"
 
 #include "jit/shared/CodeGenerator-shared-inl.h"
 #include "vm/JSScript-inl.h"
@@ -103,7 +103,8 @@ void CodeGenerator::visitCompare(LCompare* comp) {
   const Register defreg = ToRegister(comp->getDef(0));
 
   if (type == MCompare::Compare_Object || type == MCompare::Compare_Symbol ||
-      type == MCompare::Compare_UIntPtr) {
+      type == MCompare::Compare_UIntPtr ||
+      type == MCompare::Compare_RefOrNull) {
     if (right->isConstant()) {
       MOZ_ASSERT(type == MCompare::Compare_UIntPtr);
       masm.cmpPtrSet(cond, leftreg, Imm32(ToInt32(right)), defreg);
@@ -127,7 +128,8 @@ void CodeGenerator::visitCompareAndBranch(LCompareAndBranch* comp) {
   const LAllocation* right = comp->right();
 
   if (type == MCompare::Compare_Object || type == MCompare::Compare_Symbol ||
-      type == MCompare::Compare_UIntPtr) {
+      type == MCompare::Compare_UIntPtr ||
+      type == MCompare::Compare_RefOrNull) {
     if (right->isConstant()) {
       MOZ_ASSERT(type == MCompare::Compare_UIntPtr);
       masm.cmpPtr(ToRegister(left), Imm32(ToInt32(right)));
@@ -148,12 +150,6 @@ void CodeGeneratorARM64::bailoutIf(Assembler::Condition condition,
                                    LSnapshot* snapshot) {
   encode(snapshot);
 
-  // Though the assembler doesn't track all frame pushes, at least make sure
-  // the known value makes sense.
-  MOZ_ASSERT_IF(frameClass_ != FrameSizeClass::None() && deoptTable_,
-                frameClass_.frameSize() == masm.framePushed());
-
-  // ARM64 doesn't use a bailout table.
   InlineScriptTree* tree = snapshot->mir()->block()->trackedTree();
   OutOfLineBailout* ool = new (alloc()) OutOfLineBailout(snapshot);
   addOutOfLineCode(ool,
@@ -168,12 +164,6 @@ void CodeGeneratorARM64::bailoutFrom(Label* label, LSnapshot* snapshot) {
 
   encode(snapshot);
 
-  // Though the assembler doesn't track all frame pushes, at least make sure
-  // the known value makes sense.
-  MOZ_ASSERT_IF(frameClass_ != FrameSizeClass::None() && deoptTable_,
-                frameClass_.frameSize() == masm.framePushed());
-
-  // ARM64 doesn't use a bailout table.
   InlineScriptTree* tree = snapshot->mir()->block()->trackedTree();
   OutOfLineBailout* ool = new (alloc()) OutOfLineBailout(snapshot);
   addOutOfLineCode(ool,
@@ -215,15 +205,13 @@ void CodeGenerator::visitMinMaxF(LMinMaxF* ins) {
   }
 }
 
-// FIXME: Uh, is this a static function? It looks like it is...
 template <typename T>
-ARMRegister toWRegister(const T* a) {
+static ARMRegister toWRegister(const T* a) {
   return ARMRegister(ToRegister(a), 32);
 }
 
-// FIXME: Uh, is this a static function? It looks like it is...
 template <typename T>
-ARMRegister toXRegister(const T* a) {
+static ARMRegister toXRegister(const T* a) {
   return ARMRegister(ToRegister(a), 64);
 }
 
@@ -355,6 +343,10 @@ void CodeGenerator::visitMulI(LMulI* ins) {
         }
         return;  // Avoid overflow check.
       case 2:
+        if (!mul->canOverflow()) {
+          masm.Add(destreg32, lhsreg32, Operand(lhsreg32));
+          return;  // Avoid overflow check.
+        }
         masm.Adds(destreg32, lhsreg32, Operand(lhsreg32));
         break;  // Go to overflow check.
       default:
@@ -617,8 +609,7 @@ void CodeGenerator::visitDivConstantI(LDivConstantI* ins) {
 
   // We will first divide by Abs(d), and negate the answer if d is negative.
   // If desired, this can be avoided by generalizing computeDivisionConstants.
-  ReciprocalMulConstants rmc =
-      computeDivisionConstants(Abs(d), /* maxLog = */ 31);
+  auto rmc = ReciprocalMulConstants::computeSignedDivisionConstants(Abs(d));
 
   // We first compute (M * n) >> 32, where M = rmc.multiplier.
   masm.Mov(const32, int32_t(rmc.multiplier));
@@ -706,9 +697,9 @@ void CodeGenerator::visitUDivConstantI(LUDivConstantI* ins) {
   // The denominator isn't a power of 2 (see LDivPowTwoI).
   MOZ_ASSERT((d & (d - 1)) != 0);
 
-  ReciprocalMulConstants rmc = computeDivisionConstants(d, /* maxLog = */ 32);
+  auto rmc = ReciprocalMulConstants::computeUnsignedDivisionConstants(d);
 
-  // We first compute (M * n) >> 32, where M = rmc.multiplier.
+  // We first compute (M * n), where M = rmc.multiplier.
   masm.Mov(const32, int32_t(rmc.multiplier));
   masm.Umull(output64, const32, lhs32);
   if (rmc.multiplier > UINT32_MAX) {
@@ -1118,8 +1109,8 @@ MoveOperand CodeGeneratorARM64::toMoveOperand(const LAllocation a) const {
   if (a.isFloatReg()) {
     return MoveOperand(ToFloatRegister(a));
   }
-  MoveOperand::Kind kind =
-      a.isStackArea() ? MoveOperand::EFFECTIVE_ADDRESS : MoveOperand::MEMORY;
+  MoveOperand::Kind kind = a.isStackArea() ? MoveOperand::Kind::EffectiveAddress
+                                           : MoveOperand::Kind::Memory;
   return MoveOperand(ToAddress(a), kind);
 }
 
@@ -1290,16 +1281,6 @@ void CodeGenerator::visitWasmBuiltinTruncateFToInt32(
     LWasmBuiltinTruncateFToInt32* lir) {
   emitTruncateFloat32(ToFloatRegister(lir->getOperand(0)),
                       ToRegister(lir->getDef(0)), lir->mir());
-}
-
-FrameSizeClass FrameSizeClass::FromDepth(uint32_t frameDepth) {
-  return FrameSizeClass::None();
-}
-
-FrameSizeClass FrameSizeClass::ClassLimit() { return FrameSizeClass(0); }
-
-uint32_t FrameSizeClass::frameSize() const {
-  MOZ_CRASH("arm64 does not use frame size classes");
 }
 
 ValueOperand CodeGeneratorARM64::ToValue(LInstruction* ins, size_t pos) {
@@ -3032,20 +3013,20 @@ void CodeGenerator::visitWasmTernarySimd128(LWasmTernarySimd128* ins) {
       break;
     }
     case wasm::SimdOp::F32x4RelaxedFma:
-      masm.fmaFloat32x4(ToFloatRegister(ins->v1()), ToFloatRegister(ins->v2()),
-                        ToFloatRegister(ins->v0()));
+      masm.fmaFloat32x4(ToFloatRegister(ins->v0()), ToFloatRegister(ins->v1()),
+                        ToFloatRegister(ins->v2()));
       break;
-    case wasm::SimdOp::F32x4RelaxedFms:
-      masm.fmsFloat32x4(ToFloatRegister(ins->v1()), ToFloatRegister(ins->v2()),
-                        ToFloatRegister(ins->v0()));
+    case wasm::SimdOp::F32x4RelaxedFnma:
+      masm.fnmaFloat32x4(ToFloatRegister(ins->v0()), ToFloatRegister(ins->v1()),
+                         ToFloatRegister(ins->v2()));
       break;
     case wasm::SimdOp::F64x2RelaxedFma:
-      masm.fmaFloat64x2(ToFloatRegister(ins->v1()), ToFloatRegister(ins->v2()),
-                        ToFloatRegister(ins->v0()));
+      masm.fmaFloat64x2(ToFloatRegister(ins->v0()), ToFloatRegister(ins->v1()),
+                        ToFloatRegister(ins->v2()));
       break;
-    case wasm::SimdOp::F64x2RelaxedFms:
-      masm.fmsFloat64x2(ToFloatRegister(ins->v1()), ToFloatRegister(ins->v2()),
-                        ToFloatRegister(ins->v0()));
+    case wasm::SimdOp::F64x2RelaxedFnma:
+      masm.fnmaFloat64x2(ToFloatRegister(ins->v0()), ToFloatRegister(ins->v1()),
+                         ToFloatRegister(ins->v2()));
       break;
     case wasm::SimdOp::I8x16RelaxedLaneSelect:
     case wasm::SimdOp::I16x8RelaxedLaneSelect:
@@ -4020,17 +4001,17 @@ void CodeGenerator::visitWasmUnarySimd128(LWasmUnarySimd128* ins) {
     case wasm::SimdOp::I8x16Popcnt:
       masm.popcntInt8x16(src, dest);
       break;
-    case wasm::SimdOp::I32x4RelaxedTruncSSatF32x4:
-      masm.truncSatFloat32x4ToInt32x4Relaxed(src, dest);
+    case wasm::SimdOp::I32x4RelaxedTruncF32x4S:
+      masm.truncFloat32x4ToInt32x4Relaxed(src, dest);
       break;
-    case wasm::SimdOp::I32x4RelaxedTruncUSatF32x4:
-      masm.unsignedTruncSatFloat32x4ToInt32x4Relaxed(src, dest);
+    case wasm::SimdOp::I32x4RelaxedTruncF32x4U:
+      masm.unsignedTruncFloat32x4ToInt32x4Relaxed(src, dest);
       break;
-    case wasm::SimdOp::I32x4RelaxedTruncSatF64x2SZero:
-      masm.truncSatFloat64x2ToInt32x4Relaxed(src, dest);
+    case wasm::SimdOp::I32x4RelaxedTruncF64x2SZero:
+      masm.truncFloat64x2ToInt32x4Relaxed(src, dest);
       break;
-    case wasm::SimdOp::I32x4RelaxedTruncSatF64x2UZero:
-      masm.unsignedTruncSatFloat64x2ToInt32x4Relaxed(src, dest);
+    case wasm::SimdOp::I32x4RelaxedTruncF64x2UZero:
+      masm.unsignedTruncFloat64x2ToInt32x4Relaxed(src, dest);
       break;
     default:
       MOZ_CRASH("Unary SimdOp not implemented");

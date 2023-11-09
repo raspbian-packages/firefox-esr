@@ -312,11 +312,9 @@ void IDBRequest::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
 }
 
 IDBOpenDBRequest::IDBOpenDBRequest(SafeRefPtr<IDBFactory> aFactory,
-                                   nsIGlobalObject* aGlobal,
-                                   bool aFileHandleDisabled)
+                                   nsIGlobalObject* aGlobal)
     : IDBRequest(aGlobal),
       mFactory(std::move(aFactory)),
-      mFileHandleDisabled(aFileHandleDisabled),
       mIncreasedActiveDatabaseCount(false) {
   AssertIsOnOwningThread();
   MOZ_ASSERT(mFactory);
@@ -335,10 +333,8 @@ RefPtr<IDBOpenDBRequest> IDBOpenDBRequest::Create(
   aFactory->AssertIsOnOwningThread();
   MOZ_ASSERT(aGlobal);
 
-  bool fileHandleDisabled = !IndexedDatabaseManager::IsFileHandleEnabled();
-
   RefPtr<IDBOpenDBRequest> request =
-      new IDBOpenDBRequest(std::move(aFactory), aGlobal, fileHandleDisabled);
+      new IDBOpenDBRequest(std::move(aFactory), aGlobal);
   CaptureCaller(aCx, request->mFilename, &request->mLineNo, &request->mColumn);
 
   if (!NS_IsMainThread()) {
@@ -438,16 +434,6 @@ NS_INTERFACE_MAP_END_INHERITING(IDBRequest)
 
 NS_IMPL_ADDREF_INHERITED(IDBOpenDBRequest, IDBRequest)
 NS_IMPL_RELEASE_INHERITED(IDBOpenDBRequest, IDBRequest)
-
-nsresult IDBOpenDBRequest::PostHandleEvent(EventChainPostVisitor& aVisitor) {
-  nsresult rv =
-      IndexedDatabaseManager::CommonPostHandleEvent(aVisitor, *mFactory);
-  if (NS_WARN_IF(NS_FAILED(rv))) {
-    return rv;
-  }
-
-  return NS_OK;
-}
 
 JSObject* IDBOpenDBRequest::WrapObject(JSContext* aCx,
                                        JS::Handle<JSObject*> aGivenProto) {

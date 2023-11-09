@@ -7,9 +7,7 @@
 #ifndef jit_CodeGenerator_h
 #define jit_CodeGenerator_h
 
-#if defined(JS_ION_PERF)
-#  include "jit/PerfSpewer.h"
-#endif
+#include "jit/PerfSpewer.h"
 #include "js/ScalarType.h"  // js::Scalar::Type
 
 #if defined(JS_CODEGEN_X86)
@@ -26,6 +24,10 @@
 #  include "jit/mips64/CodeGenerator-mips64.h"
 #elif defined(JS_CODEGEN_LOONG64)
 #  include "jit/loong64/CodeGenerator-loong64.h"
+#elif defined(JS_CODEGEN_RISCV64)
+#  include "jit/riscv64/CodeGenerator-riscv64.h"
+#elif defined(JS_CODEGEN_WASM32)
+#  include "jit/wasm32/CodeGenerator-wasm32.h"
 #elif defined(JS_CODEGEN_NONE)
 #  include "jit/none/CodeGenerator-none.h"
 #else
@@ -63,19 +65,22 @@ class OutOfLineUpdateCache;
 class OutOfLineICFallback;
 class OutOfLineCallPostWriteBarrier;
 class OutOfLineCallPostWriteElementBarrier;
+class OutOfLineElementPostWriteBarrier;
 class OutOfLineIsCallable;
 class OutOfLineIsConstructor;
 class OutOfLineRegExpMatcher;
 class OutOfLineRegExpSearcher;
-class OutOfLineRegExpTester;
+class OutOfLineRegExpExecMatch;
+class OutOfLineRegExpExecTest;
 class OutOfLineRegExpPrototypeOptimizable;
 class OutOfLineRegExpInstanceOptimizable;
 class OutOfLineNaNToZero;
 class OutOfLineResumableWasmTrap;
 class OutOfLineAbortingWasmTrap;
-class OutOfLineZeroIfNaN;
 class OutOfLineGuardNumberToIntPtrIndex;
 class OutOfLineBoxNonStrictThis;
+class OutOfLineArrayPush;
+class OutOfLineWasmCallPostWriteBarrier;
 
 class CodeGenerator final : public CodeGeneratorSpecific {
   [[nodiscard]] bool generateBody();
@@ -89,15 +94,17 @@ class CodeGenerator final : public CodeGeneratorSpecific {
   void verifyOsiPointRegs(LSafepoint* safepoint);
 #endif
 
-  void callVMInternal(VMFunctionId id, LInstruction* ins,
-                      const Register* dynStack);
+  void callVMInternal(VMFunctionId id, LInstruction* ins);
 
   template <typename Fn, Fn fn>
-  void callVM(LInstruction* ins, const Register* dynStack = nullptr);
+  void callVM(LInstruction* ins);
 
   template <typename Fn, Fn fn, class ArgSeq, class StoreOutputTo>
   inline OutOfLineCode* oolCallVM(LInstruction* ins, const ArgSeq& args,
                                   const StoreOutputTo& out);
+
+  template <typename LCallIns>
+  void emitCallNative(LCallIns* call, JSNative native);
 
  public:
   CodeGenerator(MIRGenerator* gen, LIRGraph* graph,
@@ -106,7 +113,7 @@ class CodeGenerator final : public CodeGeneratorSpecific {
 
   [[nodiscard]] bool generate();
   [[nodiscard]] bool generateWasm(
-      wasm::TypeIdDesc funcTypeId, wasm::BytecodeOffset trapOffset,
+      wasm::CallIndirectId callIndirectId, wasm::BytecodeOffset trapOffset,
       const wasm::ArgTypeVector& argTys, const RegisterOffsets& trapExitLayout,
       size_t trapExitLayoutNumWords, wasm::FuncOffsets* offsets,
       wasm::StackMaps* stackMaps, wasm::Decoder* decoder);
@@ -131,7 +138,8 @@ class CodeGenerator final : public CodeGeneratorSpecific {
 
   void visitOutOfLineRegExpMatcher(OutOfLineRegExpMatcher* ool);
   void visitOutOfLineRegExpSearcher(OutOfLineRegExpSearcher* ool);
-  void visitOutOfLineRegExpTester(OutOfLineRegExpTester* ool);
+  void visitOutOfLineRegExpExecMatch(OutOfLineRegExpExecMatch* ool);
+  void visitOutOfLineRegExpExecTest(OutOfLineRegExpExecTest* ool);
   void visitOutOfLineRegExpPrototypeOptimizable(
       OutOfLineRegExpPrototypeOptimizable* ool);
   void visitOutOfLineRegExpInstanceOptimizable(
@@ -148,7 +156,6 @@ class CodeGenerator final : public CodeGeneratorSpecific {
   void visitOutOfLineIsConstructor(OutOfLineIsConstructor* ool);
 
   void visitOutOfLineNaNToZero(OutOfLineNaNToZero* ool);
-  void visitOutOfLineZeroIfNaN(OutOfLineZeroIfNaN* ool);
 
   void visitOutOfLineResumableWasmTrap(OutOfLineResumableWasmTrap* ool);
   void visitOutOfLineAbortingWasmTrap(OutOfLineAbortingWasmTrap* ool);
@@ -165,16 +172,31 @@ class CodeGenerator final : public CodeGeneratorSpecific {
   void visitOutOfLineCallPostWriteElementBarrier(
       OutOfLineCallPostWriteElementBarrier* ool);
 
+  void visitOutOfLineElementPostWriteBarrier(
+      OutOfLineElementPostWriteBarrier* ool);
+
   void visitOutOfLineNewArray(OutOfLineNewArray* ool);
   void visitOutOfLineNewObject(OutOfLineNewObject* ool);
 
   void visitOutOfLineGuardNumberToIntPtrIndex(
       OutOfLineGuardNumberToIntPtrIndex* ool);
 
+  void visitOutOfLineArrayPush(OutOfLineArrayPush* ool);
+
+  void visitOutOfLineWasmCallPostWriteBarrier(
+      OutOfLineWasmCallPostWriteBarrier* ool);
+
  private:
   void emitPostWriteBarrier(const LAllocation* obj);
   void emitPostWriteBarrier(Register objreg);
   void emitPostWriteBarrierS(Address address, Register prev, Register next);
+
+  void emitElementPostWriteBarrier(MInstruction* mir,
+                                   const LiveRegisterSet& liveVolatileRegs,
+                                   Register obj, const LAllocation* index,
+                                   Register scratch,
+                                   const ConstantOrRegister& val,
+                                   int32_t indexDiff = 0);
 
   template <class LPostBarrierType, MIRType nurseryType>
   void visitPostWriteBarrierCommon(LPostBarrierType* lir, OutOfLineCode* ool);
@@ -187,25 +209,23 @@ class CodeGenerator final : public CodeGeneratorSpecific {
   template <typename T>
   void emitApplyGeneric(T* apply);
   template <typename T>
-  void emitCallInvokeFunction(T* apply, Register extraStackSize);
-  void emitAllocateSpaceForApply(Register argcreg, Register extraStackSpace);
+  void emitCallInvokeFunction(T* apply);
+  void emitAllocateSpaceForApply(Register argcreg, Register scratch);
   void emitAllocateSpaceForConstructAndPushNewTarget(
-      Register argcreg, Register newTargetAndExtraStackSpace);
+      Register argcreg, Register newTargetAndScratch);
   void emitCopyValuesForApply(Register argvSrcBase, Register argvIndex,
                               Register copyreg, size_t argvSrcOffset,
                               size_t argvDstOffset);
-  void emitPopArguments(Register extraStackSize);
-  void emitPushArguments(Register argcreg, Register extraStackSpace,
-                         Register copyreg, uint32_t extraFormals);
+  void emitRestoreStackPointerFromFP();
+  void emitPushArguments(Register argcreg, Register scratch, Register copyreg,
+                         uint32_t extraFormals);
   void emitPushArrayAsArguments(Register tmpArgc, Register srcBaseAndArgc,
                                 Register scratch, size_t argvSrcOffset);
-  void emitPushArguments(LApplyArgsGeneric* apply, Register extraStackSpace);
-  void emitPushArguments(LApplyArgsObj* apply, Register extraStackSpace);
-  void emitPushArguments(LApplyArrayGeneric* apply, Register extraStackSpace);
-  void emitPushArguments(LConstructArgsGeneric* construct,
-                         Register extraStackSpace);
-  void emitPushArguments(LConstructArrayGeneric* construct,
-                         Register extraStackSpace);
+  void emitPushArguments(LApplyArgsGeneric* apply, Register scratch);
+  void emitPushArguments(LApplyArgsObj* apply, Register scratch);
+  void emitPushArguments(LApplyArrayGeneric* apply, Register scratch);
+  void emitPushArguments(LConstructArgsGeneric* construct, Register scratch);
+  void emitPushArguments(LConstructArrayGeneric* construct, Register scratch);
 
   template <class GetInlinedArgument>
   void emitGetInlinedArgument(GetInlinedArgument* lir, Register index,
@@ -325,8 +345,7 @@ class CodeGenerator final : public CodeGeneratorSpecific {
                                    Register scratch, OutOfLineTestObject* ool);
 
   void emitStoreElementTyped(const LAllocation* value, MIRType valueType,
-                             MIRType elementType, Register elements,
-                             const LAllocation* index);
+                             Register elements, const LAllocation* index);
 
   // Bailout if an element about to be written to is a hole.
   void emitStoreHoleCheck(Register elements, const LAllocation* index,
@@ -365,12 +384,17 @@ class CodeGenerator final : public CodeGeneratorSpecific {
   // Script counts created during code generation.
   IonScriptCounts* scriptCounts_;
 
-#if defined(JS_ION_PERF)
-  PerfSpewer perfSpewer_;
-#endif
+  IonPerfSpewer perfSpewer_;
 
   // Bit mask of JitRealm stubs that are to be read-barriered.
   uint32_t realmStubsToReadBarrier_;
+
+#ifdef FUZZING_JS_FUZZILLI
+  void emitFuzzilliHashDouble(FloatRegister floatDouble, Register scratch,
+                              Register output);
+  void emitFuzzilliHashObject(LInstruction* lir, Register obj, Register output);
+  void emitFuzzilliHashBigInt(Register bigInt, Register output);
+#endif
 
 #define LIR_OP(op) void visit##op(L##op* ins);
   LIR_OPCODE_LIST(LIR_OP)

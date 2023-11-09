@@ -1,8 +1,6 @@
 /* Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/publicdomain/zero/1.0/ */
 
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-
 // Import common head.
 {
   /* import-globals-from ../head_common.js */
@@ -16,19 +14,19 @@ var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 var { CanonicalJSON } = ChromeUtils.import(
   "resource://gre/modules/CanonicalJSON.jsm"
 );
-var { Log } = ChromeUtils.import("resource://gre/modules/Log.jsm");
-var { ObjectUtils } = ChromeUtils.import(
-  "resource://gre/modules/ObjectUtils.jsm"
+var { Log } = ChromeUtils.importESModule("resource://gre/modules/Log.sys.mjs");
+
+var { PlacesSyncUtils } = ChromeUtils.importESModule(
+  "resource://gre/modules/PlacesSyncUtils.sys.mjs"
 );
-var { PlacesSyncUtils } = ChromeUtils.import(
-  "resource://gre/modules/PlacesSyncUtils.jsm"
+var { SyncedBookmarksMirror } = ChromeUtils.importESModule(
+  "resource://gre/modules/SyncedBookmarksMirror.sys.mjs"
 );
-var { SyncedBookmarksMirror } = ChromeUtils.import(
-  "resource://gre/modules/SyncedBookmarksMirror.jsm"
+var { CommonUtils } = ChromeUtils.importESModule(
+  "resource://services-common/utils.sys.mjs"
 );
-var { CommonUtils } = ChromeUtils.import("resource://services-common/utils.js");
-var { FileTestUtils } = ChromeUtils.import(
-  "resource://testing-common/FileTestUtils.jsm"
+var { FileTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/FileTestUtils.sys.mjs"
 );
 var {
   HTTP_400,
@@ -86,12 +84,12 @@ function run_test() {
 // A test helper to insert local roots directly into Places, since the public
 // bookmarks APIs no longer support custom roots.
 async function insertLocalRoot({ guid, title }) {
-  await PlacesUtils.withConnectionWrapper("insertLocalRoot", async function(
-    db
-  ) {
-    let dateAdded = PlacesUtils.toPRTime(new Date());
-    await db.execute(
-      `
+  await PlacesUtils.withConnectionWrapper(
+    "insertLocalRoot",
+    async function (db) {
+      let dateAdded = PlacesUtils.toPRTime(new Date());
+      await db.execute(
+        `
         INSERT INTO moz_bookmarks(guid, type, parent, position, title,
                                   dateAdded, lastModified)
         VALUES(:guid, :type, (SELECT id FROM moz_bookmarks
@@ -100,15 +98,16 @@ async function insertLocalRoot({ guid, title }) {
                 WHERE parent = (SELECT id FROM moz_bookmarks
                                 WHERE guid = :parentGuid)),
                :title, :dateAdded, :dateAdded)`,
-      {
-        guid,
-        type: PlacesUtils.bookmarks.TYPE_FOLDER,
-        parentGuid: PlacesUtils.bookmarks.rootGuid,
-        title,
-        dateAdded,
-      }
-    );
-  });
+        {
+          guid,
+          type: PlacesUtils.bookmarks.TYPE_FOLDER,
+          parentGuid: PlacesUtils.bookmarks.rootGuid,
+          title,
+          dateAdded,
+        }
+      );
+    }
+  );
 }
 
 // Returns a `CryptoWrapper`-like object that wraps the Sync record cleartext.
@@ -400,41 +399,8 @@ BookmarkObserver.prototype = {
       }
     }
   },
-  onItemChanged(
-    itemId,
-    property,
-    isAnnoProperty,
-    newValue,
-    lastModified,
-    type,
-    parentId,
-    guid,
-    parentGuid,
-    oldValue,
-    source
-  ) {
-    let params = {
-      itemId,
-      property,
-      isAnnoProperty,
-      newValue,
-      type,
-      parentId,
-      guid,
-      parentGuid,
-      oldValue,
-      source,
-    };
-    if (!this.ignoreDates) {
-      params.lastModified = lastModified;
-    }
-    this.notifications.push({ name: "onItemChanged", params });
-  },
-
-  QueryInterface: ChromeUtils.generateQI(["nsINavBookmarkObserver"]),
 
   check(expectedNotifications) {
-    PlacesUtils.bookmarks.removeObserver(this);
     PlacesUtils.observers.removeListener(
       [
         "bookmark-added",
@@ -459,7 +425,6 @@ BookmarkObserver.prototype = {
 
 function expectBookmarkChangeNotifications(options) {
   let observer = new BookmarkObserver(options);
-  PlacesUtils.bookmarks.addObserver(observer);
   PlacesUtils.observers.addListener(
     [
       "bookmark-added",

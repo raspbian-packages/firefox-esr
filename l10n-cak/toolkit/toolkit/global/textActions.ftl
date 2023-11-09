@@ -34,6 +34,10 @@ text-action-paste =
     .label = Titz'ajb'äx
     .accesskey = T
 
+text-action-paste-no-formatting =
+    .label = Titz'ajb'äx Rik'in Manäq Rub'anikil
+    .accesskey = q
+
 text-action-paste-shortcut =
     .key = V
 
@@ -50,6 +54,22 @@ text-action-select-all-shortcut =
 
 text-action-spell-no-suggestions =
     .label = (Majun taq Kichilab'exik Tz'ib'anïk)
+
+text-action-spell-add-to-dictionary =
+    .label = Titz'aqatisäx pa Soltzij
+    .accesskey = p
+
+text-action-spell-undo-add-to-dictionary =
+    .label = Titzolïx chi rij Titz'aqatisäx pa soltzij
+    .accesskey = z
+
+text-action-spell-check-toggle =
+    .label = Tinik'öx Rutz'ib'axik
+    .accesskey = t
+
+text-action-spell-add-dictionaries =
+    .label = Ketz'aqatisäx taq Soltzij…
+    .accesskey = t
 
 text-action-spell-dictionaries =
     .label = Taq ch'ab'äl

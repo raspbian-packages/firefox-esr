@@ -34,11 +34,9 @@ function getClosedState() {
 
 var CLOSED_STATE;
 
-add_task(async function init() {
+add_setup(async function () {
   forgetClosedWindows();
-  while (ss.getClosedTabCount(window) > 0) {
-    ss.forgetClosedTab(window, 0);
-  }
+  forgetClosedTabs(window);
 });
 
 add_task(async function test_open_and_close() {

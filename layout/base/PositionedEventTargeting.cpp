@@ -7,7 +7,6 @@
 #include "PositionedEventTargeting.h"
 
 #include "mozilla/EventListenerManager.h"
-#include "mozilla/EventStates.h"
 #include "mozilla/MouseEvents.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/PresShell.h"
@@ -449,7 +448,7 @@ static nsIFrame* GetClosest(RelativeTo aRoot,
     nsIContent* content = f->GetContent();
     if (content && content->IsElement() &&
         content->AsElement()->State().HasState(
-            EventStates(NS_EVENT_STATE_VISITED))) {
+            ElementState(ElementState::VISITED))) {
       distance *= aPrefs.mVisitedWeight / 100.0f;
     }
     if (distance < bestDistance) {
@@ -519,6 +518,13 @@ nsIFrame* FindFrameTargetedByInputEvent(
     }
     return aRootFrame.mFrame;
   }();
+
+  // Ignore retarget if target is editable.
+  nsIContent* targetContent = target ? target->GetContent() : nullptr;
+  if (targetContent && targetContent->IsEditable()) {
+    PET_LOG("Target %p is editable\n", target);
+    return target;
+  }
 
   // If the target element inside an element with a z-index, restrict the
   // search to other elements inside that z-index. This is a heuristic

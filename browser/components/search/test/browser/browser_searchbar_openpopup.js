@@ -34,41 +34,34 @@ let searchIcon;
 let goButton;
 let engine;
 
-add_setup(async function() {
+add_setup(async function () {
   searchbar = await gCUITestUtils.addSearchBar();
   textbox = searchbar.textbox;
   searchIcon = searchbar.querySelector(".searchbar-search-button");
   goButton = searchbar.querySelector(".search-go-button");
 
-  let defaultEngine = await Services.search.getDefault();
-  engine = await SearchTestUtils.promiseNewSearchEngine(
-    getRootDirectory(gTestPath) + "testEngine.xml"
-  );
-  await Services.search.setDefault(engine);
+  engine = await SearchTestUtils.promiseNewSearchEngine({
+    url: getRootDirectory(gTestPath) + "testEngine.xml",
+    setAsDefault: true,
+  });
 
   await clearSearchbarHistory();
 
-  await new Promise((resolve, reject) => {
-    info("adding search history values: " + kValues);
-    let addOps = kValues.map(value => {
-      return { op: "add", fieldname: "searchbar-history", value };
-    });
-    searchbar.FormHistory.update(addOps, {
-      handleCompletion: resolve,
-      handleError: reject,
-    });
+  let addOps = kValues.map(value => {
+    return { op: "add", fieldname: "searchbar-history", value };
   });
+  info("adding search history values: " + kValues);
+  await FormHistory.update(addOps);
 
   registerCleanupFunction(async () => {
     await clearSearchbarHistory();
-    await Services.search.setDefault(defaultEngine);
     gCUITestUtils.removeSearchBar();
   });
 });
 
 // Adds a task that shouldn't show the search suggestions popup.
 function add_no_popup_task(task) {
-  add_task(async function() {
+  add_task(async function () {
     let sawPopup = false;
     function listener() {
       sawPopup = true;
@@ -797,5 +790,5 @@ add_task(async function cleanup() {
   let removeOps = kValues.map(value => {
     return { op: "remove", fieldname: "searchbar-history", value };
   });
-  searchbar.FormHistory.update(removeOps);
+  FormHistory.update(removeOps);
 });

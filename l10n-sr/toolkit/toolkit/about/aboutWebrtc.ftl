@@ -7,11 +7,14 @@
 ### for WebRTC calls. See https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API.
 
 # The text "WebRTC" is a proper noun and should not be translated.
-about-webrtc-document-title = WebRTC
+about-webrtc-document-title = WebRTC интернали
 
 # "about:webrtc" is a internal browser URL and should not be
 # translated. This string is used as a title for a file save dialog box.
 about-webrtc-save-page-dialog-title = Чување странице about:webrtc
+
+## These labels are for a disclosure which contains the information for closed PeerConnection sections
+
 
 ## AEC is an abbreviation for Acoustic Echo Cancellation.
 
@@ -20,10 +23,16 @@ about-webrtc-aec-logging-off-state-label = Започни AEC евидентир
 about-webrtc-aec-logging-on-state-label = Заустави AEC евидентирање
 about-webrtc-aec-logging-on-state-msg = AEC евидентирање је активно (разговарајте са позиваоцем неколико минута па зауставите евидентирање)
 
+about-webrtc-aec-logging-toggled-on-state-msg = AEC евидентирање је активно (разговарајте са позиваоцем неколико минута па зауставите евидентирање)
+# Variables:
+#  $path (String) - The path to which the aec log file is saved.
+about-webrtc-aec-logging-toggled-off-state-msg = Датотеке евиденција се налазе у: { $path }
+
+##
+
 # The autorefresh checkbox causes the page to autorefresh its content when checked
 about-webrtc-auto-refresh-label = Аутоматско освежавање
 
-##
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
 # an abbreviation for Identifier. This string should not normally be translated
@@ -93,6 +102,11 @@ about-webrtc-log-show-msg = прикажи евиденцију
 about-webrtc-log-hide-msg = Сакриј дневник
     .title = кликните да смањите овај одељак
 
+about-webrtc-log-section-show-msg = Прикажи евиденцију
+    .title = Кликните да бисте проширили овај одељак
+about-webrtc-log-section-hide-msg = Сакриј дневник
+    .title = Кликните да смањите овај одељак
+
 ## These are used to display a header for a PeerConnection.
 ## Variables:
 ##  $browser-id (Number) - A numeric id identifying the browser tab for the PeerConnection.
@@ -102,6 +116,11 @@ about-webrtc-log-hide-msg = Сакриј дневник
 
 about-webrtc-connection-open = [ { $browser-id } | { $id } ] { $url } { $now }
 about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (затворена) { $now }
+
+## These are used to indicate what direction media is flowing.
+## Variables:
+##  $codecs - a list of media codecs
+
 
 ##
 
@@ -114,11 +133,19 @@ about-webrtc-raw-cand-show-msg = прикажи необрађене канди�
     .title = кликните да бисте проширили овај одељак
 about-webrtc-raw-cand-hide-msg = сакриј нове кандидате
     .title = кликните да смањите овај одељак
+about-webrtc-raw-cand-section-show-msg = Прикажи необрађене кандидате
+    .title = Кликните да бисте проширили овај одељак
+about-webrtc-raw-cand-section-hide-msg = Сакриј нове кандидате
+    .title = Кликните да смањите овај одељак
 about-webrtc-priority = Приоритет
 about-webrtc-fold-show-msg = прикажи детаље
     .title = кликните да бисте проширили овај одељак
 about-webrtc-fold-hide-msg = сакриј детаље
     .title = кликните да смањите овај одељак
+about-webrtc-fold-default-show-msg = Прикажи детаље
+    .title = Кликните да бисте проширили овај одељак
+about-webrtc-fold-default-hide-msg = Сакриј детаље
+    .title = Кликните да смањите овај одељак
 about-webrtc-dropped-frames-label = Испуштени кадрови:
 about-webrtc-discarded-packets-label = Одбачени пакети:
 about-webrtc-decoder-label = Декодер
@@ -140,6 +167,12 @@ about-webrtc-last-frame-timestamp = Временска ознака пријем
 about-webrtc-local-receive-ssrc = Локални SSRC пријем
 # This is an SSRC on the remote side of the connection that is sending RTP
 about-webrtc-remote-send-ssrc = Даљинско SSRC слање
+
+## These are displayed on the button that shows or hides the
+## PeerConnection configuration disclosure
+
+about-webrtc-pc-configuration-show-msg = Прикажи конфигурацију
+about-webrtc-pc-configuration-hide-msg = Сакриј конфигурацију
 
 ##
 
@@ -191,6 +224,10 @@ about-webrtc-save-page-msg = страница је снимљена на: { $pat
 about-webrtc-debug-mode-off-state-msg = евиденција праћења се налази у: { $path }
 about-webrtc-debug-mode-on-state-msg = режим за отклањање грешака је активан, евиденција праћења је у: { $path }
 about-webrtc-aec-logging-off-state-msg = датотеке евиденција се налазе у: { $path }
+
+about-webrtc-save-page-complete-msg = Страница је снимљена на: { $path }
+about-webrtc-debug-mode-toggled-off-state-msg = Евиденција праћења се налази у: { $path }
+about-webrtc-debug-mode-toggled-on-state-msg = Режим за отклањање грешака је активан, евиденција праћења је у: { $path }
 
 ##
 
@@ -273,6 +310,16 @@ about-webrtc-sdp-set-at-timestamp-remote = Постави удаљени SDP н�
 #  $timestamp (Number) - The Unix Epoch time at which the SDP was set.
 #  $relative-timestamp (Number) - The timestamp relative to the timestamp of the earliest received SDP.
 about-webrtc-sdp-set-timestamp = Временска ознака { NUMBER($timestamp, useGrouping: "false") } (+ { $relative-timestamp } ms)
+
+## These are displayed on the button that shows or hides the SDP information disclosure
+
+about-webrtc-show-msg-sdp = Прикажи SDP
+about-webrtc-hide-msg-sdp = Сакриј SDP
+
+## These are displayed on the button that shows or hides the Media Context information disclosure.
+## The Media Context is the set of preferences and detected capabilities that informs
+## the negotiated CODEC settings.
+
 
 ##
 

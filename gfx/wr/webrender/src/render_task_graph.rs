@@ -28,11 +28,6 @@ use crate::render_target::{PictureCacheTarget, TextureCacheRenderTarget, AlphaRe
 use crate::util::Allocation;
 use std::{usize, f32};
 
-/// According to apitrace, textures larger than 2048 break fast clear
-/// optimizations on some intel drivers. We sometimes need to go larger, but
-/// we try to avoid it.
-const MAX_SHARED_SURFACE_SIZE: i32 = 2048;
-
 /// If we ever need a larger texture than the ideal, we better round it up to a
 /// reasonable number in order to have a bit of leeway in case the size of this
 /// this target is changing each frame.
@@ -93,6 +88,9 @@ struct Surface {
     allocator: GuillotineAllocator,
     /// We can only allocate into this for reuse if it's a shared surface
     is_shared: bool,
+    /// The pass that we can free this surface after (guaranteed
+    /// to be the same for all tasks assigned to this surface)
+    free_after: PassId,
 }
 
 impl Surface {
@@ -103,8 +101,9 @@ impl Surface {
         size: DeviceIntSize,
         kind: RenderTargetKind,
         is_shared: bool,
+        free_after: PassId,
     ) -> Option<DeviceIntPoint> {
-        if self.kind == kind && self.is_shared == is_shared {
+        if self.kind == kind && self.is_shared == is_shared && self.free_after == free_after {
             self.allocator
                 .allocate(&size)
                 .map(|(_slice, origin)| origin)
@@ -280,6 +279,7 @@ impl RenderTaskGraphBuilder {
         resource_cache: &mut ResourceCache,
         gpu_cache: &mut GpuCache,
         deferred_resolves: &mut Vec<DeferredResolve>,
+        max_shared_surface_size: i32,
     ) -> RenderTaskGraph {
         // Copy the render tasks over to the immutable graph output
         let task_count = self.tasks.len();
@@ -398,15 +398,11 @@ impl RenderTaskGraphBuilder {
                         let mut location = None;
                         let kind = task.kind.target_kind();
 
-                        // Allow this render task to use a shared surface target if it
-                        // is freed straight after this pass. Tasks that must remain
-                        // allocated for inputs on subsequent passes are always assigned
-                        // to a standalone surface, to simplify lifetime management of
-                        // render targets.
-
+                        // If a task is used as part of an existing-chain then we can't
+                        // safely share it (nor would we want to).
                         let can_use_shared_surface =
                             task.kind.can_use_shared_surface() &&
-                            task.render_on == PassId(task.free_after.0 + 1);
+                            task.free_after != PassId::INVALID;
 
                         if can_use_shared_surface {
                             // If we can use a shared surface, step through the existing shared
@@ -415,7 +411,7 @@ impl RenderTaskGraphBuilder {
                             for sub_pass in &mut pass.sub_passes {
                                 if let SubPassSurface::Dynamic { texture_id, ref mut used_rect, .. } = sub_pass.surface {
                                     let surface = self.active_surfaces.get_mut(&texture_id).unwrap();
-                                    if let Some(p) = surface.alloc_rect(size, kind, true) {
+                                    if let Some(p) = surface.alloc_rect(size, kind, true, task.free_after) {
                                         location = Some((texture_id, p));
                                         *used_rect = used_rect.union(&DeviceIntRect::from_origin_and_size(p, size));
                                         sub_pass.task_ids.push(*task_id);
@@ -433,13 +429,13 @@ impl RenderTaskGraphBuilder {
                             // shared surface for other tasks.
 
                             let can_use_shared_surface = can_use_shared_surface &&
-                                size.width <= MAX_SHARED_SURFACE_SIZE &&
-                                size.height <= MAX_SHARED_SURFACE_SIZE;
+                                size.width <= max_shared_surface_size &&
+                                size.height <= max_shared_surface_size;
 
                             let surface_size = if can_use_shared_surface {
                                 DeviceIntSize::new(
-                                    MAX_SHARED_SURFACE_SIZE,
-                                    MAX_SHARED_SURFACE_SIZE,
+                                    max_shared_surface_size,
+                                    max_shared_surface_size,
                                 )
                             } else {
                                 // Round up size here to avoid constant re-allocs during resizing
@@ -465,6 +461,7 @@ impl RenderTaskGraphBuilder {
                                 kind,
                                 allocator: GuillotineAllocator::new(Some(surface_size)),
                                 is_shared: can_use_shared_surface,
+                                free_after: task.free_after,
                             };
 
                             // Allocation of the task must fit in this new surface!
@@ -472,6 +469,7 @@ impl RenderTaskGraphBuilder {
                                 size,
                                 kind,
                                 can_use_shared_surface,
+                                task.free_after,
                             ).expect("bug: alloc must succeed!");
 
                             location = Some((texture_id, p));
@@ -679,6 +677,19 @@ impl RenderTaskGraph {
         }
     }
 
+    pub fn resolve_texture(
+        &self,
+        task_id: impl Into<Option<RenderTaskId>>,
+    ) -> Option<TextureSource> {
+        let task_id = task_id.into()?;
+        let task = &self[task_id];
+
+        match task.get_texture_source() {
+            TextureSource::Invalid => None,
+            source => Some(source),
+        }
+    }
+
     pub fn resolve_location(
         &self,
         task_id: impl Into<Option<RenderTaskId>>,
@@ -704,6 +715,18 @@ impl RenderTaskGraph {
         Some((uv_address, texture_source))
     }
 
+
+    #[cfg(test)]
+    pub fn new_for_testing() -> Self {
+        RenderTaskGraph {
+            tasks: Vec::new(),
+            passes: Vec::new(),
+            frame_id: FrameId::INVALID,
+            task_data: Vec::new(),
+            surface_count: 0,
+            unique_surfaces: FastHashSet::default(),
+        }
+    }
 
     /// Return the surface and texture counts, used for testing
     #[cfg(test)]
@@ -1036,7 +1059,7 @@ impl RenderTaskGraphBuilder {
         gc.prepare_for_frames();
         gc.begin_frame(frame_stamp);
 
-        let g = self.end_frame(&mut rc, &mut gc, &mut Vec::new());
+        let g = self.end_frame(&mut rc, &mut gc, &mut Vec::new(), 2048);
         g.print();
 
         assert_eq!(g.passes.len(), pass_count);
@@ -1155,7 +1178,7 @@ fn fg_test_5() {
     gb.add_dependency(pc_root, child_pic_3);
 
     gb.test_expect(5, 4, &[
-        (256, 256, ImageFormat::RGBA8),
+        (2048, 2048, ImageFormat::RGBA8),
         (2048, 2048, ImageFormat::RGBA8),
         (2048, 2048, ImageFormat::RGBA8),
     ]);
@@ -1204,7 +1227,7 @@ fn fg_test_7() {
     gb.add_dependency(child2, child3);
 
     gb.test_expect(3, 3, &[
-        (256, 256, ImageFormat::RGBA8),
+        (2048, 2048, ImageFormat::RGBA8),
         (2048, 2048, ImageFormat::RGBA8),
         (2048, 2048, ImageFormat::RGBA8),
     ]);

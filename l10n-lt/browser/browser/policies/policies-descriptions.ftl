@@ -71,7 +71,7 @@ policy-DisablePrimaryPasswordCreation = Jei „true“, negalima sukurti pagrind
 
 policy-DisablePasswordReveal = Neleisti parodyti slaptažodžių įrašytuose prisijungimuose.
 
-policy-DisablePocket = Išjungti funkcionalumą, skirtą tinklalapių įrašymui į „Pocket“.
+policy-DisablePocket2 = Išjungti funkcionalumą, skirtą tinklalapių įrašymui į „{ -pocket-brand-name }“.
 
 policy-DisablePrivateBrowsing = Išjungti privatųjį naršymą.
 
@@ -115,10 +115,6 @@ policy-Extensions = Diegti, šalinti, arba užrakinti priedus. Diegimo nuostata 
 policy-ExtensionSettings = Tvarkyti visus priedų įdiegimo aspektus.
 
 policy-ExtensionUpdate = Įjungti arba išjungti automatinius priedų naujinimus.
-
-policy-FirefoxHome = Konfigūruoti „Firefox“ pradžios ekraną.
-
-policy-FlashPlugin = Leisti arba drausti „Flash“ plėtinio naudojimą.
 
 policy-Handlers = Konfigūruoti numatytąsias programas.
 
@@ -189,9 +185,6 @@ policy-SearchBar = Parinkti numatytąją paieškos lauko vietą. Naudotojui vis 
 policy-SearchEngines = Konfigūruoti ieškyklių nuostatas. Ši strategija galima tik prailginto palaikymo laidos (ESR) versijoje.
 
 policy-SearchSuggestEnabled = Įjungti arba išjungti paieškos žodžių siūlymus.
-
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Diegti PKCS #11 modulius.
 
 policy-ShowHomeButton = Rodyti pradžios mygtuką priemonių juostoje.
 

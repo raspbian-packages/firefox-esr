@@ -13,7 +13,9 @@
 #include "js/friend/WindowProxy.h"    // js::IsWindowProxy
 #include "js/Object.h"                // JS::GetBuiltinClass
 #include "js/Proxy.h"
+#include "vm/Compartment.h"
 #include "vm/ErrorObject.h"
+#include "vm/Interpreter.h"
 #include "vm/JSContext.h"
 #include "vm/ProxyObject.h"
 #include "vm/Realm.h"
@@ -441,7 +443,7 @@ ErrorCopier::~ErrorCopier() {
     RootedValue exc(cx);
     if (cx->getPendingException(&exc) && exc.isObject() &&
         exc.toObject().is<ErrorObject>()) {
-      RootedSavedFrame stack(cx, cx->getPendingExceptionStack());
+      Rooted<SavedFrame*> stack(cx, cx->getPendingExceptionStack());
       cx->clearPendingException();
       ar.reset();
       Rooted<ErrorObject*> errObj(cx, &exc.toObject().as<ErrorObject>());

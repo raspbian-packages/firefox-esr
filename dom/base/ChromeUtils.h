@@ -48,7 +48,8 @@ class ChromeUtils {
 
  public:
   // Implemented in devtools/shared/heapsnapshot/HeapSnapshot.cpp
-  static uint64_t GetObjectNodeId(GlobalObject& global, JS::HandleObject aVal);
+  static uint64_t GetObjectNodeId(GlobalObject& global,
+                                  JS::Handle<JSObject*> aVal);
 
   // Implemented in devtools/shared/heapsnapshot/HeapSnapshot.cpp
   static void SaveHeapSnapshot(GlobalObject& global,
@@ -63,6 +64,11 @@ class ChromeUtils {
   // Implemented in devtools/shared/heapsnapshot/HeapSnapshot.cpp
   static already_AddRefed<devtools::HeapSnapshot> ReadHeapSnapshot(
       GlobalObject& global, const nsAString& filePath, ErrorResult& rv);
+
+  static bool IsDevToolsOpened();
+  static bool IsDevToolsOpened(GlobalObject& aGlobal);
+  static void NotifyDevToolsOpened(GlobalObject& aGlobal);
+  static void NotifyDevToolsClosed(GlobalObject& aGlobal);
 
   static void NondeterministicGetWeakMapKeys(
       GlobalObject& aGlobal, JS::Handle<JS::Value> aMap,
@@ -144,28 +150,33 @@ class ChromeUtils {
       const dom::CompileScriptOptionsDictionary& aOptions, ErrorResult& aRv);
 
   static MozQueryInterface* GenerateQI(const GlobalObject& global,
-                                       const Sequence<JS::Value>& interfaces,
-                                       ErrorResult& aRv);
+                                       const Sequence<JS::Value>& interfaces);
 
-  static void WaiveXrays(GlobalObject& aGlobal, JS::HandleValue aVal,
-                         JS::MutableHandleValue aRetval, ErrorResult& aRv);
+  static void WaiveXrays(GlobalObject& aGlobal, JS::Handle<JS::Value> aVal,
+                         JS::MutableHandle<JS::Value> aRetval,
+                         ErrorResult& aRv);
 
-  static void UnwaiveXrays(GlobalObject& aGlobal, JS::HandleValue aVal,
-                           JS::MutableHandleValue aRetval, ErrorResult& aRv);
+  static void UnwaiveXrays(GlobalObject& aGlobal, JS::Handle<JS::Value> aVal,
+                           JS::MutableHandle<JS::Value> aRetval,
+                           ErrorResult& aRv);
 
-  static void GetClassName(GlobalObject& aGlobal, JS::HandleObject aObj,
+  static void GetClassName(GlobalObject& aGlobal, JS::Handle<JSObject*> aObj,
                            bool aUnwrap, nsAString& aRetval);
 
-  static void ShallowClone(GlobalObject& aGlobal, JS::HandleObject aObj,
-                           JS::HandleObject aTarget,
-                           JS::MutableHandleObject aRetval, ErrorResult& aRv);
+  static bool IsDOMObject(GlobalObject& aGlobal, JS::Handle<JSObject*> aObj,
+                          bool aUnwrap);
+
+  static void ShallowClone(GlobalObject& aGlobal, JS::Handle<JSObject*> aObj,
+                           JS::Handle<JSObject*> aTarget,
+                           JS::MutableHandle<JSObject*> aRetval,
+                           ErrorResult& aRv);
 
   static void IdleDispatch(const GlobalObject& global,
                            IdleRequestCallback& callback,
                            const IdleRequestOptions& options, ErrorResult& aRv);
 
   static void GetRecentJSDevError(GlobalObject& aGlobal,
-                                  JS::MutableHandleValue aRetval,
+                                  JS::MutableHandle<JS::Value> aRetval,
                                   ErrorResult& aRv);
 
   static void ClearRecentJSDevError(GlobalObject& aGlobal);
@@ -196,11 +207,27 @@ class ChromeUtils {
                      const Optional<JS::Handle<JSObject*>>& aTargetObj,
                      JS::MutableHandle<JSObject*> aRetval, ErrorResult& aRv);
 
+  static void ImportESModule(const GlobalObject& aGlobal,
+                             const nsAString& aResourceURI,
+                             const ImportESModuleOptionsDictionary& aOptions,
+                             JS::MutableHandle<JSObject*> aRetval,
+                             ErrorResult& aRv);
+
+  static void DefineLazyGetter(const GlobalObject& aGlobal,
+                               JS::Handle<JSObject*> aTarget,
+                               JS::Handle<JS::Value> aName,
+                               JS::Handle<JSObject*> aLambda, ErrorResult& aRv);
+
   static void DefineModuleGetter(const GlobalObject& global,
                                  JS::Handle<JSObject*> target,
                                  const nsAString& id,
                                  const nsAString& resourceURI,
                                  ErrorResult& aRv);
+
+  static void DefineESModuleGetters(const GlobalObject& global,
+                                    JS::Handle<JSObject*> target,
+                                    JS::Handle<JSObject*> modules,
+                                    ErrorResult& aRv);
 
   static void GetCallerLocation(const GlobalObject& global,
                                 nsIPrincipal* principal,
@@ -223,6 +250,8 @@ class ChromeUtils {
   static double LastExternalProtocolIframeAllowed(GlobalObject& aGlobal);
 
   static void ResetLastExternalProtocolIframeAllowed(GlobalObject& aGlobal);
+
+  static void EndWheelTransaction(GlobalObject& aGlobal);
 
   static void RegisterWindowActor(const GlobalObject& aGlobal,
                                   const nsACString& aName,
@@ -262,6 +291,21 @@ class ChromeUtils {
   static void GetFormAutofillConfidences(
       GlobalObject& aGlobal, const Sequence<OwningNonNull<Element>>& aElements,
       nsTArray<FormAutofillConfidences>& aResults, ErrorResult& aRv);
+
+  static bool IsDarkBackground(GlobalObject&, Element&);
+
+  static double DateNow(GlobalObject&);
+
+  static void EnsureJSOracleStarted(GlobalObject&);
+
+  static unsigned AliveUtilityProcesses(const GlobalObject&);
+
+  static void GetAllPossibleUtilityActorNames(GlobalObject& aGlobal,
+                                              nsTArray<nsCString>& aNames);
+
+ private:
+  // Number of DevTools session debugging the current process
+  static std::atomic<uint32_t> sDevToolsOpenedCount;
 };
 
 }  // namespace dom

@@ -1479,8 +1479,11 @@ bool IMMHandler::HandleDocumentFeed(nsWindow* aWindow, LPARAM lParam,
 
   // Get the focused paragraph, we decide that it starts from the previous CRLF
   // (or start of the editor) to the next one (or the end of the editor).
-  int32_t paragraphStart = str.RFind("\n", false, targetOffset, -1) + 1;
-  int32_t paragraphEnd = str.Find("\r", false, targetOffset + targetLength, -1);
+  int32_t paragraphStart = 0;
+  if (targetOffset > 0) {
+    paragraphStart = Substring(str, 0, targetOffset).RFind(u"\n") + 1;
+  }
+  int32_t paragraphEnd = str.Find(u"\r", targetOffset + targetLength);
   if (paragraphEnd < 0) {
     paragraphEnd = str.Length();
   }
@@ -2319,7 +2322,7 @@ nsresult IMMHandler::OnMouseButtonEvent(
   MOZ_LOG(gIMELog, LogLevel::Info,
           ("IMMHandler::OnMouseButtonEvent, x,y=%d,%d, offset=%d, "
            "positioning=%d",
-           cursorPos.x, cursorPos.y, offset, positioning));
+           cursorPos.x.value, cursorPos.y.value, offset, positioning));
 
   // send MS_MSIME_MOUSE message to default IME window.
   HWND imeWnd = ::ImmGetDefaultIMEWnd(aWindow->GetWindowHandle());

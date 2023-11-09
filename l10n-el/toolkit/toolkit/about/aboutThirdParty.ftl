@@ -27,10 +27,6 @@ third-party-tag-shellex = Επέκταση κελύφους
     .title = Αυτός ο τύπος προσθέτου φορτώνεται όταν ανοίγετε τον διάλογο συστήματος για αρχεία.
 third-party-tag-background = Παρασκήνιο
     .title = Αυτό το πρόσθετο δεν απέκλεισε την εφαρμογή επειδή φορτώθηκε στο παρασκήνιο.
-third-party-unsigned-icon =
-    .title = Αυτή η μονάδα δεν έχει υπογραφεί
-third-party-warning-icon =
-    .title = Το { -brand-short-name } κατέρρευσε στον κώδικα από αυτή τη λειτουργική μονάδα
 third-party-icon-unsigned =
     .title = Αυτή η μονάδα δεν έχει υπογραφτεί
     .alt = Αυτή η μονάδα δεν έχει υπογραφτεί
@@ -41,6 +37,9 @@ third-party-status-loaded = Φορτώθηκε
 third-party-status-blocked = Αποκλείστηκε
 third-party-status-redirected = Ανακατευθύνθηκε
 third-party-button-copy-to-clipboard = Αντιγραφή ακατέργαστων δεδομένων στο πρόχειρο
+third-party-loading-data =
+    .alt = Φόρτωση πληροφοριών συστήματος…
+    .title = Φόρτωση πληροφοριών συστήματος…
 third-party-button-reload = Ανανέωση με πληροφορίες συστήματος
     .title = Ανανέωση με πληροφορίες συστήματος
 third-party-button-open =
@@ -51,13 +50,33 @@ third-party-button-to-block =
 third-party-button-to-unblock =
     .title = Βρίσκεται σε αποκλεισμό. Κάντε κλικ για άρση.
     .aria-label = Βρίσκεται σε αποκλεισμό. Κάντε κλικ για άρση.
+third-party-button-to-unblock-disabled =
+    .title =
+        Έχει επισημανθεί ως αποκλεισμένο, αν και η λίστα αποκλεισμού είναι ανενεργή για αυτήν την εκτέλεση
+        του { -brand-short-name }. Κάντε κλικ για άρση αποκλεισμού.
+    .aria-label =
+        Έχει επισημανθεί ως αποκλεισμένο, αν και η λίστα αποκλεισμού είναι ανενεργή για αυτήν την εκτέλεση
+        του { -brand-short-name }. Κάντε κλικ για άρση αποκλεισμού.
+third-party-button-to-block-module = Αποκλεισμός μονάδας
+    .title = Αποκλεισμός μονάδας
+    .aria-label = Αποκλεισμός μονάδας
+third-party-button-to-unblock-module = Άρση αποκλεισμού μονάδας
+    .title = Γίνεται αποκλεισμός αυτήν τη στιγμή. Κάντε κλικ για άρση αποκλεισμού.
+    .aria-label = Γίνεται αποκλεισμός αυτήν τη στιγμή. Κάντε κλικ για άρση αποκλεισμού.
+third-party-button-to-unblock-module-disabled = Άρση αποκλεισμού μονάδας (η λίστα αποκλεισμού έχει απενεργοποιηθεί)
+    .title =
+        Έχει επισημανθεί ως αποκλεισμένη, αν και η λίστα αποκλεισμού έχει απενεργοποιηθεί για αυτήν την εκτέλεση
+        του { -brand-short-name }. Κάντε κλικ για άρση αποκλεισμού.
+    .aria-label =
+        Έχει επισημανθεί ως αποκλεισμένη, αν και η λίστα αποκλεισμού έχει απενεργοποιηθεί για αυτήν την εκτέλεση
+        του { -brand-short-name }. Κάντε κλικ για άρση αποκλεισμού.
 third-party-button-expand =
     .title = Εμφάνιση λεπτομερών πληροφοριών
 third-party-button-collapse =
     .title = Σύμπτυξη λεπτομερών πληροφοριών
-third-party-requires-restart = Το { -brand-short-name } πρέπει να επανεκκινηθεί για να αλλάξει τις μονάδες τρίτων που αποκλείονται.
+third-party-blocking-requires-restart = Για να αποκλείσετε μια τρίτη μονάδα, πρέπει να επανεκκινήσετε το { -brand-short-name }.
 third-party-should-restart-title = Επανεκκίνηση του { -brand-short-name }
-third-party-should-restart-ok = Επανεκκίνηση του { -brand-short-name } τώρα
+third-party-restart-now = Επανεκκίνηση τώρα
 third-party-restart-later = Επανεκκίνηση αργότερα
 third-party-blocked-by-builtin =
     .title = Αποκλείστηκε από το { -brand-short-name }

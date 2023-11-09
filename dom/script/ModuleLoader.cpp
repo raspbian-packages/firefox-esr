@@ -23,6 +23,7 @@
 #include "js/loader/ModuleLoadRequest.h"
 #include "xpcpublic.h"
 #include "GeckoProfiler.h"
+#include "nsContentSecurityManager.h"
 #include "nsIContent.h"
 #include "nsJSUtils.h"
 #include "mozilla/dom/AutoEntryScript.h"
@@ -88,40 +89,37 @@ bool ModuleLoader::CanStartLoad(ModuleLoadRequest* aRequest, nsresult* aRvOut) {
 }
 
 nsresult ModuleLoader::StartFetch(ModuleLoadRequest* aRequest) {
-  nsSecurityFlags securityFlags;
-
   // According to the spec, module scripts have different behaviour to classic
   // scripts and always use CORS. Only exception: Non linkable about: pages
   // which load local module scripts.
-  if (GetScriptLoader()->IsAboutPageLoadingChromeURI(
-          aRequest, GetScriptLoader()->GetDocument())) {
-    securityFlags = nsILoadInfo::SEC_ALLOW_CROSS_ORIGIN_SEC_CONTEXT_IS_NULL;
-  } else {
-    securityFlags = nsILoadInfo::SEC_REQUIRE_CORS_INHERITS_SEC_CONTEXT;
-    if (aRequest->CORSMode() == CORS_NONE ||
-        aRequest->CORSMode() == CORS_ANONYMOUS) {
-      securityFlags |= nsILoadInfo::SEC_COOKIES_SAME_ORIGIN;
-    } else {
-      MOZ_ASSERT(aRequest->CORSMode() == CORS_USE_CREDENTIALS);
-      securityFlags |= nsILoadInfo::SEC_COOKIES_INCLUDE;
-    }
-  }
+  bool isAboutPageLoadingChromeURI = ScriptLoader::IsAboutPageLoadingChromeURI(
+      aRequest, GetScriptLoader()->GetDocument());
+
+  nsContentSecurityManager::CORSSecurityMapping corsMapping =
+      isAboutPageLoadingChromeURI
+          ? nsContentSecurityManager::CORSSecurityMapping::DISABLE_CORS_CHECKS
+          : nsContentSecurityManager::CORSSecurityMapping::REQUIRE_CORS_CHECKS;
+
+  nsSecurityFlags securityFlags =
+      nsContentSecurityManager::ComputeSecurityFlags(aRequest->CORSMode(),
+                                                     corsMapping);
 
   securityFlags |= nsILoadInfo::SEC_ALLOW_CHROME;
 
   // Delegate Shared Behavior to base ScriptLoader
-  nsresult rv = GetScriptLoader()->StartLoadInternal(aRequest, securityFlags);
+  //
+  // aCharsetForPreload is passed as Nothing() because this is not a preload
+  // and `StartLoadInternal` is able to find the charset by using `aRequest`
+  // for this case.
+  nsresult rv = GetScriptLoader()->StartLoadInternal(
+      aRequest, securityFlags, 0, Nothing() /* aCharsetForPreload */);
   NS_ENSURE_SUCCESS(rv, rv);
 
-  // https://wicg.github.io/import-maps/#document-acquiring-import-maps
-  //
-  // An import map is accepted if and only if it is added (i.e., its
-  // corresponding script element is added) before the first module load is
-  // started, even if the loading of the import map file doesn’t finish before
-  // the first module load is started.
+  // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-an-import()-module-script-graph
+  // Step 1. Disallow further import maps given settings object.
   if (!aRequest->GetScriptLoadContext()->IsPreload()) {
-    LOG(("ScriptLoadRequest (%p): SetAcquiringImportMaps false", aRequest));
-    SetAcquiringImportMaps(false);
+    LOG(("ScriptLoadRequest (%p): Disallow further import maps.", aRequest));
+    DisallowImportMaps();
   }
 
   LOG(("ScriptLoadRequest (%p): Start fetching module", aRequest));
@@ -133,10 +131,9 @@ void ModuleLoader::OnModuleLoadComplete(ModuleLoadRequest* aRequest) {
   MOZ_ASSERT(aRequest->IsReadyToRun());
 
   if (aRequest->IsTopLevel()) {
-    if (aRequest->IsDynamicImport() ||
-        (aRequest->GetScriptLoadContext()->mIsInline &&
-         aRequest->GetScriptLoadContext()->GetParserCreated() ==
-             NOT_FROM_PARSER)) {
+    if (aRequest->GetScriptLoadContext()->mIsInline &&
+        aRequest->GetScriptLoadContext()->GetParserCreated() ==
+            NOT_FROM_PARSER) {
       GetScriptLoader()->RunScriptWhenSafe(aRequest);
     } else {
       GetScriptLoader()->MaybeMoveToLoadedList(aRequest);
@@ -152,18 +149,9 @@ nsresult ModuleLoader::CompileFetchedModule(
     ModuleLoadRequest* aRequest, JS::MutableHandle<JSObject*> aModuleOut) {
   if (aRequest->GetScriptLoadContext()->mWasCompiledOMT) {
     JS::Rooted<JS::InstantiationStorage> storage(aCx);
-
-    RefPtr<JS::Stencil> stencil;
-    if (aRequest->IsTextSource()) {
-      stencil = JS::FinishCompileModuleToStencilOffThread(
-          aCx, aRequest->GetScriptLoadContext()->mOffThreadToken,
-          storage.address());
-    } else {
-      MOZ_ASSERT(aRequest->IsBytecode());
-      stencil = JS::FinishDecodeStencilOffThread(
-          aCx, aRequest->GetScriptLoadContext()->mOffThreadToken,
-          storage.address());
-    }
+    RefPtr<JS::Stencil> stencil = JS::FinishOffThreadStencil(
+        aCx, aRequest->GetScriptLoadContext()->mOffThreadToken,
+        storage.address());
 
     aRequest->GetScriptLoadContext()->mOffThreadToken = nullptr;
 
@@ -189,7 +177,7 @@ nsresult ModuleLoader::CompileFetchedModule(
   }
 
   if (!nsJSUtils::IsScriptable(aGlobal)) {
-    return NS_OK;
+    return NS_ERROR_FAILURE;
   }
 
   RefPtr<JS::Stencil> stencil;

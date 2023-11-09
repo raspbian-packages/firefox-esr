@@ -34,6 +34,10 @@ text-action-paste =
     .label = Cuir ann
     .accesskey = C
 
+text-action-paste-no-formatting =
+    .label = Cuir ann gun fhòrmatadh
+    .accesskey = m
+
 text-action-paste-shortcut =
     .key = V
 
@@ -50,6 +54,26 @@ text-action-select-all-shortcut =
 
 text-action-spell-no-suggestions =
     .label = Gun mholaidhean litreachaidh
+
+text-action-spell-add-to-dictionary =
+    .label = Cuir ris an fhaclair
+    .accesskey = C
+
+text-action-spell-undo-add-to-dictionary =
+    .label = Neo-dhèan cur ris an fhaclair
+    .accesskey = N
+
+text-action-spell-check-toggle =
+    .label = Ceartaich an litreachadh
+    .accesskey = C
+
+text-action-spell-add-dictionaries =
+    .label = Cuir faclairean ris…
+    .accesskey = u
+
+text-action-spell-dictionaries =
+    .label = Cànain
+    .accesskey = n
 
 text-action-search-text-box-clear =
     .title = Falamhaich

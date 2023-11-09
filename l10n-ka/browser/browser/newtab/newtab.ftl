@@ -20,12 +20,13 @@ newtab-personalize-dialog-label =
 newtab-search-box-search-button =
     .title = ძიება
     .aria-label = ძიება
-# Variables
-#  $engine (String): the name of the user's default search engine
+
+# Variables:
+#   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-text = მოძებნეთ { $engine } საძიებოთი ან შეიყვანეთ მისამართი
 newtab-search-box-handoff-text-no-engine = მოძებნეთ ან შეიყვანეთ მისამართი
-# Variables
-#  $engine (String): the name of the user's default search engine
+# Variables:
+#   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-input =
     .placeholder = მოძებნეთ { $engine } საძიებოთი ან შეიყვანეთ მისამართი
     .title = მოძებნეთ { $engine } საძიებოთი ან შეიყვანეთ მისამართი
@@ -34,6 +35,7 @@ newtab-search-box-handoff-input-no-engine =
     .placeholder = მოძებნეთ ან შეიყვანეთ მისამართი
     .title = მოძებნეთ ან შეიყვანეთ მისამართი
     .aria-label = მოძებნეთ ან შეიყვანეთ მისამართი
+
 newtab-search-box-text = ძიება ინტერნეტში
 newtab-search-box-input =
     .placeholder = ინტერნეტში ძიება
@@ -48,10 +50,12 @@ newtab-topsites-edit-shortcut-header = მალსახმობის ჩა�
 newtab-topsites-title-label = დასახელება
 newtab-topsites-title-input =
     .placeholder = სათაურის შეყვანა
+
 newtab-topsites-url-label = URL-ბმული
 newtab-topsites-url-input =
     .placeholder = აკრიფეთ ან ჩასვით URL-ბმული
 newtab-topsites-url-validation = საჭიროა მართებული URL
+
 newtab-topsites-image-url-label = სასურველი სურათის URL-ბმული
 newtab-topsites-use-image-link = სასურველი სურათის გამოყენება…
 newtab-topsites-image-validation = სურათი ვერ ჩაიტვირთა. სცადეთ სხვა URL-ბმული.
@@ -80,13 +84,15 @@ newtab-topsite-sponsored = დაფინანსებული
 newtab-menu-section-tooltip =
     .title = მენიუს გახსნა
     .aria-label = მენიუს გახსნა
+
 # Tooltip for dismiss button
 newtab-dismiss-button-tooltip =
     .title = მოცილება
     .aria-label = მოცილება
+
 # This tooltip is for the context menu of Pocket cards or Topsites
 # Variables:
-#  $title (String): The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
 newtab-menu-content-tooltip =
     .title = მენიუს გახსნა
     .aria-label = კონტექსტური მენიუს გახსნა { $title }
@@ -155,18 +161,21 @@ newtab-label-removed-bookmark = სანიშნი მოცილებუ�
 newtab-label-recommended = ფართოდ გავრცელებული
 newtab-label-saved = შენახულია { -pocket-brand-name }-ში
 newtab-label-download = ჩამოტვირთული
+
 # This string is used in the story cards to indicate sponsored content
 # Variables:
-#  $sponsorOrSource (String): This is the name of a company or their domain
+#   $sponsorOrSource (string) - The name of a company or their domain
 newtab-label-sponsored = { $sponsorOrSource } · დაკვეთილი
+
 # This string is used at the bottom of story cards to indicate sponsored content
 # Variables:
-#  $sponsor (String): This is the name of a sponsor
+#   $sponsor (string) - The name of a sponsor
 newtab-label-sponsored-by = დამკვეთია { $sponsor }
+
 # This string is used under the image of story cards to indicate source and time to read
 # Variables:
-#  $source (String): This is the name of a company or their domain
-#  $timeToRead (Number): This is the estimated number of minutes to read this story
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
 newtab-label-source-read-time = { $source } · { $timeToRead } წთ
 
 ## Section Menu: These strings are displayed in the section context menu and are
@@ -195,15 +204,16 @@ newtab-section-expand-section-label =
 newtab-section-header-topsites = რჩეული საიტები
 newtab-section-header-recent-activity = ბოლო მოქმედებები
 # Variables:
-#  $provider (String): Name of the corresponding content provider.
+#   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } გირჩევთ
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
 newtab-empty-section-highlights = დაიწყეთ გვერდების დათვალიერება და აქ გამოჩნდება თქვენთვის სასურველი სტატიები, ვიდეოები და ბოლოს მონახულებული ან ჩანიშნული საიტები.
+
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
-#  $provider (String): Name of the content provider for this section, e.g "Pocket".
+#   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = უკვე ყველაფერს გაეცანით. მოგვიანებით შემოიარეთ მეტი რჩეული სტატიის სანახავად, რომელსაც { $provider } მოგაწვდით. ვერ ითმენთ? აირჩიეთ რომელიმე ფართოდ გავრცელებული საკითხი, ახალი საინტერესო სტატიების მოსაძიებლად.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
@@ -225,22 +235,18 @@ newtab-pocket-learn-more = იხილეთ ვრცლად
 newtab-pocket-cta-button = გამოიყენეთ { -pocket-brand-name }
 newtab-pocket-cta-text = გადაინახეთ სასურველი შიგთავსი { -pocket-brand-name }-ში და მიეცით გონებას საკვები, შთამბეჭდავი საკითხავი მასალის სახით.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } ეკუთვნის { -brand-product-name }-ოჯახს
-# A save to Pocket button that shows over the card thumbnail on hover.
-newtab-pocket-save-to-pocket = შეინახავს { -pocket-brand-name }
-newtab-pocket-saved-to-pocket = ინახავს { -pocket-brand-name }
-# This is a button shown at the bottom of the Pocket section that loads more stories when clicked.
-newtab-pocket-load-more-stories-button = სხვა ამბების ჩატვირთვა
 
 ## Pocket Final Card Section.
 ## This is for the final card in the Pocket grid.
 
-newtab-pocket-last-card-title = ყველაფერი წაკითხულია!
-newtab-pocket-last-card-desc = სხვა ამბებისთვის, შეამოწმეთ მოგვიანებით.
-newtab-pocket-last-card-image =
-    .alt = ყველაფერი წაკითხულია
 # A save to Pocket button that shows over the card thumbnail on hover.
 newtab-pocket-save = შენახვა
 newtab-pocket-saved = შენახულია
+
+## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
+
+newtab-pocket-onboarding-discover = აღმოაჩინეთ ვებსამყაროს საუკეთესო მხარე
+newtab-pocket-onboarding-cta = { -pocket-brand-name } მოიძიებს მრავალფეროვან მასალებს, რათა თქვენს { -brand-product-name }-ბრაუზერში იხილოთ ყველაზე საინტერესო, შთამაგონებელი და სანდო შიგთავსი.
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
@@ -252,6 +258,8 @@ newtab-error-fallback-refresh-link = განაახლეთ გვერდ
 
 newtab-custom-shortcuts-title = მალსახმობები
 newtab-custom-shortcuts-subtitle = საიტები, რომლებსაც ინახავთ ან სტუმრობთ
+# Variables
+#   $num (number) - Number of rows to display
 newtab-custom-row-selector =
     { $num ->
         [one] { $num } რიგი

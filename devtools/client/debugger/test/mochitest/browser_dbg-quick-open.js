@@ -6,8 +6,26 @@
 
 "use strict";
 
-add_task(async function() {
+add_task(async function () {
   const dbg = await initDebugger("doc-script-switching.html");
+
+  // Inject lots of sources to go beyond the maximum limit of displayed sources (set to 100)
+  const injectedSources = await SpecialPowers.spawn(
+    gBrowser.selectedBrowser,
+    [],
+    function () {
+      const sources = [];
+      for (let i = 1; i <= 200; i++) {
+        const value = String(i).padStart(3, "0");
+        content.eval(
+          `function evalSource() {}; //# sourceURL=eval-source-${value}.js`
+        );
+        sources.push(`eval-source-${value}.js`);
+      }
+      return sources;
+    }
+  );
+  await waitForSources(dbg, ...injectedSources);
 
   info("test opening and closing");
   await quickOpen(dbg, "");
@@ -18,6 +36,17 @@ add_task(async function() {
   await quickOpen(dbg, "sw");
   await waitForResults(dbg, [undefined, undefined]);
   is(resultCount(dbg), 2, "two file results");
+  pressKey(dbg, "Escape");
+
+  // We ensure that sources after maxResult limit are visible
+  info("Test that first and last eval source are visible");
+  await quickOpen(dbg, "eval-source-001.js");
+  await waitForResults(dbg, ["eval-source-001.js"]);
+  is(resultCount(dbg), 1, "one file result");
+  pressKey(dbg, "Escape");
+  await quickOpen(dbg, "eval-source-200.js");
+  await waitForResults(dbg, ["eval-source-200.js"]);
+  is(resultCount(dbg), 1, "one file result");
   pressKey(dbg, "Escape");
 
   info("Testing source search and check to see if source is selected");
@@ -68,6 +97,7 @@ add_task(async function() {
   await quickOpen(dbg, ":7:12");
   await waitForResults(dbg, [undefined, undefined]);
   pressKey(dbg, "Enter");
+  await waitForSelectedSource(dbg, "script-switching-02.js");
   assertLine(dbg, 7);
   assertColumn(dbg, 12);
 

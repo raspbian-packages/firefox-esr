@@ -128,12 +128,13 @@ about-processes-frame-name-many = ქვეჩარჩო ({ $number }): { $sho
 ## Utility process actor names
 
 about-processes-utility-actor-unknown = უცნობი მოქმედი
-about-processes-utility-actor-audio-decoder = ხმის გამშიფრავი
-
 about-processes-utility-actor-audio-decoder-generic = ხმის ზოგადი გამშიფრავი
 about-processes-utility-actor-audio-decoder-applemedia = ხმის გამშიფრავი Apple Media
 about-processes-utility-actor-audio-decoder-wmf = ხმის გამშიფრავი Windows Media Framework
 about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = JavaScript Oracle
+about-processes-utility-actor-windows-utils = დამხმარე Windows-პროგრამები
 
 ## Displaying CPU (percentage and total)
 ## Variables:

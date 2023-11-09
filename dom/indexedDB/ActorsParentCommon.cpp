@@ -12,6 +12,7 @@
 #include "IndexedDatabase.h"  // for StructuredCloneFile...
 #include "IndexedDatabaseInlines.h"
 #include "IndexedDatabaseManager.h"
+#include "IndexedDBCipherKeyManager.h"
 #include "IndexedDBCommon.h"
 #include "ReportInternalError.h"
 
@@ -36,6 +37,7 @@
 #include "mozilla/ProfilerLabels.h"
 #include "mozilla/RefPtr.h"
 #include "mozilla/ResultExtensions.h"
+#include "mozilla/StaticPrefs_dom.h"
 #include "mozilla/StaticPtr.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/TelemetryScalarEnums.h"
@@ -64,7 +66,7 @@ class nsIFile;
 
 namespace mozilla::dom::indexedDB {
 
-static_assert(SNAPPY_VERSION == 0x010108);
+static_assert(SNAPPY_VERSION == 0x010109);
 
 using mozilla::ipc::IsOnBackgroundThread;
 
@@ -116,14 +118,7 @@ Result<StructuredCloneFileParent, nsresult> DeserializeStructuredCloneFile(
   // XXX In bug 1432133, for some reasons DatabaseFileInfo object cannot be
   // got. This is just a short-term fix, and we are working on finding the real
   // cause in bug 1519859.
-  if (!fileInfo) {
-    IDB_WARNING(
-        "Corrupt structured clone data detected in IndexedDB. Failing the "
-        "database request. Bug 1519859 will address this problem.");
-    Telemetry::ScalarAdd(Telemetry::ScalarID::IDB_FAILURE_FILEINFO_ERROR, 1);
-
-    return Err(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR);
-  }
+  QM_TRY(OkIf((bool)fileInfo), Err(NS_ERROR_DOM_INDEXEDDB_UNKNOWN_ERR));
 
   return StructuredCloneFileParent{type, std::move(fileInfo)};
 }
@@ -348,8 +343,7 @@ Result<StructuredCloneReadInfoParent, nsresult>
 GetStructuredCloneReadInfoFromBlob(const uint8_t* aBlobData,
                                    uint32_t aBlobDataLength,
                                    const DatabaseFileManager& aFileManager,
-                                   const nsAString& aFileIds,
-                                   const Maybe<CipherKey>& aMaybeKey) {
+                                   const nsAString& aFileIds) {
   MOZ_ASSERT(!IsOnBackgroundThread());
 
   AUTO_PROFILER_LABEL("GetStructuredCloneReadInfoFromBlob", DOM);
@@ -392,7 +386,7 @@ GetStructuredCloneReadInfoFromBlob(const uint8_t* aBlobData,
 Result<StructuredCloneReadInfoParent, nsresult>
 GetStructuredCloneReadInfoFromExternalBlob(
     uint64_t aIntData, const DatabaseFileManager& aFileManager,
-    const nsAString& aFileIds, const Maybe<CipherKey>& aMaybeKey) {
+    const nsAString& aFileIds) {
   MOZ_ASSERT(!IsOnBackgroundThread());
 
   AUTO_PROFILER_LABEL("GetStructuredCloneReadInfoFromExternalBlob", DOM);
@@ -410,7 +404,7 @@ GetStructuredCloneReadInfoFromExternalBlob(
   QM_TRY(OkIf(index < files.Length()), Err(NS_ERROR_UNEXPECTED),
          [](const auto&) { MOZ_ASSERT(false, "Bad index value!"); });
 
-  if (IndexedDatabaseManager::PreprocessingEnabled()) {
+  if (StaticPrefs::dom_indexedDB_preprocessing()) {
     return StructuredCloneReadInfoParent{
         JSStructuredCloneData{JS::StructuredCloneScope::DifferentProcess},
         std::move(files), true};
@@ -419,6 +413,15 @@ GetStructuredCloneReadInfoFromExternalBlob(
   // XXX Why can there be multiple files, but we use only a single one here?
   const StructuredCloneFileParent& file = files[index];
   MOZ_ASSERT(file.Type() == StructuredCloneFileBase::eStructuredClone);
+
+  Maybe<CipherKey> maybeKey;
+
+  if (aFileManager.IsInPrivateBrowsingMode()) {
+    nsCString fileKeyId;
+    fileKeyId.AppendInt(file.FileInfo().Id());
+
+    maybeKey = aFileManager.MutableCipherKeyManagerRef().Get(fileKeyId);
+  }
 
   auto data = JSStructuredCloneData{JS::StructuredCloneScope::DifferentProcess};
 
@@ -429,13 +432,13 @@ GetStructuredCloneReadInfoFromExternalBlob(
     QM_TRY_INSPECT(
         const auto& fileInputStream,
         NS_NewLocalFileInputStream(nativeFile)
-            .andThen([aMaybeKey](auto fileInputStream)
+            .andThen([maybeKey](auto fileInputStream)
                          -> Result<nsCOMPtr<nsIInputStream>, nsresult> {
-              if (aMaybeKey) {
+              if (maybeKey) {
                 return nsCOMPtr<nsIInputStream>{MakeRefPtr<
                     quota::DecryptingInputStream<IndexedDBCipherStrategy>>(
                     WrapNotNull(std::move(fileInputStream)),
-                    kEncryptedStreamBlockSize, *aMaybeKey)};
+                    kEncryptedStreamBlockSize, *maybeKey)};
               }
 
               return fileInputStream;
@@ -453,8 +456,7 @@ template <typename T>
 Result<StructuredCloneReadInfoParent, nsresult>
 GetStructuredCloneReadInfoFromSource(T* aSource, uint32_t aDataIndex,
                                      uint32_t aFileIdsIndex,
-                                     const DatabaseFileManager& aFileManager,
-                                     const Maybe<CipherKey>& aMaybeKey) {
+                                     const DatabaseFileManager& aFileManager) {
   MOZ_ASSERT(!IsOnBackgroundThread());
   MOZ_ASSERT(aSource);
 
@@ -482,7 +484,7 @@ GetStructuredCloneReadInfoFromSource(T* aSource, uint32_t aDataIndex,
       memcpy(&uintData, &intData, sizeof(uint64_t));
 
       return GetStructuredCloneReadInfoFromExternalBlob(uintData, aFileManager,
-                                                        fileIds, aMaybeKey);
+                                                        fileIds);
     }
 
     case mozIStorageStatement::VALUE_TYPE_BLOB: {
@@ -491,8 +493,8 @@ GetStructuredCloneReadInfoFromSource(T* aSource, uint32_t aDataIndex,
       QM_TRY(MOZ_TO_RESULT(
           aSource->GetSharedBlob(aDataIndex, &blobDataLength, &blobData)));
 
-      return GetStructuredCloneReadInfoFromBlob(
-          blobData, blobDataLength, aFileManager, fileIds, aMaybeKey);
+      return GetStructuredCloneReadInfoFromBlob(blobData, blobDataLength,
+                                                aFileManager, fileIds);
     }
 
     default:
@@ -689,20 +691,17 @@ ReadCompressedNumber(const Span<const uint8_t> aSpan) {
 Result<StructuredCloneReadInfoParent, nsresult>
 GetStructuredCloneReadInfoFromValueArray(
     mozIStorageValueArray* aValues, uint32_t aDataIndex, uint32_t aFileIdsIndex,
-    const DatabaseFileManager& aFileManager,
-    const Maybe<CipherKey>& aMaybeKey) {
-  return GetStructuredCloneReadInfoFromSource(
-      aValues, aDataIndex, aFileIdsIndex, aFileManager, aMaybeKey);
+    const DatabaseFileManager& aFileManager) {
+  return GetStructuredCloneReadInfoFromSource(aValues, aDataIndex,
+                                              aFileIdsIndex, aFileManager);
 }
 
 Result<StructuredCloneReadInfoParent, nsresult>
-GetStructuredCloneReadInfoFromStatement(mozIStorageStatement* aStatement,
-                                        uint32_t aDataIndex,
-                                        uint32_t aFileIdsIndex,
-                                        const DatabaseFileManager& aFileManager,
-                                        const Maybe<CipherKey>& aMaybeKey) {
-  return GetStructuredCloneReadInfoFromSource(
-      aStatement, aDataIndex, aFileIdsIndex, aFileManager, aMaybeKey);
+GetStructuredCloneReadInfoFromStatement(
+    mozIStorageStatement* aStatement, uint32_t aDataIndex,
+    uint32_t aFileIdsIndex, const DatabaseFileManager& aFileManager) {
+  return GetStructuredCloneReadInfoFromSource(aStatement, aDataIndex,
+                                              aFileIdsIndex, aFileManager);
 }
 
 Result<nsTArray<StructuredCloneFileParent>, nsresult>

@@ -5,46 +5,15 @@
 
 ## The main browser window's title
 
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
 #
 # default - "Mozilla Firefox"
 # private - "Mozilla Firefox (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } (Privater Modus)
-    .data-content-title-default = { $content-title } - { -brand-full-name }
-    .data-content-title-private = { $content-title } - { -brand-full-name } (Privater Modus)
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
-#
-# "default" - "Mozilla Firefox"
-# "private" - "Mozilla Firefox — (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
-#
-# Also note the other subtle difference here: we use a `-` to separate the
-# brand name from `(Private Browsing)`, which does not happen on other OSes.
-#
-# Variables:
-#  $content-title (String): the title of the web content.
-browser-main-window-mac =
-    .data-title-default = { -brand-full-name }
-    .data-title-private = { -brand-full-name } - (Privater Modus)
-    .data-content-title-default = { $content-title }
-    .data-content-title-private = { $content-title } - (Privater Modus)
-# These are the default window titles everywhere except macOS. The first two
-# attributes are used when the web content opened has no title:
-#
-# default - "Mozilla Firefox"
-# private - "Mozilla Firefox (Private Browsing)"
-#
-# The last two are for use when there *is* a content title.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
 # Variables:
 #  $content-title (String): the title of the web content.
 browser-main-window-window-titles =
@@ -52,14 +21,17 @@ browser-main-window-window-titles =
     .data-title-private = { -brand-full-name } Privater Modus
     .data-content-title-default = { $content-title } – { -brand-full-name }
     .data-content-title-private = { $content-title } – { -brand-full-name } Privater Modus
-# These are the default window titles on macOS. The first two are for use when
-# there is no content title:
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
 #
 # "default" - "Mozilla Firefox"
 # "private" - "Mozilla Firefox — (Private Browsing)"
 #
-# The last two are for use when there *is* a content title.
-# Do not use the brand name in the last two attributes, as we do on non-macOS.
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
 #
 # Also note the other subtle difference here: we use a `-` to separate the
 # brand name from `(Private Browsing)`, which does not happen on other OSes.
@@ -109,16 +81,12 @@ urlbar-xr-notification-anchor =
     .tooltiptext = Ansicht für VR-Zugriff (Virtuelle Realität) öffnen
 urlbar-storage-access-anchor =
     .tooltiptext = Ansicht für während des Surfens berechtigte Aktivitäten öffnen
-urlbar-translate-notification-anchor =
-    .tooltiptext = Diese Seite übersetzen
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = Verwalten des Zugriffs auf Ihre Fenster oder Bildschirme durch diese Website
 urlbar-indexed-db-notification-anchor =
     .tooltiptext = Ansicht über Offline-Speicher öffnen
 urlbar-password-notification-anchor =
     .tooltiptext = Ansicht über gespeicherte Zugangsdaten öffnen
-urlbar-translated-notification-anchor =
-    .tooltiptext = Übersetzung von Seiten verwalten
 urlbar-plugins-notification-anchor =
     .tooltiptext = Plugin-Verwendung verwalten
 urlbar-web-rtc-share-devices-notification-anchor =
@@ -144,6 +112,11 @@ urlbar-tip-icon-description =
     .alt = Tipp:
 urlbar-result-menu-button =
     .title = Menü öffnen
+urlbar-result-menu-button-feedback = Feedback
+    .title = Menü öffnen
+urlbar-result-menu-learn-more =
+    .label = Weitere Informationen
+    .accesskey = W
 urlbar-result-menu-remove-from-history =
     .label = Aus Chronik entfernen
     .accesskey = e
@@ -208,10 +181,6 @@ urlbar-star-add-bookmark =
 
 ## Page Action Context Menu
 
-page-action-manage-extension =
-    .label = Erweiterung verwalten…
-page-action-remove-extension =
-    .label = Erweiterung entfernen
 page-action-manage-extension2 =
     .label = Erweiterung verwalten…
     .accesskey = w
@@ -388,6 +357,7 @@ identity-weak-encryption = Diese Seite verwendet eine schwache Verschlüsselung.
 identity-insecure-login-forms = Ihre Zugangsdaten könnten auf dieser Seite in falsche Hände geraten.
 identity-https-only-connection-upgraded = (zu HTTPS geändert)
 identity-https-only-label = Nur-HTTPS-Modus
+identity-https-only-label2 = Automatisches Upgrade dieser Website auf eine sichere Verbindung
 identity-https-only-dropdown-on =
     .label = Ein
 identity-https-only-dropdown-off =
@@ -396,6 +366,8 @@ identity-https-only-dropdown-off-temporarily =
     .label = Temporär aus
 identity-https-only-info-turn-on2 = Aktivieren Sie den Nur-HTTPS-Modus für diese Website, wenn { -brand-short-name } nach Möglichkeit über HTTPS verbinden soll.
 identity-https-only-info-turn-off2 = Wenn die Seite beschädigt erscheint, können Sie den Nur-HTTPS-Modus für diese Website deaktivieren, um mit nicht verschlüsseltem HTTP neu zu laden.
+identity-https-only-info-turn-on3 = Aktivieren Sie HTTPS-Upgrades für diese Website, wenn Sie möchten, dass { -brand-short-name } die Verbindung nach Möglichkeit aktualisiert.
+identity-https-only-info-turn-off3 = Wenn die Seite defekt zu sein scheint, sollten Sie die HTTPS-Upgrades für diese Website deaktivieren, damit sie über unsicheres HTTP neu geladen wird.
 identity-https-only-info-no-upgrade = Verbindung konnte nicht von HTTP geändert werden.
 identity-permissions-storage-access-header = Seitenübergreifende Cookies
 identity-permissions-storage-access-hint = Diese Beteiligten können Cookies und Website-Daten verwenden, während Sie sich auf dieser Website befinden.
@@ -406,7 +378,7 @@ identity-clear-site-data =
 identity-connection-not-secure-security-view = Sie kommunizieren mit dieser Seite über eine ungesicherte Verbindung.
 identity-connection-verified = Sie sind derzeit über eine gesicherte Verbindung mit dieser Website verbunden.
 identity-ev-owner-label = Zertifikat ausgestellt für:
-identity-description-custom-root = Mozilla erkennt diese Zertifizierungsstelle standardmäßig nicht an. Sie wurde eventuell vom Betriebssystem oder durch einen Administrator importiert. <label data-l10n-name="link">Weitere Informationen</label>
+identity-description-custom-root2 = Mozilla erkennt diese Zertifizierungsstelle standardmäßig nicht an. Sie wurde eventuell vom Betriebssystem oder durch einen Administrator importiert.
 identity-remove-cert-exception =
     .label = Ausnahme entfernen
     .accesskey = A
@@ -414,14 +386,12 @@ identity-description-insecure = Ihre Verbindung zu dieser Website ist nicht vert
 identity-description-insecure-login-forms = Wenn Sie Ihre Zugangsdaten auf dieser Website eingeben, werden diese unverschlüsselt übertragen und können in falsche Hände geraten.
 identity-description-weak-cipher-intro = Ihre Verbindung zu dieser Website verwendet eine schwache Verschlüsselung.
 identity-description-weak-cipher-risk = Andere Personen können Ihre Informationen mitlesen oder das Verhalten der Website ändern.
-identity-description-active-blocked = { -brand-short-name } hat nicht sichere Inhalte dieser Seite blockiert. <label data-l10n-name="link">Weitere Informationen</label>
+identity-description-active-blocked2 = { -brand-short-name } hat nicht sichere Inhalte dieser Seite blockiert.
 identity-description-passive-loaded = Ihre Verbindung ist nicht sicher und mit dieser Website geteilte Informationen können von Anderen eingesehen werden.
-identity-description-passive-loaded-insecure = Diese Website enthält nicht sichere Inhalte (wie z.B. Grafiken). <label data-l10n-name="link">Weitere Informationen</label>
-identity-description-passive-loaded-mixed = Obwohl { -brand-short-name } Inhalte blockiert hat, enthält die Seite noch nicht sichere Inhalte (wie z.B. Grafiken). <label data-l10n-name="link">Weitere Informationen</label>
+identity-description-passive-loaded-insecure2 = Diese Website enthält nicht sichere Inhalte (wie z.B. Grafiken).
+identity-description-passive-loaded-mixed2 = Obwohl { -brand-short-name } Inhalte blockiert hat, enthält die Seite noch nicht sichere Inhalte (wie z.B. Grafiken).
 identity-description-active-loaded = Diese Website enthält nicht sichere Inhalte (wie z.B. Skripte) und Ihre Verbindung ist nicht vertraulich.
 identity-description-active-loaded-insecure = Mit dieser Seite geteilte Informationen (wie Passwörter, Nachrichten, Kreditkartendaten, usw.) können von Anderen eingesehen werden.
-identity-learn-more =
-    .value = Weitere Informationen
 identity-disable-mixed-content-blocking =
     .label = Schutz momentan deaktivieren
     .accesskey = d
@@ -498,13 +468,6 @@ popup-select-window-or-screen =
     .label = Fenster oder Bildschirm:
     .accesskey = F
 popup-all-windows-shared = Alle sichtbaren Fenster auf dem Bildschirm werden weitergegeben.
-popup-screen-sharing-block =
-    .label = Blockieren
-    .accesskey = B
-popup-screen-sharing-always-block =
-    .label = Immer blockieren
-    .accesskey = m
-popup-mute-notifications-checkbox = Website-Benachrichtigungen stummschalten, während ein Bildschirm oder ein Fenster geteilt wird
 
 ## WebRTC window or screen share tab switch warning
 
@@ -517,7 +480,6 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
-enable-devtools-popup-description = Um die F12-Tastenkombination einzusetzen, müssen die Entwicklerwerkzeuge einmalig über das Menü "Web-Entwickler" geöffnet werden.
 enable-devtools-popup-description2 = Um die F12-Tastenkombination einzusetzen, müssen die Entwicklerwerkzeuge einmalig über das Menü "Browser-Werkzeuge" geöffnet werden.
 
 ## URL Bar
@@ -660,6 +622,20 @@ reader-view-enter-button =
 reader-view-close-button =
     .aria-label = Leseansicht beenden
 
+## Picture-in-Picture urlbar button
+## Variables:
+##   $shortcut (String) - Keyboard shortcut to execute the command.
+
+picture-in-picture-urlbar-button-open =
+    .tooltiptext = Bild-im-Bild öffnen ({ $shortcut })
+picture-in-picture-urlbar-button-close =
+    .tooltiptext = Bild-im-Bild schließen ({ $shortcut })
+picture-in-picture-panel-header = Bild-im-Bild
+picture-in-picture-panel-headline = Diese Website empfiehlt kein Bild-im-Bild
+picture-in-picture-panel-body = Videos werden möglicherweise nicht so angezeigt, wie vom Entwickler beabsichtigt, wenn Bild-im-Bild aktiviert ist.
+picture-in-picture-enable-toggle =
+    .label = Trotzdem aktivieren
+
 ## Full Screen and Pointer Lock UI
 
 # Please ensure that the domain stays in the `<span data-l10n-name="domain">` markup.
@@ -676,19 +652,6 @@ fullscreen-exit-mac-button = Vollbild beenden (esc)
 pointerlock-warning-domain = <span data-l10n-name="domain">{ $domain }</span> kontrolliert den Mauszeiger. Drücken Sie die Esc-Taste, wenn Sie wieder die Kontrolle übernehmen wollen.
 pointerlock-warning-no-domain = Dieses Dokument kontrolliert den Mauszeiger. Drücken Sie die Esc-Taste, wenn Sie wieder die Kontrolle übernehmen wollen.
 
-## Subframe crash notification
-
-crashed-subframe-message = <strong>Ein Teil der Seite ist abgestürzt.</strong> Übermitteln Sie bitte einen Bericht, um { -brand-product-name } über dieses Problem zu informieren und beim Beheben des Fehlers zu helfen.
-# The string for crashed-subframe-title.title should match crashed-subframe-message,
-# but without any markup.
-crashed-subframe-title =
-    .title = Ein Teil der Seite ist abgestürzt. Übermitteln Sie bitte einen Bericht, um { -brand-product-name } über dieses Problem zu informieren und beim Beheben des Fehlers zu helfen.
-crashed-subframe-learnmore-link =
-    .value = Weitere Informationen
-crashed-subframe-submit =
-    .label = Bericht senden
-    .accesskey = B
-
 ## Bookmarks panels, menus and toolbar
 
 bookmarks-manage-bookmarks =
@@ -704,6 +667,11 @@ bookmarks-other-bookmarks-menu =
     .label = Weitere Lesezeichen
 bookmarks-mobile-bookmarks-menu =
     .label = Mobile Lesezeichen
+
+## Variables:
+##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
+##                         bookmarks toolbar, etc.) is visible or not.
+
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
@@ -728,12 +696,13 @@ bookmarks-tools-menu-button-visibility =
             [true] Lesezeichen-Menü aus Symbolleiste entfernen
            *[other] Lesezeichen-Menü zur Symbolleiste hinzufügen
         }
+
+##
+
 bookmarks-search =
     .label = Lesezeichen durchsuchen
 bookmarks-tools =
     .label = Lesezeichen-Werkzeuge
-bookmarks-bookmark-edit-panel =
-    .label = Lesezeichen bearbeiten
 bookmarks-subview-edit-bookmark =
     .label = Dieses Lesezeichen bearbeiten…
 # The aria-label is a spoken label that should not include the word "toolbar" or
@@ -749,9 +718,6 @@ bookmarks-toolbar-placeholder =
     .title = Lesezeichen-Symbole
 bookmarks-toolbar-placeholder-button =
     .label = Lesezeichen-Symbole
-# "Bookmark" is a verb, as in "Add current tab to bookmarks".
-bookmarks-current-tab =
-    .label = Aktuellen Tab als Lesezeichen hinzufügen
 # "Bookmark" is a verb, as in "Add current tab to bookmarks".
 bookmarks-subview-bookmark-tab =
     .label = Aktuellen Tab als Lesezeichen hinzufügen…
@@ -778,11 +744,6 @@ repair-text-encoding-button =
 ## Customize Toolbar Buttons
 
 # Variables:
-#  $shortcut (String): keyboard shortcut to open the add-ons manager
-toolbar-addons-themes-button =
-    .label = Add-ons und Themes
-    .tooltiptext = Add-ons und Themes verwalten ({ $shortcut })
-# Variables:
 #  $shortcut (String): keyboard shortcut to open settings (only on macOS)
 toolbar-settings-button =
     .label = Einstellungen
@@ -797,6 +758,9 @@ toolbar-overflow-customize-button =
 toolbar-button-email-link =
     .label = ­Link senden
     .tooltiptext = Link zu dieser Seite per E-Mail senden
+toolbar-button-logins =
+    .label = Passwörter
+    .tooltiptext = Gespeicherte Passwörter anzeigen und verwalten
 # Variables:
 #  $shortcut (String): keyboard shortcut to save a copy of the page
 toolbar-button-save-page =
@@ -828,13 +792,6 @@ eme-notifications-drm-content-playing-dismiss-accesskey = c
 
 panel-save-update-username = Benutzername
 panel-save-update-password = Passwort
-
-## Add-on removal warning
-
-# Variables:
-#  $name (String): The name of the addon that will be removed.
-addon-removal-title = { $name } entfernen?
-addon-removal-abuse-report-checkbox = Erweiterung melden an { -vendor-short-name }
 
 ##
 
@@ -903,8 +860,6 @@ navbar-library =
     .tooltiptext = Öffnen von Chronik, Lesezeichen und mehr
 navbar-search =
     .title = Suchen
-navbar-accessibility-indicator =
-    .tooltiptext = Funktionen für Barrierefreiheit aktiviert
 # Name for the tabs toolbar as spoken by screen readers. The word
 # "toolbar" is appended automatically and should not be included in
 # in the string
@@ -946,6 +901,15 @@ unified-extensions-button-permissions-needed =
         Erweiterungen
         Berechtigungen nötig
 
+## Unified extensions button when some extensions are quarantined.
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-quarantined =
+    .label = Erweiterungen
+    .tooltiptext =
+        Erweiterungen
+        Einige Erweiterungen sind nicht erlaubt
+
 ## Autorefresh blocker
 
 refresh-blocked-refresh-label = { -brand-short-name } hat diese Webseite daran gehindert automatisch neu zu laden.
@@ -956,9 +920,43 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-relay = { -relay-brand-name } maskiert Ihre wahre E-Mail-Adresse, um Sie vor Datenlecks und Spam zu schützen.
-firefox-relay-offer-how-we-integrate = Wenn Sie fortfahren, können Sie neue { -relay-brand-short-name }-E-Mail-Masken direkt aus Ihrem { -brand-shorter-name }-Passwort-Manager erstellen.
+firefox-relay-offer-why-to-use-relay = Unsere sicheren, einfach zu bedienenden Masken schützen Ihre Identität und verhindern Spam, indem sie Ihre E-Mail-Adresse verstecken.
 # Variables:
-#  $sitename (String): name of the site where user enters their Relay mask
 #  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-does = Wir leiten alle E-Mails von <strong>{ $sitename }</strong> an <strong>{ $useremail }</strong> weiter.
+firefox-relay-offer-what-relay-provides = Alle E-Mails, die an Ihre E-Mail-Masken gesendet werden, werden an <strong>{ $useremail }</strong> weitergeleitet (es sei denn, Sie beschließen, sie zu blockieren).
+firefox-relay-offer-legal-notice = Indem Sie auf "E-Mail-Maske verwenden" klicken, stimmen Sie den <label data-l10n-name="tos-url">Nutzungsbedingungen</label> und dem <label data-l10n-name="privacy-url">Datenschutzhinweis</label> zu.
+
+## Add-on Pop-up Notifications
+
+popup-notification-addon-install-unsigned =
+    .value = (nicht verifiziert)
+popup-notification-xpinstall-prompt-learn-more = Weitere Informationen über das sichere Installieren von Add-ons
+
+## Pop-up warning
+
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-message =
+    { $popupCount ->
+        [one] { -brand-short-name } hat diese Website daran gehindert, ein Pop-up-Fenster zu öffnen.
+       *[other] { -brand-short-name } hat diese Website daran gehindert, { $popupCount } Pop-up-Fenster zu öffnen.
+    }
+# The singular form is left out for English, since the number of blocked pop-ups is always greater than 1.
+# Variables:
+#   $popupCount (Number): the number of pop-ups blocked.
+popup-warning-exceeded-message = { -brand-short-name } hat diese Website daran gehindert, mehr als { $popupCount } Pop-up-Fenster öffnen.
+popup-warning-button =
+    .label =
+        { PLATFORM() ->
+            [windows] Einstellungen
+           *[other] Einstellungen
+        }
+    .accesskey =
+        { PLATFORM() ->
+            [windows] i
+           *[other] i
+        }
+# Variables:
+#   $popupURI (String): the URI for the pop-up window
+popup-show-popup-menuitem =
+    .label = Anzeigen: '{ $popupURI }'

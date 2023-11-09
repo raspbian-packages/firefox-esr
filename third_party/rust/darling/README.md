@@ -104,7 +104,8 @@ fn do_stuff() {
 # Features
 Darling's features are built to work well for real-world projects.
 
-* **Defaults**: Supports struct- and field-level defaults, using the same path syntax as `serde`.
+* **Defaults**: Supports struct- and field-level defaults, using the same path syntax as `serde`. 
+  Additionally, `Option<T>` and `darling::util::Flag` fields are innately optional; you don't need to declare `#[darling(default)]` for those.
 * **Field Renaming**: Fields can have different names in usage vs. the backing code.
 * **Auto-populated fields**: Structs deriving `FromDeriveInput` and `FromField` can declare properties named `ident`, `vis`, `ty`, `attrs`, and `generics` to automatically get copies of the matching values from the input AST. `FromDeriveInput` additionally exposes `data` to get access to the body of the deriving type, and `FromVariant` exposes `fields`.
 * **Mapping function**: Use `#[darling(map="path")]` or `#[darling(and_then="path")]` to specify a function that runs on the result of parsing a meta-item field. This can change the return type, which enables you to parse to an intermediate form and convert that to the type you need in your struct.
@@ -112,3 +113,26 @@ Darling's features are built to work well for real-world projects.
 * **Multiple-occurrence fields**: Use `#[darling(multiple)]` on a `Vec` field to allow that field to appear multiple times in the meta-item. Each occurrence will be pushed into the `Vec`.
 * **Span access**: Use `darling::util::SpannedValue` in a struct to get access to that meta item's source code span. This can be used to emit warnings that point at a specific field from your proc macro. In addition, you can use `darling::Error::write_errors` to automatically get precise error location details in most cases.
 * **"Did you mean" suggestions**: Compile errors from derived darling trait impls include suggestions for misspelled fields.
+
+## Shape Validation
+Some proc-macros only work on structs, while others need enums whose variants are either unit or newtype variants.
+Darling makes this sort of validation extremely simple.
+On the receiver that derives `FromDeriveInput`, add `#[darling(supports(...))]` and then list the shapes that your macro should accept.
+
+|Name|Description|
+|---|---|
+|`any`|Accept anything|
+|`struct_any`|Accept any struct|
+|`struct_named`|Accept structs with named fields, e.g. `struct Example { field: String }`|
+|`struct_newtype`|Accept newtype structs, e.g. `struct Example(String)`|
+|`struct_tuple`|Accept tuple structs, e.g. `struct Example(String, String)`|
+|`struct_unit`|Accept unit structs, e.g. `struct Example;`|
+|`enum_any`|Accept any enum|
+|`enum_named`|Accept enum variants with named fields|
+|`enum_newtype`|Accept newtype enum variants|
+|`enum_tuple`|Accept tuple enum variants|
+|`enum_unit`|Accept unit enum variants|
+
+Each one is additive, so listing `#[darling(supports(struct_any, enum_newtype))]` would accept all structs and any enum where every variant is a newtype variant.
+
+This can also be used when deriving `FromVariant`, without the `enum_` prefix.

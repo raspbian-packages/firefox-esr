@@ -13,6 +13,9 @@ about-webrtc-document-title = Internaĵoj de WebRTC
 # translated. This string is used as a title for a file save dialog box.
 about-webrtc-save-page-dialog-title = konservi about:webrtc kiel
 
+## These labels are for a disclosure which contains the information for closed PeerConnection sections
+
+
 ## AEC is an abbreviation for Acoustic Echo Cancellation.
 
 about-webrtc-aec-logging-msg-label = Registrado de AEC
@@ -20,10 +23,16 @@ about-webrtc-aec-logging-off-state-label = Komenci registradon de AEC
 about-webrtc-aec-logging-on-state-label = Haltigi registradon de AEC
 about-webrtc-aec-logging-on-state-msg = Registrado de AEC aktiva (parolu kun la vokinto dum kelkaj minutoj kaj poste haltigu la kaptadon)
 
+about-webrtc-aec-logging-toggled-on-state-msg = Registrado de AEC aktiva (parolu kun la vokinto dum kelkaj minutoj kaj poste haltigu la kaptadon)
+# Variables:
+#  $path (String) - The path to which the aec log file is saved.
+about-webrtc-aec-logging-toggled-off-state-msg = Kaptitaj dosieroj de registrado troveblas en: { $path }
+
+##
+
 # The autorefresh checkbox causes the page to autorefresh its content when checked
 about-webrtc-auto-refresh-label = Aŭtomata aktualiĝo
 
-##
 
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
 # an abbreviation for Identifier. This string should not normally be translated
@@ -62,8 +71,6 @@ about-webrtc-ice-pair-bytes-sent = Oktetoj senditaj:
 about-webrtc-ice-pair-bytes-received = Oktetoj ricevitaj:
 about-webrtc-ice-component-id = Identigilo de komponanto
 
-## "Avg." is an abbreviation for Average. These are used as data labels.
-
 ## These adjectives are used to label a line of statistics collected for a peer
 ## connection. The data represents either the local or remote end of the
 ## connection.
@@ -95,6 +102,12 @@ about-webrtc-log-show-msg = montri registron
 about-webrtc-log-hide-msg = kaŝi registron
     .title = alklaku por faldi tiun ĉi sekcion
 
+about-webrtc-log-section-show-msg = Montri registron
+    .title = Alklkaku por malfaldi tiun ĉi sekcion
+about-webrtc-log-section-hide-msg = Kaŝi registron
+    .title = Alklaku por faldi tiun ĉi sekcion
+about-webrtc-copy-report-button = Kopii raporton
+
 ## These are used to display a header for a PeerConnection.
 ## Variables:
 ##  $browser-id (Number) - A numeric id identifying the browser tab for the PeerConnection.
@@ -104,6 +117,11 @@ about-webrtc-log-hide-msg = kaŝi registron
 
 about-webrtc-connection-open = [ { $browser-id } | { $id } ] { $url } { $now }
 about-webrtc-connection-closed = [ { $browser-id } | { $id } ] { $url } (femita) { $now }
+
+## These are used to indicate what direction media is flowing.
+## Variables:
+##  $codecs - a list of media codecs
+
 
 ##
 
@@ -116,11 +134,19 @@ about-webrtc-raw-cand-show-msg = montri krudajn kandidatojn
     .title = alklkaku por malfaldi tiun ĉi sekcion
 about-webrtc-raw-cand-hide-msg = kaŝi krudajn kandidatojn
     .title = alklaku por faldi tiun ĉi sekcion
+about-webrtc-raw-cand-section-show-msg = Montri krudajn kandidatojn
+    .title = Alklkaku por malfaldi tiun ĉi sekcion
+about-webrtc-raw-cand-section-hide-msg = Kaŝi krudajn kandidatojn
+    .title = Alklaku por faldi tiun ĉi sekcion
 about-webrtc-priority = Prioritato
 about-webrtc-fold-show-msg = montri detalojn
     .title = alklkaku por malfaldi tiun ĉi sekcion
 about-webrtc-fold-hide-msg = kaŝi detalojn
     .title = alklaku por faldi tiun ĉi sekcion
+about-webrtc-fold-default-show-msg = Montri detalojn
+    .title = Alklkaku por malfaldi tiun ĉi sekcion
+about-webrtc-fold-default-hide-msg = Kaŝi detalojn
+    .title = Alklaku por faldi tiun ĉi sekcion
 about-webrtc-dropped-frames-label = Perditaj kadroj:
 about-webrtc-discarded-packets-label = Forlasitaj paketoj:
 about-webrtc-decoder-label = Malkodilo
@@ -142,6 +168,12 @@ about-webrtc-last-frame-timestamp = Tempindiko de lasta kadro
 about-webrtc-local-receive-ssrc = Loka riceva SSRC
 # This is an SSRC on the remote side of the connection that is sending RTP
 about-webrtc-remote-send-ssrc = Fora senda SSRC
+
+## These are displayed on the button that shows or hides the
+## PeerConnection configuration disclosure
+
+about-webrtc-pc-configuration-show-msg = Montri agordojn
+about-webrtc-pc-configuration-hide-msg = Kaŝi agordojn
 
 ##
 
@@ -193,6 +225,10 @@ about-webrtc-save-page-msg = paĝo konservita kiel: { $path }
 about-webrtc-debug-mode-off-state-msg = spurregistrado troveblas en: { $path }
 about-webrtc-debug-mode-on-state-msg = senerariga reĝimo aktiva, spurregistrado en: { $path }
 about-webrtc-aec-logging-off-state-msg = kaptitaj dosieroj de registrado troveblas en: { $path }
+
+about-webrtc-save-page-complete-msg = Paĝo konservita kiel: { $path }
+about-webrtc-debug-mode-toggled-off-state-msg = Spurregistrado troveblas en: { $path }
+about-webrtc-debug-mode-toggled-on-state-msg = Senerariga reĝimo aktiva, spurregistrado en: { $path }
 
 ##
 
@@ -270,6 +306,16 @@ about-webrtc-sdp-set-at-timestamp-remote = Difini Fora SDP kiel { NUMBER($timest
 #  $timestamp (Number) - The Unix Epoch time at which the SDP was set.
 #  $relative-timestamp (Number) - The timestamp relative to the timestamp of the earliest received SDP.
 about-webrtc-sdp-set-timestamp = Tempindiko { NUMBER($timestamp, useGrouping: "false") } (+ { $relative-timestamp } ms)
+
+## These are displayed on the button that shows or hides the SDP information disclosure
+
+about-webrtc-show-msg-sdp = Montri SDP
+about-webrtc-hide-msg-sdp = Kaŝi SDP
+
+## These are displayed on the button that shows or hides the Media Context information disclosure.
+## The Media Context is the set of preferences and detected capabilities that informs
+## the negotiated CODEC settings.
+
 
 ##
 

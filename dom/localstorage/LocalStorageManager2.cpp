@@ -96,7 +96,7 @@ class AsyncRequestHelper final : public Runnable,
                      const LSRequestParams& aParams)
       : Runnable("dom::LocalStorageManager2::AsyncRequestHelper"),
         mManager(aManager),
-        mOwningEventTarget(GetCurrentEventTarget()),
+        mOwningEventTarget(GetCurrentSerialEventTarget()),
         mActor(nullptr),
         mPromise(aPromise),
         mParams(aParams),
@@ -476,7 +476,7 @@ nsresult AsyncRequestHelper::Dispatch() {
   nsCOMPtr<nsIEventTarget> domFileThread =
       RemoteLazyInputStreamThread::GetOrCreate();
   if (NS_WARN_IF(!domFileThread)) {
-    return NS_ERROR_FAILURE;
+    return NS_ERROR_ILLEGAL_DURING_SHUTDOWN;
   }
 
   nsresult rv = domFileThread->Dispatch(this, NS_DISPATCH_NORMAL);
@@ -601,7 +601,7 @@ void SimpleRequestResolver::HandleResponse(bool aResponse) {
 [[nodiscard]] static bool ToJSValue(JSContext* aCx,
                                     const nsTArray<LSItemInfo>& aArgument,
                                     JS::MutableHandle<JS::Value> aValue) {
-  JS::RootedObject obj(aCx, JS_NewPlainObject(aCx));
+  JS::Rooted<JSObject*> obj(aCx, JS_NewPlainObject(aCx));
   if (!obj) {
     return false;
   }
@@ -611,7 +611,7 @@ void SimpleRequestResolver::HandleResponse(bool aResponse) {
 
     const nsString& key = itemInfo.key();
 
-    JS::RootedValue value(aCx);
+    JS::Rooted<JS::Value> value(aCx);
     if (!ToJSValue(aCx, itemInfo.value().AsString(), &value)) {
       return false;
     }

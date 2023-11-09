@@ -12,6 +12,7 @@ extern crate sha2;
 #[macro_use]
 extern crate xpcom;
 
+use base64::Engine;
 use digest::{Digest, DynDigest};
 use nserror::{
     nsresult, NS_ERROR_FAILURE, NS_ERROR_INVALID_ARG, NS_ERROR_NOT_AVAILABLE,
@@ -62,10 +63,8 @@ impl TryFrom<&nsACString> for Algorithm {
     }
 }
 
-#[derive(xpcom)]
-#[xpimplements(nsICryptoHash)]
-#[refcnt = "atomic"]
-struct InitCryptoHash {
+#[xpcom(implement(nsICryptoHash), atomic)]
+struct CryptoHash {
     digest: Mutex<Option<Box<dyn DynDigest>>>,
 }
 
@@ -157,7 +156,9 @@ impl CryptoHash {
         };
         let result = digest.finalize();
         if ascii {
-            Ok(nsCString::from(base64::encode(&result)))
+            Ok(nsCString::from(
+                base64::engine::general_purpose::STANDARD.encode(result),
+            ))
         } else {
             Ok(nsCString::from(result))
         }

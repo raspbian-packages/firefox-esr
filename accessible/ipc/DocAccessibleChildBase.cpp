@@ -7,12 +7,13 @@
 #include "mozilla/a11y/DocAccessibleChildBase.h"
 #include "mozilla/a11y/CacheConstants.h"
 #include "mozilla/a11y/RemoteAccessible.h"
-#include "mozilla/StaticPrefs_accessibility.h"
+#include "mozilla/ipc/ProcessChild.h"
 
 #include "LocalAccessible-inl.h"
 #ifdef A11Y_LOG
 #  include "Logging.h"
 #endif
+#include "TextLeafRange.h"
 
 namespace mozilla {
 namespace a11y {
@@ -38,11 +39,6 @@ void DocAccessibleChildBase::SerializeTree(nsTArray<LocalAccessible*>& aTree,
                                            nsTArray<AccessibleData>& aData) {
   for (LocalAccessible* acc : aTree) {
     uint64_t id = reinterpret_cast<uint64_t>(acc->UniqueID());
-#if defined(XP_WIN)
-    int32_t msaaId = StaticPrefs::accessibility_cache_enabled_AtStartup()
-                         ? 0
-                         : MsaaAccessible::GetChildIDFor(acc);
-#endif
     a11y::role role = acc->Role();
     uint32_t childCount = acc->IsOuterDoc() ? 0 : acc->ChildCount();
 
@@ -64,15 +60,21 @@ void DocAccessibleChildBase::SerializeTree(nsTArray<LocalAccessible*>& aTree,
       genericTypes |= eActionable;
     }
 
-#if defined(XP_WIN)
-    aData.AppendElement(AccessibleData(
-        id, msaaId, role, childCount, static_cast<AccType>(acc->mType),
-        static_cast<AccGenericType>(genericTypes), acc->mRoleMapEntryIndex));
-#else
-    aData.AppendElement(AccessibleData(
-        id, role, childCount, static_cast<AccType>(acc->mType),
-        static_cast<AccGenericType>(genericTypes), acc->mRoleMapEntryIndex));
-#endif
+    RefPtr<AccAttributes> fields;
+    // Even though we send moves as a hide and a show, we don't want to
+    // push the cache again for moves.
+    if (!acc->Document()->IsAccessibleBeingMoved(acc)) {
+      fields =
+          acc->BundleFieldsForCache(CacheDomain::All, CacheUpdateType::Initial);
+      if (fields->Count() == 0) {
+        fields = nullptr;
+      }
+    }
+
+    aData.AppendElement(
+        AccessibleData(id, role, childCount, static_cast<AccType>(acc->mType),
+                       static_cast<AccGenericType>(genericTypes),
+                       acc->mRoleMapEntryIndex, fields));
   }
 }
 
@@ -88,24 +90,10 @@ void DocAccessibleChildBase::InsertIntoIpcTree(LocalAccessible* aParent,
                      nsTArray<AccessibleData>(shownTree.Length()),
                      aSuppressShowEvent);
   SerializeTree(shownTree, data.NewTree());
-  MaybeSendShowEvent(data, false);
-  if (StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-    nsTArray<CacheData> cache(shownTree.Length());
-    for (LocalAccessible* acc : shownTree) {
-      if (mDoc->IsAccessibleBeingMoved(acc)) {
-        // Even though we send moves as a hide and a show, we don't want to
-        // push the cache again for moves.
-        continue;
-      }
-      RefPtr<AccAttributes> fields =
-          acc->BundleFieldsForCache(CacheDomain::All, CacheUpdateType::Initial);
-      if (fields->Count()) {
-        uint64_t id = reinterpret_cast<uint64_t>(acc->UniqueID());
-        cache.AppendElement(CacheData(id, fields));
-      }
-    }
-    Unused << SendCache(CacheUpdateType::Initial, cache, true);
+  if (ipc::ProcessChild::ExpectingShutdown()) {
+    return;
   }
+  MaybeSendShowEvent(data, false);
 }
 
 void DocAccessibleChildBase::ShowEvent(AccShowEvent* aShowEvent) {
@@ -220,6 +208,121 @@ mozilla::ipc::IPCResult DocAccessibleChildBase::RecvDoActionAsync(
   return IPC_OK();
 }
 
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvSetCaretOffset(
+    const uint64_t& aID, const int32_t& aOffset) {
+  HyperTextAccessible* acc = IdToHyperTextAccessible(aID);
+  if (acc && acc->IsTextRole() && acc->IsValidOffset(aOffset)) {
+    acc->SetCaretOffset(aOffset);
+  }
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvSetTextSelection(
+    const uint64_t& aStartID, const int32_t& aStartOffset,
+    const uint64_t& aEndID, const int32_t& aEndOffset,
+    const int32_t& aSelectionNum) {
+  TextLeafRange range(TextLeafPoint(IdToAccessible(aStartID), aStartOffset),
+                      TextLeafPoint(IdToAccessible(aEndID), aEndOffset));
+  if (range) {
+    range.SetSelection(aSelectionNum);
+  }
+
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvScrollTextLeafRangeIntoView(
+    const uint64_t& aStartID, const int32_t& aStartOffset,
+    const uint64_t& aEndID, const int32_t& aEndOffset,
+    const uint32_t& aScrollType) {
+  TextLeafRange range(TextLeafPoint(IdToAccessible(aStartID), aStartOffset),
+                      TextLeafPoint(IdToAccessible(aEndID), aEndOffset));
+  if (range) {
+    range.ScrollIntoView(aScrollType);
+  }
+
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvRemoveTextSelection(
+    const uint64_t& aID, const int32_t& aSelectionNum) {
+  HyperTextAccessible* acc = IdToHyperTextAccessible(aID);
+  if (acc && acc->IsTextRole()) {
+    acc->RemoveFromSelection(aSelectionNum);
+  }
+
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvSetCurValue(
+    const uint64_t& aID, const double& aValue) {
+  LocalAccessible* acc = IdToAccessible(aID);
+  if (acc) {
+    acc->SetCurValue(aValue);
+  }
+
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvReplaceText(
+    const uint64_t& aID, const nsAString& aText) {
+  HyperTextAccessible* acc = IdToHyperTextAccessible(aID);
+  if (acc && acc->IsTextRole()) {
+    acc->ReplaceText(aText);
+  }
+
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvInsertText(
+    const uint64_t& aID, const nsAString& aText, const int32_t& aPosition) {
+  HyperTextAccessible* acc = IdToHyperTextAccessible(aID);
+  if (acc && acc->IsTextRole()) {
+    acc->InsertText(aText, aPosition);
+  }
+
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvCopyText(
+    const uint64_t& aID, const int32_t& aStartPos, const int32_t& aEndPos) {
+  HyperTextAccessible* acc = IdToHyperTextAccessible(aID);
+  if (acc && acc->IsTextRole()) {
+    acc->CopyText(aStartPos, aEndPos);
+  }
+
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvCutText(
+    const uint64_t& aID, const int32_t& aStartPos, const int32_t& aEndPos) {
+  HyperTextAccessible* acc = IdToHyperTextAccessible(aID);
+  if (acc && acc->IsTextRole()) {
+    acc->CutText(aStartPos, aEndPos);
+  }
+
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvDeleteText(
+    const uint64_t& aID, const int32_t& aStartPos, const int32_t& aEndPos) {
+  HyperTextAccessible* acc = IdToHyperTextAccessible(aID);
+  if (acc && acc->IsTextRole()) {
+    acc->DeleteText(aStartPos, aEndPos);
+  }
+
+  return IPC_OK();
+}
+
+mozilla::ipc::IPCResult DocAccessibleChildBase::RecvPasteText(
+    const uint64_t& aID, const int32_t& aPosition) {
+  RefPtr<HyperTextAccessible> acc = IdToHyperTextAccessible(aID);
+  if (acc && acc->IsTextRole()) {
+    acc->PasteText(aPosition);
+  }
+
+  return IPC_OK();
+}
+
 LocalAccessible* DocAccessibleChildBase::IdToAccessible(
     const uint64_t& aID) const {
   if (!aID) return mDoc;
@@ -227,6 +330,12 @@ LocalAccessible* DocAccessibleChildBase::IdToAccessible(
   if (!mDoc) return nullptr;
 
   return mDoc->GetAccessibleByUniqueID(reinterpret_cast<void*>(aID));
+}
+
+HyperTextAccessible* DocAccessibleChildBase::IdToHyperTextAccessible(
+    const uint64_t& aID) const {
+  LocalAccessible* acc = IdToAccessible(aID);
+  return acc && acc->IsHyperText() ? acc->AsHyperText() : nullptr;
 }
 
 }  // namespace a11y

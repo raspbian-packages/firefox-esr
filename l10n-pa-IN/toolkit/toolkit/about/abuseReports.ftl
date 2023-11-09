@@ -18,6 +18,8 @@ abuse-report-addon-authored-by = <a data-l10n-name="author-name">{ $author-name 
 abuse-report-learnmore =
     ਪੱਕਾ ਨਹੀਂ ਕਿ ਕਿਹੜਾ ਮਸਲਾ ਚੁਣਨਾ ਹੈ?
     <a data-l10n-name="learnmore-link">ਇਕਸਟੈਨਸ਼ਨਾਂ ਤੇ ਥੀਮਾਂ ਬਾਰੇ ਰਿਪੋਰਟ ਕਰਨ ਬਾਰੇ ਹੋਰ ਸਿੱਖੋ</a>
+abuse-report-learnmore-intro = ਪੱਕਾ ਨਹੀਂ ਕਿ ਕਿਹੜਾ ਮਸਲਾ ਚੁਣਨਾ ਹੈ?
+abuse-report-learnmore-link = ਇਕਸਟੈਨਸ਼ਨਾਂ ਤੇ ਥੀਮਾਂ ਬਾਰੇ ਰਿਪੋਰਟ ਕਰਨ ਬਾਰੇ ਹੋਰ ਸਿੱਖੋ
 abuse-report-submit-description = ਸਮੱਸਿਆ ਬਾਰੇ ਜਾਣਕਾਰੀ ਦਿਓ (ਚੋਣਵਾਂ)
 abuse-report-textarea =
     .placeholder = ਜੇ ਅਸੀਂ ਸਮੱਸਿਆ ਦੱਸੀਏ ਤਾਂ ਸਾਡੇ ਲਈ ਉਸ ਦਾ ਹੱਲ਼ ਲੱਭਣਾ ਸੌਖਾ ਹੁੰਦਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਤਜਰਬੇ ਬਾਰੇ ਦੱਸੋ। ਵਧੀਆ ਵੈੱਬ ਬਣਾਈ ਰੱਖਣ ਲਈ ਸਾਡੀ ਮਦਦ ਕਰਨ ਵਾਸਤੇ ਤੁਹਾਡਾ ਧੰਨਵਾਦ ਹੈ।

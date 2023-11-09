@@ -9,7 +9,6 @@
 #include "ImageEncoder.h"
 #include "jsapi.h"
 #include "jsfriendapi.h"
-#include "Layers.h"
 #include "MediaTrackGraph.h"
 #include "mozilla/Assertions.h"
 #include "mozilla/Base64.h"
@@ -35,6 +34,7 @@
 #include "mozilla/MouseEvents.h"
 #include "mozilla/Preferences.h"
 #include "mozilla/ProfilerLabels.h"
+#include "mozilla/StaticPrefs_privacy.h"
 #include "mozilla/Telemetry.h"
 #include "mozilla/webgpu/CanvasContext.h"
 #include "nsAttrValueInlines.h"
@@ -352,9 +352,6 @@ class RequestedFrameRefreshObserver : public nsARefreshObserver {
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(HTMLCanvasPrintState, mCanvas, mContext,
                                       mCallback)
 
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(HTMLCanvasPrintState, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(HTMLCanvasPrintState, Release)
-
 HTMLCanvasPrintState::HTMLCanvasPrintState(
     HTMLCanvasElement* aCanvas, nsICanvasRenderingContextInternal* aContext,
     nsITimerCallback* aCallback)
@@ -477,7 +474,7 @@ HTMLCanvasElement::~HTMLCanvasElement() { Destroy(); }
 
 void HTMLCanvasElement::Destroy() {
   if (mOffscreenDisplay) {
-    mOffscreenDisplay->Destroy();
+    mOffscreenDisplay->DestroyElement();
     mOffscreenDisplay = nullptr;
     mImageContainer = nullptr;
   }
@@ -561,18 +558,18 @@ nsIntSize HTMLCanvasElement::GetWidthHeight() {
   return size;
 }
 
-nsresult HTMLCanvasElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
-                                         const nsAttrValue* aValue,
-                                         const nsAttrValue* aOldValue,
-                                         nsIPrincipal* aSubjectPrincipal,
-                                         bool aNotify) {
+void HTMLCanvasElement::AfterSetAttr(int32_t aNamespaceID, nsAtom* aName,
+                                     const nsAttrValue* aValue,
+                                     const nsAttrValue* aOldValue,
+                                     nsIPrincipal* aSubjectPrincipal,
+                                     bool aNotify) {
   AfterMaybeChangeAttr(aNamespaceID, aName, aNotify);
 
   return nsGenericHTMLElement::AfterSetAttr(
       aNamespaceID, aName, aValue, aOldValue, aSubjectPrincipal, aNotify);
 }
 
-nsresult HTMLCanvasElement::OnAttrSetButNotChanged(
+void HTMLCanvasElement::OnAttrSetButNotChanged(
     int32_t aNamespaceID, nsAtom* aName, const nsAttrValueOrString& aValue,
     bool aNotify) {
   AfterMaybeChangeAttr(aNamespaceID, aName, aNotify);
@@ -684,28 +681,6 @@ nsresult HTMLCanvasElement::CopyInnerTo(HTMLCanvasElement* aDest) {
   return rv;
 }
 
-void HTMLCanvasElement::GetEventTargetParent(EventChainPreVisitor& aVisitor) {
-  if (aVisitor.mEvent->mClass == eMouseEventClass) {
-    WidgetMouseEventBase* evt = (WidgetMouseEventBase*)aVisitor.mEvent;
-    if (mCurrentContext) {
-      nsIFrame* frame = GetPrimaryFrame();
-      if (!frame) {
-        return;
-      }
-      nsPoint ptInRoot =
-          nsLayoutUtils::GetEventCoordinatesRelativeTo(evt, RelativeTo{frame});
-      nsRect paddingRect = frame->GetContentRectRelativeToSelf();
-      Point hitpoint;
-      hitpoint.x = (ptInRoot.x - paddingRect.x) / AppUnitsPerCSSPixel();
-      hitpoint.y = (ptInRoot.y - paddingRect.y) / AppUnitsPerCSSPixel();
-
-      evt->mRegion = mCurrentContext->GetHitRegion(hitpoint);
-      aVisitor.mCanHandle = true;
-    }
-  }
-  nsGenericHTMLElement::GetEventTargetParent(aVisitor);
-}
-
 nsChangeHint HTMLCanvasElement::GetAttributeChangeHint(const nsAtom* aAttribute,
                                                        int32_t aModType) const {
   nsChangeHint retval =
@@ -757,7 +732,7 @@ void HTMLCanvasElement::ToDataURL(JSContext* aCx, const nsAString& aType,
                                   nsIPrincipal& aSubjectPrincipal,
                                   ErrorResult& aRv) {
   // mWriteOnly check is redundant, but optimizes for the common case.
-  if (mWriteOnly && !CallerCanRead(aCx)) {
+  if (mWriteOnly && !CallerCanRead(&aSubjectPrincipal)) {
     aRv.Throw(NS_ERROR_DOM_SECURITY_ERR);
     return;
   }
@@ -779,6 +754,7 @@ PrintCallback* HTMLCanvasElement::GetMozPrintCallback() const {
   return mPrintCallback;
 }
 
+static uint32_t sCaptureSourceId = 0;
 class CanvasCaptureTrackSource : public MediaStreamTrackSource {
  public:
   NS_DECL_ISUPPORTS_INHERITED
@@ -787,7 +763,10 @@ class CanvasCaptureTrackSource : public MediaStreamTrackSource {
 
   CanvasCaptureTrackSource(nsIPrincipal* aPrincipal,
                            CanvasCaptureMediaStream* aCaptureStream)
-      : MediaStreamTrackSource(aPrincipal, nsString()),
+      : MediaStreamTrackSource(
+            aPrincipal, nsString(),
+            TrackingId(TrackingId::Source::Canvas, sCaptureSourceId++,
+                       TrackingId::TrackAcrossProcesses::Yes)),
         mCaptureStream(aCaptureStream) {}
 
   MediaSourceEnum GetMediaSource() const override {
@@ -839,11 +818,6 @@ already_AddRefed<CanvasCaptureMediaStream> HTMLCanvasElement::CaptureStream(
   nsPIDOMWindowInner* window = OwnerDoc()->GetInnerWindow();
   if (!window) {
     aRv.Throw(NS_ERROR_FAILURE);
-    return nullptr;
-  }
-
-  if (!mCurrentContext) {
-    aRv.Throw(NS_ERROR_NOT_INITIALIZED);
     return nullptr;
   }
 
@@ -944,7 +918,7 @@ void HTMLCanvasElement::ToBlob(JSContext* aCx, BlobCallback& aCallback,
                                nsIPrincipal& aSubjectPrincipal,
                                ErrorResult& aRv) {
   // mWriteOnly check is redundant, but optimizes for the common case.
-  if (mWriteOnly && !CallerCanRead(aCx)) {
+  if (mWriteOnly && !CallerCanRead(&aSubjectPrincipal)) {
     aRv.Throw(NS_ERROR_DOM_SECURITY_ERR);
     return;
   }
@@ -1006,9 +980,9 @@ OffscreenCanvas* HTMLCanvasElement::TransferControlToOffscreen(
       MakeRefPtr<OffscreenCanvasDisplayHelper>(this, sz.width, sz.height);
   mOffscreenCanvas =
       new OffscreenCanvas(win->AsGlobal(), sz.width, sz.height, backend,
-                          textureType, mOffscreenDisplay);
+                          textureType, do_AddRef(mOffscreenDisplay));
   if (mWriteOnly) {
-    mOffscreenCanvas->SetWriteOnly();
+    mOffscreenCanvas->SetWriteOnly(mExpandedReader);
   }
 
   if (!mContextObserver) {
@@ -1040,55 +1014,6 @@ already_AddRefed<nsISupports> HTMLCanvasElement::GetContext(
       aContextOptions.isObject() ? aContextOptions : JS::NullHandleValue, aRv);
 }
 
-already_AddRefed<nsISupports> HTMLCanvasElement::MozGetIPCContext(
-    const nsAString& aContextId, ErrorResult& aRv) {
-  // Note that we're a [ChromeOnly] method, so from JS we can only be called by
-  // system code.
-
-  // We only support 2d shmem contexts for now.
-  if (!aContextId.EqualsLiteral("2d")) {
-    aRv.Throw(NS_ERROR_INVALID_ARG);
-    return nullptr;
-  }
-
-  if (mOffscreenCanvas) {
-    aRv.Throw(NS_ERROR_NOT_IMPLEMENTED);
-    return nullptr;
-  }
-
-  CanvasContextType contextType = CanvasContextType::Canvas2D;
-
-  if (!mCurrentContext) {
-    // This canvas doesn't have a context yet.
-
-    RefPtr<nsICanvasRenderingContextInternal> context;
-    context = CreateContext(contextType);
-    if (!context) {
-      return nullptr;
-    }
-
-    mCurrentContext = context;
-    mCurrentContext->SetIsIPC(true);
-    mCurrentContextType = contextType;
-
-    ErrorResult dummy;
-    nsresult rv = UpdateContext(nullptr, JS::NullHandleValue, dummy);
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      aRv.Throw(rv);
-      return nullptr;
-    }
-  } else {
-    // We already have a context of some type.
-    if (contextType != mCurrentContextType) {
-      aRv.Throw(NS_ERROR_INVALID_ARG);
-      return nullptr;
-    }
-  }
-
-  nsCOMPtr<nsISupports> context(mCurrentContext);
-  return context.forget();
-}
-
 nsIntSize HTMLCanvasElement::GetSize() { return GetWidthHeight(); }
 
 bool HTMLCanvasElement::IsWriteOnly() const { return mWriteOnly; }
@@ -1098,25 +1023,27 @@ void HTMLCanvasElement::SetWriteOnly(
   mExpandedReader = aExpandedReader;
   mWriteOnly = true;
   if (mOffscreenCanvas) {
-    mOffscreenCanvas->SetWriteOnly();
+    mOffscreenCanvas->SetWriteOnly(aExpandedReader);
   }
 }
 
-bool HTMLCanvasElement::CallerCanRead(JSContext* aCx) const {
+bool HTMLCanvasElement::CallerCanRead(nsIPrincipal* aPrincipal) const {
   if (!mWriteOnly) {
     return true;
   }
 
-  nsIPrincipal* prin = nsContentUtils::SubjectPrincipal(aCx);
+  if (!aPrincipal) {
+    return false;
+  }
 
   // If mExpandedReader is set, this canvas was tainted only by
   // mExpandedReader's resources. So allow reading if the subject
   // principal subsumes mExpandedReader.
-  if (mExpandedReader && prin->Subsumes(mExpandedReader)) {
+  if (mExpandedReader && aPrincipal->Subsumes(mExpandedReader)) {
     return true;
   }
 
-  return nsContentUtils::PrincipalHasPermission(*prin,
+  return nsContentUtils::PrincipalHasPermission(*aPrincipal,
                                                 nsGkAtoms::all_urlsPermission);
 }
 
@@ -1140,6 +1067,12 @@ void HTMLCanvasElement::SetHeight(uint32_t aHeight, ErrorResult& aRv) {
   }
 
   SetUnsignedIntAttr(nsGkAtoms::height, aHeight, DEFAULT_CANVAS_HEIGHT, aRv);
+}
+
+void HTMLCanvasElement::FlushOffscreenCanvas() {
+  if (mOffscreenDisplay) {
+    mOffscreenDisplay->FlushForDisplay();
+  }
 }
 
 void HTMLCanvasElement::InvalidateCanvasPlaceholder(uint32_t aWidth,
@@ -1378,9 +1311,9 @@ void HTMLCanvasElement::SetFrameCapture(
 }
 
 already_AddRefed<SourceSurface> HTMLCanvasElement::GetSurfaceSnapshot(
-    gfxAlphaType* const aOutAlphaType) {
+    gfxAlphaType* const aOutAlphaType, DrawTarget* aTarget) {
   if (mCurrentContext) {
-    return mCurrentContext->GetSurfaceSnapshot(aOutAlphaType);
+    return mCurrentContext->GetOptimizedSnapshot(aTarget, aOutAlphaType);
   } else if (mOffscreenDisplay) {
     return mOffscreenDisplay->GetSurfaceSnapshot();
   }
@@ -1410,7 +1343,7 @@ void HTMLCanvasElement::OnMemoryPressure() {
 
 void HTMLCanvasElement::OnDeviceReset() {
   if (!mOffscreenCanvas && mCurrentContext) {
-    mCurrentContext->Reset();
+    mCurrentContext->ResetBitmap();
   }
 }
 
@@ -1429,13 +1362,6 @@ webgpu::CanvasContext* HTMLCanvasElement::GetWebGPUContext() {
   }
 
   return static_cast<webgpu::CanvasContext*>(GetCurrentContext());
-}
-
-CompositableHandle HTMLCanvasElement::GetCompositableHandle() const {
-  if (mOffscreenDisplay) {
-    return mOffscreenDisplay->GetCompositableHandle();
-  }
-  return CompositableHandle();
 }
 
 }  // namespace mozilla::dom

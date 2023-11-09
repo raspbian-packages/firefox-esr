@@ -16,7 +16,7 @@
 
 # The text that is displayed in a info block explaining how the debugger is
 # currently paused due to a `debugger` statement in the code
-whypaused-debugger-statement = Призупинено на операторі зневаджувача
+whypaused-debugger-statement = Призупинено на операторі налагоджувача
 
 # The text that is displayed in a info block explaining how the debugger is
 # currently paused on a breakpoint
@@ -80,8 +80,8 @@ whypaused-assert = Призупинено на твердженні
 
 # The text that is displayed in a info block explaining how the debugger is
 # currently paused on a debugger statement
-whypaused-debug-command = Призупинено на зневадженій функції
+whypaused-debug-command = Призупинено на налагоджуваній функції
 
 # The text that is displayed in a info block explaining how the debugger is
 # currently paused on an event listener breakpoint set
-whypaused-other = Зневаджувач призупинено
+whypaused-other = Налагоджувач призупинено

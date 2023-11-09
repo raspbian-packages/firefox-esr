@@ -20,9 +20,6 @@ namespace mozilla::dom {
 
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE(PerformanceTiming, mPerformance)
 
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(PerformanceTiming, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(PerformanceTiming, Release)
-
 /* static */
 PerformanceTimingData* PerformanceTimingData::Create(
     nsITimedChannel* aTimedChannel, nsIHttpChannel* aChannel,
@@ -84,8 +81,7 @@ PerformanceTiming::PerformanceTiming(Performance* aPerformance,
       aChannel, aHttpChannel,
       nsRFPService::ReduceTimePrecisionAsMSecs(
           aZeroTime, aPerformance->GetRandomTimelineSeed(),
-          aPerformance->IsSystemPrincipal(),
-          aPerformance->CrossOriginIsolated())));
+          aPerformance->GetRTPCallerType())));
 
   // Non-null aHttpChannel implies that this PerformanceTiming object is being
   // used for subresources, which is irrelevant to this probe.
@@ -116,8 +112,7 @@ PerformanceTimingData::PerformanceTimingData(nsITimedChannel* aChannel,
   mInitialized = !!aChannel;
   mZeroTime = aZeroTime;
 
-  if (!StaticPrefs::dom_enable_performance() ||
-      nsContentUtils::ShouldResistFingerprinting()) {
+  if (!StaticPrefs::dom_enable_performance()) {
     mZeroTime = 0;
   }
 
@@ -138,6 +133,7 @@ PerformanceTimingData::PerformanceTimingData(nsITimedChannel* aChannel,
   if (aChannel) {
     aChannel->GetAsyncOpen(&mAsyncOpen);
     aChannel->GetAllRedirectsSameOrigin(&mAllRedirectsSameOrigin);
+    aChannel->GetAllRedirectsPassTimingAllowCheck(&mAllRedirectsPassTAO);
     aChannel->GetRedirectCount(&mRedirectCount);
     aChannel->GetRedirectStart(&mRedirectStart);
     aChannel->GetRedirectEnd(&mRedirectEnd);
@@ -310,7 +306,7 @@ DOMHighResTimeStamp PerformanceTimingData::FetchStartHighRes(
   }
   return nsRFPService::ReduceTimePrecisionAsMSecs(
       mFetchStart, aPerformance->GetRandomTimelineSeed(),
-      aPerformance->IsSystemPrincipal(), aPerformance->CrossOriginIsolated());
+      aPerformance->GetRTPCallerType());
 }
 
 DOMTimeMilliSec PerformanceTiming::FetchStart() {
@@ -341,8 +337,7 @@ bool PerformanceTimingData::CheckAllowedOrigin(nsIHttpChannel* aResourceChannel,
 }
 
 uint8_t PerformanceTimingData::GetRedirectCount() const {
-  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
-      nsContentUtils::ShouldResistFingerprinting()) {
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized()) {
     return 0;
   }
   if (!mAllRedirectsSameOrigin) {
@@ -353,8 +348,7 @@ uint8_t PerformanceTimingData::GetRedirectCount() const {
 
 bool PerformanceTimingData::ShouldReportCrossOriginRedirect(
     bool aEnsureSameOriginAndIgnoreTAO) const {
-  if (!StaticPrefs::dom_enable_performance() || !IsInitialized() ||
-      nsContentUtils::ShouldResistFingerprinting()) {
+  if (!StaticPrefs::dom_enable_performance() || !IsInitialized()) {
     return false;
   }
 
@@ -381,7 +375,7 @@ DOMHighResTimeStamp PerformanceTimingData::AsyncOpenHighRes(
       TimeStampToDOMHighRes(aPerformance, mAsyncOpen);
   return nsRFPService::ReduceTimePrecisionAsMSecs(
       rawValue, aPerformance->GetRandomTimelineSeed(),
-      aPerformance->IsSystemPrincipal(), aPerformance->CrossOriginIsolated());
+      aPerformance->GetRTPCallerType());
 }
 
 DOMHighResTimeStamp PerformanceTimingData::WorkerStartHighRes(
@@ -396,7 +390,7 @@ DOMHighResTimeStamp PerformanceTimingData::WorkerStartHighRes(
       TimeStampToDOMHighRes(aPerformance, mWorkerStart);
   return nsRFPService::ReduceTimePrecisionAsMSecs(
       rawValue, aPerformance->GetRandomTimelineSeed(),
-      aPerformance->IsSystemPrincipal(), aPerformance->CrossOriginIsolated());
+      aPerformance->GetRTPCallerType());
 }
 
 /**
@@ -474,7 +468,7 @@ DOMHighResTimeStamp PerformanceTimingData::DomainLookupStartHighRes(
     return mZeroTime;
   }
   // Bug 1637985 - DomainLookup information may be useful for fingerprinting.
-  if (nsContentUtils::ShouldResistFingerprinting()) {
+  if (aPerformance->ShouldResistFingerprinting()) {
     return FetchStartHighRes(aPerformance);
   }
   return TimeStampToReducedDOMHighResOrFetchStart(aPerformance,
@@ -494,7 +488,7 @@ DOMHighResTimeStamp PerformanceTimingData::DomainLookupEndHighRes(
     return mZeroTime;
   }
   // Bug 1637985 - DomainLookup information may be useful for fingerprinting.
-  if (nsContentUtils::ShouldResistFingerprinting()) {
+  if (aPerformance->ShouldResistFingerprinting()) {
     return FetchStartHighRes(aPerformance);
   }
   // Bug 1155008 - nsHttpTransaction is racy. Return DomainLookupStart when null
@@ -505,7 +499,7 @@ DOMHighResTimeStamp PerformanceTimingData::DomainLookupEndHighRes(
       TimeStampToDOMHighRes(aPerformance, mDomainLookupEnd);
   return nsRFPService::ReduceTimePrecisionAsMSecs(
       rawValue, aPerformance->GetRandomTimelineSeed(),
-      aPerformance->IsSystemPrincipal(), aPerformance->CrossOriginIsolated());
+      aPerformance->GetRTPCallerType());
 }
 
 DOMTimeMilliSec PerformanceTiming::DomainLookupEnd() {
@@ -527,7 +521,7 @@ DOMHighResTimeStamp PerformanceTimingData::ConnectStartHighRes(
       TimeStampToDOMHighRes(aPerformance, mConnectStart);
   return nsRFPService::ReduceTimePrecisionAsMSecs(
       rawValue, aPerformance->GetRandomTimelineSeed(),
-      aPerformance->IsSystemPrincipal(), aPerformance->CrossOriginIsolated());
+      aPerformance->GetRTPCallerType());
 }
 
 DOMTimeMilliSec PerformanceTiming::ConnectStart() {
@@ -552,7 +546,7 @@ DOMHighResTimeStamp PerformanceTimingData::SecureConnectionStartHighRes(
       TimeStampToDOMHighRes(aPerformance, mSecureConnectionStart);
   return nsRFPService::ReduceTimePrecisionAsMSecs(
       rawValue, aPerformance->GetRandomTimelineSeed(),
-      aPerformance->IsSystemPrincipal(), aPerformance->CrossOriginIsolated());
+      aPerformance->GetRTPCallerType());
 }
 
 DOMTimeMilliSec PerformanceTiming::SecureConnectionStart() {
@@ -575,7 +569,7 @@ DOMHighResTimeStamp PerformanceTimingData::ConnectEndHighRes(
       TimeStampToDOMHighRes(aPerformance, mConnectEnd);
   return nsRFPService::ReduceTimePrecisionAsMSecs(
       rawValue, aPerformance->GetRandomTimelineSeed(),
-      aPerformance->IsSystemPrincipal(), aPerformance->CrossOriginIsolated());
+      aPerformance->GetRTPCallerType());
 }
 
 DOMTimeMilliSec PerformanceTiming::ConnectEnd() {
@@ -646,7 +640,7 @@ DOMHighResTimeStamp PerformanceTimingData::ResponseEndHighRes(
       TimeStampToDOMHighRes(aPerformance, mResponseEnd);
   return nsRFPService::ReduceTimePrecisionAsMSecs(
       rawValue, aPerformance->GetRandomTimelineSeed(),
-      aPerformance->IsSystemPrincipal(), aPerformance->CrossOriginIsolated());
+      aPerformance->GetRTPCallerType());
 }
 
 DOMTimeMilliSec PerformanceTiming::ResponseEnd() {

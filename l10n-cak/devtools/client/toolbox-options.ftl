@@ -48,6 +48,7 @@ options-default-color-unit-authored = Achi'el nik'oxïk
 options-default-color-unit-hex = Kiwa winäq
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Rub'i' ri b'onil
 
 ## Style Editor section
@@ -130,4 +131,3 @@ options-source-maps-tooltip =
 
 # The message shown for settings that trigger page reload
 options-context-triggers-page-refresh = * Xa xe re moloj wakami chanin, tasamajib'ej ri ruxaq
-

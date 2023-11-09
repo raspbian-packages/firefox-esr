@@ -4,13 +4,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import print_function
-
-from copy import deepcopy
-from six import iteritems
-from struct import unpack
 import os
+from copy import deepcopy
+from struct import unpack
 from uuid import UUID
+
+from six import iteritems
 
 H_HEADER = """/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* vim: set ts=8 sts=2 et sw=2 tw=80: */
@@ -53,7 +52,7 @@ DLL_BLOCKLIST_DEFINITIONS_BEGIN_NAMED(gBlockedInprocDlls)
 
 """
 
-# These flag names should match the ones defined in WindowsDllBlocklistCommon.h
+# These flag names should match the ones defined in WindowsDllBlocklistInfo.h
 FLAGS_DEFAULT = "FLAGS_DEFAULT"
 BLOCK_WIN8_AND_OLDER = "BLOCK_WIN8_AND_OLDER"
 BLOCK_WIN7_AND_OLDER = "BLOCK_WIN7_AND_OLDER"
@@ -62,6 +61,10 @@ CHILD_PROCESSES_ONLY = "CHILD_PROCESSES_ONLY"
 BROWSER_PROCESS_ONLY = "BROWSER_PROCESS_ONLY"
 SUBSTITUTE_LSP_PASSTHROUGH = "SUBSTITUTE_LSP_PASSTHROUGH"
 REDIRECT_TO_NOOP_ENTRYPOINT = "REDIRECT_TO_NOOP_ENTRYPOINT"
+UTILITY_PROCESSES_ONLY = "UTILITY_PROCESSES_ONLY"
+SOCKET_PROCESSES_ONLY = "SOCKET_PROCESSES_ONLY"
+GPU_PROCESSES_ONLY = "GPU_PROCESSES_ONLY"
+GMPLUGIN_PROCESSES_ONLY = "GMPLUGIN_PROCESSES_ONLY"
 
 # Only these flags are available in the input script
 INPUT_ONLY_FLAGS = {
@@ -97,7 +100,15 @@ def derive_test_key(key):
     return key + "_TESTS"
 
 
-ALL_DEFINITION_LISTS = ("ALL_PROCESSES", "BROWSER_PROCESS", "CHILD_PROCESSES")
+ALL_DEFINITION_LISTS = (
+    "ALL_PROCESSES",
+    "BROWSER_PROCESS",
+    "CHILD_PROCESSES",
+    "GMPLUGIN_PROCESSES",
+    "GPU_PROCESSES",
+    "UTILITY_PROCESSES",
+    "SOCKET_PROCESSES",
+)
 
 
 class BlocklistDescriptor(object):
@@ -274,9 +285,6 @@ class BlocklistDescriptor(object):
                 map(add_list_flags, self.get_test_entries(exec_env, blocklist))
             )
 
-        # There should be no dupes in the input. If there are, raise an error.
-        self.ensure_no_dupes(unified_list)
-
         # Now we filter out any unwanted list entries
         filtered_list = filter(filter_func, unified_list)
 
@@ -365,6 +373,10 @@ GENERATED_BLOCKLIST_FILES = [
         flagspec={
             "BROWSER_PROCESS": {BROWSER_PROCESS_ONLY},
             "CHILD_PROCESSES": {CHILD_PROCESSES_ONLY},
+            "GMPLUGIN_PROCESSES": {GMPLUGIN_PROCESSES_ONLY},
+            "GPU_PROCESSES": {GPU_PROCESSES_ONLY},
+            "UTILITY_PROCESSES": {UTILITY_PROCESSES_ONLY},
+            "SOCKET_PROCESSES": {SOCKET_PROCESSES_ONLY},
         },
     ),
     BlocklistDescriptor(
@@ -373,6 +385,10 @@ GENERATED_BLOCKLIST_FILES = [
         flagspec={
             "BROWSER_PROCESS": {BROWSER_PROCESS_ONLY},
             "CHILD_PROCESSES": {CHILD_PROCESSES_ONLY},
+            "GMPLUGIN_PROCESSES": {GMPLUGIN_PROCESSES_ONLY},
+            "GPU_PROCESSES": {GPU_PROCESSES_ONLY},
+            "UTILITY_PROCESSES": {UTILITY_PROCESSES_ONLY},
+            "SOCKET_PROCESSES": {SOCKET_PROCESSES_ONLY},
         },
     ),
     # Roughed-in for the moment; we'll enable this in bug 1238735
@@ -543,7 +559,7 @@ class DllBlocklistEntry(object):
 
     @staticmethod
     def get_flag_string(flag):
-        return "DllBlockInfo::" + flag
+        return "mozilla::DllBlockInfoFlags::" + flag
 
     def get_flags_list(self):
         return self._flags

@@ -6,11 +6,16 @@ addons-page-title = Administraziun dals supplements
 search-header =
     .placeholder = Tschertgar sin addons.mozilla.org
     .searchbuttonlabel = Tschertgar
-search-header-shortcut =
-    .key = f
+
+## Variables
+##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
+
 list-empty-get-extensions-message = Visita <a data-l10n-name="get-extensions">{ $domain }</a> per installar extensiuns e designs
 list-empty-get-dictionaries-message = Va per dicziunaris sin <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-language-packs-message = Va per pachets da lingua sin <a data-l10n-name="get-extensions">{ $domain }</a>
+
+##
+
 list-empty-installed =
     .value = Ti n'has anc installà nagins supplements da quest tip
 list-empty-available-updates =
@@ -144,7 +149,7 @@ addon-category-sitepermission-title =
     .title = Autorisaziuns per la website
 # String displayed in about:addons in the Site Permissions section
 # Variables:
-#  $host (string): DNS host name for which the webextension enables permissions
+#  $host (string) - DNS host name for which the webextension enables permissions
 addon-sitepermission-host = Autorisaziuns per la website { $host }
 
 ## These are global warnings
@@ -156,6 +161,8 @@ extensions-warning-check-compatibility-button = Activar
 extensions-warning-update-security = Il test da segirezza per l'actualisaziun da supplements è deactivà. Eventualmain pon actualisaziuns donnegiar tes computer.
 extensions-warning-update-security-button = Activar
     .title = Activar il test da segirezza per l'actualisaziun da supplements
+extensions-warning-imported-addons = Finescha per plaschair l'installaziun da las extensiuns importadas en { -brand-short-name }.
+extensions-warning-imported-addons-button = Installar las extensiuns
 
 ## Strings connected to add-on updates
 
@@ -224,6 +231,8 @@ shortcuts-duplicate-warning-message = { $shortcut } vegn utilisà sco cumbinaziu
 # Variables:
 #   $addon (string) - Name of the add-on
 shortcuts-exists = Gia utilisada da { $addon }
+# Variables:
+#   $numberToShow (number) - Number of other elements available to show
 shortcuts-card-expand-button =
     { $numberToShow ->
         [one] Mussar anc { $numberToShow }
@@ -291,17 +300,7 @@ permissions-addon-button = Autorisaziuns
 extension-enabled-heading = Activà
 extension-disabled-heading = Deactivà
 theme-enabled-heading = Activà
-theme-disabled-heading = Deactivà
 theme-disabled-heading2 = Designs memorisads
-theme-monochromatic-heading = Cumbinaziun da colurs
-theme-monochromatic-subheading = Novas cumbinaziuns da colurs vivas da { -brand-product-name }. Disponiblas durant in temp limità.
-# Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
-theme-colorways-button = Empruvar las cumbinaziuns da colurs
-# Refers to the button label for the colorways card when a user has a colorway theme enabled.
-theme-colorways-button-colorway-enabled = Midar la cumbinaziun da colurs
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
-colorway-collection-expiry-label = Scroda ils { DATETIME($expiryDate, month: "long", day: "numeric") }
 plugin-enabled-heading = Activà
 plugin-disabled-heading = Deactivà
 dictionary-enabled-heading = Activà
@@ -350,6 +349,10 @@ addon-detail-updates-radio-on = Activà
 addon-detail-updates-radio-off = Deactivà
 addon-detail-update-check-label = Tschertgar actualisaziuns
 install-update-button = Actualisar
+# aria-label associated to the updates row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-updates =
+    .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
@@ -358,6 +361,24 @@ addon-badge-private-browsing-allowed2 =
 addon-detail-private-browsing-help = Sche permess ha questa extensiun access a tias activitads online en il modus privat. <a data-l10n-name="learn-more">Ulteriuras infurmaziuns</a>
 addon-detail-private-browsing-allow = Permetter
 addon-detail-private-browsing-disallow = Betg permetter
+# aria-label associated to the private browsing row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-private-browsing =
+    .aria-label = { detail-private-browsing-label }
+
+## "sites with restrictions" (internally called "quarantined") are special domains
+## where add-ons are normally blocked for security reasons.
+
+# Used as a description for the option to allow or block an add-on on quarantined domains.
+addon-detail-quarantined-domains-label = Exequir sin websites cun restricziuns
+# Used as help text part of the quarantined domains UI controls row.
+addon-detail-quarantined-domains-help = Sche permess, ha l'extensiun access a websites bloccadas da { -vendor-short-name }. Mo permetter sche ti ta fidas da questa extensiun.
+# Used as label and tooltip text on the radio inputs associated to the quarantined domains UI controls.
+addon-detail-quarantined-domains-allow = Permetter
+addon-detail-quarantined-domains-disallow = Betg permetter
+# aria-label associated to the quarantined domains exempt row to help screen readers to announce the group.
+addon-detail-group-label-quarantined-domains =
+    .aria-label = { addon-detail-quarantined-domains-label }
 
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
@@ -386,6 +407,8 @@ addon-permissions-optional = Permissiuns facultativas per funcziunalitads supple
 addon-permissions-learnmore = Vegnir a savair dapli davart permissiuns
 recommended-extensions-heading = Extensiuns recumandadas
 recommended-themes-heading = Designs recumandads
+# Variables:
+#   $hostname (string) - Host where the permissions are granted
 addon-sitepermissions-required = Permetta a <span data-l10n-name="hostname">{ $hostname }</span> dad utilisar las suandantas funcziuns:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
@@ -410,10 +433,10 @@ addon-page-options-button =
 
 ## Detail notifications
 ## Variables:
-##   $name (String): name of the add-on.
+##   $name (string) - Name of the add-on.
 
 # Variables:
-#   $version (String): application version.
+#   $version (string) - Application version.
 details-notification-incompatible = { $name } n'è betg cumpatibel cun { -brand-short-name } { $version }.
 details-notification-incompatible-link = Ulteriuras infurmaziuns
 details-notification-unsigned-and-disabled = Impussibel da verifitgar { $name } per l'utilisaziun en { -brand-short-name }. Il suplement è vegnì deactivà.

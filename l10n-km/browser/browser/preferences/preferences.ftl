@@ -51,6 +51,17 @@ restart-later = ចាប់ផ្ដើម​ឡើងវិញ​នៅ​ព�
 ## Variables:
 ##   $name (String): name of the extension
 
+
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
 # This string is shown after the user disables an extension to notify the user
 # how to enable an extension that they disabled.
 #
@@ -111,9 +122,16 @@ browser-containers-settings =
     .accesskey = i
 
 containers-disable-alert-title = បិទ​ផ្ទាំង​ឧបករណ៍​ផ្ទុក​ទាំងអស់មែន​ទេ?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc = ប្រសិនបើ​អ្នក​បិទ​ផ្ទាំង​ឧបករណ៍​ផ្ទុក​ឥឡូវ​នេះ ផ្ទាំង​ឧបករណ៍​ផ្ទុក { $tabCount } នឹង​ត្រូវបាន​បិទ។ តើ​អ្នក​ពិត​ជា​ចង់​បិទ​ផ្ទាំង​ឧបករណ៍​ផ្ទុក​មែន​ទេ?
 
 containers-disable-alert-ok-button = បិទ​ផ្ទាំង​ឧបករណ៍​ផ្ទុក { $tabCount }
+
+##
+
 containers-disable-alert-cancel-button = បន្ត​បើក
 
 containers-remove-alert-title = លុប​ប្រអប់​នេះ​ចេញ?
@@ -381,11 +399,6 @@ home-restore-defaults =
     .label = ស្ដារ​លំនាំ​ដើម
     .accesskey = R
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = ទំព័រដើម Firefox (លំនាំដើម)
-
 home-mode-choice-custom =
     .label = URL ផ្ទាល់ខ្លួន…
 
@@ -413,14 +426,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = ខ្លឹមសារ Firefox Home
-home-prefs-content-description = ជ្រើសរើស​ខ្លឹមសារ​អ្វីដែលអ្នកចង់បាននៅលើអេក្រង់ Firefox Home របស់អ្នក។
-
 home-prefs-search-header =
     .label = ការស្វែងរកតាម​អ៊ីនធឺណិត
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 home-prefs-recommended-by-header =
     .label = បានណែនាំដោយ { $provider }
@@ -471,6 +485,7 @@ search-show-suggestions-url-bar-option =
     .label = បង្ហាញការណែនាំ​ស្វែងរកនៅក្នុងលទ្ធផលរបារអាសយដ្ឋាន
     .accesskey = I
 
+
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -519,6 +534,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = យក​បណ្ដាញ​របស់​អ្នក​ជាមួយ​អ្នក
 
 # This message contains two links and two icon images.
@@ -533,14 +552,22 @@ sync-mobile-promo = ទាញ​យក​ Firefox សម្រាប់​<img d
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = ប្តូរ​​រូប​ប្រូ​ហ្វាល់
 
 sync-manage-account = គ្រប់គ្រង​គណនី
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } មិន​ត្រូវ​បាន​ផ្ទៀងផ្ទាត់។
 sync-signedin-login-failure = សូម​ចូល​ដើម្បី​តភ្ជាប់​ឡើង​វិញ { $email }
+
+##
 
 sync-resend-verification =
     .label = ផ្ញើការផ្ទៀងផ្ទាត់ម្ដងទៀត
@@ -605,6 +632,16 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = រក្សា​ទុក
     .accesskey = v
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = បាន​ផ្ញើ​ការ​ផ្ទៀងផ្ទាត់
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = តំណ​ការ​ផ្ទៀងផ្ទាត់​ត្រូវបាន​ផ្ញើ​ទៅ { $email } ។
+sync-verification-not-sent-title = មិន​អាច​ផ្ញើ​ការ​ផ្ទៀងផ្ទាត់​បាន​ទេ
+sync-verification-not-sent-body = យើង​មិន​អាច​ផ្ញើ​អ៊ីមែល​​ផ្ទៀងផ្ទាត់​បាន​ទេ​នៅ​ពេល​នេះ សូម​​ព្យាយាម​ម្ដង​ទៀត​នៅ​ពេល​ក្រោយ។
 
 ## Privacy Section
 
@@ -708,6 +745,9 @@ sitedata-settings =
     .label = គ្រប់គ្រងទិន្នន័យ...
     .accesskey = M
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-header = របារអាសយដ្ឋាន
@@ -742,6 +782,9 @@ enhanced-tracking-protection-setting-custom =
     .accesskey = C
 
 ##
+
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 content-blocking-cookies-label =
     .label = ​ខូគី
@@ -846,6 +889,9 @@ certs-devices =
     .accesskey = D
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

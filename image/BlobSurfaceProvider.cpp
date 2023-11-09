@@ -191,19 +191,16 @@ Maybe<BlobImageKeyData> BlobSurfaceProvider::RecordDrawing(
     return Nothing();
   }
 
-  bool contextPaint = svgContext && svgContext->GetContextPaint();
+  bool contextPaint = svgContext.GetContextPaint();
 
   float animTime = (GetSurfaceKey().Playback() == PlaybackType::eStatic)
                        ? 0.0f
                        : mSVGDocumentWrapper->GetCurrentTimeAsFloat();
 
   IntSize viewportSize = size;
-  if (svgContext) {
-    auto cssViewportSize = svgContext->GetViewportSize();
-    if (cssViewportSize) {
-      // XXX losing unit
-      viewportSize.SizeTo(cssViewportSize->width, cssViewportSize->height);
-    }
+  if (auto cssViewportSize = svgContext.GetViewportSize()) {
+    // XXX losing unit
+    viewportSize.SizeTo(cssViewportSize->width, cssViewportSize->height);
   }
 
   {
@@ -229,15 +226,14 @@ Maybe<BlobImageKeyData> BlobSurfaceProvider::RecordDrawing(
     mSVGDocumentWrapper->UpdateViewportBounds(viewportSize);
     mSVGDocumentWrapper->FlushImageTransformInvalidation();
 
-    RefPtr<gfxContext> ctx = gfxContext::CreateOrNull(dt);
-    MOZ_ASSERT(ctx);  // Already checked the draw target above.
+    gfxContext ctx(dt);
 
     nsRect svgRect;
     auto auPerDevPixel = presContext->AppUnitsPerDevPixel();
     if (size != viewportSize) {
       auto scaleX = double(size.width) / viewportSize.width;
       auto scaleY = double(size.height) / viewportSize.height;
-      ctx->SetMatrix(Matrix::Scaling(float(scaleX), float(scaleY)));
+      ctx.SetMatrix(Matrix::Scaling(float(scaleX), float(scaleY)));
 
       auto scaledVisibleRect = IntRectToRect(imageRect);
       scaledVisibleRect.Scale(float(auPerDevPixel / scaleX),
@@ -264,7 +260,7 @@ Maybe<BlobImageKeyData> BlobSurfaceProvider::RecordDrawing(
 
     presShell->RenderDocument(svgRect, renderDocFlags,
                               NS_RGBA(0, 0, 0, 0),  // transparent
-                              ctx);
+                              &ctx);
   }
 
   recorder->FlushItem(imageRectOrigin);

@@ -2,10 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-sanitize-prefs =
-    .title = Pengaturan untuk Menghapus Riwayat
-    .style = width: 36em
-
 sanitize-prefs2 =
     .title = Pengaturan untuk Menghapus Riwayat
     .style = min-width: 36em
@@ -13,15 +9,15 @@ sanitize-prefs2 =
 sanitize-prefs-style =
     .style = width: 18em
 
-dialog-title =
+sanitize-dialog-title =
     .title = Bersihkan Riwayat Terakhir
-    .style = width: 36em
+    .style = min-width: 36em
 
 # When "Time range to clear" is set to "Everything", this message is used for the
 # title instead of dialog-title.
-dialog-title-everything =
+sanitize-dialog-title-everything =
     .title = Bersihkan Semua Riwayat
-    .style = width: 36em
+    .style = min-width: 36em
 
 clear-data-settings-label = Saat ditutup, secara otomatis { -brand-short-name } akan membersihkan semua data
 

@@ -21,6 +21,14 @@ fxa-menu-turn-on-sync-default = Emyandy Ñembojuehe
 
 fxa-menu-connect-another-device =
     .label = Embojuaju ambue mba’e’oka…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Emondo tendayke mba’e’okápe
+           *[other] Emondo umi tendayke { $tabCount } mba’e’okápe
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

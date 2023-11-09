@@ -112,11 +112,17 @@ nsWebPEncoder::InitFromData(const uint8_t* aData,
   }
 
   if (aInputFormat == INPUT_FORMAT_RGB) {
-    size = WebPEncodeRGB(aData, width.value(), height.value(), stride.value(),
-                         quality, &mImageBuffer);
+    size = quality == 100
+               ? WebPEncodeLosslessRGB(aData, width.value(), height.value(),
+                                       stride.value(), &mImageBuffer)
+               : WebPEncodeRGB(aData, width.value(), height.value(),
+                               stride.value(), quality, &mImageBuffer);
   } else if (aInputFormat == INPUT_FORMAT_RGBA) {
-    size = WebPEncodeRGBA(aData, width.value(), height.value(), stride.value(),
-                          quality, &mImageBuffer);
+    size = quality == 100
+               ? WebPEncodeLosslessRGBA(aData, width.value(), height.value(),
+                                        stride.value(), &mImageBuffer)
+               : WebPEncodeRGBA(aData, width.value(), height.value(),
+                                stride.value(), quality, &mImageBuffer);
   } else if (aInputFormat == INPUT_FORMAT_HOSTARGB) {
     UniquePtr<uint8_t[]> aDest = MakeUnique<uint8_t[]>(aStride * aHeight);
 
@@ -143,8 +149,12 @@ nsWebPEncoder::InitFromData(const uint8_t* aData,
       }
     }
 
-    size = WebPEncodeRGBA(aDest.get(), width.value(), height.value(),
-                          stride.value(), quality, &mImageBuffer);
+    size =
+        quality == 100
+            ? WebPEncodeLosslessRGBA(aDest.get(), width.value(), height.value(),
+                                     stride.value(), &mImageBuffer)
+            : WebPEncodeRGBA(aDest.get(), width.value(), height.value(),
+                             stride.value(), quality, &mImageBuffer);
   }
 
   mFinished = true;
@@ -217,6 +227,11 @@ nsWebPEncoder::Available(uint64_t* _retval) {
 
   *_retval = mImageBufferUsed - mImageBufferReadPoint;
   return NS_OK;
+}
+
+NS_IMETHODIMP
+nsWebPEncoder::StreamStatus() {
+  return mImageBuffer ? NS_OK : NS_BASE_STREAM_CLOSED;
 }
 
 NS_IMETHODIMP

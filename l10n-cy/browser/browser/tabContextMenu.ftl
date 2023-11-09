@@ -54,14 +54,11 @@ unpin-selected-tabs =
 bookmark-selected-tabs =
     .label = Gosod Nod Tudalen i'r Tabiau…
     .accesskey = T
-bookmark-tab =
-    .label = Gosod Nod Tudalen i'r Tab
-    .accesskey = N
 tab-context-bookmark-tab =
     .label = Gosod Nod Tudalen i'r Tab
     .accesskey = T
 tab-context-open-in-new-container-tab =
-    .label = Agor Dolen mewn Tab Cynhwysydd Newydd
+    .label = Agor mewn Tab Cynhwysydd Newydd
     .accesskey = A
 move-to-start =
     .label = Symud i'r Cychwyn
@@ -97,12 +94,12 @@ tab-context-reopen-closed-tabs =
 tab-context-close-n-tabs =
     .label =
         { $tabCount ->
-            [1] Cau'r Tab
+            [1] Cau Tab
             [zero] Cau { $tabCount } Tabiau
             [one] Cau { $tabCount } Tab
             [two] Cau { $tabCount } Dab
-            [few] Cau { $tabCount } Thab
-            [many] Cau { $tabCount } Tab
+            [few] Cau { $tabCount } Tab
+            [many] Cau { $tabCount } Thab
            *[other] Cau { $tabCount } Tab
         }
     .accesskey = T

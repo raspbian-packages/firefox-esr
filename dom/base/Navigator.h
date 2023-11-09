@@ -11,6 +11,7 @@
 #include "mozilla/dom/AddonManagerBinding.h"
 #include "mozilla/dom/BindingDeclarations.h"
 #include "mozilla/dom/Fetch.h"
+#include "mozilla/dom/NavigatorBinding.h"
 #include "mozilla/dom/Nullable.h"
 #include "nsWrapperCache.h"
 #include "nsHashKeys.h"
@@ -36,13 +37,14 @@ class Geolocation;
 class systemMessageCallback;
 class MediaDevices;
 struct MediaStreamConstraints;
-class WakeLock;
 class ArrayBufferOrArrayBufferViewOrBlobOrFormDataOrUSVStringOrURLSearchParams;
 class ServiceWorkerContainer;
 class DOMRequest;
 class CredentialsContainer;
 class Clipboard;
 class LockManager;
+class HTMLMediaElement;
+class AudioContext;
 }  // namespace dom
 namespace webgpu {
 class Instance;
@@ -99,11 +101,6 @@ class Navigator final : public nsISupports, public nsWrapperCache {
   size_t SizeOfIncludingThis(mozilla::MallocSizeOf aMallocSizeOf) const;
 
   /**
-   * For use during document.write where our inner window changes.
-   */
-  void SetWindow(nsPIDOMWindowInner* aInnerWindow);
-
-  /**
    * Called when the inner window navigates to a new page.
    */
   void OnNavigation();
@@ -135,20 +132,19 @@ class Navigator final : public nsISupports, public nsWrapperCache {
   bool CanShare(const ShareData& aData);
   already_AddRefed<Promise> Share(const ShareData& aData, ErrorResult& aRv);
 
-  static void AppName(nsAString& aAppName, nsIPrincipal* aCallerPrincipal,
+  static void AppName(nsAString& aAppName, Document* aCallerDoc,
                       bool aUsePrefOverriddenValue);
 
-  static nsresult GetPlatform(nsAString& aPlatform,
-                              nsIPrincipal* aCallerPrincipal,
+  static nsresult GetPlatform(nsAString& aPlatform, Document* aCallerDoc,
                               bool aUsePrefOverriddenValue);
 
-  static nsresult GetAppVersion(nsAString& aAppVersion,
-                                nsIPrincipal* aCallerPrincipal,
+  static nsresult GetAppVersion(nsAString& aAppVersion, Document* aCallerDoc,
                                 bool aUsePrefOverriddenValue);
 
   static nsresult GetUserAgent(nsPIDOMWindowInner* aWindow,
-                               nsIPrincipal* aCallerPrincipal,
-                               bool aIsCallerChrome, nsAString& aUserAgent);
+                               Document* aCallerDoc,
+                               Maybe<bool> aShouldResistFingerprinting,
+                               nsAString& aUserAgent);
 
   // Clears the platform cache by calling:
   // Navigator_Binding::ClearCachedPlatformValue(this);
@@ -204,6 +200,10 @@ class Navigator final : public nsISupports, public nsWrapperCache {
                        CallerType aCallerType, ErrorResult& aRv);
 
   already_AddRefed<ServiceWorkerContainer> ServiceWorker();
+  // NOTE(krosylight): This currently exists solely for use counter purpose,
+  // since Navigator::ServiceWorker is also called by native functions. Remove
+  // this when we don't need the counter.
+  already_AddRefed<ServiceWorkerContainer> ServiceWorkerJS();
 
   mozilla::dom::CredentialsContainer* Credentials();
   dom::Clipboard* Clipboard();
@@ -228,6 +228,8 @@ class Navigator final : public nsISupports, public nsWrapperCache {
                                   JSObject* /* unused */);
   static bool HasShareSupport(JSContext* /* unused */, JSObject* /* unused */);
 
+  static bool HasMidiSupport(JSContext* /* unused */, JSObject* /* unused */);
+
   nsPIDOMWindowInner* GetParentObject() const { return GetWindow(); }
 
   virtual JSObject* WrapObject(JSContext* cx,
@@ -243,6 +245,12 @@ class Navigator final : public nsISupports, public nsWrapperCache {
       const Sequence<MediaKeySystemConfiguration>& aConfig, ErrorResult& aRv);
 
   bool HasCreatedMediaSession() const;
+
+  // Following methods are for the Autoplay Policy Detection API.
+  // https://w3c.github.io/autoplay/#autoplay-detection-methods
+  AutoplayPolicy GetAutoplayPolicy(AutoplayPolicyMediaType aType);
+  AutoplayPolicy GetAutoplayPolicy(HTMLMediaElement& aElement);
+  AutoplayPolicy GetAutoplayPolicy(AudioContext& aContext);
 
  private:
   void ValidateShareData(const ShareData& aData, ErrorResult& aRv);

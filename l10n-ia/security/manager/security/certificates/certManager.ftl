@@ -26,10 +26,6 @@ certmgr-people = Tu ha certificatos sur le file que identifica iste personas
 certmgr-server = Iste entratas identifica exceptiones de error del certificato de servitor
 certmgr-ca = Tu ha certificatos sur le file que identifica iste autoritates
 
-certmgr-edit-ca-cert =
-    .title = Modificar le parametros de confidentia del CA
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = Modificar le parametros de confidentia del certificato del CA
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Iste certificato pote identificar usatores de email.
-
-certmgr-delete-cert =
-    .title = Deler le certificato
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Deler le certificato
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Servitor
-
-certmgr-override-lifetime =
-    .label = Duration del vita
 
 certmgr-token-name =
     .label = Dispositivo de securitate
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Numero serial
+
+certmgr-fingerprint-sha-256 =
+    .label = Impression digital SHA-256
 
 certmgr-view =
     .label = Vider…

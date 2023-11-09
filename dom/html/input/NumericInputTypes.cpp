@@ -41,25 +41,9 @@ bool NumericInputTypeBase::IsRangeUnderflow() const {
   return value < minimum;
 }
 
-bool NumericInputTypeBase::HasStepMismatch(bool aUseZeroIfValueNaN) const {
+bool NumericInputTypeBase::HasStepMismatch() const {
   Decimal value = mInputElement->GetValueAsDecimal();
-  if (value.isNaN()) {
-    if (aUseZeroIfValueNaN) {
-      value = Decimal(0);
-    } else {
-      // The element can't suffer from step mismatch if it's value isn't a
-      // number.
-      return false;
-    }
-  }
-
-  Decimal step = mInputElement->GetStep();
-  if (step == kStepAny) {
-    return false;
-  }
-
-  // Value has to be an integral multiple of step.
-  return NS_floorModulo(value - GetStepBase(), step) != Decimal(0);
+  return mInputElement->ValueIsStepMismatch(value);
 }
 
 nsresult NumericInputTypeBase::GetRangeOverflowMessage(nsAString& aMessage) {
@@ -172,7 +156,7 @@ bool NumberInputType::IsMutable() const {
 }
 
 /* input type=range */
-nsresult RangeInputType::MinMaxStepAttrChanged() {
+void RangeInputType::MinMaxStepAttrChanged() {
   // The value may need to change when @min/max/step changes since the value may
   // have been invalid and can now change to a valid value, or vice versa. For
   // example, consider: <input type=range value=-1 max=1 step=3>. The valid
@@ -185,6 +169,5 @@ nsresult RangeInputType::MinMaxStepAttrChanged() {
   // example above were to change from 1 to -1.
   nsAutoString value;
   GetNonFileValueInternal(value);
-  return SetValueInternal(value,
-                          TextControlState::ValueSetterOption::ByInternalAPI);
+  SetValueInternal(value, TextControlState::ValueSetterOption::ByInternalAPI);
 }

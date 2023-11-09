@@ -30,6 +30,7 @@
 
 #include "mozilla/ArrayUtils.h"
 #include "mozilla/Sprintf.h"
+#include "nsAccessibilityService.h"
 #include "nsComponentManagerUtils.h"
 
 using namespace mozilla;
@@ -580,8 +581,8 @@ AtkRole getRoleCB(AtkObject* aAtkObj) {
   }
 #endif
 
-#define ROLE(geckoRole, stringRole, atkRole, macRole, macSubrole, msaaRole, \
-             ia2Role, androidClass, nameRule)                               \
+#define ROLE(geckoRole, stringRole, ariaRole, atkRole, macRole, macSubrole, \
+             msaaRole, ia2Role, androidClass, nameRule)                     \
   case roles::geckoRole:                                                    \
     aAtkObj->role = atkRole;                                                \
     break;
@@ -668,11 +669,13 @@ AtkAttributeSet* getAttributesCB(AtkObject* aAtkObj) {
 }
 
 const gchar* GetLocaleCB(AtkObject* aAtkObj) {
-  AccessibleWrap* accWrap = GetAccessibleWrap(aAtkObj);
-  if (!accWrap) return nullptr;
+  Accessible* acc = GetInternalObj(aAtkObj);
+  if (!acc) {
+    return nullptr;
+  }
 
   nsAutoString locale;
-  accWrap->Language(locale);
+  acc->Language(locale);
   return AccessibleWrap::ReturnString(locale);
 }
 
@@ -705,38 +708,20 @@ AtkObject* refChildCB(AtkObject* aAtkObj, gint aChildIndex) {
     return nullptr;
   }
 
-  AtkObject* childAtkObj = nullptr;
-  AccessibleWrap* accWrap = GetAccessibleWrap(aAtkObj);
-  if (accWrap) {
-    if (nsAccUtils::MustPrune(accWrap)) {
-      return nullptr;
-    }
-
-    LocalAccessible* accChild = accWrap->EmbeddedChildAt(aChildIndex);
-    if (accChild) {
-      childAtkObj = AccessibleWrap::GetAtkObject(accChild);
-    } else {
-      OuterDocAccessible* docOwner = accWrap->AsOuterDoc();
-      if (docOwner) {
-        RemoteAccessible* proxyDoc = docOwner->RemoteChildDoc();
-        if (proxyDoc) childAtkObj = GetWrapperFor(proxyDoc);
-      }
-    }
-  } else if (RemoteAccessible* proxy = GetProxy(aAtkObj)) {
-    if (nsAccUtils::MustPrune(proxy)) {
-      return nullptr;
-    }
-
-    Accessible* child = proxy->EmbeddedChildAt(aChildIndex);
-    if (child) {
-      childAtkObj = GetWrapperFor(child->AsRemote());
-    }
-  } else {
+  Accessible* acc = GetInternalObj(aAtkObj);
+  if (!acc || nsAccUtils::MustPrune(acc)) {
+    return nullptr;
+  }
+  Accessible* accChild = acc->EmbeddedChildAt(aChildIndex);
+  if (!accChild) {
     return nullptr;
   }
 
+  AtkObject* childAtkObj = GetWrapperFor(accChild);
   NS_ASSERTION(childAtkObj, "Fail to get AtkObj");
-  if (!childAtkObj) return nullptr;
+  if (!childAtkObj) {
+    return nullptr;
+  }
 
   g_object_ref(childAtkObj);
 
@@ -794,11 +779,8 @@ AtkStateSet* refStateSetCB(AtkObject* aAtkObj) {
   AtkStateSet* state_set = nullptr;
   state_set = ATK_OBJECT_CLASS(parent_class)->ref_state_set(aAtkObj);
 
-  AccessibleWrap* accWrap = GetAccessibleWrap(aAtkObj);
-  if (accWrap) {
-    TranslateStates(accWrap->State(), accWrap->Role(), state_set);
-  } else if (RemoteAccessible* proxy = GetProxy(aAtkObj)) {
-    TranslateStates(proxy->State(), proxy->Role(), state_set);
+  if (Accessible* acc = GetInternalObj(aAtkObj)) {
+    TranslateStates(acc->State(), acc->Role(), state_set);
   } else {
     TranslateStates(states::DEFUNCT, roles::NOTHING, state_set);
   }
@@ -806,7 +788,7 @@ AtkStateSet* refStateSetCB(AtkObject* aAtkObj) {
   return state_set;
 }
 
-static void UpdateAtkRelation(RelationType aType, LocalAccessible* aAcc,
+static void UpdateAtkRelation(RelationType aType, Accessible* aAcc,
                               AtkRelationType aAtkType,
                               AtkRelationSet* aAtkSet) {
   if (aAtkType == ATK_RELATION_NULL) return;
@@ -817,16 +799,9 @@ static void UpdateAtkRelation(RelationType aType, LocalAccessible* aAcc,
 
   Relation rel(aAcc->RelationByType(aType));
   nsTArray<AtkObject*> targets;
-  LocalAccessible* tempAcc = nullptr;
+  Accessible* tempAcc = nullptr;
   while ((tempAcc = rel.Next())) {
-    targets.AppendElement(AccessibleWrap::GetAtkObject(tempAcc));
-  }
-
-  if (aType == RelationType::EMBEDS && aAcc->IsRoot()) {
-    if (RemoteAccessible* proxyDoc =
-            aAcc->AsRoot()->GetPrimaryRemoteTopLevelContentDoc()) {
-      targets.AppendElement(GetWrapperFor(proxyDoc));
-    }
+    targets.AppendElement(GetWrapperFor(tempAcc));
   }
 
   if (targets.Length()) {
@@ -841,46 +816,13 @@ AtkRelationSet* refRelationSetCB(AtkObject* aAtkObj) {
   AtkRelationSet* relation_set =
       ATK_OBJECT_CLASS(parent_class)->ref_relation_set(aAtkObj);
 
-  const AtkRelationType typeMap[] = {
-#define RELATIONTYPE(gecko, s, atk, m, i) atk,
-#include "RelationTypeMap.h"
-#undef RELATIONTYPE
-  };
-
-  if (RemoteAccessible* proxy = GetProxy(aAtkObj)) {
-    nsTArray<RelationType> types;
-    nsTArray<nsTArray<RemoteAccessible*>> targetSets;
-    proxy->Relations(&types, &targetSets);
-
-    size_t relationCount = types.Length();
-    for (size_t i = 0; i < relationCount; i++) {
-      if (typeMap[static_cast<uint32_t>(types[i])] == ATK_RELATION_NULL) {
-        continue;
-      }
-
-      size_t targetCount = targetSets[i].Length();
-      AutoTArray<AtkObject*, 5> wrappers;
-      for (size_t j = 0; j < targetCount; j++) {
-        wrappers.AppendElement(GetWrapperFor(targetSets[i][j]));
-      }
-
-      AtkRelationType atkType = typeMap[static_cast<uint32_t>(types[i])];
-      AtkRelation* atkRelation =
-          atk_relation_set_get_relation_by_type(relation_set, atkType);
-      if (atkRelation) atk_relation_set_remove(relation_set, atkRelation);
-
-      atkRelation =
-          atk_relation_new(wrappers.Elements(), wrappers.Length(), atkType);
-      atk_relation_set_add(relation_set, atkRelation);
-      g_object_unref(atkRelation);
-    }
+  Accessible* acc = GetInternalObj(aAtkObj);
+  if (!acc) {
+    return relation_set;
   }
 
-  AccessibleWrap* accWrap = GetAccessibleWrap(aAtkObj);
-  if (!accWrap) return relation_set;
-
 #define RELATIONTYPE(geckoType, geckoTypeName, atkType, msaaType, ia2Type) \
-  UpdateAtkRelation(RelationType::geckoType, accWrap, atkType, relation_set);
+  UpdateAtkRelation(RelationType::geckoType, acc, atkType, relation_set);
 
 #include "RelationTypeMap.h"
 
@@ -892,24 +834,15 @@ AtkRelationSet* refRelationSetCB(AtkObject* aAtkObj) {
 // Check if aAtkObj is a valid MaiAtkObject, and return the AccessibleWrap
 // for it.
 AccessibleWrap* GetAccessibleWrap(AtkObject* aAtkObj) {
-  bool isMAIObject = IS_MAI_OBJECT(aAtkObj);
-  NS_ENSURE_TRUE(isMAIObject || MAI_IS_ATK_SOCKET(aAtkObj), nullptr);
+  NS_ENSURE_TRUE(IS_MAI_OBJECT(aAtkObj), nullptr);
 
-  AccessibleWrap* accWrap = nullptr;
-  if (isMAIObject) {
-    // If we're working with an ATK object, we need to convert the Accessible
-    // back to an AccessibleWrap:
-    Accessible* storedAcc = MAI_ATK_OBJECT(aAtkObj)->acc;
-    if (!storedAcc) {
-      return nullptr;
-    }
-
-    accWrap = static_cast<AccessibleWrap*>(storedAcc->AsLocal());
-  } else {
-    // The ATK socket stores an AccessibleWrap directly, so we can get the value
-    // with no casting.
-    accWrap = MAI_ATK_SOCKET(aAtkObj)->accWrap;
+  // If we're working with an ATK object, we need to convert the Accessible
+  // back to an AccessibleWrap:
+  Accessible* storedAcc = MAI_ATK_OBJECT(aAtkObj)->acc;
+  if (!storedAcc) {
+    return nullptr;
   }
+  auto* accWrap = static_cast<AccessibleWrap*>(storedAcc->AsLocal());
 
   // Check if the accessible was deconstructed.
   if (!accWrap) return nullptr;
@@ -1390,9 +1323,9 @@ void MaiAtkObject::FireStateChangeEvent(uint64_t aState, bool aEnabled) {
   }
 }
 
-void a11y::ProxyTextChangeEvent(RemoteAccessible* aTarget, const nsString& aStr,
-                                int32_t aStart, uint32_t aLen, bool aIsInsert,
-                                bool aFromUser) {
+void a11y::ProxyTextChangeEvent(RemoteAccessible* aTarget,
+                                const nsAString& aStr, int32_t aStart,
+                                uint32_t aLen, bool aIsInsert, bool aFromUser) {
   MaiAtkObject* atkObj = MAI_ATK_OBJECT(GetWrapperFor(aTarget));
   atkObj->FireTextChangeEvent(aStr, aStart, aLen, aIsInsert, aFromUser);
 }
@@ -1410,7 +1343,7 @@ static const char* textChangedStrings[2][2] = {
     {TEXT_REMOVED NON_USER_DETAIL, TEXT_INSERTED NON_USER_DETAIL},
     {TEXT_REMOVED, TEXT_INSERTED}};
 
-void MaiAtkObject::FireTextChangeEvent(const nsString& aStr, int32_t aStart,
+void MaiAtkObject::FireTextChangeEvent(const nsAString& aStr, int32_t aStart,
                                        uint32_t aLen, bool aIsInsert,
                                        bool aFromUser) {
   if (gAvailableAtkSignals == eUnknown) {
@@ -1461,7 +1394,7 @@ void a11y::ProxySelectionEvent(RemoteAccessible*, RemoteAccessible* aWidget,
 }
 
 // static
-void AccessibleWrap::GetKeyBinding(LocalAccessible* aAccessible,
+void AccessibleWrap::GetKeyBinding(Accessible* aAccessible,
                                    nsAString& aResult) {
   // Return all key bindings including access key and keyboard shortcut.
 
@@ -1471,7 +1404,7 @@ void AccessibleWrap::GetKeyBinding(LocalAccessible* aAccessible,
   if (!keyBinding.IsEmpty()) {
     keyBinding.AppendToString(keyBindingsStr, KeyBinding::eAtkFormat);
 
-    LocalAccessible* parent = aAccessible->LocalParent();
+    Accessible* parent = aAccessible->Parent();
     roles::Role role = parent ? parent->Role() : roles::NOTHING;
     if (role == roles::PARENT_MENUITEM || role == roles::MENUITEM ||
         role == roles::RADIO_MENU_ITEM || role == roles::CHECK_MENU_ITEM) {
@@ -1487,8 +1420,7 @@ void AccessibleWrap::GetKeyBinding(LocalAccessible* aAccessible,
 
           keysInHierarchyStr.Insert(str, 0);
         }
-      } while ((parent = parent->LocalParent()) &&
-               parent->Role() != roles::MENUBAR);
+      } while ((parent = parent->Parent()) && parent->Role() != roles::MENUBAR);
 
       keyBindingsStr.Append(';');
       keyBindingsStr.Append(keysInHierarchyStr);
@@ -1500,9 +1432,11 @@ void AccessibleWrap::GetKeyBinding(LocalAccessible* aAccessible,
 
   // Get keyboard shortcut.
   keyBindingsStr.Append(';');
-  keyBinding = aAccessible->KeyboardShortcut();
-  if (!keyBinding.IsEmpty()) {
-    keyBinding.AppendToString(keyBindingsStr, KeyBinding::eAtkFormat);
+  if (LocalAccessible* localAcc = aAccessible->AsLocal()) {
+    keyBinding = localAcc->KeyboardShortcut();
+    if (!keyBinding.IsEmpty()) {
+      keyBinding.AppendToString(keyBindingsStr, KeyBinding::eAtkFormat);
+    }
   }
   aResult = keyBindingsStr;
 }

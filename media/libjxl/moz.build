@@ -14,19 +14,22 @@ SOURCES += [
     "/third_party/jpeg-xl/lib/jxl/ac_strategy.cc",
     "/third_party/jpeg-xl/lib/jxl/alpha.cc",
     "/third_party/jpeg-xl/lib/jxl/ans_common.cc",
-    "/third_party/jpeg-xl/lib/jxl/aux_out.cc",
     "/third_party/jpeg-xl/lib/jxl/base/cache_aligned.cc",
     "/third_party/jpeg-xl/lib/jxl/base/data_parallel.cc",
     "/third_party/jpeg-xl/lib/jxl/base/padded_bytes.cc",
+    "/third_party/jpeg-xl/lib/jxl/base/profiler.cc",
     "/third_party/jpeg-xl/lib/jxl/base/random.cc",
     "/third_party/jpeg-xl/lib/jxl/blending.cc",
-    "/third_party/jpeg-xl/lib/jxl/box_content_decoder.cc",
     "/third_party/jpeg-xl/lib/jxl/chroma_from_luma.cc",
     "/third_party/jpeg-xl/lib/jxl/coeff_order.cc",
     "/third_party/jpeg-xl/lib/jxl/color_encoding_internal.cc",
     "/third_party/jpeg-xl/lib/jxl/color_management.cc",
     "/third_party/jpeg-xl/lib/jxl/compressed_dc.cc",
-    "/third_party/jpeg-xl/lib/jxl/convolve.cc",
+    "/third_party/jpeg-xl/lib/jxl/convolve_separable5.cc",
+    "/third_party/jpeg-xl/lib/jxl/convolve_separable7.cc",
+    "/third_party/jpeg-xl/lib/jxl/convolve_slow.cc",
+    "/third_party/jpeg-xl/lib/jxl/convolve_symmetric3.cc",
+    "/third_party/jpeg-xl/lib/jxl/convolve_symmetric5.cc",
     "/third_party/jpeg-xl/lib/jxl/dct_scales.cc",
     "/third_party/jpeg-xl/lib/jxl/dec_ans.cc",
     "/third_party/jpeg-xl/lib/jxl/dec_cache.cc",
@@ -41,11 +44,8 @@ SOURCES += [
     "/third_party/jpeg-xl/lib/jxl/dec_patch_dictionary.cc",
     "/third_party/jpeg-xl/lib/jxl/dec_xyb.cc",
     "/third_party/jpeg-xl/lib/jxl/decode.cc",
-    "/third_party/jpeg-xl/lib/jxl/decode_to_jpeg.cc",
-    "/third_party/jpeg-xl/lib/jxl/enc_bit_writer.cc",
     "/third_party/jpeg-xl/lib/jxl/entropy_coder.cc",
     "/third_party/jpeg-xl/lib/jxl/epf.cc",
-    "/third_party/jpeg-xl/lib/jxl/exif.cc",
     "/third_party/jpeg-xl/lib/jxl/fast_dct.cc",
     "/third_party/jpeg-xl/lib/jxl/fields.cc",
     "/third_party/jpeg-xl/lib/jxl/frame_header.cc",
@@ -57,15 +57,13 @@ SOURCES += [
     "/third_party/jpeg-xl/lib/jxl/image.cc",
     "/third_party/jpeg-xl/lib/jxl/image_bundle.cc",
     "/third_party/jpeg-xl/lib/jxl/image_metadata.cc",
-    "/third_party/jpeg-xl/lib/jxl/jpeg/dec_jpeg_data.cc",
-    "/third_party/jpeg-xl/lib/jxl/jpeg/dec_jpeg_data_writer.cc",
-    "/third_party/jpeg-xl/lib/jxl/jpeg/jpeg_data.cc",
     "/third_party/jpeg-xl/lib/jxl/loop_filter.cc",
     "/third_party/jpeg-xl/lib/jxl/luminance.cc",
     "/third_party/jpeg-xl/lib/jxl/memory_manager_internal.cc",
     "/third_party/jpeg-xl/lib/jxl/modular/encoding/dec_ma.cc",
     "/third_party/jpeg-xl/lib/jxl/modular/encoding/encoding.cc",
     "/third_party/jpeg-xl/lib/jxl/modular/modular_image.cc",
+    "/third_party/jpeg-xl/lib/jxl/modular/transform/palette.cc",
     "/third_party/jpeg-xl/lib/jxl/modular/transform/rct.cc",
     "/third_party/jpeg-xl/lib/jxl/modular/transform/squeeze.cc",
     "/third_party/jpeg-xl/lib/jxl/modular/transform/transform.cc",
@@ -79,11 +77,14 @@ SOURCES += [
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_blending.cc",
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_chroma_upsampling.cc",
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_epf.cc",
+    "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_from_linear.cc",
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_gaborish.cc",
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_noise.cc",
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_patches.cc",
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_splines.cc",
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_spot.cc",
+    "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_to_linear.cc",
+    "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_tone_mapping.cc",
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_upsampling.cc",
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_write.cc",
     "/third_party/jpeg-xl/lib/jxl/render_pipeline/stage_xyb.cc",
@@ -97,13 +98,10 @@ SOURCES += [
     "/third_party/jpeg-xl/lib/threads/thread_parallel_runner_internal.cc",
 ]
 
-DEFINES["JPEGXL_MAJOR_VERSION"] = "0"
-DEFINES["JPEGXL_MINOR_VERSION"] = "0"
-DEFINES["JPEGXL_PATCH_VERSION"] = "0"
-
 EXPORTS.jxl += [
     "./include/jxl/jxl_export.h",
     "./include/jxl/jxl_threads_export.h",
+    "./include/jxl/version.h",
     "/third_party/jpeg-xl/lib/include/jxl/butteraugli.h",
     "/third_party/jpeg-xl/lib/include/jxl/butteraugli_cxx.h",
     "/third_party/jpeg-xl/lib/include/jxl/cms_interface.h",
@@ -119,6 +117,9 @@ EXPORTS.jxl += [
     "/third_party/jpeg-xl/lib/include/jxl/thread_parallel_runner_cxx.h",
     "/third_party/jpeg-xl/lib/include/jxl/types.h",
 ]
+
+DEFINES["JPEGXL_ENABLE_BOXES"] = "0"
+DEFINES["JPEGXL_ENABLE_TRANSCODE_JPEG"] = "0"
 
 FINAL_LIBRARY = "gkmedias"
 

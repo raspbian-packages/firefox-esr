@@ -10,12 +10,8 @@
 #define builtin_Array_h
 
 #include "mozilla/Attributes.h"
-#include "mozilla/TextUtils.h"
-
-#include "jspubtd.h"
 
 #include "vm/JSObject.h"
-#include "vm/NativeObject.h"  // js::ShouldUpdateTypes
 
 namespace js {
 
@@ -85,7 +81,7 @@ extern ArrayObject* NewDenseFullyAllocatedArrayWithTemplate(
     JSContext* cx, uint32_t length, ArrayObject* templateObject);
 
 extern ArrayObject* NewArrayWithShape(JSContext* cx, uint32_t length,
-                                      HandleShape shape);
+                                      Handle<Shape*> shape);
 
 extern bool ToLength(JSContext* cx, HandleValue v, uint64_t* out);
 
@@ -112,17 +108,11 @@ extern bool array_includes(JSContext* cx, unsigned argc, js::Value* vp);
 extern bool array_indexOf(JSContext* cx, unsigned argc, js::Value* vp);
 extern bool array_lastIndexOf(JSContext* cx, unsigned argc, js::Value* vp);
 
-extern bool array_push(JSContext* cx, unsigned argc, js::Value* vp);
-
 extern bool array_pop(JSContext* cx, unsigned argc, js::Value* vp);
 
 extern bool array_join(JSContext* cx, unsigned argc, js::Value* vp);
 
 extern void ArrayShiftMoveElements(ArrayObject* arr);
-
-extern bool array_shift(JSContext* cx, unsigned argc, js::Value* vp);
-
-extern bool array_slice(JSContext* cx, unsigned argc, js::Value* vp);
 
 extern JSObject* ArraySliceDense(JSContext* cx, HandleObject obj, int32_t begin,
                                  int32_t end, HandleObject result);
@@ -131,7 +121,7 @@ extern JSObject* ArgumentsSliceDense(JSContext* cx, HandleObject obj,
                                      int32_t begin, int32_t end,
                                      HandleObject result);
 
-extern bool intrinsic_newList(JSContext* cx, unsigned argc, js::Value* vp);
+extern ArrayObject* NewArrayWithNullProto(JSContext* cx);
 
 /*
  * Append the given (non-hole) value to the end of an array.  The array must be
@@ -143,7 +133,7 @@ extern bool intrinsic_newList(JSContext* cx, unsigned argc, js::Value* vp);
 extern bool NewbornArrayPush(JSContext* cx, HandleObject obj, const Value& v);
 
 extern ArrayObject* ArrayConstructorOneArg(JSContext* cx,
-                                           HandleArrayObject templateObject,
+                                           Handle<ArrayObject*> templateObject,
                                            int32_t lengthInt);
 
 #ifdef DEBUG

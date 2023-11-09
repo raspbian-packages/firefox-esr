@@ -91,9 +91,9 @@ class CharacterData : public nsIContent {
 
   NS_IMPL_FROMNODE_HELPER(CharacterData, IsCharacterData())
 
-  virtual void GetNodeValueInternal(nsAString& aNodeValue) override;
-  virtual void SetNodeValueInternal(const nsAString& aNodeValue,
-                                    ErrorResult& aError) override;
+  void GetNodeValueInternal(nsAString& aNodeValue) override;
+  void SetNodeValueInternal(const nsAString& aNodeValue,
+                            ErrorResult& aError) override;
 
   void GetTextContentInternal(nsAString& aTextContent, OOMReporter&) final {
     GetNodeValue(aTextContent);
@@ -107,10 +107,6 @@ class CharacterData : public nsIContent {
   nsresult BindToTree(BindContext&, nsINode& aParent) override;
 
   void UnbindFromTree(bool aNullParent = true) override;
-
-  already_AddRefed<nsINodeList> GetChildren(uint32_t aFilter) final {
-    return nullptr;
-  }
 
   const nsTextFragment* GetText() override { return &mText; }
   uint32_t TextLength() const final { return TextDataLength(); }
@@ -162,8 +158,6 @@ class CharacterData : public nsIContent {
 
   void DumpContent(FILE* out, int32_t aIndent, bool aDumpAll) const override {}
 #endif
-
-  bool IsNodeOfType(uint32_t aFlags) const override { return false; }
 
   nsresult Clone(dom::NodeInfo* aNodeInfo, nsINode** aResult) const override {
     RefPtr<CharacterData> result = CloneDataNode(aNodeInfo, true);

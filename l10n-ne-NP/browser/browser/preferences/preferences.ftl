@@ -51,6 +51,17 @@ restart-later = केहि समयपछि पुनःसुरु गर�
 ##   $name (String): name of the extension
 
 
+## Extension Control Notifications
+##
+## These strings are used to inform the user
+## about changes made by extensions to browser settings.
+##
+## <img data-l10n-name="icon"/> is going to be replaced by the extension icon.
+##
+## Variables:
+##   $name (string) - Name of the extension
+
+
 ## Preferences UI Search Results
 
 search-results-header = खोजी परिणामहरू
@@ -104,6 +115,10 @@ browser-containers-settings =
     .accesskey = i
 
 containers-disable-alert-title = सबै कन्टेनर ट्याबहरू बन्द गर्न चाहनुहुन्छ?
+
+## Variables:
+##   $tabCount (number) - Number of tabs
+
 containers-disable-alert-desc =
     { $tabCount ->
         [one] यदि तपाईँले अहिले कन्टेनर ट्याबहरू अक्षम गर्नुभयो भने { $tabCount } कन्टेनर ट्याब बन्द हुने छ। के तपाईँ कन्टेनर ट्याबहरू अक्षम गर्न चाहनुहुन्छ?
@@ -115,6 +130,9 @@ containers-disable-alert-ok-button =
         [one] { $tabCount } कन्टेनर ट्याब बन्द गर्नुहोस्
        *[other] { $tabCount } कन्टेनर ट्याबहरू बन्द गर्नुहोस्
     }
+
+##
+
 containers-disable-alert-cancel-button = सक्षम राख्नुहोस्
 
 containers-remove-alert-title = यो कन्टेनर हटाउने हो ?
@@ -379,11 +397,6 @@ home-restore-defaults =
     .label = पूर्वानिर्धारित अवस्थामा ल्याउनुहोस्
     .accesskey = R
 
-# "Firefox" should be treated as a brand and kept in English,
-# while "Home" and "(Default)" can be localized.
-home-mode-choice-default =
-    .label = Firefox गृहपृष्ठ (पूर्वनिर्धारित)
-
 home-mode-choice-custom =
     .label = अनुकूल URLहरू
 
@@ -411,14 +424,15 @@ choose-bookmark =
 
 ## Home Section - Firefox Home Content Customization
 
-home-prefs-content-header = Firefox गृह सामग्री
-home-prefs-content-description = तपाईंको Firefox गृह पृष्ठमा तपाईँ कुन सामग्री राख्न चाहनुहुन्छ छान्नुहोस् ।
-
 home-prefs-search-header =
     .label = वेब खोजि
 
 ## Variables:
 ##  $provider (String): Name of the corresponding content provider, e.g "Pocket".
+
+
+## Variables:
+##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
 
 home-prefs-recommended-by-header =
     .label = { $provider } द्वारा सिफारिस गरिएको
@@ -469,6 +483,7 @@ search-show-suggestions-url-bar-option =
     .label = ठेगानापट्टिको नतिजाहरूमा खोज सुझावहरू देखाउनुहोस्
     .accesskey = I
 
+
 search-suggestions-cant-show = खोज इतिहास कहिले पनि लोकेसन बारमा देखिदैन किनभने { -brand-short-name } लाई कहिले पनि इतिहास नसम्झनेमा सेट गर्नुभएको छ ।
 
 search-one-click-desc = बैकल्पिक खोज इन्जिनहरू चयन गर्नुहोस् जुन तपाईँले खोजशब्दहरू प्रविष्ट गर्न थालेपछि ठेगानापट्टि र खोजीपट्टि को तलपट्टि देखा पर्दछ ।
@@ -509,6 +524,10 @@ containers-remove-button =
 ## Firefox Account - Signed out. Note that "Sync" and "Firefox Account" are now
 ## more discrete ("signed in" no longer means "and sync is connected").
 
+
+## Firefox account - Signed out. Note that "Sync" and "Firefox account" are now
+## more discrete ("signed in" no longer means "and sync is connected").
+
 sync-signedout-caption = तपाईँको वेब अाफुसँगै लैजानुहोस्
 
 # This message contains two links and two icon images.
@@ -523,14 +542,22 @@ sync-mobile-promo = निम्नको लागि Firefox डाउनल�
 
 ## Firefox Account - Signed in
 
+
+## Firefox account - Signed in
+
 sync-profile-picture =
     .tooltiptext = प्रोफाइल तस्वीर परिवर्तन गर्नुहोस्
 
 sync-manage-account = खाता व्यवस्थापन गर्नुहोस्
     .accesskey = o
 
+## Variables
+## $email (string) - Email used for Firefox account
+
 sync-signedin-unverified = { $email } प्रमाणित गरिएको छैन।
 sync-signedin-login-failure = कृपया पुनः जडान गर्न साइन-इन गर्नुहोस् { $email }
+
+##
 
 sync-sign-in =
     .label = साइन इन गर्नुहोस्
@@ -567,6 +594,16 @@ sync-device-name-cancel =
 sync-device-name-save =
     .label = सङ्ग्रह गर्नुहोस्
     .accesskey = v
+
+## These strings are shown in a desktop notification after the
+## user requests we resend a verification email.
+
+sync-verification-sent-title = प्रमाणीकरण पाठइयो
+# Variables:
+#   $email (String): Email address of user's Firefox account.
+sync-verification-sent-body = एक प्रमाणीकरण लिङ्क { $email } मा पठाइएको छ।
+sync-verification-not-sent-title = प्रमाणिकरण पठाउन असमर्थ
+sync-verification-not-sent-body = हामी यस समय प्रमाणिकरण मेल पठाउन असमर्थ छौँ, पछि पुनःप्रयास गर्नुहोस्।
 
 ## Privacy Section
 
@@ -657,6 +694,9 @@ sitedata-settings =
     .label = डेटा व्यवस्थापन गर्नुहोस्…
     .accesskey = M
 
+## Privacy Section - Cookie Banner Handling
+
+
 ## Privacy Section - Address Bar
 
 addressbar-header = ठेगानापट्टि
@@ -684,6 +724,9 @@ content-blocking-learn-more = थप जान्नुहोस्
 
 
 ##
+
+
+# The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
 
 ## Privacy Section - Tracking
@@ -785,6 +828,9 @@ certs-devices =
     .accesskey = D
 
 ## Privacy Section - HTTPS-Only
+
+
+## DoH Section
 
 
 ## The following strings are used in the Download section of settings

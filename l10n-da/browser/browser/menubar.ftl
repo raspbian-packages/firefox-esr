@@ -220,8 +220,6 @@ menu-history-undo-menu =
     .label = Senest lukkede faneblade
 menu-history-undo-window-menu =
     .label = Senest lukkede vinduer
-menu-history-reopen-all-tabs = Genåbn alle faneblade
-menu-history-reopen-all-windows = Genåbn alle vinduer
 
 ## Bookmarks Menu
 
@@ -230,14 +228,13 @@ menu-bookmarks-menu =
     .accesskey = B
 menu-bookmarks-manage =
     .label = Håndter bogmærker
-menu-bookmark-current-tab =
-    .label = Bogmærk dette faneblad
-menu-bookmark-edit =
-    .label = Rediger bogmærke
 menu-bookmark-tab =
     .label = Bogmærk dette faneblad…
 menu-edit-bookmark =
     .label = Rediger bogmærke…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Søg i bogmærker
 menu-bookmarks-all-tabs =
     .label = Bogmærk alle faneblade…
 menu-bookmarks-toolbar =
@@ -331,6 +328,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Slå fejlsøgnings-tilstand fra
     .accesskey = f
+menu-help-switch-device =
+    .label = Skifte til en ny enhed
+    .accesskey = n
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

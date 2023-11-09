@@ -6,8 +6,8 @@
 
 var FormAutofillHandler;
 add_task(async function seutp() {
-  ({ FormAutofillHandler } = ChromeUtils.import(
-    "resource://autofill/FormAutofillHandler.jsm"
+  ({ FormAutofillHandler } = ChromeUtils.importESModule(
+    "resource://gre/modules/shared/FormAutofillHandler.sys.mjs"
   ));
 });
 
@@ -495,7 +495,7 @@ const TESTCASES = [
 ];
 
 for (let testcase of TESTCASES) {
-  add_task(async function() {
+  add_task(async function () {
     info("Starting testcase: " + testcase.description);
 
     let doc = MockDocument.createTestDocument(

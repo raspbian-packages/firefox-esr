@@ -35,9 +35,11 @@ class ScheduleHandleRenderTextureOps : public wr::NotificationHandler {
 };
 
 WebRenderTextureHost::WebRenderTextureHost(
-    const SurfaceDescriptor& aDesc, TextureFlags aFlags, TextureHost* aTexture,
+    TextureFlags aFlags, TextureHost* aTexture,
     const wr::ExternalImageId& aExternalImageId)
-    : TextureHost(aFlags), mWrappedTextureHost(aTexture) {
+    : TextureHost(TextureHostType::Unknown, aFlags),
+      mWrappedTextureHost(aTexture) {
+  MOZ_ASSERT(mWrappedTextureHost);
   // The wrapped textureHost will be used in WebRender, and the WebRender could
   // run at another thread. It's hard to control the life-time when gecko
   // receives PTextureParent destroy message. It's possible that textureHost is
@@ -46,8 +48,6 @@ WebRenderTextureHost::WebRenderTextureHost(
   // parent, we could do something to make sure the wrapped textureHost is not
   // used by WebRender and then release it.
   MOZ_ASSERT(!(aFlags & TextureFlags::DEALLOCATE_CLIENT));
-  MOZ_ASSERT(mWrappedTextureHost);
-
   MOZ_COUNT_CTOR(WebRenderTextureHost);
 
   mExternalImageId = Some(aExternalImageId);
@@ -68,7 +68,7 @@ wr::ExternalImageId WebRenderTextureHost::GetExternalImageKey() {
 bool WebRenderTextureHost::IsValid() { return mWrappedTextureHost->IsValid(); }
 
 void WebRenderTextureHost::UnbindTextureSource() {
-  if (mWrappedTextureHost->IsWrappingBufferTextureHost()) {
+  if (mWrappedTextureHost->AsBufferTextureHost()) {
     mWrappedTextureHost->UnbindTextureSource();
   }
   // Handle read unlock
@@ -101,16 +101,23 @@ gfx::SurfaceFormat WebRenderTextureHost::GetFormat() const {
 
 void WebRenderTextureHost::NotifyNotUsed() {
 #ifdef MOZ_WIDGET_ANDROID
-  if (mWrappedTextureHost->AsSurfaceTextureHost()) {
+  // When SurfaceTextureHost is wrapped by RemoteTextureHostWrapper,
+  // NotifyNotUsed() is handled by SurfaceTextureHost.
+  if (IsWrappingSurfaceTextureHost() &&
+      !mWrappedTextureHost->AsRemoteTextureHostWrapper()) {
     wr::RenderThread::Get()->NotifyNotUsed(GetExternalImageKey());
   }
 #endif
+  if (mWrappedTextureHost->AsRemoteTextureHostWrapper()) {
+    mWrappedTextureHost->NotifyNotUsed();
+  }
   TextureHost::NotifyNotUsed();
 }
 
 void WebRenderTextureHost::MaybeNotifyForUse(wr::TransactionBuilder& aTxn) {
 #if defined(MOZ_WIDGET_ANDROID)
-  if (mWrappedTextureHost->AsSurfaceTextureHost()) {
+  if (IsWrappingSurfaceTextureHost() &&
+      !mWrappedTextureHost->AsRemoteTextureHostWrapper()) {
     wr::RenderThread::Get()->NotifyForUse(GetExternalImageKey());
     aTxn.Notify(wr::Checkpoint::FrameTexturesUpdated,
                 MakeUnique<ScheduleHandleRenderTextureOps>());
@@ -118,13 +125,16 @@ void WebRenderTextureHost::MaybeNotifyForUse(wr::TransactionBuilder& aTxn) {
 #endif
 }
 
-bool WebRenderTextureHost::IsWrappingBufferTextureHost() {
-  return mWrappedTextureHost->IsWrappingBufferTextureHost();
+bool WebRenderTextureHost::IsWrappingSurfaceTextureHost() {
+  return mWrappedTextureHost->IsWrappingSurfaceTextureHost();
 }
 
 void WebRenderTextureHost::PrepareForUse() {
-  if (mWrappedTextureHost->AsSurfaceTextureHost() ||
-      mWrappedTextureHost->IsWrappingBufferTextureHost()) {
+  // When SurfaceTextureHost is wrapped by RemoteTextureHostWrapper,
+  // PrepareForUse() is handled by SurfaceTextureHost.
+  if ((IsWrappingSurfaceTextureHost() &&
+       !mWrappedTextureHost->AsRemoteTextureHostWrapper()) ||
+      mWrappedTextureHost->AsBufferTextureHost()) {
     // Call PrepareForUse on render thread.
     // See RenderAndroidSurfaceTextureHostOGL::PrepareForUse.
     wr::RenderThread::Get()->PrepareForUse(GetExternalImageKey());
@@ -193,6 +203,10 @@ mozilla::ipc::FileDescriptor WebRenderTextureHost::GetAndResetReleaseFence() {
 
 AndroidHardwareBuffer* WebRenderTextureHost::GetAndroidHardwareBuffer() const {
   return mWrappedTextureHost->GetAndroidHardwareBuffer();
+}
+
+TextureHostType WebRenderTextureHost::GetTextureHostType() {
+  return mWrappedTextureHost->GetTextureHostType();
 }
 
 }  // namespace mozilla::layers

@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Zwiskowe nastajenja
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Zwiskowe nastajenja
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Tute nastajenje awtentizuje was w pozadku pola proksyjow, hdyž sće přizjwjenske daty za nje składował. Dóstanjeće informaciju, hdyž so awtentifikacija njeporadźi.
 
+connection-proxy-autologin-checkbox =
+    .label = Za awtentifikaciju so njeprašeć, jeli hesło je składowane
+    .accesskey = i
+    .tooltiptext = Tute nastajenje awtentizuje was w pozadku pola proksyjow, hdyž sće přizjwjenske daty za nje składował. Dóstanjeće informaciju, hdyž so awtentifikacija njeporadźi.
+
 connection-proxy-socks-remote-dns =
     .label = Proksy-DNS, hdyž so SOCKS v5 wužiwa
     .accesskey = d
-
-connection-dns-over-https =
-    .label = DNS přez HTTPS zmóžnić
-    .accesskey = H
-
-connection-dns-over-https-url-resolver = Poskićowarja wužiwać
-    .accesskey = P
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

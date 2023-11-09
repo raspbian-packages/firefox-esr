@@ -38,9 +38,11 @@ menu-quit =
             [windows] K
            *[other] K
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Kuitaat { -brand-shorter-name }
+
 menu-about =
     .label = A-zivout { -brand-shorter-name }
     .accesskey = A
@@ -223,8 +225,6 @@ menu-history-undo-menu =
     .label = Ivinelloù serret nevez zo
 menu-history-undo-window-menu =
     .label = Prenestroù serret nevez zo
-menu-history-reopen-all-tabs = Digeriñ en-dro an holl ivinelloù
-menu-history-reopen-all-windows = Digeriñ en-dro an holl brenestroù
 
 ## Bookmarks Menu
 
@@ -233,10 +233,6 @@ menu-bookmarks-menu =
     .accesskey = n
 menu-bookmarks-manage =
     .label = Merañ ar sinedoù
-menu-bookmark-current-tab =
-    .label = Lakaat an ivinell vremanel er sinedoù
-menu-bookmark-edit =
-    .label = Embann ar sined-mañ
 menu-bookmark-tab =
     .label = Lakaat an ivinell a-vremañ er sinedoù…
 menu-edit-bookmark =
@@ -334,6 +330,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Diweredekaat ar mod disac’hañ
     .accesskey = D
+menu-help-switch-device =
+    .label = Tremen war un trevnad nevez
+    .accesskey = T
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

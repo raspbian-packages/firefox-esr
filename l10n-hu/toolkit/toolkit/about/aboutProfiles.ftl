@@ -34,7 +34,7 @@ profiles-in-use-profile = Ezt a profilt egy másik alkalmazás használja, és n
 profiles-rename = Átnevezés
 profiles-remove = Eltávolítás
 profiles-set-as-default = Alapértelmezett profil beállítása
-profiles-launch-profile = Profilozás indítása új böngészőben
+profiles-launch-profile = Profil indítása új böngészőben
 
 profiles-cannot-set-as-default-title = Az alapértelmezett nem állítható be
 profiles-cannot-set-as-default-message = Az alapértelmezett profil nem módosítható a { -brand-short-name }nál.

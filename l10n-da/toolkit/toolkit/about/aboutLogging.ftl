@@ -2,28 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
--profiler-brand-name = Firefox Profiler
-
-##
-
 # This is the title of the page
 about-logging-title = Om logning
 about-logging-page-title = Log-håndtering
 about-logging-current-log-file = Aktuel logfil:
-about-logging-current-log-modules = Aktuelle logmoduler:
 about-logging-new-log-file = Ny logfil:
 about-logging-currently-enabled-log-modules = Aktuelt aktiverede logmoduler:
 about-logging-log-tutorial =
@@ -46,13 +28,22 @@ about-logging-logging-to-profiler = Logger til { -profiler-brand-name }
 about-logging-no-log-modules = Ingen
 about-logging-no-log-file = Ingen
 about-logging-logging-preset-selector-text = Forindstilling for logging:
+about-logging-with-profiler-stacks-checkbox = Aktiver stack-traces for logbeskeder.
 
 ## Logging presets
 
 about-logging-preset-networking-label = Netværk
 about-logging-preset-networking-description = Logmoduler til at diagnosticere netværksproblemer
+about-logging-preset-networking-cookie-label = Cookies
+about-logging-preset-networking-cookie-description = Logmoduler til at diagnosticere cookieproblemer
+about-logging-preset-networking-websocket-label = WebSockets
+about-logging-preset-networking-websocket-description = Logmoduler til at diagnosticere WebSocket-problemer
+about-logging-preset-networking-http3-label = HTTP/3
+about-logging-preset-networking-http3-description = Logmoduler til at diagnosticere HTTP/3- og QUIC-problemer
 about-logging-preset-media-playback-label = Medieafspilning
 about-logging-preset-media-playback-description = Logmoduler til at diagnosticere problemer med medieafspilning (ikke problemer med videokonferencer)
+about-logging-preset-webrtc-label = WebRTC
+about-logging-preset-webrtc-description = Logmoduler til at diagnosticere WebRTC-opkald
 about-logging-preset-custom-label = Tilpasset
 about-logging-preset-custom-description = Manuelt valgte logmoduler
 # Error handling

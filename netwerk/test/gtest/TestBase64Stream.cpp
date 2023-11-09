@@ -5,6 +5,7 @@
 
 #include "gtest/gtest.h"
 #include "mozilla/Base64.h"
+#include "mozilla/gtest/MozAssertions.h"
 #include "nsCOMPtr.h"
 #include "nsIInputStream.h"
 #include "nsStringStream.h"
@@ -28,6 +29,8 @@ class TestStream final : public nsIInputStream {
     *aLength = mInput.Length() - mPos;
     return NS_OK;
   }
+
+  NS_IMETHOD StreamStatus() override { return NS_OK; }
 
   NS_IMETHOD Read(char* aBuffer, uint32_t aCount,
                   uint32_t* aReadCount) override {
@@ -87,7 +90,7 @@ TEST(TestBase64Stream, Run)
 
     nsAutoString encodedData;
     nsresult rv = Base64EncodeInputStream(ts, encodedData, input.Length());
-    ASSERT_TRUE(NS_SUCCEEDED(rv));
+    ASSERT_NS_SUCCEEDED(rv);
 
     EXPECT_TRUE(encodedData.EqualsLiteral("SGVsbG8gV29ybGQh"));
   }
@@ -107,11 +110,11 @@ TEST(TestBase64Stream, VaryingCount)
   for (auto& [count, expected] : tests) {
     nsCOMPtr<nsIInputStream> is;
     nsresult rv = NS_NewCStringInputStream(getter_AddRefs(is), input);
-    ASSERT_TRUE(NS_SUCCEEDED(rv));
+    ASSERT_NS_SUCCEEDED(rv);
 
     nsAutoCString encodedData;
     rv = Base64EncodeInputStream(is, encodedData, count);
-    ASSERT_TRUE(NS_SUCCEEDED(rv));
+    ASSERT_NS_SUCCEEDED(rv);
     EXPECT_EQ(encodedData, expected) << "count: " << count;
   }
 }

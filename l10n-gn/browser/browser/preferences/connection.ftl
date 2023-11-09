@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Mba’epytyvõrã jeikekatu rehegua
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Mba’epytyvõrã jeikekatu rehegua
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = i
     .tooltip = Ko poravopyrã kirirĩguáva oñemoañetetéva proxies-pe oñongatu rire terachaukaha chupekuéra g̃uarã. Ojejeruréta chupe pe ñemoañetetéva ndoikóiramo.
 
+connection-proxy-autologin-checkbox =
+    .label = Ani eporandu ñemoañetete rehe eñongatúramo ñe’ẽñemi
+    .accesskey = i
+    .tooltiptext = Ko poravopyrã kirirĩguáva oñemoañetetéva proxies-pe oñongatu rire terachaukaha chupekuéra g̃uarã. Ojejeruréta chupe pe ñemoañetetéva ndoikóiramo.
+
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS eipurúva SOCKS v5
     .accesskey = d
-
-connection-dns-over-https =
-    .label = Embojuruja DNS pe HTTPS ári
-    .accesskey = b
-
-connection-dns-over-https-url-resolver = Eipuru Me’ẽha
-    .accesskey = P
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

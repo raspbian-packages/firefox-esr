@@ -86,7 +86,7 @@ nsresult nsJSUtils::UpdateFunctionDebugMetadata(
     return NS_ERROR_FAILURE;
   }
 
-  JS::RootedScript script(cx, JS_GetFunctionScript(cx, fun));
+  JS::Rooted<JSScript*> script(cx, JS_GetFunctionScript(cx, fun));
   if (!script) {
     return NS_OK;
   }
@@ -139,12 +139,12 @@ nsresult nsJSUtils::CompileFunction(AutoJSAPI& jsapi,
 
 /* static */
 bool nsJSUtils::IsScriptable(JS::Handle<JSObject*> aEvaluationGlobal) {
-  return xpc::Scriptability::Get(aEvaluationGlobal).Allowed();
+  return xpc::Scriptability::AllowedIfExists(aEvaluationGlobal);
 }
 
 static bool AddScopeChainItem(JSContext* aCx, nsINode* aNode,
                               JS::MutableHandleVector<JSObject*> aScopeChain) {
-  JS::RootedValue val(aCx);
+  JS::Rooted<JS::Value> val(aCx);
   if (!GetOrCreateDOMReflector(aCx, aNode, &val)) {
     return false;
   }
@@ -184,6 +184,21 @@ bool nsJSUtils::DumpEnabled() {
 #else
   return StaticPrefs::browser_dom_window_dump_enabled();
 #endif
+}
+
+JSObject* nsJSUtils::MoveBufferAsUint8Array(JSContext* aCx, size_t aSize,
+                                            UniquePtr<uint8_t>& aBuffer) {
+  JS::Rooted<JSObject*> arrayBuffer(
+      aCx, JS::NewArrayBufferWithContents(aCx, aSize, aBuffer.get()));
+  if (!arrayBuffer) {
+    return nullptr;
+  }
+
+  // Now the ArrayBuffer owns the buffer, so let's release our ownership
+  (void)aBuffer.release();
+
+  return JS_NewUint8ArrayWithBuffer(aCx, arrayBuffer, 0,
+                                    static_cast<int64_t>(aSize));
 }
 
 //

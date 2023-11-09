@@ -9,6 +9,14 @@ sync-disconnect-dialog-button = Изключване
 
 fxa-menu-connect-another-device =
     .label = Добавяне на устройство…
+# Variables:
+#   $tabCount (Number): The number of tabs sent to the device.
+fxa-menu-send-tab-to-device =
+    .label =
+        { $tabCount ->
+            [one] Изпращане на раздела до устройство
+           *[other] Изпращане на { $tabCount } раздела до устройство
+        }
 
 # This is shown dynamically within "Send tab to device" in fxa menu.
 fxa-menu-send-tab-to-device-syncnotready =

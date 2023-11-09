@@ -50,6 +50,7 @@ class ClientSource;
 class EventTarget;
 class SessionHistoryInfo;
 struct LoadingSessionHistoryInfo;
+struct Wireframe;
 }  // namespace dom
 namespace net {
 class LoadInfo;
@@ -401,9 +402,6 @@ class nsDocShell final : public nsDocLoader,
       nsDocShellLoadState* aLoadState,
       mozilla::Maybe<uint32_t> aCacheKey = mozilla::Nothing());
 
-  // Clear the document's storage access flag if needed.
-  void MaybeClearStorageAccessFlag();
-
   void MaybeRestoreWindowName();
 
   void StoreWindowNameToSHEntries();
@@ -511,8 +509,8 @@ class nsDocShell final : public nsDocLoader,
   already_AddRefed<nsIInputStream> GetPostDataFromCurrentEntry() const;
   mozilla::Maybe<uint32_t> GetCacheKeyFromCurrentEntry() const;
 
-  // Loading and/or active entries are only set when pref
-  // fission.sessionHistoryInParent is on.
+  // Loading and/or active entries are only set when session history
+  // in the parent is on.
   bool FillLoadStateFromCurrentEntry(nsDocShellLoadState& aLoadState);
 
   static bool ShouldAddToSessionHistory(nsIURI* aURI, nsIChannel* aChannel);
@@ -559,11 +557,6 @@ class nsDocShell final : public nsDocLoader,
 
   nsDocShell(mozilla::dom::BrowsingContext* aBrowsingContext,
              uint64_t aContentWindowID);
-
-  // Security check to prevent frameset spoofing. See comments at
-  // implementation site.
-  static bool ValidateOrigin(mozilla::dom::BrowsingContext* aOrigin,
-                             mozilla::dom::BrowsingContext* aTarget);
 
   static inline uint32_t PRTimeToSeconds(PRTime aTimeUsec) {
     return uint32_t(aTimeUsec / PR_USEC_PER_SEC);
@@ -643,10 +636,10 @@ class nsDocShell final : public nsDocLoader,
 
   void UpdateActiveEntry(
       bool aReplace, const mozilla::Maybe<nsPoint>& aPreviousScrollPos,
-      nsIURI* aURI, nsIURI* aOriginalURI, nsIPrincipal* aTriggeringPrincipal,
-      nsIContentSecurityPolicy* aCsp, const nsAString& aTitle,
-      bool aScrollRestorationIsManual, nsIStructuredCloneContainer* aData,
-      bool aURIWasModified);
+      nsIURI* aURI, nsIURI* aOriginalURI, nsIReferrerInfo* aReferrerInfo,
+      nsIPrincipal* aTriggeringPrincipal, nsIContentSecurityPolicy* aCsp,
+      const nsAString& aTitle, bool aScrollRestorationIsManual,
+      nsIStructuredCloneContainer* aData, bool aURIWasModified);
 
   nsresult AddChildSHEntry(nsISHEntry* aCloneRef, nsISHEntry* aNewEntry,
                            int32_t aChildOffset, uint32_t aLoadType,
@@ -740,6 +733,10 @@ class nsDocShell final : public nsDocLoader,
                 bool aAddToGlobalHistory, bool aCloneSHChildren);
 
  public:
+  // If wireframe collection is enabled, will attempt to gather the
+  // wireframe for the document.
+  mozilla::Maybe<mozilla::dom::Wireframe> GetWireframe();
+
   // If wireframe collection is enabled, will attempt to gather the
   // wireframe for the document and stash it inside of the active history
   // entry. Returns true if wireframes were collected.
@@ -1004,7 +1001,7 @@ class nsDocShell final : public nsDocLoader,
   nsresult Embed(nsIContentViewer* aContentViewer,
                  mozilla::dom::WindowGlobalChild* aWindowActor,
                  bool aIsTransientAboutBlank, bool aPersist,
-                 nsIRequest* aRequest);
+                 nsIRequest* aRequest, nsIURI* aPreviousURI);
   nsPresContext* GetEldestPresContext();
   nsresult CheckLoadingPermissions();
   nsresult LoadHistoryEntry(nsISHEntry* aEntry, uint32_t aLoadType,
@@ -1060,11 +1057,15 @@ class nsDocShell final : public nsDocLoader,
     bool mCurrentURIHasRef = false;
     bool mNewURIHasRef = false;
     bool mSameExceptHashes = false;
+    bool mSecureUpgradeURI = false;
     bool mHistoryNavBetweenSameDoc = false;
   };
 
   // Check to see if we're loading a prior history entry or doing a fragment
   // navigation in the same document.
+  // NOTE: In case we are doing a fragment navigation, and HTTPS-Only/ -First
+  // mode is enabled and upgraded the underlying document, we update the URI of
+  // aLoadState from HTTP to HTTPS (if neccessary).
   bool IsSameDocumentNavigation(nsDocShellLoadState* aLoadState,
                                 SameDocumentNavigationState& aState);
 
@@ -1102,8 +1103,10 @@ class nsDocShell final : public nsDocLoader,
   // case a new session history entry is added to the session history.
   // aExpired is true if the relevant nsIChannel has its cache token expired.
   // aCacheKey is the channel's cache key.
+  // aPreviousURI should be the URI that was previously loaded into the
+  // nsDocshell
   void MoveLoadingToActiveEntry(bool aPersist, bool aExpired,
-                                uint32_t aCacheKey);
+                                uint32_t aCacheKey, nsIURI* aPreviousURI);
 
   void ActivenessMaybeChanged();
 
@@ -1317,7 +1320,6 @@ class nsDocShell final : public nsDocLoader,
   bool mAllowKeywordFixup : 1;
   bool mDisableMetaRefreshWhenInactive : 1;
   bool mIsAppTab : 1;
-  bool mDeviceSizeIsPageSize : 1;
   bool mWindowDraggingAllowed : 1;
   bool mInFrameSwap : 1;
 
@@ -1361,10 +1363,6 @@ class nsDocShell final : public nsDocLoader,
   // This flag indicates whether or not the DocShell is currently executing an
   // nsIWebNavigation navigation method.
   bool mIsNavigating : 1;
-
-  // This flag indicates whether the media in this docshell should be suspended
-  // when the docshell is inactive.
-  bool mSuspendMediaWhenInactive : 1;
 
   // Whether we have a pending encoding autodetection request from the
   // menu for all encodings.

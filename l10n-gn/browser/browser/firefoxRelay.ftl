@@ -17,13 +17,15 @@ firefox-relay-must-login-to-fxa = Emoñepyrũ tembiapo { -fxaccount-brand-name }
 firefox-relay-get-unlimited-masks =
     .label = Eñangareko tovamo’ãháre
     .accesskey = M
-firefox-relay-opt-in-title = Emo’ã ñanduti veve kundaharape
-firefox-relay-opt-in-subtitle = Embojuaju { -relay-brand-name }
-firefox-relay-generate-mask-title = Emo’ã ñanduti veve kundaharape
-firefox-relay-generate-mask-subtitle = Ejapo { -relay-brand-short-name } rovamo’ãha
-firefox-relay-opt-in-confirmation-enable =
-    .label = Ku’ejey
-    .accesskey = C
+# This is followed, on a new line, by firefox-relay-opt-in-subtitle-1
+firefox-relay-opt-in-title-1 = Emo’ã ñanduti veve kundaharape:
+# This is preceded by firefox-relay-opt-in-title-1 (on a different line), which
+# ends with a colon. You might need to adapt the capitalization of this string.
+firefox-relay-opt-in-subtitle-1 = Eipuru ñanduti veve rovamo’ãha { -relay-brand-name }
+firefox-relay-use-mask-title = Eipuru ñanduti veve rovamo’ãha { -relay-brand-name }
+firefox-relay-opt-in-confirmation-enable-button =
+    .label = Eipuru ñanduti veve rovamo’ãha
+    .accesskey = U
 firefox-relay-opt-in-confirmation-disable =
     .label = Anive ehechauka
     .accesskey = D

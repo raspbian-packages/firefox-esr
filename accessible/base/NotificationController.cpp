@@ -5,7 +5,6 @@
 
 #include "NotificationController.h"
 
-#include "CacheConstants.h"
 #include "DocAccessible-inl.h"
 #include "DocAccessibleChild.h"
 #include "nsEventShell.h"
@@ -16,9 +15,10 @@
 
 #include "mozilla/dom/BrowserChild.h"
 #include "mozilla/dom/Element.h"
+#include "mozilla/ipc/ProcessChild.h"
 #include "mozilla/PresShell.h"
-#include "mozilla/ProfilerLabels.h"
-#include "mozilla/StaticPrefs_accessibility.h"
+#include "mozilla/ProfilerMarkers.h"
+#include "nsAccessibilityService.h"
 #include "mozilla/Telemetry.h"
 
 using namespace mozilla;
@@ -35,10 +35,6 @@ NotificationController::NotificationController(DocAccessible* aDocument,
       mObservingState(eNotObservingRefresh),
       mPresShell(aPresShell),
       mEventGeneration(0) {
-#ifdef DEBUG
-  mMoveGuardOnStack = false;
-#endif
-
   // Schedule initial accessible tree construction.
   ScheduleProcessing();
 }
@@ -76,9 +72,6 @@ NS_IMPL_CYCLE_COLLECTION_TRAVERSE_BEGIN(NotificationController)
   NS_IMPL_CYCLE_COLLECTION_TRAVERSE(mRelocations)
 NS_IMPL_CYCLE_COLLECTION_TRAVERSE_END
 
-NS_IMPL_CYCLE_COLLECTION_ROOT_NATIVE(NotificationController, AddRef)
-NS_IMPL_CYCLE_COLLECTION_UNROOT_NATIVE(NotificationController, Release)
-
 ////////////////////////////////////////////////////////////////////////////////
 // NotificationCollector: public
 
@@ -107,15 +100,6 @@ void NotificationController::Shutdown() {
   mFocusEvent = nullptr;
   mEvents.Clear();
   mRelocations.Clear();
-  mEventTree.Clear();
-}
-
-EventTree* NotificationController::QueueMutation(LocalAccessible* aContainer) {
-  EventTree* tree = mEventTree.FindOrInsert(aContainer);
-  if (tree) {
-    ScheduleProcessing();
-  }
-  return tree;
 }
 
 void NotificationController::CoalesceHideEvent(AccHideEvent* aHideEvent) {
@@ -201,7 +185,6 @@ bool NotificationController::QueueMutationEvent(AccTreeMutationEvent* aEvent) {
   // or hidden children of a container.  So either queue a new one, or move an
   // existing one to the end of the queue if the container already has a
   // reorder event.
-  LocalAccessible* target = aEvent->GetAccessible();
   LocalAccessible* container = aEvent->GetAccessible()->LocalParent();
   RefPtr<AccReorderEvent> reorder;
   if (!container->ReorderEventTarget()) {
@@ -211,7 +194,7 @@ bool NotificationController::QueueMutationEvent(AccTreeMutationEvent* aEvent) {
 
     // Since this is the first child of container that is changing, the name
     // and/or description of dependent Accessibles may be changing.
-    if (PushNameOrDescriptionChange(target)) {
+    if (PushNameOrDescriptionChange(aEvent)) {
       ScheduleProcessing();
     }
   } else {
@@ -247,6 +230,7 @@ bool NotificationController::QueueMutationEvent(AccTreeMutationEvent* aEvent) {
     return true;
   }
 
+  LocalAccessible* target = aEvent->GetAccessible();
   int32_t offset = container->AsHyperText()->GetChildOffset(target);
   AccTreeMutationEvent* prevEvent = aEvent->PrevEvent();
   while (prevEvent &&
@@ -489,13 +473,72 @@ bool NotificationController::WaitingForParent() {
 }
 
 void NotificationController::ProcessMutationEvents() {
+  // Firing an event can indirectly run script; e.g. an XPCOM event observer
+  // or querying a XUL interface. Further mutations might be queued as a result.
+  // It's important that the mutation queue and state bits from one tick don't
+  // interfere with the next tick. Otherwise, we can end up dropping events.
+  // Therefore:
+  // 1. Clear the state bits, which we only need for coalescence.
+  for (AccTreeMutationEvent* event = mFirstMutationEvent; event;
+       event = event->NextEvent()) {
+    LocalAccessible* acc = event->GetAccessible();
+    acc->SetShowEventTarget(false);
+    acc->SetHideEventTarget(false);
+    acc->SetReorderEventTarget(false);
+  }
+  // 2. Keep the current queue locally, but clear the queue on the instance.
+  RefPtr<AccTreeMutationEvent> firstEvent = mFirstMutationEvent;
+  mFirstMutationEvent = mLastMutationEvent = nullptr;
+  mMutationMap.Clear();
+  mEventGeneration = 0;
+
+  // Group the show events by the parent of their target.
+  nsTHashMap<nsPtrHashKey<LocalAccessible>, nsTArray<AccTreeMutationEvent*>>
+      showEvents;
+  for (AccTreeMutationEvent* event = firstEvent; event;
+       event = event->NextEvent()) {
+    if (event->GetEventType() != nsIAccessibleEvent::EVENT_SHOW) {
+      continue;
+    }
+
+    LocalAccessible* parent = event->GetAccessible()->LocalParent();
+    showEvents.LookupOrInsert(parent).AppendElement(event);
+  }
+
+  // We need to fire show events for the children of an accessible in the order
+  // of their indices at this point.  So sort each set of events for the same
+  // container by the index of their target. We do this before firing any events
+  // because firing an event might indirectly run script which might alter the
+  // tree, breaking our sort. However, we don't actually fire the events yet.
+  for (auto iter = showEvents.Iter(); !iter.Done(); iter.Next()) {
+    struct AccIdxComparator {
+      bool LessThan(const AccTreeMutationEvent* a,
+                    const AccTreeMutationEvent* b) const {
+        int32_t aIdx = a->GetAccessible()->IndexInParent();
+        int32_t bIdx = b->GetAccessible()->IndexInParent();
+        MOZ_ASSERT(aIdx >= 0 && bIdx >= 0 && aIdx != bIdx);
+        return aIdx < bIdx;
+      }
+      bool Equals(const AccTreeMutationEvent* a,
+                  const AccTreeMutationEvent* b) const {
+        DebugOnly<int32_t> aIdx = a->GetAccessible()->IndexInParent();
+        DebugOnly<int32_t> bIdx = b->GetAccessible()->IndexInParent();
+        MOZ_ASSERT(aIdx >= 0 && bIdx >= 0 && aIdx != bIdx);
+        return false;
+      }
+    };
+
+    nsTArray<AccTreeMutationEvent*>& events = iter.Data();
+    events.Sort(AccIdxComparator());
+  }
+
   // there is no reason to fire a hide event for a child of a show event
   // target.  That can happen if something is inserted into the tree and
   // removed before the next refresh driver tick, but it should not be
   // observable outside gecko so it should be safe to coalesce away any such
   // events.  This means that it should be fine to fire all of the hide events
   // first, and then deal with any shown subtrees.
-  for (AccTreeMutationEvent* event = mFirstMutationEvent; event;
+  for (AccTreeMutationEvent* event = firstEvent; event;
        event = event->NextEvent()) {
     if (event->GetEventType() != nsIAccessibleEvent::EVENT_HIDE) {
       continue;
@@ -537,42 +580,9 @@ void NotificationController::ProcessMutationEvents() {
     }
   }
 
-  // Group the show events by the parent of their target.
-  nsTHashMap<nsPtrHashKey<LocalAccessible>, nsTArray<AccTreeMutationEvent*>>
-      showEvents;
-  for (AccTreeMutationEvent* event = mFirstMutationEvent; event;
-       event = event->NextEvent()) {
-    if (event->GetEventType() != nsIAccessibleEvent::EVENT_SHOW) {
-      continue;
-    }
-
-    LocalAccessible* parent = event->GetAccessible()->LocalParent();
-    showEvents.LookupOrInsert(parent).AppendElement(event);
-  }
-
-  // We need to fire show events for the children of an accessible in the order
-  // of their indices at this point.  So sort each set of events for the same
-  // container by the index of their target.
+  // Fire the show events we sorted earlier.
   for (auto iter = showEvents.Iter(); !iter.Done(); iter.Next()) {
-    struct AccIdxComparator {
-      bool LessThan(const AccTreeMutationEvent* a,
-                    const AccTreeMutationEvent* b) const {
-        int32_t aIdx = a->GetAccessible()->IndexInParent();
-        int32_t bIdx = b->GetAccessible()->IndexInParent();
-        MOZ_ASSERT(aIdx >= 0 && bIdx >= 0 && aIdx != bIdx);
-        return aIdx < bIdx;
-      }
-      bool Equals(const AccTreeMutationEvent* a,
-                  const AccTreeMutationEvent* b) const {
-        DebugOnly<int32_t> aIdx = a->GetAccessible()->IndexInParent();
-        DebugOnly<int32_t> bIdx = b->GetAccessible()->IndexInParent();
-        MOZ_ASSERT(aIdx >= 0 && bIdx >= 0 && aIdx != bIdx);
-        return false;
-      }
-    };
-
     nsTArray<AccTreeMutationEvent*>& events = iter.Data();
-    events.Sort(AccIdxComparator());
     for (AccTreeMutationEvent* event : events) {
       nsEventShell::FireEvent(event);
       if (!mDocument) {
@@ -592,7 +602,7 @@ void NotificationController::ProcessMutationEvents() {
   // Now we can fire the reorder events after all the show and hide events.
   for (const uint32_t reorderType : {nsIAccessibleEvent::EVENT_INNER_REORDER,
                                      nsIAccessibleEvent::EVENT_REORDER}) {
-    for (AccTreeMutationEvent* event = mFirstMutationEvent; event;
+    for (AccTreeMutationEvent* event = firstEvent; event;
          event = event->NextEvent()) {
       if (event->GetEventType() != reorderType) {
         continue;
@@ -618,28 +628,51 @@ void NotificationController::ProcessMutationEvents() {
       }
     }
   }
+
+  // Our events are in a doubly linked list. Clear the pointers to reduce
+  // pressure on the cycle collector. Even though clearing the previous pointers
+  // removes cycles, this isn't enough. The cycle collector still gets bogged
+  // down when there are lots of mutation events if the next pointers aren't
+  // cleared. Even without the cycle collector, not clearing the next pointers
+  // potentially results in deep recursion because releasing each event releases
+  // its next event.
+  RefPtr<AccTreeMutationEvent> event = firstEvent;
+  while (event) {
+    RefPtr<AccTreeMutationEvent> next = event->NextEvent();
+    event->SetNextEvent(nullptr);
+    event->SetPrevEvent(nullptr);
+    event = next;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // NotificationCollector: private
 
 void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
+  AUTO_PROFILER_MARKER_TEXT("NotificationController::WillRefresh", A11Y, {},
+                            ""_ns);
   Telemetry::AutoTimer<Telemetry::A11Y_TREE_UPDATE_TIMING_MS> timer;
+  // DO NOT ADD CODE ABOVE THIS BLOCK: THIS CODE IS MEASURING TIMINGS.
 
-  AUTO_PROFILER_LABEL("NotificationController::WillRefresh", OTHER);
+  AUTO_PROFILER_LABEL("NotificationController::WillRefresh", A11Y);
 
   // If the document accessible that notification collector was created for is
   // now shut down, don't process notifications anymore.
   NS_ASSERTION(
       mDocument,
       "The document was shut down while refresh observer is attached!");
-  if (!mDocument) return;
+  if (!mDocument || ipc::ProcessChild::ExpectingShutdown()) {
+    return;
+  }
 
   // Wait until an update, we have started, or an interruptible reflow is
-  // finished.
+  // finished. We also check the existance of our pres context and root pres
+  // context, since if we can't reach either of these the frame tree is being
+  // destroyed.
+  nsPresContext* pc = mPresShell->GetPresContext();
   if (mObservingState == eRefreshProcessing ||
       mObservingState == eRefreshProcessingForUpdate ||
-      mPresShell->IsReflowInterrupted()) {
+      mPresShell->IsReflowInterrupted() || !pc || !pc->GetRootPresContext()) {
     return;
   }
 
@@ -647,7 +680,7 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
   // e.g. tab event and content event.
   if (WaitingForParent()) {
     mDocument->ParentDocument()->mNotificationController->WillRefresh(aTime);
-    if (!mDocument) {
+    if (!mDocument || ipc::ProcessChild::ExpectingShutdown()) {
       return;
     }
   }
@@ -658,9 +691,12 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
 
   // Initial accessible tree construction.
   if (!mDocument->HasLoadState(DocAccessible::eTreeConstructed)) {
-    // If document is not bound to parent at this point then the document is not
-    // ready yet (process notifications later).
-    if (!mDocument->IsBoundToParent()) {
+    // (1) If document is not bound to parent at this point, or
+    // (2) the PresShell is not initialized (and it isn't about:blank),
+    // then the document is not ready yet (process notifications later).
+    if (!mDocument->IsBoundToParent() ||
+        (!mPresShell->DidInitialize() &&
+         !mDocument->DocumentNode()->IsInitialDocument())) {
       mObservingState = eRefreshObserving;
       return;
     }
@@ -674,6 +710,9 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
 #endif
 
     mDocument->DoInitialUpdate();
+    if (ipc::ProcessChild::ExpectingShutdown()) {
+      return;
+    }
 
     NS_ASSERTION(mContentInsertions.Count() == 0,
                  "Pending content insertions while initial accessible tree "
@@ -745,10 +784,6 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
 #endif
 
       TextUpdater::Run(mDocument, textAcc->AsTextLeaf(), text.mString);
-      if (IPCAccessibilityActive() &&
-          StaticPrefs::accessibility_cache_enabled_AtStartup()) {
-        mDocument->QueueCacheUpdate(textAcc, CacheDomain::Text);
-      }
       continue;
     }
 
@@ -877,6 +912,10 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
     if (!mDocument) return;
   }
 
+  if (ipc::ProcessChild::ExpectingShutdown()) {
+    return;
+  }
+
   // If a generic notification occurs after this point then we may be allowed to
   // process it synchronously.  However we do not want to reenter if fireing
   // events causes script to run.
@@ -894,40 +933,24 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
 
   CoalesceMutationEvents();
   ProcessMutationEvents();
-  mEventGeneration = 0;
 
-  // Now that we are done with them get rid of the events we fired.
-  RefPtr<AccTreeMutationEvent> mutEvent = std::move(mFirstMutationEvent);
-  mLastMutationEvent = nullptr;
-  mFirstMutationEvent = nullptr;
-  while (mutEvent) {
-    RefPtr<AccTreeMutationEvent> nextEvent = mutEvent->NextEvent();
-    LocalAccessible* target = mutEvent->GetAccessible();
-
-    // We need to be careful here, while it may seem that we can simply 0 all
-    // the pending event bits that is not true.  Because accessibles may be
-    // reparented they may be the target of both a hide event and a show event
-    // at the same time.
-    if (mutEvent->GetEventType() == nsIAccessibleEvent::EVENT_SHOW) {
-      target->SetShowEventTarget(false);
-    }
-
-    if (mutEvent->GetEventType() == nsIAccessibleEvent::EVENT_HIDE) {
-      target->SetHideEventTarget(false);
-    }
-
-    // However it is not possible for a reorder event target to also be the
-    // target of a show or hide, so we can just zero that.
-    target->SetReorderEventTarget(false);
-
-    mutEvent->SetPrevEvent(nullptr);
-    mutEvent->SetNextEvent(nullptr);
-    mMutationMap.RemoveEvent(mutEvent);
-    mutEvent = nextEvent;
+  // When firing mutation events, mObservingState is set to
+  // eRefreshProcessing. Any calls to ScheduleProcessing() that
+  // occur before mObservingState is reset will be dropped because we only
+  // schedule a tick if mObservingState == eNotObservingRefresh.
+  // This sometimes results in our viewport cache being out-of-date after
+  // processing mutation events. Call ProcessQueuedCacheUpdates again to
+  // ensure it is updated.
+  if (IPCAccessibilityActive() && mDocument) {
+    mDocument->ProcessQueuedCacheUpdates();
   }
 
   if (mDocument) {
     mDocument->ClearMovedAccessibles();
+  }
+
+  if (ipc::ProcessChild::ExpectingShutdown()) {
+    return;
   }
 
   ProcessEventQueue();
@@ -947,28 +970,24 @@ void NotificationController::WillRefresh(mozilla::TimeStamp aTime) {
       MOZ_DIAGNOSTIC_ASSERT(id);
       DocAccessibleChild* ipcDoc = childDoc->IPCDoc();
       if (ipcDoc) {
-        parentIPCDoc->SendBindChildDoc(ipcDoc, id);
+        parentIPCDoc->SendBindChildDoc(WrapNotNull(ipcDoc), id);
         continue;
       }
 
       ipcDoc = new DocAccessibleChild(childDoc, parentIPCDoc->Manager());
       childDoc->SetIPCDoc(ipcDoc);
 
-#if defined(XP_WIN)
-      parentIPCDoc->ConstructChildDocInParentProcess(
-          ipcDoc, id,
-          StaticPrefs::accessibility_cache_enabled_AtStartup()
-              ? 0
-              : MsaaAccessible::GetChildIDFor(childDoc));
-#else
       nsCOMPtr<nsIBrowserChild> browserChild =
           do_GetInterface(mDocument->DocumentNode()->GetDocShell());
       if (browserChild) {
         static_cast<BrowserChild*>(browserChild.get())
-            ->SendPDocAccessibleConstructor(ipcDoc, parentIPCDoc, id, 0, 0);
+            ->SendPDocAccessibleConstructor(
+                ipcDoc, parentIPCDoc, id,
+                childDoc->DocumentNode()->GetBrowsingContext());
+#ifndef XP_WIN
         ipcDoc->SendPDocAccessiblePlatformExtConstructor();
-      }
 #endif
+      }
     }
   }
 

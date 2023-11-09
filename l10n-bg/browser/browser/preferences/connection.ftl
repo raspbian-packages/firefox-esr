@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Настройки на свързване
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Настройки на свързване
     .style =
@@ -84,16 +76,14 @@ connection-proxy-autologin =
     .accesskey = у
     .tooltip = Тази настройка ще ви удостоверява без да потвърждение пред мрежови посредници, когато имате запазени данни за вход. Ще бъдете питани, ако удостоверяването се провали.
 
+connection-proxy-autologin-checkbox =
+    .label = Да не се пита за удостоверяване, ако паролата е запазена
+    .accesskey = у
+    .tooltiptext = Тази настройка ще ви удостоверява без да потвърждение пред мрежови посредници, когато имате запазени данни за вход. Ще бъдете питани, ако удостоверяването се провали.
+
 connection-proxy-socks-remote-dns =
     .label = Посредник за DNS при използване на SOCKS v5
     .accesskey = D
-
-connection-dns-over-https =
-    .label = Разрешаване на DNS през HTTPS
-    .accesskey = р
-
-connection-dns-over-https-url-resolver = Доставчик
-    .accesskey = д
 
 # Variables:
 #   $name (String) - Display name or URL for the DNS over HTTPS provider

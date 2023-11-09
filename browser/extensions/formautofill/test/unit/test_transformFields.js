@@ -5,9 +5,9 @@
 "use strict";
 
 let FormAutofillStorage;
-add_task(async function setup() {
-  ({ FormAutofillStorage } = ChromeUtils.import(
-    "resource://autofill/FormAutofillStorage.jsm"
+add_setup(async () => {
+  ({ FormAutofillStorage } = ChromeUtils.importESModule(
+    "resource://autofill/FormAutofillStorage.sys.mjs"
   ));
 });
 

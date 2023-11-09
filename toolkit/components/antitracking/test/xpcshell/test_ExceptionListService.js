@@ -7,20 +7,18 @@
 
 /* Unit tests for the nsIPartitioningExceptionListService implementation. */
 
-const { RemoteSettings } = ChromeUtils.import(
-  "resource://services-settings/remote-settings.js"
+const { RemoteSettings } = ChromeUtils.importESModule(
+  "resource://services-settings/remote-settings.sys.mjs"
 );
 
 const COLLECTION_NAME = "partitioning-exempt-urls";
 const PREF_NAME = "privacy.restrict3rdpartystorage.skip_list";
 
-XPCOMUtils.defineLazyGlobalGetters(this, ["EventTarget"]);
-
 do_get_profile();
 
 class UpdateEvent extends EventTarget {}
 function waitForEvent(element, eventName) {
-  return new Promise(function(resolve) {
+  return new Promise(function (resolve) {
     element.addEventListener(eventName, e => resolve(e.detail), { once: true });
   });
 }

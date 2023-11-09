@@ -125,18 +125,33 @@ TimeDuration VsyncDispatcher::GetVsyncRate() {
   return state->mCurrentVsyncSource->GetVsyncRate();
 }
 
-void VsyncDispatcher::NotifyVsync(const VsyncEvent& aVsync) {
-  if (++mVsyncSkipCounter < StaticPrefs::gfx_display_frame_rate_divisor()) {
-    return;
+static int32_t ComputeFrameRateDivisor(gfx::VsyncSource* aCurrentVsyncSource) {
+  int32_t maxRate = StaticPrefs::gfx_display_max_frame_rate();
+  if (maxRate == 0) {
+    return StaticPrefs::gfx_display_frame_rate_divisor();
   }
-  mVsyncSkipCounter = 0;
 
+  // Compute the frame rate divisor based on max frame rates.
+  double frameDuration = aCurrentVsyncSource->GetVsyncRate().ToMilliseconds();
+
+  // Respect the pref gfx.display.frame-rate-divisor if larger.
+  return std::max(StaticPrefs::gfx_display_frame_rate_divisor(),
+                  int32_t(floor(1000.0 / frameDuration / maxRate)));
+}
+
+void VsyncDispatcher::NotifyVsync(const VsyncEvent& aVsync) {
   nsTArray<RefPtr<VsyncObserver>> observers;
   bool shouldDispatchToMainThread = false;
   {
+    auto state = mState.Lock();
+    if (++state->mVsyncSkipCounter <
+        ComputeFrameRateDivisor(state->mCurrentVsyncSource)) {
+      return;
+    }
+    state->mVsyncSkipCounter = 0;
+
     // Copy out the observers so that we don't keep the mutex
     // locked while notifying vsync.
-    auto state = mState.Lock();
     observers = state->mObservers.Clone();
     shouldDispatchToMainThread = !state->mMainThreadObservers.IsEmpty() &&
                                  (state->mLastVsyncIdSentToMainThread ==
@@ -223,7 +238,7 @@ void VsyncDispatcher::RemoveMainThreadObserver(VsyncObserver* aObserver) {
 void VsyncDispatcher::UpdateVsyncStatus() {
   bool wasObservingVsync = false;
   bool needVsync = false;
-  RefPtr<VsyncSource> vsyncSource;
+  RefPtr<gfx::VsyncSource> vsyncSource;
 
   {
     auto state = mState.Lock();

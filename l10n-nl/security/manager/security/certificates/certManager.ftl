@@ -26,10 +26,6 @@ certmgr-people = U hebt certificaten gearchiveerd die deze personen identificere
 certmgr-server = Deze vermeldingen identificeren uitzonderingen op servercertificaatfouten
 certmgr-ca = U hebt certificaten gearchiveerd die deze certificaatautoriteiten identificeren
 
-certmgr-edit-ca-cert =
-    .title = CA-certificaat-vertrouwensinstellingen bewerken
-    .style = width: 48em;
-
 certmgr-edit-ca-cert2 =
     .title = CA-certificaat-vertrouwensinstellingen bewerken
     .style = min-width: 48em;
@@ -41,10 +37,6 @@ certmgr-edit-cert-trust-ssl =
 
 certmgr-edit-cert-trust-email =
     .label = Dit certificaat kan e-mailgebruikers identificeren.
-
-certmgr-delete-cert =
-    .title = Certificaat verwijderen
-    .style = width: 48em; height: 24em;
 
 certmgr-delete-cert2 =
     .title = Certificaat verwijderen
@@ -58,9 +50,6 @@ certmgr-cert-name =
 
 certmgr-cert-server =
     .label = Server
-
-certmgr-override-lifetime =
-    .label = Levensduur
 
 certmgr-token-name =
     .label = Beveiligingsapparaat
@@ -76,6 +65,9 @@ certmgr-email =
 
 certmgr-serial =
     .label = Serienummer
+
+certmgr-fingerprint-sha-256 =
+    .label = SHA-256-vingerafdruk
 
 certmgr-view =
     .label = Weergeven…

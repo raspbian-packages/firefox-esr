@@ -185,6 +185,7 @@ class TypedOperandId : public OperandId {
   _(ToPropertyKey)        \
   _(InstanceOf)           \
   _(GetIterator)          \
+  _(CloseIter)            \
   _(OptimizeSpreadCall)   \
   _(Compare)              \
   _(ToBool)               \
@@ -202,9 +203,7 @@ enum class CacheKind : uint8_t {
 
 extern const char* const CacheKindNames[];
 
-#ifdef DEBUG
 extern size_t NumInputsForCacheKind(CacheKind kind);
-#endif
 
 enum class CacheOp {
 #define DEFINE_OP(op, ...) op,
@@ -222,6 +221,11 @@ static_assert(sizeof(CacheIROpInfo) == 1);
 extern const CacheIROpInfo CacheIROpInfos[];
 
 extern const char* const CacheIROpNames[];
+
+inline const char* CacheIRCodeName(CacheOp op) {
+  return CacheIROpNames[static_cast<size_t>(op)];
+}
+
 extern const uint32_t CacheIROpHealth[];
 
 class StubField {
@@ -236,6 +240,8 @@ class StubField {
     Symbol,
     String,
     BaseScript,
+    JitCode,
+
     Id,
     AllocSite,
 
@@ -305,7 +311,8 @@ class CallFlags {
     FunCall,
     FunApplyArgsObj,
     FunApplyArray,
-    LastArgFormat = FunApplyArray
+    FunApplyNullUndefined,
+    LastArgFormat = FunApplyNullUndefined
   };
 
   CallFlags() = default;
@@ -362,6 +369,14 @@ class CallFlags {
   friend class CacheIRReader;
   friend class CacheIRWriter;
 };
+
+// In baseline, we have to copy args onto the stack. Below this threshold, we
+// will unroll the arg copy loop. We need to clamp this before providing it as
+// an arg to a CacheIR op so that everything 5 or greater can share an IC.
+const uint32_t MaxUnrolledArgCopy = 5;
+inline uint32_t ClampFixedArgc(uint32_t argc) {
+  return std::min(argc, MaxUnrolledArgCopy);
+}
 
 enum class AttachDecision {
   // We cannot attach a stub.
@@ -453,6 +468,7 @@ inline int32_t GetIndexOfArgument(ArgumentKind kind, CallFlags flags,
     case CallFlags::FunCall:
     case CallFlags::FunApplyArgsObj:
     case CallFlags::FunApplyArray:
+    case CallFlags::FunApplyNullUndefined:
       MOZ_CRASH("Currently unreachable");
       break;
   }
@@ -493,6 +509,7 @@ inline int32_t GetIndexOfArgument(ArgumentKind kind, CallFlags flags,
 // in the IR, to keep the IR compact and the same size on all platforms.
 enum class GuardClassKind : uint8_t {
   Array,
+  PlainObject,
   ArrayBuffer,
   SharedArrayBuffer,
   DataView,
@@ -500,6 +517,7 @@ enum class GuardClassKind : uint8_t {
   UnmappedArguments,
   WindowProxy,
   JSFunction,
+  BoundFunction,
   Set,
   Map,
 };

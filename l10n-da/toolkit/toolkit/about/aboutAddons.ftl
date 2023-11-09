@@ -6,11 +6,16 @@ addons-page-title = Tilføjelser
 search-header =
     .placeholder = Søg på addons.mozilla.org
     .searchbuttonlabel = Søg
-search-header-shortcut =
-    .key = f
+
+## Variables
+##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
+
 list-empty-get-extensions-message = Hent udvidelser og temaer på <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-dictionaries-message = Hent ordbøger på <a data-l10n-name="get-extensions">{ $domain }</a>
 list-empty-get-language-packs-message = Hent sprogpakker på <a data-l10n-name="get-extensions">{ $domain }</a>
+
+##
+
 list-empty-installed =
     .value = Du har ikke nogen tilføjelser af denne type installeret
 list-empty-available-updates =
@@ -148,7 +153,7 @@ addon-category-sitepermission-title =
     .title = Websteds-tilladelser
 # String displayed in about:addons in the Site Permissions section
 # Variables:
-#  $host (string): DNS host name for which the webextension enables permissions
+#  $host (string) - DNS host name for which the webextension enables permissions
 addon-sitepermission-host = Websteds-tilladelser for { $host }
 
 ## These are global warnings
@@ -160,6 +165,8 @@ extensions-warning-check-compatibility-button = Aktiver
 extensions-warning-update-security = Sikkerhedstjek ved opdatering af tilføjelser er deaktiveret. Du kan blive kompromiteret ved opdateringer.
 extensions-warning-update-security-button = Aktiver
     .title = Aktiver sikkerhedstjek ved opdatering af tilføjelser
+extensions-warning-imported-addons = Færdiggør installeringen af udvidelser importeret til { -brand-short-name }.
+extensions-warning-imported-addons-button = Installer udvidelser
 
 ## Strings connected to add-on updates
 
@@ -228,6 +235,8 @@ shortcuts-duplicate-warning-message = { $shortcut } bliver brugt som genvej i me
 # Variables:
 #   $addon (string) - Name of the add-on
 shortcuts-exists = Bruges allerede af { $addon }
+# Variables:
+#   $numberToShow (number) - Number of other elements available to show
 shortcuts-card-expand-button =
     { $numberToShow ->
        *[other] vis { $numberToShow } til
@@ -296,17 +305,7 @@ permissions-addon-button = Tilladelser
 extension-enabled-heading = Aktiveret
 extension-disabled-heading = Deaktiveret
 theme-enabled-heading = Aktiveret
-theme-disabled-heading = Deaktiveret
 theme-disabled-heading2 = Gemte temaer
-theme-monochromatic-heading = Farvekombinationer
-theme-monochromatic-subheading = Dynamiske nye farvekombinationer fra { -brand-product-name }. Findes kun i begrænset tid.
-# Refers to the button label for the colorways card when a user does not have a colorway theme enabled.
-theme-colorways-button = Prøv farvekombinationer
-# Refers to the button label for the colorways card when a user has a colorway theme enabled.
-theme-colorways-button-colorway-enabled = Skift farvekombination
-# Variables:
-#   $expiryDate (string) - date on which the colorway collection expires. When formatting this, you may omit the year, only exposing the month and day, as colorway collections will always expire within a year.
-colorway-collection-expiry-label = Udløber { DATETIME($expiryDate, month: "long", day: "numeric") }
 plugin-enabled-heading = Aktiveret
 plugin-disabled-heading = Deaktiveret
 dictionary-enabled-heading = Aktiveret
@@ -355,6 +354,10 @@ addon-detail-updates-radio-on = Til
 addon-detail-updates-radio-off = Fra
 addon-detail-update-check-label = Søg efter opdateringer
 install-update-button = Opdater
+# aria-label associated to the updates row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-updates =
+    .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
@@ -363,6 +366,24 @@ addon-badge-private-browsing-allowed2 =
 addon-detail-private-browsing-help = Udvidelsen har adgang til dine aktiviteter i privat browsing-tilstand, hvis du giver den tilladelse til det. <a data-l10n-name="learn-more">Læs mere</a>
 addon-detail-private-browsing-allow = Tillad
 addon-detail-private-browsing-disallow = Tillad ikke
+# aria-label associated to the private browsing row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-private-browsing =
+    .aria-label = { detail-private-browsing-label }
+
+## "sites with restrictions" (internally called "quarantined") are special domains
+## where add-ons are normally blocked for security reasons.
+
+# Used as a description for the option to allow or block an add-on on quarantined domains.
+addon-detail-quarantined-domains-label = Kør på websteder med begrænsninger
+# Used as help text part of the quarantined domains UI controls row.
+addon-detail-quarantined-domains-help = Når udvidelsen har tilladelse til det, har den adgang til websteder begrænset af { -vendor-short-name }. Tillad kun dette, hvis du stoler på udvidelsen.
+# Used as label and tooltip text on the radio inputs associated to the quarantined domains UI controls.
+addon-detail-quarantined-domains-allow = Tillad
+addon-detail-quarantined-domains-disallow = Tillad ikke
+# aria-label associated to the quarantined domains exempt row to help screen readers to announce the group.
+addon-detail-group-label-quarantined-domains =
+    .aria-label = { addon-detail-quarantined-domains-label }
 
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
@@ -391,6 +412,8 @@ addon-permissions-optional = Valgfrie tilladelser for yderligere funktionalitet:
 addon-permissions-learnmore = Læs mere om tilladelser
 recommended-extensions-heading = Anbefalede udvidelser
 recommended-themes-heading = Anbefalede temaer
+# Variables:
+#   $hostname (string) - Host where the permissions are granted
 addon-sitepermissions-required = Tilføjer følgende funktioner til <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
@@ -415,10 +438,10 @@ addon-page-options-button =
 
 ## Detail notifications
 ## Variables:
-##   $name (String): name of the add-on.
+##   $name (string) - Name of the add-on.
 
 # Variables:
-#   $version (String): application version.
+#   $version (string) - Application version.
 details-notification-incompatible = { $name } er inkompatibel med { -brand-short-name } { $version }.
 details-notification-incompatible-link = Mere information
 details-notification-unsigned-and-disabled = { $name } kunne ikke verificeres til brug i { -brand-short-name } og er blevet deaktiveret.

@@ -14,7 +14,6 @@
 #include "nsCOMPtr.h"
 #include "nsProxyRelease.h"
 #include "prinrval.h"
-#include "TLSFilterTransaction.h"
 #include "mozilla/Mutex.h"
 #include "ARefBase.h"
 #include "TimingStruct.h"
@@ -24,12 +23,13 @@
 #include "nsIAsyncInputStream.h"
 #include "nsIAsyncOutputStream.h"
 #include "nsIInterfaceRequestor.h"
+#include "nsISocketTransport.h"
 #include "nsISupportsPriority.h"
 #include "nsITimer.h"
 #include "nsITlsHandshakeListener.h"
 
 class nsISocketTransport;
-class nsISSLSocketControl;
+class nsITLSSocketControl;
 
 namespace mozilla {
 namespace net {
@@ -58,8 +58,7 @@ class nsHttpConnection final : public HttpConnectionBase,
                                public nsIInputStreamCallback,
                                public nsIOutputStreamCallback,
                                public nsITransportEventSink,
-                               public nsIInterfaceRequestor,
-                               public NudgeTunnelCallback {
+                               public nsIInterfaceRequestor {
  private:
   virtual ~nsHttpConnection();
 
@@ -73,7 +72,6 @@ class nsHttpConnection final : public HttpConnectionBase,
   NS_DECL_NSIOUTPUTSTREAMCALLBACK
   NS_DECL_NSITRANSPORTEVENTSINK
   NS_DECL_NSIINTERFACEREQUESTOR
-  NS_DECL_NUDGETUNNELCALLBACK
 
   nsHttpConnection();
 
@@ -102,7 +100,7 @@ class nsHttpConnection final : public HttpConnectionBase,
   uint32_t TimeToLive();
 
   bool NeedSpdyTunnel() {
-    return mConnInfo->UsingHttpsProxy() && !mTLSFilter &&
+    return mConnInfo->UsingHttpsProxy() && !mHasTLSTransportLayer &&
            mConnInfo->UsingConnect();
   }
 
@@ -156,9 +154,8 @@ class nsHttpConnection final : public HttpConnectionBase,
 
   int64_t ContentBytesWritten() { return mContentBytesWritten; }
 
-  void SetupSecondaryTLS(
-      nsAHttpTransaction* aHttp2ConnectTransaction = nullptr);
-  void SetInSpdyTunnel(bool arg);
+  void SetupSecondaryTLS();
+  void SetInSpdyTunnel();
 
   // Check active connections for traffic (or not). SPDY connections send a
   // ping, ordinary HTTP connections get some time to get traffic to be
@@ -177,7 +174,7 @@ class nsHttpConnection final : public HttpConnectionBase,
   // has finished this returns false.
   bool NoClientCertAuth() const override;
 
-  bool CanAcceptWebsocket() override;
+  WebSocketSupport GetWebSocketSupport() override;
 
   int64_t BytesWritten() override { return mTotalBytesWritten; }
 
@@ -187,17 +184,23 @@ class nsHttpConnection final : public HttpConnectionBase,
   nsresult GetPeerAddr(NetAddr* addr) override;
   bool ResolvedByTRR() override;
   bool GetEchConfigUsed() override;
-
+  nsIRequest::TRRMode EffectiveTRRMode() override;
+  TRRSkippedReason TRRSkipReason() override;
   bool IsForWebSocket() { return mForWebSocket; }
 
   // The following functions are related to setting up a tunnel.
-  [[nodiscard]] static nsresult MakeConnectString(nsAHttpTransaction* trans,
-                                                  nsHttpRequestHead* request,
-                                                  nsACString& result,
-                                                  bool h2ws);
+  [[nodiscard]] static nsresult MakeConnectString(
+      nsAHttpTransaction* trans, nsHttpRequestHead* request, nsACString& result,
+      bool h2ws, bool aShouldResistFingerprinting);
   [[nodiscard]] static nsresult ReadFromStream(nsIInputStream*, void*,
                                                const char*, uint32_t, uint32_t,
                                                uint32_t*);
+
+  nsresult CreateTunnelStream(nsAHttpTransaction* httpTransaction,
+                              nsHttpConnection** aHttpConnection,
+                              bool aIsWebSocket = false);
+
+  bool RequestDone() { return mRequestDone; }
 
  private:
   enum HttpConnectionState {
@@ -218,6 +221,7 @@ class nsHttpConnection final : public HttpConnectionBase,
   void HandleWebSocketResponse(nsHttpRequestHead* requestHead,
                                nsHttpResponseHead* responseHead,
                                uint16_t responseStatus);
+  void ResetTransaction(RefPtr<nsAHttpTransaction>&& trans);
 
   // Value (set in mTCPKeepaliveConfig) indicates which set of prefs to use.
   enum TCPKeepaliveConfig {
@@ -234,7 +238,7 @@ class nsHttpConnection final : public HttpConnectionBase,
   bool IsAlive();
 
   // Start the Spdy transaction handler when NPN indicates spdy/*
-  void StartSpdy(nsISSLSocketControl* ssl, SpdyVersion spdyVersion);
+  void StartSpdy(nsITLSSocketControl* ssl, SpdyVersion spdyVersion);
   // Like the above, but do the bare minimum to do 0RTT data, so we can back
   // it out, if necessary
   void Start0RTTSpdy(SpdyVersion spdyVersion);
@@ -260,6 +264,8 @@ class nsHttpConnection final : public HttpConnectionBase,
   void HandshakeDoneInternal();
   uint32_t TransactionCaps() const { return mTransactionCaps; }
 
+  void MarkAsDontReuse();
+
  private:
   // mTransaction only points to the HTTP Transaction callbacks if the
   // transaction is open, otherwise it is null.
@@ -272,9 +278,6 @@ class nsHttpConnection final : public HttpConnectionBase,
 
   nsresult mSocketInCondition{NS_ERROR_NOT_INITIALIZED};
   nsresult mSocketOutCondition{NS_ERROR_NOT_INITIALIZED};
-
-  RefPtr<TLSFilterTransaction> mTLSFilter;
-  nsWeakPtr mWeakTrans;  // Http2ConnectTransaction *
 
   RefPtr<nsHttpHandler> mHttpHandler;  // keep gHttpHandler alive
 
@@ -325,6 +328,7 @@ class nsHttpConnection final : public HttpConnectionBase,
   SpdyVersion mUsingSpdyVersion{SpdyVersion::NONE};
 
   RefPtr<ASpdySession> mSpdySession;
+  RefPtr<ASpdySession> mWebSocketHttp2Session;
   int32_t mPriority{nsISupportsPriority::PRIORITY_NORMAL};
   bool mReportedSpdy{false};
 
@@ -367,6 +371,10 @@ class nsHttpConnection final : public HttpConnectionBase,
   int64_t mTotalBytesWritten = 0;  // does not include CONNECT tunnel
 
   nsCOMPtr<nsIInputStream> mProxyConnectStream;
+
+  bool mRequestDone{false};
+  bool mHasTLSTransportLayer{false};
+  bool mTransactionDisallowHttp3{false};
 };
 
 NS_DEFINE_STATIC_IID_ACCESSOR(nsHttpConnection, NS_HTTPCONNECTION_IID)

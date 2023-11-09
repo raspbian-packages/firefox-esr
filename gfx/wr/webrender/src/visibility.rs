@@ -10,14 +10,14 @@
 use api::{DebugFlags};
 use api::units::*;
 use std::{usize};
-use crate::clip::{ClipStore, ClipChainStack};
+use crate::clip::ClipStore;
 use crate::composite::CompositeState;
 use crate::spatial_tree::{SpatialTree, SpatialNodeIndex};
-use crate::clip::{ClipInstance, ClipChainInstance};
+use crate::clip::{ClipChainInstance, ClipTree};
 use crate::frame_builder::FrameBuilderConfig;
 use crate::gpu_cache::GpuCache;
 use crate::picture::{PictureCompositeMode, ClusterFlags, SurfaceInfo, TileCacheInstance};
-use crate::picture::{SurfaceIndex, RasterConfig, TileRect, SubSliceIndex};
+use crate::picture::{SurfaceIndex, RasterConfig, SubSliceIndex};
 use crate::prim_store::{ClipTaskIndex, PictureIndex, PrimitiveInstanceKind};
 use crate::prim_store::{PrimitiveStore, PrimitiveInstance};
 use crate::render_backend::{DataStores, ScratchBuffer};
@@ -42,7 +42,7 @@ pub struct FrameVisibilityState<'a> {
     pub gpu_cache: &'a mut GpuCache,
     pub scratch: &'a mut ScratchBuffer,
     pub data_stores: &'a mut DataStores,
-    pub clip_chain_stack: ClipChainStack,
+    pub clip_tree: &'a mut ClipTree,
     pub composite_state: &'a mut CompositeState,
     /// A stack of currently active off-screen surfaces during the
     /// visibility frame traversal.
@@ -54,20 +54,12 @@ impl<'a> FrameVisibilityState<'a> {
         &mut self,
         pic_index: PictureIndex,
         surface_index: SurfaceIndex,
-        shared_clips: &[ClipInstance],
-        spatial_tree: &SpatialTree,
     ) {
         self.surface_stack.push((pic_index, surface_index));
-        self.clip_chain_stack.push_surface(
-            shared_clips,
-            spatial_tree,
-            &self.data_stores.clip,
-        );
     }
 
     pub fn pop_surface(&mut self) {
         self.surface_stack.pop().unwrap();
-        self.clip_chain_stack.pop_surface();
     }
 }
 
@@ -102,9 +94,6 @@ pub enum VisibilityState {
         /// during batching of visible primitives.
         vis_flags: PrimitiveVisibilityFlags,
 
-        /// Tiles that this primitive intersects with
-        tile_rect: TileRect,
-
         /// Sub-slice within the picture cache that this prim exists on
         sub_slice_index: SubSliceIndex,
     },
@@ -129,10 +118,6 @@ pub struct PrimitiveVisibility {
     /// global clip mask task for this primitive, or the first of
     /// a list of clip task ids (one per segment).
     pub clip_task_index: ClipTaskIndex,
-
-    /// The current combined local clip for this primitive, from
-    /// the primitive local clip above and the current clip chain.
-    pub combined_local_clip_rect: LayoutRect,
 }
 
 impl PrimitiveVisibility {
@@ -141,7 +126,6 @@ impl PrimitiveVisibility {
             state: VisibilityState::Unset,
             clip_chain: ClipChainInstance::empty(),
             clip_task_index: ClipTaskIndex::INVALID,
-            combined_local_clip_rect: LayoutRect::zero(),
         }
     }
 
@@ -173,8 +157,6 @@ pub fn update_prim_visibility(
             frame_state.push_surface(
                 pic_index,
                 raster_config.surface_index,
-                &[],
-                frame_context.spatial_tree,
             );
 
             let surface_local_rect = surfaces[raster_config.surface_index.0]
@@ -246,10 +228,9 @@ pub fn update_prim_visibility(
                     None => true,
                 };
 
-                if is_passthrough {
-                    frame_state.clip_chain_stack.push_clip(
-                        prim_instances[prim_instance_index].clip_set.clip_chain_id,
-                        frame_state.clip_store,
+                if !is_passthrough {
+                    frame_state.clip_tree.push_clip_root_leaf(
+                        prim_instances[prim_instance_index].clip_leaf_id,
                     );
                 }
 
@@ -267,12 +248,12 @@ pub fn update_prim_visibility(
                 );
 
                 if is_passthrough {
-                    frame_state.clip_chain_stack.pop_clip();
-
                     // Pass through pictures are always considered visible in all dirty tiles.
                     prim_instances[prim_instance_index].vis.state = VisibilityState::PassThrough;
 
                     continue;
+                } else {
+                    frame_state.clip_tree.pop_clip_root();
                 }
             }
 
@@ -284,19 +265,13 @@ pub fn update_prim_visibility(
                 surfaces,
             );
 
-            // Include the clip chain for this primitive in the current stack.
-            frame_state.clip_chain_stack.push_clip(
-                prim_instance.clip_set.clip_chain_id,
-                frame_state.clip_store,
-            );
-
             frame_state.clip_store.set_active_clips(
-                prim_instance.clip_set.local_clip_rect,
                 cluster.spatial_node_index,
                 map_local_to_surface.ref_spatial_node_index,
-                frame_state.clip_chain_stack.current_clips_array(),
+                prim_instance.clip_leaf_id,
                 &frame_context.spatial_tree,
                 &frame_state.data_stores.clip,
+                frame_state.clip_tree,
             );
 
             let clip_chain = frame_state
@@ -312,37 +287,13 @@ pub fn update_prim_visibility(
                     &world_culling_rect,
                     &mut frame_state.data_stores.clip,
                     true,
-                    prim_instance.is_chased(),
                 );
-
-            // Ensure the primitive clip is popped
-            frame_state.clip_chain_stack.pop_clip();
 
             prim_instance.vis.clip_chain = match clip_chain {
                 Some(clip_chain) => clip_chain,
                 None => {
-                    if prim_instance.is_chased() {
-                        info!("\tunable to build the clip chain, skipping");
-                    }
                     continue;
                 }
-            };
-
-            if prim_instance.is_chased() {
-                info!("\teffective clip chain from {:?} {}",
-                         prim_instance.vis.clip_chain.clips_range,
-                         if pic.apply_local_clip_rect { "(applied)" } else { "" },
-                );
-                info!("\tpicture rect {:?} @{:?}",
-                         prim_instance.vis.clip_chain.pic_coverage_rect,
-                         prim_instance.vis.clip_chain.pic_spatial_node_index,
-                );
-            }
-
-            prim_instance.vis.combined_local_clip_rect = if pic.apply_local_clip_rect {
-                prim_instance.vis.clip_chain.local_clip_rect
-            } else {
-                prim_instance.clip_set.local_clip_rect
             };
 
             tile_cache.update_prim_dependencies(

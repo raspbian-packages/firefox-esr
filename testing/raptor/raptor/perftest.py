@@ -4,10 +4,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import
-
 import json
 import os
+import pathlib
 import re
 import shutil
 import subprocess
@@ -21,7 +20,6 @@ import mozprocess
 import mozproxy.utils as mpu
 import mozversion
 import six
-
 from mozprofile import create_profile
 from mozproxy import get_playback
 
@@ -38,10 +36,10 @@ for path in paths:
     sys.path.insert(0, path)
 
 from cmdline import FIREFOX_ANDROID_APPS
-from condprof.client import get_profile, ProfileNotFoundError
+from condprof.client import ProfileNotFoundError, get_profile
 from condprof.util import get_current_platform
-from logger.logger import RaptorLogger
 from gecko_profile import GeckoProfile
+from logger.logger import RaptorLogger
 from results import RaptorResultsHandler
 
 LOG = RaptorLogger(component="raptor-perftest")
@@ -81,6 +79,7 @@ class Perftest(object):
         gecko_profile_extra_threads=None,
         gecko_profile_threads=None,
         gecko_profile_features=None,
+        extra_profiler_run=False,
         symbols_path=None,
         host=None,
         power_test=False,
@@ -97,12 +96,18 @@ class Perftest(object):
         device_name=None,
         disable_perf_tuning=False,
         conditioned_profile=None,
+        test_bytecode_cache=False,
         chimera=False,
         extra_prefs={},
         environment={},
         project="mozilla-central",
         verbose=False,
         python=None,
+        fission=True,
+        extra_summary_methods=[],
+        benchmark_repository=None,
+        benchmark_revision=None,
+        benchmark_branch=None,
         **kwargs
     ):
         self._remote_test_root = None
@@ -127,6 +132,7 @@ class Perftest(object):
             "gecko_profile_extra_threads": gecko_profile_extra_threads,
             "gecko_profile_threads": gecko_profile_threads,
             "gecko_profile_features": gecko_profile_features,
+            "extra_profiler_run": extra_profiler_run,
             "symbols_path": symbols_path,
             "host": host,
             "power_test": power_test,
@@ -138,14 +144,19 @@ class Perftest(object):
             "enable_control_server_wait": memory_test or cpu_test,
             "e10s": e10s,
             "device_name": device_name,
-            "fission": extra_prefs.get("fission.autostart", True),
+            "fission": fission,
             "disable_perf_tuning": disable_perf_tuning,
             "conditioned_profile": conditioned_profile,
+            "test_bytecode_cache": test_bytecode_cache,
             "chimera": chimera,
             "extra_prefs": extra_prefs,
             "environment": environment,
             "project": project,
             "verbose": verbose,
+            "extra_summary_methods": extra_summary_methods,
+            "benchmark_repository": benchmark_repository,
+            "benchmark_revision": benchmark_revision,
+            "benchmark_branch": benchmark_branch,
         }
 
         self.firefox_android_apps = FIREFOX_ANDROID_APPS
@@ -166,7 +177,7 @@ class Perftest(object):
         # To differentiate between chrome/firefox failures, we
         # set an app variable in the logger which prefixes messages
         # with the app name
-        if self.config["app"] in ("chrome", "chrome-m", "chromium"):
+        if self.config["app"] in ("chrome", "chrome-m", "chromium", "custom-car"):
             LOG.set_app(self.config["app"])
 
         self.browser_name = None
@@ -180,6 +191,9 @@ class Perftest(object):
         self.device = None
         self.runtime_error = None
         self.profile_class = profile_class or app
+        # Use the `chromium` profile class for custom-car
+        if app in ["custom-car"]:
+            self.profile_class = "chromium"
         self.conditioned_profile_dir = None
         self.interrupt_handler = interrupt_handler
         self.results_handler = results_handler_class(**self.config)
@@ -206,6 +220,9 @@ class Perftest(object):
 
         LOG.info("Post startup delay set to %d ms" % self.post_startup_delay)
         LOG.info("main raptor init, config is: %s" % str(self.config))
+
+        # TODO: Move this outside of the perftest initialization, it contains
+        # platform-specific code
         self.build_browser_profile()
 
         # Crashes counter
@@ -239,11 +256,11 @@ class Perftest(object):
     def build_conditioned_profile(self):
         # Late import so python-test doesn't import it
         import asyncio
-        from condprof.runner import Runner
 
         # The following import patchs an issue with invalid
         # content-type, see bug 1655869
         from condprof import patch  # noqa
+        from condprof.runner import Runner
 
         if not getattr(self, "browsertime"):
             raise Exception(
@@ -374,8 +391,11 @@ class Perftest(object):
         return self.conditioned_profile_copy
 
     def build_browser_profile(self):
-        if (
-            self.config["app"] in ["chrome", "chromium", "chrome-m"]
+        if self.config["app"] in ["safari"]:
+            self.profile = None
+            return
+        elif (
+            self.config["app"] in ["chrome", "chromium", "chrome-m", "custom-car"]
             or self.config.get("conditioned_profile") is None
         ):
             self.profile = create_profile(self.profile_class)
@@ -393,14 +413,7 @@ class Perftest(object):
             LOG.info("Merging profile: {}".format(path))
             self.profile.merge(path)
 
-        if self.config["extra_prefs"].get("fission.autostart", True):
-            self.config["extra_prefs"].update(
-                {
-                    "fission.autostart": True,
-                }
-            )
-            LOG.info("Enabling fission via browser preferences")
-            LOG.info("Browser preferences: {}".format(self.config["extra_prefs"]))
+        LOG.info("Browser preferences: {}".format(self.config["extra_prefs"]))
         self.profile.set_preferences(self.config["extra_prefs"])
 
         # share the profile dir with the config and the control server
@@ -444,7 +457,7 @@ class Perftest(object):
         if test.get("playback") is not None and self.playback is None:
             self.start_playback(test)
 
-        if test.get("preferences") is not None:
+        if test.get("preferences") is not None and self.config["app"] not in "safari":
             self.set_browser_test_prefs(test["preferences"])
 
     @abstractmethod
@@ -456,8 +469,11 @@ class Perftest(object):
         pass
 
     def run_tests(self, tests, test_names):
+        tests_to_run = tests
+        if self.results_handler.existing_results:
+            tests_to_run = []
         try:
-            for test in tests:
+            for test in tests_to_run:
                 try:
                     self.run_test(test, timeout=int(test.get("page_timeout")))
                 except RuntimeError as e:
@@ -492,8 +508,11 @@ class Perftest(object):
         self.config["page_count"] = self.page_count
         res = self.results_handler.summarize_and_output(self.config, tests, test_names)
 
-        # gecko profiling symbolication
-        if self.config["gecko_profile"]:
+        # Gecko profiling symbolication
+        # We enable the gecko profiler either when the profiler is enabled with
+        # gecko_profile flag form the command line or when an extra profiler-enabled
+        # run is added with extra_profiler_run flag.
+        if self.config["gecko_profile"] or self.config.get("extra_profiler_run"):
             self.gecko_profiler.symbolicate()
             # clean up the temp gecko profiling folders
             LOG.info("cleaning up after gecko profiling")
@@ -510,12 +529,29 @@ class Perftest(object):
         pass
 
     def clean_up(self):
+        # Cleanup all of our temporary directories
         for dir_to_rm in self._dirs_to_remove:
             if not os.path.exists(dir_to_rm):
                 continue
             LOG.info("Removing temporary directory: {}".format(dir_to_rm))
             shutil.rmtree(dir_to_rm, ignore_errors=True)
         self._dirs_to_remove = []
+
+        # Go through the artifact directory and ensure we
+        # don't have too many JPG/PNG files from a task failure
+        if (
+            not self.run_local
+            and self.results_handler
+            and self.results_handler.result_dir()
+        ):
+            artifact_dir = pathlib.Path(self.artifact_dir)
+            for filetype in ("*.png", "*.jpg"):
+                # Limit the number of images uploaded to the last (newest) 5
+                for file in sorted(artifact_dir.rglob(filetype))[:-5]:
+                    try:
+                        file.unlink()
+                    except FileNotFoundError:
+                        pass
 
     def get_page_timeout_list(self):
         return self.results_handler.page_timeout_list
@@ -538,7 +574,7 @@ class Perftest(object):
         self.config.update(
             {
                 "playback_tool": test.get("playback"),
-                "playback_version": test.get("playback_version", "7.0.4"),
+                "playback_version": test.get("playback_version", "8.1.1"),
                 "playback_files": [
                     os.path.join(playback_dir, test.get("playback_pageset_manifest"))
                 ],
@@ -606,14 +642,18 @@ class PerftestAndroid(Perftest):
                     % (e.__class__.__name__, e)
                 )
 
-        if self.config["app"] == "chrome-m":
+        if self.config["app"] == "chrome-m" or browser_version is None:
             # We absolutely need to determine the chrome
             # version here so that we can select the correct
             # chromedriver for browsertime
             from mozdevice import ADBDeviceFactory
 
             device = ADBDeviceFactory(verbose=True)
+
+            # Chrome uses a specific binary that we don't set as a command line option
             binary = "com.android.chrome"
+            if self.config["app"] not in ("chrome-m",):
+                binary = self.config["binary"]
 
             pkg_info = device.shell_output("dumpsys package %s" % binary)
             version_matcher = re.compile(r".*versionName=([\d.]+)")
@@ -781,10 +821,20 @@ class PerftestDesktop(Perftest):
 
             # Fall-back method to get browser version on desktop
             try:
-                if (
-                    "linux" in self.config["platform"]
-                    or "mac" in self.config["platform"]
-                ):
+                if "mac" in self.config["platform"]:
+                    import plistlib
+
+                    for plist_file in ("version.plist", "Info.plist"):
+                        try:
+                            binary_path = pathlib.Path(self.config["binary"])
+                            plist_path = binary_path.parent.parent.joinpath(plist_file)
+                            with plist_path.open("rb") as plist:
+                                plist = plistlib.load(plist)
+                        except FileNotFoundError:
+                            pass
+                    browser_name = self.config["app"]
+                    browser_version = plist.get("CFBundleShortVersionString")
+                elif "linux" in self.config["platform"]:
                     command = [self.config["binary"], "--version"]
                     proc = mozprocess.ProcessHandler(command)
                     proc.run(timeout=10, outputTimeout=10)

@@ -46,31 +46,6 @@ class TablePartRule : public PivotRule {
   }
 };
 
-// Iterates through headers explicitly associated with a remote table cell via
-// the headers DOM attribute. These are cached as Accessible ids.
-class RemoteExplicitHeadersIterator : public AccIterable {
- public:
-  RemoteExplicitHeadersIterator(const nsTArray<uint64_t>& aHeaders,
-                                Accessible* aDoc)
-      : mHeaders(aHeaders), mDoc(aDoc), mIndex(0) {}
-
-  virtual Accessible* Next() override {
-    while (mIndex < mHeaders.Length()) {
-      uint64_t id = mHeaders[mIndex++];
-      Accessible* acc = nsAccUtils::GetAccessibleByID(mDoc, id);
-      if (acc) {
-        return acc;
-      }
-    }
-    return nullptr;
-  }
-
- private:
-  const nsTArray<uint64_t>& mHeaders;
-  Accessible* mDoc;
-  uint32_t mIndex;
-};
-
 // The Accessible* keys should only be used for lookup. They should not be
 // dereferenced.
 using CachedTablesMap = nsTHashMap<Accessible*, CachedTableAccessible>;
@@ -83,6 +58,7 @@ static StaticAutoPtr<CachedTablesMap> sCachedTables;
 
 /* static */
 CachedTableAccessible* CachedTableAccessible::GetFrom(Accessible* aAcc) {
+  MOZ_ASSERT(aAcc->IsTable());
   if (!sCachedTables) {
     sCachedTables = new CachedTablesMap();
     ClearOnShutdown(&sCachedTables);
@@ -96,19 +72,8 @@ void CachedTableAccessible::Invalidate(Accessible* aAcc) {
   if (!sCachedTables) {
     return;
   }
-  Accessible* table = nullptr;
-  if (aAcc->IsTable()) {
-    table = aAcc;
-  } else if (aAcc->IsTableCell()) {
-    for (table = aAcc->Parent(); table; table = table->Parent()) {
-      if (table->IsTable()) {
-        break;
-      }
-    }
-  } else {
-    MOZ_ASSERT_UNREACHABLE("Should only be called on a table or a cell");
-  }
-  if (table) {
+
+  if (Accessible* table = nsAccUtils::TableFor(aAcc)) {
     // Destroy the instance (if any). We'll create a new one the next time it
     // is requested.
     sCachedTables->Remove(table);
@@ -181,7 +146,6 @@ CachedTableAccessible::CachedTableAccessible(Accessible* aAcc) : mAcc(aAcc) {
       for (uint32_t spannedCol = colIdx; spannedCol <= lastColForCell;
            ++spannedCol) {
         EnsureRowCol(spannedRow, spannedCol);
-        MOZ_ASSERT(mRowColToCellIdx[spannedRow][spannedCol] == kNoCellIdx);
         auto& rowCol = mRowColToCellIdx[spannedRow][spannedCol];
         // If a cell already occupies this position, it overlaps with this one;
         // e.g. r1..2c2 and r2c1..2. In that case, we want to prefer the first
@@ -203,10 +167,8 @@ CachedTableAccessible::CachedTableAccessible(Accessible* aAcc) : mAcc(aAcc) {
 }
 
 void CachedTableAccessible::EnsureRow(uint32_t aRowIdx) {
-  for (uint32_t newRow = mRowColToCellIdx.Length(); newRow <= aRowIdx;
-       ++newRow) {
-    // The next row doesn't exist yet. Create it.
-    mRowColToCellIdx.AppendElement();
+  if (mRowColToCellIdx.Length() <= aRowIdx) {
+    mRowColToCellIdx.AppendElements(aRowIdx - mRowColToCellIdx.Length() + 1);
   }
   MOZ_ASSERT(mRowColToCellIdx.Length() > aRowIdx);
 }
@@ -214,14 +176,15 @@ void CachedTableAccessible::EnsureRow(uint32_t aRowIdx) {
 void CachedTableAccessible::EnsureRowCol(uint32_t aRowIdx, uint32_t aColIdx) {
   EnsureRow(aRowIdx);
   auto& row = mRowColToCellIdx[aRowIdx];
+  if (mColCount <= aColIdx) {
+    mColCount = aColIdx + 1;
+  }
+  row.SetCapacity(mColCount);
   for (uint32_t newCol = row.Length(); newCol <= aColIdx; ++newCol) {
     // An entry doesn't yet exist for this column in this row.
     row.AppendElement(kNoCellIdx);
   }
   MOZ_ASSERT(row.Length() > aColIdx);
-  if (mColCount <= aColIdx) {
-    ++mColCount;
-  }
 }
 
 Accessible* CachedTableAccessible::Caption() const {
@@ -229,7 +192,7 @@ Accessible* CachedTableAccessible::Caption() const {
     Accessible* caption = nsAccUtils::GetAccessibleByID(
         nsAccUtils::DocumentFor(mAcc), mCaptionAccID);
     MOZ_ASSERT(caption, "Dead caption Accessible!");
-    MOZ_ASSERT(caption->Role() != roles::CAPTION, "Caption has wrong role");
+    MOZ_ASSERT(caption->Role() == roles::CAPTION, "Caption has wrong role");
     return caption;
   }
   return nullptr;
@@ -332,6 +295,7 @@ uint32_t CachedTableCellAccessible::ColExtent() const {
     if (remoteAcc->mCachedFields) {
       if (auto colSpan = remoteAcc->mCachedFields->GetAttribute<int32_t>(
               nsGkAtoms::colspan)) {
+        MOZ_ASSERT(*colSpan > 0);
         return *colSpan;
       }
     }
@@ -342,7 +306,11 @@ uint32_t CachedTableCellAccessible::ColExtent() const {
     // about thead, tbody, etc., which is info we don't have in the a11y tree.
     TableCellAccessible* cell = localAcc->AsTableCell();
     MOZ_ASSERT(cell);
-    return cell->ColExtent();
+    uint32_t colExtent = cell->ColExtent();
+    MOZ_ASSERT(colExtent > 0);
+    if (colExtent > 0) {
+      return colExtent;
+    }
   }
   return 1;
 }
@@ -352,6 +320,7 @@ uint32_t CachedTableCellAccessible::RowExtent() const {
     if (remoteAcc->mCachedFields) {
       if (auto rowSpan = remoteAcc->mCachedFields->GetAttribute<int32_t>(
               nsGkAtoms::rowspan)) {
+        MOZ_ASSERT(*rowSpan > 0);
         return *rowSpan;
       }
     }
@@ -362,7 +331,11 @@ uint32_t CachedTableCellAccessible::RowExtent() const {
     // about thead, tbody, etc., which is info we don't have in the a11y tree.
     TableCellAccessible* cell = localAcc->AsTableCell();
     MOZ_ASSERT(cell);
-    return cell->RowExtent();
+    uint32_t rowExtent = cell->RowExtent();
+    MOZ_ASSERT(rowExtent > 0);
+    if (rowExtent > 0) {
+      return rowExtent;
+    }
   }
   return 1;
 }
@@ -373,8 +346,7 @@ UniquePtr<AccIterable> CachedTableCellAccessible::GetExplicitHeadersIterator() {
       if (auto headers =
               remoteAcc->mCachedFields->GetAttribute<nsTArray<uint64_t>>(
                   nsGkAtoms::headers)) {
-        return MakeUnique<RemoteExplicitHeadersIterator>(*headers,
-                                                         remoteAcc->Document());
+        return MakeUnique<RemoteAccIterator>(*headers, remoteAcc->Document());
       }
     }
   } else if (LocalAccessible* localAcc = mAcc->AsLocal()) {
@@ -446,20 +418,22 @@ void CachedTableCellAccessible::RowHeaderCells(nsTArray<Accessible*>* aCells) {
       return;
     }
   }
+  Accessible* doc = nsAccUtils::DocumentFor(table->AsAccessible());
   // We don't cache implicit row headers because there are usually not that many
   // cells per row. Get all the row headers on the row before this cell.
   uint32_t row = RowIdx();
   uint32_t thisCol = ColIdx();
   for (uint32_t col = thisCol - 1; col < thisCol; --col) {
-    Accessible* cellAcc = table->CellAt(row, col);
-    if (!cellAcc) {
+    int32_t cellIdx = table->CellIndexAt(row, col);
+    if (cellIdx == -1) {
       continue;
     }
-    TableCellAccessibleBase* cell = cellAcc->AsTableCellBase();
-    MOZ_ASSERT(cell);
+    CachedTableCellAccessible& cell = table->mCells[cellIdx];
+    Accessible* cellAcc = nsAccUtils::GetAccessibleByID(doc, cell.mAccID);
+    MOZ_ASSERT(cellAcc);
     // cell might span multiple columns. We don't want to visit it multiple
     // times, so ensure col is set to cell's starting column.
-    col = cell->ColIdx();
+    col = cell.ColIdx();
     if (cellAcc->Role() != roles::ROWHEADER) {
       continue;
     }

@@ -63,7 +63,6 @@ protections-panel-not-found-label = Aucun détecté
 ##
 
 protections-panel-settings-label = Paramètres de protection
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Tableau de bord des protections
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -78,6 +77,7 @@ protections-panel-site-not-working-view-issue-list-forms = Les formulaires
 protections-panel-site-not-working-view-issue-list-payments = Les paiements
 protections-panel-site-not-working-view-issue-list-comments = Les commentaires
 protections-panel-site-not-working-view-issue-list-videos = Les vidéos
+protections-panel-site-not-working-view-issue-list-fonts = Polices de caractères
 
 protections-panel-site-not-working-view-send-report = Envoyer un rapport
 
@@ -101,6 +101,7 @@ protections-panel-content-blocking-manage-settings =
 protections-panel-content-blocking-breakage-report-view =
     .title = Signaler des problèmes avec ce site
 protections-panel-content-blocking-breakage-report-view-description = Le blocage de certains traqueurs peut occasionner des problèmes sur des sites web. En signalant ces problèmes, vous contribuez à rendre { -brand-short-name } meilleur pour tout le monde. L’envoi du rapport communiquera une URL ainsi que des informations sur les préférences de votre navigateur à Mozilla. <label data-l10n-name="learn-more">En savoir plus</label>
+protections-panel-content-blocking-breakage-report-view-description2 = Le blocage de certains traqueurs peut occasionner des problèmes sur des sites web. En signalant ces problèmes, vous contribuez à rendre { -brand-short-name } meilleur pour tout le monde. L’envoi du rapport communiquera une URL ainsi que des informations sur les préférences de votre navigateur à { -vendor-short-name }.
 protections-panel-content-blocking-breakage-report-view-collection-url = URL
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = URL
@@ -111,3 +112,22 @@ protections-panel-content-blocking-breakage-report-view-cancel =
     .label = Annuler
 protections-panel-content-blocking-breakage-report-view-send-report =
     .label = Envoyer le rapport
+
+# Cookie Banner Handling
+
+protections-panel-cookie-banner-handling-header = Réduction des bannières de cookies
+protections-panel-cookie-banner-handling-enabled = Activée pour ce site
+protections-panel-cookie-banner-handling-disabled = Désactivée pour ce site
+protections-panel-cookie-banner-handling-undetected = Site actuellement non pris en charge
+
+protections-panel-cookie-banner-view-title =
+    .title = Réduction des bannières de cookies
+# Variables
+#  $host (String): the hostname of the site that is being displayed.
+protections-panel-cookie-banner-view-turn-off-for-site = Désactiver la réduction des bannières de cookies pour { $host } ?
+protections-panel-cookie-banner-view-turn-on-for-site = Activer la réduction des bannières de cookies pour ce site ?
+protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } effacera les cookies de ce site et actualisera la page. La suppression de tous les cookies peut vous déconnecter ou vider les paniers d’achats.
+protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } peut essayer de refuser automatiquement les demandes de dépôt de cookies sur les sites compatibles.
+protections-panel-cookie-banner-view-cancel = Annuler
+protections-panel-cookie-banner-view-turn-off = Désactiver
+protections-panel-cookie-banner-view-turn-on = Activer

@@ -38,9 +38,11 @@ menu-quit =
             [windows] k
            *[other] k
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = Zakończ program { -brand-shorter-name }
+
 menu-about =
     .label = O programie { -brand-shorter-name }
     .accesskey = O
@@ -221,8 +223,6 @@ menu-history-undo-menu =
     .label = Ostatnio zamknięte karty
 menu-history-undo-window-menu =
     .label = Ostatnio zamknięte okna
-menu-history-reopen-all-tabs = Przywróć wszystkie karty
-menu-history-reopen-all-windows = Przywróć wszystkie okna
 
 ## Bookmarks Menu
 
@@ -231,10 +231,6 @@ menu-bookmarks-menu =
     .accesskey = Z
 menu-bookmarks-manage =
     .label = Zarządzaj zakładkami
-menu-bookmark-current-tab =
-    .label = Dodaj zakładkę do tej karty
-menu-bookmark-edit =
-    .label = Edytuj tę zakładkę
 menu-bookmark-tab =
     .label = Dodaj zakładkę do tej karty…
 menu-edit-bookmark =
@@ -332,6 +328,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Wyłącz tryb rozwiązywania problemów
     .accesskey = t
+menu-help-switch-device =
+    .label = Przechodzenie na nowe urządzenie
+    .accesskey = P
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

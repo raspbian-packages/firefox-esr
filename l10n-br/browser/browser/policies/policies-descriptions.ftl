@@ -69,7 +69,7 @@ policy-DisablePrimaryPasswordCreation = M’eo gwir e vo tu krouiñ ur ger-treme
 
 policy-DisablePasswordReveal = Na aotren ar gerioù-tremen da vezañ diskouezet en titouroù kennaskañ enrollet.
 
-policy-DisablePocket = Diweredekaat ar c'heweriuster evit enrollañ pajennoù e Pocket.
+policy-DisablePocket2 = Diweredekaat ar c'heweriuster evit enrollañ pajennoù e { -pocket-brand-name }.
 
 policy-DisablePrivateBrowsing = Diweredekaat ar merdeiñ prevez.
 
@@ -111,10 +111,6 @@ policy-Extensions = Staliañ, distaliañ pe prennañ askouezhioù. An dibarzh st
 policy-ExtensionSettings = Ardoit pep tra a sell deus an askouezhioù
 
 policy-ExtensionUpdate = (Di)weredekaat hizivadennoù askouezhioù ent emgefreek.
-
-policy-FirefoxHome = Kefluniañ degemer firefox
-
-policy-FlashPlugin = Aotren pe difenn arver an enlugellad Flash.
 
 policy-Handlers = Kefluniañ ar verourien arloadoù dre ziouer.
 
@@ -185,9 +181,6 @@ policy-SearchBar = Despizañ al lec'hiadur dre ziouer er varrenn glask. AN arver
 policy-SearchEngines = Kefluniañ arventennoù al lusker enklask. Ar reolenn-mañ a c'hall bezañ lakaet en handelv skor astennet (ESR).
 
 policy-SearchSuggestEnabled = (Di)weredekaat an alioù klask.
-
-# For more information, see https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/PKCS11/Module_Installation
-policy-SecurityDevices = Staliañ ar molladoù PKCS #11.
 
 policy-ShowHomeButton = Diskouez an afell degemer er varrenn ostilhoù.
 

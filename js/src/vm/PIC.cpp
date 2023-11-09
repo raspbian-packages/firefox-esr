@@ -7,15 +7,15 @@
 #include "vm/PIC.h"
 
 #include "gc/GCContext.h"
-#include "gc/Marking.h"
 #include "vm/GlobalObject.h"
 #include "vm/JSContext.h"
 #include "vm/JSObject.h"
 #include "vm/Realm.h"
 #include "vm/SelfHosting.h"
 
+#include "gc/GCContext-inl.h"
+#include "vm/JSContext-inl.h"
 #include "vm/JSObject-inl.h"
-#include "vm/NativeObject-inl.h"
 
 using namespace js;
 
@@ -42,14 +42,14 @@ bool js::ForOfPIC::Chain::initialize(JSContext* cx) {
   MOZ_ASSERT(!initialized_);
 
   // Get the canonical Array.prototype
-  RootedNativeObject arrayProto(
+  Rooted<NativeObject*> arrayProto(
       cx, GlobalObject::getOrCreateArrayPrototype(cx, cx->global()));
   if (!arrayProto) {
     return false;
   }
 
   // Get the canonical ArrayIterator.prototype
-  RootedNativeObject arrayIteratorProto(
+  Rooted<NativeObject*> arrayIteratorProto(
       cx, GlobalObject::getOrCreateArrayIteratorPrototype(cx, cx->global()));
   if (!arrayIteratorProto) {
     return false;
@@ -112,7 +112,7 @@ bool js::ForOfPIC::Chain::initialize(JSContext* cx) {
 }
 
 bool js::ForOfPIC::Chain::tryOptimizeArray(JSContext* cx,
-                                           HandleArrayObject array,
+                                           Handle<ArrayObject*> array,
                                            bool* optimized) {
   MOZ_ASSERT(optimized);
 
@@ -166,7 +166,7 @@ bool js::ForOfPIC::Chain::tryOptimizeArray(JSContext* cx,
   }
 
   // Good to optimize now, create stub to add.
-  RootedShape shape(cx, array->shape());
+  Rooted<Shape*> shape(cx, array->shape());
   Stub* stub = cx->new_<Stub>(shape);
   if (!stub) {
     return false;
@@ -288,11 +288,13 @@ void js::ForOfPIC::Chain::trace(JSTracer* trc) {
   TraceEdge(trc, &canonicalNextFunc_,
             "ForOfPIC ArrayIterator.prototype.next builtin.");
 
-  JS::GCContext* gcx = TlsGCContext.get();
-  if (trc->isMarkingTracer()) {
-    // Free all the stubs in the chain.
-    freeAllStubs(gcx);
+  for (Stub* stub = stubs_; stub; stub = stub->next()) {
+    stub->trace(trc);
   }
+}
+
+void js::ForOfPIC::Stub::trace(JSTracer* trc) {
+  TraceEdge(trc, &shape_, "ForOfPIC::Stub::shape_");
 }
 
 static void ForOfPIC_finalize(JS::GCContext* gcx, JSObject* obj) {

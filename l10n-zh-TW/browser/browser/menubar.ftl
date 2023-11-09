@@ -38,9 +38,11 @@ menu-quit =
             [windows] x
            *[other] Q
         }
+
 # This menu-quit-mac string is only used on macOS.
 menu-quit-mac =
     .label = 離開 { -brand-shorter-name }
+
 menu-about =
     .label = 關於 { -brand-shorter-name }
     .accesskey = A
@@ -219,8 +221,6 @@ menu-history-undo-menu =
     .label = 最近關閉的分頁
 menu-history-undo-window-menu =
     .label = 最近關閉的視窗
-menu-history-reopen-all-tabs = 回復所有分頁
-menu-history-reopen-all-windows = 回復所有視窗
 
 ## Bookmarks Menu
 
@@ -229,14 +229,13 @@ menu-bookmarks-menu =
     .accesskey = B
 menu-bookmarks-manage =
     .label = 管理書籤
-menu-bookmark-current-tab =
-    .label = 將目前分頁加入書籤
-menu-bookmark-edit =
-    .label = 編輯此書籤
 menu-bookmark-tab =
     .label = 將目前分頁加入書籤…
 menu-edit-bookmark =
     .label = 編輯此書籤…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = 搜尋書籤
 menu-bookmarks-all-tabs =
     .label = 將所有分頁加入書籤…
 menu-bookmarks-toolbar =
@@ -330,6 +329,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = 關閉疑難排解模式
     .accesskey = M
+menu-help-switch-device =
+    .label = 切換至新裝置
+    .accesskey = N
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =

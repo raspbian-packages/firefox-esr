@@ -165,18 +165,21 @@ pub type MozImageRect = generic::GenericMozImageRect<NumberOrPercentage, Specifi
 /// Empty enum on non-Gecko
 pub enum MozImageRect {}
 
+bitflags! {
+    #[derive(Clone, Copy)]
+    struct ParseImageFlags: u8 {
+        const FORBID_NONE = 1 << 0;
+        const FORBID_IMAGE_SET = 1 << 1;
+        const FORBID_NON_URL = 1 << 2;
+    }
+}
+
 impl Parse for Image {
     fn parse<'i, 't>(
         context: &ParserContext,
         input: &mut Parser<'i, 't>,
     ) -> Result<Image, ParseError<'i>> {
-        Image::parse_with_cors_mode(
-            context,
-            input,
-            CorsMode::None,
-            /* allow_none = */ true,
-            /* only_url = */ false,
-        )
+        Image::parse_with_cors_mode(context, input, CorsMode::None, ParseImageFlags::empty())
     }
 }
 
@@ -185,10 +188,11 @@ impl Image {
         context: &ParserContext,
         input: &mut Parser<'i, 't>,
         cors_mode: CorsMode,
-        allow_none: bool,
-        only_url: bool,
+        flags: ParseImageFlags,
     ) -> Result<Image, ParseError<'i>> {
-        if allow_none && input.try_parse(|i| i.expect_ident_matching("none")).is_ok() {
+        if !flags.contains(ParseImageFlags::FORBID_NONE) &&
+            input.try_parse(|i| i.expect_ident_matching("none")).is_ok()
+        {
             return Ok(generic::Image::None);
         }
 
@@ -198,13 +202,15 @@ impl Image {
             return Ok(generic::Image::Url(url));
         }
 
-        if let Ok(is) =
-            input.try_parse(|input| ImageSet::parse(context, input, cors_mode, only_url))
-        {
-            return Ok(generic::Image::ImageSet(Box::new(is)));
+        if !flags.contains(ParseImageFlags::FORBID_IMAGE_SET) {
+            if let Ok(is) =
+                input.try_parse(|input| ImageSet::parse(context, input, cors_mode, flags))
+            {
+                return Ok(generic::Image::ImageSet(Box::new(is)));
+            }
         }
 
-        if only_url {
+        if flags.contains(ParseImageFlags::FORBID_NON_URL) {
             return Err(input.new_custom_error(StyleParseErrorKind::UnspecifiedError));
         }
 
@@ -213,7 +219,9 @@ impl Image {
         }
 
         if cross_fade_enabled() {
-            if let Ok(cf) = input.try_parse(|input| CrossFade::parse(context, input, cors_mode)) {
+            if let Ok(cf) =
+                input.try_parse(|input| CrossFade::parse(context, input, cors_mode, flags))
+            {
                 return Ok(generic::Image::CrossFade(Box::new(cf)));
             }
         }
@@ -267,9 +275,16 @@ impl Image {
             context,
             input,
             CorsMode::Anonymous,
-            /* allow_none = */ true,
-            /* only_url = */ false,
+            ParseImageFlags::empty(),
         )
+    }
+
+    /// Provides an alternate method for parsing, but forbidding `none`
+    pub fn parse_forbid_none<'i, 't>(
+        context: &ParserContext,
+        input: &mut Parser<'i, 't>,
+    ) -> Result<Image, ParseError<'i>> {
+        Self::parse_with_cors_mode(context, input, CorsMode::None, ParseImageFlags::FORBID_NONE)
     }
 
     /// Provides an alternate method for parsing, but only for urls.
@@ -281,8 +296,7 @@ impl Image {
             context,
             input,
             CorsMode::None,
-            /* allow_none = */ false,
-            /* only_url = */ true,
+            ParseImageFlags::FORBID_NONE | ParseImageFlags::FORBID_NON_URL,
         )
     }
 }
@@ -293,10 +307,13 @@ impl CrossFade {
         context: &ParserContext,
         input: &mut Parser<'i, 't>,
         cors_mode: CorsMode,
+        flags: ParseImageFlags,
     ) -> Result<Self, ParseError<'i>> {
         input.expect_function_matching("cross-fade")?;
         let elements = input.parse_nested_block(|input| {
-            input.parse_comma_separated(|input| CrossFadeElement::parse(context, input, cors_mode))
+            input.parse_comma_separated(|input| {
+                CrossFadeElement::parse(context, input, cors_mode, flags)
+            })
         })?;
         let elements = crate::OwnedSlice::from(elements);
         Ok(Self { elements })
@@ -304,12 +321,16 @@ impl CrossFade {
 }
 
 impl CrossFadeElement {
-    fn parse_percentage<'i, 't>(context: &ParserContext, input: &mut Parser<'i, 't>) -> Option<Percentage> {
+    fn parse_percentage<'i, 't>(
+        context: &ParserContext,
+        input: &mut Parser<'i, 't>,
+    ) -> Option<Percentage> {
         // We clamp our values here as this is the way that Safari and Chrome's
         // implementation handle out-of-bounds percentages but whether or not
         // this behavior follows the specification is still being discussed.
         // See: <https://github.com/w3c/csswg-drafts/issues/5333>
-        input.try_parse(|input| Percentage::parse_non_negative(context, input))
+        input
+            .try_parse(|input| Percentage::parse_non_negative(context, input))
             .ok()
             .map(|p| p.clamp_to_hundred())
     }
@@ -319,11 +340,12 @@ impl CrossFadeElement {
         context: &ParserContext,
         input: &mut Parser<'i, 't>,
         cors_mode: CorsMode,
+        flags: ParseImageFlags,
     ) -> Result<Self, ParseError<'i>> {
         // Try and parse a leading percent sign.
         let mut percent = Self::parse_percentage(context, input);
         // Parse the image
-        let image = CrossFadeImage::parse(context, input, cors_mode)?;
+        let image = CrossFadeImage::parse(context, input, cors_mode, flags)?;
         // Try and parse a trailing percent sign.
         if percent.is_none() {
             percent = Self::parse_percentage(context, input);
@@ -340,11 +362,14 @@ impl CrossFadeImage {
         context: &ParserContext,
         input: &mut Parser<'i, 't>,
         cors_mode: CorsMode,
+        flags: ParseImageFlags,
     ) -> Result<Self, ParseError<'i>> {
         if let Ok(image) = input.try_parse(|input| {
             Image::parse_with_cors_mode(
-                context, input, cors_mode, /* allow_none = */ false,
-                /* only_url = */ false,
+                context,
+                input,
+                cors_mode,
+                flags | ParseImageFlags::FORBID_NONE,
             )
         }) {
             return Ok(Self::Image(image));
@@ -358,7 +383,7 @@ impl ImageSet {
         context: &ParserContext,
         input: &mut Parser<'i, 't>,
         cors_mode: CorsMode,
-        only_url: bool,
+        flags: ParseImageFlags,
     ) -> Result<Self, ParseError<'i>> {
         let function = input.expect_function()?;
         match_ignore_ascii_case! { &function,
@@ -370,11 +395,11 @@ impl ImageSet {
         }
         let items = input.parse_nested_block(|input| {
             input.parse_comma_separated(|input| {
-                ImageSetItem::parse(context, input, cors_mode, only_url)
+                ImageSetItem::parse(context, input, cors_mode, flags)
             })
         })?;
         Ok(Self {
-            selected_index: 0,
+            selected_index: std::usize::MAX,
             items: items.into(),
         })
     }
@@ -390,7 +415,7 @@ impl ImageSetItem {
         context: &ParserContext,
         input: &mut Parser<'i, 't>,
         cors_mode: CorsMode,
-        only_url: bool,
+        flags: ParseImageFlags,
     ) -> Result<Self, ParseError<'i>> {
         let image = match input.try_parse(|i| i.expect_url_or_string()) {
             Ok(url) => Image::Url(SpecifiedImageUrl::parse_from_string(
@@ -399,8 +424,10 @@ impl ImageSetItem {
                 cors_mode,
             )),
             Err(..) => Image::parse_with_cors_mode(
-                context, input, cors_mode, /* allow_none = */ false,
-                /* only_url = */ only_url,
+                context,
+                input,
+                cors_mode,
+                flags | ParseImageFlags::FORBID_NONE | ParseImageFlags::FORBID_IMAGE_SET,
             )?,
         };
 
@@ -416,7 +443,7 @@ impl ImageSetItem {
                 .ok();
         }
 
-        let resolution = resolution.unwrap_or(Resolution::X(1.0));
+        let resolution = resolution.unwrap_or_else(|| Resolution::from_x(1.0));
         let has_mime_type = mime_type.is_some();
         let mime_type = mime_type.unwrap_or_default();
 
@@ -721,12 +748,12 @@ impl Gradient {
         if items.is_empty() {
             items = vec![
                 generic::GradientItem::ComplexColorStop {
-                    color: Color::transparent().into(),
-                    position: Percentage::zero().into(),
+                    color: Color::transparent(),
+                    position: LengthPercentage::zero_percent(),
                 },
                 generic::GradientItem::ComplexColorStop {
-                    color: Color::transparent().into(),
-                    position: Percentage::hundred().into(),
+                    color: Color::transparent(),
+                    position: LengthPercentage::hundred_percent(),
                 },
             ];
         } else if items.len() == 1 {
@@ -931,7 +958,7 @@ impl generic::LineDirection for LineDirection {
                     dest.write_str("to ")?;
                 }
                 x.to_css(dest)?;
-                dest.write_str(" ")?;
+                dest.write_char(' ')?;
                 y.to_css(dest)
             },
         }

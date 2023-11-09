@@ -6,6 +6,7 @@
 #if !defined(DAV1DDecoder_h_)
 #  define DAV1DDecoder_h_
 
+#  include "PerformanceRecorder.h"
 #  include "PlatformDecoderModule.h"
 #  include "dav1d/dav1d.h"
 #  include "nsRefPtrHashtable.h"
@@ -32,11 +33,15 @@ class DAV1DDecoder final : public MediaDataDecoder,
   nsCString GetDescriptionName() const override {
     return "av1 libdav1d video decoder"_ns;
   }
+  nsCString GetCodecName() const override { return "av1"_ns; }
 
   void ReleaseDataBuffer(const uint8_t* buf);
 
   static Maybe<gfx::YUVColorSpace> GetColorSpace(const Dav1dPicture& aPicture,
                                                  LazyLogModule& aLogger);
+
+  static Maybe<gfx::ColorSpace2> GetColorPrimaries(const Dav1dPicture& aPicture,
+                                                   LazyLogModule& aLogger);
 
  private:
   virtual ~DAV1DDecoder();
@@ -50,6 +55,8 @@ class DAV1DDecoder final : public MediaDataDecoder,
   const RefPtr<TaskQueue> mTaskQueue;
   const RefPtr<layers::ImageContainer> mImageContainer;
   const RefPtr<layers::KnowsCompositor> mImageAllocator;
+  const Maybe<TrackingId> mTrackingId;
+  PerformanceRecorderMulti<DecodeStage> mPerformanceRecorder;
 
   // Keep the buffers alive until dav1d
   // does not need them any more.

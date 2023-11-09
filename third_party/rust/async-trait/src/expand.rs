@@ -1,16 +1,17 @@
-use crate::lifetime::CollectLifetimes;
+use crate::bound::{has_bound, InferredBound, Supertraits};
+use crate::lifetime::{AddLifetimeToImplTrait, CollectLifetimes};
 use crate::parse::Item;
 use crate::receiver::{has_self_in_block, has_self_in_sig, mut_pat, ReplaceSelf};
-use proc_macro2::TokenStream;
+use proc_macro2::{Span, TokenStream};
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use std::collections::BTreeSet as Set;
 use std::mem;
 use syn::punctuated::Punctuated;
 use syn::visit_mut::{self, VisitMut};
 use syn::{
-    parse_quote, parse_quote_spanned, Attribute, Block, FnArg, GenericParam, Generics, Ident,
-    ImplItem, Lifetime, LifetimeDef, Pat, PatIdent, Receiver, ReturnType, Signature, Stmt, Token,
-    TraitItem, Type, TypeParamBound, TypePath, WhereClause,
+    parse_quote, parse_quote_spanned, Attribute, Block, FnArg, GenericArgument, GenericParam,
+    Generics, Ident, ImplItem, Lifetime, LifetimeDef, Pat, PatIdent, PathArguments, Receiver,
+    ReturnType, Signature, Stmt, Token, TraitItem, Type, TypePath, WhereClause,
 };
 
 impl ToTokens for Item {
@@ -51,8 +52,6 @@ impl Context<'_> {
     }
 }
 
-type Supertraits = Punctuated<TypeParamBound, Token![+]>;
-
 pub fn expand(input: &mut Item, is_local: bool) {
     match input {
         Item::Trait(input) => {
@@ -81,7 +80,7 @@ pub fn expand(input: &mut Item, is_local: bool) {
             }
         }
         Item::Impl(input) => {
-            let mut lifetimes = CollectLifetimes::new("'impl", input.impl_token.span);
+            let mut lifetimes = CollectLifetimes::new("'impl");
             lifetimes.visit_type_mut(&mut *input.self_ty);
             lifetimes.visit_path_mut(&mut input.trait_.as_mut().unwrap().1);
             let params = &input.generics.params;
@@ -120,6 +119,7 @@ pub fn expand(input: &mut Item, is_local: bool) {
 fn lint_suppress_with_body() -> Attribute {
     parse_quote! {
         #[allow(
+            clippy::async_yields_async,
             clippy::let_unit_value,
             clippy::no_effect_underscore_binding,
             clippy::shadow_same,
@@ -159,20 +159,15 @@ fn transform_sig(
     has_default: bool,
     is_local: bool,
 ) {
-    sig.fn_token.span = sig.asyncness.take().unwrap().span;
+    let default_span = sig.asyncness.take().unwrap().span;
+    sig.fn_token.span = default_span;
 
-    let ret = match &sig.output {
-        ReturnType::Default => quote!(()),
-        ReturnType::Type(_, ret) => quote!(#ret),
+    let (ret_arrow, ret) = match &sig.output {
+        ReturnType::Default => (Token![->](default_span), quote_spanned!(default_span=> ())),
+        ReturnType::Type(arrow, ret) => (*arrow, quote!(#ret)),
     };
 
-    let default_span = sig
-        .ident
-        .span()
-        .join(sig.paren_token.span)
-        .unwrap_or_else(|| sig.ident.span());
-
-    let mut lifetimes = CollectLifetimes::new("'life", default_span);
+    let mut lifetimes = CollectLifetimes::new("'life");
     for arg in sig.inputs.iter_mut() {
         match arg {
             FnArg::Receiver(arg) => lifetimes.visit_receiver_mut(arg),
@@ -235,37 +230,65 @@ fn transform_sig(
         .push(parse_quote_spanned!(default_span=> 'async_trait));
 
     if has_self {
-        let bound_span = sig.ident.span();
-        let bound = match sig.inputs.iter().next() {
+        let bounds: &[InferredBound] = match sig.inputs.iter().next() {
             Some(FnArg::Receiver(Receiver {
                 reference: Some(_),
                 mutability: None,
                 ..
-            })) => Ident::new("Sync", bound_span),
+            })) => &[InferredBound::Sync],
             Some(FnArg::Typed(arg))
-                if match (arg.pat.as_ref(), arg.ty.as_ref()) {
-                    (Pat::Ident(pat), Type::Reference(ty)) => {
-                        pat.ident == "self" && ty.mutability.is_none()
-                    }
+                if match arg.pat.as_ref() {
+                    Pat::Ident(pat) => pat.ident == "self",
                     _ => false,
                 } =>
             {
-                Ident::new("Sync", bound_span)
+                match arg.ty.as_ref() {
+                    // self: &Self
+                    Type::Reference(ty) if ty.mutability.is_none() => &[InferredBound::Sync],
+                    // self: Arc<Self>
+                    Type::Path(ty)
+                        if {
+                            let segment = ty.path.segments.last().unwrap();
+                            segment.ident == "Arc"
+                                && match &segment.arguments {
+                                    PathArguments::AngleBracketed(arguments) => {
+                                        arguments.args.len() == 1
+                                            && match &arguments.args[0] {
+                                                GenericArgument::Type(Type::Path(arg)) => {
+                                                    arg.path.is_ident("Self")
+                                                }
+                                                _ => false,
+                                            }
+                                    }
+                                    _ => false,
+                                }
+                        } =>
+                    {
+                        &[InferredBound::Sync, InferredBound::Send]
+                    }
+                    _ => &[InferredBound::Send],
+                }
             }
-            _ => Ident::new("Send", bound_span),
+            _ => &[InferredBound::Send],
         };
 
-        let assume_bound = match context {
-            Context::Trait { supertraits, .. } => !has_default || has_bound(supertraits, &bound),
-            Context::Impl { .. } => true,
-        };
-
-        let where_clause = where_clause_or_default(&mut sig.generics.where_clause);
-        where_clause.predicates.push(if assume_bound || is_local {
-            parse_quote_spanned!(bound_span=> Self: 'async_trait)
-        } else {
-            parse_quote_spanned!(bound_span=> Self: ::core::marker::#bound + 'async_trait)
+        let bounds = bounds.iter().filter_map(|bound| {
+            let assume_bound = match context {
+                Context::Trait { supertraits, .. } => !has_default || has_bound(supertraits, bound),
+                Context::Impl { .. } => true,
+            };
+            if assume_bound || is_local {
+                None
+            } else {
+                Some(bound.spanned_path(default_span))
+            }
         });
+
+        where_clause_or_default(&mut sig.generics.where_clause)
+            .predicates
+            .push(parse_quote_spanned! {default_span=>
+                Self: #(#bounds +)* 'async_trait
+            });
     }
 
     for (i, arg) in sig.inputs.iter_mut().enumerate() {
@@ -275,26 +298,32 @@ fn transform_sig(
             }) => {}
             FnArg::Receiver(arg) => arg.mutability = None,
             FnArg::Typed(arg) => {
-                if let Pat::Ident(ident) = &mut *arg.pat {
-                    ident.by_ref = None;
-                    ident.mutability = None;
-                } else {
+                let type_is_reference = match *arg.ty {
+                    Type::Reference(_) => true,
+                    _ => false,
+                };
+                if let Pat::Ident(pat) = &mut *arg.pat {
+                    if pat.ident == "self" || !type_is_reference {
+                        pat.by_ref = None;
+                        pat.mutability = None;
+                    }
+                } else if !type_is_reference {
                     let positional = positional_arg(i, &arg.pat);
                     let m = mut_pat(&mut arg.pat);
                     arg.pat = parse_quote!(#m #positional);
                 }
+                AddLifetimeToImplTrait.visit_type_mut(&mut arg.ty);
             }
         }
     }
 
-    let ret_span = sig.ident.span();
     let bounds = if is_local {
-        quote_spanned!(ret_span=> 'async_trait)
+        quote_spanned!(default_span=> 'async_trait)
     } else {
-        quote_spanned!(ret_span=> ::core::marker::Send + 'async_trait)
+        quote_spanned!(default_span=> ::core::marker::Send + 'async_trait)
     };
-    sig.output = parse_quote_spanned! {ret_span=>
-        -> ::core::pin::Pin<Box<
+    sig.output = parse_quote_spanned! {default_span=>
+        #ret_arrow ::core::pin::Pin<Box<
             dyn ::core::future::Future<Output = #ret> + #bounds
         >>
     };
@@ -340,6 +369,12 @@ fn transform_block(context: Context, sig: &mut Signature, block: &mut Block) {
                 quote!(let #mutability #ident = #self_token;)
             }
             FnArg::Typed(arg) => {
+                // If there is a #[cfg(...)] attribute that selectively enables
+                // the parameter, forward it to the variable.
+                //
+                // This is currently not applied to the `self` parameter.
+                let attrs = arg.attrs.iter().filter(|attr| attr.path.is_ident("cfg"));
+
                 if let Pat::Ident(PatIdent {
                     ident, mutability, ..
                 }) = &*arg.pat
@@ -348,13 +383,33 @@ fn transform_block(context: Context, sig: &mut Signature, block: &mut Block) {
                         self_span = Some(ident.span());
                         let prefixed = Ident::new("__self", ident.span());
                         quote!(let #mutability #prefixed = #ident;)
+                    } else if let Type::Reference(_) = *arg.ty {
+                        quote!()
                     } else {
-                        quote!(let #mutability #ident = #ident;)
+                        quote! {
+                            #(#attrs)*
+                            let #mutability #ident = #ident;
+                        }
                     }
+                } else if let Type::Reference(_) = *arg.ty {
+                    quote!()
                 } else {
                     let pat = &arg.pat;
                     let ident = positional_arg(i, pat);
-                    quote!(let #pat = #ident;)
+                    if let Pat::Wild(_) = **pat {
+                        quote! {
+                            #(#attrs)*
+                            let #ident = #ident;
+                        }
+                    } else {
+                        quote! {
+                            #(#attrs)*
+                            let #pat = {
+                                let #ident = #ident;
+                                #ident
+                            };
+                        }
+                    }
                 }
             }
         })
@@ -398,25 +453,10 @@ fn transform_block(context: Context, sig: &mut Signature, block: &mut Block) {
 }
 
 fn positional_arg(i: usize, pat: &Pat) -> Ident {
-    use syn::spanned::Spanned;
-    format_ident!("__arg{}", i, span = pat.span())
-}
-
-fn has_bound(supertraits: &Supertraits, marker: &Ident) -> bool {
-    for bound in supertraits {
-        if let TypeParamBound::Trait(bound) = bound {
-            if bound.path.is_ident(marker)
-                || bound.path.segments.len() == 3
-                    && (bound.path.segments[0].ident == "std"
-                        || bound.path.segments[0].ident == "core")
-                    && bound.path.segments[1].ident == "marker"
-                    && bound.path.segments[2].ident == *marker
-            {
-                return true;
-            }
-        }
-    }
-    false
+    let span: Span = syn::spanned::Spanned::span(pat);
+    #[cfg(not(no_span_mixed_site))]
+    let span = span.resolved_at(Span::mixed_site());
+    format_ident!("__arg{}", i, span = span)
 }
 
 fn contains_associated_type_impl_trait(context: Context, ret: &mut Type) -> bool {

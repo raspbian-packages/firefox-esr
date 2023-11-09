@@ -2,15 +2,18 @@
 /* vim: set sts=2 sw=2 et tw=80: */
 "use strict";
 
-const { AddonTestUtils } = ChromeUtils.import(
-  "resource://testing-common/AddonTestUtils.jsm"
+const { AddonTestUtils } = ChromeUtils.importESModule(
+  "resource://testing-common/AddonTestUtils.sys.mjs"
 );
+
+ChromeUtils.defineESModuleGetters(this, {
+  RemoteSettings: "resource://services-settings/remote-settings.sys.mjs",
+  TelemetryTestUtils: "resource://testing-common/TelemetryTestUtils.sys.mjs",
+  sinon: "resource://testing-common/Sinon.sys.mjs",
+});
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   HomePage: "resource:///modules/HomePage.jsm",
-  RemoteSettings: "resource://services-settings/remote-settings.js",
-  sinon: "resource://testing-common/Sinon.jsm",
-  TelemetryTestUtils: "resource://testing-common/TelemetryTestUtils.jsm",
 });
 
 function promisePrefChanged(expectedValue) {
@@ -167,7 +170,7 @@ add_task(async function test_overriding_homepage_locale() {
 
   let extension = ExtensionTestUtils.loadExtension({
     manifest: {
-      applications: {
+      browser_specific_settings: {
         gecko: {
           id: "homepage@example.com",
         },

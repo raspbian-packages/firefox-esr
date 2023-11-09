@@ -16,28 +16,12 @@ module.exports = {
     browser: true,
     es2021: true,
     "mozilla/privileged": true,
+    "mozilla/specific": true,
   },
 
-  extends: ["eslint:recommended", "plugin:prettier/recommended"],
-
-  globals: {
-    // These are all specific to Firefox unless otherwise stated.
-    Cc: false,
-    ChromeUtils: false,
-    Ci: false,
-    Components: false,
-    Cr: false,
-    Cu: false,
-    Debugger: false,
-    InstallTrigger: false,
-    // https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/InternalError
-    InternalError: true,
-    // https://developer.mozilla.org/docs/Web/API/Window/dump
-    dump: true,
-    openDialog: false,
-    // https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/uneval
-    uneval: false,
-  },
+  // The prettier configuration here comes from eslint-config-prettier and
+  // turns off all of ESLint's rules related to formatting.
+  extends: ["eslint:recommended", "prettier"],
 
   overrides: [
     {
@@ -50,11 +34,15 @@ module.exports = {
       },
       files: ["**/*.sys.mjs", "**/*.jsm", "**/*.jsm.js"],
       rules: {
+        "mozilla/lazy-getter-object-name": "error",
+        "mozilla/reject-eager-module-in-lazy-getter": "error",
+        "mozilla/reject-global-this": "error",
+        "mozilla/reject-globalThis-modification": "error",
+        // For all system modules, we expect no properties to need importing,
+        // hence reject everything.
+        "mozilla/reject-importGlobalProperties": ["error", "everything"],
+        "mozilla/reject-mixing-eager-and-lazy": "error",
         "mozilla/reject-top-level-await": "error",
-        // Bug 1703953: We don't have a good way to check a file runs in a
-        // privilieged context. Apply this for these files as we know those are
-        // privilieged, and then include more directories elsewhere.
-        "mozilla/use-isInstance": "error",
         // TODO: Bug 1575506 turn `builtinGlobals` on here.
         // We can enable builtinGlobals for jsms due to their scopes.
         "no-redeclare": ["error", { builtinGlobals: false }],
@@ -72,6 +60,30 @@ module.exports = {
             vars: "all",
           },
         ],
+      },
+    },
+    {
+      files: ["**/*.sys.mjs"],
+      rules: {
+        "mozilla/use-static-import": "error",
+      },
+    },
+    {
+      excludedFiles: ["**/*.sys.mjs"],
+      files: ["**/*.mjs"],
+      rules: {
+        "mozilla/reject-import-system-module-from-non-system": "error",
+        "mozilla/reject-lazy-imports-into-globals": "error",
+        "no-shadow": ["error", { allow: ["event"], builtinGlobals: true }],
+      },
+    },
+    {
+      files: ["**/*.mjs"],
+      rules: {
+        "mozilla/use-static-import": "error",
+        // This rule defaults to not allowing "use strict" in module files since
+        // they are always loaded in strict mode.
+        strict: "error",
       },
     },
     {
@@ -106,6 +118,9 @@ module.exports = {
   // When adding items to this file please check for effects on all of toolkit
   // and browser
   rules: {
+    // This may conflict with prettier, so we turn it off.
+    "arrow-body-style": "off",
+
     // Warn about cyclomatic complexity in functions.
     // XXX Get this down to 20?
     complexity: ["error", 34],
@@ -143,6 +158,7 @@ module.exports = {
     "mozilla/import-browser-window-globals": "error",
     "mozilla/import-globals": "error",
     "mozilla/no-compare-against-boolean-literals": "error",
+    "mozilla/no-cu-reportError": "error",
     "mozilla/no-define-cc-etc": "error",
     "mozilla/no-throw-cr-literal": "error",
     "mozilla/no-useless-parameters": "error",
@@ -152,7 +168,7 @@ module.exports = {
     "mozilla/reject-addtask-only": "error",
     "mozilla/reject-chromeutils-import-params": "error",
     "mozilla/reject-importGlobalProperties": ["error", "allownonwebidl"],
-    "mozilla/reject-osfile": "warn",
+    "mozilla/reject-multiple-getters-calls": "error",
     "mozilla/reject-scriptableunicodeconverter": "warn",
     "mozilla/rejects-requires-await": "error",
     "mozilla/use-cc-etc": "error",
@@ -160,9 +176,12 @@ module.exports = {
     "mozilla/use-chromeutils-import": "error",
     "mozilla/use-default-preference-values": "error",
     "mozilla/use-includes-instead-of-indexOf": "error",
+    "mozilla/use-isInstance": "error",
     "mozilla/use-ownerGlobal": "error",
     "mozilla/use-returnValue": "error",
     "mozilla/use-services": "error",
+    "mozilla/valid-lazy": "error",
+    "mozilla/valid-services": "error",
 
     // Use [] instead of Array()
     "no-array-constructor": "error",
@@ -315,6 +334,9 @@ module.exports = {
 
     // Require object-literal shorthand with ES6 method syntax
     "object-shorthand": ["error", "always", { avoidQuotes: true }],
+
+    // This may conflict with prettier, so turn it off.
+    "prefer-arrow-callback": "off",
 
     // This generates too many false positives that are not easy to work around,
     // and false positives seem to be inherent in the rule.

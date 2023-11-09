@@ -175,6 +175,15 @@ media-codec-support-info = Infurmaziuns davart il sustegn da codecs
 # List all the entries of the database.
 media-capabilities-enumerate = Percurrer la banca da datas
 
+## Codec support table
+
+media-codec-support-sw-decoding = Decodaziun software
+media-codec-support-hw-decoding = Decodaziun hardware
+media-codec-support-codec-name = Num dal codec
+media-codec-support-supported = Sustegnì
+media-codec-support-unsupported = Betg sustegnì
+media-codec-support-error = Naginas infurmaziuns disponiblas davart il sustegn da codecs. Emprova anc ina giada suenter avair reproducì ina datoteca da multimedia.
+
 ##
 
 intl-title = Internaziunalisaziun & lingua
@@ -288,6 +297,8 @@ webgl2-renderer = Driver WebGL 2 - Visualisader
 webgl2-version = Driver WebGL 2 - Versiun
 webgl2-driver-extensions = Driver WebGL 2 - Extensiuns
 webgl2-extensions = WebGL 2 - Extensiuns
+webgpu-default-adapter = Adapter WebGPU standard
+webgpu-fallback-adapter = Adapter WebGPU alternativ
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Bloccà pervia da sbagls enconuschents: <a data-l10n-name="bug-link">bug { $bugNumber }</a>

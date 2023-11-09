@@ -101,10 +101,6 @@ NS_IMPL_COMPONENT_FACTORY(mozHunspell) {
   return nullptr;
 }
 
-template <>
-mozilla::CountingAllocatorBase<HunspellAllocator>::AmountType
-    mozilla::CountingAllocatorBase<HunspellAllocator>::sAmount(0);
-
 mozHunspell::mozHunspell() {
 #ifdef DEBUG
   // There must be only one instance of this class: it reports memory based on
@@ -354,7 +350,7 @@ mozHunspell::LoadDictionariesFromDir(nsIFile* aDir) {
     if (NS_FAILED(rv) || !check) continue;
 
     // Replace '_' separator with '-'
-    dict.ReplaceChar("_", '-');
+    dict.ReplaceChar('_', '-');
 
     nsCOMPtr<nsIURI> uri;
     rv = NS_NewFileURI(getter_AddRefs(uri), file);

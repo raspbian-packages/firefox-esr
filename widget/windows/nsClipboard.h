@@ -66,6 +66,8 @@ class nsClipboard : public nsBaseClipboard, public nsIObserver {
   // of Gecko.
   static UINT GetFormat(const char* aMimeStr, bool aMapHTMLMime = true);
 
+  static UINT GetClipboardFileDescriptorFormatA();
+  static UINT GetClipboardFileDescriptorFormatW();
   static UINT GetHtmlClipboardFormat();
   static UINT GetCustomClipboardFormat();
 
@@ -74,7 +76,10 @@ class nsClipboard : public nsBaseClipboard, public nsIObserver {
   static HRESULT FillSTGMedium(IDataObject* aDataObject, UINT aFormat,
                                LPFORMATETC pFE, LPSTGMEDIUM pSTM, DWORD aTymed);
 
-  NS_IMETHOD SetNativeClipboardData(int32_t aWhichClipboard) override;
+  // Implement the native clipboard behavior.
+  NS_IMETHOD SetNativeClipboardData(nsITransferable* aTransferable,
+                                    nsIClipboardOwner* aOwner,
+                                    int32_t aWhichClipboard) override;
   NS_IMETHOD GetNativeClipboardData(nsITransferable* aTransferable,
                                     int32_t aWhichClipboard) override;
 
@@ -90,6 +95,10 @@ class nsClipboard : public nsBaseClipboard, public nsIObserver {
                                uint32_t* outDataLen);
 
   static void ResolveShortcut(nsIFile* inFileName, nsACString& outURL);
+  static nsresult GetTempFilePath(const nsAString& aFileName,
+                                  nsAString& aFilePath);
+  static nsresult SaveStorageOrStream(IDataObject* aDataObject, UINT aIndex,
+                                      const nsAString& aFileName);
 
   nsIWidget* mWindow;
 };

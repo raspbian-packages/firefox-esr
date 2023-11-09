@@ -115,12 +115,13 @@ about-processes-frame-name-many = Podokviri ({ $number }): { $shortUrl }
 
 ## Utility process actor names
 
-about-processes-utility-actor-audio-decoder = Zvočni dekoder
-
 about-processes-utility-actor-audio-decoder-generic = Splošni zvočni dekodirnik
 about-processes-utility-actor-audio-decoder-applemedia = Zvočni dekodirnik Apple Media
 about-processes-utility-actor-audio-decoder-wmf = Zvočni dekodirnik Windows Media Framework
 about-processes-utility-actor-mf-media-engine = Windows Media Foundation Media Engine CDM
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = Oracle za JavaScript
+about-processes-utility-actor-windows-utils = Orodja Windows
 
 ## Displaying CPU (percentage and total)
 ## Variables:

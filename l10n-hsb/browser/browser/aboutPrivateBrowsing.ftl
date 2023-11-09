@@ -64,3 +64,11 @@ about-private-browsing-pin-promo-link-text =
        *[other] K nadawkowej lajsće připjeć
     }
 about-private-browsing-pin-promo-title = Žane składowane placki abo žana historiju, direktnje z wašeho desktopa. Přehladujće kaž njeby was nichtó wobkedźbował.
+
+## Strings used in a promotion message for cookie banner reduction
+
+# Simplified version of the headline if the original text doesn't work
+# in your language: `See fewer cookie requests`.
+about-private-browsing-cookie-banners-promo-header = Preč z plackowymi chorhojemi!
+about-private-browsing-cookie-banners-promo-button = Plackowe chorhoje redukować
+about-private-browsing-cookie-banners-promo-message = Dajće { -brand-short-name } za was awtomatisce na plackowewuskakowace wokna wotmołwić. zo byšće so k přehladowanju bjez wotwjedźenja wróćił. { -brand-short-name } wšě naprašowanja wotpokaza, jeli móžno.

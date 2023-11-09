@@ -4,8 +4,8 @@
 
 "use strict";
 
-const { AboutProtectionsParent } = ChromeUtils.import(
-  "resource:///actors/AboutProtectionsParent.jsm"
+const { AboutProtectionsParent } = ChromeUtils.importESModule(
+  "resource:///actors/AboutProtectionsParent.sys.mjs"
 );
 
 const monitorErrorData = {
@@ -17,37 +17,38 @@ const mockMonitorData = {
   numBreachesResolved: 0,
 };
 
-add_task(async function() {
-  let tab = await BrowserTestUtils.openNewForegroundTab({
+add_task(async function () {
+  const tab = await BrowserTestUtils.openNewForegroundTab({
     url: "about:protections",
     gBrowser,
   });
 
-  await reloadTab(tab);
+  await BrowserTestUtils.reloadTab(tab);
 
-  info("Check that the correct content is displayed for users with no logins.");
-
-  let monitorCardEnabled = Services.prefs.getBoolPref(
+  const monitorCardEnabled = Services.prefs.getBoolPref(
     "browser.contentblocking.report.monitor.enabled"
   );
 
   // Only run monitor card tests if it's enabled.
   if (monitorCardEnabled) {
+    info(
+      "Check that the correct content is displayed for users with no logins."
+    );
     await checkNoLoginsContentIsDisplayed(tab, "monitor-sign-up");
 
     info(
       "Check that the correct content is displayed for users with monitor data."
     );
-    Services.logins.addLogin(TEST_LOGIN1);
+    await Services.logins.addLoginAsync(TEST_LOGIN1);
     AboutProtectionsParent.setTestOverride(mockGetMonitorData(mockMonitorData));
-    await reloadTab(tab);
+    await BrowserTestUtils.reloadTab(tab);
 
     Assert.ok(
       true,
       "Error was not thrown for trying to reach the Monitor endpoint, the cache has worked."
     );
 
-    await SpecialPowers.spawn(tab.linkedBrowser, [], async function() {
+    await SpecialPowers.spawn(tab.linkedBrowser, [], async function () {
       await ContentTaskUtils.waitForCondition(() => {
         const hasLogins = content.document.querySelector(
           ".monitor-card.has-logins"
@@ -95,7 +96,7 @@ add_task(async function() {
     AboutProtectionsParent.setTestOverride(
       mockGetMonitorData(monitorErrorData)
     );
-    await reloadTab(tab);
+    await BrowserTestUtils.reloadTab(tab);
     await checkNoLoginsContentIsDisplayed(tab);
 
     info("Disable showing the Monitor card.");
@@ -103,10 +104,10 @@ add_task(async function() {
       "browser.contentblocking.report.monitor.enabled",
       false
     );
-    await reloadTab(tab);
+    await BrowserTestUtils.reloadTab(tab);
   }
 
-  await SpecialPowers.spawn(tab.linkedBrowser, [], async function() {
+  await SpecialPowers.spawn(tab.linkedBrowser, [], async function () {
     await ContentTaskUtils.waitForCondition(() => {
       const monitorCard = content.document.querySelector(".monitor-card");
       return !monitorCard["data-enabled"];
@@ -134,7 +135,7 @@ add_task(async function() {
 });
 
 async function checkNoLoginsContentIsDisplayed(tab, expectedLinkContent) {
-  await SpecialPowers.spawn(tab.linkedBrowser, [], async function() {
+  await SpecialPowers.spawn(tab.linkedBrowser, [], async function () {
     await ContentTaskUtils.waitForCondition(() => {
       const noLogins = content.document.querySelector(
         ".monitor-card.no-logins"

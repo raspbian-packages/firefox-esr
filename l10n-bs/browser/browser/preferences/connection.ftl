@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Postavke konekcije
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Postavke konekcije
     .style =
@@ -75,6 +67,11 @@ connection-proxy-autologin =
     .label = Ne pitaj za prijavu ako je lozinka spašena
     .accesskey = i
     .tooltip = Ova opcija vas neprimjetno prijavljuje na proxije kada imate spremljene njihove lozinke. Ako prijava ne uspije, bit ćete obaviješteni.
+
+connection-proxy-autologin-checkbox =
+    .label = Ne pitaj za prijavu ako je lozinka spašena
+    .accesskey = i
+    .tooltiptext = Ova opcija vas neprimjetno prijavljuje na proxije kada imate spremljene njihove lozinke. Ako prijava ne uspije, bit ćete obaviješteni.
 
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS pri korištenju SOCKS v5

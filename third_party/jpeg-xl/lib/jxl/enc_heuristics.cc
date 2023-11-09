@@ -17,6 +17,7 @@
 #include "lib/jxl/enc_ar_control_field.h"
 #include "lib/jxl/enc_cache.h"
 #include "lib/jxl/enc_chroma_from_luma.h"
+#include "lib/jxl/enc_gaborish.h"
 #include "lib/jxl/enc_modular.h"
 #include "lib/jxl/enc_noise.h"
 #include "lib/jxl/enc_patch_dictionary.h"
@@ -24,9 +25,11 @@
 #include "lib/jxl/enc_quant_weights.h"
 #include "lib/jxl/enc_splines.h"
 #include "lib/jxl/enc_xyb.h"
-#include "lib/jxl/gaborish.h"
 
 namespace jxl {
+
+struct AuxOut;
+
 namespace {
 void FindBestBlockEntropyModel(PassesEncoderState& enc_state) {
   if (enc_state.cparams.decoding_speed_tier >= 1) {
@@ -164,19 +167,6 @@ void FindBestBlockEntropyModel(PassesEncoderState& enc_state) {
       *std::max_element(ctx_map.begin(), ctx_map.end()) + 1;
 }
 
-// Returns the target size based on whether bitrate or direct targetsize is
-// given.
-size_t TargetSize(const CompressParams& cparams,
-                  const FrameDimensions& frame_dim) {
-  if (cparams.target_size > 0) {
-    return cparams.target_size;
-  }
-  if (cparams.target_bitrate > 0.0) {
-    return 0.5 + cparams.target_bitrate * frame_dim.xsize * frame_dim.ysize /
-                     kBitsPerByte;
-  }
-  return 0;
-}
 }  // namespace
 
 void FindBestDequantMatrices(const CompressParams& cparams,
@@ -772,12 +762,7 @@ Status DefaultEncoderHeuristics::LossyFrameHeuristics(
     PadImageToBlockMultipleInPlace(opsin);
   }
 
-  const FrameDimensions& frame_dim = enc_state->shared.frame_dim;
-  size_t target_size = TargetSize(cparams, frame_dim);
-  size_t opsin_target_size = target_size;
-  if (cparams.target_size > 0 || cparams.target_bitrate > 0.0) {
-    cparams.target_size = opsin_target_size;
-  } else if (cparams.butteraugli_distance < 0) {
+  if (cparams.butteraugli_distance < 0) {
     return JXL_FAILURE("Expected non-negative distance");
   }
 
@@ -846,10 +831,13 @@ Status DefaultEncoderHeuristics::LossyFrameHeuristics(
   if (cparams.speed_tier > SpeedTier::kHare || cparams.uniform_quant > 0) {
     enc_state->initial_quant_field =
         ImageF(shared.frame_dim.xsize_blocks, shared.frame_dim.ysize_blocks);
+    enc_state->initial_quant_masking =
+        ImageF(shared.frame_dim.xsize_blocks, shared.frame_dim.ysize_blocks);
     float q = cparams.uniform_quant > 0
                   ? cparams.uniform_quant
                   : kAcQuant / cparams.butteraugli_distance;
     FillImage(q, &enc_state->initial_quant_field);
+    FillImage(1.0f / (q + 0.001f), &enc_state->initial_quant_masking);
   } else {
     // Call this here, as it relies on pre-gaborish values.
     float butteraugli_distance_for_iqf = cparams.butteraugli_distance;
@@ -859,13 +847,20 @@ Status DefaultEncoderHeuristics::LossyFrameHeuristics(
     enc_state->initial_quant_field = InitialQuantField(
         butteraugli_distance_for_iqf, *opsin, shared.frame_dim, pool, 1.0f,
         &enc_state->initial_quant_masking);
+    quantizer.SetQuantField(quant_dc, enc_state->initial_quant_field, nullptr);
   }
 
   // TODO(veluca): do something about animations.
 
   // Apply inverse-gaborish.
   if (shared.frame_header.loop_filter.gab) {
-    GaborishInverse(opsin, 0.9908511000000001f, pool);
+    // Unsure why better to do some more gaborish on X and B than Y.
+    float weight[3] = {
+        1.0036278514398933f,
+        0.99406123118127299f,
+        0.99719338015886894f,
+    };
+    GaborishInverse(opsin, weight, pool);
   }
 
   FindBestDequantMatrices(cparams, *opsin, modular_frame_encoder,
@@ -892,6 +887,7 @@ Status DefaultEncoderHeuristics::LossyFrameHeuristics(
     if (cparams.speed_tier <= SpeedTier::kSquirrel) {
       cfl_heuristics.ComputeTile(r, *opsin, enc_state->shared.matrices,
                                  /*ac_strategy=*/nullptr,
+                                 /*raw_quant_field=*/nullptr,
                                  /*quantizer=*/nullptr, /*fast=*/false, thread,
                                  &enc_state->shared.cmap);
     }
@@ -916,7 +912,7 @@ Status DefaultEncoderHeuristics::LossyFrameHeuristics(
     if (cparams.speed_tier <= SpeedTier::kHare) {
       cfl_heuristics.ComputeTile(
           r, *opsin, enc_state->shared.matrices, &enc_state->shared.ac_strategy,
-          &enc_state->shared.quantizer,
+          &enc_state->shared.raw_quant_field, &enc_state->shared.quantizer,
           /*fast=*/cparams.speed_tier >= SpeedTier::kWombat, thread,
           &enc_state->shared.cmap);
     }

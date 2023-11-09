@@ -45,23 +45,6 @@ static constexpr CSSIntCoord kDefaultWinOverlayScrollbarSize = CSSIntCoord(12);
 static constexpr CSSIntCoord kDefaultWinOverlayThinScrollbarSize =
     CSSIntCoord(10);
 
-auto ScrollbarDrawingWin11::GetScrollbarSizes(nsPresContext* aPresContext,
-                                              StyleScrollbarWidth aWidth,
-                                              Overlay aOverlay)
-    -> ScrollbarSizes {
-  if (aOverlay == Overlay::Yes) {
-    // TODO(emilio): Maybe make this configurable? Though this doesn't respect
-    // classic Windows registry settings, and cocoa overlay scrollbars also
-    // don't respect the override it seems, so this should be fine.
-    CSSCoord cssSize(aWidth == StyleScrollbarWidth::Thin
-                         ? kDefaultWinOverlayThinScrollbarSize
-                         : kDefaultWinOverlayScrollbarSize);
-    auto size = (cssSize * GetDPIRatioForScrollbarPart(aPresContext)).Rounded();
-    return {size, size};
-  }
-  return ScrollbarDrawingWin::GetScrollbarSizes(aPresContext, aWidth, aOverlay);
-}
-
 LayoutDeviceIntSize ScrollbarDrawingWin11::GetMinimumWidgetSize(
     nsPresContext* aPresContext, StyleAppearance aAppearance,
     nsIFrame* aFrame) {
@@ -73,24 +56,16 @@ LayoutDeviceIntSize ScrollbarDrawingWin11::GetMinimumWidgetSize(
   constexpr float kArrowRatio = 14.0f / kDefaultWinScrollbarSize;
   switch (aAppearance) {
     case StyleAppearance::ScrollbarbuttonUp:
-    case StyleAppearance::ScrollbarbuttonDown: {
-      if (IsScrollbarWidthThin(aFrame)) {
-        return {};
-      }
-      const LayoutDeviceIntCoord size =
-          ScrollbarDrawing::GetScrollbarSizes(aPresContext, aFrame).mVertical;
-      return LayoutDeviceIntSize{
-          size, (kArrowRatio * LayoutDeviceCoord(size)).Rounded()};
-    }
+    case StyleAppearance::ScrollbarbuttonDown:
     case StyleAppearance::ScrollbarbuttonLeft:
     case StyleAppearance::ScrollbarbuttonRight: {
       if (IsScrollbarWidthThin(aFrame)) {
         return {};
       }
       const LayoutDeviceIntCoord size =
-          ScrollbarDrawing::GetScrollbarSizes(aPresContext, aFrame).mHorizontal;
+          ScrollbarDrawing::GetScrollbarSize(aPresContext, aFrame);
       return LayoutDeviceIntSize{
-          (kArrowRatio * LayoutDeviceCoord(size)).Rounded(), size};
+          size, (kArrowRatio * LayoutDeviceCoord(size)).Rounded()};
     }
     default:
       return ScrollbarDrawingWin::GetMinimumWidgetSize(aPresContext,
@@ -100,7 +75,7 @@ LayoutDeviceIntSize ScrollbarDrawingWin11::GetMinimumWidgetSize(
 
 sRGBColor ScrollbarDrawingWin11::ComputeScrollbarTrackColor(
     nsIFrame* aFrame, const ComputedStyle& aStyle,
-    const EventStates& aDocumentState, const Colors& aColors) {
+    const DocumentState& aDocumentState, const Colors& aColors) {
   if (aColors.HighContrast()) {
     return ScrollbarDrawingWin::ComputeScrollbarTrackColor(
         aFrame, aStyle, aDocumentState, aColors);
@@ -116,7 +91,7 @@ sRGBColor ScrollbarDrawingWin11::ComputeScrollbarTrackColor(
 
 sRGBColor ScrollbarDrawingWin11::ComputeScrollbarThumbColor(
     nsIFrame* aFrame, const ComputedStyle& aStyle,
-    const EventStates& aElementState, const EventStates& aDocumentState,
+    const ElementState& aElementState, const DocumentState& aDocumentState,
     const Colors& aColors) {
   if (aColors.HighContrast()) {
     return ScrollbarDrawingWin::ComputeScrollbarThumbColor(
@@ -130,15 +105,15 @@ sRGBColor ScrollbarDrawingWin11::ComputeScrollbarThumbColor(
     return aColors.IsDark() ? NS_RGBA(149, 149, 149, 255)
                             : NS_RGBA(133, 133, 133, 255);
   }();
-  EventStates state = aElementState;
+  ElementState state = aElementState;
   if (!IsScrollbarWidthThin(aStyle)) {
     // non-thin scrollbars get hover feedback by changing thumb shape, so we
     // only provide active feedback (and we use the hover state for that as it's
     // more subtle).
-    state &= ~NS_EVENT_STATE_HOVER;
-    if (state.HasState(NS_EVENT_STATE_ACTIVE)) {
-      state &= ~NS_EVENT_STATE_ACTIVE;
-      state |= NS_EVENT_STATE_HOVER;
+    state &= ~ElementState::HOVER;
+    if (state.HasState(ElementState::ACTIVE)) {
+      state &= ~ElementState::ACTIVE;
+      state |= ElementState::HOVER;
     }
   }
   return sRGBColor::FromABGR(
@@ -148,7 +123,7 @@ sRGBColor ScrollbarDrawingWin11::ComputeScrollbarThumbColor(
 std::pair<sRGBColor, sRGBColor>
 ScrollbarDrawingWin11::ComputeScrollbarButtonColors(
     nsIFrame* aFrame, StyleAppearance aAppearance, const ComputedStyle& aStyle,
-    const EventStates& aElementState, const EventStates& aDocumentState,
+    const ElementState& aElementState, const DocumentState& aDocumentState,
     const Colors& aColors) {
   if (aColors.HighContrast()) {
     return ScrollbarDrawingWin::ComputeScrollbarButtonColors(
@@ -165,7 +140,7 @@ bool ScrollbarDrawingWin11::PaintScrollbarButton(
     DrawTarget& aDrawTarget, StyleAppearance aAppearance,
     const LayoutDeviceRect& aRect, ScrollbarKind aScrollbarKind,
     nsIFrame* aFrame, const ComputedStyle& aStyle,
-    const EventStates& aElementState, const EventStates& aDocumentState,
+    const ElementState& aElementState, const DocumentState& aDocumentState,
     const Colors& aColors, const DPIRatio& aDpiRatio) {
   if (!ScrollbarDrawing::IsParentScrollbarHoveredOrActive(aFrame)) {
     return true;
@@ -215,10 +190,10 @@ bool ScrollbarDrawingWin11::PaintScrollbarButton(
                                 : float(kDefaultWinScrollbarSize);
   const int32_t arrowNumPoints = ArrayLength(arrowPolygonX);
 
-  if (aElementState.HasState(NS_EVENT_STATE_ACTIVE)) {
+  if (aElementState.HasState(ElementState::ACTIVE)) {
     arrowX = arrowPolygonXActive;
     arrowY = arrowPolygonYActive;
-  } else if (aElementState.HasState(NS_EVENT_STATE_HOVER)) {
+  } else if (aElementState.HasState(ElementState::HOVER)) {
     arrowX = arrowPolygonXHover;
     arrowY = arrowPolygonYHover;
   }
@@ -262,7 +237,7 @@ template <typename PaintBackendData>
 bool ScrollbarDrawingWin11::DoPaintScrollbarThumb(
     PaintBackendData& aPaintData, const LayoutDeviceRect& aRect,
     ScrollbarKind aScrollbarKind, nsIFrame* aFrame, const ComputedStyle& aStyle,
-    const EventStates& aElementState, const EventStates& aDocumentState,
+    const ElementState& aElementState, const DocumentState& aDocumentState,
     const Colors& aColors, const DPIRatio& aDpiRatio) {
   sRGBColor thumbColor = ComputeScrollbarThumbColor(
       aFrame, aStyle, aElementState, aDocumentState, aColors);
@@ -358,7 +333,7 @@ bool ScrollbarDrawingWin11::DoPaintScrollbarThumb(
 bool ScrollbarDrawingWin11::PaintScrollbarThumb(
     DrawTarget& aDrawTarget, const LayoutDeviceRect& aRect,
     ScrollbarKind aScrollbarKind, nsIFrame* aFrame, const ComputedStyle& aStyle,
-    const EventStates& aElementState, const EventStates& aDocumentState,
+    const ElementState& aElementState, const DocumentState& aDocumentState,
     const Colors& aColors, const DPIRatio& aDpiRatio) {
   return DoPaintScrollbarThumb(aDrawTarget, aRect, aScrollbarKind, aFrame,
                                aStyle, aElementState, aDocumentState, aColors,
@@ -368,11 +343,22 @@ bool ScrollbarDrawingWin11::PaintScrollbarThumb(
 bool ScrollbarDrawingWin11::PaintScrollbarThumb(
     WebRenderBackendData& aWrData, const LayoutDeviceRect& aRect,
     ScrollbarKind aScrollbarKind, nsIFrame* aFrame, const ComputedStyle& aStyle,
-    const EventStates& aElementState, const EventStates& aDocumentState,
+    const ElementState& aElementState, const DocumentState& aDocumentState,
     const Colors& aColors, const DPIRatio& aDpiRatio) {
   return DoPaintScrollbarThumb(aWrData, aRect, aScrollbarKind, aFrame, aStyle,
                                aElementState, aDocumentState, aColors,
                                aDpiRatio);
+}
+
+void ScrollbarDrawingWin11::RecomputeScrollbarParams() {
+  ScrollbarDrawingWin::RecomputeScrollbarParams();
+  // TODO(emilio): Maybe make this configurable? Though this doesn't respect
+  // classic Windows registry settings, and cocoa overlay scrollbars also don't
+  // respect the override it seems, so this should be fine.
+  ConfigureScrollbarSize(StyleScrollbarWidth::Thin, Overlay::Yes,
+                         kDefaultWinOverlayThinScrollbarSize);
+  ConfigureScrollbarSize(StyleScrollbarWidth::Auto, Overlay::Yes,
+                         kDefaultWinOverlayScrollbarSize);
 }
 
 }  // namespace mozilla::widget

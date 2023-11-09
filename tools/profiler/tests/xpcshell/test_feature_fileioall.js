@@ -2,10 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// This is only needed for getting a temp file location, which IOUtils
-// cannot currently do.
-const { OS } = ChromeUtils.import("resource://gre/modules/osfile.jsm");
-
 add_task(async () => {
   info(
     "Test that off-main thread fileio is captured for a profiled thread, " +
@@ -27,7 +23,7 @@ add_task(async () => {
     // Check for FileIO in any of the background threads.
     if (thread.name.startsWith("BgIOThreadPool")) {
       const markers = getInflatedFileIOMarkers(thread, filename);
-      if (markers.length > 0) {
+      if (markers.length) {
         backgroundThread = thread;
         backgroundThreadFileIO = markers;
         break;
@@ -120,8 +116,7 @@ async function startProfilerAndTriggerFileIO({
     threadsFilter
   );
 
-  const tmpDir = OS.Constants.Path.tmpDir;
-  const path = OS.Path.join(tmpDir, filename);
+  const path = PathUtils.join(PathUtils.tempDir, filename);
 
   info(`Using a temporary file to test FileIO: ${path}`);
 
@@ -145,15 +140,7 @@ async function startProfilerAndTriggerFileIO({
   info("Remove the file");
   await removeFile(path);
 
-  // Pause the profiler as we don't need to collect more samples as we retrieve
-  // and serialize the profile.
-  // Don't await the pause, because each process will handle it before it
-  // receives the following `getProfileDataAsync()`.
-  Services.profiler.Pause();
-
-  const profile = await Services.profiler.getProfileDataAsync();
-  await Services.profiler.StopProfiler();
-  return profile;
+  return stopNowAndGetProfile();
 }
 
 async function fileExists(file) {

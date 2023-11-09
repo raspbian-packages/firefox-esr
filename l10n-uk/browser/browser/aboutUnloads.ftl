@@ -27,7 +27,7 @@ about-unloads-button-unload = Вивантажити
 about-unloads-no-unloadable-tab = Немає вкладок для вивантаження.
 
 about-unloads-column-priority = Пріоритет
-about-unloads-column-host = Вузол
+about-unloads-column-host = Хост
 about-unloads-column-last-accessed = Останній доступ
 about-unloads-column-weight = Навантаженіші
     .title = Вкладки спершу впорядковуються за цим значенням, яке походить від певних спеціальних властивостей, наприклад, відтворення звуку, WebRTC тощо.

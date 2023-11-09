@@ -4,40 +4,38 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from __future__ import absolute_import, print_function, unicode_literals
-
 import argparse
 import copy
 import glob
+import multiprocessing
 import os
+import pathlib
 import re
-import sys
 import subprocess
+import sys
 import tempfile
-
 from shutil import copyfile, rmtree
 
 from six import string_types
 
 import mozharness
-
 from mozharness.base.errors import PythonErrorList
-from mozharness.base.log import OutputParser, DEBUG, ERROR, CRITICAL, INFO
+from mozharness.base.log import CRITICAL, DEBUG, ERROR, INFO, OutputParser
+from mozharness.base.python import Python3Virtualenv
+from mozharness.base.vcs.vcsbase import MercurialScript
 from mozharness.mozilla.automation import (
     EXIT_STATUS_DICT,
-    TBPL_SUCCESS,
     TBPL_RETRY,
+    TBPL_SUCCESS,
     TBPL_WORST_LEVEL_TUPLE,
 )
-from mozharness.base.python import Python3Virtualenv
 from mozharness.mozilla.testing.android import AndroidMixin
-from mozharness.mozilla.testing.errors import HarnessErrorList, TinderBoxPrintRe
-from mozharness.mozilla.testing.testbase import TestingMixin, testing_config_options
-from mozharness.base.vcs.vcsbase import MercurialScript
 from mozharness.mozilla.testing.codecoverage import (
     CodeCoverageMixin,
     code_coverage_config_options,
 )
+from mozharness.mozilla.testing.errors import HarnessErrorList, TinderBoxPrintRe
+from mozharness.mozilla.testing.testbase import TestingMixin, testing_config_options
 
 scripts_path = os.path.abspath(os.path.dirname(os.path.dirname(mozharness.__file__)))
 external_tools_path = os.path.join(scripts_path, "external_tools")
@@ -74,9 +72,9 @@ RaptorErrorList = (
 # the users locally cached ffmpeg binary from from when the user
 # ran `./mach browsertime --setup`
 FFMPEG_LOCAL_CACHE = {
-    "mac": "ffmpeg-4.1.1-macos64-static",
-    "linux": "ffmpeg-4.1.4-i686-static",
-    "win": "ffmpeg-4.1.1-win64-static",
+    "mac": "ffmpeg-macos",
+    "linux": "ffmpeg-4.4.1-i686-static",
+    "win": "ffmpeg-4.4.1-full_build",
 }
 
 
@@ -171,7 +169,7 @@ class Raptor(
             {
                 "dest": "browsertime",
                 "action": "store_true",
-                "default": False,
+                "default": True,
                 "help": argparse.SUPPRESS,
             },
         ],
@@ -196,6 +194,8 @@ class Raptor(
                         "geckoview",
                         "refbrow",
                         "fenix",
+                        "safari",
+                        "custom-car",
                     ],
                     "dest": "app",
                     "help": "Name of the application we are testing (default: firefox).",
@@ -315,6 +315,15 @@ class Raptor(
                     "dest": "gecko_profile_features",
                     "type": "str",
                     "help": "Features to enable in the profiler.",
+                },
+            ],
+            [
+                ["--extra-profiler-run"],
+                {
+                    "dest": "extra_profiler_run",
+                    "action": "store_true",
+                    "default": False,
+                    "help": "Run the tests again with profiler enabled after the main run.",
                 },
             ],
             [
@@ -440,6 +449,21 @@ class Raptor(
                 },
             ],
             [
+                ["--test-bytecode-cache"],
+                {
+                    "dest": "test_bytecode_cache",
+                    "action": "store_true",
+                    "default": False,
+                    "help": (
+                        "If set, the pageload test will set the preference "
+                        "`dom.script_loader.bytecode_cache.strategy=-1` and wait 20 seconds "
+                        "after the first cold pageload to populate the bytecode cache before "
+                        "running a warm pageload test. Only available if `--chimera` "
+                        "is also provided."
+                    ),
+                },
+            ],
+            [
                 ["--chimera"],
                 {
                     "dest": "chimera",
@@ -552,6 +576,79 @@ class Raptor(
                     ),
                 },
             ],
+            [
+                ["--webext"],
+                {
+                    "action": "store_true",
+                    "dest": "webext",
+                    "default": False,
+                    "help": (
+                        "Whether to use webextension to execute pageload tests "
+                        "(WebExtension is being deprecated).",
+                    ),
+                },
+            ],
+            [
+                ["--collect-perfstats"],
+                {
+                    "action": "store_true",
+                    "dest": "collect_perfstats",
+                    "default": False,
+                    "help": (
+                        "If set, the test will collect perfstats in addition to "
+                        "the regular metrics it gathers."
+                    ),
+                },
+            ],
+            [
+                ["--extra-summary-methods"],
+                {
+                    "action": "append",
+                    "metavar": "OPTION",
+                    "dest": "extra_summary_methods",
+                    "default": [],
+                    "help": (
+                        "Alternative methods for summarizing technical and visual"
+                        "pageload metrics."
+                        "Options: geomean, mean."
+                    ),
+                },
+            ],
+            [
+                ["--benchmark-repository"],
+                {
+                    "dest": "benchmark_repository",
+                    "type": "str",
+                    "default": None,
+                    "help": (
+                        "Repository that should be used for a particular benchmark test. "
+                        "e.g. https://github.com/mozilla-mobile/firefox-android"
+                    ),
+                },
+            ],
+            [
+                ["--benchmark-revision"],
+                {
+                    "dest": "benchmark_revision",
+                    "type": "str",
+                    "default": None,
+                    "help": (
+                        "Repository revision that should be used for a particular "
+                        "benchmark test."
+                    ),
+                },
+            ],
+            [
+                ["--benchmark-branch"],
+                {
+                    "dest": "benchmark_branch",
+                    "type": "str",
+                    "default": None,
+                    "help": (
+                        "Repository branch that should be used for a particular benchmark test."
+                    ),
+                },
+            ],
         ]
         + testing_config_options
         + copy.deepcopy(code_coverage_config_options)
@@ -639,6 +736,7 @@ class Raptor(
         self.raptor_json_config = self.config.get("raptor_json_config")
         self.repo_path = self.config.get("repo_path")
         self.obj_path = self.config.get("obj_path")
+        self.mozbuild_path = self.config.get("mozbuild_path")
         self.test = None
         self.gecko_profile = self.config.get(
             "gecko_profile"
@@ -647,6 +745,7 @@ class Raptor(
         self.gecko_profile_entries = self.config.get("gecko_profile_entries")
         self.gecko_profile_threads = self.config.get("gecko_profile_threads")
         self.gecko_profile_features = self.config.get("gecko_profile_features")
+        self.extra_profiler_run = self.config.get("extra_profiler_run")
         self.test_packages_url = self.config.get("test_packages_url")
         self.test_url_params = self.config.get("test_url_params")
         self.host = self.config.get("host")
@@ -704,6 +803,9 @@ class Raptor(
                 gecko_results.extend(
                     ["--gecko-profile-threads", self.gecko_profile_threads]
                 )
+        else:
+            if self.extra_profiler_run:
+                gecko_results.append("--extra-profiler-run")
         return gecko_results
 
     def query_abs_dirs(self):
@@ -732,7 +834,10 @@ class Raptor(
             )
             return
         self.info("Fetching and installing Google Chrome for Android")
+        self.device.shell_output("cmd package install-existing com.android.chrome")
+        self.info("Google Chrome for Android successfully installed")
 
+    def download_chrome_android(self):
         # Fetch the APK
         tmpdir = tempfile.mkdtemp()
         self.tooltool_fetch(
@@ -745,8 +850,6 @@ class Raptor(
             ),
             output_dir=tmpdir,
         )
-
-        # Find the downloaded APK
         files = os.listdir(tmpdir)
         if len(files) > 1:
             raise Exception(
@@ -762,19 +865,21 @@ class Raptor(
         self.device.shell_output("settings put global verifier_verify_adb_installs 1")
         rmtree(tmpdir)
 
-        self.info("Google Chrome for Android successfully installed")
-
     def install_chromium_distribution(self):
         """Install Google Chromium distribution in production"""
         linux, mac, win = "linux", "mac", "win"
-        chrome, chromium = "chrome", "chromium"
+        chrome, chromium, chromium_release = "chrome", "chromium", "custom-car"
 
-        available_chromium_dists = [chrome, chromium]
+        available_chromium_dists = [chrome, chromium, chromium_release]
         binary_location = {
             chromium: {
                 linux: ["chrome-linux", "chrome"],
                 mac: ["chrome-mac", "Chromium.app", "Contents", "MacOS", "Chromium"],
                 win: ["chrome-win", "Chrome.exe"],
+            },
+            chromium_release: {
+                linux: ["chromium", "Default", "chrome"],
+                win: ["chromium", "Default", "chrome.exe"],
             },
         }
 
@@ -877,6 +982,9 @@ class Raptor(
                     "Set binary to %s instead of %s"
                     % (kw_options["binary"], binary_path)
                 )
+        elif self.app == "safari" and not self.run_local:
+            binary_path = "/Applications/Safari.app/Contents/MacOS/Safari"
+            kw_options["binary"] = binary_path
         else:  # Running on Chromium
             if not self.run_local:
                 # When running locally we already set the Chromium binary above, in init.
@@ -893,6 +1001,8 @@ class Raptor(
             kw_options["symbolsPath"] = self.symbols_path
         if self.config.get("obj_path", None) is not None:
             kw_options["obj-path"] = self.config["obj_path"]
+        if self.config.get("mozbuild_path", None) is not None:
+            kw_options["mozbuild-path"] = self.config["mozbuild_path"]
         if self.test_url_params:
             kw_options["test-url-params"] = self.test_url_params
         if self.config.get("device_name") is not None:
@@ -901,6 +1011,12 @@ class Raptor(
             kw_options["activity"] = self.config["activity"]
         if self.config.get("conditioned_profile") is not None:
             kw_options["conditioned-profile"] = self.config["conditioned_profile"]
+        if self.config.get("benchmark_repository"):
+            kw_options["benchmark_repository"] = self.config["benchmark_repository"]
+        if self.config.get("benchmark_revision"):
+            kw_options["benchmark_revision"] = self.config["benchmark_revision"]
+        if self.config.get("benchmark_repository"):
+            kw_options["benchmark_branch"] = self.config["benchmark_branch"]
 
         kw_options.update(kw)
         if self.host:
@@ -910,6 +1026,13 @@ class Raptor(
         # Extra arguments
         if args is not None:
             options += args
+        if os.getenv("PERF_FLAGS"):
+            for option in os.getenv("PERF_FLAGS").split():
+                if "=" in option:
+                    kw_option, value = option.split("=")
+                    kw_options[kw_option] = value
+                else:
+                    options.extend(["--" + option])
 
         if self.config.get("run_local", False):
             options.extend(["--run-local"])
@@ -951,21 +1074,34 @@ class Raptor(
             options.extend(
                 ["--browser-cycles={}".format(self.config.get("browser_cycles"))]
             )
-
-        for (arg,), details in Raptor.browsertime_options:
-            # Allow overriding defaults on the `./mach raptor-test ...` command-line
-            value = self.config.get(details["dest"])
-            if value is None or value != getattr(self, details["dest"], None):
-                # Check for modifications done to the instance variables
-                value = getattr(self, details["dest"], None)
-            if value and arg not in self.config.get("raptor_cmd_line_args", []):
-                if isinstance(value, string_types):
-                    options.extend([arg, os.path.expandvars(value)])
-                elif isinstance(value, (tuple, list)):
-                    for val in value:
-                        options.extend([arg, val])
-                else:
-                    options.extend([arg])
+        if self.config.get("test_bytecode_cache", False):
+            options.extend(["--test-bytecode-cache"])
+        if self.config.get("collect_perfstats", False):
+            options.extend(["--collect-perfstats"])
+        if self.config.get("extra_summary_methods"):
+            options.extend(
+                [
+                    "--extra-summary-methods={}".format(method)
+                    for method in self.config.get("extra_summary_methods")
+                ]
+            )
+        if self.config.get("webext", False):
+            options.extend(["--webext"])
+        else:
+            for (arg,), details in Raptor.browsertime_options:
+                # Allow overriding defaults on the `./mach raptor-test ...` command-line
+                value = self.config.get(details["dest"])
+                if value is None or value != getattr(self, details["dest"], None):
+                    # Check for modifications done to the instance variables
+                    value = getattr(self, details["dest"], None)
+                if value and arg not in self.config.get("raptor_cmd_line_args", []):
+                    if isinstance(value, string_types):
+                        options.extend([arg, os.path.expandvars(value)])
+                    elif isinstance(value, (tuple, list)):
+                        for val in value:
+                            options.extend([arg, val])
+                    else:
+                        options.extend([arg])
 
         for key, value in kw_options.items():
             options.extend(["--%s" % key, value])
@@ -999,8 +1135,13 @@ class Raptor(
             self.logcat_stop()
 
     def download_and_extract(self, extract_dirs=None, suite_categories=None):
+        # Use in-tree wptserve for Python 3.10 compatibility
+        extract_dirs = [
+            "tools/wptserve/*",
+            "tools/wpt_third_party/pywebsocket3/*",
+        ]
         return super(Raptor, self).download_and_extract(
-            suite_categories=["common", "condprof", "raptor"]
+            extract_dirs=extract_dirs, suite_categories=["common", "condprof", "raptor"]
         )
 
     def create_virtualenv(self, **kwargs):
@@ -1014,13 +1155,16 @@ class Raptor(
         if self.clean:
             rmtree(_virtualenv_path, ignore_errors=True)
 
+        _python_interp = self.query_exe("python")
+        if "win" in self.platform_name() and os.path.exists(_python_interp):
+            multiprocessing.set_executable(_python_interp)
+
         if self.run_local and os.path.exists(_virtualenv_path):
             self.info("Virtualenv already exists, skipping creation")
             # ffmpeg exists outside of this virtual environment so
             # we re-add it to the platform environment on repeated
             # local runs of browsertime visual metric tests
             self.setup_local_ffmpeg()
-            _python_interp = self.config.get("exes")["python"]
 
             if "win" in self.platform_name():
                 _path = os.path.join(_virtualenv_path, "Lib", "site-packages")
@@ -1037,17 +1181,22 @@ class Raptor(
 
         # virtualenv doesn't already exist so create it
         # Install mozbase first, so we use in-tree versions
+        # Additionally, decide where to pull raptor requirements from.
         if not self.run_local:
             mozbase_requirements = os.path.join(
                 self.query_abs_dirs()["abs_test_install_dir"],
                 "config",
                 "mozbase_requirements.txt",
             )
+            raptor_requirements = os.path.join(self.raptor_path, "requirements.txt")
         else:
             mozbase_requirements = os.path.join(
                 os.path.dirname(self.raptor_path),
                 "config",
                 "mozbase_source_requirements.txt",
+            )
+            raptor_requirements = os.path.join(
+                self.raptor_path, "source_requirements.txt"
             )
         self.register_virtualenv_module(
             requirements=[mozbase_requirements],
@@ -1087,17 +1236,12 @@ class Raptor(
         super(Raptor, self).create_virtualenv(modules=modules)
 
         # Install Raptor dependencies
-        self.install_module(
-            requirements=[os.path.join(self.raptor_path, "requirements.txt")]
-        )
+        self.install_module(requirements=[raptor_requirements])
 
     def setup_local_ffmpeg(self):
         """Make use of the users local ffmpeg when running browsertime visual
         metrics tests.
         """
-
-        # TODO expand this logic below for Windows and Linux (Bug 1746206 and 1746208)
-        # and refactor once all the paths are finalized across platforms
 
         if "ffmpeg" in os.environ["PATH"]:
             return
@@ -1108,7 +1252,6 @@ class Raptor(
             path_to_ffmpeg = os.path.join(
                 btime_cache,
                 FFMPEG_LOCAL_CACHE["mac"],
-                "bin",
             )
         elif "linux" in platform:
             path_to_ffmpeg = os.path.join(
@@ -1138,7 +1281,17 @@ class Raptor(
         if not self.config.get("noinstall", False):
             if self.app in self.firefox_android_browsers:
                 self.device.uninstall_app(self.binary_path)
-                self.install_android_app(self.installer_path)
+
+                # Check if the user supplied their own APK, and install
+                # that instead
+                installer_path = pathlib.Path(
+                    self.raptor_path, "raptor", "user_upload.apk"
+                )
+                if not installer_path.exists():
+                    installer_path = self.installer_path
+
+                self.info(f"Installing APK from: {installer_path}")
+                self.install_android_app(str(installer_path))
             else:
                 super(Raptor, self).install()
 
@@ -1193,22 +1346,23 @@ class Raptor(
             env["MOZ_DEVELOPER_REPO_DIR"] = self.repo_path
         if self.obj_path is not None:
             env["MOZ_DEVELOPER_OBJ_DIR"] = self.obj_path
+        if self.mozbuild_path is not None:
+            env["MOZ_MOZBUILD_DIR"] = self.mozbuild_path
 
         # Sets a timeout for how long Raptor should run without output
         output_timeout = self.config.get("raptor_output_timeout", 3600)
         # Run Raptor tests
         run_tests = os.path.join(self.raptor_path, "raptor", "raptor.py")
 
-        mozlog_opts = ["--log-tbpl-level=debug"]
+        # Dynamically set the log level based on the raptor config for consistency
+        # throughout the test
+        mozlog_opts = [f"--log-tbpl-level={self.config['log_level']}"]
+
         if not self.run_local and "suite" in self.config:
             fname_pattern = "%s_%%s.log" % self.config["test"]
             mozlog_opts.append(
                 "--log-errorsummary=%s"
                 % os.path.join(env["MOZ_UPLOAD_DIR"], fname_pattern % "errorsummary")
-            )
-            mozlog_opts.append(
-                "--log-raw=%s"
-                % os.path.join(env["MOZ_UPLOAD_DIR"], fname_pattern % "raw")
             )
 
         def launch_in_debug_mode(cmdline):

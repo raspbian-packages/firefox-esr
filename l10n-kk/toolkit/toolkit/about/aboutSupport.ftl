@@ -172,6 +172,15 @@ media-codec-support-info = Кодек қолдау ақпараты
 # List all the entries of the database.
 media-capabilities-enumerate = Дерекқор жазбаларын шығару
 
+## Codec support table
+
+media-codec-support-sw-decoding = Бағдарламалық декодтау
+media-codec-support-hw-decoding = Құрылғылық декодтау
+media-codec-support-codec-name = Кодек атауы
+media-codec-support-supported = Қолдауы бар
+media-codec-support-unsupported = Қолдауы жоқ
+media-codec-support-error = Кодектерге қолдау көрсету ақпараты қолжетімді емес. Медиа файлын ойнатқаннан кейін қайта көріңіз.
+
 ##
 
 intl-title = Интернационалдандыру және локализация
@@ -285,6 +294,8 @@ webgl2-renderer = WebGL 2 драйвер Renderer
 webgl2-version = WebGL 2 драйвер нұсқасы
 webgl2-driver-extensions = WebGL 2 драйвер кеңейтулері
 webgl2-extensions = WebGL 2 кеңейтулері
+webgpu-default-adapter = WebGPU бастапқы адаптері
+webgpu-fallback-adapter = WebGPU қосымша адаптері
 # Variables
 #   $bugNumber (string) - Bug number on Bugzilla
 support-blocklisted-bug = Белгілі мәселелерге байланысты бұғатталған: <a data-l10n-name="bug-link">bug { $bugNumber }</a>

@@ -2,14 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-connection-window =
-    .title = Nagi'io' conexión
-    .style =
-        { PLATFORM() ->
-            [macos] width: 44em
-           *[other] width: 49em
-        }
-
 connection-window2 =
     .title = Nagi'io' conexión
     .style =
@@ -76,15 +68,13 @@ connection-proxy-autologin =
     .accesskey = S
     .tooltip = Nachin' na'anj ma sisi nanín sat da'ngà huìi. 'Ngà na'ue gi'iaj sun hue'é ma.
 
+connection-proxy-autologin-checkbox =
+    .label = Si nachin' na'anj ma ahui si huin si 'ngà nun kontareseña
+    .accesskey = S
+    .tooltiptext = Nachin' na'anj ma sisi nanín sat da'ngà huìi. 'Ngà na'ue gi'iaj sun hue'é ma.
+
 connection-proxy-socks-remote-dns =
     .label = Proxy DNS 'ngà garasunt SOCKS v5
-    .accesskey = P
-
-connection-dns-over-https =
-    .label = Dugi'iaj sun DNS riña HTTPS
-    .accesskey = H
-
-connection-dns-over-https-url-resolver = Sa du'uej sa 'iaj sunt
     .accesskey = P
 
 # Variables:
