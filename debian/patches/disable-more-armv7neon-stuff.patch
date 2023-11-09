@@ -1,10 +1,6 @@
 From: Peter Michael Green <plugwash@raspbian.org>
 Date: Sat, 27 Aug 2022 08:00:25 +0000
-X-Dgit-Generated: 102.2.0esr-1+rpi1 987d60ce9ec74082bc02f5eb0e346ebe9bbd7e83
 Subject: Disable more armv7/neon stuff.
-
-
----
 
 diff --git a/gfx/ycbcr/moz.build b/gfx/ycbcr/moz.build
 index c643fbaf406..e715f1a94fc 100644
@@ -186,10 +182,10 @@ index 672d48bf24d..9caf5295726 100644
      '../../third_party/aom/aom/aom.h',
      '../../third_party/aom/aom/aom_codec.h',
 diff --git a/media/libvpx/sources.mozbuild b/media/libvpx/sources.mozbuild
-index e9d687a1c79..f8ddd6675d0 100644
+index 31b1c021e96..55f84b7e863 100644
 --- a/media/libvpx/sources.mozbuild
 +++ b/media/libvpx/sources.mozbuild
-@@ -536,249 +536,6 @@ files = {
+@@ -539,252 +539,6 @@ files = {
      'libvpx/vpx_scale/vpx_scale_rtcd.c',
      'libvpx/vpx_util/vpx_thread.c',
      'libvpx/vpx_util/vpx_write_yuv_frame.c',
@@ -322,6 +318,8 @@ index e9d687a1c79..f8ddd6675d0 100644
 -    'libvpx/vp9/decoder/vp9_detokenize.c',
 -    'libvpx/vp9/decoder/vp9_dsubexp.c',
 -    'libvpx/vp9/decoder/vp9_job_queue.c',
+-    'libvpx/vp9/encoder/arm/neon/vp9_dct_neon.c',
+-    'libvpx/vp9/encoder/arm/neon/vp9_diamond_search_sad_neon.c',
 -    'libvpx/vp9/encoder/arm/neon/vp9_error_neon.c',
 -    'libvpx/vp9/encoder/arm/neon/vp9_frame_scale_neon.c',
 -    'libvpx/vp9/encoder/arm/neon/vp9_quantize_neon.c',
@@ -355,6 +353,7 @@ index e9d687a1c79..f8ddd6675d0 100644
 -    'libvpx/vp9/encoder/vp9_subexp.c',
 -    'libvpx/vp9/encoder/vp9_svc_layercontext.c',
 -    'libvpx/vp9/encoder/vp9_tokenize.c',
+-    'libvpx/vp9/encoder/vp9_tpl_model.c',
 -    'libvpx/vp9/encoder/vp9_treewriter.c',
 -    'libvpx/vp9/vp9_cx_iface.c',
 -    'libvpx/vp9/vp9_dx_iface.c',
@@ -367,9 +366,9 @@ index e9d687a1c79..f8ddd6675d0 100644
 -    'libvpx/vpx_dsp/arm/avg_pred_neon.c',
 -    'libvpx/vpx_dsp/arm/fdct16x16_neon.c',
 -    'libvpx/vpx_dsp/arm/fdct32x32_neon.c',
--    'libvpx/vpx_dsp/arm/fdct_neon.c',
+-    'libvpx/vpx_dsp/arm/fdct4x4_neon.c',
+-    'libvpx/vpx_dsp/arm/fdct8x8_neon.c',
 -    'libvpx/vpx_dsp/arm/fdct_partial_neon.c',
--    'libvpx/vpx_dsp/arm/fwd_txfm_neon.c',
 -    'libvpx/vpx_dsp/arm/hadamard_neon.c',
 -    'libvpx/vpx_dsp/arm/idct16x16_1_add_neon.c',
 -    'libvpx/vpx_dsp/arm/idct16x16_add_neon.c',

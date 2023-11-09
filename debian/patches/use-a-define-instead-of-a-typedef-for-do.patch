@@ -1,19 +1,17 @@
 From: Peter Michael Green <plugwash@raspbian.org>
 Date: Tue, 21 Dec 2021 17:35:22 +0000
-X-Dgit-Generated: 91.4.0esr-1+rpi1 f2f0506a7eb9cf10f4fe44779c3d669707eb61e3
-Subject: Use a #define instead of a typedef for double_t in fdlibm to prevent conflicting definitions error.
+Subject: Use a #define instead of a typedef for double_t in fdlibm to prevent conflicting definitions error
 
-
----
-
---- firefox-esr-91.4.0esr.orig/modules/fdlibm/src/math_private.h
-+++ firefox-esr-91.4.0esr/modules/fdlibm/src/math_private.h
+diff --git a/modules/fdlibm/src/math_private.h b/modules/fdlibm/src/math_private.h
+index 632d2c4c619..b7fecb02e58 100644
+--- a/modules/fdlibm/src/math_private.h
++++ b/modules/fdlibm/src/math_private.h
 @@ -35,7 +35,7 @@ typedef long double      __double_t;
  #else
  typedef double      __double_t;
  #endif
 -typedef __double_t  double_t;
 +#define double_t __double_t
+ typedef float       __float_t;
  
  /*
-  * The original fdlibm code used statements like:
