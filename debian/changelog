@@ -28,6 +28,9 @@ firefox-esr (115.3.0esr-1+rpi1) trixie-staging; urgency=medium
     + Pass disable-jit from debian/rules
     + Nerf jit detection in s/moz.configure
 
+  [changes introduced in 115.3.0esr-1+rpi1 by Peter Michael Green]
+  * Disable conflicting include in js/src/jit/shared/AtomicOperations-shared-jit.cpp
+
  -- Peter Michael Green <plugwash@raspbian.org>  Thu, 09 Nov 2023 17:20:43 +0000
 
 firefox-esr (115.3.0esr-1) unstable; urgency=medium
