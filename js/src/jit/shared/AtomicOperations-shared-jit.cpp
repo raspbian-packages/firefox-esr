@@ -6,9 +6,9 @@
 
 #include "jit/AtomicOperations.h"
 
-#if defined(__arm__)
-#  include "jit/arm/Architecture-arm.h"
-#endif
+//#if defined(__arm__)
+//#  include "jit/arm/Architecture-arm.h"
+//#endif
 
 #ifdef JS_HAVE_GENERATED_ATOMIC_OPS
 
