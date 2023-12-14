@@ -22,3 +22,4 @@ disable-neon-in-qcms.patch
 use-a-define-instead-of-a-typedef-for-do.patch
 disable-more-armv7neon-stuff.patch
 disable-jit.patch
+disable-conflicting-include.patch
