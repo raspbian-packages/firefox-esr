@@ -21,11 +21,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #![allow(clippy::missing_safety_doc)]
-#[cfg(all(any(target_arch = "arm", target_arch = "aarch64"), feature = "neon"))]
+/*#[cfg(all(any(target_arch = "arm", target_arch = "aarch64"), feature = "neon"))]
 use crate::transform_neon::{
     qcms_transform_data_bgra_out_lut_neon, qcms_transform_data_rgb_out_lut_neon,
     qcms_transform_data_rgba_out_lut_neon,
-};
+};*/
 use crate::{
     chain::chain_transform,
     double_to_s15Fixed16Number,
@@ -1369,7 +1369,7 @@ pub fn transform_create(
                 }
             }
 
-            #[cfg(all(target_arch = "arm", feature = "neon"))]
+            /*#[cfg(all(target_arch = "arm", feature = "neon"))]
             let neon_supported = is_arm_feature_detected!("neon");
             #[cfg(all(target_arch = "aarch64", feature = "neon"))]
             let neon_supported = is_aarch64_feature_detected!("neon");
@@ -1383,7 +1383,7 @@ pub fn transform_create(
                 } else if in_type == BGRA8 {
                     transform.transform_fn = Some(qcms_transform_data_bgra_out_lut_neon)
                 }
-            }
+            }*/
 
             if transform.transform_fn.is_none() {
                 if in_type == RGB8 {
