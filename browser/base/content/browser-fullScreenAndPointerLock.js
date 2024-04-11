@@ -255,6 +255,9 @@ var PointerlockFsWarning = {
         if (this._state == "hiding") {
           this._element.hidden = true;
         }
+        if (this._state == "onscreen") {
+          window.dispatchEvent(new CustomEvent("FullscreenWarningOnScreen"));
+        }
         break;
       }
       case "activate": {
@@ -272,11 +275,24 @@ var PointerlockFsWarning = {
 };
 
 var PointerLock = {
+  _isActive: false,
+
+  /**
+   * @returns {boolean} - true if pointer lock is currently active for the
+   * associated window.
+   */
+  get isActive() {
+    return this._isActive;
+  },
+
   entered(originNoSuffix) {
+    this._isActive = true;
+    Services.obs.notifyObservers(null, "pointer-lock-entered");
     PointerlockFsWarning.showPointerLock(originNoSuffix);
   },
 
   exited() {
+    this._isActive = false;
     PointerlockFsWarning.close("pointerlock-warning");
   },
 };

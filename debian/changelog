@@ -1,4 +1,4 @@
-firefox-esr (115.7.0esr-1+rpi1) trixie-staging; urgency=medium
+firefox-esr (115.9.1esr-1~deb12u1+rpi1) bookworm-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -31,9 +31,37 @@ firefox-esr (115.7.0esr-1+rpi1) trixie-staging; urgency=medium
   [changes introduced in 115.3.0esr-1+rpi1 by Peter Michael Green]
   * Disable conflicting include in js/src/jit/shared/AtomicOperations-shared-jit.cpp
 
- -- Raspbian forward porter <root@raspbian.org>  Fri, 09 Feb 2024 06:28:50 +0000
+ -- Peter Michael Green <plugwash@raspbian.org>  Thu, 11 Apr 2024 08:12:48 +0000
 
-firefox-esr (115.7.0esr-1) unstable; urgency=medium
+firefox-esr (115.9.1esr-1~deb12u1) bookworm-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2024-16, also known as CVE-2024-29944.
+
+  * debian/control*, debian/rules: Undo workaround for bug 1052002.
+
+ -- Mike Hommey <glandium@debian.org>  Sat, 23 Mar 2024 05:09:32 +0900
+
+firefox-esr (115.9.0esr-1~deb12u1) bookworm-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2024-13, also known as:
+    CVE-2024-0743, CVE-2024-2607, CVE-2024-2608, CVE-2024-2616,
+    CVE-2023-5388, CVE-2024-2610, CVE-2024-2611, CVE-2024-2612,
+    CVE-2024-2614.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 20 Mar 2024 05:59:40 +0900
+
+firefox-esr (115.8.0esr-1~deb12u1) bookworm-security; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2024-06, also known as:
+    CVE-2024-1546, CVE-2024-1547, CVE-2024-1548, CVE-2024-1549,
+    CVE-2024-1550, CVE-2024-1551, CVE-2024-1552, CVE-2024-1553.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 21 Feb 2024 06:08:41 +0900
+
+firefox-esr (115.7.0esr-1~deb12u1) bookworm-security; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2024-02, also known as:
@@ -43,7 +71,7 @@ firefox-esr (115.7.0esr-1) unstable; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 24 Jan 2024 05:44:58 +0900
 
-firefox-esr (115.6.0esr-1) unstable; urgency=medium
+firefox-esr (115.6.0esr-1~deb12u1) bookworm-security; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2023-54, also known as:
@@ -56,7 +84,7 @@ firefox-esr (115.6.0esr-1) unstable; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 20 Dec 2023 08:49:25 +0900
 
-firefox-esr (115.5.0esr-1) unstable; urgency=medium
+firefox-esr (115.5.0esr-1~deb12u1) bookworm-security; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2023-50, also known as:
@@ -65,7 +93,7 @@ firefox-esr (115.5.0esr-1) unstable; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 22 Nov 2023 05:32:16 +0900
 
-firefox-esr (115.4.0esr-1) unstable; urgency=medium
+firefox-esr (115.4.0esr-1~deb12u1) bookworm-security; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2023-46, also known as:
@@ -74,7 +102,7 @@ firefox-esr (115.4.0esr-1) unstable; urgency=medium
 
  -- Mike Hommey <glandium@debian.org>  Wed, 25 Oct 2023 06:21:28 +0900
 
-firefox-esr (115.3.0esr-1) unstable; urgency=medium
+firefox-esr (115.3.0esr-1~deb12u1) bookworm-security; urgency=medium
 
   * New upstream release.
   * Fixes for mfsa2023-42, also known as:
