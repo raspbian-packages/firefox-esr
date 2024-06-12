@@ -1,0 +1,33 @@
+From: Emilio Pozuelo Monfort <pochu@debian.org>
+Date: Thu, 16 Mar 2023 11:48:11 +0100
+Subject: Build with -fno-inline on !amd64
+
+As GCC 8.3 on buster has an ICE when building swgl on at least
+i386 and arm64.
+---
+ gfx/wr/swgl/build.rs | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/gfx/wr/swgl/build.rs b/gfx/wr/swgl/build.rs
+index d02797d4379..8c9f2a8510a 100644
+--- a/gfx/wr/swgl/build.rs
++++ b/gfx/wr/swgl/build.rs
+@@ -6,6 +6,7 @@ extern crate cc;
+ extern crate glsl_to_cxx;
+ extern crate webrender_build;
+ 
++use std::env;
+ use std::collections::HashSet;
+ use std::fmt::Write;
+ use webrender_build::shader::{ShaderFeatureFlags, get_shader_features};
+@@ -168,6 +169,10 @@ fn main() {
+                  .flag("-fno-rtti")
+                  .flag("-fno-math-errno")
+                  .flag("-UMOZILLA_CONFIG_H");
++            let target = env::var("TARGET").unwrap();
++            if !target.starts_with("x86_64") {
++                build.flag("-fno-inline");
++            }
+         }
+         // SWGL relies heavily on inlining for performance so override -Oz with -O2
+         if tool.args().contains(&"-Oz".into()) {
