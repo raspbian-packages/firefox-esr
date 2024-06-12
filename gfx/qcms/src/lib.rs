@@ -67,8 +67,8 @@ pub use transform::DataType;
 pub use transform::Transform;
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod transform_avx;
-#[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), feature = "neon"))]
-mod transform_neon;
+//#[cfg(all(any(target_arch = "aarch64", target_arch = "arm"), feature = "neon"))]
+//mod transform_neon;
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 mod transform_sse2;
 mod transform_util;
