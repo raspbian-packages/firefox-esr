@@ -1,0 +1,487 @@
+From: Peter Michael Green <plugwash@raspbian.org>
+Date: Sat, 27 Aug 2022 08:00:25 +0000
+Subject: Disable more armv7/neon stuff.
+
+diff --git a/gfx/ycbcr/moz.build b/gfx/ycbcr/moz.build
+index c643fbaf406..e715f1a94fc 100644
+--- a/gfx/ycbcr/moz.build
++++ b/gfx/ycbcr/moz.build
+@@ -53,13 +53,13 @@ else:
+         'yuv_row_other.cpp',
+     ]
+ 
+-if CONFIG['CPU_ARCH'] == 'arm' and CONFIG['HAVE_ARM_NEON']:
+-    SOURCES += [
+-        'yuv_row_arm.s',
+-    ]
+-    SOURCES += [
+-        'yuv_convert_arm.cpp',
+-    ]
++#if CONFIG['CPU_ARCH'] == 'arm' and CONFIG['HAVE_ARM_NEON']:
++#    SOURCES += [
++#        'yuv_row_arm.s',
++#    ]
++#    SOURCES += [
++#        'yuv_convert_arm.cpp',
++#    ]
+ 
+ LOCAL_INCLUDES += ['/media/libyuv/libyuv/include']
+ 
+diff --git a/media/libaom/moz.build b/media/libaom/moz.build
+index db3f9ca6eca..8396b55851f 100644
+--- a/media/libaom/moz.build
++++ b/media/libaom/moz.build
+@@ -42,26 +42,6 @@ elif CONFIG['CPU_ARCH'] == 'x86':
+         ASFLAGS += [ '-I%s/media/libaom/config/linux/ia32/' % TOPSRCDIR ]
+         LOCAL_INCLUDES += [ '/media/libaom/config/linux/ia32/' ]
+         EXPORTS.aom += [ 'config/linux/ia32/config/aom_config.h' ]
+-elif CONFIG['CPU_ARCH'] == 'arm':
+-    EXPORTS.aom += files['ARM_EXPORTS']
+-    ASFLAGS += [
+-        '-I%s/media/libaom/config/linux/arm/' % TOPSRCDIR,
+-        '-I%s/libaom' % OBJDIR,
+-    ]
+-    LOCAL_INCLUDES += [ '/media/libaom/config/linux/arm/' ]
+-    EXPORTS.aom += [ 'config/linux/arm/config/aom_config.h' ]
+-
+-    SOURCES += files['ARM_SOURCES']
+-
+-    for f in SOURCES:
+-        if f.endswith('neon.c'):
+-            SOURCES[f].flags += CONFIG['NEON_FLAGS']
+-
+-    if CONFIG['OS_TARGET'] == 'Android':
+-        # For cpu-features.h
+-        LOCAL_INCLUDES += [
+-            '%%%s/sources/android/cpufeatures' % CONFIG['ANDROID_NDK'],
+-        ]
+ else:
+     # Generic C-only configuration
+     EXPORTS.aom += files['GENERIC_EXPORTS']
+diff --git a/media/libaom/sources.mozbuild b/media/libaom/sources.mozbuild
+index 672d48bf24d..9caf5295726 100644
+--- a/media/libaom/sources.mozbuild
++++ b/media/libaom/sources.mozbuild
+@@ -1,118 +1,6 @@
+ # This file is generated. Do not edit.
+ 
+ files = {
+-  'ARM_EXPORTS': [
+-    '../../third_party/aom/aom/aom.h',
+-    '../../third_party/aom/aom/aom_codec.h',
+-    '../../third_party/aom/aom/aom_decoder.h',
+-    '../../third_party/aom/aom/aom_encoder.h',
+-    '../../third_party/aom/aom/aom_frame_buffer.h',
+-    '../../third_party/aom/aom/aom_image.h',
+-    '../../third_party/aom/aom/aom_integer.h',
+-    '../../third_party/aom/aom/aomcx.h',
+-    '../../third_party/aom/aom/aomdx.h',
+-    '../../third_party/aom/aom_mem/aom_mem.h',
+-    '../../third_party/aom/aom_ports/aom_timer.h',
+-    '../../third_party/aom/aom_ports/arm.h',
+-    '../../third_party/aom/aom_ports/bitops.h',
+-    '../../third_party/aom/aom_ports/mem.h',
+-    '../../third_party/aom/aom_ports/sanitizer.h',
+-    '../../third_party/aom/aom_ports/system_state.h',
+-    '../../third_party/aom/aom_scale/aom_scale.h',
+-    '../../third_party/aom/aom_scale/yv12config.h',
+-  ],
+-  'ARM_SOURCES': [
+-    '../../third_party/aom/aom/src/aom_codec.c',
+-    '../../third_party/aom/aom/src/aom_decoder.c',
+-    '../../third_party/aom/aom/src/aom_encoder.c',
+-    '../../third_party/aom/aom/src/aom_image.c',
+-    '../../third_party/aom/aom/src/aom_integer.c',
+-    '../../third_party/aom/aom_dsp/aom_convolve.c',
+-    '../../third_party/aom/aom_dsp/aom_dsp_rtcd.c',
+-    '../../third_party/aom/aom_dsp/arm/blend_a64_mask_neon.c',
+-    '../../third_party/aom/aom_dsp/arm/fwd_txfm_neon.c',
+-    '../../third_party/aom/aom_dsp/arm/intrapred_neon.c',
+-    '../../third_party/aom/aom_dsp/arm/loopfilter_neon.c',
+-    '../../third_party/aom/aom_dsp/arm/subtract_neon.c',
+-    '../../third_party/aom/aom_dsp/binary_codes_reader.c',
+-    '../../third_party/aom/aom_dsp/bitreader_buffer.c',
+-    '../../third_party/aom/aom_dsp/bitwriter_buffer.c',
+-    '../../third_party/aom/aom_dsp/blend_a64_hmask.c',
+-    '../../third_party/aom/aom_dsp/blend_a64_mask.c',
+-    '../../third_party/aom/aom_dsp/blend_a64_vmask.c',
+-    '../../third_party/aom/aom_dsp/daalaboolreader.c',
+-    '../../third_party/aom/aom_dsp/entcode.c',
+-    '../../third_party/aom/aom_dsp/entdec.c',
+-    '../../third_party/aom/aom_dsp/fft.c',
+-    '../../third_party/aom/aom_dsp/grain_synthesis.c',
+-    '../../third_party/aom/aom_dsp/intrapred.c',
+-    '../../third_party/aom/aom_dsp/loopfilter.c',
+-    '../../third_party/aom/aom_dsp/subtract.c',
+-    '../../third_party/aom/aom_mem/aom_mem.c',
+-    '../../third_party/aom/aom_ports/arm_cpudetect.c',
+-    '../../third_party/aom/aom_scale/aom_scale_rtcd.c',
+-    '../../third_party/aom/aom_scale/generic/aom_scale.c',
+-    '../../third_party/aom/aom_scale/generic/gen_scalers.c',
+-    '../../third_party/aom/aom_scale/generic/yv12config.c',
+-    '../../third_party/aom/aom_scale/generic/yv12extend.c',
+-    '../../third_party/aom/aom_util/aom_thread.c',
+-    '../../third_party/aom/aom_util/debug_util.c',
+-    '../../third_party/aom/av1/av1_dx_iface.c',
+-    '../../third_party/aom/av1/common/alloccommon.c',
+-    '../../third_party/aom/av1/common/arm/av1_inv_txfm_neon.c',
+-    '../../third_party/aom/av1/common/arm/av1_txfm_neon.c',
+-    '../../third_party/aom/av1/common/arm/blend_a64_hmask_neon.c',
+-    '../../third_party/aom/av1/common/arm/blend_a64_vmask_neon.c',
+-    '../../third_party/aom/av1/common/arm/cfl_neon.c',
+-    '../../third_party/aom/av1/common/arm/convolve_neon.c',
+-    '../../third_party/aom/av1/common/arm/jnt_convolve_neon.c',
+-    '../../third_party/aom/av1/common/arm/reconinter_neon.c',
+-    '../../third_party/aom/av1/common/arm/selfguided_neon.c',
+-    '../../third_party/aom/av1/common/arm/warp_plane_neon.c',
+-    '../../third_party/aom/av1/common/arm/wiener_convolve_neon.c',
+-    '../../third_party/aom/av1/common/av1_inv_txfm1d.c',
+-    '../../third_party/aom/av1/common/av1_inv_txfm2d.c',
+-    '../../third_party/aom/av1/common/av1_loopfilter.c',
+-    '../../third_party/aom/av1/common/av1_rtcd.c',
+-    '../../third_party/aom/av1/common/av1_txfm.c',
+-    '../../third_party/aom/av1/common/blockd.c',
+-    '../../third_party/aom/av1/common/cdef.c',
+-    '../../third_party/aom/av1/common/cdef_block.c',
+-    '../../third_party/aom/av1/common/cdef_block_neon.c',
+-    '../../third_party/aom/av1/common/cfl.c',
+-    '../../third_party/aom/av1/common/convolve.c',
+-    '../../third_party/aom/av1/common/debugmodes.c',
+-    '../../third_party/aom/av1/common/entropy.c',
+-    '../../third_party/aom/av1/common/entropymode.c',
+-    '../../third_party/aom/av1/common/entropymv.c',
+-    '../../third_party/aom/av1/common/frame_buffers.c',
+-    '../../third_party/aom/av1/common/idct.c',
+-    '../../third_party/aom/av1/common/mvref_common.c',
+-    '../../third_party/aom/av1/common/obu_util.c',
+-    '../../third_party/aom/av1/common/odintrin.c',
+-    '../../third_party/aom/av1/common/pred_common.c',
+-    '../../third_party/aom/av1/common/quant_common.c',
+-    '../../third_party/aom/av1/common/reconinter.c',
+-    '../../third_party/aom/av1/common/reconintra.c',
+-    '../../third_party/aom/av1/common/resize.c',
+-    '../../third_party/aom/av1/common/restoration.c',
+-    '../../third_party/aom/av1/common/scale.c',
+-    '../../third_party/aom/av1/common/scan.c',
+-    '../../third_party/aom/av1/common/seg_common.c',
+-    '../../third_party/aom/av1/common/thread_common.c',
+-    '../../third_party/aom/av1/common/tile_common.c',
+-    '../../third_party/aom/av1/common/timing.c',
+-    '../../third_party/aom/av1/common/txb_common.c',
+-    '../../third_party/aom/av1/common/warped_motion.c',
+-    '../../third_party/aom/av1/decoder/decodeframe.c',
+-    '../../third_party/aom/av1/decoder/decodemv.c',
+-    '../../third_party/aom/av1/decoder/decoder.c',
+-    '../../third_party/aom/av1/decoder/decodetxb.c',
+-    '../../third_party/aom/av1/decoder/detokenize.c',
+-    '../../third_party/aom/av1/decoder/dthread.c',
+-    '../../third_party/aom/av1/decoder/obu.c',
+-    '../../third_party/aom/av1/encoder/arm/neon/quantize_neon.c',
+-  ],
+   'GENERIC_EXPORTS': [
+     '../../third_party/aom/aom/aom.h',
+     '../../third_party/aom/aom/aom_codec.h',
+diff --git a/media/libvpx/sources.mozbuild b/media/libvpx/sources.mozbuild
+index 31b1c021e96..55f84b7e863 100644
+--- a/media/libvpx/sources.mozbuild
++++ b/media/libvpx/sources.mozbuild
+@@ -539,252 +539,6 @@ files = {
+     'libvpx/vpx_scale/vpx_scale_rtcd.c',
+     'libvpx/vpx_util/vpx_thread.c',
+     'libvpx/vpx_util/vpx_write_yuv_frame.c',
+-],
+-  'ARM_EXPORTS': [
+-    'libvpx/vpx/vp8.h',
+-    'libvpx/vpx/vp8cx.h',
+-    'libvpx/vpx/vp8dx.h',
+-    'libvpx/vpx/vpx_codec.h',
+-    'libvpx/vpx/vpx_decoder.h',
+-    'libvpx/vpx/vpx_encoder.h',
+-    'libvpx/vpx/vpx_ext_ratectrl.h',
+-    'libvpx/vpx/vpx_frame_buffer.h',
+-    'libvpx/vpx/vpx_image.h',
+-    'libvpx/vpx/vpx_integer.h',
+-    'libvpx/vpx_mem/include/vpx_mem_intrnl.h',
+-    'libvpx/vpx_mem/vpx_mem.h',
+-    'libvpx/vpx_ports/arm.h',
+-    'libvpx/vpx_ports/bitops.h',
+-    'libvpx/vpx_ports/compiler_attributes.h',
+-    'libvpx/vpx_ports/mem.h',
+-    'libvpx/vpx_ports/static_assert.h',
+-    'libvpx/vpx_ports/system_state.h',
+-    'libvpx/vpx_ports/vpx_timer.h',
+-    'libvpx/vpx_scale/vpx_scale.h',
+-    'libvpx/vpx_scale/yv12config.h',
+-],
+-  'ARM_SOURCES': [
+-    'libvpx/vp8/common/alloccommon.c',
+-    'libvpx/vp8/common/arm/loopfilter_arm.c',
+-    'libvpx/vp8/common/arm/neon/bilinearpredict_neon.c',
+-    'libvpx/vp8/common/arm/neon/copymem_neon.c',
+-    'libvpx/vp8/common/arm/neon/dc_only_idct_add_neon.c',
+-    'libvpx/vp8/common/arm/neon/dequant_idct_neon.c',
+-    'libvpx/vp8/common/arm/neon/dequantizeb_neon.c',
+-    'libvpx/vp8/common/arm/neon/idct_blk_neon.c',
+-    'libvpx/vp8/common/arm/neon/iwalsh_neon.c',
+-    'libvpx/vp8/common/arm/neon/loopfiltersimplehorizontaledge_neon.c',
+-    'libvpx/vp8/common/arm/neon/loopfiltersimpleverticaledge_neon.c',
+-    'libvpx/vp8/common/arm/neon/mbloopfilter_neon.c',
+-    'libvpx/vp8/common/arm/neon/shortidct4x4llm_neon.c',
+-    'libvpx/vp8/common/arm/neon/sixtappredict_neon.c',
+-    'libvpx/vp8/common/arm/neon/vp8_loopfilter_neon.c',
+-    'libvpx/vp8/common/blockd.c',
+-    'libvpx/vp8/common/dequantize.c',
+-    'libvpx/vp8/common/entropy.c',
+-    'libvpx/vp8/common/entropymode.c',
+-    'libvpx/vp8/common/entropymv.c',
+-    'libvpx/vp8/common/extend.c',
+-    'libvpx/vp8/common/filter.c',
+-    'libvpx/vp8/common/findnearmv.c',
+-    'libvpx/vp8/common/generic/systemdependent.c',
+-    'libvpx/vp8/common/idct_blk.c',
+-    'libvpx/vp8/common/idctllm.c',
+-    'libvpx/vp8/common/loopfilter_filters.c',
+-    'libvpx/vp8/common/mbpitch.c',
+-    'libvpx/vp8/common/modecont.c',
+-    'libvpx/vp8/common/quant_common.c',
+-    'libvpx/vp8/common/reconinter.c',
+-    'libvpx/vp8/common/reconintra.c',
+-    'libvpx/vp8/common/reconintra4x4.c',
+-    'libvpx/vp8/common/rtcd.c',
+-    'libvpx/vp8/common/setupintrarecon.c',
+-    'libvpx/vp8/common/swapyv12buffer.c',
+-    'libvpx/vp8/common/treecoder.c',
+-    'libvpx/vp8/common/vp8_loopfilter.c',
+-    'libvpx/vp8/common/vp8_skin_detection.c',
+-    'libvpx/vp8/decoder/dboolhuff.c',
+-    'libvpx/vp8/decoder/decodeframe.c',
+-    'libvpx/vp8/decoder/decodemv.c',
+-    'libvpx/vp8/decoder/detokenize.c',
+-    'libvpx/vp8/decoder/onyxd_if.c',
+-    'libvpx/vp8/decoder/threading.c',
+-    'libvpx/vp8/encoder/arm/neon/denoising_neon.c',
+-    'libvpx/vp8/encoder/arm/neon/fastquantizeb_neon.c',
+-    'libvpx/vp8/encoder/arm/neon/shortfdct_neon.c',
+-    'libvpx/vp8/encoder/arm/neon/vp8_shortwalsh4x4_neon.c',
+-    'libvpx/vp8/encoder/bitstream.c',
+-    'libvpx/vp8/encoder/boolhuff.c',
+-    'libvpx/vp8/encoder/copy_c.c',
+-    'libvpx/vp8/encoder/dct.c',
+-    'libvpx/vp8/encoder/denoising.c',
+-    'libvpx/vp8/encoder/encodeframe.c',
+-    'libvpx/vp8/encoder/encodeintra.c',
+-    'libvpx/vp8/encoder/encodemb.c',
+-    'libvpx/vp8/encoder/encodemv.c',
+-    'libvpx/vp8/encoder/ethreading.c',
+-    'libvpx/vp8/encoder/lookahead.c',
+-    'libvpx/vp8/encoder/mcomp.c',
+-    'libvpx/vp8/encoder/modecosts.c',
+-    'libvpx/vp8/encoder/mr_dissim.c',
+-    'libvpx/vp8/encoder/onyx_if.c',
+-    'libvpx/vp8/encoder/pickinter.c',
+-    'libvpx/vp8/encoder/picklpf.c',
+-    'libvpx/vp8/encoder/ratectrl.c',
+-    'libvpx/vp8/encoder/rdopt.c',
+-    'libvpx/vp8/encoder/segmentation.c',
+-    'libvpx/vp8/encoder/tokenize.c',
+-    'libvpx/vp8/encoder/treewriter.c',
+-    'libvpx/vp8/encoder/vp8_quantize.c',
+-    'libvpx/vp8/vp8_cx_iface.c',
+-    'libvpx/vp8/vp8_dx_iface.c',
+-    'libvpx/vp9/common/arm/neon/vp9_iht16x16_add_neon.c',
+-    'libvpx/vp9/common/arm/neon/vp9_iht4x4_add_neon.c',
+-    'libvpx/vp9/common/arm/neon/vp9_iht8x8_add_neon.c',
+-    'libvpx/vp9/common/vp9_alloccommon.c',
+-    'libvpx/vp9/common/vp9_blockd.c',
+-    'libvpx/vp9/common/vp9_common_data.c',
+-    'libvpx/vp9/common/vp9_entropy.c',
+-    'libvpx/vp9/common/vp9_entropymode.c',
+-    'libvpx/vp9/common/vp9_entropymv.c',
+-    'libvpx/vp9/common/vp9_filter.c',
+-    'libvpx/vp9/common/vp9_frame_buffers.c',
+-    'libvpx/vp9/common/vp9_idct.c',
+-    'libvpx/vp9/common/vp9_loopfilter.c',
+-    'libvpx/vp9/common/vp9_mvref_common.c',
+-    'libvpx/vp9/common/vp9_pred_common.c',
+-    'libvpx/vp9/common/vp9_quant_common.c',
+-    'libvpx/vp9/common/vp9_reconinter.c',
+-    'libvpx/vp9/common/vp9_reconintra.c',
+-    'libvpx/vp9/common/vp9_rtcd.c',
+-    'libvpx/vp9/common/vp9_scale.c',
+-    'libvpx/vp9/common/vp9_scan.c',
+-    'libvpx/vp9/common/vp9_seg_common.c',
+-    'libvpx/vp9/common/vp9_thread_common.c',
+-    'libvpx/vp9/common/vp9_tile_common.c',
+-    'libvpx/vp9/decoder/vp9_decodeframe.c',
+-    'libvpx/vp9/decoder/vp9_decodemv.c',
+-    'libvpx/vp9/decoder/vp9_decoder.c',
+-    'libvpx/vp9/decoder/vp9_detokenize.c',
+-    'libvpx/vp9/decoder/vp9_dsubexp.c',
+-    'libvpx/vp9/decoder/vp9_job_queue.c',
+-    'libvpx/vp9/encoder/arm/neon/vp9_dct_neon.c',
+-    'libvpx/vp9/encoder/arm/neon/vp9_diamond_search_sad_neon.c',
+-    'libvpx/vp9/encoder/arm/neon/vp9_error_neon.c',
+-    'libvpx/vp9/encoder/arm/neon/vp9_frame_scale_neon.c',
+-    'libvpx/vp9/encoder/arm/neon/vp9_quantize_neon.c',
+-    'libvpx/vp9/encoder/vp9_aq_cyclicrefresh.c',
+-    'libvpx/vp9/encoder/vp9_bitstream.c',
+-    'libvpx/vp9/encoder/vp9_context_tree.c',
+-    'libvpx/vp9/encoder/vp9_cost.c',
+-    'libvpx/vp9/encoder/vp9_dct.c',
+-    'libvpx/vp9/encoder/vp9_encodeframe.c',
+-    'libvpx/vp9/encoder/vp9_encodemb.c',
+-    'libvpx/vp9/encoder/vp9_encodemv.c',
+-    'libvpx/vp9/encoder/vp9_encoder.c',
+-    'libvpx/vp9/encoder/vp9_ethread.c',
+-    'libvpx/vp9/encoder/vp9_ext_ratectrl.c',
+-    'libvpx/vp9/encoder/vp9_extend.c',
+-    'libvpx/vp9/encoder/vp9_frame_scale.c',
+-    'libvpx/vp9/encoder/vp9_lookahead.c',
+-    'libvpx/vp9/encoder/vp9_mcomp.c',
+-    'libvpx/vp9/encoder/vp9_multi_thread.c',
+-    'libvpx/vp9/encoder/vp9_noise_estimate.c',
+-    'libvpx/vp9/encoder/vp9_picklpf.c',
+-    'libvpx/vp9/encoder/vp9_pickmode.c',
+-    'libvpx/vp9/encoder/vp9_quantize.c',
+-    'libvpx/vp9/encoder/vp9_ratectrl.c',
+-    'libvpx/vp9/encoder/vp9_rd.c',
+-    'libvpx/vp9/encoder/vp9_rdopt.c',
+-    'libvpx/vp9/encoder/vp9_resize.c',
+-    'libvpx/vp9/encoder/vp9_segmentation.c',
+-    'libvpx/vp9/encoder/vp9_skin_detection.c',
+-    'libvpx/vp9/encoder/vp9_speed_features.c',
+-    'libvpx/vp9/encoder/vp9_subexp.c',
+-    'libvpx/vp9/encoder/vp9_svc_layercontext.c',
+-    'libvpx/vp9/encoder/vp9_tokenize.c',
+-    'libvpx/vp9/encoder/vp9_tpl_model.c',
+-    'libvpx/vp9/encoder/vp9_treewriter.c',
+-    'libvpx/vp9/vp9_cx_iface.c',
+-    'libvpx/vp9/vp9_dx_iface.c',
+-    'libvpx/vp9/vp9_iface_common.c',
+-    'libvpx/vpx/src/vpx_codec.c',
+-    'libvpx/vpx/src/vpx_decoder.c',
+-    'libvpx/vpx/src/vpx_encoder.c',
+-    'libvpx/vpx/src/vpx_image.c',
+-    'libvpx/vpx_dsp/arm/avg_neon.c',
+-    'libvpx/vpx_dsp/arm/avg_pred_neon.c',
+-    'libvpx/vpx_dsp/arm/fdct16x16_neon.c',
+-    'libvpx/vpx_dsp/arm/fdct32x32_neon.c',
+-    'libvpx/vpx_dsp/arm/fdct4x4_neon.c',
+-    'libvpx/vpx_dsp/arm/fdct8x8_neon.c',
+-    'libvpx/vpx_dsp/arm/fdct_partial_neon.c',
+-    'libvpx/vpx_dsp/arm/hadamard_neon.c',
+-    'libvpx/vpx_dsp/arm/idct16x16_1_add_neon.c',
+-    'libvpx/vpx_dsp/arm/idct16x16_add_neon.c',
+-    'libvpx/vpx_dsp/arm/idct32x32_135_add_neon.c',
+-    'libvpx/vpx_dsp/arm/idct32x32_1_add_neon.c',
+-    'libvpx/vpx_dsp/arm/idct32x32_34_add_neon.c',
+-    'libvpx/vpx_dsp/arm/idct32x32_add_neon.c',
+-    'libvpx/vpx_dsp/arm/idct4x4_1_add_neon.asm',
+-    'libvpx/vpx_dsp/arm/idct4x4_add_neon.asm',
+-    'libvpx/vpx_dsp/arm/idct8x8_1_add_neon.c',
+-    'libvpx/vpx_dsp/arm/idct8x8_add_neon.c',
+-    'libvpx/vpx_dsp/arm/idct_neon.asm',
+-    'libvpx/vpx_dsp/arm/intrapred_neon.c',
+-    'libvpx/vpx_dsp/arm/intrapred_neon_asm.asm',
+-    'libvpx/vpx_dsp/arm/loopfilter_16_neon.asm',
+-    'libvpx/vpx_dsp/arm/loopfilter_4_neon.asm',
+-    'libvpx/vpx_dsp/arm/loopfilter_8_neon.asm',
+-    'libvpx/vpx_dsp/arm/quantize_neon.c',
+-    'libvpx/vpx_dsp/arm/sad4d_neon.c',
+-    'libvpx/vpx_dsp/arm/sad_neon.c',
+-    'libvpx/vpx_dsp/arm/save_reg_neon.asm',
+-    'libvpx/vpx_dsp/arm/subpel_variance_neon.c',
+-    'libvpx/vpx_dsp/arm/subtract_neon.c',
+-    'libvpx/vpx_dsp/arm/sum_squares_neon.c',
+-    'libvpx/vpx_dsp/arm/variance_neon.c',
+-    'libvpx/vpx_dsp/arm/vpx_convolve8_avg_horiz_filter_type1_neon.asm',
+-    'libvpx/vpx_dsp/arm/vpx_convolve8_avg_horiz_filter_type2_neon.asm',
+-    'libvpx/vpx_dsp/arm/vpx_convolve8_avg_vert_filter_type1_neon.asm',
+-    'libvpx/vpx_dsp/arm/vpx_convolve8_avg_vert_filter_type2_neon.asm',
+-    'libvpx/vpx_dsp/arm/vpx_convolve8_horiz_filter_type1_neon.asm',
+-    'libvpx/vpx_dsp/arm/vpx_convolve8_horiz_filter_type2_neon.asm',
+-    'libvpx/vpx_dsp/arm/vpx_convolve8_neon_asm.c',
+-    'libvpx/vpx_dsp/arm/vpx_convolve8_vert_filter_type1_neon.asm',
+-    'libvpx/vpx_dsp/arm/vpx_convolve8_vert_filter_type2_neon.asm',
+-    'libvpx/vpx_dsp/arm/vpx_convolve_avg_neon_asm.asm',
+-    'libvpx/vpx_dsp/arm/vpx_convolve_copy_neon_asm.asm',
+-    'libvpx/vpx_dsp/arm/vpx_convolve_neon.c',
+-    'libvpx/vpx_dsp/arm/vpx_scaled_convolve8_neon.c',
+-    'libvpx/vpx_dsp/avg.c',
+-    'libvpx/vpx_dsp/bitreader.c',
+-    'libvpx/vpx_dsp/bitreader_buffer.c',
+-    'libvpx/vpx_dsp/bitwriter.c',
+-    'libvpx/vpx_dsp/bitwriter_buffer.c',
+-    'libvpx/vpx_dsp/fwd_txfm.c',
+-    'libvpx/vpx_dsp/intrapred.c',
+-    'libvpx/vpx_dsp/inv_txfm.c',
+-    'libvpx/vpx_dsp/loopfilter.c',
+-    'libvpx/vpx_dsp/prob.c',
+-    'libvpx/vpx_dsp/psnr.c',
+-    'libvpx/vpx_dsp/quantize.c',
+-    'libvpx/vpx_dsp/sad.c',
+-    'libvpx/vpx_dsp/skin_detection.c',
+-    'libvpx/vpx_dsp/subtract.c',
+-    'libvpx/vpx_dsp/sum_squares.c',
+-    'libvpx/vpx_dsp/variance.c',
+-    'libvpx/vpx_dsp/vpx_convolve.c',
+-    'libvpx/vpx_dsp/vpx_dsp_rtcd.c',
+-    'libvpx/vpx_mem/vpx_mem.c',
+-    'libvpx/vpx_ports/arm_cpudetect.c',
+-    'libvpx/vpx_scale/generic/gen_scalers.c',
+-    'libvpx/vpx_scale/generic/vpx_scale.c',
+-    'libvpx/vpx_scale/generic/yv12config.c',
+-    'libvpx/vpx_scale/generic/yv12extend.c',
+-    'libvpx/vpx_scale/vpx_scale_rtcd.c',
+-    'libvpx/vpx_util/vpx_thread.c',
+-    'libvpx/vpx_util/vpx_write_yuv_frame.c',
+ ],
+   'ARM64_EXPORTS': [
+     'libvpx/vpx/vp8.h',
+diff --git a/mozglue/build/arm.h b/mozglue/build/arm.h
+index 8600329931e..be4791dd846 100644
+--- a/mozglue/build/arm.h
++++ b/mozglue/build/arm.h
+@@ -59,13 +59,13 @@
+ #      define MOZILLA_MAY_SUPPORT_ARMV6 1
+ #    endif
+ 
+-#    if defined(HAVE_ARM_NEON)
+-#      define MOZILLA_MAY_SUPPORT_NEON 1
+-#    endif
++//#    if defined(HAVE_ARM_NEON)
++//#      define MOZILLA_MAY_SUPPORT_NEON 1
++//#    endif
+ 
+-#    if defined(HAVE_ARM_SIMD)
+-#      define MOZILLA_MAY_SUPPORT_ARMV7 1
+-#    endif
++//#    if defined(HAVE_ARM_SIMD)
++//#      define MOZILLA_MAY_SUPPORT_ARMV7 1
++//#    endif
+ #  endif
+ 
+ // Currently we only have CPU detection for Linux via /proc/cpuinfo
+diff --git a/third_party/aom/aom_dsp/aom_dsp.cmake b/third_party/aom/aom_dsp/aom_dsp.cmake
+index 11ff73756b7..b13500417ce 100644
+--- a/third_party/aom/aom_dsp/aom_dsp.cmake
++++ b/third_party/aom/aom_dsp/aom_dsp.cmake
+@@ -96,12 +96,12 @@ list(APPEND AOM_DSP_COMMON_INTRIN_AVX2
+             "${AOM_ROOT}/aom_dsp/x86/intrapred_avx2.c"
+             "${AOM_ROOT}/aom_dsp/x86/blend_a64_mask_avx2.c")
+ 
+-list(APPEND AOM_DSP_COMMON_INTRIN_NEON
+-            "${AOM_ROOT}/aom_dsp/arm/fwd_txfm_neon.c"
+-            "${AOM_ROOT}/aom_dsp/arm/loopfilter_neon.c"
+-            "${AOM_ROOT}/aom_dsp/arm/intrapred_neon.c"
+-            "${AOM_ROOT}/aom_dsp/arm/subtract_neon.c"
+-            "${AOM_ROOT}/aom_dsp/arm/blend_a64_mask_neon.c")
++#list(APPEND AOM_DSP_COMMON_INTRIN_NEON
++#            "${AOM_ROOT}/aom_dsp/arm/fwd_txfm_neon.c"
++#            "${AOM_ROOT}/aom_dsp/arm/loopfilter_neon.c"
++#            "${AOM_ROOT}/aom_dsp/arm/intrapred_neon.c"
++#            "${AOM_ROOT}/aom_dsp/arm/subtract_neon.c"
++#            "${AOM_ROOT}/aom_dsp/arm/blend_a64_mask_neon.c")
+ 
+ list(APPEND AOM_DSP_COMMON_INTRIN_DSPR2
+             "${AOM_ROOT}/aom_dsp/mips/common_dspr2.c"
