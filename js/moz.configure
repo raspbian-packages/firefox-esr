@@ -177,18 +177,18 @@ set_define("ENABLE_DECORATORS", enable_decorators)
 # =======================================================
 @depends(target, "--enable-record-tuple")
 def jit_default(target, enable_record_tuple):
-    if enable_record_tuple:
-        return False
-    if target.cpu in (
-        "x86",
-        "x86_64",
-        "arm",
-        "aarch64",
-        "mips32",
-        "mips64",
-        "loongarch64",
-    ):
-        return True
+    #if enable_record_tuple:
+    #    return False
+    #if target.cpu in (
+    #    "x86",
+    #    "x86_64",
+    #    "arm",
+    #    "aarch64",
+    #    "mips32",
+    #    "mips64",
+    #    "loongarch64",
+    #):
+    #    return True
     return False
 
 
