@@ -29,14 +29,6 @@ protections-panel-etp-off-header = การป้องกันการติ
 ## custom element code.
 ##   $host (String): the hostname of the site that is being displayed.
 
-protections-panel-etp-on-toggle =
-    .label = การป้องกันการติดตามแบบพิเศษ
-    .description = เปิดสำหรับไซต์นี้
-    .aria-label = ปิดใช้งานการป้องกันสำหรับ { $host }
-protections-panel-etp-off-toggle =
-    .label = การป้องกันการติดตามแบบพิเศษ
-    .description = ปิดสำหรับไซต์นี้
-    .aria-label = เปิดใช้งานการป้องกันสำหรับ { $host }
 protections-panel-etp-toggle-on =
     .label = การป้องกันการติดตามแบบพิเศษ
     .description = เปิดสำหรับไซต์นี้
@@ -55,10 +47,10 @@ protections-panel-site-not-working-view =
 ## a tooltip explaining why these items were not blocked in the page.
 
 protections-panel-not-blocking-why-label = ทำไม?
-protections-panel-not-blocking-why-etp-on-tooltip = การปิดกั้นคุณลักษณะเหล่านี้อาจทำให้องค์ประกอบของบางเว็บไซต์เสียหายได้ หากไม่มีตัวติดตาม ปุ่ม แบบฟอร์ม และฟิลด์การเข้าสู่ระบบบางส่วนอาจไม่ทำงาน
+protections-panel-not-blocking-why-etp-on-tooltip = การปิดกั้นคุณลักษณะเหล่านี้อาจทำให้องค์ประกอบของบางเว็บไซต์เสียหายได้ ถ้าไม่มีตัวติดตาม ปุ่ม แบบฟอร์ม และฟิลด์การเข้าสู่ระบบบางส่วนอาจไม่ทำงาน
 protections-panel-not-blocking-why-etp-off-tooltip = ตัวติดตามทั้งหมดในไซต์นี้ถูกโหลดเนื่องจากการป้องกันถูกปิด
 protections-panel-not-blocking-why-etp-on-tooltip-label =
-    .label = การปิดกั้นคุณลักษณะเหล่านี้อาจทำให้องค์ประกอบของบางเว็บไซต์เสียหายได้ หากไม่มีตัวติดตาม ปุ่ม แบบฟอร์ม และฟิลด์การเข้าสู่ระบบบางส่วนอาจไม่ทำงาน
+    .label = การปิดกั้นคุณลักษณะเหล่านี้อาจทำให้องค์ประกอบของบางเว็บไซต์เสียหายได้ ถ้าไม่มีตัวติดตาม ปุ่ม แบบฟอร์ม และฟิลด์การเข้าสู่ระบบบางส่วนอาจไม่ทำงาน
 protections-panel-not-blocking-why-etp-off-tooltip-label =
     .label = ตัวติดตามทั้งหมดในไซต์นี้ถูกโหลดเนื่องจากการป้องกันถูกปิด
 
@@ -89,7 +81,7 @@ protections-panel-protectionsdashboard-label = แดชบอร์ดการ
 ## the user is experiencing issues with any of a variety of functionality.
 
 # The header of the list
-protections-panel-site-not-working-view-header = ปิดการป้องกันหากคุณมีปัญหากับ:
+protections-panel-site-not-working-view-header = ปิดการป้องกันถ้าคุณมีปัญหากับ:
 # The list items, shown in a <ul>
 protections-panel-site-not-working-view-issue-list-login-fields = ช่องเข้าสู่ระบบ
 protections-panel-site-not-working-view-issue-list-forms = แบบฟอร์ม
@@ -149,10 +141,10 @@ protections-panel-cookie-banner-blocker-view-turn-off-for-site = ปิดตั
 protections-panel-cookie-banner-blocker-view-turn-on-for-site = ปิดตัวปิดกั้นแบนเนอร์คุกกี้สำหรับไซต์นี้หรือไม่?
 protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } จะล้างคุกกี้ของไซต์นี้และรีเฟรชหน้า การล้างคุกกี้ทั้งหมดอาจนำคุณออกจากระบบหรือล้างรถเข็นช็อปปิ้ง
 protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name } จะพยายามปฏิเสธคำขอคุกกี้ทั้งหมดบนไซต์ที่รองรับโดยอัตโนมัติ
-protections-panel-cookie-banner-blocker-view-turn-on-description = เปิดใช้งานแล้ว { -brand-short-name } จะพยายามปฏิเสธแบนเนอร์คุกกี้บนไซต์นี้โดยอัตโนมัติ
 protections-panel-cookie-banner-view-cancel = ยกเลิก
 protections-panel-cookie-banner-view-turn-off = ปิด
 protections-panel-cookie-banner-view-turn-on = เปิด
+protections-panel-cookie-banner-blocker-view-turn-on-description = เปิดใช้งานแล้ว { -brand-short-name } จะพยายามปฏิเสธแบนเนอร์คุกกี้บนไซต์นี้โดยอัตโนมัติ
 protections-panel-cookie-banner-view-cancel-label =
     .label = ยกเลิก
 protections-panel-cookie-banner-view-turn-off-label =
@@ -162,3 +154,9 @@ protections-panel-cookie-banner-view-turn-on-label =
 protections-panel-report-broken-site =
     .label = รายงานไซต์ที่ใช้งานไม่ได้
     .title = รายงานไซต์ที่ใช้งานไม่ได้
+
+## Protections panel info message
+
+cfr-protections-panel-header = เรียกดูโดยไม่ต้องมีใครมาติดตาม
+cfr-protections-panel-body = เก็บข้อมูลของคุณไว้กับตัวคุณเอง { -brand-short-name } ปกป้องคุณจากตัวติดตามที่พบบ่อยที่สุดซึ่งติดตามสิ่งที่คุณทำทางออนไลน์
+cfr-protections-panel-link-text = เรียนรู้เพิ่มเติม

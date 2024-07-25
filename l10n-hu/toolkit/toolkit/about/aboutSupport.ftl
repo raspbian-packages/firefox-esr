@@ -187,6 +187,23 @@ media-codec-support-unsupported = Nem támogatott
 media-codec-support-error = A kodek támogatási információi nem érhetőek el. Próbálja újra egy médiafájl lejátszása után.
 media-codec-support-lack-of-extension = Kiegészítő telepítése
 
+## Media Content Decryption Modules (CDM)
+## See EME Spec for more explanation for following technical terms
+## https://w3c.github.io/encrypted-media/
+
+media-content-decryption-modules-title = A tartalom-visszafejtő modulok információi
+media-key-system-name = Kulcsrendszer neve
+media-video-robustness = Videó robusztussága
+media-audio-robustness = Hang robusztussága
+media-cdm-capabilities = Képességek
+# Clear Lead isn't defined in the spec, which means the the first few seconds
+# are not encrypted. It allows playback to start without having to wait for
+# license response, improving video start time and user experience.
+media-cdm-clear-lead = Titkosítatlan kezdet
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = HDCP 2.2 kompatibilis
+
 ##
 
 intl-title = Nemzetköziesítés és honosítás
@@ -265,6 +282,7 @@ try-newer-driver = Ezzel a grafikus illesztőprogrammal nem engedélyezett az eg
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType-paraméterek
 compositing = Kompozitálás
+support-font-determination = Betűtípus láthatóságának hibakeresési információi
 hardware-h264 = Hardveres H264-dekódolás
 main-thread-no-omtc = fő szál, nincs OMTC
 yes = Igen
@@ -410,3 +428,15 @@ pointing-device-mouse = Egér
 pointing-device-touchscreen = Érintőképernyő
 pointing-device-pen-digitizer = Digitalizáló toll
 pointing-device-none = Nincsenek mutatóeszközök
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = Tartalomelemzés (DLP)
+content-analysis-active = Aktív
+content-analysis-connected-to-agent = Kapcsolódva az ügynökhöz
+content-analysis-agent-path = Ügynök útvonala
+content-analysis-agent-failed-signature-verification = Az ügynök nem ment át az aláírás-ellenőrzésen
+content-analysis-request-count = Kérések száma

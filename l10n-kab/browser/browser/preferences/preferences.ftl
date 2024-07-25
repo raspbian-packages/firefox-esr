@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Af deg yiɣewwaren
 managed-notice = Iminig-ik tessefrak-it tuddsa-ik.
+managed-notice-info-icon =
+    .alt = Talɣut
 category-list =
     .aria-label = Taggayin
 pane-general-title = Amatu
@@ -227,6 +229,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Tifranin-ik•im n yiniten ttbeddilent arwes n usmel web. <a data-l10n-name="colors-link">Sefrek initen</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Tifranin-ik•im n yiniten ttbeddilent arwes n usmel web.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Sefrek isental n { -brand-short-name } deg <a data-l10n-name="themes-link">yiseɣzaf & yisental</a>
@@ -612,6 +618,9 @@ search-suggestions-desc = Fren amek ara d-banen isumar deg yimseddayen n unadi.
 search-suggestions-option =
     .label = Sken isumar n unadi
     .accesskey = S
+search-show-suggestions-option =
+    .label = Sken isumar n unadi
+    .accesskey = S
 search-show-suggestions-url-bar-option =
     .label = Sken isumar n unadi deg ugmuḍ n ufeggag n tansa
     .accesskey = u
@@ -693,6 +702,11 @@ sync-mobile-promo = Sader Firefox i <img data-l10n-name="android-icon"/> <a data
 
 sync-profile-picture =
     .tooltiptext = Beddel tugna n umaɣnu
+sync-profile-picture-with-alt =
+    .tooltiptext = Beddel tugna n umaɣnu
+    .alt = Beddel tugna n umaɣnu
+fxa-login-rejected-warning =
+    .alt = Alɣu
 sync-sign-out =
     .label = Ffeɣ…
     .accesskey = F
@@ -745,8 +759,10 @@ sync-currently-syncing-bookmarks = Ticraḍ n yisebtar
 sync-currently-syncing-history = Azray
 sync-currently-syncing-tabs = Ldi iccaren
 sync-currently-syncing-logins-passwords = Inekcam d wawalen uffiren
+sync-currently-syncing-passwords = Awalen uffiren
 sync-currently-syncing-addresses = Tansiwin
 sync-currently-syncing-creditcards = Tikarḍiwin n usmad
+sync-currently-syncing-payment-methods = Tarrayin n uxelleṣ
 sync-currently-syncing-addons = Izegrar
 sync-currently-syncing-settings = Iɣewwaren
 sync-change-options =
@@ -854,6 +870,9 @@ forms-fill-logins-and-passwords =
 forms-saved-logins =
     .label = Inekcumen yettwakelsen…
     .accesskey = e
+forms-saved-passwords =
+    .label = Awalen uffiren yettwakelsen
+    .accesskey = d
 forms-primary-pw-use =
     .label = Seqdec awal uffir agejdan
     .accesskey = U
@@ -892,6 +911,10 @@ master-password-os-auth-dialog-caption = { -brand-full-name }
 ## Privacy section - Autofill
 
 pane-privacy-autofill-header = Taččart tawurmant
+autofill-addresses-checkbox = Sekles; teččareḍ tansiwin
+    .accesskey = a
+autofill-saved-addresses-button = Tansiwin ittwakelsen
+    .accesskey = T
 
 ## Privacy Section - History
 
@@ -1022,10 +1045,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Tigawin tiruradin
     .accesskey = T
+addressbar-suggestions-settings = Snifel ismenyifen i yisumar n umsedday n unadi
 addressbar-locbar-showrecentsearches-option =
     .label = Sken inadiyen imaynuten
     .accesskey = m
-addressbar-suggestions-settings = Snifel ismenyifen i yisumar n umsedday n unadi
 addressbar-quickactions-learn-more = Issin ugar
 
 ## Privacy Section - Content Blocking
@@ -1194,6 +1217,8 @@ addon-recommendations-link = Issin ugar
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Aneqqis n isefka ur irmid ara i uswel-a n usefsu
 collection-backlogged-crash-reports-with-link = Sireg { -brand-short-name } ad yazen ineqqisen n uɣelluy deg ugilal s yisem-ik·im <a data-l10n-name="crash-reports-link">Issin ugar</a>
+    .accesskey = g
+collection-backlogged-crash-reports = Sireg { -brand-short-name } ad yazen ineqqisen n uɣelluy deg ugilal s yisem-ik·im
     .accesskey = g
 privacy-segmentation-section-header = Timahilin timaynutin ara isselhun tunigin
 privacy-segmentation-section-description = Mi ara d-nmudd timahilin ara isseqdacen isefka-k•m i wakken ad ak•am-nmudd ugar n tirmit tudmawat:

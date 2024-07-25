@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Importovať z prehliada
 mr1-onboarding-theme-header = Prispôsobte si ho podľa seba
 mr1-onboarding-theme-subtitle = Zmeňte vzhľad { -brand-short-name(case: "gen") } pomocou témy vzhľadu.
 mr1-onboarding-theme-secondary-button-label = Teraz nie
+newtab-wallpaper-onboarding-title = Vyskúšajte nádych farieb
+newtab-wallpaper-onboarding-subtitle = Vyberte tapetu, ktorá dodá každej vašej novej karte svieži vzhľad.
+newtab-wallpaper-onboarding-primary-button-label = Nastaviť tapetu
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Systémová téma
 mr1-onboarding-theme-label-light = Svetlá
@@ -343,3 +346,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Počas synchronizáci
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } vám kryje chrbát
 onboarding-gratitude-security-and-privacy-subtitle = Ďakujeme, že používate { -brand-short-name } podporovaný Mozilla Foundation. S vašou podporou pracujeme na tom, aby bol internet bezpečnejší a prístupnejší pre každého.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Ako dlho používate { -brand-short-name }?
+onboarding-new-user-familiarity-based-survey-title = Ako dobre poznáte prehliadač { -brand-short-name }?
+onboarding-new-user-survey-subtitle = Vaša spätná väzba pomáha ešte viac vylepšiť { -brand-short-name }.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Ďalej
+onboarding-new-user-survey-legal-link-label = Voľbou možnosti “{ onboarding-new-user-survey-next-button-label }” súhlasíte s <a data-l10n-name="privacy_notice">Vyhlásením o ochrane osobných údajov</a> { -brand-product-name(case: "gen") }.
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Som úplný nováčik
+onboarding-new-user-survey-time-based-option-2 = Menej ako 1 mesiac
+onboarding-new-user-survey-time-based-option-3 = Viac ako 1 mesiac, pravidelne
+onboarding-new-user-survey-time-based-option-4 = Viac ako 1 mesiac, príležitostne
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Som úplný nováčik
+onboarding-new-user-survey-familiarity-based-option-2 = Už som ho trochu používal
+onboarding-new-user-survey-familiarity-based-option-3 = Poznám ho dobre
+onboarding-new-user-survey-familiarity-based-option-4 = Používal som ho v minulosti, ale už je to dávno

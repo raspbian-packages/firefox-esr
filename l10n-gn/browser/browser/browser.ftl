@@ -570,6 +570,11 @@ urlbar-result-action-search-w-engine = Eheka { $engine } ndive
 urlbar-result-action-sponsored = Pytyvõpyréva
 urlbar-result-action-switch-tab = Tendayképe jeguerova
 urlbar-result-action-visit = Jeho
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Emoambue tendayke · <span>{ $container }</span>-pe
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Jeike kuatiajokoha guive
 # Directs a user to press the Tab key to perform a search with the specified
@@ -599,6 +604,12 @@ urlbar-result-action-copy-to-clipboard = Monguatia
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Eheka { $engine } ndive
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -894,6 +905,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>¿Embojuruja tendayke mboyveguáva?</strong> Ehechajeykuaa ne rembiapokue tembiporu’i poravorã guive { -brand-short-name } <img data-l10n-name="icon"/>, Rembiasakuépe.
 restore-session-startup-suggestion-button = Ehechauka mba’éichapa
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Nde atyguasu ojokóma marandurendápe jeike ko mohendaha pegua.
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } oguerahauka ijeheguite heta mba’e { -vendor-short-name }-pe ikatuhápe iñakãpu’ã tembihasakue.
@@ -902,6 +917,15 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Kundaha ñemigua
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Mba’éicha emboykéta mba’ekuaarã ñehundi (DLP) { $agentName } rupi. Eikutu ápe eikuaave hag̃ua.
+content-analysis-panel-title = Mba’ekuaarã ñemo’ã
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Nde atyguasu oiporu { $agentName } oñemo’ã hag̃ua mba’ekuaarã ñehundígui. <a data-l10n-name="info">Eikuaave</a>
 
 ## Unified extensions (toolbar) button
 

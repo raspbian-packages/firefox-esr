@@ -9059,6 +9059,11 @@
   value: 32
   mirror: always
 
+- name: layout.cursor.disable-for-popups
+  type: bool
+  value: true
+  mirror: always
+
 - name: layout.display-list.build-twice
   type: RelaxedAtomicBool
   value: false
@@ -11146,6 +11151,13 @@
   value: true
   mirror: always
 
+# When this is true, the protection mask that Firefox replies to Widevine API
+# QueryOutputProtectionStatus is `kProtectionHDCP` when no potential capturing.
+- name: media.widevine.hdcp-protection-mask
+  type: RelaxedAtomicBool
+  value: true
+  mirror: always
+
 #---------------------------------------------------------------------------
 # Prefs starting with "midi."
 #---------------------------------------------------------------------------
@@ -11431,6 +11443,12 @@
   value: true
   mirror: always
 
+# If true content types of multipart/x-mixed-replace cannot set a cookie
+- name: network.cookie.prevent_set_cookie_from_multipart
+  type: RelaxedAtomicBool
+  value: true
+  mirror: always
+
 # If we should attempt to race the cache and network.
 - name: network.http.rcwn.enabled
   type: bool
@@ -11656,6 +11674,12 @@
 - name: network.http.largeKeepaliveFactor
   type: RelaxedAtomicUint32
   value: 10
+  mirror: always
+
+# Max size, in bytes, for received HTTP response header.
+- name: network.http.max_response_header_size
+  type: RelaxedAtomicUint32
+  value: 393216
   mirror: always
 
 # This preference, if true, causes all UTF-8 domain names to be normalized to

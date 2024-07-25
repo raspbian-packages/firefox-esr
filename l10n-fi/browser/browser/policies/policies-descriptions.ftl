@@ -12,10 +12,13 @@
 
 policy-3rdparty = Aseta käytäntöjä, joita WebExtensionit voivat käyttää chrome.storage.managed-objektin kautta.
 policy-AllowedDomainsForApps = Määritä verkkotunnukset, joilla on pääsy Google Workspaceen.
+policy-AllowFileSelectionDialogs = Salli tiedostojen valintaikkunat.
 policy-AppAutoUpdate = Käytä tai poista käytöstä sovelluksen automaattiset päivitykset.
 policy-AppUpdatePin = Estä { -brand-short-name }in päivitykset määritettyä versiota uudemmaksi.
 policy-AppUpdateURL = Aseta oma sovelluksen päivittämisen URL-osoite.
 policy-Authentication = Määritä sisäänrakennettu tunnistautuminen sivustoille, jotka tukevat sitä.
+policy-AutofillAddressEnabled = Ota osoitteiden automaattinen täyttö käyttöön.
+policy-AutofillCreditCardEnabled = Ota maksutapojen automaattinen täyttö käyttöön.
 policy-AutoLaunchProtocolsFromOrigins = Määritä lista ulkoisista yhteyskäytännöistä, joita voi käyttää määrätyistä lähteistä kysymättä lupaa käyttäjältä.
 policy-BackgroundAppUpdate2 = Ota käyttöön tai poista käytöstä taustalla suoritettavien päivitysten toiminnallisuus.
 policy-BlockAboutAddons = Estä pääsy lisäosien hallintaan (about:addons).
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = Estä pääsy about:support-sivulle.
 policy-Bookmarks = Luo kirjanmerkkejä kirjanmerkkipalkkiin, Kirjanmerkit-valikkoon tai tiettyyn kansioon niiden sisälle.
 policy-CaptivePortal = Ota käyttöön tai poista käytöstä vahtiportaalien tuki.
 policy-CertificatesDescription = Lisää varmenteita tai käytä sisäänrakennettuja varmenteita.
+policy-ContentAnalysis = Yhdistä tai poista yhteys tietojen menetyksen estämisen agenttiin.
 policy-Cookies = Salli tai estä, että sivustot asettavat evästeitä.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Aseta eristystiloihin liittyvät käytännöt.
@@ -37,6 +41,8 @@ policy-DisableDefaultBrowserAgent = Estä oletusselainagenttia tekemästä mitä
 policy-DisableDeveloperTools = Estä pääsy web-työkaluihin.
 policy-DisableFeedbackCommands = Estä komennot, joilla voi antaa palautetta Ohje-valikosta (Anna palautetta ja Ilmoita petollinen sivusto).
 policy-DisableFirefoxAccounts = Poista käytöstä { -fxaccount-brand-name }-pohjaiset palvelut, mukaan lukien Sync.
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = Poista käytöstä tilipohjaiset palvelut, mukaan lukien synkronointi.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Poista Firefox Screenshots -ominaisuus käytöstä.
 policy-DisableFirefoxStudies = Estä { -brand-short-name } suorittamasta tutkimuksia.
@@ -121,6 +127,7 @@ policy-SSLVersionMax = Aseta SSL:n enimmäisversio.
 policy-SSLVersionMin = Aseta SSL:n vähimmäisversio.
 policy-StartDownloadsInTempDirectory = Pakota lataukset alkamaan paikallisesta väliaikaisesta sijainnista oletusarvoisen latauskansion sijaan.
 policy-SupportMenu = Lisää Ohje-valikkoon oma valikkokohta tukea varten.
+policy-TranslateEnabled = Ota käyttöön verkkosivun käännös tai poista se käytöstä.
 policy-UserMessaging = Älä näytä tiettyjä viestejä käyttäjälle.
 policy-UseSystemPrintDialog = Tulosta käyttäen järjestelmän tulostusikkunaa.
 # “format” refers to the format used for the value of this policy.

@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Procurar em configurações
 managed-notice = Seu navegador está sendo gerenciado por nossa organização.
+managed-notice-info-icon =
+    .alt = informações
 category-list =
     .aria-label = Categorias
 pane-general-title = Geral
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Remover este contêiner
 containers-remove-cancel-button = Não remover este contêiner
+settings-tabs-show-image-in-preview =
+    .label = Exibir uma imagem prévia ao passar o mouse sobre uma aba
+    .accessKey = b
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Sua seleção de cores está sobrepondo a aparência de sites. <a data-l10n-name="colors-link">Gerenciar cores</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Sua seleção de cores está sobrepondo a aparência de sites.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Gerencie temas do { -brand-short-name } em <a data-l10n-name="themes-link">Extensões e temas</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Zoom só no texto
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Aviso: Se você selecionar “Zoom apenas no texto” e o zoom padrão não estiver definido como 100%, pode atrapalhar alguns sites ou conteúdos.
 language-header = Idioma
 choose-language-description = Escolha o idioma preferido para exibir páginas
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Recomendado pelo { $provider }
 home-prefs-recommended-by-description-new = Conteúdo excepcional selecionado pelo { $provider }, parte da família { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Histórias recomendadas
+home-prefs-recommended-by-description-generic = Conteúdo excepcional selecionado pela família { -brand-product-name }
 
 ##
 
@@ -678,7 +692,7 @@ containers-remove-button =
 ## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Leve a web com você
-sync-signedout-description2 = Sincronize seus favoritos, histórico, abas, senhas, extensões e configurações entre todos os seus dispositivos.
+sync-signedout-description2 = Sincronize seus favoritos, histórico, abas, senhas, extensões e configurações em todos os seus dispositivos.
 sync-signedout-account-signin3 =
     .label = Entrar na conta para sincronizar…
     .accesskey = E
@@ -696,6 +710,13 @@ sync-mobile-promo = Instale o Firefox no <img data-l10n-name="android-icon"/> <
 
 sync-profile-picture =
     .tooltiptext = Alterar imagem do perfil
+sync-profile-picture-with-alt =
+    .tooltiptext = Alterar imagem do perfil
+    .alt = Alterar imagem do perfil
+sync-profile-picture-account-problem =
+    .alt = Imagem do perfil da conta
+fxa-login-rejected-warning =
+    .alt = Alerta
 sync-sign-out =
     .label = Desconectar…
     .accesskey = D
@@ -730,7 +751,7 @@ prefs-syncing-off = Sincronização: DESATIVADA
 prefs-sync-turn-on-syncing =
     .label = Ativar sincronização…
     .accesskey = s
-prefs-sync-offer-setup-label2 = Sincronize seus favoritos, histórico, abas, senhas, extensões e configurações entre todos os seus dispositivos.
+prefs-sync-offer-setup-label2 = Sincronize seus favoritos, histórico, abas, senhas, extensões e configurações em todos os seus dispositivos.
 prefs-sync-now =
     .labelnotsyncing = Sincronizar agora
     .accesskeynotsyncing = n
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Apagar cookies e dados de sites quando o { -brand-short-name } for fechado
     .accesskey = c
 sitedata-delete-on-close-private-browsing = No modo de navegação privativa permanente, cookies e dados de sites são sempre limpos quando o { -brand-short-name } é fechado.
+sitedata-delete-on-close-private-browsing2 = Com base nas configurações do histórico, o { -brand-short-name } exclui cookies e dados de sites de sua sessão quando você fecha o navegador.
 sitedata-allow-cookies-option =
     .label = Aceitar cookies e dados de sites
     .accesskey = A
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Ações rápidas
     .accesskey = A
+addressbar-suggestions-settings = Alterar preferências de sugestões de mecanismos de pesquisa
 addressbar-locbar-showrecentsearches-option =
     .label = Mostrar pesquisas recentes
     .accesskey = r
-addressbar-suggestions-settings = Alterar preferências de sugestões de mecanismos de pesquisa
 addressbar-quickactions-learn-more = Saiba mais
 
 ## Privacy Section - Content Blocking
@@ -1262,6 +1284,8 @@ addon-recommendations-link = Saiba mais
 collection-health-report-disabled = O relatório de dados está desativado nesta configuração
 collection-backlogged-crash-reports-with-link = Permitir que o { -brand-short-name } envie, em seu nome, relatórios acumulados de falhas <a data-l10n-name="crash-reports-link">Saiba mais</a>
     .accesskey = f
+collection-backlogged-crash-reports = Permitir que o { -brand-short-name } envie, em seu nome, relatórios acumulados de falhas
+    .accesskey = f
 privacy-segmentation-section-header = Novos recursos que aprimoram sua navegação
 privacy-segmentation-section-description = Quando oferecemos recursos que usam seus dados para oferecer uma experiência de uso mais pessoal:
 privacy-segmentation-radio-off =
@@ -1374,7 +1398,7 @@ preferences-doh-checkbox-warn =
     .label = Avisar se um terceiro impedir DNS seguro ativamente
     .accesskey = v
 preferences-doh-select-resolver = Escolher provedor:
-preferences-doh-exceptions-description = O { -brand-short-name } não usará DNS seguro nesses sites
+preferences-doh-exceptions-description = O { -brand-short-name } não usa DNS seguro nos sites da lista de exceções
 preferences-doh-manage-exceptions =
     .label = Gerenciar exceções…
     .accesskey = x

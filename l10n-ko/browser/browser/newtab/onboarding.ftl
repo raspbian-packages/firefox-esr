@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = { $previous }에서 가
 mr1-onboarding-theme-header = 나만의 것으로 만드세요
 mr1-onboarding-theme-subtitle = 테마로 { -brand-short-name }를 개인화하세요.
 mr1-onboarding-theme-secondary-button-label = 나중에
+newtab-wallpaper-onboarding-title = 배경 화면 사용해보기
+newtab-wallpaper-onboarding-subtitle = 새 탭에 새로운 모습을 더할 배경 화면을 선택하세요.
+newtab-wallpaper-onboarding-primary-button-label = 배경 화면 설정
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = 시스템 테마
 mr1-onboarding-theme-label-light = 밝게
@@ -343,3 +346,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = 동기화되면 { -br
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name }가 여러분을 도와드립니다.
 onboarding-gratitude-security-and-privacy-subtitle = Mozilla 재단이 지원하는 { -brand-short-name }를 사용해 주셔서 감사합니다. 여러분의 지원으로 우리는 인터넷을 더 안전하고 더 쉽게 이용할 수 있도록 노력하고 있습니다.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = { -brand-short-name }를 얼마나 오랫동안 사용하셨습니까?
+onboarding-new-user-familiarity-based-survey-title = { -brand-short-name }에 대해 얼마나 잘 알고 계십니까?
+onboarding-new-user-survey-subtitle = 사용자의 의견은 { -brand-short-name }를 더욱 개선하는 데 도움이 됩니다.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = 다음
+onboarding-new-user-survey-legal-link-label = “{ onboarding-new-user-survey-next-button-label }”을 선택하면, { -brand-product-name }의 <a data-l10n-name="privacy_notice">개인정보처리방침</a>에 동의하게 됩니다.
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = 완전 새내기
+onboarding-new-user-survey-time-based-option-2 = 1개월 미만
+onboarding-new-user-survey-time-based-option-3 = 1개월 이상 정기적으로
+onboarding-new-user-survey-time-based-option-4 = 1개월 이상 가끔
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = 완전 새내기
+onboarding-new-user-survey-familiarity-based-option-2 = 사용해 본 적이 있음
+onboarding-new-user-survey-familiarity-based-option-3 = 매우 익숙함
+onboarding-new-user-survey-familiarity-based-option-4 = 예전에 사용했지만 시간이 좀 지남

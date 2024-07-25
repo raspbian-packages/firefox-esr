@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Sykmasine tafoegje
 newtab-topsites-add-shortcut-header = Nije fluchkeppeling
 newtab-topsites-edit-topsites-header = Topwebsite tafoegje
 newtab-topsites-edit-shortcut-header = Fluchkeppeling bewurkje
+newtab-topsites-add-shortcut-label = Fluchkeppeling tafoegje
 newtab-topsites-title-label = Titel
 newtab-topsites-title-input =
     .placeholder = Titel ynfiere
@@ -198,6 +199,7 @@ newtab-section-header-recent-activity = Resinte aktiviteit
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Oanrekommandearre troch { $provider }
+newtab-section-header-stories = Ferhalen dy’t ta neitinken stimme
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -206,6 +208,8 @@ newtab-empty-section-highlights = Start mei sneupen en wy toane jo guon moaie ar
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Jo binne by. Kom letter werom foar mear ferhalen fan { $provider }. Kin jo net wachtsje? Selektearje in populêr ûnderwerp om mear ferhalen fan it ynternet te finen.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Jo binne wer by. Kom letter werom foar mear ferhalen. Kin jo net wachtsje? Selektearje in populêr ûnderwerp om mear bjusterbaarlike ferhalen fan it hiele web te finen.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -258,9 +262,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Sponsore fluchkeppelingen
 newtab-custom-pocket-title = Oanrekommandearre troch { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Utsûnderlike ynhâld, gearstald troch { -pocket-brand-name }, ûnderdiel fan de { -brand-product-name }-famylje
-newtab-custom-pocket-toggle =
-    .label = Oanrekommandearre troch { -pocket-brand-name }
-    .description = Utsûnderlike ynhâld, gearstald troch { -pocket-brand-name }, ûnderdiel fan de { -brand-product-name }-famylje
+newtab-custom-stories-toggle =
+    .label = Oanrekommandearre ferhalen
+    .description = Utsûnderlike ynhâld, sammele troch de { -brand-product-name }-famylje
 newtab-custom-pocket-sponsored = Sponsore ferhalen
 newtab-custom-pocket-show-recent-saves = Koartlyn bewarre items toane
 newtab-custom-recent-title = Resinte aktiviteit
@@ -270,3 +274,24 @@ newtab-custom-recent-toggle =
     .description = In seleksje fan resinte websites en ynhâld
 newtab-custom-close-button = Slute
 newtab-custom-settings = Mear ynstellingen beheare
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Eftergrûnen
+newtab-wallpaper-reset = Standertwearden
+newtab-wallpaper-light-red-panda = Reade panda
+newtab-wallpaper-light-mountain = Wite berch
+newtab-wallpaper-light-sky = Himel mei pearze en rôze wolken
+newtab-wallpaper-light-color = Blauwe, rôze en giele foarmen
+newtab-wallpaper-light-landscape = Berch lânskip mei blauwe mist
+newtab-wallpaper-light-beach = Strân mei palmbeam
+newtab-wallpaper-dark-aurora = Noarderljocht
+newtab-wallpaper-dark-color = Reade en blauwe foarmen
+newtab-wallpaper-dark-panda = Reade panda ferburgen yn bosk
+newtab-wallpaper-dark-sky = Stedslânskip mei in nachthimel
+newtab-wallpaper-dark-mountain = Lânskip mei berch
+newtab-wallpaper-dark-city = Pears stêdslânskip
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Foto troch <a data-l10n-name="name-link">{ $author_string }</a> op <a data-l10n-name="webpage-link">{ $webpage_string }</a>

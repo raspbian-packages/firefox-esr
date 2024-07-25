@@ -117,6 +117,8 @@ about-logins-intro-import2 = Zure saio-hasierak { -brand-product-name }(e)tik ka
 ## Login
 
 login-item-new-login-title = Sortu saio-hasiera berria
+# Header for adding a password
+about-logins-login-item-new-login-title = Gehitu pasahitza
 login-item-edit-button = Editatu
 about-logins-login-item-remove-button = Kendu
 login-item-origin-label = Webgunearen helbidea
@@ -134,6 +136,7 @@ login-item-password-reveal-checkbox =
 login-item-copy-password-button-text = Kopiatu
 login-item-copied-password-button-text = Kopiatuta!
 login-item-save-changes-button = Gorde aldaketak
+about-logins-login-item-save-changes-button = Gorde
 login-item-save-new-button = Gorde
 login-item-cancel-button = Utzi
 
@@ -161,6 +164,8 @@ about-logins-edit-login-os-auth-dialog-message-win = Zure saio-hasiera editatzek
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-edit-login-os-auth-dialog-message-macosx = editatu gordetako saio-hasiera
+# This message can be seen when attempting to edit a login in about:logins on Windows.
+about-logins-edit-login-os-auth-dialog-message2-win = Zure pasahitza aldatzeko, sartu zure Windows kredentzialak. Honek zure kontuen segurtasuna babesten laguntzen du.
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-edit-login-os-auth-dialog-message2-macosx = editatu gordetako pasahitza
@@ -179,6 +184,8 @@ about-logins-export-password-os-auth-dialog-message-win = Zure saio-hasierak esp
 # This message can be seen when attempting to export a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-export-password-os-auth-dialog-message-macosx = esportatu gordetako saio-hasiera eta pasahitzak
+# This message can be seen when attempting to export a password in about:logins on Windows.
+about-logins-export-password-os-auth-dialog-message2-win = Zure pasahitzak esportatzeko, sartu zure Windows kredentzialak. Honek zure kontuen segurtasuna babesten laguntzen du.
 # This message can be seen when attempting to export a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-export-password-os-auth-dialog-message2-macosx = esportatu gordetako pasahitzak
@@ -257,6 +264,7 @@ about-logins-confirm-remove-all-dialog-title2 =
 about-logins-confirm-export-dialog-title = Esportatu saio-hasierak eta pasahitzak
 about-logins-confirm-export-dialog-message = Zure pasahitzak testu irakurgarri modura gordeko dira (adib. P@sahitz3skas4) beraz esportatutako fitxategia ireki dezakeen orok ikusi ahal izango ditu.
 about-logins-confirm-export-dialog-confirm-button = Esportatu…
+about-logins-confirm-export-dialog-title2 = Pasahitzak esportatzeari buruzko oharra
 about-logins-confirm-export-dialog-confirm-button2 = Jarraitu esportazioarekin
 about-logins-alert-import-title = Inportazioa burutu da
 about-logins-alert-import-message = Ikusi inportazioaren laburpen xehatua
@@ -353,6 +361,21 @@ about-logins-import-dialog-items-no-change =
     { $count ->
        *[other] <span>Bikoiztutako saio-hasierak aurkitu dira:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(ez dira inportatu)</span>
     }
+about-logins-import-dialog-items-added2 =
+    { $count ->
+        [one] <span>Pasahitz berria gehituta:</span> <span data-l10n-name="count">{ $count }</span>
+       *[other] <span>Pasahitz berriak gehituta:</span> <span data-l10n-name="count">{ $count }</span>
+    }
+about-logins-import-dialog-items-modified2 =
+    { $count ->
+        [one] <span>Lehendik dagoen sarrera eguneratuta:</span> <span data-l10n-name="count">{ $count }</span>
+       *[other] <span>Lehendik dauden sarrerak eguneratuta:</span> <span data-l10n-name="count">{ $count }</span>
+    }
+about-logins-import-dialog-items-no-change2 =
+    { $count ->
+        [one] <span>Bikoiztutako sarrera aurkitu da:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(ez da inportatu)</span>
+       *[other] <span>Bikoiztutako sarrerak aurkitu dira:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(ez dira inportatu)</span>
+    }
 about-logins-import-dialog-items-error =
     { $count ->
        *[other] <span>Erroreak:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(ez dira inportatu)</span>
@@ -373,6 +396,7 @@ about-logins-import-dialog-error-try-import-again = Saiatu berriz inportatzen…
 about-logins-import-dialog-error-cancel = Utzi
 about-logins-import-report-title = Inportazioaren laburpena
 about-logins-import-report-description = Saio-hasiera eta pasahitzak { -brand-short-name }(e)ra inportatu dira.
+about-logins-import-report-description2 = Pasahitzak { -brand-short-name }(e)ra inportatu dira.
 #
 # Variables:
 #  $number (number) - The number of the row
@@ -380,6 +404,8 @@ about-logins-import-report-row-index = { $number }. errenkada
 about-logins-import-report-row-description-no-change = Bikoiztua: lehendik dagoen saio-hasiera batekin bat dator
 about-logins-import-report-row-description-modified = Lehendik dagoen saio-hasiera eguneratuta
 about-logins-import-report-row-description-added = Saio-hasiera berria gehituta
+about-logins-import-report-row-description-no-change2 = Bikoiztua: lehendik dagoen sarrera batekin bat dator
+about-logins-import-report-row-description-modified2 = Lehendik dagoen sarrera eguneratu da
 about-logins-import-report-row-description-added2 = Pasahitz berria gehituta
 about-logins-import-report-row-description-error = Errorea: eremua falta da
 
@@ -405,6 +431,21 @@ about-logins-import-report-modified =
 about-logins-import-report-no-change =
     { $count ->
        *[other] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">Saio-hasiera bikoiztu</div> <div data-l10n-name="not-imported">(ez dira inportatu)</div>
+    }
+about-logins-import-report-added2 =
+    { $count ->
+        [one] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">pasahitz berri gehitu da</div>
+       *[other] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">pasahitz berri gehitu dira</div>
+    }
+about-logins-import-report-modified2 =
+    { $count ->
+        [one] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">sarrera eguneratu da (lehendik zegoen)</div>
+       *[other] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">sarrera eguneratu dira (lehendik zeudenak)</div>
+    }
+about-logins-import-report-no-change2 =
+    { $count ->
+        [one] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">sarrera bikoiztu</div> <div data-l10n-name="not-imported">(ez da inportatu)</div>
+       *[other] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">sarrera bikoiztu</div> <div data-l10n-name="not-imported">(ez dira inportatu)</div>
     }
 about-logins-import-report-error =
     { $count ->

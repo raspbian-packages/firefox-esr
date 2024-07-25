@@ -15,6 +15,10 @@ fxviewtabrow-time = { DATETIME($time, timeStyle: "short") }
 fxviewtabrow-tabs-list-tab =
     .title = Abrir { $targetURI } en una pestaña nueva
 # Variables:
+#   $tabTitle (string) - Title of tab being closed
+fxviewtabrow-close-tab-button =
+    .title = Cerrar { $tabTitle }
+# Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 fxviewtabrow-dismiss-tab-button =
     .title = Ocultar { $tabTitle }
@@ -51,7 +55,30 @@ fxviewtabrow-move-tab-window = Mover a una nueva ventana
     .accesskey = W
 fxviewtabrow-send-tab = Enviar pestaña a dispositivo
     .accesskey = n
+fxviewtabrow-pin-tab = Fijar pestaña
+    .accesskey = P
+fxviewtabrow-unpin-tab = Soltar pestaña
+    .accesskey = p
+fxviewtabrow-mute-tab = Silenciar pestaña
+    .accesskey = M
+fxviewtabrow-unmute-tab = Desilenciar pestaña
+    .accesskey = m
 # Variables:
 #   $tabTitle (string) - Title of the tab to which the context menu is associated
 fxviewtabrow-options-menu-button =
     .title = Opciones para { $tabTitle }
+# Variables:
+#   $tabTitle (string) - Title of tab being muted
+fxviewtabrow-mute-tab-button =
+    .title = Silenciar { $tabTitle }
+# Variables:
+#   $tabTitle (string) - Title of tab being unmuted
+fxviewtabrow-unmute-tab-button =
+    .title = Desilenciar { $tabTitle }
+
+## Strings below are to be used without context (tab title/URL) on mute/unmute buttons
+
+fxviewtabrow-mute-tab-button-no-context =
+    .title = Silenciar pestaña
+fxviewtabrow-unmute-tab-button-no-context =
+    .title = Desilenciar pestaña

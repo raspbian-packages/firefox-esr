@@ -12,10 +12,13 @@
 
 policy-3rdparty = Ustawienie zasad, do których rozszerzenia WebExtension mają dostęp przez „chrome.storage.managed”.
 policy-AllowedDomainsForApps = Określenie domen, które mają dostęp do Google Workspace.
+policy-AllowFileSelectionDialogs = Zezwalanie na okna wyboru plików.
 policy-AppAutoUpdate = Włączenie lub wyłączenie automatycznego aktualizowania aplikacji.
 policy-AppUpdatePin = Uniemożliwienie programowi { -brand-short-name } aktualizowania poza podaną wersję.
 policy-AppUpdateURL = Ustawienie niestandardowego adresu URL aktualizacji programu.
 policy-Authentication = Konfiguracja zintegrowanego uwierzytelniania dla witryn, które je obsługują.
+policy-AutofillAddressEnabled = Włączenie automatycznego wypełniania adresów.
+policy-AutofillCreditCardEnabled = Włączenie automatycznego wypełniania metod płatności.
 policy-AutoLaunchProtocolsFromOrigins = Określenie listy zewnętrznych protokołów, które mogą być używane z wymienionych źródeł bez pytania użytkownika.
 policy-BackgroundAppUpdate2 = Włączenie lub wyłączenie aktualizatora w tle.
 policy-BlockAboutAddons = Blokowanie dostępu do menedżera dodatków (about:addons).
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = Blokowanie dostępu do strony about:support.
 policy-Bookmarks = Tworzenie zakładek na pasku zakładek, w menu zakładek lub w podanym folderze w powyższych.
 policy-CaptivePortal = Włączenie lub wyłączenie obsługi portalu przechwytującego.
 policy-CertificatesDescription = Dodawanie certyfikatów lub używanie wbudowanych.
+policy-ContentAnalysis = Włączenie lub wyłączenie połączenia z agentem zapobiegającym utracie danych.
 policy-Cookies = Zezwalanie lub zabranianie witrynom ustawiania ciasteczek.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Ustawianie zasad związanych z kontekstami.
@@ -121,6 +125,7 @@ policy-SSLVersionMax = Ustawienie maksymalnej wersji SSL.
 policy-SSLVersionMin = Ustawienie minimalnej wersji SSL.
 policy-StartDownloadsInTempDirectory = Wymuszenie rozpoczynania pobierania w lokalnym, tymczasowym położeniu zamiast w domyślnym katalogu pobierania.
 policy-SupportMenu = Dodanie niestandardowego elementu menu pomocy.
+policy-TranslateEnabled = Włączenie lub wyłączenie tłumaczenia stron.
 policy-UserMessaging = Wyłączenie wyświetlania użytkownikowi pewnych komunikatów.
 policy-UseSystemPrintDialog = Drukowanie za pomocą systemowego okna drukowania.
 # “format” refers to the format used for the value of this policy.

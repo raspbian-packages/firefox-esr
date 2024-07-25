@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = W nastajenjach pytaś
 managed-notice = Waš wobglědowak se wót wašeje organizacije zastoj.
+managed-notice-info-icon =
+    .alt = Informacije
 category-list =
     .aria-label = Kategorije
 pane-general-title = Powšykne
@@ -209,6 +211,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Toś ten kontejner wótwónoźeś
 containers-remove-cancel-button = Toś ten kontejner njewótwónoźeś
+settings-tabs-show-image-in-preview =
+    .label = Wobrazowy pśeglěd pokazaś, gaž sćo nad rejtarikom
+    .accessKey = b
 
 ## General Section - Language & Appearance
 
@@ -233,6 +238,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Waše barwowe wuběrki naglěd websedła pśepisuju. <a data-l10n-name="colors-link">Barwy zastojaś</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Waše barwowe wuběrki naglěd websedła pśepisuju.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Drastwy { -brand-short-name } w <a data-l10n-name="themes-link">Rozšyrjenja a drastwy</a> zastojaś
@@ -260,6 +269,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Jano tekst skalěrowaś
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Glědajśo: Jolic „Jano tekst skalěrowaś“  wuběraśo a wašo standardne skalěrowanje njejo na 100 % nastajone, mógu problemy z někotarymi sedłami abo wopśimjeśim wustupowaś.
 language-header = Rěc
 choose-language-description = Wubjeŕśo swóju preferěrowanu rěc za zwobraznjenje bokow
 choose-button =
@@ -565,6 +576,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Wót { $provider } dopórucony
 home-prefs-recommended-by-description-new = Wósebne wopśimjeśe, wubrane pśez { $provider }, źěla swójźby { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Dopórucone tšojeńka
+home-prefs-recommended-by-description-generic = Wuwześowe wopśimjeśe, kótarež se pśez swójźbu { -brand-product-name } wótwardujo
 
 ##
 
@@ -704,6 +718,13 @@ sync-mobile-promo = Firefox za <img data-l10n-name="android-icon"/> <a data-l10n
 
 sync-profile-picture =
     .tooltiptext = Profilowy wobraz změniś
+sync-profile-picture-with-alt =
+    .tooltiptext = Profilowy wobraz změniś
+    .alt = Profilowy wobraz změniś
+sync-profile-picture-account-problem =
+    .alt = Kontowy profilowy wobraz
+fxa-login-rejected-warning =
+    .alt = Warnowanje
 sync-sign-out =
     .label = Wótzjawiś…
     .accesskey = t
@@ -1008,6 +1029,7 @@ sitedata-delete-on-close =
     .label = Cookieje a sedłowe daty wulašowaś, gaž se { -brand-short-name } zacynja
     .accesskey = s
 sitedata-delete-on-close-private-browsing = W stawnem priwatnem modusu se cookieje a sedłowe daty pśecej wulašuju, gaž se { -brand-short-name } zacynja.
+sitedata-delete-on-close-private-browsing2 = Na zakłaźe wašych nastajenjow { -brand-short-name } cookieje a sedłowe daty z wašogo pósejźenja lašujo, gaž wobglědowak zacynjaśo.
 sitedata-allow-cookies-option =
     .label = Cookieje a sedłowe daty akceptěrowaś
     .accesskey = C
@@ -1084,10 +1106,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Malsne akcije
     .accesskey = M
+addressbar-suggestions-settings = Nastajenja za naraźenja pytnice změniś
 addressbar-locbar-showrecentsearches-option =
     .label = Nejnowše pytanja pokazaś
     .accesskey = n
-addressbar-suggestions-settings = Nastajenja za naraźenja pytnice změniś
 addressbar-quickactions-learn-more = Dalšne informacije
 
 ## Privacy Section - Content Blocking
@@ -1269,6 +1291,8 @@ addon-recommendations-link = Dalšne informacije
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Datowe rozpšawjenje jo znjemóžnjone za toś tu programowu konfiguraciju
 collection-backlogged-crash-reports-with-link = { -brand-short-name } dowóliś, aby se njepósłane wowaleńske rozpšawy we wašom mjenju pósłali <a data-l10n-name="crash-reports-link">Dalšne informacije</a>
+    .accesskey = d
+collection-backlogged-crash-reports = { -brand-short-name } dowóliś, aby se njepósłane wowaleńske rozpšawy we wašom mjenju pósłali
     .accesskey = d
 privacy-segmentation-section-header = Nowe funkcije, kótarež wašo pśeglědowanje pólěpšaju
 privacy-segmentation-section-description = Gaž funkcije póbitujomy, kótarež waše daty wužywaju, aby my wam wěcej wósobinske dožywjenje bitowali:

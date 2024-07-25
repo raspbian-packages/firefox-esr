@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Ayarlarda ara
 managed-notice = Tarayıcınız kuruluşunuz tarafından yönetiliyor.
+managed-notice-info-icon =
+    .alt = Bilgi
 category-list =
     .aria-label = Kategoriler
 pane-general-title = Genel
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Kapsayıcıyı sil
 containers-remove-cancel-button = Kapsayıcıyı silme
+settings-tabs-show-image-in-preview =
+    .label = Bir sekmenin üzerine geldiğimde sekme ön izlemesini göster
+    .accessKey = ö
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Renk seçimleriniz web sitesi görünümünü geçersiz kılıyor. <a data-l10n-name="colors-link">Renkleri yönet</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Renk seçimleriniz web sitesi görünümünü geçersiz kılıyor.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = { -brand-short-name } temalarını <a data-l10n-name="themes-link">Uzantılar ve Temalar</a> sayfasından yönetebilirsiniz.
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Sadece metni yakınlaştır
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Uyarı: “Sadece metni yakınlaştır”ı seçerseniz ve varsayılan yakınlaştırmanız %100 olarak ayarlanmazsa bazı siteler ve içerikler düzgün görünmeyebilir.
 language-header = Dil
 choose-language-description = Sayfaları hangi dilde görmeyi tercih ettiğinizi seçin
 choose-button =
@@ -416,7 +427,7 @@ update-application-use-service =
     .label = Güncellemeleri yüklemek için arka plan hizmetini kullan
     .accesskey = h
 update-application-suppress-prompts =
-    .label = Güncelleme bildirimlerini daha az  göster
+    .label = Güncelleme bildirimlerini daha az göster
     .accesskey = G
 update-setting-write-failure-title2 = Güncelleme ayarları kaydedilirken hata oluştu
 # Variables:
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = { $provider } öneriyor
 home-prefs-recommended-by-description-new = { -brand-product-name } ailesinin bir parçası olan { $provider }’ın seçtiği harika içerikler
+home-prefs-recommended-by-header-generic =
+    .label = Önerilen makaleler
+home-prefs-recommended-by-description-generic = { -brand-product-name } ailesinin seçtiği harika içerikler
 
 ##
 
@@ -678,7 +692,7 @@ containers-remove-button =
 ## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Web’inizi yanınızda taşıyın
-sync-signedout-description2 = Yer imlerinizi, geçmişinizi, sekmelerinizi, parolalarınızı, eklentilerinizi ve ayarlarınızı tüm cihazlarınız arasında senkronize edin.
+sync-signedout-description2 = Yer imlerinizi, geçmişinizi, sekmelerinizi, parolalarınızı, eklentilerinizi ve ayarlarınızı tüm cihazlarınız arasında eşitleyin.
 sync-signedout-account-signin3 =
     .label = Eşitlemek için giriş yap…
     .accesskey = i
@@ -696,6 +710,13 @@ sync-mobile-promo = Mobil cihazınızla eşitleme yapmak isterseniz <img data-l1
 
 sync-profile-picture =
     .tooltiptext = Profil resmini değiştir
+sync-profile-picture-with-alt =
+    .tooltiptext = Profil resmini değiştir
+    .alt = Profil resmini değiştir
+sync-profile-picture-account-problem =
+    .alt = Hesap profil resmi
+fxa-login-rejected-warning =
+    .alt = Uyarı
 sync-sign-out =
     .label = Çıkış yap…
     .accesskey = k
@@ -730,7 +751,7 @@ prefs-syncing-off = Eşitleme: KAPALI
 prefs-sync-turn-on-syncing =
     .label = Eşitlemeyi başlat…
     .accesskey = E
-prefs-sync-offer-setup-label2 = Yer imlerinizi, geçmişinizi, sekmelerinizi, parolalarınızı, eklentilerinizi ve ayarlarınızı tüm cihazlarınız arasında senkronize edin.
+prefs-sync-offer-setup-label2 = Yer imlerinizi, geçmişinizi, sekmelerinizi, parolalarınızı, eklentilerinizi ve ayarlarınızı tüm cihazlarınız arasında eşitleyin.
 prefs-sync-now =
     .labelnotsyncing = Şimdi eşitle
     .accesskeynotsyncing = m
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = { -brand-short-name } kapatıldığında çerezleri ve site verilerini sil
     .accesskey = k
 sitedata-delete-on-close-private-browsing = Kalıcı gizli gezinti modunda, { -brand-short-name } kapatıldığında çerezler ve site verileri her zaman silinir.
+sitedata-delete-on-close-private-browsing2 = { -brand-short-name }, geçmiş ayarlarınıza bağlı olarak, tarayıcıyı kapattığınızda oturumunuzdaki çerezleri ve site verilerini siler.
 sitedata-allow-cookies-option =
     .label = Çerezleri ve site verilerini kabul et
     .accesskey = z
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Hızlı eylemler
     .accesskey = H
+addressbar-suggestions-settings = Arama motoru önerileri için tercihleri değiştir
 addressbar-locbar-showrecentsearches-option =
     .label = Son aramaları göster
     .accesskey = r
-addressbar-suggestions-settings = Arama motoru önerileri için tercihleri değiştir
 addressbar-quickactions-learn-more = Daha fazla bilgi al
 
 ## Privacy Section - Content Blocking
@@ -1087,7 +1109,7 @@ addressbar-quickactions-learn-more = Daha fazla bilgi al
 content-blocking-enhanced-tracking-protection = Gelişmiş izlenme koruması
 content-blocking-section-top-level-description = Takip kodları, gezinti alışkanlıklarınız ve ilgi alanlarınız hakkında bilgi toplamak için internette sizi takip eder. { -brand-short-name } bu takip kodlarının ve diğer kötü amaçlı betiklerin çoğunu engeller.
 content-blocking-learn-more = Daha fazla bilgi al
-content-blocking-fpi-incompatibility-warning = First Party Isolation (FPI) özelliğini kullanıyorsunuz. Bu özellik, bazı { -brand-short-name } çerez ayarları geçersiz kılar.
+content-blocking-fpi-incompatibility-warning = First Party Isolation (FPI) özelliğini kullanıyorsunuz. Bu özellik, bazı { -brand-short-name } çerez ayarlarını geçersiz kılar.
 # There is no need to translate "Resist Fingerprinting (RFP)". This is a
 # feature that can only be enabled via about:config, and it's not exposed to
 # standard users (e.g. via Settings).
@@ -1113,7 +1135,7 @@ content-blocking-etp-standard-desc = Dengeli koruma ve performans. Sayfalar norm
 content-blocking-etp-strict-desc = Daha güçlü koruma, ama bazı siteler ve içerikler düzgün çalışmayabilir.
 content-blocking-etp-custom-desc = Hangi takip kodlarının ve betiklerin engelleneceğini seçin.
 content-blocking-etp-blocking-desc = { -brand-short-name } aşağıdakileri engeller:
-content-blocking-private-windows = Gizli pencelerde takip amaçlı içerikler
+content-blocking-private-windows = Gizli pencerelerde takip amaçlı içerikler
 content-blocking-cross-site-cookies-in-all-windows2 = Tüm pencerelerde siteler arası çerezler
 content-blocking-cross-site-tracking-cookies = Siteler arası takip çerezleri
 content-blocking-all-cross-site-cookies-private-windows = Gizli pencerelerde siteler arası çerezler
@@ -1206,7 +1228,7 @@ permissions-microphone-settings =
     .label = Ayarlar…
     .accesskey = r
 # Short form for "the act of choosing sound output devices and redirecting audio to the chosen devices".
-permissions-speaker = Hoparlör seçimi
+permissions-speaker = Ses aygıtı seçimi
 permissions-speaker-settings =
     .label = Ayarlar…
     .accesskey = A
@@ -1261,6 +1283,8 @@ addon-recommendations-link = Daha fazla bilgi al
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Bu yapılandırma için veri raporlama devre dışı bırakılmış
 collection-backlogged-crash-reports-with-link = { -brand-short-name } geriye dönük çökme raporlarını benim adıma gönderebilir <a data-l10n-name="crash-reports-link">Daha fazla bilgi al</a>
+    .accesskey = d
+collection-backlogged-crash-reports = { -brand-short-name } geriye dönük çökme raporlarını benim adıma gönderebilir
     .accesskey = d
 privacy-segmentation-section-header = Gezintinizi iyileştiren yeni özellikler
 privacy-segmentation-section-description = Size daha kişisel bir deneyim sunmak için verilerinizi kullanan özellikler sunduğumuzda:
@@ -1351,7 +1375,7 @@ preferences-doh-default-desc = Gizliliğinizi korumak için ne zaman güvenli DN
 preferences-doh-default-detailed-desc-1 = Güvenli DNS hizmetinin sunulduğu bölgelerde güvenli DNS kullanılır
 preferences-doh-default-detailed-desc-2 = Güvenli DNS sağlayıcınızda sorun yaşanırsa varsayılan DNS çözümleyiciniz kullanılır
 preferences-doh-default-detailed-desc-3 = Mümkünse yerel bir sağlayıcı kullanılır
-preferences-doh-default-detailed-desc-4 = VPN, ebeveyn denetileri veya kurumsal ilkeler etkinse güvenli DNS kapanır
+preferences-doh-default-detailed-desc-4 = VPN, ebeveyn denetimleri veya kurumsal ilkeler etkinse güvenli DNS kapanır
 preferences-doh-default-detailed-desc-5 = Ağınız { -brand-short-name } tarayıcısına güvenli DNS kullanmama isteği gönderirse güvenli DNS kapanır
 preferences-doh-setting-enabled =
     .label = Artırılmış koruma

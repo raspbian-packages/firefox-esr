@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Nhập từ { $previous
 mr1-onboarding-theme-header = Biến nó thành của riêng bạn
 mr1-onboarding-theme-subtitle = Cá nhân hóa { -brand-short-name } với một chủ đề.
 mr1-onboarding-theme-secondary-button-label = Không phải bây giờ
+newtab-wallpaper-onboarding-title = Thử một chút màu sắc
+newtab-wallpaper-onboarding-subtitle = Chọn hình nền để mang lại diện mạo mới cho thẻ mới của bạn.
+newtab-wallpaper-onboarding-primary-button-label = Đặt hình nền
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Chủ đề hệ thống
 mr1-onboarding-theme-label-light = Sáng
@@ -343,3 +346,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Khi bạn đồng b�
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } luôn ủng hộ bạn
 onboarding-gratitude-security-and-privacy-subtitle = Cảm ơn bạn đã sử dụng { -brand-short-name }, được hỗ trợ bởi Mozilla Foundation. Với sự hỗ trợ của bạn, chúng tôi đang nỗ lực làm cho Internet an toàn hơn và dễ truy cập hơn cho mọi người.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Bạn đã sử dụng { -brand-short-name } được bao lâu rồi?
+onboarding-new-user-familiarity-based-survey-title = Bạn quen thuộc với { -brand-short-name } đến mức nào?
+onboarding-new-user-survey-subtitle = Phản hồi của bạn giúp { -brand-short-name } trở nên tốt hơn nữa.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Tiếp theo
+onboarding-new-user-survey-legal-link-label = Bằng cách chọn “{ onboarding-new-user-survey-next-button-label },” bạn đã đồng ý với <a data-l10n-name="privacy_notice">thông báo về quyền riêng tư</a> của { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Tôi là người mới
+onboarding-new-user-survey-time-based-option-2 = Ít hơn 1 tháng
+onboarding-new-user-survey-time-based-option-3 = Hơn 1 tháng, thường xuyên
+onboarding-new-user-survey-time-based-option-4 = Hơn 1 tháng, thỉnh thoảng
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Tôi là người mới
+onboarding-new-user-survey-familiarity-based-option-2 = Tôi đã sử dụng nó nhiều lúc
+onboarding-new-user-survey-familiarity-based-option-3 = Tôi rất quen thuộc với nó
+onboarding-new-user-survey-familiarity-based-option-4 = Tôi có dùng nó trước đây, nhưng đã rất lâu rồi

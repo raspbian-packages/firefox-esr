@@ -574,6 +574,11 @@ urlbar-result-action-search-w-engine = Hľadať pomocou vyhľadávača { $engine
 urlbar-result-action-sponsored = Sponzorované
 urlbar-result-action-switch-tab = Prepnúť na kartu
 urlbar-result-action-visit = Navštíviť
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Prepnúť na kartu · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Použiť adresu zo schránky
 # Directs a user to press the Tab key to perform a search with the specified
@@ -603,6 +608,12 @@ urlbar-result-action-copy-to-clipboard = Kopírovať
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Hľadať pomocou vyhľadávača { $engine }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -898,6 +909,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Chcete otvoriť predchádzajúce karty?</strong> Predchádzajúcu reláciu môžete obnoviť z ponuky { -brand-short-name(case: "gen") } <img data-l10n-name="icon"/>, v časti História.
 restore-session-startup-suggestion-button = Ako na to
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Prístup k lokálnym súborom bol na tomto počítači zablokovaný vašou organizáciou.
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } automaticky odosiela údaje spoločnosti { -vendor-short-name } s cieľom vylepšiť tento produkt.
@@ -906,6 +921,15 @@ data-reporting-notification-button =
     .accesskey = v
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Súkromné prehliadanie
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Ochrana pred stratou údajov (DLP) od agenta { $agentName }. Kliknutím zobrazíte ďalšie informácie.
+content-analysis-panel-title = Ochrana údajov
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Vaša organizácia používa { $agentName } na ochranu pred stratou údajov. <a data-l10n-name="info">Ďalšie informácie</a>
 
 ## Unified extensions (toolbar) button
 

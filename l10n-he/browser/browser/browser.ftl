@@ -567,6 +567,11 @@ urlbar-result-action-search-w-engine = חיפוש באמצעות { $engine }
 urlbar-result-action-sponsored = ממומן
 urlbar-result-action-switch-tab = מעבר ללשונית
 urlbar-result-action-visit = ביקור
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = מעבר ללשונית · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = לבקר מלוח העריכה
 # Directs a user to press the Tab key to perform a search with the specified
@@ -596,6 +601,12 @@ urlbar-result-action-copy-to-clipboard = העתקה
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = חיפוש באמצעות { $engine }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -891,6 +902,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>לפתוח את הלשוניות הקודמות?</strong> באפשרותך לשחזר את ההפעלה הקודמת שלך מתפריט היישום של { -brand-short-name } ‏<img data-l10n-name="icon"/>, תחת היסטוריה.
 restore-session-startup-suggestion-button = להראות לך איך
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = הארגון שלך חסם גישה לדפים מקומיים במחשב זה.
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } יישלח אוטומטית חלק מהנתונים אל { -vendor-short-name } כדי שנוכל לשפר את החוויה שלך.
@@ -899,6 +914,15 @@ data-reporting-notification-button =
     .accesskey = ש
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = גלישה פרטית
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = מניעת אובדן נתונים (DLP) מאת { $agentName }. יש ללחוץ למידע נוסף.
+content-analysis-panel-title = הגנת נתונים
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = הארגון שלך משתמש ב־{ $agentName } כדי להגן מפני אובדן נתונים. <a data-l10n-name="info">מידע נוסף</a>
 
 ## Unified extensions (toolbar) button
 
@@ -952,7 +976,7 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-to-use-relay = המסכות המאובטחות והקלות לשימוש שלנו מגנות על הזהות שלך ומונעות דואר זבל על־ידי הסתרת כתובת הדוא״ל שלך.
+firefox-relay-offer-why-to-use-relay = המסיכות המאובטחות והקלות לשימוש שלנו מגנות על הזהות שלך ומונעות דואר זבל על־ידי הסתרת כתובת הדוא״ל שלך.
 # Variables:
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = כל הודעות הדוא״ל שנשלחים למסיכות הדוא״ל שלך יועברו אל <strong>{ $useremail }</strong> (אלא אם תבחר לחסום אותם).

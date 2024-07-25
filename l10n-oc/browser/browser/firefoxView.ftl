@@ -12,6 +12,8 @@ menu-tools-firefox-view =
     .label = { -firefoxview-brand-name }
     .accesskey = F
 firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
 firefoxview-page-label =
     .label = { -firefoxview-brand-name }
 firefoxview-close-button =
@@ -149,8 +151,12 @@ firefoxview-opentabs-focus-tab =
     .title = Anar a aqueste onglet
 firefoxview-show-more = Ne veire mai
 firefoxview-show-less = Ne veire mens
+firefoxview-show-all = O afichar tot
 firefoxview-search-text-box-clear-button =
     .title = Escafar
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = Recercar
 # Placeholder for the input field to search in history ("search" is a verb).
 firefoxview-search-text-box-history =
     .placeholder = Cercar dins l’istoric
@@ -238,3 +244,22 @@ firefoxview-recentlyclosed-empty-header = Avètz tampat los onglets per inatenci
 
 firefoxview-syncedtabs-device-notabs = Cap d’onglet pas dobèrt sus aqueste aparelh
 firefoxview-syncedtabs-connect-another-device = Connectar un autre periferic
+firefoxview-pinned-tabs =
+    .title = Onglets penjats
+firefoxview-tabs =
+    .title = Onglets
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Anar a { $tabTitle }
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (En marcapagina) { $url }

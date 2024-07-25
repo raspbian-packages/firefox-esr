@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 16em
     .placeholder = Cercar in parametros
 managed-notice = Tu navigator debe ser gerite per tu organisation.
+managed-notice-info-icon =
+    .alt = Information
 category-list =
     .aria-label = Categorias
 pane-general-title = General
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Remover iste contentor
 containers-remove-cancel-button = Non remover iste contentor
+settings-tabs-show-image-in-preview =
+    .label = Monstrar un vista preliminar del imagine quando tu passa le mus sur un scheda
+    .accessKey = n
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Tu selectiones color supplanta le apparentia del sito web.<a data-l10n-name="colors-link">Gere le colores</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Tu selectiones color supplanta le apparentia del sito web.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Gere le themas de { -brand-short-name } in <a data-l10n-name="themes-link">Extensiones e themas</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Zoom del texto solmente
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = ATTENTION: Si tu elige “Facer zoom solo texto” e tu zoom predefinite non es configurate a 100%, isto pote causar que alcun sitos o contento collabe.
 language-header = Lingua
 choose-language-description = Elige tu lingua preferite pro presentar le paginas
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Recommendate per { $provider }
 home-prefs-recommended-by-description-new = Contento exceptional a cura de { $provider }, parte del familia { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Historias recommendate
+home-prefs-recommended-by-description-generic = Contento exceptional curate per le familia de { -brand-product-name }
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Discarga Firefox pro <img data-l10n-name="android-icon"/> <a
 
 sync-profile-picture =
     .tooltiptext = Cambiar le imagine del profilo
+sync-profile-picture-with-alt =
+    .tooltiptext = Cambiar le imagine del profilo
+    .alt = Cambiar le imagine del profilo
+sync-profile-picture-account-problem =
+    .alt = Imagine del profilo del conto
+fxa-login-rejected-warning =
+    .alt = Advertentia
 sync-sign-out =
     .label = Clauder session…
     .accesskey = C
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Deler datos de cookies e sitos quando { -brand-short-name } es claudite
     .accesskey = D
 sitedata-delete-on-close-private-browsing = Durante le modo de navigation private permanente, le cookies e le datos del sito sera sempre cancellate al clausura de { -brand-short-name }.
+sitedata-delete-on-close-private-browsing2 = In base al parametros del chronologia, le cookies e le datos del sitos web sera eliminate quando tu claudera { -brand-short-name }.
 sitedata-allow-cookies-option =
     .label = Acceptar le cookies e le datos de sito
     .accesskey = A
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Actiones rapide
     .accesskey = r
+addressbar-suggestions-settings = Cambiar le preferentias pro le suggestiones del motor de recerca
 addressbar-locbar-showrecentsearches-option =
     .label = Monstrar recercas recente
     .accesskey = r
-addressbar-suggestions-settings = Cambiar le preferentias pro le suggestiones del motor de recerca
 addressbar-quickactions-learn-more = Pro saper plus
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = Saper plus
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Le reporto de datos es inactive pro iste configuration de compilation
 collection-backlogged-crash-reports-with-link = Permitter que { -brand-short-name } invia in tu nomine le reportos accumulate de crash <a data-l10n-name="crash-reports-link">saper plus</a>
+    .accesskey = P
+collection-backlogged-crash-reports = Permitter que { -brand-short-name } invia in tu nomine le reportos accumulate de crash
     .accesskey = P
 privacy-segmentation-section-header = Nove functiones que meliora tu navigation
 privacy-segmentation-section-description = Quando nos offere functiones que usa tu datos pro dar te un experientia plus personal:

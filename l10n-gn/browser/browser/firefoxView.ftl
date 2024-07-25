@@ -12,6 +12,8 @@ menu-tools-firefox-view =
     .label = { -firefoxview-brand-name }
     .accesskey = F
 firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
 firefoxview-page-label =
     .label = { -firefoxview-brand-name }
 firefoxview-close-button =
@@ -51,6 +53,7 @@ firefoxview-syncedtabs-loading-header = Ñemboheko oku’éma
 firefoxview-syncedtabs-loading-description = Emoĩmbávo, ehecháta umi tendayke ijurujáva ambue mba’e’okápe. Eporandujey ag̃amieve.
 firefoxview-tabpickup-fxa-admin-disabled-header = Nde atyguasu omboyke pe ñembojuehe
 firefoxview-tabpickup-fxa-admin-disabled-description = { -brand-short-name } nombojuehekuaái tendayke mba’e’okakuéra pa’ũme ne ñangarekohára omboyke rupi ñembojuehe.
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } nombojuehekuaái tendayke mba’e’okakuéra pa’ũme nde atyguasu ombogue rupi ñembojuehe.
 firefoxview-tabpickup-network-offline-header = Ehecha oiko porãpa ñanduti
 firefoxview-tabpickup-network-offline-description = Eiporúramo firewall térã proxy, ehechajey { -brand-short-name } oñemoneĩpa eikekuaa hag̃ua ñandutípe.
 firefoxview-tabpickup-network-offline-primarybutton = Eha’ãjey
@@ -184,6 +187,8 @@ firefoxview-search-results-count =
 firefoxview-search-results-empty = Ndaipóri “{ $query }” rapykuere
 firefoxview-sort-history-by-date-label = Arange rupive
 firefoxview-sort-history-by-site-label = Tenda rupive
+firefoxview-sort-open-tabs-by-recency-label = Emoĩporã tembiapokue ipyahúvare
+firefoxview-sort-open-tabs-by-order-label = Emoĩporã tabulación rupive
 # Variables:
 #   $url (string) - URL that will be opened in the new tab
 firefoxview-opentabs-tab-row =
@@ -246,3 +251,25 @@ firefoxview-recentlyclosed-empty-description-two = Eheka hag̃ua tendayke embot�
 
 firefoxview-syncedtabs-device-notabs = Ndaipóri tendayke ijurujáva ko mba’e’okápe
 firefoxview-syncedtabs-connect-another-device = Embojuaju ambue mba’e’oka
+firefoxview-pinned-tabs =
+    .title = Tendayke mbojapyre
+firefoxview-tabs =
+    .title = Tendayke
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Emoambue { $tabTitle }-pe
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Emoambue (Techaukahápe) { $tabTitle }-pe
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Techaukahápe) { $url }

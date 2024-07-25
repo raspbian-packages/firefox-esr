@@ -12,10 +12,13 @@
 
 policy-3rdparty = Für WebExtensions mittels chrome.storage.managed zugängliche Richtlinien festlegen
 policy-AllowedDomainsForApps = Domains festlegen, die auf Google Workspace zugreifen dürfen
+policy-AllowFileSelectionDialogs = Dateiauswahl-Dialoge erlauben
 policy-AppAutoUpdate = Automatische Anwendungsaktualisierung aktivieren oder deaktivieren
 policy-AppUpdatePin = Verhindern, dass { -brand-short-name } über die angegebene Version hinaus aktualisiert wird
 policy-AppUpdateURL = Anwendungsaktualisierung über benutzerdefinierte Adresse festlegen
 policy-Authentication = Integrierte Authentifizierung für Websites, welche dies unterstützen, konfigurieren
+policy-AutofillAddressEnabled = Automatisches Ausfüllen für Adressen aktivieren
+policy-AutofillCreditCardEnabled = Automatisches Ausfüllen für Zahlungsmethoden aktivieren
 policy-AutoLaunchProtocolsFromOrigins = Eine Liste externer Protokolle festlegen, die von aufgelisteten Quellen verwendet werden können, ohne den Benutzer zu fragen
 policy-BackgroundAppUpdate2 = Hintergrundaktualisierung aktivieren oder deaktivieren
 policy-BlockAboutAddons = Add-ons-Verwaltung-Seitenzugriff (about:addons) blockieren
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = about:support-Seitenzugriff (Informationen zur Fehler
 policy-Bookmarks = Lesezeichen erstellen in der Lesezeichen-Symbolleiste, im Lesezeichen-Menü oder in einem vorgegebenen Ordner in diesen
 policy-CaptivePortal = Erkennung von Anmelde- oder Bestätigungspflicht für Internetzugriff aktivieren oder deaktivieren
 policy-CertificatesDescription = Zertifikate hinzufügen oder eingebaute Zertifikate verwenden
+policy-ContentAnalysis = Verbindung mit Datenverlustverhinderungsagent aktivieren oder deaktivieren
 policy-Cookies = Cookies setzen durch Websites erlauben oder verbieten
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Richtlinien für Umgebungen festlegen
@@ -121,6 +125,7 @@ policy-SSLVersionMax = Höchste zu verwendende SSL-Version festlegen
 policy-SSLVersionMin = Niedrigste zu verwendende SSL-Version festlegen
 policy-StartDownloadsInTempDirectory = Erzwingen, dass Downloads an einem lokalen, temporären Speicherort und nicht im Standard-Download-Verzeichnis beginnen
 policy-SupportMenu = Benutzerdefinierten Eintrag zum Menü "Hilfe" hinzufügen
+policy-TranslateEnabled = Übersetzung von Webseiten aktivieren oder deaktivieren
 policy-UserMessaging = Anzeige von bestimmten Nachrichten deaktivieren
 policy-UseSystemPrintDialog = Mit Druckdialog des Systems drucken
 # “format” refers to the format used for the value of this policy.

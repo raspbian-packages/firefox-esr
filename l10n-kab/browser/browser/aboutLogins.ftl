@@ -10,6 +10,9 @@ about-logins-login-filter =
 create-new-login-button =
     .title = Rnu anekcum amaynut
 about-logins-page-title-name = Awalen uffiren
+about-logins-login-filter2 =
+    .placeholder = Nadi awalen uffiren
+    .key = F
 create-login-button =
     .title = rnu awal uffir
 fxaccounts-sign-in-text = Kcem ɣer wawalen-ik uffiren ɣef yibenkan-nniḍen
@@ -26,6 +29,8 @@ about-logins-menu-menuitem-import-from-another-browser = Kter seg iminig nniḍe
 about-logins-menu-menuitem-import-from-a-file = Kter seg ufaylu…
 about-logins-menu-menuitem-export-logins = Sifeḍ inekcam…
 about-logins-menu-menuitem-remove-all-logins = Kkes meṛṛa inekcumen…
+about-logins-menu-menuitem-export-logins2 = Kter awalen uffiren…
+about-logins-menu-menuitem-remove-all-logins2 = Kkes akk awalen uffiren …
 menu-menuitem-preferences =
     { PLATFORM() ->
         [windows] iɣewwaṛen
@@ -52,6 +57,21 @@ login-list-filtered-count =
         [one] { $count } seg { $total } unekcum
        *[other] { $count } seg { $total } inekcam
     }
+# Variables
+#   $count (number) - Number of logins
+login-list-count2 =
+    { $count ->
+        [one] { $quantity } n wawal uffir
+       *[other] { $count } n wawalen uffiren
+    }
+# Variables
+#   $count (number) - Number of filtered logins
+#   $total (number) - Total number of logins
+login-list-filtered-count2 =
+    { $total ->
+        [one] { $count } n { $total } wawal uffir
+       *[other] { $count } n { $total } wawalen uffiren
+    }
 login-list-sort-label-text = Smizzwer s:
 login-list-name-option = Isem (A-Z)
 login-list-name-reverse-option = Isem (Z-A)
@@ -61,6 +81,7 @@ about-logins-login-list-alerts-option = Ilɣa
 login-list-last-changed-option = Asnifel aneggaru
 login-list-last-used-option = Aseqdec anneggaru
 login-list-intro-title = Ulac inekcam yettwafen
+login-list-intro-title2 = Ulac awalen uffiren i yettwaskelsen
 login-list-intro-description = Ticki teskelseḍ awal uffir deg { -brand-product-name }, ad d-iban dagi.
 about-logins-login-list-empty-search-title = Ulac inekcam yettwafen
 about-logins-login-list-empty-search-title2 = Ulac awalen uffiren i yettwafen
@@ -86,6 +107,7 @@ about-logins-login-intro-heading-logged-out2 = Tettnadiḍ ɣef yinekcam-ik·im 
 about-logins-login-intro-heading-logged-in = Ulac inekcam yemtawin i yettwafen.
 login-intro-description = Ma teskelseḍ inekcam-ik deg { -brand-product-name } ɣef ddeqs n yibenkan, a-t-an amek ara tkecmeḍ ɣur-sen.
 login-intro-instructions-fxa = Rnu neɣ qqen ɣer { -fxaccount-brand-name } inek·inem ɣef yibenk anida ttwaskelsen yinekcam-ik·im.
+about-logins-login-intro-heading-message = Sekles awalen-ik uffiren deg wadeg aɣellsan
 login-intro-instructions-fxa2 = Rnu neɣ qqen ɣer umiḍan-ik·im ɣef yibenk anida ttwaskelsen yinekcam-ik.
 login-intro-instructions-fxa-settings = Ddu ɣer yiɣewwaren > Rmed amtawi… Ṛcem tibewwaḍin n yinekcam akked wawalen uffiren
 login-intro-instructions-fxa-passwords-help = Rzu ɣer <a data-l10n-name="passwords-help-link">tallalt n wawalen uffiren</a> i wugar n tallelt.
@@ -157,6 +179,9 @@ about-logins-export-password-os-auth-dialog-message-win = Akken ad tketreḍ ine
 # This message can be seen when attempting to export a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-export-password-os-auth-dialog-message-macosx = Akter n yinekcam d wawalen uffiren yettwasekles
+# This message can be seen when attempting to export a password in about:logins
+# On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
+about-logins-export-password-os-auth-dialog-message2-macosx = kter awal uffir yettwaskelsen
 
 ## Primary Password notification
 
@@ -172,6 +197,8 @@ confirmation-dialog-dismiss-button =
     .title = Sefsex
 about-logins-confirm-remove-dialog-title = Kkes anekcam-agi?
 confirm-delete-dialog-message = Ulac tuɣalin ɣer deffir.
+# Title for modal to confirm the removal of one saved password
+about-logins-confirm-delete-dialog-title = Kkes awal uffir ?
 # Message for modal to confirm the removal of one saved password
 about-logins-confirm-delete-dialog-message = Ur tezmireḍ ara ad tesfesxeḍ tigawt-a.
 about-logins-confirm-remove-dialog-confirm-button = Kkes
@@ -213,18 +240,13 @@ about-logins-confirm-remove-all-sync-dialog-message =
         [one] Aya ad yekkes anekcum i teskelseḍ deg { -brand-short-name } ɣef meṛṛa ibenkan yemtawan akkaed { -fxaccount-brand-name }-inek·inem. Ad yekkes ula d talɣut n trewla n yisefka ara d-ibanen da. Ur tezmireḍ ad esfesxeḍ tigawt-a.
        *[other] Aya ad yekkes inekcumen i teskelseḍ deg { -brand-short-name } ɣef meṛṛa ibenkan yemtawan akkaed { -fxaccount-brand-name }-inek·inem. Ad yekkes ula d talɣut n trewla n yisefka ara d-ibanen da. Ur tezmireḍ ad esfesxeḍ tigawt-a.
     }
-about-logins-confirm-remove-all-sync-dialog-message2 =
-    { $count ->
-        [1] Aya ad yekkes anekcum i teskelseḍ deg { -brand-short-name } ɣef meṛṛa ibenkan yemtawan akked umiḍan-ik·im. Ad yekkes ula d talɣut n trewla n yisefka ara d-ibanen da. Ur tezmireḍ ad esfesxeḍ tigawt-a.
-        [one] Aya ad yekkes anekcum i teskelseḍ deg { -brand-short-name } ɣef meṛṛa ibenkan yemtawan akked umiḍan-ik·im. Ad yekkes ula d talɣut n trewla n yisefka ara d-ibanen da. Ur tezmireḍ ad esfesxeḍ tigawt-a.
-       *[other] Aya ad yekkes inekcumen i teskelseḍ deg { -brand-short-name } ɣef meṛṛa ibenkan yemtawan akked umiḍan-ik·im. Ad yekkes ula d talɣut n trewla n yisefka ara d-ibanen da. Ur tezmireḍ ad esfesxeḍ tigawt-a.
-    }
 
 ##
 
 about-logins-confirm-export-dialog-title = Sifeḍ inekcam d wawalen uffiren
 about-logins-confirm-export-dialog-message = Awalen-inek uffiren ad ttwaskelsen am uḍris ara d-ibanen i tɣuri (d amedya, BadP@ssw0rd) akken yal amdan ara yeldin afaylu i yettusifḍen ad yizmir ad t-iwali.
 about-logins-confirm-export-dialog-confirm-button = Kter…
+about-logins-confirm-export-dialog-confirm-button2 = Kemmel asifeḍ
 about-logins-alert-import-title = Aktar yemmed
 about-logins-alert-import-message = Sken agzul leqqayen n uktar
 confirm-discard-changes-dialog-title = Sefsex isenfal-agi?
@@ -266,6 +288,11 @@ about-logins-export-file-picker-title = Afaylu n usifeḍ n yinekcam
 # The default file name shown in the file picker when exporting saved logins.
 # This must end in .csv
 about-logins-export-file-picker-default-filename = logins.csv
+# Title of the file picker dialog
+about-logins-export-file-picker-title2 = Sifeḍ awalen n uεeddi seg { -brand-short-name }
+# The default file name shown in the file picker when exporting saved logins.
+# This must end in .csv
+about-logins-export-file-picker-default-filename2 = passwords.csv
 about-logins-export-file-picker-export-button = Kter
 # A description for the .csv file format that may be shown as the file type
 # filter by the operating system.
@@ -279,6 +306,8 @@ about-logins-export-file-picker-csv-filter-title =
 
 # Title of the file picker dialog
 about-logins-import-file-picker-title = Afaylu n ukter n yinekcam
+# Title of the file picker dialog
+about-logins-import-file-picker-title2 = Kter awalen n uεeddi ɣer { -brand-short-name }
 about-logins-import-file-picker-import-button = Kter
 # A description for the .csv file format that may be shown as the file type
 # filter by the operating system.
@@ -311,6 +340,16 @@ about-logins-import-dialog-items-modified =
 about-logins-import-dialog-items-no-change =
     { $count ->
        *[other] <span>Ttwafen inekcumen yellan sin iberdan:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(not imported)</span>
+    }
+about-logins-import-dialog-items-added2 =
+    { $count ->
+        [one] <span>Yettwarna wawal n uεeddi amaynut:</span> <span data-l10n-name="count">{ $count }</span>
+       *[other] <span>Ttwarnan wawalen n uεeddi imaynuten:</span> <span data-l10n-name="count">{ $count }</span>
+    }
+about-logins-import-dialog-items-modified2 =
+    { $count ->
+        [one] <span>Yettwaleqqem unekcum i yellan:</span> <span data-l10n-name="count">{ $count }</span>
+       *[other] <span>Ttuleqqmen inekcumen i yellan:</span> <span data-l10n-name="count">{ $count }</span>
     }
 about-logins-import-dialog-items-error =
     { $count ->

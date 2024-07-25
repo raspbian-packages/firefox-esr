@@ -64,6 +64,11 @@ shopping-message-bar-analysis-in-progress-with-amount = Po kontrollohet cilësi 
 shopping-message-bar-page-not-supported =
     .heading = S’mund t’i kontrollojmë këto shqyrtime
     .message = Mjerisht, s’mund të kontrollojmë cilësinë e shqyrtimit për disa lloje produktesh. Për shembull, karta dhuratë dhe transmetim videosh, muzike dhe lojërash.
+shopping-message-bar-keep-closed-header =
+    .heading = Të mbahet mbyllur?
+    .message = Mund të përditësoni rregullimet tuaja, për ta mbajtur, si parazgjedhje, të mbyllur Kontrollorin e Shqyrtimeve. Tani hapet vetvetiu.
+shopping-message-bar-keep-closed-dismiss-button = Jo, faleminderit
+shopping-message-bar-keep-closed-accept-button = Po, mbaje mbyllur
 
 ## Strings for the product review snippets card
 
@@ -89,6 +94,19 @@ shopping-settings-recommendations-toggle =
 shopping-settings-recommendations-learn-more2 = Do të shihni reklama me raste, për produkte të afërt. Shfaqim reklama vetëm për produkte me shqyrtime të besueshme. <a data-l10n-name="review-quality-url">Mësoni më tepër</a>
 shopping-settings-opt-out-button = Çaktivizoje kontrollorin e shqyrtimeve
 powered-by-fakespot = Kontrollori i shqyrtimeve bazohet në <a data-l10n-name="fakespot-link">{ -fakespot-brand-full-name }</a>.
+shopping-settings-auto-open-toggle =
+    .label = Hape Automatikisht Kontrollorin e Shqyrtimeve
+# Description text for regions where we support three sites. Sites are limited to Amazon, Walmart and Best Buy.
+# Variables:
+#   $firstSite (String) - The first shopping page name
+#   $secondSite (String) - The second shopping page name
+#   $thirdSite (String) - The third shopping page name
+shopping-settings-auto-open-description-three-sites = Kur shihni produkte në { $firstSite }, { $secondSite } dhe { $thirdSite }
+# Description text for regions where we support only one site (e.g. currently used in FR/DE with Amazon).
+# Variables:
+#   $currentSite (String) - The current shopping page name
+shopping-settings-auto-open-description-single-site = Kur shihni produkte në { $currentSite }
+shopping-settings-sidebar-enabled-state = Kontrollori i Shqyrtimeve është <strong>Aktiv</strong>
 
 ## Strings for the adjusted rating component
 
@@ -110,7 +128,6 @@ shopping-analysis-explainer-label =
 shopping-analysis-explainer-intro2 = Për të kontrolluar besueshmërinë e shqyrtimeve të produkteve, ne përdorim teknologji IA nga { -fakespot-brand-full-name }. Kjo do t’ju ndihmojë vetëm të vlerësoni cilësinë e shqyrtimeve, jo cilësinë e produkteve.
 shopping-analysis-explainer-grades-intro = I caktojmë çdo shqyrtimi të produktit një <strong>vlerësim me shkronjë</strong> nga A në F.
 shopping-analysis-explainer-adjusted-rating-description = <strong>Vlerësimi i rregulluar</strong> bazohet vetëm në shqyrtime që besojmë se janë të besueshme.
-shopping-analysis-explainer-learn-more = Mësoni më tepër mbi <a data-l10n-name="review-quality-url">se si { -fakespot-brand-full-name } përcakton cilësinë e shqyrtimeve</a>.
 shopping-analysis-explainer-learn-more2 = Mësoni më tepër mbi <a data-l10n-name="review-quality-url">se si { -fakespot-brand-name } përcakton cilësinë e shqyrtimeve</a>.
 # This string includes the short brand name of one of the three supported
 # websites, which will be inserted without being translated.
@@ -126,14 +143,6 @@ shopping-sidebar-open-button2 =
     .tooltiptext = Hap kontrollorin e shqyrtimeve
 shopping-sidebar-close-button2 =
     .tooltiptext = Mbylle kontrollorin e shqyrtimeve
-
-## Strings for the unanalyzed product card.
-## The word 'analyzer' when used here reflects what this tool is called on
-## fakespot.com. If possible, a different word should be used for the Fakespot
-## tool (the Fakespot by Mozilla 'analyzer') other than 'checker', which is
-## used in the name of the Firefox feature ('Review checker'). If that is not
-## possible - if these terms are not meaningfully different - that is OK.
-
 
 ## Strings for the unanalyzed product card.
 ## The word 'analyzer' when used here reflects what this tool is called on
@@ -180,6 +189,22 @@ shopping-callout-pdp-opted-in-title = A janë të besueshme këto shqyrtime? Zbu
 shopping-callout-pdp-opted-in-subtitle = Që të shihni vlerësim të rregulluar, me shqyrtime jo të besueshme të hequra, hapni Kontrollor Shqyrtimesh. Plus, shihni gjëra në pah nga shqyrtime të mirëfillta së fundi.
 shopping-callout-closed-not-opted-in-title = Një klikim larg nga shqyrtime të besueshme
 shopping-callout-closed-not-opted-in-subtitle = Provojeni Kontrollorin e Shqyrtimeve kurdo që shihni një çmim. Merrni shpejt ide nga blerës të njëmendtë — para se të blini.
+shopping-callout-closed-not-opted-in-revised-title = Një klikim larg nga shqyrtime të besueshme
+shopping-callout-closed-not-opted-in-revised-subtitle = Që të ktheheni te Kontrolloni i Shqyrtimeve, thjesht klikoni mbi ikonën e fashës së çmimeve te shtylla e adresave.
+shopping-callout-closed-not-opted-in-revised-button = E mora vesh
+shopping-callout-not-opted-in-reminder-title = Blini me vetëbesim
+shopping-callout-not-opted-in-reminder-subtitle = Jo i sigurt nëse shqyrtimet e një produkti janë të njëmendta, apo të sajuara? Kontrollori i Shqyrtimeve nga { -brand-product-name } mund t’ju vijë në ndihmë.
+shopping-callout-not-opted-in-reminder-open-button = Hap Kontrollor Shqyrtimesh
+shopping-callout-not-opted-in-reminder-close-button = Hidhe tej
+shopping-callout-not-opted-in-reminder-ignore-checkbox = Mos e shfaq sërish
+shopping-callout-not-opted-in-reminder-img-alt =
+    .aria-label = Ilustrim abstrakt i tre shqyrtimeve të një produkti. Njëri ka një simbol sinjalizimi, që tregon se mund të mos jetë i besueshëm.
+shopping-callout-disabled-auto-open-title = Kontrollori i Shqyrtimeve tanimë, si parazgjedhje, është i mbyllur
+shopping-callout-disabled-auto-open-subtitle = Klikoni mbi ikonën e fashës së çmimeve, kurdo që doni të shihni nëse mund t’i besoni shqyrtimeve të një produkti.
+shopping-callout-disabled-auto-open-button = E mora vesh
+shopping-callout-opted-out-title = Kontrollori i Shqyrtimeve është i çaktivizuar
+shopping-callout-opted-out-subtitle = Për ta rikthyer, klikoni mbi ikonën e fashës së çmimeve, te shtylla e adresave dhe ndiqni hapat.
+shopping-callout-opted-out-button = E mora vesh
 
 ## Onboarding message strings.
 
@@ -195,8 +220,7 @@ shopping-onboarding-dynamic-subtitle-1 = Shihni sa të besueshme janë shqyrtime
 #   $currentSite (str) - The current shopping page name
 shopping-onboarding-single-subtitle = Shihni se sa të besueshme janë shqyrtime produktesh në <b>{ $currentSite }</b>, para se të blini. Kontrollori i Shqyrtimeve, një veçori eksperimentale prej { -brand-product-name }, është ndërtuar drejt e në shfletues.
 shopping-onboarding-body = Duke përdorur fuqinë e { -fakespot-brand-full-name }, ju ndihmojmë të shmangni shqyrtime të njëanshme dhe jo të mirëfillta. Modeli ynë IA përmirësohet përherë, për t’ju mbrojtur teksa blini. <a data-l10n-name="learn_more">Mësoni më tepër</a>
-shopping-onboarding-opt-in-privacy-policy-and-terms-of-use = Duke përzgjedhur “{ shopping-onboarding-opt-in-button }“ pajtoheni me <a data-l10n-name="privacy_policy">rregulla privatësie</a> dhe <a data-l10n-name="terms_of_use">kushte përdorimi</a> të { -fakespot-brand-full-name }.
-shopping-onboarding-opt-in-privacy-policy-and-terms-of-use2 = Duke përzgjedhur “{ shopping-onboarding-opt-in-button }“ pajtoheni me <a data-l10n-name="privacy_policy">rregulla privatësie</a> dhe <a data-l10n-name="terms_of_use">kushte përdorimi</a> të { -fakespot-brand-name }.
+shopping-onboarding-opt-in-privacy-policy-and-terms-of-use3 = Duke përzgjedhur “{ shopping-onboarding-opt-in-button }“, pajtoheni me <a data-l10n-name="privacy_policy">rregulla privatësie</a> të { -brand-product-name }-it dhe <a data-l10n-name="terms_of_use">kushte përdorimi</a> të { -fakespot-brand-name }-it.
 shopping-onboarding-opt-in-button = Po, provojeni
 shopping-onboarding-not-now-button = Jo tani
 shopping-onboarding-dialog-close-button =

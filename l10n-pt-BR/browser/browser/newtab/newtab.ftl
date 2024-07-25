@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Adicionar mecanismo de pesquisa
 newtab-topsites-add-shortcut-header = Novo atalho
 newtab-topsites-edit-topsites-header = Editar site preferido
 newtab-topsites-edit-shortcut-header = Editar atalho
+newtab-topsites-add-shortcut-label = Adicionar atalho
 newtab-topsites-title-label = Título
 newtab-topsites-title-input =
     .placeholder = Digite um título
@@ -194,6 +195,7 @@ newtab-section-header-recent-activity = Atividade recente
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Recomendado pelo { $provider }
+newtab-section-header-stories = Histórias que instigam o pensamento
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -202,6 +204,8 @@ newtab-empty-section-highlights = Comece a navegar e mostraremos aqui alguns ót
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Você já viu tudo. Volte mais tarde para mais histórias do { $provider }. Não consegue esperar? Escolha um assunto popular para encontrar mais grandes histórias através da web.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Você já viu tudo. Volte mais tarde para ver mais histórias. Não quer esperar? Escolha um assunto popular para encontrar mais grandes histórias na web.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -254,9 +258,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Atalhos patrocinados
 newtab-custom-pocket-title = Recomendado pelo { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Conteúdo excepcional selecionado pelo { -pocket-brand-name }, parte da família { -brand-product-name }
-newtab-custom-pocket-toggle =
-    .label = Recomendado pelo { -pocket-brand-name }
-    .description = Conteúdo excepcional selecionado pelo { -pocket-brand-name }, parte da família { -brand-product-name }
+newtab-custom-stories-toggle =
+    .label = Histórias recomendadas
+    .description = Conteúdo excepcional escolhido pela família { -brand-product-name }
 newtab-custom-pocket-sponsored = Histórias patrocinadas
 newtab-custom-pocket-show-recent-saves = Mostrar salvamentos recentes
 newtab-custom-recent-title = Atividade recente
@@ -266,3 +270,24 @@ newtab-custom-recent-toggle =
     .description = Uma seleção de sites e conteúdos recentes
 newtab-custom-close-button = Fechar
 newtab-custom-settings = Gerenciar mais configurações
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Imagens de fundo
+newtab-wallpaper-reset = Restaurar padrão
+newtab-wallpaper-light-red-panda = Panda vermelho
+newtab-wallpaper-light-mountain = Montanha branca
+newtab-wallpaper-light-sky = Céu com nuvens violeta e rosa
+newtab-wallpaper-light-color = Formas azul, rosa e amarelo
+newtab-wallpaper-light-landscape = Paisagem azul montanhosa com neblina
+newtab-wallpaper-light-beach = Praia com palmeira
+newtab-wallpaper-dark-aurora = Aurora boreal
+newtab-wallpaper-dark-color = Formas vermelho e azul
+newtab-wallpaper-dark-panda = Panda vermelho escondido na floresta
+newtab-wallpaper-dark-sky = Paisagem de cidade com céu noturno
+newtab-wallpaper-dark-mountain = Paisagem com montanhas
+newtab-wallpaper-dark-city = Paisagem de cidade em tonalidade violeta
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Foto de <a data-l10n-name="name-link">{ $author_string }</a> em <a data-l10n-name="webpage-link">{ $webpage_string }</a>

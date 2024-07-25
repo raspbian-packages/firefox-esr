@@ -23,7 +23,7 @@ return-to-amo-subtitle = Frábært, þú ert með { -brand-short-name }
 # Variables:
 #   $addon-name (String) - Name of the add-on
 return-to-amo-addon-title = Nú skulum við ná í handa þér <img data-l10n-name="icon"/> <b>{ $addon-name }</b>.
-return-to-amo-add-extension-label = Bæta inn viðbótinni
+return-to-amo-add-extension-label = Bæta inn forritsaukanum
 return-to-amo-add-theme-label = Bæta við þemanu
 
 ##  Variables: $addon-name (String) - Name of the add-on to be installed
@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Flytja inn úr { $previ
 mr1-onboarding-theme-header = Gerðu það að þínu eigin
 mr1-onboarding-theme-subtitle = Sérsníddu { -brand-short-name } með þema.
 mr1-onboarding-theme-secondary-button-label = Ekki núna
+newtab-wallpaper-onboarding-title = Prófaðu skvettu af lit
+newtab-wallpaper-onboarding-subtitle = Veldu bakgrunn til að gefa nýja flipanum þínum ferskt útlit.
+newtab-wallpaper-onboarding-primary-button-label = Stilla bakgrunn
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Kerfisþema
 mr1-onboarding-theme-label-light = Ljóst
@@ -344,3 +347,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Þegar þú hefur sam
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } hefur stuðning af þér
 onboarding-gratitude-security-and-privacy-subtitle = Takk fyrir að nota { -brand-short-name }, sem stutt er af Mozilla stofnuninni. Með stuðningi þínum erum við að vinna að því að gera internetið öruggara, aðgengilegra og betra fyrir alla.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Hve lengi hefur þú notað { -brand-short-name }?
+onboarding-new-user-familiarity-based-survey-title = Hversu kunnug/ur ertu { -brand-short-name }?
+onboarding-new-user-survey-subtitle = Álit þitt hjálpar til við að gera { -brand-short-name } enn betri.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Næsta
+onboarding-new-user-survey-legal-link-label = Með því að velja „{ onboarding-new-user-survey-next-button-label }“ samþykkir þú <a data-l10n-name="privacy_notice">persónuverndarskilmála</a> frá { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Ég er byrjandi
+onboarding-new-user-survey-time-based-option-2 = Innan við 1 mánuður
+onboarding-new-user-survey-time-based-option-3 = Meira en 1 mánuður, reglulega
+onboarding-new-user-survey-time-based-option-4 = Meira en 1 mánuður, stundum
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Ég er byrjandi
+onboarding-new-user-survey-familiarity-based-option-2 = Ég hef notað það eitthvað
+onboarding-new-user-survey-familiarity-based-option-3 = Ég er þekki það ágætlega
+onboarding-new-user-survey-familiarity-based-option-4 = Ég hef notaði það áður, en fyrir nokkru síðan

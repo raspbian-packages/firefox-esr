@@ -65,6 +65,7 @@ cfr-doorhanger-extension-total-users =
 
 cfr-doorhanger-bookmark-fxa-header = Сінхранізуйце свае закладкі ўсюды.
 cfr-doorhanger-bookmark-fxa-body = Выдатная знаходка! Цяпер не заставайцеся без гэтай закладкі на вашых мабільных прыладах. Пачніце працу з { -fxaccount-brand-name }.
+cfr-doorhanger-bookmark-fxa-body-2 = Выдатная знаходка! Цяпер не заставайцеся без гэтай закладкі на вашых мабільных прыладах. Пачніце з уліковага запісу.
 cfr-doorhanger-bookmark-fxa-link-text = Сінхранізаваць закладкі зараз…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Кнопка закрыцця
@@ -207,8 +208,9 @@ cfr-cbh-confirm-button = Адхіляць банеры кукі
     .accesskey = к
 cfr-cbh-dismiss-button = Не зараз
     .accesskey = Н
-cookie-banner-blocker-cfr-header = { -brand-short-name } толькі што заблакаваў для вас кукі
-cookie-banner-blocker-cfr-body = Мы аўтаматычна адмаўляемся ад многіх выплыўных вокнаў пра кукі, каб сайтам было цяжэй асочваць вас.
+cookie-banner-blocker-onboarding-header = { -brand-short-name } толькі што адхіліў банер кукі для вас
+cookie-banner-blocker-onboarding-body = Менш адцягнення ўвагі, менш кукі, якія асочваюць вас на гэтым сайце.
+cookie-banner-blocker-onboarding-learn-more = Падрабязней
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -238,10 +240,6 @@ fxa-sync-cfr-secondary = Нагадаць пазней
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = Карыстаецеся старой прыладай?
-device-migration-fxa-spotlight-body = Зрабіце рэзервовую копію дадзеных, каб упэўніцца, што вы не страціце важную інфармацыю, такую як закладкі і паролі, асабліва калі вы пераходзіце на новую прыладу.
-device-migration-fxa-spotlight-primary-button = Як зрабіць рэзервовую копію маіх дадзеных
-device-migration-fxa-spotlight-link = Нагадаць пазней
 device-migration-fxa-spotlight-heavy-user-header = Не забудзьцеся стварыць рэзервовую копію дадзеных
 device-migration-fxa-spotlight-heavy-user-body = Пераканайцеся, што важная інфармацыя — напрыклад, закладкі і паролі — абнаўляецца і абаронена на ўсіх вашых прыладах.
 device-migration-fxa-spotlight-heavy-user-primary-button = Пачаць
@@ -276,3 +274,14 @@ launch-on-login-infobar-reject-button = Не зараз
 launch-on-login-infobar-final-message = <strong>Адкрываць { -brand-short-name } кожны раз па перазапуску камп'ютара?</strong> Каб кіраваць наладамі запуску, шукайце «запуск» у наладах.
 launch-on-login-infobar-final-reject-button = Не, дзякуй
     .accesskey = е
+
+## Tail Fox Set Default Spotlight
+
+# This title is displayed together with the picture of a running fox with a long tail.
+# In English, this is a figure of speech meaning 'stop something from following you'.
+# If the localization of this message is challenging, consider using a simplified
+# alternative as a reference for translation: 'Keep unwanted trackers away'.
+tail-fox-spotlight-title = Трымайце надакучлівыя трэкеры далей ад сябе
+tail-fox-spotlight-subtitle = Развітайцеся з надакучлівымі рэкламнымі трэкерамі і пасяліцеся ў больш бяспечным і хуткім Інтэрнэце.
+tail-fox-spotlight-primary-button = Адкрываць мае спасылкі ў { -brand-short-name }
+tail-fox-spotlight-secondary-button = Не зараз

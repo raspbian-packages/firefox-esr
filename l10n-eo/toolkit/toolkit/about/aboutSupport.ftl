@@ -185,6 +185,24 @@ media-codec-support-codec-name = Nomo de kodeko
 media-codec-support-supported = Subtenata
 media-codec-support-unsupported = Ne subtenata
 media-codec-support-error = Ne estas informo pri subteno de kodeko. Provu denove post ludado de aŭvidaĵa dosiero.
+media-codec-support-lack-of-extension = Instali etendaĵon
+
+## Media Content Decryption Modules (CDM)
+## See EME Spec for more explanation for following technical terms
+## https://w3c.github.io/encrypted-media/
+
+media-content-decryption-modules-title = Informo pri moduloj de malĉifro de enhavo
+media-key-system-name = Nomo de ŝlosila sistemo
+media-video-robustness = Fortikeco videa
+media-audio-robustness = Fortikeco sona
+media-cdm-capabilities = Kapabloj
+# Clear Lead isn't defined in the spec, which means the the first few seconds
+# are not encrypted. It allows playback to start without having to wait for
+# license response, improving video start time and user experience.
+media-cdm-clear-lead = Neĉifrita komenco
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = Kongrua kun HDCP 2.2
 
 ##
 
@@ -264,6 +282,7 @@ try-newer-driver = Blokita por via versio de grafika pelilo. Klopodu ĝisdatigi 
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Agordoj de ClearType
 compositing = Komponado
+support-font-determination = Informoj por senerarigi videblecon de tiparoj
 hardware-h264 = Aparata malkodigo de H264
 main-thread-no-omtc = ĉefa fadeno, sen OMTC
 yes = Jes
@@ -367,9 +386,9 @@ async-pan-zoom = Nesinkrona panoramado kaj skaligo
 apz-none = neniu
 wheel-enabled = rada enigo aktiva
 touch-enabled = tuŝa enigo aktiva
-drag-enabled = treno de ŝovstrio aktiva
+drag-enabled = treno de rulumo aktiva
 keyboard-enabled = klavaro aktiva
-autoscroll-enabled = aŭtomata ŝovo aktiva
+autoscroll-enabled = aŭtomata rulumo aktiva
 zooming-enabled = flua ŝanĝo de grando per pinĉo aktivita
 
 ## Variables

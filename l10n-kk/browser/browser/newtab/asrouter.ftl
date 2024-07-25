@@ -61,6 +61,7 @@ cfr-doorhanger-extension-total-users =
 
 cfr-doorhanger-bookmark-fxa-header = Бетбелгілерді барлық жерде синхрондаңыз.
 cfr-doorhanger-bookmark-fxa-body = Тамаша табу! Енді мобильді құрылғыларыңызда бұл бетбелгісіз қалмаңыз. { -fxaccount-brand-name } қызметімен жұмысты бастаңыз.
+cfr-doorhanger-bookmark-fxa-body-2 = Тамаша табу! Енді мобильді құрылғыларыңызда бұл бетбелгісіз қалмаңыз. Тіркелгіден бастаңыз.
 cfr-doorhanger-bookmark-fxa-link-text = Бетбелгілерді қазір синхрондау…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Жабу батырмасы
@@ -201,8 +202,9 @@ cfr-cbh-confirm-button = Cookie баннерлерін елемеу
     .accesskey = р
 cfr-cbh-dismiss-button = Қазір емес
     .accesskey = м
-cookie-banner-blocker-cfr-header = { -brand-short-name } жаңа ғана сіз үшін cookie файлдарын бұғаттады
-cookie-banner-blocker-cfr-body = Сайттардың сізді қадағалауын қиындату үшін біз көптеген cookie файлдарының қалқымалы терезелерінен автоматты түрде бас тартамыз.
+cookie-banner-blocker-onboarding-header = { -brand-short-name } жаңа ғана сіз үшін cookie баннерінен бас тартты
+cookie-banner-blocker-onboarding-body = Бұл сайтта алаңдататын нәрселерді мен сізді бақылайтын cookie файлдарын азырақ қылу.
+cookie-banner-blocker-onboarding-learn-more = Көбірек білу
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -232,10 +234,6 @@ fxa-sync-cfr-secondary = Кейінірек еске салу
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = Ескі құрылғыны пайдаланып жатырсыз ба?
-device-migration-fxa-spotlight-body = Бетбелгілер мен парольдер сияқты маңызды ақпаратты жоғалтпау үшін деректердің сақтық көшірмесін жасаңыз, әсіресе жаңа құрылғыға ауыссаңыз.
-device-migration-fxa-spotlight-primary-button = Деректерімнің сақтық көшірмесін қалай жасауға болады
-device-migration-fxa-spotlight-link = Кейінірек еске салу
 device-migration-fxa-spotlight-heavy-user-header = Деректеріңіздің сақтық көшірмесін жасауды ұмытпаңыз
 device-migration-fxa-spotlight-heavy-user-body = Бетбелгілер мен парольдер сияқты маңызды ақпараттың барлық құрылғыларыңызда жаңартылғанын және қорғалғанын тексеріңіз.
 device-migration-fxa-spotlight-heavy-user-primary-button = Бастау
@@ -270,3 +268,14 @@ launch-on-login-infobar-reject-button = Қазір емес
 launch-on-login-infobar-final-message = <strong>Компьютеріңізді әр рет қайта іске қосқан сайын { -brand-short-name } қолданбасын ашу керек пе?</strong>Іске қосылу баптауларын басқару үшін, баптаулардан "іске қосу" іздеңіз.
 launch-on-login-infobar-final-reject-button = Жоқ, рахмет
     .accesskey = Ж
+
+## Tail Fox Set Default Spotlight
+
+# This title is displayed together with the picture of a running fox with a long tail.
+# In English, this is a figure of speech meaning 'stop something from following you'.
+# If the localization of this message is challenging, consider using a simplified
+# alternative as a reference for translation: 'Keep unwanted trackers away'.
+tail-fox-spotlight-title = Тітіркендіргіш трекерлерді өзіңізден аулақ ұстаңыз
+tail-fox-spotlight-subtitle = Тітіркендіргіш жарнама трекерлерімен қоштасып, қауіпсіз, жылдам интернет тәжірибесіне ие болыңыз.
+tail-fox-spotlight-primary-button = Менің сілтемелерімді { -brand-short-name } арқылы ашу
+tail-fox-spotlight-secondary-button = Қазір емес

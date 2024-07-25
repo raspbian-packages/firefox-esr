@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = { $previous } ішін�
 mr1-onboarding-theme-header = Оны өзіңіздікі етіп қылу
 mr1-onboarding-theme-subtitle = { -brand-short-name } өнімін тема көмегімен жеке қылыңыз.
 mr1-onboarding-theme-secondary-button-label = Қазір емес
+newtab-wallpaper-onboarding-title = Түстер шашырауын қолданып көріңіз
+newtab-wallpaper-onboarding-subtitle = Жаңа бетке жаңа көрініс беру үшін тұсқағазды таңдаңыз.
+newtab-wallpaper-onboarding-primary-button-label = Тұсқағазды орнату
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Жүйелік тема
 mr1-onboarding-theme-label-light = Ашық түсті
@@ -343,3 +346,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Синхрондал�
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } сізді қолдайды
 onboarding-gratitude-security-and-privacy-subtitle = Mozilla Foundation ұсынған { -brand-short-name } қолданбасын пайдаланғаныңыз үшін рахмет. Сіздің қолдауыңызбен біз интернетті қауіпсіздеу және әркім үшін қолжетімді ету үшін жұмыс істеп жатырмыз.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = { -brand-short-name } қолданып жүргеніңізге қанша уақыт болды?
+onboarding-new-user-familiarity-based-survey-title = { -brand-short-name } өнімімен қаншалықты таныссыз?
+onboarding-new-user-survey-subtitle = Сіздің пікіріңіз { -brand-short-name } өнімін одан сайын жақсартуға көмектеседі.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Келесі
+onboarding-new-user-survey-legal-link-label = "{ onboarding-new-user-survey-next-button-label }" таңдау арқылы, сіз { -brand-product-name } өнімінің <a data-l10n-name="privacy_notice">Жекелік ескертуімен</a> келісесіз
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Мен жаңадан келдім
+onboarding-new-user-survey-time-based-option-2 = 1 айдан аз
+onboarding-new-user-survey-time-based-option-3 = 1 айдан астам, жүйелі түрде
+onboarding-new-user-survey-time-based-option-4 = 1 айдан астам, кейде
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Мен жаңадан келдім
+onboarding-new-user-survey-familiarity-based-option-2 = Мен оны біраз қолдандым
+onboarding-new-user-survey-familiarity-based-option-3 = Мен онымен өте жақсы таныспын
+onboarding-new-user-survey-familiarity-based-option-4 = Мен оны бұрын қолдандым, бірақ біраз уақыт өтті

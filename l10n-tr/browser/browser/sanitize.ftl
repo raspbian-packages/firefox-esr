@@ -19,6 +19,7 @@ sanitize-dialog-title-everything =
     .title = Tüm geçmişi sil
     .style = min-width: 34em
 clear-data-settings-label = { -brand-short-name } kapatıldığında aşağıdakileri otomatik olarak temizlesin
+sanitize-on-shutdown-description = { -brand-short-name } kapatıldığında işaretli tüm öğeleri otomatik olarak temizle.
 
 ## clear-time-duration-prefix is followed by a dropdown list, with
 ## values localized using clear-time-duration-value-* messages.
@@ -31,6 +32,9 @@ clear-data-settings-label = { -brand-short-name } kapatıldığında aşağıdak
 clear-time-duration-prefix =
     .value = Temizlenecek zaman aralığı:{ " " }
     .accesskey = m
+clear-time-duration-prefix2 =
+    .value = Zaman:
+    .accesskey = Z
 clear-time-duration-value-last-hour =
     .label = Son bir saat
 clear-time-duration-value-last-2-hours =
@@ -51,33 +55,46 @@ history-section-label = Geçmiş
 item-history-and-downloads =
     .label = Gezinti ve indirme geçmişi
     .accesskey = T
-item-browsing-and-search =
-    .label = Ziyaret edilen siteler, kayıtlı form bilgileri ve aramalar
-    .accesskey = Z
+item-history-form-data-downloads =
+    .label = Geçmiş
+    .accesskey = G
+item-history-form-data-downloads-description = Site ve indirme geçmişini, kayıtlı form bilgilerini ve aramaları temizler
 item-cookies =
     .label = Çerezler
     .accesskey = z
+# Variables:
+#   $amount (Number) - Amount of site data currently stored on disk
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cookies-site-data-with-size =
+    .label = Çerezler ve site verileri ({ $amount } { $unit })
+    .accesskey = e
 item-cookies-site-data =
     .label = Çerezler ve site verileri
     .accesskey = e
+item-cookies-site-data-description = Sitelerdeki oturumlarınızı kapatabilir ve alışveriş sepetlerinizi boşaltabilir
 item-active-logins =
     .label = Etkin oturumlar
     .accesskey = o
 item-cache =
     .label = Önbellek
     .accesskey = n
+# Variables:
+#   $amount (Number) - Amount of cached data
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cached-content-with-size =
+    .label = Geçici önbelleğe alınmış dosyalar ve sayfalar ({ $amount } { $unit })
+    .accesskey = G
 item-cached-content =
     .label = Geçici önbelleğe alınmış dosyalar ve sayfalar
     .accesskey = d
+item-cached-content-description = Sitelerin daha hızlı yüklenmesini sağlayacak öğeleri temizler
 item-form-search-history =
     .label = Form ve arama geçmişi
     .accesskey = F
 item-site-prefs =
     .label = Site ayarları
     .accesskey = i
-item-download-history =
-    .label = İndirilen dosyaların listesi
-    .accesskey = n
+item-site-prefs-description = İzinlerinizi ve site tercihlerinizi orijinal ayarlarına sıfırlar
 data-section-label = Veri
 item-site-settings =
     .label = Site ayarları
@@ -92,6 +109,8 @@ sanitize-button-ok =
     .label = Şimdi temizle
 sanitize-button-ok2 =
     .label = Temizle
+sanitize-button-ok-on-shutdown =
+    .label = Değişiklikleri kaydet
 # The label for the default button between the user clicking it and the window
 # closing.  Indicates the items are being cleared.
 sanitize-button-clearing =

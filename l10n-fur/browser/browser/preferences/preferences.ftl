@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 16em
     .placeholder = Cîr tes impostazions
 managed-notice = Il to navigadôr al ven gjestît de tô organizazion.
+managed-notice-info-icon =
+    .alt = Informazion
 category-list =
     .aria-label = Categoriis
 pane-general-title = Gjenerâl
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Gjave chest contignidôr
 containers-remove-cancel-button = No sta gjavâ chest contignidôr
+settings-tabs-show-image-in-preview =
+    .label = Mostre une imagjin di anteprime cuant che tu passis cul pontadôr sore di une schede
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = L'aspiet dal sît web al è stât sostituît de tô selezion di colôrs. <a data-l10n-name="colors-link"> Gjestìs i colôrs</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = L'aspiet dal sît web al è stât sostituît de tô selezion di colôrs.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Gjestìs i temis di { -brand-short-name } in <a data-l10n-name="themes-link">Estensions e temis</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Ingrandìs dome il test
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Atenzion: se tu selezionis “Ingrandìs dome il test” e il zoom predefinît nol è metût a 100%, cualchi sît o contignût al podarès funzionâ mâl.
 language-header = Lenghe
 choose-language-description = Sielç la tô lenghe preferide par visualizâ lis pagjinis
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Conseât di { $provider }
 home-prefs-recommended-by-description-new = Contignûts ecezionâi par cure di { $provider }, part de famee { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Storiis conseadis
+home-prefs-recommended-by-description-generic = Contignûts ecezionâi curâts de famee di prodots { -brand-product-name }
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Discjame Firefox par <img data-l10n-name="android-icon"/> <a
 
 sync-profile-picture =
     .tooltiptext = Cambie la imagjin dal profîl
+sync-profile-picture-with-alt =
+    .tooltiptext = Cambie la imagjin dal profîl
+    .alt = Cambie la imagjin dal profîl
+sync-profile-picture-account-problem =
+    .alt = Imagjin dal profîl pal account
+fxa-login-rejected-warning =
+    .alt = Avertiment
 sync-sign-out =
     .label = Disconet…
     .accesskey = g
@@ -937,6 +958,14 @@ autofill-payment-methods-checkbox-submessage = Al inclût cjartis di credit e di
     .accesskey = I
 autofill-saved-payment-methods-button = Metodis di paiament salvâts
     .accesskey = v
+autofill-reauth-checkbox =
+    { PLATFORM() ->
+        [macos] Domande la autenticazion di macOS par compilâ e modificâ metodis di paiament.
+        [windows] Domande la autenticazion di Windows par compilâ e modificâ metodis di paiament.
+        [linux] Domande la autenticazion di Linux par compilâ e modificâ metodis di paiament.
+       *[other] Domande la autenticazion par compilâ e modificâ metodis di paiament.
+    }
+    .accesskey = o
 
 ## Privacy Section - History
 
@@ -992,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Elimine i cookies e i dâts dai sîts cuant che al ven sierât { -brand-short-name }
     .accesskey = c
 sitedata-delete-on-close-private-browsing = in modalitât navigazion privade permanente, i cookies e i dâts dai sîts a vignaran simpri netâts cuant che si sierarà { -brand-short-name }.
+sitedata-delete-on-close-private-browsing2 = In base aes impostazions de cronologjie, i cookies e i dâts dai sîts de tô session a vignaran eliminâts cuant che tu sierarâs { -brand-short-name }.
 sitedata-allow-cookies-option =
     .label = Acete i cookies e i dâts dai sîts
     .accesskey = A
@@ -1068,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Azions sveltis
     .accesskey = Z
+addressbar-suggestions-settings = Modifiche lis preferencis pai sugjeriments dai motôrs di ricercje
 addressbar-locbar-showrecentsearches-option =
     .label = Mostre ricercjis resintis
     .accesskey = r
-addressbar-suggestions-settings = Modifiche lis preferencis pai sugjeriments dai motôrs di ricercje
 addressbar-quickactions-learn-more = Plui informazions
 
 ## Privacy Section - Content Blocking
@@ -1253,6 +1283,8 @@ addon-recommendations-link = Plui informazions
 # or builds with no Telemetry support available.
 collection-health-report-disabled = La segnalazion di dâts e je stade disativade te configurazion di cheste compilazion
 collection-backlogged-crash-reports-with-link = Permet a { -brand-short-name } di inviâ a to non segnalazions di colàs regjistradis in precedence <a data-l10n-name="crash-reports-link">Plui informazions</a>
+    .accesskey = c
+collection-backlogged-crash-reports = Permet a { -brand-short-name } di inviâ a to non segnalazions di colàs regjistradis in precedence
     .accesskey = c
 privacy-segmentation-section-header = Gnovis funzionalitâts che a miorin la navigazion
 privacy-segmentation-section-description = Cuant che us ufrìn funzionalitâts che a doprin i vuestris dâts par dâus esperience plui personâl:

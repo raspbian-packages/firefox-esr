@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Hitta i inställningar
 managed-notice = Din webbläsare hanteras av din organisation.
+managed-notice-info-icon =
+    .alt = Information
 category-list =
     .aria-label = Kategorier
 pane-general-title = Allmänt
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Ta bort denna behållare
 containers-remove-cancel-button = Ta inte bort denna behållare
+settings-tabs-show-image-in-preview =
+    .label = Visa en förhandsgranskning av bilden när du håller muspekaren på en flik
+    .accessKey = V
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Dina färgval åsidosätter webbplatsens utseende. <a data-l10n-name="colors-link">Hantera färger</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Dina färgval åsidosätter webbplatsens utseende.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Hantera { -brand-short-name } teman i <a data-l10n-name="themes-link">Tillägg och teman</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Zooma endast text
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Varning: Om du väljer "Zooma endast text" och din standardzoom är inte inställd på 100%, kan det orsaka fel på vissa webbplatser eller innehåll.
 language-header = Språk
 choose-language-description = Välj språk som webbsidor ska visas i
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Rekommenderas av { $provider }
 home-prefs-recommended-by-description-new = Särskilt innehåll valt av { $provider }, en del av familjen { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Rekommenderade berättelser
+home-prefs-recommended-by-description-generic = Exceptionellt innehåll kurerat av { -brand-product-name }-familjen
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Hämta Firefox för <img data-l10n-name="android-icon"/> <a 
 
 sync-profile-picture =
     .tooltiptext = Ändra profilbild
+sync-profile-picture-with-alt =
+    .tooltiptext = Ändra profilbild
+    .alt = Ändra profilbild
+sync-profile-picture-account-problem =
+    .alt = Kontots profilbild
+fxa-login-rejected-warning =
+    .alt = Varning
 sync-sign-out =
     .label = Logga ut…
     .accesskey = g
@@ -911,7 +932,7 @@ forms-windows-sso =
     .label = Tillåt Windows enkel inloggning för Microsoft-, arbets- och skolkonton.
 forms-windows-sso-learn-more-link = Läs mer
 forms-windows-sso-desc = Hantera konton i dina enhetsinställningar
-windows-passkey-settings-label = Hantera lösenord i systeminställningar
+windows-passkey-settings-label = Hantera lösenordsnycklar i systeminställningar
 
 ## OS Authentication dialog
 
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Ta bort kakor och webbplatsdata när { -brand-short-name } stängs
     .accesskey = k
 sitedata-delete-on-close-private-browsing = I permanent privat surfläge raderas alltid kakor och webbplatsdata när { -brand-short-name } är stängd.
+sitedata-delete-on-close-private-browsing2 = Baserat på dina historikinställningar, raderar { -brand-short-name } kakor och webbplatsdata från din session när du stänger webbläsaren.
 sitedata-allow-cookies-option =
     .label = Tillåt kakor och webbplatsdata
     .accesskey = T
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Snabbåtgärder
     .accesskey = a
+addressbar-suggestions-settings = Ändra inställningar för förslag från sökmotorn
 addressbar-locbar-showrecentsearches-option =
     .label = Visa senaste sökningar
     .accesskey = s
-addressbar-suggestions-settings = Ändra inställningar för förslag från sökmotorn
 addressbar-quickactions-learn-more = Läs mer
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = Läs mer
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Datarapportering är inaktiverad för den här byggkonfigurationen
 collection-backlogged-crash-reports-with-link = Tillåt { -brand-short-name } att skicka eftersläpande felrapporter för din räkning <a data-l10n-name="crash-reports-link">Läs mer</a>
+    .accesskey = f
+collection-backlogged-crash-reports = Tillåt { -brand-short-name } att skicka eftersläpande felrapporter för din räkning
     .accesskey = f
 privacy-segmentation-section-header = Nya funktioner som förbättrar din surfning
 privacy-segmentation-section-description = När vi erbjuder funktioner som använder din data för att ge dig en mer personlig upplevelse:

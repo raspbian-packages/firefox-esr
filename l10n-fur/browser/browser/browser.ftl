@@ -568,6 +568,11 @@ urlbar-result-action-search-w-engine = Cîr cun { $engine }
 urlbar-result-action-sponsored = Sponsorizât
 urlbar-result-action-switch-tab = Passe ae schede
 urlbar-result-action-visit = Visite
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Passe ae schede · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Vierç direzion da lis notis
 # Directs a user to press the Tab key to perform a search with the specified
@@ -892,6 +897,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Vierzi lis schedis precedentis?</strong> Tu puedis ripristinâ la tô session di prime dal menù aplicazion <img data-l10n-name="icon"/> di { -brand-short-name }, sot di Cronologjie.
 restore-session-startup-suggestion-button = Mostrimi cemût
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = La tô organizazion e à blocât l’acès ai files locâi di chest computer
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } al invie in automatic cualchi dât a { -vendor-short-name } cussì che o podìn miorâ la tô esperience.
@@ -900,6 +909,15 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Esplorazion privade
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Prevenzion pierdite dâts (DLP) midiant { $agentName }. Fâs clic par vê plui informazions.
+content-analysis-panel-title = Protezion dâts
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = La tô organizazion e dopre { $agentName } par parâsi des pierditis di dâts. <a data-l10n-name="info">Scuvierç di plui</a>
 
 ## Unified extensions (toolbar) button
 

@@ -67,7 +67,6 @@ protections-panel-not-found-label = Niciunul detectat
 ##
 
 protections-panel-settings-label = Setări pentru protecție
-# This should match the "appmenuitem-protection-dashboard-title" string in browser/appmenu.ftl.
 protections-panel-protectionsdashboard-label = Tablou de bord privind protecțiile
 
 ## In the Site Not Working? view, we suggest turning off protections if
@@ -81,6 +80,7 @@ protections-panel-site-not-working-view-issue-list-forms = Formularele
 protections-panel-site-not-working-view-issue-list-payments = Plățile
 protections-panel-site-not-working-view-issue-list-comments = Comentariile
 protections-panel-site-not-working-view-issue-list-videos = Videoclipurile
+protections-panel-site-not-working-view-issue-list-fonts = Fonturi
 protections-panel-site-not-working-view-send-report = Trimite un raport
 
 ##
@@ -111,3 +111,9 @@ protections-panel-content-blocking-breakage-report-view-send-report =
 
 # Cookie Banner Handling
 
+
+## Protections panel info message
+
+cfr-protections-panel-header = Navighează fără să fii urmărit(ă)
+cfr-protections-panel-body = Păstrează-ți datele pentru tine. { -brand-short-name } te protejează de multe dintre cele mai frecvente elemente de urmărire care monitorizează ce faci online.
+cfr-protections-panel-link-text = Află mai multe

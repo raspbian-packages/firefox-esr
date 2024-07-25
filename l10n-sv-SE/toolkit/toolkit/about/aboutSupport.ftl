@@ -200,6 +200,9 @@ media-cdm-capabilities = Förmågor
 # are not encrypted. It allows playback to start without having to wait for
 # license response, improving video start time and user experience.
 media-cdm-clear-lead = Rensa inledning
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = HDCP 2.2-kompatibel
 
 ##
 
@@ -279,6 +282,7 @@ try-newer-driver = Blockeras på grund av grafikdrivrutinens version. Prova att 
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType-parametrar
 compositing = Komposition
+support-font-determination = Felsökningsinfo för teckensnitts synlighet
 hardware-h264 = H264 hårdvaruavkodning
 main-thread-no-omtc = huvudtråden, ingen OMTC
 yes = Ja
@@ -424,3 +428,15 @@ pointing-device-mouse = Mus
 pointing-device-touchscreen = Pekskärm
 pointing-device-pen-digitizer = Digital penna
 pointing-device-none = Inga pekdon
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = Innehållsanalys (DLP)
+content-analysis-active = Aktiv
+content-analysis-connected-to-agent = Ansluten till Agent
+content-analysis-agent-path = Agentsökväg
+content-analysis-agent-failed-signature-verification = Agent misslyckades signaturverifiering
+content-analysis-request-count = Antal förfrågningar

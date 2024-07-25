@@ -19,6 +19,7 @@ sanitize-dialog-title-everything =
     .title = Απαλοιφή όλου του ιστορικού
     .style = min-width: 34em
 clear-data-settings-label = Όταν κλείνει, το { -brand-short-name } να κάνει αυτόματη απαλοιφή των παρακάτω
+sanitize-on-shutdown-description = Αυτόματη απαλοιφή όλων των επιλεγμένων στοιχείων όταν κλείσει το { -brand-short-name }.
 
 ## clear-time-duration-prefix is followed by a dropdown list, with
 ## values localized using clear-time-duration-value-* messages.
@@ -54,33 +55,46 @@ history-section-label = Ιστορικό
 item-history-and-downloads =
     .label = Ιστορικό περιήγησης και λήψεων
     .accesskey = π
-item-browsing-and-search =
-    .label = Επισκέψεις ιστοτόπων, αποθηκευμένα στοιχεία φορμών και αναζητήσεις
-    .accesskey = Ε
+item-history-form-data-downloads =
+    .label = Ιστορικό
+    .accesskey = Ι
+item-history-form-data-downloads-description = Διαγραφή ιστορικού ιστοτόπων και λήψεων, των πληροφοριών αποθηκευμένων φορμών και αναζητήσεων
 item-cookies =
     .label = Cookie
     .accesskey = C
+# Variables:
+#   $amount (Number) - Amount of site data currently stored on disk
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cookies-site-data-with-size =
+    .label = Cookie και δεδομένα ιστοτόπων ({ $amount } { $unit })
+    .accesskey = e
 item-cookies-site-data =
     .label = Cookie και δεδομένα ιστοτόπων
     .accesskey = e
+item-cookies-site-data-description = Ενδέχεται να αποσυνδεθείτε από ιστοτόπους ή να αδειάσουν τα καλάθια αγορών
 item-active-logins =
     .label = Ενεργές συνδέσεις
     .accesskey = υ
 item-cache =
     .label = Προσωρινή μνήμη
     .accesskey = ρ
+# Variables:
+#   $amount (Number) - Amount of cached data
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cached-content-with-size =
+    .label = Προσωρινά αρχεία και σελίδες ({ $amount } { $unit })
+    .accesskey = ρ
 item-cached-content =
     .label = Προσωρινά αποθηκευμένα αρχεία και σελίδες
     .accesskey = σ
+item-cached-content-description = Διαγράφει στοιχεία που βοηθούν τους ιστοτόπους να φορτώνουν πιο γρήγορα
 item-form-search-history =
     .label = Ιστορικό φορμών και αναζήτησης
     .accesskey = φ
 item-site-prefs =
     .label = Ρυθμίσεις ιστοτόπων
     .accesskey = θ
-item-download-history =
-    .label = Λίστα ληφθέντων αρχείων
-    .accesskey = Λ
+item-site-prefs-description = Επαναφέρει τα δικαιώματα και τις προτιμήσεις ιστοτόπων σας στις αρχικές ρυθμίσεις
 data-section-label = Δεδομένα
 item-site-settings =
     .label = Ρυθμίσεις ιστοτόπου
@@ -95,6 +109,8 @@ sanitize-button-ok =
     .label = Απαλοιφή τώρα
 sanitize-button-ok2 =
     .label = Απαλοιφή
+sanitize-button-ok-on-shutdown =
+    .label = Αποθήκευση αλλαγών
 # The label for the default button between the user clicking it and the window
 # closing.  Indicates the items are being cleared.
 sanitize-button-clearing =

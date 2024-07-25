@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Pridať vyhľadávací modul
 newtab-topsites-add-shortcut-header = Nová skratka
 newtab-topsites-edit-topsites-header = Upraviť top stránku
 newtab-topsites-edit-shortcut-header = Upraviť skratku
+newtab-topsites-add-shortcut-label = Pridať skratku
 newtab-topsites-title-label = Názov
 newtab-topsites-title-input =
     .placeholder = Zadajte názov
@@ -194,6 +195,7 @@ newtab-section-header-recent-activity = Nedávna aktivita
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Odporúča { $provider }
+newtab-section-header-stories = Príbehy na zamyslenie
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -202,6 +204,8 @@ newtab-empty-section-highlights = Začnite s prehliadaním a my vám na tomto mi
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Už ste prečítali všetko. Ďalšie príbehy zo služby { $provider } tu nájdete opäť neskôr. Nemôžete sa dočkať? Vyberte si populárnu tému a pozrite sa na ďalšie skvelé príbehy z celého webu.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Už ste prečítali všetko. Ďalšie príbehy tu nájdete neskôr. Neviete sa dočkať? Vyberte obľúbenú tému a nájdite ďalšie skvelé príbehy z celého webu.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -255,9 +259,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Sponzorované skratky
 newtab-custom-pocket-title = Odporúčané službou { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Výnimočný obsah vybraný službou { -pocket-brand-name }, ktorá je súčasťou rodiny { -brand-product-name(case: "gen") }
-newtab-custom-pocket-toggle =
-    .label = Odporúčané službou { -pocket-brand-name }
-    .description = Výnimočný obsah vybraný službou { -pocket-brand-name }, ktorá je súčasťou rodiny { -brand-product-name(case: "gen") }
+newtab-custom-stories-toggle =
+    .label = Odporúčané príbehy
+    .description = Výnimočný obsah spravovaný rodinou { -brand-product-name }
 newtab-custom-pocket-sponsored = Sponzorované príbehy
 newtab-custom-pocket-show-recent-saves = Zobraziť nedávno uložené položky
 newtab-custom-recent-title = Nedávna aktivita
@@ -267,3 +271,24 @@ newtab-custom-recent-toggle =
     .description = Výber z nedávno navštívených stránok a obsahu
 newtab-custom-close-button = Zavrieť
 newtab-custom-settings = Ďalšie nastavenia
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Tapety
+newtab-wallpaper-reset = Obnoviť predvolenú tapetu
+newtab-wallpaper-light-red-panda = Červená panda
+newtab-wallpaper-light-mountain = Biela hora
+newtab-wallpaper-light-sky = Obloha s fialovými a ružovými oblakmi
+newtab-wallpaper-light-color = Modré, ružové a žlté tvary
+newtab-wallpaper-light-landscape = Scenéria zahmlenej hory
+newtab-wallpaper-light-beach = Pláž s palmou
+newtab-wallpaper-dark-aurora = Polárna žiara
+newtab-wallpaper-dark-color = Červené a modré tvary
+newtab-wallpaper-dark-panda = Panda červená ukrytá v lese
+newtab-wallpaper-dark-sky = Mestská scenéria s nočnou oblohou
+newtab-wallpaper-dark-mountain = Horská scenéria
+newtab-wallpaper-dark-city = Fialová mestská scenéria
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Autor fotografie: <a data-l10n-name="name-link">{ $author_string }</a>, zdroj: <a data-l10n-name="webpage-link">{ $webpage_string }</a>

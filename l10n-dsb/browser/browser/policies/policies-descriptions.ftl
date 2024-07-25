@@ -12,10 +12,13 @@
 
 policy-3rdparty = Pšawidła nastajiś, ku kótarymž WebExtensions maju pśistup pśez chrome.storage.managed.
 policy-AllowedDomainsForApps = Definěrujśo domeny, kótarež směju pśistup k Google Workspace měś.
+policy-AllowFileSelectionDialogs = Dialogi za wuběranje datajow dowóliś.
 policy-AppAutoUpdate = Awtomatiske aktualizacije nałoženjow zmóžniś abo znjemóžniś.
 policy-AppUpdatePin = Zajźowaś tomu, až se { -brand-short-name } wušej pódaneje wersije aktualizěrujo.
 policy-AppUpdateURL = Swójski aktualizěrowański URL za nałoženje nastajiś.
 policy-Authentication = Integrěrowanu awtentifikaciju za websedła konfigurěrowaś, kótarež ju pódpěraju.
+policy-AutofillAddressEnabled = Awtomatiske wupołnjenje za adrese zmóžniś.
+policy-AutofillCreditCardEnabled = Awtomatiske wupołnjenje za płaśeńske metody zmóžniś.
 policy-AutoLaunchProtocolsFromOrigins = Definěrujśo lisćinu protokolow, kótarež daju se z naliconych žrědłow wužywaś, bźez togo aby se dejało wužywarja pšašaś.
 policy-BackgroundAppUpdate2 = Slězynowe aktualizěrowanje zmóžniś abo znjemóžniś.
 policy-BlockAboutAddons = Pśistup k zastojnikoju dodankow (about:addons) blokěrowaś.
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = Pśistup k bokoju about:support blokěrowaś.
 policy-Bookmarks = Cytańske znamjenja w symbolowej rědce cytańskich znamjenjow, w meniju cytańskich znamjenjow abo w pódanem zastojniku w nima napóraś.
 policy-CaptivePortal = Kaptiwny portal zmóžniś abo znjemóžniś
 policy-CertificatesDescription = Certifikaty pśidaś abo zatwarjone certifikaty wužywaś.
+policy-ContentAnalysis = Zwisk z agentom zajźowanja zgubjenja datow zmóžniś abo znjemóžniś.
 policy-Cookies = Websedłam dowóliś abo zakazaś, cookieje składowaś.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Pšawidła nastupajucy kontejnery póstajiś
@@ -35,8 +39,11 @@ policy-DisableAppUpdate = Wobglědowakoju aktualizěrowanje zakazaś.
 policy-DisableBuiltinPDFViewer = PDF.js znjemóžniś, zatwarjony PDF-wobglědowak w { -brand-short-name }.
 policy-DisableDefaultBrowserAgent = Zawoborajśo standardnemu agentoju wobglědowaka wuwjedowanje akcijow. To jo jano za Windows k dispoziciji; druge platformy agent njamaju.
 policy-DisableDeveloperTools = Pśistup k wuwijaŕskim rědam blokěrowaś.
+policy-DisableEncryptedClientHello = Wužywanje TLS-funkcije Encrfypted Client Hello (ECH) znjemóžniś.
 policy-DisableFeedbackCommands = Pśikaze znjemóžniś, kótarež komentary z menija Pomoc sćelu (Pósudk pósłaś a Wobšudnikojske sedło k wěsći daś)
 policy-DisableFirefoxAccounts = Słužby na zakłaźe { -fxaccount-brand-name } znjemóžniś, inkluziwnje Sync.
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = Słužby znjemóžniś, kótarež na konśe bazěruju, mjazy nimi synchronizaciju.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Funkciju Firefox Screenshots znjemóžniś.
 policy-DisableFirefoxStudies = { -brand-short-name } zakazaś, studije wuwjasć.
@@ -121,6 +128,7 @@ policy-SSLVersionMax = Nastajśo maksimalnu SSL-wersiju.
 policy-SSLVersionMin = Nastajśo minimalnu SSL-wersiju.
 policy-StartDownloadsInTempDirectory = Ześěgnjenja nuźiś, aby w lokalnem, nachylnem městnje město w standardnem zapisu ześěgnjenjow zachopili.
 policy-SupportMenu = Swójski menijowy zapisk pomocy menijoju pomocy pśidaś.
+policy-TranslateEnabled = Pśełožowanje webbokow zmóžniś abo znjemóžniś.
 policy-UserMessaging = Wužywarjeju wěste powěsći njepokazaś
 policy-UseSystemPrintDialog = Z pomocu systemowego śišćaŕskego dialoga śišćaś.
 # “format” refers to the format used for the value of this policy.

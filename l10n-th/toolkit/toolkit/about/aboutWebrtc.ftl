@@ -33,8 +33,6 @@ about-webrtc-aec-logging-toggled-off-state-msg = ไฟล์บันทึก�
 
 # The autorefresh checkbox causes a stats section to autorefresh its content when checked
 about-webrtc-auto-refresh-label = การรีเฟรชอัตโนมัติ
-# Determines the default state of the Auto Refresh check boxes
-about-webrtc-auto-refresh-default-label = เรียกใหม่อัตโนมัติตามค่าเริ่มต้น
 # A button which forces a refresh of displayed statistics
 about-webrtc-force-refresh-button = เรียกใหม่
 # "PeerConnection" is a proper noun associated with the WebRTC module. "ID" is
@@ -98,8 +96,11 @@ about-webrtc-save-page-label = บันทึกหน้า
 about-webrtc-debug-mode-msg-label = โหมดดีบั๊ก
 about-webrtc-debug-mode-off-state-label = เริ่มโหมดดีบั๊ก
 about-webrtc-debug-mode-on-state-label = หยุดโหมดดีบั๊ก
-about-webrtc-enable-logging-label = เปิดใช้งานพรีเซ็ตปูม WebRTC
 about-webrtc-stats-heading = สถิติวาระ
+about-webrtc-enable-logging-label = เปิดใช้งานพรีเซ็ตปูม WebRTC
+about-webrtc-peerconnections-section-heading = สถิติ RTCPeerConnection
+about-webrtc-peerconnections-section-show-msg = แสดงสถิติ RTCPeerConnection
+about-webrtc-peerconnections-section-hide-msg = ซ่อนสถิติ RTCPeerConnection
 about-webrtc-stats-clear = ล้างประวัติ
 about-webrtc-log-heading = รายการบันทึกการเชื่อมต่อ
 about-webrtc-log-clear = ล้างรายการบันทึก
@@ -194,6 +195,17 @@ about-webrtc-configuration-element-provided = จัดเตรียมไว�
 about-webrtc-configuration-element-not-provided = ไม่ได้จัดเตรียมไว้
 # The options set by the user in about:config that could impact a WebRTC call
 about-webrtc-custom-webrtc-configuration-heading = การกำหนดลักษณะ WebRTC ที่ตั้งโดยผู้ใช้
+# The options set by the user in about:config that could impact a WebRTC call
+about-webrtc-user-modified-configuration-heading = การกำหนดค่า WebRTC ที่ผู้ใช้ปรับเปลี่ยน
+
+## These are displayed on the button that shows or hides the
+## user modified configuration disclosure
+
+about-webrtc-user-modified-configuration-show-msg = แสดงการกำหนดค่าที่ผู้ใช้ปรับเปลี่ยน
+about-webrtc-user-modified-configuration-hide-msg = ซ่อนการกำหนดค่าที่ผู้ใช้ปรับเปลี่ยน
+
+##
+
 # Section header for estimated bandwidths of WebRTC media flows
 about-webrtc-bandwidth-stats-heading = แบนด์วิดท์โดยประมาณ
 # The ID of the MediaStreamTrack
@@ -222,7 +234,7 @@ about-webrtc-frame-stats-heading = สถิติเฟรมวิดีโอ
 
 about-webrtc-save-page-msg = ได้บันทึกหน้าลงใน: { $path }
 about-webrtc-debug-mode-off-state-msg = บันทึกร่องรอยสามารถพบได้ที่: { $path }
-about-webrtc-debug-mode-on-state-msg = โหมดดีบั๊กทำงานอยู่ บันทึกการติดตามอยู่ที่: { $path }
+about-webrtc-debug-mode-on-state-msg = โหมดดีบั๊กทำงานอยู่ บันทึกการตามรอยอยู่ที่: { $path }
 about-webrtc-aec-logging-off-state-msg = ไฟล์บันทึกที่จับสามารถพบได้ใน: { $path }
 # This path is used for saving the about:webrtc page so it can be attached to
 # bug reports.
@@ -295,9 +307,6 @@ about-webrtc-sdp-set-timestamp = ประทับเวลา { NUMBER($timest
 
 about-webrtc-show-msg-sdp = แสดง SDP
 about-webrtc-hide-msg-sdp = ซ่อน SDP
-
-##
-
 
 ## These are displayed on the button that shows or hides the Media Context information disclosure.
 ## The Media Context is the set of preferences and detected capabilities that informs

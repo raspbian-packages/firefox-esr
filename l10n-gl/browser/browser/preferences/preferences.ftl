@@ -226,6 +226,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = As túas escollas de cores substitúen a aparencia do sitio web. <a data-l10n-name="colors-link">Xestionar as cores</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = As túas escollas de cores substitúen a aparencia do sitio web.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Xestiona os temas de { -brand-short-name } en <a data-l10n-name="themes-link">Extensións e temas</a>
@@ -465,6 +469,9 @@ browsing-use-smooth-scrolling =
 browsing-gtk-use-non-overlay-scrollbars =
     .label = Amosar sempre as barras de desprazamento
     .accesskey = o
+browsing-always-underline-links =
+    .label = Subliñar sempre as ligazóns
+    .accesskey = u
 browsing-use-onscreen-keyboard =
     .label = Amosar un teclado táctil cando sexa necesario
     .accesskey = c
@@ -552,6 +559,8 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Recomendado por { $provider }
 home-prefs-recommended-by-description-new = Contido excepcional patrocinado por { $provider }, parte da familia { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Historias recomendadas
 
 ##
 
@@ -686,6 +695,9 @@ sync-mobile-promo = Descargar Firefox para <img data-l10n-name="android-icon"/> 
 
 sync-profile-picture =
     .tooltiptext = Cambiar a foto do perfil
+sync-profile-picture-with-alt =
+    .tooltiptext = Cambiar a foto do perfil
+    .alt = Cambiar a foto do perfil
 sync-sign-out =
     .label = Saír…
     .accesskey = S
@@ -735,8 +747,10 @@ sync-currently-syncing-bookmarks = Marcadores
 sync-currently-syncing-history = Historial
 sync-currently-syncing-tabs = Lapelas abertas
 sync-currently-syncing-logins-passwords = Identificacións e contrasinais
+sync-currently-syncing-passwords = Contrasinais
 sync-currently-syncing-addresses = Enderezos
 sync-currently-syncing-creditcards = Tarxetas de crédito
+sync-currently-syncing-payment-methods = Métodos de pagamento
 sync-currently-syncing-addons = Complementos
 sync-currently-syncing-settings = Configuración
 sync-change-options =
@@ -767,6 +781,10 @@ sync-engine-logins-passwords =
     .label = Identificacións e contrasinais
     .tooltiptext = Nomes de usuario e contrasinais que gardaches
     .accesskey = I
+sync-engine-passwords =
+    .label = Contrasinais
+    .tooltiptext = Contrasinais que gardou
+    .accesskey = C
 sync-engine-addresses =
     .label = Enderezos
     .tooltiptext = Enderezos postais gardados (só no escritorio)
@@ -775,6 +793,10 @@ sync-engine-creditcards =
     .label = Tarxetas de crédito
     .tooltiptext = Nomes, números e datas de caducidade (só no escritorio)
     .accesskey = c
+sync-engine-payment-methods2 =
+    .label = Métodos de pagamento
+    .tooltiptext = Nomes, números de tarxetas, e datas de caducidade
+    .accesskey = M
 sync-engine-addons =
     .label = Complementos
     .tooltiptext = Extensións e temas para o Firefox de escritorio
@@ -821,6 +843,9 @@ pane-privacy-logins-and-passwords-header = Identificacións e contrasinais
 forms-ask-to-save-logins =
     .label = Preguntar se gardar identificacións e contrasinais de acceso nos sitios web
     .accesskey = r
+
+## Privacy Section - Passwords
+
 forms-exceptions =
     .label = Excepcións…
     .accesskey = p
@@ -875,6 +900,10 @@ primary-password-os-auth-dialog-message-win = Para crear un contrasinal principa
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = crear un contrasinal principal
 master-password-os-auth-dialog-caption = { -brand-full-name }
+
+## Privacy section - Autofill
+
+pane-privacy-autofill-header = Completado automático
 
 ## Privacy Section - History
 
@@ -1005,10 +1034,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Accións rápidas
     .accesskey = r
+addressbar-suggestions-settings = Cambiar as preferencias relacionadas coas suxestións do buscador
 addressbar-locbar-showrecentsearches-option =
     .label = Mostrar buscas recentes
     .accesskey = r
-addressbar-suggestions-settings = Cambiar as preferencias relacionadas coas suxestións do buscador
 addressbar-quickactions-learn-more = Máis información
 
 ## Privacy Section - Content Blocking
@@ -1187,6 +1216,8 @@ addon-recommendations-link = Máis información
 collection-health-report-disabled = O envío de informes está desactivado nesta configuración de compilación
 collection-backlogged-crash-reports-with-link = Permitir que o { -brand-short-name } envíe informes de fallo atrasados no seu nome <a data-l10n-name="crash-reports-link">Máis información</a>
     .accesskey = P
+collection-backlogged-crash-reports = Permitir que o { -brand-short-name } envíe informes de fallo atrasados no seu nome
+    .accesskey = P
 privacy-segmentation-section-header = Novas funcionalidades que melloran a súa navegación
 privacy-segmentation-section-description = Cando ofrecemos funcionalidades que usan os teus datos para darte unha experiencia máis personalizada:
 privacy-segmentation-radio-off =
@@ -1262,6 +1293,7 @@ preferences-doh-status-disabled = Desactivado
 #   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
 preferences-doh-status-not-active = Non activo ({ $reason })
 preferences-doh-group-message = Activar o DNS seguro usando:
+preferences-doh-group-message2 = Activar DNS sobre HTTPS usando:
 preferences-doh-expand-section =
     .tooltiptext = Máis información
 preferences-doh-setting-default =

@@ -12,6 +12,8 @@ menu-tools-firefox-view =
     .label = { -firefoxview-brand-name }
     .accesskey = F
 firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
 firefoxview-page-label =
     .label = { -firefoxview-brand-name }
 firefoxview-close-button =
@@ -51,6 +53,7 @@ firefoxview-syncedtabs-loading-header = Syngronisearje
 firefoxview-syncedtabs-loading-description = As dit dien is, sjogge jo alle ljepblêden dy’t jo op oare apparaten iepene hawwe. Kom gau werom.
 firefoxview-tabpickup-fxa-admin-disabled-header = Jo organisaasje hat syngronisaasje útskeakele
 firefoxview-tabpickup-fxa-admin-disabled-description = { -brand-short-name } is net yn steat om ljepblêden tusken apparaten te syngronisearjen, omdat jo behearder syngronisaasje útskeakele hat.
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } is net yn steat om ljepblêden tusken apparaten te syngronisearjen, omdat jo organisaasje syngronisaasje útskeakele hat.
 firefoxview-tabpickup-network-offline-header = Kontrolearje jo ynternetferbining
 firefoxview-tabpickup-network-offline-description = As jo in firewall of proxy brûke, kontrolearje dan oft { -brand-short-name } tastimming hat om tagong te krijen ta it web.
 firefoxview-tabpickup-network-offline-primarybutton = Opnij probearje
@@ -184,6 +187,8 @@ firefoxview-search-results-count =
 firefoxview-search-results-empty = Gjin resultaten foar ‘{ $query }’
 firefoxview-sort-history-by-date-label = Sortearje op datum
 firefoxview-sort-history-by-site-label = Sortearje op website
+firefoxview-sort-open-tabs-by-recency-label = Sortearje op resinte aktiviteit
+firefoxview-sort-open-tabs-by-order-label = Sortearje op ljepblêdfolchoarder
 # Variables:
 #   $url (string) - URL that will be opened in the new tab
 firefoxview-opentabs-tab-row =
@@ -246,3 +251,25 @@ firefoxview-recentlyclosed-empty-description-two = Besjoch jo <a data-l10n-name=
 
 firefoxview-syncedtabs-device-notabs = Der binne gjin ljepblêden iepene op dit apparaat
 firefoxview-syncedtabs-connect-another-device = In oar apparaat ferbine
+firefoxview-pinned-tabs =
+    .title = Fêstmakke ljepblêden
+firefoxview-tabs =
+    .title = Ljepblêden
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Wikselje nei { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Wikselje nei (Blêdwizer) { $tabTitle }
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Blêdwizer) { $url }

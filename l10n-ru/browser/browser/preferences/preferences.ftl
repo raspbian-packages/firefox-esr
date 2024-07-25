@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Найти в Настройках
 managed-notice = Ваш браузер управляется Вашей организацией.
+managed-notice-info-icon =
+    .alt = Информация
 category-list =
     .aria-label = Категории
 pane-general-title = Основные
@@ -206,6 +208,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Удалить этот контейнер
 containers-remove-cancel-button = Не удалять этот контейнер
+settings-tabs-show-image-in-preview =
+    .label = Отображать предпросмотр изображения при наведении на вкладку
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -230,6 +235,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Выбранные вами цвета изменяют внешний вид сайтов. <a data-l10n-name="colors-link">Управлять цветами</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Выбранные вами цвета изменяют внешний вид сайтов.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Управляйте темами { -brand-short-name } в разделе <a data-l10n-name="themes-link">«Расширения и темы»</a>
@@ -257,6 +266,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Только текст
     .accesskey = о
+preferences-text-zoom-override-warning =
+    .message = Предупреждение: Если вы выберете «Масштабировать только текст», а ваш масштаб по умолчанию не установлен на 100%, это может привести к поломке некоторых сайтов или их содержимого.
 language-header = Язык
 choose-language-description = Выберите язык, предпочитаемый вами для отображения страниц
 choose-button =
@@ -562,6 +573,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Рекомендовано { $provider }
 home-prefs-recommended-by-description-new = Особый контент, курируемый { $provider }, частью семейства { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Рекомендуемые истории
+home-prefs-recommended-by-description-generic = Исключительный контент, курируемый семейством { -brand-product-name }
 
 ##
 
@@ -700,6 +714,13 @@ sync-mobile-promo = Загрузите Firefox для <img data-l10n-name="andro
 
 sync-profile-picture =
     .tooltiptext = Изменить фотографию в профиле
+sync-profile-picture-with-alt =
+    .tooltiptext = Изменить фотографию в профиле
+    .alt = Изменить фотографию в профиле
+sync-profile-picture-account-problem =
+    .alt = Фото профиля аккаунта
+fxa-login-rejected-warning =
+    .alt = Предупреждение
 sync-sign-out =
     .label = Выйти…
     .accesskey = ы
@@ -866,7 +887,7 @@ forms-generate-passwords =
     .label = Предлагать и генерировать надежные пароли
     .accesskey = н
 forms-suggest-passwords =
-    .label = Предлагайть надежные пароли
+    .label = Предлагать надежные пароли
     .accesskey = ы
 forms-breach-alerts =
     .label = Показывать уведомления о паролях для взломанных сайтов
@@ -1004,6 +1025,7 @@ sitedata-delete-on-close =
     .label = Удалять куки и данные сайтов при закрытии { -brand-short-name }
     .accesskey = д
 sitedata-delete-on-close-private-browsing = В постоянном приватном режиме куки и данные сайтов всегда будут удаляться при закрытии { -brand-short-name }.
+sitedata-delete-on-close-private-browsing2 = Основываясь на ваших настройках истории, { -brand-short-name } удаляет куки и данные сайтов из вашей сессии, когда вы закрываете браузер.
 sitedata-allow-cookies-option =
     .label = Принимать куки и данные сайтов
     .accesskey = и
@@ -1080,10 +1102,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Быстрые действия
     .accesskey = ы
+addressbar-suggestions-settings = Изменить настройки для предложений поисковых систем
 addressbar-locbar-showrecentsearches-option =
     .label = Показать недавние поисковые запросы
     .accesskey = к
-addressbar-suggestions-settings = Изменить настройки для предложений поисковых систем
 addressbar-quickactions-learn-more = Подробнее
 
 ## Privacy Section - Content Blocking
@@ -1265,6 +1287,8 @@ addon-recommendations-link = Подробнее
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Для этой конфигурации сборки отправка данных отключена
 collection-backlogged-crash-reports-with-link = Разрешить { -brand-short-name } отправлять от вашего имени накопившиеся сообщения о его падениях <a data-l10n-name="crash-reports-link">Подробнее</a>
+    .accesskey = ш
+collection-backlogged-crash-reports = Разрешить { -brand-short-name } отправлять от вашего имени накопившиеся сообщения о его падениях
     .accesskey = ш
 privacy-segmentation-section-header = Новые возможности, улучшающие ваш просмотр сети
 privacy-segmentation-section-description = Когда мы предлагаем возможности, которые используют ваши данные, чтобы улучшить персонализацию браузера:

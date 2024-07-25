@@ -48,6 +48,9 @@ browser-main-window-mac-window-titles =
 # This should match the `data-title-default` attribute in both
 # `browser-main-window` and `browser-main-window-mac`.
 browser-main-window-title = { -brand-full-name }
+# The non-variable portion of this MUST match the translation of
+# "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
+private-browsing-shortcut-text-2 = { -brand-shortcut-name } التصفح الخفي
 
 ##
 
@@ -276,16 +279,36 @@ quickactions-cmd-plugins = المُلحقات
 # Opens the print dialog
 quickactions-print2 = اطبع الصفحة
 quickactions-cmd-print = اطبع
+# Opens the print dialog at the save to PDF option
+quickactions-savepdf = احفظ الصفحة بصيغة PDF
+quickactions-cmd-savepdf = pdf
 # Opens a new private browsing window
 quickactions-private2 = افتح نافذة خاصة
 quickactions-cmd-private = التصفّح الخاص
+# Opens a SUMO article explaining how to refresh
+quickactions-refresh = أعد تحميل { -brand-short-name }
+quickactions-cmd-refresh = حدّث
+# Restarts the browser
+quickactions-restart = أعِد تشغيل { -brand-short-name }
+quickactions-cmd-restart = أعِد التشغيل
 # Opens the screenshot tool
 quickactions-screenshot3 = خذ لقطة شاشة
+quickactions-cmd-screenshot = لقطة شاشة
 # Opens about:preferences
 quickactions-settings2 = أدِر الإعدادات
 quickactions-cmd-settings = الإعدادات، التفضيلات، الخيارات
+# Opens about:addons page in the themes section
+quickactions-themes = أدِر السمات
+quickactions-cmd-themes = السمات
+# Opens a SUMO article explaining how to update the browser
+quickactions-update = حدِّث { -brand-short-name }
+quickactions-cmd-update = حدّث
 # Opens the view-source UI with current pages source
 quickactions-viewsource2 = اعرض مصدر هذه الصفحة
+quickactions-cmd-viewsource = اعرض المصدر، مصدر
+# Tooltip text for the help button shown in the result.
+quickactions-learn-more =
+    .title = تعرف على المزيد حول الإجراءات السريعة
 
 ## Bookmark Panel
 
@@ -332,6 +355,7 @@ identity-connection-secure = الاتصال آمن
 identity-connection-failure = فشل الاتصال
 identity-connection-internal = هذه صفحة { -brand-short-name } آمنة.
 identity-connection-file = هذه الصفحة مخزنة على حاسوبك.
+identity-connection-associated = حمِّلت هذه الصفحة من صفحة أخرى.
 identity-extension-page = حمِّلت هذه الصفحة من امتداد.
 identity-active-blocked = حجب { -brand-short-name } الأجزاء غير الآمنة في هذه الصفحة.
 identity-custom-root = تثبّت من هذا الاتصال مُصْدِر شهادات لا تعرفه Mozilla.
@@ -518,6 +542,10 @@ urlbar-placeholder-search-mode-other-history =
 urlbar-placeholder-search-mode-other-tabs =
     .placeholder = أدخِل نص البحث
     .aria-label = ابحث في الألسنة
+# This placeholder is used when searching quick actions.
+urlbar-placeholder-search-mode-other-actions =
+    .placeholder = أدخِل نص البحث
+    .aria-label = إجراءات البحث
 # Variables
 #  $name (String): the name of the user's default search engine
 urlbar-placeholder-with-name =
@@ -558,6 +586,13 @@ urlbar-result-action-search-w-engine = ابحث مستخدمًا { $engine }
 urlbar-result-action-sponsored = نتيجة مموّلة
 urlbar-result-action-switch-tab = انتقل إلى اللسان
 urlbar-result-action-visit = زُر
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = انتقل للسان · <span>{ $container }</span>
+# Allows the user to visit a URL that was previously copied to the clipboard.
+urlbar-result-action-visit-from-clipboard = زر من الحافظة
 # Directs a user to press the Tab key to perform a search with the specified
 # engine.
 # Variables
@@ -593,6 +628,7 @@ urlbar-result-action-calculator-result = = { $result }
 urlbar-result-action-search-bookmarks = ابحث في العلامات
 urlbar-result-action-search-history = ابحث في التأريخ
 urlbar-result-action-search-tabs = ابحث في الألسنة
+urlbar-result-action-search-actions = إجراءات البحث
 
 ## Labels shown above groups of urlbar results
 
@@ -606,6 +642,14 @@ urlbar-group-firefox-suggest =
 #  $engine (String): the name of the search engine providing the suggestions
 urlbar-group-search-suggestions =
     .label = اقتراحات { $engine }
+# A label shown above Quick Actions in the urlbar results.
+urlbar-group-quickactions =
+    .label = إجراءات سريعة
+# A label shown above the recent searches group in the urlbar results.
+# Variables
+#  $engine (String): the name of the search engine used to search.
+urlbar-group-recent-searches =
+    .label = عمليات البحث الأخيرة
 
 ## Reader View toolbar buttons
 
@@ -697,6 +741,8 @@ bookmarks-search =
     .label = ابحث في العلامات
 bookmarks-tools =
     .label = أدوات العلامات
+bookmarks-subview-edit-bookmark =
+    .label = حرّر هذه العلامة…
 # The aria-label is a spoken label that should not include the word "toolbar" or
 # such, because screen readers already know that this container is a toolbar.
 # This avoids double-speaking.
@@ -869,15 +915,24 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>أتريد فتح الألسنة الأخيرة؟</strong> يمكنك استعادة الجلسة السابقة من قائمة تطبيق { -brand-short-name } <img data-l10n-name="icon"/>، ضمن قائمة التأريخ.
 restore-session-startup-suggestion-button = ما الطريقة؟
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = حجبت مؤسستك الوصول إلى الملفات المحلية الموجودة على هذا الكمبيوتر
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = يُرسل { -brand-short-name } بعض البيانات تلقائيا إلى { -vendor-short-name } لمساعدتنا في تحسين متصفّحك.
 data-reporting-notification-button =
     .label = اختر ما الذي أشاركه
     .accesskey = خ
+# Label for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-label = التصفح الخاص
 
 ## Unified extensions (toolbar) button
 
+unified-extensions-button =
+    .label = الامتدادات
+    .tooltiptext = الامتدادات
 
 ## Unified extensions button when permission(s) are needed.
 ## Note that the new line is intentionally part of the tooltip.
@@ -899,7 +954,21 @@ unified-extensions-button-quarantined =
 
 ## Private browsing reset button
 
+reset-pbm-toolbar-button =
+    .label = إنهِ الجلسة الخاصة
+    .tooltiptext = إنهِ الجلسة الخاصة
+reset-pbm-panel-heading = إنهِ جلستك الخاصة؟
 reset-pbm-panel-description = أغلق كل الألسنة الخاصة واحذف التأريخ والكعكات وكل بيانات المواقع الأخرى.
+reset-pbm-panel-always-ask-checkbox =
+    .label = اسألني دائمًا
+    .accesskey = م
+reset-pbm-panel-cancel-button =
+    .label = ألغِ
+    .accesskey = غ
+reset-pbm-panel-confirm-button =
+    .label = احذف بيانات الجلسة
+    .accesskey = ت
+reset-pbm-panel-complete = حُذفت بيانات الجلسة الخاصة
 
 ## Autorefresh blocker
 

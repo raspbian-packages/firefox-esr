@@ -31,7 +31,9 @@ settings-page-title = Impostazioni
 search-input-box2 =
     .style = width: 16em
     .placeholder = Cerca nelle impostazioni
-managed-notice = Il browser è gestito dalla propria azienda.
+managed-notice = Il browser è gestito dalla propria organizzazione.
+managed-notice-info-icon =
+    .alt = Informazione
 category-list =
     .aria-label = Categorie
 pane-general-title = Generale
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Rimuovi questo contenitore
 containers-remove-cancel-button = Non rimuovere questo contenitore
+settings-tabs-show-image-in-preview =
+    .label = Mostra un’anteprima quando si passa il puntatore sopra una scheda
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,8 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Le impostazioni per l’aspetto dei siti web sono sostituite dall’attuale selezione di colori. <a data-l10n-name="colors-link">Gestisci colori</a>
+preferences-web-appearance-override-warning2 =
+    .message = Le impostazioni per l’aspetto dei siti web sono sostituite dall’attuale selezione di colori.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Gestisci i temi di { -brand-short-name } in <a data-l10n-name="themes-link">Estensioni e temi</a>
@@ -254,6 +261,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Ingrandisci solo il testo
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Attenzione: se si seleziona “Ingrandisci solo il testo” e lo zoom predefinito non è impostato a 100%, alcuni siti o contenuti potrebbero non funzionare correttamente.
 language-header = Lingua
 choose-language-description = Scegli la lingua in cui visualizzare le pagine web
 choose-button =
@@ -559,6 +568,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Consigliati da { $provider }
 home-prefs-recommended-by-description-new = Contenuti eccezionali a cura di { $provider }, un membro della famiglia { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Storie consigliate
+home-prefs-recommended-by-description-generic = Contenuti eccezionali curati dalla famiglia di prodotti { -brand-product-name }
 
 ##
 
@@ -696,6 +708,16 @@ sync-mobile-promo = Scarica Firefox per <img data-l10n-name="android-icon"/> <a 
 
 sync-profile-picture =
     .tooltiptext = Cambia l’immagine del profilo
+sync-profile-picture-with-alt =
+    .tooltiptext = Cambia l’immagine del profilo
+    .alt = Cambia l’immagine del profilo
+
+sync-profile-picture-account-problem =
+    .alt = Immagine del profilo per l’account
+
+fxa-login-rejected-warning =
+    .alt = Avviso
+
 sync-sign-out =
     .label = Disconnetti…
     .accesskey = t
@@ -899,7 +921,7 @@ forms-master-pw-change =
     .label = Cambia la password principale…
     .accesskey = w
 forms-primary-pw-change =
-    .label = Cambia la password principale…
+    .label = Cambia password principale…
     .accesskey = w
 # Leave this message empty if the translation for "Primary Password" matches
 # "Master Password" in your language. If you're editing the FTL file directly,
@@ -911,7 +933,6 @@ forms-windows-sso =
     .label = Consenti single sign-on di Windows per account Microsoft, del lavoro o della scuola
 forms-windows-sso-learn-more-link = Ulteriori informazioni
 forms-windows-sso-desc = Gestisci account nelle impostazioni del dispositivo
-
 windows-passkey-settings-label = Gestisci passkey nelle impostazioni di sistema
 
 ## OS Authentication dialog
@@ -1001,6 +1022,7 @@ sitedata-delete-on-close =
     .label = Elimina cookie e dati dei siti web alla chiusura di { -brand-short-name }
     .accesskey = c
 sitedata-delete-on-close-private-browsing = Se la modalità Navigazione anonima è sempre attiva, i cookie e i dati dei siti web verranno eliminati alla chiusura di { -brand-short-name }.
+sitedata-delete-on-close-private-browsing2 = In base alle impostazioni della cronologia, i cookie e i dati dei siti web verranno eliminati alla chiusura di { -brand-short-name }.
 sitedata-allow-cookies-option =
     .label = Accetta cookie e dati dei siti web
     .accesskey = A
@@ -1077,10 +1099,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Azioni rapide
     .accesskey = z
+addressbar-suggestions-settings = Modifica le impostazioni relative ai suggerimenti dei motori di ricerca
 addressbar-locbar-showrecentsearches-option =
     .label = Mostra ricerche recenti
     .accesskey = r
-addressbar-suggestions-settings = Modifica le impostazioni relative ai suggerimenti dei motori di ricerca
 addressbar-quickactions-learn-more = Ulteriori informazioni
 
 ## Privacy Section - Content Blocking
@@ -1263,6 +1285,8 @@ addon-recommendations-link = Ulteriori informazioni
 collection-health-report-disabled = L’invio dei dati è stato disattivato nella configurazione utilizzata per questa build
 collection-backlogged-crash-reports-with-link = Consenti a { -brand-short-name } di inviare segnalazioni di arresto anomalo in sospeso <a data-l10n-name="crash-reports-link">Ulteriori informazioni</a>
     .accesskey = C
+collection-backlogged-crash-reports = Consenti a { -brand-short-name } di inviare segnalazioni di arresto anomalo in sospeso
+    .accesskey = C
 privacy-segmentation-section-header = Nuove funzioni per migliorare la navigazione
 privacy-segmentation-section-description = Quando introduciamo nuove funzioni che utilizzano i tuoi dati per offrire un’esperienza più personale:
 privacy-segmentation-radio-off =
@@ -1352,7 +1376,7 @@ preferences-doh-default-desc = { -brand-short-name } decide quando utilizzare un
 preferences-doh-default-detailed-desc-1 = Utilizza un DNS sicuro nei Paesi in cui è disponibile
 preferences-doh-default-detailed-desc-2 = Utilizza il sistema predefinito di risoluzione dei nomi se si verifica un problema con il fornitore di DNS sicuro
 preferences-doh-default-detailed-desc-3 = Utilizza un fornitore locale dove possibile
-preferences-doh-default-detailed-desc-4 = Disattiva in presenza di VPN, controllo parentale o criteri a livello aziendale
+preferences-doh-default-detailed-desc-4 = Disattiva in presenza di VPN, controllo parentale o criteri aziendali
 preferences-doh-default-detailed-desc-5 = Disattiva nel caso in cui la rete richieda a { -brand-short-name } di non utilizzare un DNS sicuro
 preferences-doh-setting-enabled =
     .label = Protezione maggiore

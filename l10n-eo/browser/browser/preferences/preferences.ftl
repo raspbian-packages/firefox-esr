@@ -203,6 +203,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Forigi tiun ĉi ingon
 containers-remove-cancel-button = Ne forigi tiun ĉi ingon
+settings-tabs-show-image-in-preview =
+    .label = Montri antaŭvidon kiam vi movas la muson super langeto
+    .accessKey = a
 
 ## General Section - Language & Appearance
 
@@ -227,6 +230,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Via elekto de koloroj superregas la aspekton de retejoj. <a data-l10n-name="colors-link">Administri kolorojn</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Via elekto de koloroj superregas la aspekton de retejoj.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Administri la etosojn de { -brand-short-name } en <a data-l10n-name="themes-link">Etendaĵoj kaj etosoj</a>
@@ -254,6 +261,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Pligrandigi nur tekston
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Averto: se vi elektas “Pligrandigi nur tekston” kaj via norma pligrandigo ne estas 100%, kelkaj retejoj aŭ enhavo povas misfunkcii.
 language-header = Lingvo
 choose-language-description = Elektu vian preferatan lingvon por retpaĝoj
 choose-button =
@@ -458,13 +467,16 @@ performance-default-content-process-count =
 
 browsing-title = Retumo
 browsing-use-autoscroll =
-    .label = Uzi aŭtomatan ŝovadon
+    .label = Uzi aŭtomatan rulumon
     .accesskey = a
 browsing-use-smooth-scrolling =
-    .label = Uzi glatan ŝovadon
+    .label = Uzi glatan rulumon
     .accesskey = g
 browsing-gtk-use-non-overlay-scrollbars =
-    .label = Ĉiam montri ŝovstriojn
+    .label = Ĉiam montri rulumskalojn
+    .accesskey = s
+browsing-always-underline-links =
+    .label = Ĉiam substreki ligilojn
     .accesskey = s
 browsing-use-onscreen-keyboard =
     .label = Montri tuŝklavaron se necesas
@@ -556,6 +568,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Rekomendita de { $provider }
 home-prefs-recommended-by-description-new = Eksterordinara  enhavo reviziita de { $provider }, parto de la familio { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Rekomenditaj artikoloj
+home-prefs-recommended-by-description-generic = Eksterordinara enhavo elektita de la familio de { -brand-product-name }
 
 ##
 
@@ -607,6 +622,9 @@ search-separate-default-engine =
 search-suggestions-header = Serĉaj sugestoj
 search-suggestions-desc = Elektu la manieron vidi sugestojn de serĉiloj.
 search-suggestions-option =
+    .label = Montri serĉajn sugestojn
+    .accesskey = s
+search-show-suggestions-option =
     .label = Montri serĉajn sugestojn
     .accesskey = s
 search-show-suggestions-url-bar-option =
@@ -690,6 +708,9 @@ sync-mobile-promo = Elŝuti Firefox por <img data-l10n-name="android-icon"/> <a 
 
 sync-profile-picture =
     .tooltiptext = Ŝanĝi bildon de profilo
+sync-profile-picture-with-alt =
+    .tooltiptext = Ŝanĝi bildon de profilo
+    .alt = Ŝanĝi bildon de profilo
 sync-sign-out =
     .label = Fini seancon…
     .accesskey = F
@@ -706,6 +727,9 @@ sync-signedin-login-failure = Bonvolu komenci seancon por rekonekti { $email }
 
 sync-resend-verification =
     .label = Resendi kontrolon
+    .accesskey = k
+sync-verify-account =
+    .label = Kontroli konton
     .accesskey = k
 sync-remove-account =
     .label = Forigi konton
@@ -739,8 +763,10 @@ sync-currently-syncing-bookmarks = legosignojn
 sync-currently-syncing-history = historion
 sync-currently-syncing-tabs = malfermitajn langetojn
 sync-currently-syncing-logins-passwords = legitimilojn
+sync-currently-syncing-passwords = Pasvortoj
 sync-currently-syncing-addresses = adresojn
 sync-currently-syncing-creditcards = kreditkartojn
+sync-currently-syncing-payment-methods = Pagmetodoj
 sync-currently-syncing-addons = aldonaĵojn
 sync-currently-syncing-settings = Agordoj
 sync-change-options =
@@ -771,6 +797,10 @@ sync-engine-logins-passwords =
     .label = legitimilojn
     .tooltiptext = Nomoj de uzanto kaj pasvortoj, kiujn vi konservis
     .accesskey = l
+sync-engine-passwords =
+    .label = Pasvortoj
+    .tooltiptext = Pasvortoj konservitaj de vi
+    .accesskey = P
 sync-engine-addresses =
     .label = adresojn
     .tooltiptext = Poŝtaj adresoj konservitaj de vi (nur en komputilo)
@@ -779,6 +809,10 @@ sync-engine-creditcards =
     .label = kreditkartojn
     .tooltiptext = Nomoj, numeroj kaj datoj de senvalidiĝo (nur en komputilo)
     .accesskey = K
+sync-engine-payment-methods2 =
+    .label = Pagmetodoj
+    .tooltiptext = Nomoj, kreditkartaj numeroj kaj datoj de senvalidiĝo
+    .accesskey = P
 sync-engine-addons =
     .label = aldonaĵon
     .tooltiptext = Etendaĵoj kaj etosoj por komputila Firefox
@@ -825,11 +859,25 @@ pane-privacy-logins-and-passwords-header = Akreditiloj kaj pasvortoj
 forms-ask-to-save-logins =
     .label = Demandi ĉu konservi akreditilojn kaj pasvortojn por retejoj
     .accesskey = D
+
+## Privacy Section - Passwords
+
+# "Logins" is the former term for "Passwords". Users should find password settings
+# by searching for the former term "logins". It's not displayed in the UI.
+pane-privacy-passwords-header = Pasvortoj
+    .searchkeywords = legitimiloj
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
+forms-ask-to-save-passwords =
+    .label = Demandi antaŭ ol konservi pasvortojn
+    .accesskey = D
 forms-exceptions =
     .label = Esceptoj…
     .accesskey = c
 forms-generate-passwords =
     .label = Sugesti kaj krei fortikajn pasvortojn
+    .accesskey = S
+forms-suggest-passwords =
+    .label = Sugesti fortajn pasvortojn
     .accesskey = S
 forms-breach-alerts =
     .label = Montri atentigojn pri pasvortoj por retejoj kun datumfuĝoj
@@ -837,6 +885,9 @@ forms-breach-alerts =
 forms-breach-alerts-learn-more-link = Pli da informo
 preferences-relay-integration-checkbox =
     .label = Sugesti retpoŝtajn maskojn de { -relay-brand-name } por protekti vian retpoŝtan adreson
+preferences-relay-integration-checkbox2 =
+    .label = Sugesti retpoŝtajn maskojn de { -relay-brand-name } por protekti vian retpoŝtan adreson
+    .accesskey = S
 relay-integration-learn-more-link = Pli da informo
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
@@ -845,6 +896,13 @@ forms-fill-logins-and-passwords =
 forms-saved-logins =
     .label = Konservitaj akreditiloj…
     .accesskey = a
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-usernames-and-passwords =
+    .label = Aŭtomate plenigi nomojn de uzanto kaj pasvortojn
+    .accesskey = A
+forms-saved-passwords =
+    .label = Konservitaj pasvortoj
+    .accesskey = p
 forms-primary-pw-use =
     .label = Uzi ĉefan pasvorton
     .accesskey = U
@@ -868,6 +926,7 @@ forms-windows-sso =
     .label = Permesi nurfojan komencon de seancon de Windows por kontoj laboraj, lernejaj aŭ de Microsoft
 forms-windows-sso-learn-more-link = Pli da informo
 forms-windows-sso-desc = Administri kontojn en la agordoj de via aparato
+windows-passkey-settings-label = Administri alirŝlosiloj en la sistemaj agordoj
 
 ## OS Authentication dialog
 
@@ -879,6 +938,28 @@ primary-password-os-auth-dialog-message-win = Por krei ĉefan pasvorton vi devas
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = krei ĉefan pasvorton
 master-password-os-auth-dialog-caption = { -brand-full-name }
+
+## Privacy section - Autofill
+
+pane-privacy-autofill-header = Aŭtomata plenigo
+autofill-addresses-checkbox = Konservi kaj aŭtomate plenigi adresojn
+    .accesskey = a
+autofill-saved-addresses-button = Konservitaj adresoj
+    .accesskey = a
+autofill-payment-methods-checkbox-message = Konservi kaj aŭtomate plenigi pagmetodojn
+    .accesskey = p
+autofill-payment-methods-checkbox-submessage = Inkluzivi kreditajn kaj debetajn kartojn
+    .accesskey = k
+autofill-saved-payment-methods-button = Konservitaj pagmetodoj
+    .accesskey = p
+autofill-reauth-checkbox =
+    { PLATFORM() ->
+        [macos] Aŭtentigado de macOS postulata por plenigi kaj redakti pagmetodojn.
+        [windows] Aŭtentigado de Windows postulata por plenigi kaj redakti pagmetodojn.
+        [linux] Aŭtentigado de Linux postulata por plenigi kaj redakti pagmetodojn.
+       *[other] Aŭtentigado postulata por plenigi kaj redakti pagmetodojn.
+    }
+    .accesskey = A
 
 ## Privacy Section - History
 
@@ -934,6 +1015,7 @@ sitedata-delete-on-close =
     .label = Forigi kuketojn kaj retejajn datumojn je fermo de { -brand-short-name }
     .accesskey = F
 sitedata-delete-on-close-private-browsing = En la konstanta reĝimo de privata retumo, kuketoj kaj retejaj datumoj estos forviŝitaj je ĉiu fermo de { -brand-short-name }.
+sitedata-delete-on-close-private-browsing2 = Konforme al viaj agordoj pri historio, { -brand-short-name } forigos kuketojn kaj retejajn datumojn el via seanco, kiam vi fermas la retumilon.
 sitedata-allow-cookies-option =
     .label = Akcepti kuketojn kaj retejajn datumojn
     .accesskey = A
@@ -1010,10 +1092,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Rapidaj agoj
     .accesskey = R
+addressbar-suggestions-settings = Ŝanĝi preferojn pri serĉilaj sugestoj
 addressbar-locbar-showrecentsearches-option =
     .label = Montri ĵusajn serĉojn
     .accesskey = M
-addressbar-suggestions-settings = Ŝanĝi preferojn pri serĉilaj sugestoj
 addressbar-quickactions-learn-more = Pli da informo
 
 ## Privacy Section - Content Blocking
@@ -1196,6 +1278,8 @@ addon-recommendations-link = Pli da informo
 collection-health-report-disabled = La raporto de datumoj estas malŝaltita pro la agordoj de konstruo
 collection-backlogged-crash-reports-with-link = Permesi al { -brand-short-name } aŭtomate sendi ankoraŭ nesenditajn raportojn pri paneo. <a data-l10n-name="crash-reports-link">Pli da informo</a>
     .accesskey = A
+collection-backlogged-crash-reports = Permesi al { -brand-short-name } aŭtomate sendi ankoraŭ nesenditajn raportojn pri paneo.
+    .accesskey = A
 privacy-segmentation-section-header = Novaj trajtoj kiuj plibonigas vian retumon
 privacy-segmentation-section-description = Kiam ni proponas trajtojn kiuj uzas viajn datumojn por havi pli personan sperton:
 privacy-segmentation-radio-off =
@@ -1258,6 +1342,7 @@ httpsonly-radio-disabled =
 
 preferences-doh-header = DNS per HTTPS
 preferences-doh-description = Nomregna sistemo (DNS) tra HTTPS sendas vian peton por nomregna nomo tra ĉifrita konekto, kio kreas pli sekuran DNS kaj malhelpas al aliaj vidi, kiun retejon vi pretas aliri.
+preferences-doh-description2 = Nomregna sistemo (DNS) tra HTTPS sendas vian peton por nomregna nomo tra ĉifrita konekto, kio provizas pli sekuran DNS kaj malhelpas al aliaj vidi, kiun retejon vi pretas aliri.
 # Variables:
 #   $status (string) - The status of the DoH connection
 preferences-doh-status = Stato: { $status }
@@ -1274,6 +1359,7 @@ preferences-doh-status-disabled = Malŝaltita
 #   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
 preferences-doh-status-not-active = Neaktiva ({ $reason })
 preferences-doh-group-message = Aktivigi sekuran DNS per:
+preferences-doh-group-message2 = Aktivigi DNS sur HTTPS per:
 preferences-doh-expand-section =
     .tooltiptext = Pli da informo
 preferences-doh-setting-default =

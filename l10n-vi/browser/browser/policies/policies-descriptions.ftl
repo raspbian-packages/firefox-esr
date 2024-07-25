@@ -12,10 +12,13 @@
 
 policy-3rdparty = Đặt chính sách mà WebExtensions có thể truy cập thông qua chrome.storage.managed.
 policy-AllowedDomainsForApps = Xác định các miền được phép truy cập Google Workspace.
+policy-AllowFileSelectionDialogs = Cho phép hộp thoại chọn tập tin.
 policy-AppAutoUpdate = Bật hoặc tắt cập nhật chương trình tự động.
 policy-AppUpdatePin = Ngăn không cho cập nhật { -brand-short-name } ngoài phiên bản đã chỉ định.
 policy-AppUpdateURL = Thiết lập URL cập nhật của ứng dụng tùy chỉnh.
 policy-Authentication = Cấu hình các phương thức xác thực tích hợp sẵn cho các trang web có hỗ trợ.
+policy-AutofillAddressEnabled = Bật tính năng tự động điền địa chỉ.
+policy-AutofillCreditCardEnabled = Bật tính năng tự động điền phương thức thanh toán.
 policy-AutoLaunchProtocolsFromOrigins = Xác định danh sách các giao thức bên ngoài có thể được sử dụng từ các origin được liệt kê mà không cần nhắc người dùng.
 policy-BackgroundAppUpdate2 = Kích hoạt hoặc vô hiệu hóa trình cập nhật nền.
 policy-BlockAboutAddons = Chặn quyền truy cập vào trình quản lý tiện ích (about: addons).
@@ -37,6 +40,8 @@ policy-DisableDefaultBrowserAgent = Ngăn chặn tác nhân người dùng trìn
 policy-DisableDeveloperTools = Chặn truy cập đến công cụ nhà phát triển.
 policy-DisableFeedbackCommands = Tắt các lệnh để gửi phản hồi từ bảng chọn trợ giúp (gửi phản hồi và báo cáo trang web lừa đảo).
 policy-DisableFirefoxAccounts = Vô hiệu hóa { -fxaccount-brand-name } dựa trên các dịch vụ, bao gồm cả đồng bộ.
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = Vô hiệu hóa các dịch vụ dựa trên tài khoản, bao gồm cả đồng bộ hóa.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Vô hiệu hóa tính năng Firefox Screenshots.
 policy-DisableFirefoxStudies = Chặn { -brand-short-name } chạy các nghiên cứu.
@@ -121,6 +126,7 @@ policy-SSLVersionMax = Chỉnh phiên bản SSL tối đa.
 policy-SSLVersionMin = Chỉnh phiên bản SSL tối thiểu.
 policy-StartDownloadsInTempDirectory = Buộc bắt đầu tải xuống ở một vị trí cục bộ, tạm thời thay vì thư mục tải xuống mặc định.
 policy-SupportMenu = Thêm một mục menu hỗ trợ tùy chỉnh vào menu trợ giúp.
+policy-TranslateEnabled = Bật hoặc tắt dịch trang web.
 policy-UserMessaging = Không hiển thị một số thông điệp nhất định cho người dùng.
 policy-UseSystemPrintDialog = In bằng hộp thoại in hệ thống.
 # “format” refers to the format used for the value of this policy.

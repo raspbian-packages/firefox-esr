@@ -71,6 +71,7 @@ cfr-doorhanger-extension-total-users =
 
 cfr-doorhanger-bookmark-fxa-header = Cydweddu eich nodau tudalen ym mhob man
 cfr-doorhanger-bookmark-fxa-body = Mae hwn yn dda! Peidiwch bod heb y nod tudalen hon ar eich dyfeisiau symudol. Dechrau arni gyda { -fxaccount-brand-name }.
+cfr-doorhanger-bookmark-fxa-body-2 = Mae hwn yn dda! Peidiwch bod heb y nod tudalen hon ar eich dyfeisiau symudol. Dechreuwch arni gyda chyfrif
 cfr-doorhanger-bookmark-fxa-link-text = Cydweddu nodau tudalen nawr…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Cau botwm
@@ -216,8 +217,9 @@ cfr-cbh-confirm-button = Gwrthod baneri cwci
     .accesskey = G
 cfr-cbh-dismiss-button = Nid nawr
     .accesskey = N
-cookie-banner-blocker-cfr-header = Mae { -brand-short-name } newydd rwystro cwcis ar eich cyfer
-cookie-banner-blocker-cfr-body = Rydym yn gwrthod llawer o lamlenni cwcis yn awtomatig i'w gwneud hi'n anodd i wefannau eich tracio chi.
+cookie-banner-blocker-onboarding-header = Mae { -brand-short-name } newydd wrthod baner cwci drosoch chi
+cookie-banner-blocker-onboarding-body = Llai o darfu, llai o gwcis yn eich tracio ar y wefan hon.
+cookie-banner-blocker-onboarding-learn-more = Darllen rhagor
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -247,10 +249,6 @@ fxa-sync-cfr-secondary = Atgoffwch fi yn nes ymlaen
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = Yn defnyddio dyfais hŷn?
-device-migration-fxa-spotlight-body = Gwnewch gopi wrth gefn o'ch data i wneud yn siŵr nad ydych chi'n colli manylion pwysig fel nodau tudalen a chyfrineiriau — yn enwedig os byddwch chi'n newid i ddyfais newydd.
-device-migration-fxa-spotlight-primary-button = Sut i wneud copi wrth gefn o fy nata
-device-migration-fxa-spotlight-link = Atgoffwch fi yn nes ymlaen
 device-migration-fxa-spotlight-heavy-user-header = Peidiwch ag anghofio gwneud copi wrth gefn o'ch data
 device-migration-fxa-spotlight-heavy-user-body = Gwnewch yn siŵr fod gwybodaeth bwysig - fel nodau tudalen a chyfrineiriau - yn cael eu diweddaru a'u diogelu ar draws eich holl ddyfeisiau.
 device-migration-fxa-spotlight-heavy-user-primary-button = Cychwyn arni
@@ -266,7 +264,7 @@ device-migration-fxa-spotlight-getting-new-device-primary-button = Sut i wneud c
 # The question portion of the following message should have the <strong> and </strong> tags surrounding it.
 pdf-default-notification-message = <strong>Gwneud { -brand-short-name } eich darllenydd PDF rhagosodedig?</strong> Defnyddiwch { -brand-short-name } i ddarllen a golygu ffeiliau PDF sydd wedi'u cadw ar eich cyfrifiadur.
 pdf-default-notification-set-default-button =
-    .label = Gosod fel y rhagosodedig
+    .label = Gosod fel y rhagosodiad
 pdf-default-notification-decline-button =
     .label = Nid nawr
 
@@ -285,3 +283,14 @@ launch-on-login-infobar-reject-button = Nid nawr
 launch-on-login-infobar-final-message = <strong>Agor { -brand-short-name } bob tro y byddwch yn ailgychwyn eich cyfrifiadur?</strong> I reoli eich dewisiadau Cychwyn, chwiliwch am “cychwyn neu startup” yn y gosodiadau.
 launch-on-login-infobar-final-reject-button = Dim diolch
     .accesskey = D
+
+## Tail Fox Set Default Spotlight
+
+# This title is displayed together with the picture of a running fox with a long tail.
+# In English, this is a figure of speech meaning 'stop something from following you'.
+# If the localization of this message is challenging, consider using a simplified
+# alternative as a reference for translation: 'Keep unwanted trackers away'.
+tail-fox-spotlight-title = Cadw tracwyr blin oddi ar eich cefn
+tail-fox-spotlight-subtitle = Ffarweliwch â thracwyr hysbysebion annifyr a symud i brofiad rhyngrwyd mwy diogel a chyflym.
+tail-fox-spotlight-primary-button = Agor fy nolenni gyda { -brand-short-name }
+tail-fox-spotlight-secondary-button = Nid nawr

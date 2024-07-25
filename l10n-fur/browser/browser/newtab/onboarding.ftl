@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Impuarte di { $previous
 mr1-onboarding-theme-header = Adatilu al tô stîl
 mr1-onboarding-theme-subtitle = Personalize { -brand-short-name } cuntun teme.
 mr1-onboarding-theme-secondary-button-label = No cumò
+newtab-wallpaper-onboarding-title = Prove une man di colôr
+newtab-wallpaper-onboarding-subtitle = Sielç un fondâl par dâ un aspiet diviers aes gnovis schedis.
+newtab-wallpaper-onboarding-primary-button-label = Stabilìs fonts
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Teme di sisteme
 mr1-onboarding-theme-label-light = Clâr
@@ -344,3 +347,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Une volte completade 
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } ti pare simpri
 onboarding-gratitude-security-and-privacy-subtitle = Graciis par vê sielt di doprâ { -brand-short-name }, il navigadôr supuartât de Mozilla Foundation. Cul to supuart, o lavorìn par rindi internet plui sigûr e acessibil par ducj.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Di trop timp dopristu { -brand-short-name }?
+onboarding-new-user-familiarity-based-survey-title = Trop cognossistu { -brand-short-name }?
+onboarding-new-user-survey-subtitle = La tô opinion nus jude a rindi { -brand-short-name } ancjemò miôr.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Indevant
+onboarding-new-user-survey-legal-link-label = Selezionant “{ onboarding-new-user-survey-next-button-label }” tu acetis la <a data-l10n-name="privacy_notice">informative su la riservatece</a> di { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = O soi gnûf
+onboarding-new-user-survey-time-based-option-2 = Mancul di un mês
+onboarding-new-user-survey-time-based-option-3 = Plui di un mês, in mût regolâr
+onboarding-new-user-survey-time-based-option-4 = Plui di un mês, dome ogni tant
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = No lu cognòs
+onboarding-new-user-survey-familiarity-based-option-2 = Lu ai doprât ogni tant
+onboarding-new-user-survey-familiarity-based-option-3 = Lu cognòs une vore ben
+onboarding-new-user-survey-familiarity-based-option-4 = Une volte lu dopravi, ma al è passât un pôc di timp

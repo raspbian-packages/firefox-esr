@@ -12,10 +12,13 @@
 
 policy-3rdparty = Definìs lis politichis che a chês lis estensions basadis su WebExtensions a puedin acedi vie chrome.storage.managed.
 policy-AllowedDomainsForApps = Definìs i dominis ametûts pal acès al Google Workspace.
+policy-AllowFileSelectionDialogs = Permet i dialics pe selezion dai files.
 policy-AppAutoUpdate = Abilite o disabilite l'inzornament automatic de aplicazion .
 policy-AppUpdatePin = Impedìs a { -brand-short-name } di inzornâsi plui in là de version specificade.
 policy-AppUpdateURL = Stabilìs il URL personlizât pal inzornament de aplicazion.
 policy-Authentication = Configure la autenticazion integrade pai sîts web che le supuartin.
+policy-AutofillAddressEnabled = Ative compilazion automatiche pai recapits.
+policy-AutofillCreditCardEnabled = Ative compilazion automatiche pai metodis di paiament.
 policy-AutoLaunchProtocolsFromOrigins = Definìs une liste di protocoi esternis che a puedin jessi doprâts da lis origjinis listadis cence domandâ conferme al utent.
 policy-BackgroundAppUpdate2 = Abilite o disabilite l'inzornadôr in sotfont.
 policy-BlockAboutAddons = Bloche l'acès al gjestôr dai components adizionâi (about:addons).
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = Bloche l'acès ae pagjine about:support.
 policy-Bookmarks = Cree i segnelibris te sbare dai segneliris, tal menù segnelibris o intune specifiche cartele che ur sta dentri.
 policy-CaptivePortal = Abilite o disabilite il supuart pal portâl presonîr (captive portal).
 policy-CertificatesDescription = Zonte certificâts o dopre i certificâts integrâts.
+policy-ContentAnalysis = Ative o disative la conession al agjent pe prevenzion des pierditis di dâts.
 policy-Cookies = Permet o dinee ai sîts web di definî cookies.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Stabilìs lis politichis relativis ai contignidôrs.
@@ -121,6 +125,7 @@ policy-SSLVersionMax = Stabilìs la massime version di SSL.
 policy-SSLVersionMin = Stabilìs la minime version di SSL.
 policy-StartDownloadsInTempDirectory = Sfuarce l'inviament dai discjariaments intune cartele locâl temporanie invezit che te cartele predefinide pai file discjariâts.
 policy-SupportMenu = Zonte un element personalizât dal menù di supuart al menù di jutori.
+policy-TranslateEnabled = Ative o disative la traduzion des pagjinis web.
 policy-UserMessaging = No sta mostrâ cierts messaçs al utent.
 policy-UseSystemPrintDialog = Stampe doprant il dialic di stampe dal sisteme.
 # “format” refers to the format used for the value of this policy.

@@ -45,7 +45,7 @@ onboarding-welcome-steps-indicator-label =
 # This button will open system settings to turn on prefers-reduced-motion
 mr1-onboarding-reduce-motion-button-label = ਐਨੀਮੇਸ਼ਨਾਂ ਬੰਦ ਕਰੋ
 # String for the Firefox Accounts button
-mr1-onboarding-sign-in-button-label = ਸਾਇਨ ਇਨ
+mr1-onboarding-sign-in-button-label = ਸਾਈਨ ਇਨ
 # The primary import button label will depend on whether we can detect which browser was used to download Firefox.
 # Variables:
 #   $previous (Str) - Previous browser name, such as Edge, Chrome
@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = { $previous } ਤੋਂ
 mr1-onboarding-theme-header = ਇਸ ਨੂੰ ਆਪਣਾ ਬਣਾਓ
 mr1-onboarding-theme-subtitle = ਥੀਮ ਨਾਲ { -brand-short-name } ਨੂੰ ਸ਼ਿੰਗਾਰੋ
 mr1-onboarding-theme-secondary-button-label = ਹੁਣੇ ਨਹੀਂ
+newtab-wallpaper-onboarding-title = ਰੰਗ ਪਾ ਕੇ ਵੇਖੋ
+newtab-wallpaper-onboarding-subtitle = ਆਪਣੀ ਟੈਬ ਨੂੰ ਤਾਜ਼ਾ ਦਿੱਖ ਦੇਣ ਲਈ ਵਾਲਪੇਪਰ ਦੀ ਚੋਣ ਕਰੋ।
+newtab-wallpaper-onboarding-primary-button-label = ਵਾਲਪੇਪਰ ਲਾਓ
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = ਸਿਸਟਮ ਥੀਮ
 mr1-onboarding-theme-label-light = ਹਲਕਾ
@@ -344,3 +347,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = ਜਦੋਂ ਤੱ�
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } ਤੁਹਾਡੇ ਨਾਲ ਖੜ੍ਹਾ ਹੈ
 onboarding-gratitude-security-and-privacy-subtitle = { -brand-short-name }, ਜਿਸ ਨੂੰ Mozilla Foundation ਵਲੋਂ ਸਹਿਯੋਗ ਮਿਲਦਾ ਹੈ, ਵਰਤਣ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ ਹੈ। ਤੁਹਾਡੀ ਮਦਦ ਨਾਲ ਅਸੀਂ ਇੰਟਰਨੈੱਟ ਨੂੰ ਹਰ ਕਿਸੇ ਲਈ ਵੱਧ ਸੁਰੱਖਿਅਤ ਅਤੇ ਵੱਧ ਪਹੁੰਚ ਵਿੱਚ ਲਿਆਉਣ ਲਈ ਕੰਮ ਕਰ ਰਹੇ ਹਾਂ।
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = ਤੁਸੀਂ ਕਿੰਨੇ ਸਮੇਂ ਤੋਂ { -brand-short-name } ਨੂੰ ਵਰਤ ਰਹੇ ਹੋ?
+onboarding-new-user-familiarity-based-survey-title = { -brand-short-name } ਨੂੰ ਕਿੰਨੀ ਚੰਗੀ ਤਰ੍ਹਾਂ ਜਾਣਦੇ ਹੋ?
+onboarding-new-user-survey-subtitle = ਤੁਹਾਡੇ ਸੁਝਾਅ { -brand-short-name } ਨੂੰ ਬੇਹਤਰ ਬਣਾਉਣ ਲਈ ਮਦਦ ਕਰਦੇ ਹਨ।
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = ਅੱਗੇ
+onboarding-new-user-survey-legal-link-label = “{ onboarding-new-user-survey-next-button-label }” ਚੁਣ ਕੇ ਤੁਸੀਂ { -brand-product-name } ਦੀ <a data-l10n-name="privacy_notice">ਪਰਦੇਦਾਰੀ ਨੀਤੀ</a> ਨਾਲ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = ਮੈਂ ਬਿਲਕੁਲ ਨਵਾਂ ਹਾਂ
+onboarding-new-user-survey-time-based-option-2 = 1 ਮਹੀਨੇ ਤੋਂ ਘੱਟ
+onboarding-new-user-survey-time-based-option-3 = 1 ਮਹੀਨੇ ਤੋਂ ਵੱਧ, ਨਿਯਮਤ
+onboarding-new-user-survey-time-based-option-4 = 1 ਮਹੀਨੇ ਤੋਂ ਵੱਧ, ਕਦੇ-ਕਦਾਈਂ
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = ਮੈਂ ਬਿਲਕੁਲ ਨਵਾਂ ਹਾਂ
+onboarding-new-user-survey-familiarity-based-option-2 = ਮੈਂ ਇਸ ਨੂੰ ਵਰਤਦਾ/ਵਰਤਦੀ ਹਾਂ ਕੁਝ
+onboarding-new-user-survey-familiarity-based-option-3 = ਮੈਂ ਇਸ ਨਾਲ ਚੰਗੀ ਤਰ੍ਹਾਂ ਜਾਣੂ ਹਾਂ
+onboarding-new-user-survey-familiarity-based-option-4 = ਮੈ ਪਹਿਲਾਂ ਵਰਤਿਆ ਸੀ, ਪਰ ਇਸ ਨੂੰ ਚਿਰ ਹੋ ਗਿਆ ਹੈ

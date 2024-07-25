@@ -63,6 +63,7 @@ cfr-doorhanger-extension-total-users =
 
 cfr-doorhanger-bookmark-fxa-header = Synchronisez vos marque-pages partout.
 cfr-doorhanger-bookmark-fxa-body = Vous avez déniché la perle rare ! Maintenant, retrouvez ce marque-page sur vos appareils mobiles. C’est le moment d’utiliser un { -fxaccount-brand-name }.
+cfr-doorhanger-bookmark-fxa-body-2 = Vous avez déniché la perle rare ! Maintenant, retrouvez ce marque-page sur vos appareils mobiles. C’est le moment d’utiliser un compte.
 cfr-doorhanger-bookmark-fxa-link-text = Synchroniser les marque-pages maintenant…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Bouton de fermeture
@@ -203,8 +204,9 @@ cfr-cbh-confirm-button = Refuser les bannières de cookies
     .accesskey = R
 cfr-cbh-dismiss-button = Plus tard
     .accesskey = P
-cookie-banner-blocker-cfr-header = { -brand-short-name } vient de bloquer des cookies pour vous
-cookie-banner-blocker-cfr-body = Nous refusons automatiquement beaucoup de demandes de dépôt de cookies pour compliquer la tâche des sites qui veulent vous pister.
+cookie-banner-blocker-onboarding-header = { -brand-short-name } a refusé une bannière de cookies pour vous
+cookie-banner-blocker-onboarding-body = Moins de distractions, moins de cookies qui vous pistent sur ce site.
+cookie-banner-blocker-onboarding-learn-more = En savoir plus
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -234,10 +236,6 @@ fxa-sync-cfr-secondary = Me le rappeler plus tard
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = Vous utilisez un appareil plus ancien ?
-device-migration-fxa-spotlight-body = Sauvegardez vos données pour vous assurer de ne pas perdre d’informations importantes comme des marque-pages ou des mots de passe, surtout si vous changez d’appareil.
-device-migration-fxa-spotlight-primary-button = Comment sauvegarder mes données
-device-migration-fxa-spotlight-link = Me le rappeler plus tard
 device-migration-fxa-spotlight-heavy-user-header = N’oubliez pas de sauvegarder vos données
 device-migration-fxa-spotlight-heavy-user-body = Assurez-vous que les informations importantes (telles que marque-pages et mots de passe) soient mises à jour et protégées sur tous vos appareils.
 device-migration-fxa-spotlight-heavy-user-primary-button = Commencer
@@ -272,3 +270,14 @@ launch-on-login-infobar-reject-button = Plus tard
 launch-on-login-infobar-final-message = <strong>Vous ouvrez { -brand-short-name } chaque fois que vous redémarrez votre ordinateur ?</strong> Pour gérer vos préférences de démarrage, recherchez « démarrage » dans les paramètres.
 launch-on-login-infobar-final-reject-button = Non merci
     .accesskey = N
+
+## Tail Fox Set Default Spotlight
+
+# This title is displayed together with the picture of a running fox with a long tail.
+# In English, this is a figure of speech meaning 'stop something from following you'.
+# If the localization of this message is challenging, consider using a simplified
+# alternative as a reference for translation: 'Keep unwanted trackers away'.
+tail-fox-spotlight-title = Gardez les traqueurs indésirables à distance
+tail-fox-spotlight-subtitle = Dites adieu aux traqueurs publicitaires pénibles et optez pour une expérience Internet plus rapide et plus sûre.
+tail-fox-spotlight-primary-button = Ouvrir mes liens avec { -brand-short-name }
+tail-fox-spotlight-secondary-button = Plus tard

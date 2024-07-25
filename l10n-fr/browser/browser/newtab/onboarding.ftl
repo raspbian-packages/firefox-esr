@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Importer depuis { $prev
 mr1-onboarding-theme-header = Adaptez-le à votre style
 mr1-onboarding-theme-subtitle = Personnalisez { -brand-short-name } avec un thème.
 mr1-onboarding-theme-secondary-button-label = Plus tard
+newtab-wallpaper-onboarding-title = Essayez une touche de couleur
+newtab-wallpaper-onboarding-subtitle = Choisissez un fond d’écran pour donner un nouveau look à la page Nouvel onglet.
+newtab-wallpaper-onboarding-primary-button-label = Définir un fond d’écran
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Thème du système
 mr1-onboarding-theme-label-light = Clair
@@ -344,3 +347,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Lorsque la synchronis
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } est toujours de votre côté
 onboarding-gratitude-security-and-privacy-subtitle = Merci d’utiliser { -brand-short-name }, soutenu par la Fondation Mozilla. Avec votre soutien, nous nous efforçons de rendre Internet plus sûr et accessible pour tout le monde.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Depuis combien de temps utilisez-vous { -brand-short-name } ?
+onboarding-new-user-familiarity-based-survey-title = Quel est votre degré de familiarité avec { -brand-short-name } ?
+onboarding-new-user-survey-subtitle = Vos réponses nous aide à améliorer encore { -brand-short-name }.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Suivant
+onboarding-new-user-survey-legal-link-label = En sélectionnant « { onboarding-new-user-survey-next-button-label } », vous acceptez la <a data-l10n-name="privacy_notice">politique de confidentialité</a> de { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Je commence seulement
+onboarding-new-user-survey-time-based-option-2 = Moins d’un mois
+onboarding-new-user-survey-time-based-option-3 = Plus d’un mois, régulièrement
+onboarding-new-user-survey-time-based-option-4 = Plus d’un mois, occasionnellement
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Je commence seulement
+onboarding-new-user-survey-familiarity-based-option-2 = Je l’ai utilisé un peu
+onboarding-new-user-survey-familiarity-based-option-3 = Je le connais bien
+onboarding-new-user-survey-familiarity-based-option-4 = Je l’ai utilisé autrefois, mais cela fait longtemps.

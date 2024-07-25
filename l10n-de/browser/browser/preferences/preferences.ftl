@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = In Einstellungen suchen
 managed-notice = Der Browser wird durch Ihre Organisation verwaltet.
+managed-notice-info-icon =
+    .alt = Information
 category-list =
     .aria-label = Kategorien
 pane-general-title = Allgemein
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Umgebung löschen
 containers-remove-cancel-button = Umgebung behalten
+settings-tabs-show-image-in-preview =
+    .label = Eine Grafik-Vorschau anzeigen, wenn Sie mit der Maus über einen Tab fahren
+    .accessKey = f
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Ihre Farbauswahl überschreibt das Erscheinungsbild von Websites. <a data-l10n-name="colors-link">Farben verwalten</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Ihre Farbauswahl überschreibt das Erscheinungsbild von Websites.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Verwalten Sie { -brand-short-name }-Themes in <a data-l10n-name="themes-link">Erweiterungen & Themes</a>.
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Nur Text zoomen
     .accesskey = T
+preferences-text-zoom-override-warning =
+    .message = Warnung: Wenn Sie "Nur Text zoomen" auswählen und Ihr Standard-Zoom nicht auf 100% gesetzt ist, kann dies dazu führen, dass einige Websites oder Inhalte nicht funktionieren.
 language-header = Sprache
 choose-language-description = Bevorzugte Sprachen für die Darstellung von Websites wählen
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Empfohlen von { $provider }
 home-prefs-recommended-by-description-new = Besondere Inhalte ausgewählt von { $provider }, Teil der { -brand-product-name }-Familie
+home-prefs-recommended-by-header-generic =
+    .label = Empfohlene Geschichten
+home-prefs-recommended-by-description-generic = Besondere Inhalte ausgewählt von der { -brand-product-name }-Familie
 
 ##
 
@@ -622,7 +636,7 @@ search-show-suggestions-url-bar-option =
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
 search-show-search-term-option =
-    .label = Suchbegriffe statt URL auf der Standard-Suchmaschinen-Ergebnisseite anzeigen
+    .label = Suchbegriffe statt URL auf der Standardsuchmaschinen-Ergebnisseite anzeigen
 # This string describes what the user will observe when the system
 # prioritizes search suggestions over browsing history in the results
 # that extend down from the address bar. In the original English string,
@@ -696,6 +710,13 @@ sync-mobile-promo = Firefox für <img data-l10n-name="android-icon"/> <a data-l1
 
 sync-profile-picture =
     .tooltiptext = Profilbild ändern
+sync-profile-picture-with-alt =
+    .tooltiptext = Profilbild ändern
+    .alt = Profilbild ändern
+sync-profile-picture-account-problem =
+    .alt = Profilbild des Kontos
+fxa-login-rejected-warning =
+    .alt = Warnung
 sync-sign-out =
     .label = Abmelden…
     .accesskey = b
@@ -794,9 +815,9 @@ sync-engine-creditcards =
     .label = Kreditkarten
     .tooltiptext = Namen, Nummern und Gültigkeitsdatum (nur für Desktops)
     .accesskey = K
-sync-engine-payment-methods =
+sync-engine-payment-methods2 =
     .label = Zahlungsmethoden
-    .tooltiptext = Namen, Kartennummern und Gültigkeitsdatum (nur für Desktops)
+    .tooltiptext = Namen, Kartennummern und Gültigkeitsdatum
     .accesskey = Z
 sync-engine-addons =
     .label = Add-ons
@@ -844,18 +865,35 @@ pane-privacy-logins-and-passwords-header = Zugangsdaten und Passwörter
 forms-ask-to-save-logins =
     .label = Fragen, ob Zugangsdaten und Passwörter für Websites gespeichert werden sollen
     .accesskey = F
+
+## Privacy Section - Passwords
+
+# "Logins" is the former term for "Passwords". Users should find password settings
+# by searching for the former term "logins". It's not displayed in the UI.
+pane-privacy-passwords-header = Passwörter
+    .searchkeywords = Zugangsdaten
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
+forms-ask-to-save-passwords =
+    .label = Fragen, ob Passwörter gespeichert werden sollen
+    .accesskey = F
 forms-exceptions =
     .label = Ausnahmen…
     .accesskey = u
 forms-generate-passwords =
     .label = Starke Passwörter erzeugen und vorschlagen
     .accesskey = P
+forms-suggest-passwords =
+    .label = Starke Passwörter vorschlagen
+    .accesskey = S
 forms-breach-alerts =
     .label = Alarme für Passwörter, deren Websites von einem Datenleck betroffen waren
     .accesskey = A
 forms-breach-alerts-learn-more-link = Weitere Informationen
 preferences-relay-integration-checkbox =
     .label = { -relay-brand-name }-E-Mail-Masken zum Schutz Ihrer E-Mail-Adresse vorschlagen
+preferences-relay-integration-checkbox2 =
+    .label = { -relay-brand-name }-E-Mail-Masken zum Schutz Ihrer E-Mail-Adresse vorschlagen
+    .accesskey = E
 relay-integration-learn-more-link = Weitere Informationen
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
@@ -863,6 +901,13 @@ forms-fill-logins-and-passwords =
     .accesskey = Z
 forms-saved-logins =
     .label = Gespeicherte Zugangsdaten…
+    .accesskey = G
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-usernames-and-passwords =
+    .label = Benutzernamen und Passwörter automatisch ausfüllen
+    .accesskey = a
+forms-saved-passwords =
+    .label = Gespeicherte Passwörter
     .accesskey = G
 forms-primary-pw-use =
     .label = Hauptpasswort verwenden
@@ -887,6 +932,7 @@ forms-windows-sso =
     .label = Windows Single Sign-on für Microsoft-, Geschäfts- und Schulkonten erlauben
 forms-windows-sso-learn-more-link = Weitere Informationen
 forms-windows-sso-desc = Verwalten Sie Konten in Ihren Geräteeinstellungen.
+windows-passkey-settings-label = Passkeys in den Systemeinstellungen verwalten
 
 ## OS Authentication dialog
 
@@ -898,6 +944,28 @@ primary-password-os-auth-dialog-message-win = Um ein Hauptpasswort zu erstellen,
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = Hauptpasswort festlegen
 master-password-os-auth-dialog-caption = { -brand-full-name }
+
+## Privacy section - Autofill
+
+pane-privacy-autofill-header = Automatisch ausfüllen
+autofill-addresses-checkbox = Adressen speichern und ausfüllen
+    .accesskey = A
+autofill-saved-addresses-button = Gespeicherte Adressen
+    .accesskey = G
+autofill-payment-methods-checkbox-message = Zahlungsmethoden speichern und ausfüllen
+    .accesskey = Z
+autofill-payment-methods-checkbox-submessage = Einschließlich Kredit- und Debitkarten
+    .accesskey = E
+autofill-saved-payment-methods-button = Gespeicherte Zahlungsmethoden
+    .accesskey = G
+autofill-reauth-checkbox =
+    { PLATFORM() ->
+        [macos] macOS-Authentifizierung anfordern, um Zahlungsmethoden auszufüllen und zu bearbeiten
+        [windows] Windows-Authentifizierung anfordern, um Zahlungsmethoden auszufüllen und zu bearbeiten
+        [linux] Linux-Authentifizierung anfordern, um Zahlungsmethoden auszufüllen und zu bearbeiten
+       *[other] Authentifizierung anfordern, um Zahlungsmethoden auszufüllen und zu bearbeiten
+    }
+    .accesskey = A
 
 ## Privacy Section - History
 
@@ -953,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Cookies und Website-Daten beim Beenden von { -brand-short-name } löschen
     .accesskey = B
 sitedata-delete-on-close-private-browsing = Wenn der Private Modus immer verwendet wird, löscht { -brand-short-name } Cookies und Website-Daten beim Beenden.
+sitedata-delete-on-close-private-browsing2 = Basierend auf Ihren Chronikeinstellungen löscht { -brand-short-name } Cookies und Website-Daten aus Ihrer Sitzung, wenn Sie den Browser schließen.
 sitedata-allow-cookies-option =
     .label = Annehmen von Cookies und Website-Daten
     .accesskey = A
@@ -1029,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Schnellaktionen
     .accesskey = S
+addressbar-suggestions-settings = Einstellungen für Suchvorschläge ändern
 addressbar-locbar-showrecentsearches-option =
     .label = Letzte Suchanfragen anzeigen
     .accesskey = L
-addressbar-suggestions-settings = Einstellungen für Suchvorschläge ändern
 addressbar-quickactions-learn-more = Weitere Informationen
 
 ## Privacy Section - Content Blocking
@@ -1214,6 +1283,8 @@ addon-recommendations-link = Weitere Informationen
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Datenübermittlung ist für diese Build-Konfiguration deaktiviert
 collection-backlogged-crash-reports-with-link = Nicht gesendete Absturzberichte automatisch von { -brand-short-name } senden lassen <a data-l10n-name="crash-reports-link">Weitere Informationen</a>
+    .accesskey = g
+collection-backlogged-crash-reports = Nicht gesendete Absturzberichte automatisch von { -brand-short-name } senden lassen
     .accesskey = g
 privacy-segmentation-section-header = Neue Funktionen, die Ihr Surfen verbessern
 privacy-segmentation-section-description = Wenn wir Funktionen anbieten, die Ihre Daten verwenden, um Ihnen ein persönlicheres Erlebnis zu bieten:

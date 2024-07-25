@@ -12,11 +12,15 @@ menu-tools-firefox-view =
     .label = { -firefoxview-brand-name }
     .accesskey = F
 firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
 firefoxview-page-label =
     .label = { -firefoxview-brand-name }
 firefoxview-close-button =
     .title = Fermi
     .aria-label = Fermi
+firefoxview-empty-state-icon =
+    .alt = Atento:
 # Used instead of the localized relative time when a timestamp is within a minute or so of now
 firefoxview-just-now-timestamp = Ĵus
 # This is a headline for an area in the product where users can resume and re-open tabs they have previously viewed on other devices.
@@ -49,6 +53,7 @@ firefoxview-syncedtabs-loading-header = Nuntempe spegulanta
 firefoxview-syncedtabs-loading-description = Kiam tio finiĝos, vi vidos langetojn, kiuj etas malfermitaj en aliaj aparatoj. Rekontrolu baldaŭ.
 firefoxview-tabpickup-fxa-admin-disabled-header = Via organizo malaktivigis la speguladon
 firefoxview-tabpickup-fxa-admin-disabled-description = { -brand-short-name } ne povas speguli langetojn inter aparatoj ĉar via administranto malaktivigis la speguladon.
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } ne povas speguli langetojn inter aparatoj ĉar via organizo malaktivigis la speguladon.
 firefoxview-tabpickup-network-offline-header = Kontrolu vian retaliron
 firefoxview-tabpickup-network-offline-description = Se vi uzas retbarilon aŭ retperanton, kontrolu ĉu { -brand-short-name } rajtas aliri la reton.
 firefoxview-tabpickup-network-offline-primarybutton = Klopodi denove
@@ -147,8 +152,43 @@ firefoxview-opentabs-focus-tab =
     .title = Iri al tiu ĉi langeto
 firefoxview-show-more = Montri pli
 firefoxview-show-less = Montri malpli
+firefoxview-show-all = Montri ĉiujn
+firefoxview-search-text-box-clear-button =
+    .title = Viŝi
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = Serĉi
+# Placeholder for the input field to search in history ("search" is a verb).
+firefoxview-search-text-box-history =
+    .placeholder = Serĉi en historio
+# Placeholder for the input field to search in recently closed tabs ("search" is a verb).
+firefoxview-search-text-box-recentlyclosed =
+    .placeholder = Serĉi en ĵuse fermitaj langetoj
+# Placeholder for the input field to search in tabs from other devices ("search" is a verb).
+firefoxview-search-text-box-syncedtabs =
+    .placeholder = Serĉi spegulitajn langetojn
+# Placeholder for the input field to search in open tabs ("search" is a verb).
+firefoxview-search-text-box-opentabs =
+    .placeholder = Serĉi malfermitajn langetojn
+# "Search" is a noun (as in "Results of the search for")
+# Variables:
+#   $query (String) - The search query used for searching through browser history.
+firefoxview-search-results-header = Serĉaj rezultoj por “{ $query }”
+# Variables:
+#   $count (Number) - The number of visits matching the search query.
+firefoxview-search-results-count =
+    { $count ->
+        [one] { $count } retejo
+       *[other] { $count } retejoj
+    }
+# Message displayed when a search is performed and no matching results were found.
+# Variables:
+#   $query (String) - The search query.
+firefoxview-search-results-empty = Neniu rezulto por “{ $query }”
 firefoxview-sort-history-by-date-label = Ordigi laŭ dato
 firefoxview-sort-history-by-site-label = Ordigi laŭ retejo
+firefoxview-sort-open-tabs-by-recency-label = Ordigi laŭ ĵusa aktiveco
+firefoxview-sort-open-tabs-by-order-label = Ordigi laŭ la ordo de langetoj
 # Variables:
 #   $url (string) - URL that will be opened in the new tab
 firefoxview-opentabs-tab-row =
@@ -211,3 +251,25 @@ firefoxview-recentlyclosed-empty-description-two = Por trovi pli malnovajn lange
 
 firefoxview-syncedtabs-device-notabs = Nenlu langeto malfermita en tiu ĉi aparato
 firefoxview-syncedtabs-connect-another-device = Konekti alian aparaton
+firefoxview-pinned-tabs =
+    .title = Alpinglitaj langetoj
+firefoxview-tabs =
+    .title = Langetoj
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Iri al { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Iri al (legosigno) { $tabTitle }
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Legosigno) { $url }

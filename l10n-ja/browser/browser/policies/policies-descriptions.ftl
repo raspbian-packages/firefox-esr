@@ -12,10 +12,13 @@
 
 policy-3rdparty = WebExtension が chrome.storage.managed を経由してアクセス可能なポリシーを設定します。
 policy-AllowedDomainsForApps = Google Workspace へのアクセスを許可するドメインを定義します。
+policy-AllowFileSelectionDialogs = ファイル選択ダイアログを許可します。
 policy-AppAutoUpdate = アプリケーションの自動更新を有効または無効にします。
 policy-AppUpdatePin = { -brand-short-name } が指定のバージョン以降に更新されるのを抑止します。
 policy-AppUpdateURL = アプリケーションのカスタム更新 URL を設定します。
 policy-Authentication = ウェブサイトが対応する統合認証を設定します。
+policy-AutofillAddressEnabled = アドレスの自動入力を有効にします。
+policy-AutofillCreditCardEnabled = 支払い方法の自動入力を有効にします。
 policy-AutoLaunchProtocolsFromOrigins = ユーザーに確認せずに、列挙された生成元から利用できる外部プロトコルのリストを定義します。
 policy-BackgroundAppUpdate2 = バックグラウンド更新を有効または無効にします。
 policy-BlockAboutAddons = アドオンマネージャー (about:addons) へのアクセスをブロックします。
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = about:support ページへのアクセスをブロッ
 policy-Bookmarks = ブックマークツールバー、ブックマークメニュー、または指定のフォルダーの中にブックマークを作成します。
 policy-CaptivePortal = キャプティブポータルサポートを有効または無効にします。
 policy-CertificatesDescription = 証明書を追加、または組み込みの証明書を利用します。
+policy-ContentAnalysis = データ損失防止エージェントへの接続を有効または無効にします。
 policy-Cookies = ウェブサイトの Cookie の保存を許可するか拒否するか設定します。
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = コンテナーに関連するポリシーを設定します。
@@ -121,6 +125,7 @@ policy-SSLVersionMax = SSL の最高バージョンを設定します。
 policy-SSLVersionMin = SSL の最低バージョンを設定します。
 policy-StartDownloadsInTempDirectory = 既定のダウンロードディレクトリーではなく、ローカルの一時的な場所にダウンロードするよう強制します。
 policy-SupportMenu = ヘルプメニューにカスタムサポートメニューを追加します。
+policy-TranslateEnabled = ウェブページ翻訳を有効または無効にします。
 policy-UserMessaging = 特定のメッセージをユーザーに表示させないようにします。
 policy-UseSystemPrintDialog = システムの印刷ダイアログで印刷します。
 # “format” refers to the format used for the value of this policy.

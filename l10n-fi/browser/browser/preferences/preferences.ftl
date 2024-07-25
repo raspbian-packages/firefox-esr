@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Hae asetuksista
 managed-notice = Organisaatiosi hallitsee selaimesi asetuksia.
+managed-notice-info-icon =
+    .alt = Tietoa
 category-list =
     .aria-label = Luokat
 pane-general-title = Yleiset
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Poista eristystila
 containers-remove-cancel-button = Älä poista eristystilaa
+settings-tabs-show-image-in-preview =
+    .label = Näytä kuvan esikatselu, kun siirrät hiiren välilehden päälle
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Värivalintasi ohittavat verkkosivuston ulkoasun. <a data-l10n-name="colors-link">Hallinnoi värejä</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Värivalintasi ohittavat verkkosivuston ulkoasun.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Hallinnoi { -brand-short-name }in teemoja <a data-l10n-name="themes-link">Laajennukset ja teemat -osiossa</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Muuta vain tekstin kokoa
     .accesskey = M
+preferences-text-zoom-override-warning =
+    .message = Varoitus: Jos valitset "Muuta vain tekstin kokoa" ja oletussuurennusta ei ole asetettu 100 %:iin, jotkin sivustot tai sisällöt saattavat rikkoutua.
 language-header = Kieli
 choose-language-description = Valitse kielet, joilla sivut näytetään
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Suositukset lähteestä { $provider }
 home-prefs-recommended-by-description-new = Poikkeuksellista, valikoitua sisältöä { $provider }-palvelulta, osana { -brand-product-name }-perhettä
+home-prefs-recommended-by-header-generic =
+    .label = Suositellut tarinat
+home-prefs-recommended-by-description-generic = Poikkeuksellista { -brand-product-name }-perheen kuratoimaa sisältöä
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Lataa Firefox <img data-l10n-name="android-icon"/> <a data-l
 
 sync-profile-picture =
     .tooltiptext = Vaihda kuva
+sync-profile-picture-with-alt =
+    .tooltiptext = Vaihda kuva
+    .alt = Vaihda kuva
+sync-profile-picture-account-problem =
+    .alt = Tilin profiilikuva
+fxa-login-rejected-warning =
+    .alt = Varoitus
 sync-sign-out =
     .label = Kirjaudu ulos…
     .accesskey = K
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Poista evästeet ja sivustotiedot, kun { -brand-short-name } suljetaan
     .accesskey = s
 sitedata-delete-on-close-private-browsing = Pysyvässä yksityisessä selaustilassa evästeet ja sivustotiedot poistetaan aina, kun { -brand-short-name } suljetaan.
+sitedata-delete-on-close-private-browsing2 = Historia-asetustesi perusteella { -brand-short-name } poistaa evästeet ja sivustotiedot istunnostasi, kun suljet selaimen.
 sitedata-allow-cookies-option =
     .label = Hyväksy evästeet ja sivustotiedot
     .accesskey = H
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Pikatoiminnot
     .accesskey = Q
+addressbar-suggestions-settings = Muuta hakukoneiden ehdotusten asetuksia
 addressbar-locbar-showrecentsearches-option =
     .label = Näytä viimeisimmät haut
     .accesskey = h
-addressbar-suggestions-settings = Muuta hakukoneiden ehdotusten asetuksia
 addressbar-quickactions-learn-more = Lue lisää
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = Lue lisää
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Tietojen kerääminen ei ole käytössä tässä koostamiskokoonpanossa
 collection-backlogged-crash-reports-with-link = Salli, että { -brand-short-name } lähettää lähettämättömät kaatumisraportit puolestasi <a data-l10n-name="crash-reports-link">Lue lisää</a>
+    .accesskey = S
+collection-backlogged-crash-reports = Salli, että { -brand-short-name } lähettää lähettämättömät kaatumisraportit puolestasi
     .accesskey = S
 privacy-segmentation-section-header = Uudet selaamista parantavat ominaisuudet
 privacy-segmentation-section-description = Kun tarjoamme ominaisuuksia, jotka käyttävät tietojasi aiempaa henkilökohtaisemman käyttökokemuksen tarjoamiseksi:

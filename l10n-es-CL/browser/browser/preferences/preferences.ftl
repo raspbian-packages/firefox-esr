@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Buscar en Ajustes
 managed-notice = Tu navegador está siendo administrado por tu organización.
+managed-notice-info-icon =
+    .alt = Información
 category-list =
     .aria-label = Categorías
 pane-general-title = General
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Remover este contenedor
 containers-remove-cancel-button = No remover este contenedor
+settings-tabs-show-image-in-preview =
+    .label = Mostrar una imagen de vista previa cuando pases el cursor sobre una pestaña
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Tu elección de colores deciden la apariencia del sitio web. <a data-l10n-name="colors-link">Gestionar colores</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Tu elección de colores deciden la apariencia del sitio web.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Gestiona los temas de { -brand-short-name } en <a data-l10n-name="themes-link">Extensiones y temas</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Ampliar solo el texto
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Advertencia: si seleccionas "Ampliar solo texto" y tu aumento predeterminado no está configurado en 100%, podría ser que algunos sitios o contenidos fallen.
 language-header = Idioma
 choose-language-description = Elige tu idioma preferido para mostrar páginas Web.
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Recomendado por { $provider }
 home-prefs-recommended-by-description-new = Contenido excepcional seleccionado por { $provider }, parte de la familia { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Historias recomendadas
+home-prefs-recommended-by-description-generic = Contenido excepcional seleccionado por la familia { -brand-product-name }
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Descarga Firefox para <img data-l10n-name="android-icon"/> <
 
 sync-profile-picture =
     .tooltiptext = Cambiar imagen de perfil
+sync-profile-picture-with-alt =
+    .tooltiptext = Cambiar imagen de perfil
+    .alt = Cambiar imagen de perfil
+sync-profile-picture-account-problem =
+    .alt = imagen de perfil de la cuenta
+fxa-login-rejected-warning =
+    .alt = Advertencia
 sync-sign-out =
     .label = Salir…
     .accesskey = g
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Eliminar cookies y datos de sitio cuando { -brand-short-name } sea cerrado
     .accesskey = c
 sitedata-delete-on-close-private-browsing = En el modo de navegación privada permanente, las cookies y los datos de sitio siempre serán limpiados cuando { -brand-short-name } sea cerrado.
+sitedata-delete-on-close-private-browsing2 = En base a tus ajustes de historial, { -brand-short-name } elimina las cookies y los datos del sitio de tu sesión cuando cierras el navegador.
 sitedata-allow-cookies-option =
     .label = Aceptar cookies y datos de sitio
     .accesskey = A
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Acciones rápidas
     .accesskey = Q
+addressbar-suggestions-settings = Cambia las preferencias para las sugerencias de los motores de búsqueda
 addressbar-locbar-showrecentsearches-option =
     .label = Mostrar guardados recientes
     .accesskey = r
-addressbar-suggestions-settings = Cambia las preferencias para las sugerencias de los motores de búsqueda
 addressbar-quickactions-learn-more = Aprender más
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = Aprender más
 # or builds with no Telemetry support available.
 collection-health-report-disabled = El reporte de datos está deshabilitado para esta configuración de compilación
 collection-backlogged-crash-reports-with-link = Permitir a { -brand-short-name } enviar reportes de fallos acumulados a tu nombre <a data-l10n-name="crash-reports-link">Aprender más</a>
+    .accesskey = c
+collection-backlogged-crash-reports = Permitir a { -brand-short-name } enviar reportes de fallos acumulados a tu nombre
     .accesskey = c
 privacy-segmentation-section-header = Nuevas funcionalidades que mejoran tu navegación
 privacy-segmentation-section-description = Cuando ofrezcamos funcionalidades que usen tus datos para brindarte una experiencia más personal:

@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Sykje yn Ynstellingen
 managed-notice = Jo browser wurdt troch jo organisaasje beheard.
+managed-notice-info-icon =
+    .alt = Ynformaasje
 category-list =
     .aria-label = Kategoryen
 pane-general-title = Algemien
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Dizze kontener fuortsmite
 containers-remove-cancel-button = Dizze kontener net fuortsmite
+settings-tabs-show-image-in-preview =
+    .label = In ôfbyldingsfoarbyld toane as jo in ljepblêd oanwize
+    .accessKey = w
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Jo kleurseleksjes hawwe foarrang op it uterlik fan de website. <a data-l10n-name="colors-link">Kleuren beheare</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Jo kleurseleksjes hawwe foarrang op it uterlik fan de website.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Jo kinne { -brand-short-name }-tema’s beheare yn <a data-l10n-name="themes-link">Utwreidingen en tema’s</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Allinnich tekst ynzoome
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Warskôging: As jo ‘Allinnich tekst zoome’ selektearje en jo standertzoom is net ynsteld op 100%, kin dit der foar soargje dat bepaalde websites of ynhâld net goed wurkje.
 language-header = Taal
 choose-language-description = Talen kieze dêr’t websites yn werjûn wurde moatte.
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Oanrekommandearre troch { $provider }
 home-prefs-recommended-by-description-new = Utsûnderlike ynhâld, gearstald troch { $provider }, ûnderdiel fan de { -brand-product-name }-famylje
+home-prefs-recommended-by-header-generic =
+    .label = Oanrekommandearre ferhalen
+home-prefs-recommended-by-description-generic = Utsûnderlike ynhâld, sammele troch de { -brand-product-name }-famylje
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Download Firefox foar <img data-l10n-name="android-icon"/> <
 
 sync-profile-picture =
     .tooltiptext = Profylôfbylding wizigje
+sync-profile-picture-with-alt =
+    .tooltiptext = Profylôfbylding wizigje
+    .alt = Profylôfbylding wizigje
+sync-profile-picture-account-problem =
+    .alt = Accountprofylôfbylding
+fxa-login-rejected-warning =
+    .alt = Warskôging
 sync-sign-out =
     .label = Ofmelde…
     .accesskey = O
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Cookies en websitegegevens fuortsmite sa gau as { -brand-short-name } sluten wurdt
     .accesskey = C
 sitedata-delete-on-close-private-browsing = Yn permaninte priveenavigaasjemodus wurde cookies en websitegegevens altyd wiske sa gau as { -brand-short-name } sluten wurdt.
+sitedata-delete-on-close-private-browsing2 = Op grûn fan jo skiednisynstellingen smyt { -brand-short-name } cookies en websitegegevens út jo sesje fuort as jo de browser slute.
 sitedata-allow-cookies-option =
     .label = Cookies en websitegegevens akseptearje
     .accesskey = a
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Flugge aksjes
     .accesskey = F
+addressbar-suggestions-settings = Foarkarren foar sykmasinesuggestjes wizigje
 addressbar-locbar-showrecentsearches-option =
     .label = Resinte sykopdrachten toane
     .accesskey = R
-addressbar-suggestions-settings = Foarkarren foar sykmasinesuggestjes wizigje
 addressbar-quickactions-learn-more = Mear ynfo
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = Mear ynfo
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Gegevensrapporten binne foar dizze build-konfiguraasje útskeakele
 collection-backlogged-crash-reports-with-link = { -brand-short-name } tastean om út jo namme efterstallige ûngelokrapporten te ferstjoeren. <a data-l10n-name="crash-reports-link">Mear ynfo</a>
+    .accesskey = r
+collection-backlogged-crash-reports = { -brand-short-name } tastean om út jo namme efterstallige ûngelokrapporten te ferstjoeren.
     .accesskey = r
 privacy-segmentation-section-header = Nije funksjes dy’t jo sneupen ferbetterje
 privacy-segmentation-section-description = As wy funksjes oanbiede dy’t jo gegevens brûke om jo in mear persoanlike ûnderfining te jaan:

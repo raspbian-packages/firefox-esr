@@ -54,6 +54,9 @@ history-section-label = Таърих
 item-history-and-downloads =
     .label = Таърихи тамошо ва боргирӣ
     .accesskey = Т
+item-history-form-data-downloads =
+    .label = Таърих
+    .accesskey = Т
 item-cookies =
     .label = Кукиҳо
     .accesskey = К
@@ -86,6 +89,8 @@ sanitize-button-ok =
     .label = Ҳозир пок карда шавад
 sanitize-button-ok2 =
     .label = Пок кардан
+sanitize-button-ok-on-shutdown =
+    .label = Нигоҳ доштани тағйирот
 # The label for the default button between the user clicking it and the window
 # closing.  Indicates the items are being cleared.
 sanitize-button-clearing =

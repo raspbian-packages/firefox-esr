@@ -219,6 +219,9 @@ shortcuts-no-addons = 사용하는 확장 기능이 없습니다.
 shortcuts-no-commands = 다음 확장 기능에는 단축키가 없습니다:
 shortcuts-input =
     .placeholder = 단축키 입력
+# Accessible name for a trashcan icon button that removes an existent shortcut
+shortcuts-remove-button =
+    .aria-label = 바로가기 제거
 shortcuts-browserAction2 = 도구 모음 버튼 활성화
 shortcuts-pageAction = 페이지 작업 활성화
 shortcuts-sidebarAction = 사이드바 표시/숨기기
@@ -277,8 +280,8 @@ install-theme-button = 테마 설치
 # The label of the button that appears after installing an add-on. Upon click,
 # the detailed add-on view is opened, from where the add-on can be managed.
 manage-addon-button = 관리
-find-more-addons = 더 많은 부가 기능 찾기
-find-more-themes = 더 많은 테마 찾기
+find-more-addons = 부가 기능 더 찾기
+find-more-themes = 테마 더 찾기
 # This is a label for the button to open the "more options" menu, it is only
 # used for screen readers.
 addon-options-button =
@@ -438,7 +441,7 @@ updates-heading = 업데이트 관리
 sitepermission-heading = 사이트 권한 관리
 discover-heading = { -brand-short-name } 개인화
 shortcuts-heading = 확장 기능 단축키 관리
-default-heading-search-label = 더 많은 부가 기능 찾기
+default-heading-search-label = 부가 기능 더 찾기
 addons-heading-search-input =
     .placeholder = addons.mozilla.org 검색
 addon-page-options-button =

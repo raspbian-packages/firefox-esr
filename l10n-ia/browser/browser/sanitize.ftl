@@ -19,6 +19,7 @@ sanitize-dialog-title-everything =
     .title = Vacuar tote le chronologia
     .style = min-width: 34em
 clear-data-settings-label = Quando claudite, { -brand-short-name } deberea automaticamente rader tote le
+sanitize-on-shutdown-description = Automaticamente clarar tote le elementos marcate quando { -brand-short-name } claude.
 
 ## clear-time-duration-prefix is followed by a dropdown list, with
 ## values localized using clear-time-duration-value-* messages.
@@ -54,12 +55,19 @@ history-section-label = Chronologia
 item-history-and-downloads =
     .label = Chronologia de navigation e de discargamentos
     .accesskey = C
-item-browsing-and-search =
-    .label = Sitos visitate, informationes de formulario e recercas salvate
-    .accesskey = v
+item-history-form-data-downloads =
+    .label = Chronologia
+    .accesskey = C
+item-history-form-data-downloads-description = Clara sito e chronologia de discargamento, informationes de formulario salvate, e recercas
 item-cookies =
     .label = Cookies
     .accesskey = C
+# Variables:
+#   $amount (Number) - Amount of site data currently stored on disk
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cookies-site-data-with-size =
+    .label = Cookies e datos de sitos ({ $amount } { $unit })
+    .accesskey = e
 item-cookies-site-data =
     .label = Cookies e datos de sito
     .accesskey = e
@@ -70,6 +78,12 @@ item-active-logins =
 item-cache =
     .label = Cache
     .accesskey = A
+# Variables:
+#   $amount (Number) - Amount of cached data
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cached-content-with-size =
+    .label = Files e paginas in cache temporari ({ $amount } { $unit })
+    .accesskey = F
 item-cached-content =
     .label = Files e paginas temporari in cache
     .accesskey = F
@@ -81,9 +95,6 @@ item-site-prefs =
     .label = Parametros del sito
     .accesskey = i
 item-site-prefs-description = Remonta tu permissos e preferentias de sitos al parametros original
-item-download-history =
-    .label = Lista de files discargate
-    .accesskey = d
 data-section-label = Datos
 item-site-settings =
     .label = Parametros del sito
@@ -98,6 +109,8 @@ sanitize-button-ok =
     .label = Vacuar ora
 sanitize-button-ok2 =
     .label = Clarar
+sanitize-button-ok-on-shutdown =
+    .label = Salvar le cambios
 # The label for the default button between the user clicking it and the window
 # closing.  Indicates the items are being cleared.
 sanitize-button-clearing =

@@ -200,6 +200,9 @@ media-cdm-capabilities = Возможности
 # are not encrypted. It allows playback to start without having to wait for
 # license response, improving video start time and user experience.
 media-cdm-clear-lead = Незашифрованное начало
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = Совместим с HDCP 2.2
 
 ##
 
@@ -284,6 +287,7 @@ try-newer-driver = Заблокировано для вашей версии д�
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Параметры ClearType
 compositing = Композитинг
+support-font-determination = Информация отладки видимости шрифта
 hardware-h264 = Аппаратное декодирование H264
 main-thread-no-omtc = главный поток, без OMTC
 yes = Да
@@ -429,3 +433,15 @@ pointing-device-mouse = Мышь
 pointing-device-touchscreen = Сенсорный экран
 pointing-device-pen-digitizer = Графический планшет
 pointing-device-none = Манипуляторы отсутствуют
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = Анализ содержимого (DLP)
+content-analysis-active = Активно
+content-analysis-connected-to-agent = Подключено к агенту
+content-analysis-agent-path = Путь к агенту
+content-analysis-agent-failed-signature-verification = Агент не смог проверить подпись
+content-analysis-request-count = Число запросов

@@ -390,7 +390,7 @@ identity-description-active-blocked2 = { -brand-short-name } 已拦截此页面�
 identity-description-passive-loaded = 您的连接并不私密，您提供给此网站的信息可能会被其他人看到。
 identity-description-passive-loaded-insecure2 = 此网站包含不安全的内容（例如图像）。
 identity-description-passive-loaded-mixed2 = 尽管 { -brand-short-name } 已拦截部分内容，但页面上仍有内容不安全（例如图像）。
-identity-description-active-loaded = 此网站包含的内容不安全（例如脚本），并且您至它的连接非私密。
+identity-description-active-loaded = 此网站包含不安全内容（例如脚本），并且您至它的连接非私密。
 identity-description-active-loaded-insecure = 您提供给此网站的信息（例如密码、聊天消息、信用卡等）可能会被其他人看到。
 identity-disable-mixed-content-blocking =
     .label = 暂时解除保护
@@ -563,6 +563,11 @@ urlbar-result-action-search-w-engine = 使用 { $engine } 搜索
 urlbar-result-action-sponsored = 赞助推广
 urlbar-result-action-switch-tab = 切换到标签页
 urlbar-result-action-visit = 访问
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = 切换到标签页 · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = 访问剪贴板中的网址
 # Directs a user to press the Tab key to perform a search with the specified
@@ -592,6 +597,12 @@ urlbar-result-action-copy-to-clipboard = 复制
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = 使用 { $engine } 搜索
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -887,6 +898,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>想打开先前的标签页？</strong>您可以从 { -brand-short-name } 应用程序菜单 <img data-l10n-name="icon"/> 中的“历史”恢复先前的浏览状态。
 restore-session-startup-suggestion-button = 怎么做
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = 您的组织已阻止此计算机访问本地文件
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } 会自动向 { -vendor-short-name } 反馈一些数据，以便我们改善您的使用体验。
@@ -895,6 +910,15 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = 隐私浏览
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = 由“{ $agentName }”提供数据泄露防护。点击以了解更多信息。
+content-analysis-panel-title = 数据保护
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = 您的组织使用“{ $agentName }”进行数据泄露防护。<a data-l10n-name="info">详细了解</a>
 
 ## Unified extensions (toolbar) button
 

@@ -61,6 +61,7 @@ cfr-doorhanger-extension-total-users =
 
 cfr-doorhanger-bookmark-fxa-header = 將您的書籤同步帶著走。
 cfr-doorhanger-bookmark-fxa-body = 找到好網站了！接下來也把這筆書籤同步進手機吧。試試使用 { -fxaccount-brand-name }。
+cfr-doorhanger-bookmark-fxa-body-2 = 找到好網站了！接下來也把這筆書籤同步進手機吧。註冊帳號即可開始使用。
 cfr-doorhanger-bookmark-fxa-link-text = 立即同步書籤…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = 關閉按鈕
@@ -201,8 +202,9 @@ cfr-cbh-confirm-button = 拒絕 Cookie 橫幅
     .accesskey = R
 cfr-cbh-dismiss-button = 現在不要
     .accesskey = N
-cookie-banner-blocker-cfr-header = { -brand-short-name } 已為您封鎖 Cookie
-cookie-banner-blocker-cfr-body = 我們會自動為您拒絕許多網站中的彈出型視窗，讓網站更難追蹤您。
+cookie-banner-blocker-onboarding-header = { -brand-short-name } 已為您封鎖 Cookie 橫幅
+cookie-banner-blocker-onboarding-body = 少一分會追蹤您的 Cookie，也讓您更不用分心。
+cookie-banner-blocker-onboarding-learn-more = 更多資訊
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -232,10 +234,6 @@ fxa-sync-cfr-secondary = 待會提醒我
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = 使用的是舊裝置？
-device-migration-fxa-spotlight-body = 備份您的資料，以確保不會遺失書籤、密碼等重要資訊。尤其是換新裝置轉移資料時更要小心。
-device-migration-fxa-spotlight-primary-button = 如何備份我的資料
-device-migration-fxa-spotlight-link = 待會提醒我
 device-migration-fxa-spotlight-heavy-user-header = 別忘記備份您的資料
 device-migration-fxa-spotlight-heavy-user-body = 確保您所有的裝置上，隨時都能有最新、同步的書籤、密碼等重要資訊。
 device-migration-fxa-spotlight-heavy-user-primary-button = 開始使用
@@ -270,3 +268,14 @@ launch-on-login-infobar-reject-button = 現在不要
 launch-on-login-infobar-final-message = <strong>要在每次電腦開機時自動開啟 { -brand-short-name } 嗎？</strong>若要管理您的啟動設定，請在設定頁面中搜尋「啟動」。
 launch-on-login-infobar-final-reject-button = 不要，謝謝
     .accesskey = N
+
+## Tail Fox Set Default Spotlight
+
+# This title is displayed together with the picture of a running fox with a long tail.
+# In English, this is a figure of speech meaning 'stop something from following you'.
+# If the localization of this message is challenging, consider using a simplified
+# alternative as a reference for translation: 'Keep unwanted trackers away'.
+tail-fox-spotlight-title = 別讓討厭的追蹤器跟上來
+tail-fox-spotlight-subtitle = 跟令人討厭的廣告追蹤器說再見，並且有一套更快、更安全的上網體驗。
+tail-fox-spotlight-primary-button = 用 { -brand-short-name } 開啟我的鏈結
+tail-fox-spotlight-secondary-button = 現在不要

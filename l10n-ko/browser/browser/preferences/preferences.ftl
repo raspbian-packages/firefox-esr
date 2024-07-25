@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = 설정에서 찾기
 managed-notice = 이 브라우저는 조직에서 관리하고 있습니다.
+managed-notice-info-icon =
+    .alt = 정보
 category-list =
     .aria-label = 카테고리
 pane-general-title = 일반
@@ -191,6 +193,9 @@ containers-remove-alert-title = 이 컨테이너를 삭제하시겠습니까?
 containers-remove-alert-msg = 이 컨테이너를 삭제하면 { $count } 컨테이너 탭이 닫힙니다. 이 컨테이너를 정말로 삭제하시겠습니까?
 containers-remove-ok-button = 이 컨테이너 삭제
 containers-remove-cancel-button = 이 컨테이너 삭제하지 않음
+settings-tabs-show-image-in-preview =
+    .label = 탭 위로 마우스를 가져가면 이미지 미리 보기 표시
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -215,6 +220,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = 선택한 색상이 웹 사이트 화면 배색보다 우선합니다. <a data-l10n-name="colors-link">색상 관리</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = 선택한 색상이 웹 사이트 화면 배색보다 우선합니다.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = <a data-l10n-name="themes-link">확장 기능 및 테마</a>에서 { -brand-short-name } 테마 관리
@@ -242,6 +251,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = 글자 크기만 조정
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = 경고: "글자 크기만 조정"을 선택하고 기본 확대/축소가 100%로 설정되지 않은 경우, 일부 사이트나 콘텐츠가 깨질 수 있습니다.
 language-header = 언어
 choose-language-description = 웹 페이지를 표시할 기본 언어 선택
 choose-button =
@@ -547,6 +558,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = { $provider } 추천
 home-prefs-recommended-by-description-new = { -brand-product-name } 제품군의 일부인 { $provider }에서 선별한 뛰어난 콘텐츠
+home-prefs-recommended-by-header-generic =
+    .label = 추천 이야기
+home-prefs-recommended-by-description-generic = { -brand-product-name } 제품군이 선별한 뛰어난 콘텐츠
 
 ##
 
@@ -633,7 +647,7 @@ search-remove-engine =
 search-add-engine =
     .label = 추가
     .accesskey = A
-search-find-more-link = 더 많은 검색 엔진 찾기
+search-find-more-link = 검색 엔진 더 찾기
 # This warning is displayed when the chosen keyword is already in use
 # ('Duplicate' is an adjective)
 search-keyword-warning-title = 키워드 복사
@@ -680,6 +694,13 @@ sync-mobile-promo = 모바일 기기와 동기화하려면 <img data-l10n-name="
 
 sync-profile-picture =
     .tooltiptext = 프로필 사진 변경
+sync-profile-picture-with-alt =
+    .tooltiptext = 프로필 사진 변경
+    .alt = 프로필 사진 변경
+sync-profile-picture-account-problem =
+    .alt = 계정 프로필 사진
+fxa-login-rejected-warning =
+    .alt = 경고
 sync-sign-out =
     .label = 로그아웃…
     .accesskey = g
@@ -853,9 +874,9 @@ forms-breach-alerts =
     .accesskey = b
 forms-breach-alerts-learn-more-link = 더 알아보기
 preferences-relay-integration-checkbox =
-    .label = 이메일 주소를 보호하기 위해 { -relay-brand-name } 이메일 마스크 제안
+    .label = 이메일 주소를 보호하기 위해 { -relay-brand-name } 이메일 가리기 제안
 preferences-relay-integration-checkbox2 =
-    .label = 이메일 주소를 보호하기 위해 { -relay-brand-name } 이메일 마스크 제안
+    .label = 이메일 주소를 보호하기 위해 { -relay-brand-name } 이메일 가리기 제안
     .accesskey = r
 relay-integration-learn-more-link = 더 알아보기
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
@@ -984,6 +1005,7 @@ sitedata-delete-on-close =
     .label = { -brand-short-name }를 닫을 때 쿠키와 사이트 데이터를 삭제
     .accesskey = c
 sitedata-delete-on-close-private-browsing = 영구 사생활 보호 모드에서는 { -brand-short-name }를 닫으면 쿠키와 사이트 데이터가 항상 지워집니다.
+sitedata-delete-on-close-private-browsing2 = 기록 설정에 따라 { -brand-short-name }는 브라우저를 닫을 때 세션에서 쿠키와 사이트 데이터를 삭제합니다.
 sitedata-allow-cookies-option =
     .label = 쿠키와 사이트 데이터 허용
     .accesskey = A
@@ -1060,10 +1082,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = 빠른 작업
     .accesskey = Q
+addressbar-suggestions-settings = 검색 엔진 제안 설정 변경
 addressbar-locbar-showrecentsearches-option =
     .label = 최근 검색 표시
     .accesskey = r
-addressbar-suggestions-settings = 검색 엔진 제안 설정 변경
 addressbar-quickactions-learn-more = 더 알아보기
 
 ## Privacy Section - Content Blocking
@@ -1245,6 +1267,8 @@ addon-recommendations-link = 더 알아보기
 # or builds with no Telemetry support available.
 collection-health-report-disabled = 이 빌드 설정에서는 데이터 보고가 비활성화 되어 있음
 collection-backlogged-crash-reports-with-link = { -brand-short-name }가 사용자를 대신하여 백로그된 충돌 보고서를 보내도록 허용 <a data-l10n-name="crash-reports-link">더 알아보기</a>
+    .accesskey = c
+collection-backlogged-crash-reports = { -brand-short-name }가 사용자를 대신하여 백로그된 충돌 보고서를 보내도록 허용
     .accesskey = c
 privacy-segmentation-section-header = 탐색을 향상시키는 새로운 기능
 privacy-segmentation-section-description = 더 개인적인 경험을 제공하기 위해 사용자의 데이터를 사용하는 기능을 제공하는 경우:

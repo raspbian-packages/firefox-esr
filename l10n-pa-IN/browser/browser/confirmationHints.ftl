@@ -16,9 +16,16 @@ confirmation-hint-address-created = ਸਿਰਨਾਵਾਂ ਸੰਭਾਲਿ�
 confirmation-hint-address-updated = ਸਿਰਨਾਵਾਂ ਅੱਪਡੇਟ ਕੀਤਾ
 confirmation-hint-credit-card-created = ਕਾਰਡ ਸੰਭਾਲਿਆ
 confirmation-hint-credit-card-updated = ਕਾਰਡ ਅੱਪਡੇਟ ਕੀਤਾ
-confirmation-hint-pin-tab = ਪਿੰਨ ਕੀਤੇ!
+confirmation-hint-pin-tab = ਟੰਗੀਆਂ!
 confirmation-hint-pin-tab-description = ਟੈਬ ਨੂੰ ਪੱਟਣ ਲਈ ਸੱਜਾ ਕਲਿੱਕ ਕਰੋ।
 confirmation-hint-send-to-device = ਭੇਜੋ!
 confirmation-hint-firefox-relay-mask-created = ਨਵਾਂ ਮਾਸਕ ਬਣਾਇਆ!
 confirmation-hint-firefox-relay-mask-reused = ਮੌਜੂਦਾ ਮਸਕਾ ਮੁੜ-ਵਰਤਿਆ!
 confirmation-hint-screenshot-copied = ਸਕਰੀਨਸ਼ਾਟ ਕਾਪੀ ਕੀਤਾ!
+# Variables:
+#   $tabCount (Number): The number of duplicate tabs closed, at least 1.
+confirmation-hint-duplicate-tabs-closed =
+    { $tabCount ->
+        [one] ਬੰਦ ਕੀਤੀ { $tabCount } ਟੈਬ
+       *[other] ਬੰਦ ਕੀਤੀਆਂ { $tabCount } ਟੈਬਾਂ
+    }

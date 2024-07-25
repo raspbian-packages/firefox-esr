@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Илова кардани низом�
 newtab-topsites-add-shortcut-header = Миёнбури нав
 newtab-topsites-edit-topsites-header = Таҳрир кардани сомонаи беҳтарин
 newtab-topsites-edit-shortcut-header = Таҳрир кардани миёнбур
+newtab-topsites-add-shortcut-label = Илова кардани миёнбур
 newtab-topsites-title-label = Сарлавҳа
 newtab-topsites-title-input =
     .placeholder = Сарлавҳаро ворид намоед
@@ -196,6 +197,7 @@ newtab-section-header-recent-activity = Фаъолияти охирин
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Аз тарафи «{ $provider }» тавсия дода мешавад
+newtab-section-header-stories = Ҳикояҳои андешаангез
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -256,9 +258,6 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Миёнбурҳои сарпарастӣ
 newtab-custom-pocket-title = Аз тарафи { -pocket-brand-name } тавсия дода мешавад
 newtab-custom-pocket-subtitle = Муҳтавои мустасно аз тарафи { -pocket-brand-name }, қисми оилаи { -brand-product-name } дастгирӣ карда мешавад
-newtab-custom-pocket-toggle =
-    .label = Аз тарафи { -pocket-brand-name } тавсия дода мешавад
-    .description = Муҳтавои мустасно аз тарафи { -pocket-brand-name }, қисми оилаи { -brand-product-name } дастгирӣ карда мешавад
 newtab-custom-pocket-sponsored = Мақолаҳои сарпарастӣ
 newtab-custom-pocket-show-recent-saves = Намоиш додани маводҳои охирин
 newtab-custom-recent-title = Фаъолияти охирин
@@ -268,3 +267,7 @@ newtab-custom-recent-toggle =
     .description = Интихоби сомонаҳо ва муҳтавои охирин
 newtab-custom-close-button = Пӯшидан
 newtab-custom-settings = Идоракунии танзимоти бештар
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Тасвирҳои замина

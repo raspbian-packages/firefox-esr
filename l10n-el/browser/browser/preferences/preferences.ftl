@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Εύρεση στις ρυθμίσεις
 managed-notice = Το πρόγραμμα περιήγησής σας ρυθμίζεται από τον οργανισμό σας.
+managed-notice-info-icon =
+    .alt = Πληροφορίες
 category-list =
     .aria-label = Κατηγορίες
 pane-general-title = Γενικά
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Αφαίρεση θεματικής ενότητας
 containers-remove-cancel-button = Διατήρηση θεματικής ενότητας
+settings-tabs-show-image-in-preview =
+    .label = Εμφάνιση προεπισκόπησης εικόνας όταν τοποθετείτε τον δείκτη του ποντικιού σε μια καρτέλα
+    .accessKey = μ
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Οι επιλογές χρωμάτων σας υπερισχύουν της εμφάνισης του ιστοτόπου. <a data-l10n-name="colors-link">Διαχείριση χρωμάτων</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Οι επιλογές χρωμάτων σας υπερισχύουν της εμφάνισης του ιστοτόπου.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Διαχειριστείτε τα θέματα του { -brand-short-name } στην ενότητα <a data-l10n-name="themes-link">Επεκτάσεις και θέματα</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Ζουμ μόνο στο κείμενο
     .accesskey = κ
+preferences-text-zoom-override-warning =
+    .message = Προειδοποίηση: Εάν επιλέξετε «Ζουμ μόνο στο κείμενο» και το προεπιλεγμένο ζουμ δεν έχει οριστεί στο 100%, ενδέχεται να προκληθεί δυσλειτουργία σε ορισμένους ιστοτόπους ή περιεχόμενο.
 language-header = Γλώσσα
 choose-language-description = Επιλέξτε την προτιμώμενη γλώσσα για την εμφάνιση σελίδων
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Προτάσεις του { $provider }
 home-prefs-recommended-by-description-new = Εξαιρετικό περιεχόμενο από το { $provider }, μέρος της οικογένειας του { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Προτεινόμενα άρθρα
+home-prefs-recommended-by-description-generic = Εξαιρετικό περιεχόμενο από την οικογένεια του { -brand-product-name }
 
 ##
 
@@ -629,7 +643,7 @@ search-show-search-term-option =
 # "ahead" refers to location (appearing most proximate to), not time
 # (appearing before).
 search-show-suggestions-above-history-option =
-    .label = Εμφάνιση προτάσεων αναζήτησης πριν το ιστορικό περιήγησης στα αποτελέσματα γραμμής διευθύνσεων
+    .label = Εμφάνιση προτάσεων αναζήτησης πριν από το ιστορικό περιήγησης στα αποτελέσματα γραμμής διευθύνσεων
 search-show-suggestions-private-windows =
     .label = Εμφάνιση προτάσεων αναζήτησης σε ιδιωτικά παράθυρα
 suggestions-addressbar-settings-generic2 = Αλλαγή ρυθμίσεων για άλλες προτάσεις της γραμμής διευθύνσεων
@@ -696,6 +710,13 @@ sync-mobile-promo = Κάντε λήψη του Firefox για <img data-l10n-na
 
 sync-profile-picture =
     .tooltiptext = Αλλαγή εικόνας προφίλ
+sync-profile-picture-with-alt =
+    .tooltiptext = Αλλαγή εικόνας προφίλ
+    .alt = Αλλαγή εικόνας προφίλ
+sync-profile-picture-account-problem =
+    .alt = Εικόνα προφίλ λογαριασμού
+fxa-login-rejected-warning =
+    .alt = Προειδοποίηση
 sync-sign-out =
     .label = Αποσύνδεση…
     .accesskey = ν
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Διαγραφή cookie και δεδομένων ιστοτόπων όταν κλείνει το { -brand-short-name }
     .accesskey = c
 sitedata-delete-on-close-private-browsing = Στη λειτουργία μόνιμης ιδιωτικής περιήγησης, τα cookie και τα δεδομένα ιστοτόπων θα διαγράφονται πάντα όταν κλείνει το { -brand-short-name }.
+sitedata-delete-on-close-private-browsing2 = Βάσει των ρυθμίσεων ιστορικού σας, το { -brand-short-name } διαγράφει τα cookie και τα δεδομένα ιστοτόπων από τη συνεδρία σας όταν κλείνετε το πρόγραμμα περιήγησης.
 sitedata-allow-cookies-option =
     .label = Αποδοχή cookie και δεδομένων ιστοτόπων
     .accesskey = Α
@@ -1050,36 +1072,36 @@ cookie-banner-blocker-checkbox-label =
 ## Privacy Section - Address Bar
 
 addressbar-header = Γραμμή διευθύνσεων
-addressbar-suggest = Κατά τη χρήση της γραμμής διευθύνσεων, να γίνεται πρόταση
+addressbar-suggest = Κατά τη χρήση της γραμμής διευθύνσεων, να γίνονται προτάσεις από
 addressbar-locbar-history-option =
-    .label = Ιστορικού περιήγησης
+    .label = Ιστορικό περιήγησης
     .accesskey = Ι
 addressbar-locbar-bookmarks-option =
-    .label = Σελιδοδεικτών
-    .accesskey = δ
+    .label = Σελιδοδείκτες
+    .accesskey = κ
 addressbar-locbar-clipboard-option =
-    .label = Προχείρου
+    .label = Πρόχειρο
     .accesskey = Π
 addressbar-locbar-openpage-option =
-    .label = Ανοικτών καρτελών
-    .accesskey = Ο
+    .label = Ανοικτές καρτέλες
+    .accesskey = ν
 # Shortcuts refers to the shortcut tiles on the new tab page, previously known as top sites. Translation should be consistent.
 addressbar-locbar-shortcuts-option =
-    .label = Συντομεύσεων
+    .label = Συντομεύσεις
     .accesskey = Σ
 addressbar-locbar-topsites-option =
-    .label = Κορυφαίων ιστοτόπων
+    .label = Κορυφαίους ιστοτόπους
     .accesskey = Κ
 addressbar-locbar-engines-option =
-    .label = Μηχανών αναζήτησης
+    .label = Μηχανές αναζήτησης
     .accesskey = α
 addressbar-locbar-quickactions-option =
-    .label = Γρήγορων ενεργειών
+    .label = Γρήγορες ενέργειες
     .accesskey = Γ
+addressbar-suggestions-settings = Αλλαγή προτιμήσεων για τις προτάσεις μηχανών αναζήτησης
 addressbar-locbar-showrecentsearches-option =
     .label = Εμφάνιση πρόσφατων αναζητήσεων
     .accesskey = φ
-addressbar-suggestions-settings = Αλλαγή προτιμήσεων για τις προτάσεις μηχανών αναζήτησης
 addressbar-quickactions-learn-more = Μάθετε περισσότερα
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = Μάθετε περισσότερα
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Η αναφορά δεδομένων είναι ανενεργή για αυτήν τη ρύθμιση δομής
 collection-backlogged-crash-reports-with-link = Να επιτρέπεται στο { -brand-short-name } η αποστολή αναφορών καταρρεύσεων με καθυστέρηση <a data-l10n-name="crash-reports-link">Μάθετε περισσότερα</a>
+    .accesskey = κ
+collection-backlogged-crash-reports = Να επιτρέπεται στο { -brand-short-name } η αποστολή αναφορών καταρρεύσεων με καθυστέρηση
     .accesskey = κ
 privacy-segmentation-section-header = Νέες λειτουργίες που βελτιώνουν την περιήγησή σας
 privacy-segmentation-section-description = Όταν προσφέρουμε λειτουργίες που χρησιμοποιούν τα δεδομένα σας για μια πιο εξατομικευμένη εμπειρία:

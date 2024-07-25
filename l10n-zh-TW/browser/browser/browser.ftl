@@ -201,7 +201,7 @@ full-screen-exit =
 
 # This string prompts the user to use the list of search shortcuts in
 # the Urlbar and searchbar.
-search-one-offs-with-title = 這次使用下列搜尋引擎搜尋:
+search-one-offs-with-title = 這次使用下列搜尋引擎搜尋：
 search-one-offs-change-settings-compact-button =
     .tooltiptext = 修改搜尋設定
 search-one-offs-context-open-new-tab =
@@ -567,6 +567,11 @@ urlbar-result-action-search-w-engine = 使用 { $engine } 進行搜尋
 urlbar-result-action-sponsored = 贊助項目
 urlbar-result-action-switch-tab = 切換至該分頁
 urlbar-result-action-visit = 前往
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = 切換到分頁 · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = 開啟剪貼簿中的網址
 # Directs a user to press the Tab key to perform a search with the specified
@@ -596,6 +601,12 @@ urlbar-result-action-copy-to-clipboard = 複製
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = 使用 { $engine } 進行搜尋
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -891,6 +902,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>想開啟先前的分頁？</strong>您可以從 { -brand-short-name } 應用程式選單 <img data-l10n-name="icon"/> 當中的「歷史」重新開啟先前的瀏覽階段。
 restore-session-startup-suggestion-button = 告訴我怎麼做
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = 您的組織已封鎖存取此電腦中的本機檔案。
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } 將會自動傳送一些資料給 { -vendor-short-name }，讓我們能夠改善您的使用體驗。
@@ -899,6 +914,15 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = 隱私瀏覽
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = 由 { $agentName } 提供資料遺失保護（DLP）功能。點擊此處即可取得更多資訊。
+content-analysis-panel-title = 資料保護
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = 您的組織使用 { $agentName } 來防止資料遺失。<a data-l10n-name="info">更多資訊</a>
 
 ## Unified extensions (toolbar) button
 

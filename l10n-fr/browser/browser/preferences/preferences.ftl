@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 19em
     .placeholder = Rechercher dans les paramètres
 managed-notice = Votre navigateur est géré par votre organisation.
+managed-notice-info-icon =
+    .alt = Informations
 category-list =
     .aria-label = Catégories
 pane-general-title = Général
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Supprimer ce conteneur
 containers-remove-cancel-button = Ne pas supprimer ce conteneur
+settings-tabs-show-image-in-preview =
+    .label = Afficher un aperçu au survol des onglets
+    .accessKey = A
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Vos sélections de couleurs changent l’apparence des sites web. <a data-l10n-name="colors-link">Gérer les couleurs</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Vos sélections de couleurs changent l’apparence des sites web.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Gérez les thèmes de { -brand-short-name } depuis la section <a data-l10n-name="themes-link">Extensions et thèmes</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Agrandir uniquement le texte
     .accesskey = A
+preferences-text-zoom-override-warning =
+    .message = Attention : si vous sélectionnez « Agrandir uniquement le texte » et que votre zoom par défaut n’est pas réglé sur 100 %, certains sites ou contenus peuvent ne pas fonctionner correctement.
 language-header = Langue
 choose-language-description = Choix de la langue préférée pour l’affichage des pages
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Recommandations par { $provider }
 home-prefs-recommended-by-description-new = Contenu exceptionnel sélectionné par { $provider }, membre de la famille { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Articles recommandés
+home-prefs-recommended-by-description-generic = Contenu exceptionnel sélectionné par les membres de la gamme de produits { -brand-product-name }
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Téléchargez Firefox pour <img data-l10n-name="android-icon
 
 sync-profile-picture =
     .tooltiptext = Changer la photo de profil
+sync-profile-picture-with-alt =
+    .tooltiptext = Changer la photo de profil
+    .alt = Changer la photo de profil
+sync-profile-picture-account-problem =
+    .alt = Image de profil du compte
+fxa-login-rejected-warning =
+    .alt = Avertissement
 sync-sign-out =
     .label = Se déconnecter…
     .accesskey = d
@@ -939,10 +960,10 @@ autofill-saved-payment-methods-button = Moyens de paiement enregistrés
     .accesskey = M
 autofill-reauth-checkbox =
     { PLATFORM() ->
-        [macos] Exiger l’authentification macOS pour remplir ou modifier les méthodes de paiement.
-        [windows] Exiger l’authentification Windows pour remplir ou modifier les méthodes de paiement.
-        [linux] Exiger l’authentification Linux pour remplir ou modifier les méthodes de paiement.
-       *[other] Exiger une authentification pour remplir ou modifier les méthodes de paiement.
+        [macos] Exiger l’authentification macOS pour remplir ou modifier les moyens de paiement.
+        [windows] Exiger l’authentification Windows pour remplir ou modifier les moyens de paiement.
+        [linux] Exiger l’authentification Linux pour remplir ou modifier les moyens de paiement.
+       *[other] Exiger une authentification pour remplir ou modifier les moyens de paiement.
     }
     .accesskey = p
 
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Supprimer les cookies et les données des sites à la fermeture de { -brand-short-name }
     .accesskey = S
 sitedata-delete-on-close-private-browsing = En mode de navigation privée permanent, les cookies et les données de site sont toujours effacés à la fermeture de { -brand-short-name }.
+sitedata-delete-on-close-private-browsing2 = En fonction de vos paramètres d’historique, { -brand-short-name } supprime les cookies et les données de site de votre session lorsque vous fermez le navigateur.
 sitedata-allow-cookies-option =
     .label = Accepter les cookies et les données de site
     .accesskey = A
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Les actions rapides
     .accesskey = a
+addressbar-suggestions-settings = Modifier les préférences pour les suggestions de recherche
 addressbar-locbar-showrecentsearches-option =
     .label = Afficher les recherches récentes
     .accesskey = r
-addressbar-suggestions-settings = Modifier les préférences pour les suggestions de recherche
 addressbar-quickactions-learn-more = En savoir plus
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = En savoir plus
 # or builds with no Telemetry support available.
 collection-health-report-disabled = L’envoi de données est désactivé pour cette configuration de compilation
 collection-backlogged-crash-reports-with-link = Autoriser { -brand-short-name } à envoyer des rapports de plantage en attente en votre nom <a data-l10n-name="crash-reports-link">En savoir plus</a>
+    .accesskey = v
+collection-backlogged-crash-reports = Autoriser { -brand-short-name } à envoyer des rapports de plantage en attente en votre nom
     .accesskey = v
 privacy-segmentation-section-header = De nouvelles fonctionnalités qui améliorent votre navigation
 privacy-segmentation-section-description = Lorsque nous proposons des fonctionnalités qui utilisent vos données pour vous offrir une expérience plus personnelle :

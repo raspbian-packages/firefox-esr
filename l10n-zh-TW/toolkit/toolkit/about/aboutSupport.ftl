@@ -203,6 +203,9 @@ media-cdm-capabilities = 系統能力
 # are not encrypted. It allows playback to start without having to wait for
 # license response, improving video start time and user experience.
 media-cdm-clear-lead = 不加密片頭（Clear Lead）
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = HDCP 2.2 相容
 
 ##
 
@@ -262,6 +265,7 @@ try-newer-driver = 因為您的顯示卡驅動程式版本過舊，已封鎖此�
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType 參數
 compositing = 合成
+support-font-determination = 字型可見度除錯資訊
 hardware-h264 = H264 硬體解碼
 main-thread-no-omtc = 主執行緒，無 OMTC
 yes = 是
@@ -407,3 +411,15 @@ pointing-device-mouse = 滑鼠
 pointing-device-touchscreen = 觸控螢幕
 pointing-device-pen-digitizer = 繪圖板
 pointing-device-none = 無指向裝置
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = 內容分析（DLP）
+content-analysis-active = 使用中
+content-analysis-connected-to-agent = 已連線到代理程式
+content-analysis-agent-path = 代理程式路徑
+content-analysis-agent-failed-signature-verification = 代理程式簽章驗證失敗
+content-analysis-request-count = 請求數量

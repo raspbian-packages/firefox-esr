@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Шукаць у наладах
 managed-notice = Вашым браўзерам кіруе ваша арганізацыя.
+managed-notice-info-icon =
+    .alt = інфармацыя
 category-list =
     .aria-label = Катэгорыі
 pane-general-title = Агульныя
@@ -206,6 +208,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Выдаліць гэты кантэйнер
 containers-remove-cancel-button = Не выдаляць гэты кантэйнер
+settings-tabs-show-image-in-preview =
+    .label = Паказваць папярэдні прагляд выявы пры навядзенні курсора на картку
+    .accessKey = р
 
 ## General Section - Language & Appearance
 
@@ -230,6 +235,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Ваш выбар колераў мае перавагу над знешнім выглядам вэб-сайта. <a data-l10n-name="colors-link">Кіраваць колерамі</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Ваш выбар колераў мае перавагу над знешнім выглядам вэб-сайта.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Кіруйце тэмамі { -brand-short-name } у <a data-l10n-name="themes-link">пашырэннях і тэмах</a>
@@ -257,6 +266,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Павялічваць толькі тэкст
     .accesskey = т
+preferences-text-zoom-override-warning =
+    .message = Папярэджанне: калі вы выбіраеце «Павялічваць толькі тэкст», а ваш прадвызначаны маштаб не ўсталяваны на 100%, гэта можа прывесці да няспраўнасці некаторых сайтаў або змесціва.
 language-header = Мова
 choose-language-description = Выберыце мовы, якім вы аддаяце перавагу, для прагляду старонак
 choose-button =
@@ -562,6 +573,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Рэкамендавана { $provider }
 home-prefs-recommended-by-description-new = Выключнае змесціва, куратарам якога з'яўляецца { $provider }, частка сям'і { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Рэкамендаваныя гісторыі
+home-prefs-recommended-by-description-generic = Выключнае змесціва, курыраванае сям'ёй { -brand-product-name }
 
 ##
 
@@ -700,6 +714,13 @@ sync-mobile-promo = Сцягніце Firefox для <img data-l10n-name="android
 
 sync-profile-picture =
     .tooltiptext = Змяніць профільную выяву
+sync-profile-picture-with-alt =
+    .tooltiptext = Змяніць профільную выяву
+    .alt = Змяніць профільную выяву
+sync-profile-picture-account-problem =
+    .alt = Фота профілю ўліковага запісу
+fxa-login-rejected-warning =
+    .alt = Папярэджанне
 sync-sign-out =
     .label = Выйсці…
     .accesskey = і
@@ -1004,6 +1025,7 @@ sitedata-delete-on-close =
     .label = Выдаляць кукі і звесткі сайтаў па закрыцці { -brand-short-name }
     .accesskey = с
 sitedata-delete-on-close-private-browsing = У рэжыме сталага прыватнага аглядання кукі і звесткі сайтаў будуць заўсёды выдаляцца па закрыцці { -brand-short-name }.
+sitedata-delete-on-close-private-browsing2 = На падставе вашых налад гісторыі { -brand-short-name } выдаляе кукі і звесткі сайтаў з вашага сеансу, калі вы закрываеце браўзер.
 sitedata-allow-cookies-option =
     .label = Прымаць кукі і звесткі сайтаў
     .accesskey = П
@@ -1080,10 +1102,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Хуткія дзеянні
     .accesskey = Х
+addressbar-suggestions-settings = Змяніць налады для падказак пашукавіка
 addressbar-locbar-showrecentsearches-option =
     .label = Паказваць апошнія пошукі
     .accesskey = к
-addressbar-suggestions-settings = Змяніць налады для падказак пашукавіка
 addressbar-quickactions-learn-more = Падрабязней
 
 ## Privacy Section - Content Blocking
@@ -1265,6 +1287,8 @@ addon-recommendations-link = Падрабязней
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Адпраўка дадзеных адключана для гэтай канфігурацыі зборкі
 collection-backlogged-crash-reports-with-link = Дазволіць { -brand-short-name } адсылаць запісаныя справаздачы аб збоях ад вашага імя <a data-l10n-name="crash-reports-link">Падрабязней</a>
+    .accesskey = с
+collection-backlogged-crash-reports = Дазволіць { -brand-short-name } адсылаць запісаныя справаздачы аб збоях ад вашага імя
     .accesskey = с
 privacy-segmentation-section-header = Новыя функцыі, якія паляпшаюць ваша агляданне
 privacy-segmentation-section-description = Калі мы прапануем функцыі, якія выкарыстоўваюць вашы дадзеныя, каб даць вам больш персаналізаваны досвед:

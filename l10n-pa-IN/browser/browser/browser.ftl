@@ -575,6 +575,11 @@ urlbar-result-action-search-w-engine = { $engine } ਨਾਲ ਖੋਜੋ
 urlbar-result-action-sponsored = ਸਪੌਂਸਰ ਕੀਤਾ
 urlbar-result-action-switch-tab = ਟੈਬ ਲਈ ਸਵਿੱਚ ਕਰੋ
 urlbar-result-action-visit = ਖੋਲ੍ਹੋ
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = ਟੈਬ ਉੱਤੇ ਜਾਓ· <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = ਕਲਿੱਪਬੋਰਡ ਤੋਂ ਖੋਲ੍ਹੋ
 # Directs a user to press the Tab key to perform a search with the specified
@@ -604,6 +609,12 @@ urlbar-result-action-copy-to-clipboard = ਕਾਪੀ ਕਰੋ
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = { $engine } ਨਾਲ ਖੋਜੋ
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -899,6 +910,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>ਪਿਛਲੀਆਂ ਟੈਬਾਂ ਖੋਲ੍ਹਣੀਆਂ ਹਨ?</strong> ਤੁਸੀਂ ਪਿਛਲੇ ਸ਼ੈਸ਼ਨ ਨੂੰ { -brand-short-name } ਐਪਲੀਕੇਸ਼ਨ ਮੇਨੂ <img data-l10n-name="icon"/> ਤੋਂ ਅਤੀਤ ਵਿੱਚੋਂ ਪਿਛਲੇ ਸ਼ੈਸ਼ਨ ਨੂੰ ਬਹਾਲ ਕਰ ਸਕਦੇ ਹੋ।
 restore-session-startup-suggestion-button = ਮੈਨੂੰ ਦੇਖਾਇਓ ਕਿਵੇਂ
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = ਤੁਹਾਡਾ ਸੰਗਠਨ ਨੇ ਇਸ ਕੰਪਿਊਟਰ ਉੱਤੇ ਲੋਕਲ ਫਾਇਲਾਂ ਲਈ ਪਹੁੰਚ ਉੱਤੇ ਪਾਬੰਦੀ ਲਗਾਈ ਹੈ।
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } ਆਪਣੇ-ਆਪ ਹੀ ਕੁਝ ਡਾਟਾ { -vendor-short-name } ਭੇਜਦਾ ਹੈ ਤਾਂ ਕਿ ਅਸੀਂ ਤੁਹਾਡੇ ਤਜਰਬੇ ਨੂੰ ਵਧੀਆ ਬਣਾ ਸਕੀਏ।
@@ -907,6 +922,15 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = { $agentName } ਵਲੋਂ ਡਾਟਾ ਨੁਕਸਾਨ ਰੋਕੂ (DLP)। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਕਲਿੱਕ ਕਰੋ।
+content-analysis-panel-title = ਡਾਟਾ ਰੋਕੂ
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = ਤੁਹਾਡਾ ਸੰਗਠਨ { $agentName } ਨੂੰ ਡਾਟਾ ਨੁਕਸਾਨ ਤੋਂ ਰੋਕਣ ਲਈ ਸੁਰੱਖਿਆ ਲਈ ਵਰਤਦੀ ਹੈ। <a data-l10n-name="info">ਹੋਰ ਜਾਣੋ</a>
 
 ## Unified extensions (toolbar) button
 

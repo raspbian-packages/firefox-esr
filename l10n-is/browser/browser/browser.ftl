@@ -182,10 +182,10 @@ urlbar-star-add-bookmark =
 ## Page Action Context Menu
 
 page-action-manage-extension2 =
-    .label = Sýsla með viðbót…
+    .label = Sýsla með forritsauka…
     .accesskey = e
 page-action-remove-extension2 =
-    .label = Fjarlægja viðbót
+    .label = Fjarlægja forritsauka
     .accesskey = F
 
 ## Auto-hide Context Menu
@@ -352,7 +352,7 @@ identity-connection-failure = Tenging mistókst
 identity-connection-internal = Þetta er örugg { -brand-short-name } síða.
 identity-connection-file = Þessi síða er vistuð á tölvunni þinni.
 identity-connection-associated = Þessari síðu er hlaðið inn af annarri síðu.
-identity-extension-page = Þessari síðu er hlaðið inn af viðbót.
+identity-extension-page = Þessari síðu er hlaðið inn af forritsauka.
 identity-active-blocked = { -brand-short-name } hefur lokað á suma hluta á þessari síðu sem eru ekki öruggir.
 identity-custom-root = Tenging staðfest af útgefanda skilríkis sem ekki er viðurkennt af Mozilla.
 identity-passive-loaded = Sumir hlutir á þessari síðu eru ekki öruggir (eins og myndir).
@@ -545,7 +545,7 @@ urlbar-switch-to-tab =
     .value = Fara á flipa:
 # Used to indicate that a selected autocomplete entry is provided by an extension.
 urlbar-extension =
-    .value = Viðbót:
+    .value = Forritsauki:
 urlbar-go-button =
     .tooltiptext = Hoppa á tengilinn sem er í veffangastikunni
 urlbar-page-action-button =
@@ -570,6 +570,11 @@ urlbar-result-action-search-w-engine = Leita með { $engine }
 urlbar-result-action-sponsored = Kostað
 urlbar-result-action-switch-tab = Fara á flipa
 urlbar-result-action-visit = Heimsækja
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Skipta á flipann · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Heimsækja af klippispjaldinu
 # Directs a user to press the Tab key to perform a search with the specified
@@ -599,6 +604,12 @@ urlbar-result-action-copy-to-clipboard = Afrita
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Leita með { $engine }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -894,6 +905,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Opna fyrri flipa?</strong> Þú getur endurheimt fyrri lotu þína úr { -brand-short-name } forritavalmyndinni <img data-l10n-name="icon"/>, undir Ferill-færslunni.
 restore-session-startup-suggestion-button = Sýna mér hvernig
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Stofnunin/fyrirtækið þitt hefur lokað fyrir aðgang að staðbundnum skrám á þessari tölvu
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } sendir sjálfkrafa gögn til { -vendor-short-name } til að hægt sé að betrumbæta vafrann.
@@ -902,6 +917,15 @@ data-reporting-notification-button =
     .accesskey = V
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Huliðsvafur
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Gagnatapsvörn (DLP) með { $agentName }. Smelltu til að fá frekari upplýsingar.
+content-analysis-panel-title = Gagnavarnir
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Stofnunin þín notar { $agentName } til að verjast gagnatapi. <a data-l10n-name="info">Frekari upplýsingar</a>
 
 ## Unified extensions (toolbar) button
 

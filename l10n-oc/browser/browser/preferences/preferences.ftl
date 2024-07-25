@@ -202,6 +202,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Suprimir aqueste contenedor
 containers-remove-cancel-button = Suprimir pas aqueste contenedor
+settings-tabs-show-image-in-preview =
+    .label = Afichar un apercebut al subrevòl dels onglets
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -226,6 +229,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Vòstras seleccion de colors subrecargan l’aparéncia dels sites web. <a data-l10n-name="colors-link">Gerir las colors</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Vòstras seleccion de colors subrecargan l’aparéncia dels sites web.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Gerissètz los tèmas de { -brand-short-name } dins <a data-l10n-name="themes-link">Extensions e tèma</a>
@@ -465,6 +472,9 @@ browsing-use-smooth-scrolling =
 browsing-gtk-use-non-overlay-scrollbars =
     .label = Totjorn afichar las barras de defilaments
     .accesskey = o
+browsing-always-underline-links =
+    .label = Totjorn soslinhar los ligams
+    .accesskey = u
 browsing-use-onscreen-keyboard =
     .label = Mostrar un clavièr tactil quand es necessari
     .accesskey = t
@@ -605,6 +615,9 @@ search-suggestions-desc = Causissètz cossí apareisseràn las suggestions dels 
 search-suggestions-option =
     .label = Mostrar de suggestions de recèrca
     .accesskey = A
+search-show-suggestions-option =
+    .label = Mostrar las suggestions de recèrca
+    .accesskey = M
 search-show-suggestions-url-bar-option =
     .label = Mostrar las suggestions dins los resultats de la barra d'adreça
     .accesskey = l
@@ -686,6 +699,9 @@ sync-mobile-promo = Telecargatz Firefox per <img data-l10n-name="android-icon"/>
 
 sync-profile-picture =
     .tooltiptext = Cambiar la fòto de perfil de l'utilizaire
+sync-profile-picture-with-alt =
+    .tooltiptext = Cambiar la fòto de perfil de l'utilizaire
+    .alt = Cambiar la fòto de perfil de l'utilizaire
 sync-sign-out =
     .label = Se desconnectar
     .accesskey = d
@@ -784,6 +800,10 @@ sync-engine-creditcards =
     .label = Cartas de crèdit
     .tooltiptext = Noms, numeròs e data d’expiracion (pas qu’al ordenador)
     .accesskey = C
+sync-engine-payment-methods2 =
+    .label = Metòdes de pagament
+    .tooltiptext = Noms, numèros de carta e datas d’expiracion
+    .accesskey = n
 sync-engine-addons =
     .label = los moduls complementaris
     .tooltiptext = Extensions e tèmas per Firefox per ordenador
@@ -830,12 +850,26 @@ pane-privacy-logins-and-passwords-header = Identificants e senhals
 forms-ask-to-save-logins =
     .label = Demandar per salvar los identificants e senhals dels sites
     .accesskey = r
+
+## Privacy Section - Passwords
+
+# "Logins" is the former term for "Passwords". Users should find password settings
+# by searching for the former term "logins". It's not displayed in the UI.
+pane-privacy-passwords-header = Senhals
+    .searchkeywords = identificants
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
+forms-ask-to-save-passwords =
+    .label = Prepausar d’enregistrar los senhals
+    .accesskey = P
 forms-exceptions =
     .label = Excepcions…
     .accesskey = x
 forms-generate-passwords =
     .label = Suggerir e generar de senhals fòrts
     .accesskey = u
+forms-suggest-passwords =
+    .label = Suggerir un senhal fòrt
+    .accesskey = S
 forms-breach-alerts =
     .label = Afichar las alèrtas pels senhals dels sites concernits per de pèrdas de donadas
     .accesskey = A
@@ -850,6 +884,9 @@ forms-fill-logins-and-passwords =
 forms-saved-logins =
     .label = Identificants salvats…
     .accesskey = S
+forms-saved-passwords =
+    .label = Senhals salvats
+    .accesskey = n
 forms-primary-pw-use =
     .label = Utilizar un senhal principal
     .accesskey = U
@@ -885,6 +922,18 @@ primary-password-os-auth-dialog-message-win = Per crear un senhal principal, pic
 primary-password-os-auth-dialog-message-macosx = crear un senhal principal
 master-password-os-auth-dialog-caption = { -brand-full-name }
 
+## Privacy section - Autofill
+
+pane-privacy-autofill-header = Emplenament automatic
+autofill-addresses-checkbox = Salvar e emplenar automaticament las adreças
+    .accesskey = a
+autofill-saved-addresses-button = Adreças salvadas
+    .accesskey = A
+autofill-payment-methods-checkbox-message = Enregistrar e entresenhar los metòdes de pagament
+    .accesskey = m
+autofill-saved-payment-methods-button = Metòdes de pagament enregistrats
+    .accesskey = e
+
 ## Privacy Section - History
 
 history-header = Istoric
@@ -914,7 +963,7 @@ history-remember-browser-option =
     .label = Servar l'istoric de navegacion e dels telecargaments
     .accesskey = i
 history-remember-search-option =
-    .label = Conservar l'istoric de las recèrcas e dels formularis
+    .label = Servar l'istoric de las recèrcas e dels formularis
     .accesskey = f
 history-clear-on-close-option =
     .label = Voidar l'istoric quand { -brand-short-name } se tampa
@@ -1014,10 +1063,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Accions rapidas
     .accesskey = A
+addressbar-suggestions-settings = Cambiar las preferéncias per las suggestions del motor de recèrca
 addressbar-locbar-showrecentsearches-option =
     .label = Afichar las recèrcas recentas
     .accesskey = r
-addressbar-suggestions-settings = Cambiar las preferéncias per las suggestions del motor de recèrca
 addressbar-quickactions-learn-more = Ne saber mai
 
 ## Privacy Section - Content Blocking
@@ -1195,6 +1244,8 @@ addon-recommendations-link = Ne saber mai
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Lo rapòrt de donadas es desactivat per aquela configuracion de compilacion
 collection-backlogged-crash-reports-with-link = Autorizar { -brand-short-name } a enviar de rapòrt de plantatge en espèra a vòstre nom <a data-l10n-name="crash-reports-link">Ne saber mai</a>
+    .accesskey = A
+collection-backlogged-crash-reports = Autorizar { -brand-short-name } a enviar de rapòrt de plantatge en espèra a vòstre nom
     .accesskey = A
 privacy-segmentation-section-header = Foncionalitats novèlas per melhorar vòstra navegacion
 privacy-segmentation-section-description = Quand propausam foncionalitats qu’utilizan vòstras donadas per vos provesir una experiéncia mai personala :

@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Ymportearje út { $prev
 mr1-onboarding-theme-header = Meitsje it fan josels
 mr1-onboarding-theme-subtitle = Personalisearje { -brand-short-name } mei in tema.
 mr1-onboarding-theme-secondary-button-label = No net
+newtab-wallpaper-onboarding-title = Probearje in bytsje kleur
+newtab-wallpaper-onboarding-subtitle = Kies in eftergrûn om jo Nij-ljepblêdside in frisse útstrieling te jaan.
+newtab-wallpaper-onboarding-primary-button-label = Eftergrûn ynstelle
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Systeemtema
 mr1-onboarding-theme-label-light = Ljocht
@@ -344,3 +347,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Wannear’t jo syngro
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } is der foar jo
 onboarding-gratitude-security-and-privacy-subtitle = Tank foar it brûken fan { -brand-short-name }, stipe troch de Mozilla Foundation. Mei jo stipe wurkje wy om it ynternet  foar elkenien feiliger en mear tagonklik te meitsjen.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Hoe lang brûke jo { -brand-short-name } al?
+onboarding-new-user-familiarity-based-survey-title = Hoe bekend binne jo mei { -brand-short-name }?
+onboarding-new-user-survey-subtitle = Jo feedback helpt { -brand-short-name } noch better te meitsjen.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Folgjende
+onboarding-new-user-survey-legal-link-label = Troch ‘{ onboarding-new-user-survey-next-button-label }’ te selektearjen, geane jo akkoard mei de <a data-l10n-name="privacy_notice">Privacyferklearring</a> fan { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Ik bin hielendal nij
+onboarding-new-user-survey-time-based-option-2 = Minder as in moanne
+onboarding-new-user-survey-time-based-option-3 = Mear as in moanne, regelmjittich
+onboarding-new-user-survey-time-based-option-4 = Mear as in moanne, sa no en dan
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Ik bin hielendal nij
+onboarding-new-user-survey-familiarity-based-option-2 = Ik haw it wat brûkt
+onboarding-new-user-survey-familiarity-based-option-3 = Ik bin der tige bekend mei
+onboarding-new-user-survey-familiarity-based-option-4 = Ik haw it yn it ferline brûkt, mar it is in tydsje lyn

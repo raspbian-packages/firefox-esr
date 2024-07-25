@@ -20,6 +20,7 @@
 -lockwise-brand-short-name = Lockwise
 -monitor-brand-name = Firefox Monitor
 -monitor-brand-short-name = Monitor
+-mozmonitor-brand-name = Mozilla Monitor
 -pocket-brand-name = Pocket
 -send-brand-name = Firefox Send
 -screenshots-brand-name = Firefox Screenshots
@@ -36,7 +37,7 @@
 -fakespot-brand-full-name = Fakespot från Mozilla
 # “Suggest” can be localized, “Firefox” must be treated as a brand
 # and kept in English.
--firefox-suggest-brand-name = Firefox-förslag
+-firefox-suggest-brand-name = Firefox Suggest
 # ”Home" can be localized, “Firefox” must be treated as a brand
 # and kept in English.
 -firefox-home-brand-name = Firefox startsida

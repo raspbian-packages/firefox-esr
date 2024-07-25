@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Εισαγωγή από
 mr1-onboarding-theme-header = Κάντε το δικό σας
 mr1-onboarding-theme-subtitle = Εξατομικεύστε το { -brand-short-name } με ένα θέμα.
 mr1-onboarding-theme-secondary-button-label = Όχι τώρα
+newtab-wallpaper-onboarding-title = Δοκιμάστε μια πινελιά χρώματος
+newtab-wallpaper-onboarding-subtitle = Επιλέξτε μια ταπετσαρία για να δώσετε μια νέα εμφάνιση στη νέα σας καρτέλα.
+newtab-wallpaper-onboarding-primary-button-label = Ορισμός ταπετσαρίας
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Θέμα συστήματος
 mr1-onboarding-theme-label-light = Ανοιχτόχρωμο
@@ -343,3 +346,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Όταν κάνετε
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = Το { -brand-short-name } στο πλευρό σας
 onboarding-gratitude-security-and-privacy-subtitle = Σας ευχαριστούμε που χρησιμοποιείτε το { -brand-short-name }, που υποστηρίζεται από το Mozilla Foundation. Με την υποστήριξή σας, εργαζόμαστε για να κάνουμε το διαδίκτυο ασφαλέστερο και πιο προσβάσιμο για όλους.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Πόσο καιρό χρησιμοποιείτε το { -brand-short-name };
+onboarding-new-user-familiarity-based-survey-title = Πόσο εξοικειωμένοι είστε με το { -brand-short-name };
+onboarding-new-user-survey-subtitle = Τα σχόλιά σας κάνουν το { -brand-short-name } ακόμα καλύτερο.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Επόμενο
+onboarding-new-user-survey-legal-link-label = Επιλέγοντας «{ onboarding-new-user-survey-next-button-label }», συμφωνείτε με τη <a data-l10n-name="privacy_notice">Σημείωση απορρήτου</a> του { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Είμαι αρχάριος
+onboarding-new-user-survey-time-based-option-2 = Λιγότερο από ένα μήνα
+onboarding-new-user-survey-time-based-option-3 = Περισσότερο από ένα μήνα, τακτικά
+onboarding-new-user-survey-time-based-option-4 = Περισσότερο από ένα μήνα, περιστασιακά
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Είμαι αρχάριος
+onboarding-new-user-survey-familiarity-based-option-2 = Το έχω χρησιμοποιήσει λίγο
+onboarding-new-user-survey-familiarity-based-option-3 = Είμαι πολύ εξοικειωμένος με αυτό
+onboarding-new-user-survey-familiarity-based-option-4 = Το χρησιμοποιούσα στο παρελθόν, αλλά έχει περάσει καιρός

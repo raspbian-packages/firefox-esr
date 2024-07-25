@@ -41,16 +41,16 @@ reload-tabs =
     .accesskey = r
 pin-tab =
     .label = Pripnúť kartu
-    .accesskey = r
+    .accesskey = i
 unpin-tab =
     .label = Zrušiť pripnutie karty
-    .accesskey = r
+    .accesskey = i
 pin-selected-tabs =
     .label = Pripnúť karty
     .accesskey = P
 unpin-selected-tabs =
     .label = Zrušiť pripnutie kariet
-    .accesskey = r
+    .accesskey = i
 bookmark-selected-tabs =
     .label = Pridať karty medzi záložky…
     .accesskey = a
@@ -72,6 +72,9 @@ move-to-new-window =
 tab-context-close-multiple-tabs =
     .label = Zavrieť viaceré karty
     .accesskey = c
+tab-context-close-duplicate-tabs =
+    .label = Zavrieť duplicitné karty
+    .accesskey = u
 tab-context-share-url =
     .label = Zdieľať
     .accesskey = e
@@ -104,7 +107,6 @@ tab-context-move-tabs =
            *[other] Presunúť karty
         }
     .accesskey = s
-
 tab-context-send-tabs-to-device =
     .label =
         { $tabCount ->

@@ -12,10 +12,13 @@
 
 policy-3rdparty = 设置 WebExtension 可通过 chrome.storage.managed 存取的策略。
 policy-AllowedDomainsForApps = 定义允许访问 Google Workspace 的域。
+policy-AllowFileSelectionDialogs = 允许显示文件选择对话框。
 policy-AppAutoUpdate = 启用或禁用应用程序自动更新。
 policy-AppUpdatePin = 阻止 { -brand-short-name } 更新超过特定版本。
 policy-AppUpdateURL = 设置自定义的应用程序更新网址。
 policy-Authentication = 为支持的网站配置集成身份验证。
+policy-AutofillAddressEnabled = 启用自动填写地址功能。
+policy-AutofillCreditCardEnabled = 启用自动填写付款方式功能。
 policy-AutoLaunchProtocolsFromOrigins = 定义一组外部协议列表，可不提示用户直接从列出的来源使用。
 policy-BackgroundAppUpdate2 = 启用或禁用后台更新程序。
 policy-BlockAboutAddons = 阻止访问附加组件管理器（about:addons）。
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = 阻止访问 about:support 页面。
 policy-Bookmarks = 在书签工具栏，书签菜单或特定文件夹中创建书签。
 policy-CaptivePortal = 启用或禁用强制门户支持。
 policy-CertificatesDescription = 添加证书或使用内置的证书。
+policy-ContentAnalysis = 启用或禁用与数据泄露防护工具的连接。
 policy-Cookies = 允许或拒绝网站设置 Cookie。
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = 设置身份标签页相关策略。
@@ -35,12 +39,15 @@ policy-DisableAppUpdate = 阻止浏览器更新。
 policy-DisableBuiltinPDFViewer = 禁用 { -brand-short-name } 内置的 PDF 阅读器 PDF.js。
 policy-DisableDefaultBrowserAgent = 阻止默认浏览器用户代理执行任何操作。仅适用于 Windows，其他平台没有用户代理可用。
 policy-DisableDeveloperTools = 阻止访问开发者工具。
+policy-DisableEncryptedClientHello = 禁用 TLS 功能“Encrypted Client Hello”（ECH）。
 policy-DisableFeedbackCommands = 禁用“帮助”菜单中的“发送反馈”命令（提交反馈和举报诈骗网站）。
 policy-DisableFirefoxAccounts = 禁用 { -fxaccount-brand-name }的基础服务，包含同步。
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = 禁用基于账户的服务，包括同步。
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = 禁用 Firefox 的“截图”功能。
 policy-DisableFirefoxStudies = 阻止 { -brand-short-name } 运行研究实验。
-policy-DisableForgetButton = 阻止使用“忘记”功能。
+policy-DisableForgetButton = 阻止使用“抹去足迹”按钮。
 policy-DisableFormHistory = 不要记住搜索和表单的历史记录。
 policy-DisablePrimaryPasswordCreation = 若为 true，将无法创建主密码。
 policy-DisablePasswordReveal = 阻止密码在列表中明文显示
@@ -121,6 +128,7 @@ policy-SSLVersionMax = 设置最高 SSL 版本。
 policy-SSLVersionMin = 设置最低 SSL 版本。
 policy-StartDownloadsInTempDirectory = 强制下载至本地临时文件夹，而非默认下载路径。
 policy-SupportMenu = 向帮助菜单自选添加技术支持项目。
+policy-TranslateEnabled = 启用或禁用网页翻译。
 policy-UserMessaging = 不向用户显示某些消息。
 policy-UseSystemPrintDialog = 使用系统打印对话框打印。
 # “format” refers to the format used for the value of this policy.

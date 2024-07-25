@@ -5,6 +5,13 @@
 # The button for "Firefox Translations" in the url bar.
 urlbar-translations-button =
     .tooltiptext = Tradu această pagină
+# The button for "Firefox Translations" in the url bar. Note that here "Beta" should
+# not be translated, as it is a reflection of the un-localized BETA icon that is in the
+# panel.
+urlbar-translations-button2 =
+    .tooltiptext = Tradu această pagină - Beta
+urlbar-translations-button-loading =
+    .tooltiptext = Traducere în curs
 translations-panel-settings-button =
     .aria-label = Gestionează setările de traducere
 # Text displayed on a language dropdown when the language is in beta
@@ -27,6 +34,8 @@ translations-panel-settings-always-translate-language =
     .label = Tradu întotdeauna { $language }
 translations-panel-settings-always-translate-unknown-language =
     .label = Tradu întotdeauna această limbă
+translations-panel-settings-always-offer-translation =
+    .label = Oferă întotdeauna traducerea
 # Text displayed for the option to never translate a given language
 # Variables:
 #   $language (string) - The localized display name of the detected language
@@ -48,6 +57,7 @@ translations-panel-translate-button-loading =
     .label = Te rugăm să aștepți…
 translations-panel-translate-cancel =
     .label = Renunță
+translations-panel-learn-more-link = Află mai multe
 translations-panel-error-translating = A apărut o problemă la traducere. Te rugăm să încerci din nou.
 translations-panel-error-load-languages = Nu s-au putut încărca limbile
 translations-panel-error-load-languages-hint = Verifică conexiunea la internet și încearcă din nou.
@@ -101,17 +111,25 @@ translations-manage-description = Descarcă limbi pentru traducere offline.
 translations-manage-all-language = Toate limbile
 translations-manage-download-button = Descarcă
 translations-manage-delete-button = Șterge
-translations-manage-language-download-button =
-    .label = Descarcă
-    .accesskey = D
-translations-manage-language-delete-button =
-    .label = Șterge
+translations-manage-language-remove-button =
+    .label = Elimină
+translations-manage-language-remove-all-button =
+    .label = Elimină toate
     .accesskey = e
+translations-manage-error-install = A apărut o problemă la instalarea fișierelor lingvistice. Te rugăm să încerci din nou.
 translations-manage-error-download = A apărut o problemă la descărcarea fișierelor lingvistice. Te rugăm să încerci din nou.
 translations-manage-error-delete = A apărut o problemă la ștergerea fișierelor lingvistice. Te rugăm să încerci din nou.
+translations-manage-intro = Setează preferințele de traducere pentru limbă și site-uri și gestionează limbile instalate pentru traducerea offline.
+translations-manage-install-description = Instalează limbi pentru traducere offline
+translations-manage-language-install-button =
+    .label = Instalează
+translations-manage-language-install-all-button =
+    .label = Instalează toate
+    .accesskey = I
+translations-manage-error-remove = A apărut o problemă la eliminarea fișierelor lingvistice. Te rugăm să încerci din nou.
 translations-manage-error-list = Nu s-a putut obține lista de limbi disponibile pentru traducere. Reîmprospătează pagina pentru a încerca din nou.
 translations-settings-title =
-    .title = Setări pentru traducere
+    .title = Setări pentru traduceri
     .style = min-width: 37em
 translations-settings-close-key =
     .key = w
@@ -137,3 +155,22 @@ translations-settings-remove-all-sites-button =
 translations-settings-close-dialog =
     .buttonlabelaccept = Închide
     .buttonaccesskeyaccept = C
+select-translations-panel-cancel-button =
+    .label = Renunță
+select-translations-panel-translate-button =
+    .label = Tradu
+select-translations-panel-try-again-button =
+    .label = Încearcă din nou
+# Text displayed when the translation fails to complete.
+select-translations-panel-translation-failure-message =
+    .message = A apărut o problemă la traducere. Te rugăm să încerci din nou.
+# If your language requires declining the language name, a possible solution
+# is to adapt the structure of the phrase, or use a support noun, e.g.
+# `Sorry, we don't support the language yet: { $language }
+#
+# Variables:
+#   $language (string) - The language of the document.
+select-translations-panel-unsupported-language-message-known =
+    .message = Ne pare rău, încă nu oferim suport pentru { $language }.
+select-translations-panel-unsupported-language-message-unknown =
+    .message = Ne pare rău, încă nu oferim suport pentru această limbă.

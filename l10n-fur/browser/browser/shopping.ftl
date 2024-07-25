@@ -64,6 +64,11 @@ shopping-message-bar-analysis-in-progress-with-amount = Daûr a verificâ la cua
 shopping-message-bar-page-not-supported =
     .heading = Impussibil verificâ chestis recensions
     .message = Magari cussì no, ma nol è pussibil verificâ la cualitât des recensions par cualchi gjenar di prodot, come par esempli lis cjartis regâl, trasmissions video, musiche e zûcs.
+shopping-message-bar-keep-closed-header =
+    .heading = Tignî sierade?
+    .message = Tu puedis inzornâ lis impostazions par tignî sierade la Verifiche recensions tant che impostazion predefinide. In chest moment, si vierç in automatic.
+shopping-message-bar-keep-closed-dismiss-button = No graciis
+shopping-message-bar-keep-closed-accept-button = Sì, tenle sierade
 
 ## Strings for the product review snippets card
 
@@ -89,6 +94,19 @@ shopping-settings-recommendations-toggle =
 shopping-settings-recommendations-learn-more2 = Tu viodarâs anuncis ocasionâi par prodots pertinents. O promovìn dome prodots cun recensions afidabilis. <a data-l10n-name="review-quality-url">Plui informazions</a>
 shopping-settings-opt-out-button = Disative la verifiche recensions
 powered-by-fakespot = Verifiche recensions al è basât su tecnologjie <a data-l10n-name="fakespot-link">{ -fakespot-brand-full-name }</a>.
+shopping-settings-auto-open-toggle =
+    .label = Vierç in automatic la Verifiche recensions
+# Description text for regions where we support three sites. Sites are limited to Amazon, Walmart and Best Buy.
+# Variables:
+#   $firstSite (String) - The first shopping page name
+#   $secondSite (String) - The second shopping page name
+#   $thirdSite (String) - The third shopping page name
+shopping-settings-auto-open-description-three-sites = Cuant che tu viodis un prodot su { $firstSite }, { $secondSite } e { $thirdSite }
+# Description text for regions where we support only one site (e.g. currently used in FR/DE with Amazon).
+# Variables:
+#   $currentSite (String) - The current shopping page name
+shopping-settings-auto-open-description-single-site = Cuant che tu viodis un prodot su { $currentSite }
+shopping-settings-sidebar-enabled-state = Verifiche recensions e je <strong>ative</strong>
 
 ## Strings for the adjusted rating component
 
@@ -110,7 +128,6 @@ shopping-analysis-explainer-label =
 shopping-analysis-explainer-intro2 = O doprìn la tecnologjie IA di { -fakespot-brand-full-name } par controlâ la afidabilitât des recensions sui prodots. Cheste analisi ti judarà a valutâ dome la cualitât des recensions, no chê dal prodot.
 shopping-analysis-explainer-grades-intro = O assegnìn aes recensions di ogni prodot un <strong>vôt in letaris</strong> de A ae F.
 shopping-analysis-explainer-adjusted-rating-description = La <strong>valutazion retificade</strong> si base dome su lis recensions che o calcolìn afidabilis.
-shopping-analysis-explainer-learn-more = Scuvierç altris informazions su <a data-l10n-name="review-quality-url">cemût che { -fakespot-brand-full-name } al determine la cualitât des recensions</a>.
 shopping-analysis-explainer-learn-more2 = Scuvierç altris informazions su <a data-l10n-name="review-quality-url">cemût che { -fakespot-brand-name } al determine la cualitât des recensions</a>.
 # This string includes the short brand name of one of the three supported
 # websites, which will be inserted without being translated.
@@ -126,14 +143,6 @@ shopping-sidebar-open-button2 =
     .tooltiptext = Vierç verifiche recensions
 shopping-sidebar-close-button2 =
     .tooltiptext = Siere verifiche recensions
-
-## Strings for the unanalyzed product card.
-## The word 'analyzer' when used here reflects what this tool is called on
-## fakespot.com. If possible, a different word should be used for the Fakespot
-## tool (the Fakespot by Mozilla 'analyzer') other than 'checker', which is
-## used in the name of the Firefox feature ('Review checker'). If that is not
-## possible - if these terms are not meaningfully different - that is OK.
-
 
 ## Strings for the unanalyzed product card.
 ## The word 'analyzer' when used here reflects what this tool is called on
@@ -180,6 +189,22 @@ shopping-callout-pdp-opted-in-title = Sono afidabilis chestis recensions? Scuvie
 shopping-callout-pdp-opted-in-subtitle = Vierç verifiche recensions par viodi la valutazion retificade dopo vê gjavadis lis recensions inafidabilis. In plui, viôt i ponts in risalt des recensions autentichis inseridis di resint.
 shopping-callout-closed-not-opted-in-title = Recensions afidabilis intun clic
 shopping-callout-closed-not-opted-in-subtitle = Prove “verifiche recensions” ogni volte che tu viodis la icone cul cartelin dal presit. Oten subite informazions detaiadis dai vêrs acuirents, prime di comprâ.
+shopping-callout-closed-not-opted-in-revised-title = Recensions afidabilis intun sôl clic
+shopping-callout-closed-not-opted-in-revised-subtitle = Ti baste fâ clic su la icone cul cartelin dal presit te sbare de direzion par tornâ a Verifiche recensions.
+shopping-callout-closed-not-opted-in-revised-button = Capît
+shopping-callout-not-opted-in-reminder-title = Fâs compris cun fidance
+shopping-callout-not-opted-in-reminder-subtitle = Se no tu âs la sigurece che lis recensions di un prodot a sedin veris, la Verifiche recensions di { -brand-product-name } e pues judâti.
+shopping-callout-not-opted-in-reminder-open-button = Vierç Verifiche recensions
+shopping-callout-not-opted-in-reminder-close-button = Siere
+shopping-callout-not-opted-in-reminder-ignore-checkbox = No sta mostrâ plui
+shopping-callout-not-opted-in-reminder-img-alt =
+    .aria-label = Ilusion astrate di trê recensions di prodots. Une e presente un simbul di avîs par indicâ che al è probabil che no sedi une recension afidabile.
+shopping-callout-disabled-auto-open-title = La Verifiche recensions in chest moment, tant che impostazion predefinide, e je sierade
+shopping-callout-disabled-auto-open-subtitle = Fâs clic su la icone cul cartelin dal presit te sbare de direzion ogni volte che tu desideris viodi la afidabilitât des recensions di un prodot.
+shopping-callout-disabled-auto-open-button = Capît
+shopping-callout-opted-out-title = Verifiche recensions e je disativade
+shopping-callout-opted-out-subtitle = Par tornâle a ativâ, fâs clic su la icone cul cartelin dal presit te sbare de direzion e va daûr des indicazions.
+shopping-callout-opted-out-button = Capît
 
 ## Onboarding message strings.
 
@@ -190,9 +215,12 @@ shopping-onboarding-headline = Prove la nestre vuide pes recensions dai prodots
 #   $secondSite (str) - A second shopping page name
 #   $thirdSite (str) - A third shopping page name
 shopping-onboarding-dynamic-subtitle-1 = Viôt trop che a son afidabilis lis recensions dai prodots su <b>{ $currentSite }</b> prime di comprâju. Verifiche recensions, une funzion sperimentâl di { -brand-product-name }, e je integrade tal navigadôr. E funzione ancje su <b>{ $secondSite }</b> e su <b>{ $thirdSite }</b>.
+# Subtitle for countries where we only support one shopping website (e.g. currently used in FR/DE with Amazon)
+# Variables:
+#   $currentSite (str) - The current shopping page name
+shopping-onboarding-single-subtitle = Scuvierç trop che a son afidabilis lis recensions dai prodots su <b>{ $currentSite }</b> prime di comprâju. Verifiche recensions, une funzion sperimentâl di { -brand-product-name }, e je biele che integrade tal navigadôr.
 shopping-onboarding-body = Doprant la tecnologjie di { -fakespot-brand-full-name }, ti judìn a evitâ recensions di part e falsis. Il nestri model di inteligjence artificiâl al miore di un continui, par proteziti intant che tu fasis compris. <a data-l10n-name="learn_more">Altris informazions</a>
-shopping-onboarding-opt-in-privacy-policy-and-terms-of-use = Selezionant “{ shopping-onboarding-opt-in-button }“ tu acetis la <a data-l10n-name="privacy_policy">informative su la riservatece</a> e lis <a data-l10n-name="terms_of_use">cundizions di utilizazion dal servizi</a> di { -fakespot-brand-full-name }.
-shopping-onboarding-opt-in-privacy-policy-and-terms-of-use2 = Selezionant “{ shopping-onboarding-opt-in-button }“ tu acetis la <a data-l10n-name="privacy_policy">informative su la riservatece</a> e lis <a data-l10n-name="terms_of_use">cundizions di utilizazion dal servizi</a> di { -fakespot-brand-name }.
+shopping-onboarding-opt-in-privacy-policy-and-terms-of-use3 = Selezionant “{ shopping-onboarding-opt-in-button }“ tu acetis la <a data-l10n-name="privacy_policy">informative su la riservatece</a> di { -brand-product-name } e lis <a data-l10n-name="terms_of_use">cundizions di utilizazion dal servizi</a> di { -fakespot-brand-name }.
 shopping-onboarding-opt-in-button = Sì, provile
 shopping-onboarding-not-now-button = No cumò
 shopping-onboarding-dialog-close-button =

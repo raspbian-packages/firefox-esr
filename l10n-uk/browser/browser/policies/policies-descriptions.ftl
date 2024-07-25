@@ -12,10 +12,13 @@
 
 policy-3rdparty = Встановити політики, за якими WebExtensions можуть отримувати доступ через chrome.storage.managed.
 policy-AllowedDomainsForApps = Визначити домени, яким дозволено отримати доступ до Google Workspace.
+policy-AllowFileSelectionDialogs = Дозволити діалоги вибору файлів.
 policy-AppAutoUpdate = Увімкнути або вимкнути автоматичне оновлення програми.
 policy-AppUpdatePin = Не дозволяти { -brand-short-name } після вказаної версії.
 policy-AppUpdateURL = Встановити власну URL-адресу для оновлення програми.
 policy-Authentication = Налаштувати інтегровану автентифікацію для підтримуваних вебсайтів.
+policy-AutofillAddressEnabled = Увімкнути автозаповнення адрес.
+policy-AutofillCreditCardEnabled = Увімкнути автозаповнення способів оплати.
 policy-AutoLaunchProtocolsFromOrigins = Визначити список зовнішніх протоколів, які можна використовувати з перелічених джерел без запиту користувача.
 policy-BackgroundAppUpdate2 = Увімкнути чи вимкнути службу фонового оновлення.
 policy-BlockAboutAddons = Заблокувати доступ до керування додатками (about:addons).
@@ -25,7 +28,8 @@ policy-BlockAboutSupport = Заблокувати доступ до сторін
 policy-Bookmarks = Створювати закладки в панелі закладок, меню закладок, або в окремих теках.
 policy-CaptivePortal = Увімкнути чи вимкнути підтримку порталу перехоплення.
 policy-CertificatesDescription = Додавати сертифікати або використовувати вбудовані.
-policy-Cookies = Дозволити або заборонити вебсайтам встановлювати куки.
+policy-ContentAnalysis = Увімкнути або вимкнути з'єднання з агентом запобігання втраті даних.
+policy-Cookies = Дозволити або заборонити вебсайтам встановлювати файли cookie.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Налаштуйте політики щодо контейнерів.
 policy-DisableAccounts = Вимкніть служби, пов'язані з обліковим записом, включно із синхронізацією.
@@ -35,8 +39,11 @@ policy-DisableAppUpdate = Заборонити оновлення браузер
 policy-DisableBuiltinPDFViewer = Вимкнути вбудований PDF.js для перегляду файлів PDF у { -brand-short-name }.
 policy-DisableDefaultBrowserAgent = Не допускати будь-яких дій типового браузерного агента. Стосується лише Windows; інші платформи не мають агента.
 policy-DisableDeveloperTools = Заблокувати доступ до інструментів розробника.
+policy-DisableEncryptedClientHello = Вимкнути використання функції TLS Encrypted Client Hello (ECH).
 policy-DisableFeedbackCommands = Вимкнути команди меню Довідка для елементів "Надіслати відгук..." та "Повідомити про шахрайський сайт...".
 policy-DisableFirefoxAccounts = Вимкнути служби, пов'язані з { -fxaccount-brand-name(case: "abl") }, включно з Синхронізацією.
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = Вимкніть служби, пов'язані з обліковим записом, включно із синхронізацією.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Вимкнути функцію Firefox Screenshots.
 policy-DisableFirefoxStudies = Не дозволяти { -brand-short-name } виконувати дослідження.
@@ -82,8 +89,8 @@ policy-LegacyProfiles = Вимкнути функцію, що застосову
 
 ## Do not translate "SameSite", it's the name of a cookie attribute.
 
-policy-LegacySameSiteCookieBehaviorEnabled = Увімкнути застаріле налаштування поведінки SameSite для куків.
-policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Повертати застарілу поведінку SameSite для куків на вказаних сайтах.
+policy-LegacySameSiteCookieBehaviorEnabled = Увімкнути застаріле налаштування поведінки SameSite для файлів cookie.
+policy-LegacySameSiteCookieBehaviorEnabledForDomainList = Повернутися до застарілої поведінки SameSite для файлів cookie на вказаних сайтах.
 
 ##
 
@@ -112,7 +119,7 @@ policy-Proxy = Налаштувати параметри проксі.
 policy-RequestedLocales = Встановити перелік запитуваних мов для програми в бажаному порядку.
 policy-SanitizeOnShutdown2 = Очищати дані навігації при закритті браузера.
 policy-SearchBar = Встановити типове розташування панелі пошуку. Користувачу все одно дозволяється змінювати.
-policy-SearchEngines = Налаштувати засіб пошуку. Ця політика доступна лише у версії Extended Support Release (ESR).
+policy-SearchEngines = Налаштувати параметри пошукової системи. Ця політика доступна лише у версії Extended Support Release (ESR).
 policy-SearchSuggestEnabled = Увімкнути чи вимкнути пропозиції пошуку.
 # For more information, see https://wikipedia.org/wiki/PKCS_11
 policy-SecurityDevices2 = Додати або видалити модулі PKCS #11.
@@ -121,6 +128,7 @@ policy-SSLVersionMax = Встановити максимальну версію 
 policy-SSLVersionMin = Встановити мінімальну версію SSL.
 policy-StartDownloadsInTempDirectory = Примусово розпочинати завантаження в локальне тимчасове розташування,  а не в усталений каталог завантаження.
 policy-SupportMenu = Додати власний елемент меню підтримки в меню довідки.
+policy-TranslateEnabled = Увімкнути або вимкнути переклад вебсторінок.
 policy-UserMessaging = Не показувати певні повідомлення користувачу.
 policy-UseSystemPrintDialog = Друк за допомогою системного засобу друку
 # “format” refers to the format used for the value of this policy.

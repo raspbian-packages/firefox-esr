@@ -185,6 +185,24 @@ media-codec-support-codec-name = Codec-aren izena
 media-codec-support-supported = Euskarria du
 media-codec-support-unsupported = Ez du euskarririk
 media-codec-support-error = Kodekaren euskarriari buruzko informazioa ez dago erabilgarri. Saiatu berriro multimedia-fitxategi bat erreproduzitu ondoren.
+media-codec-support-lack-of-extension = Instalatu hedapena
+
+## Media Content Decryption Modules (CDM)
+## See EME Spec for more explanation for following technical terms
+## https://w3c.github.io/encrypted-media/
+
+media-content-decryption-modules-title = Content Decryption Modules informazioa
+media-key-system-name = Gako-sistemaren izena
+media-video-robustness = Bideoaren sendotasuna
+media-audio-robustness = Audioaren sendotasuna
+media-cdm-capabilities = Gaitasunak
+# Clear Lead isn't defined in the spec, which means the the first few seconds
+# are not encrypted. It allows playback to start without having to wait for
+# license response, improving video start time and user experience.
+media-cdm-clear-lead = Hasiera garbia
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = HDCP 2.2rekin bateragarria
 
 ##
 
@@ -264,6 +282,7 @@ try-newer-driver = Txartel grafikoaren kontrolatzailearen bertsioak blokeatuta. 
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType parametroak
 compositing = Konposatzea
+support-font-determination = Letra-tipoen ikusgaitasuaren arazketa-informazioa
 hardware-h264 = Hardware bidezko H264 deskodetzea
 main-thread-no-omtc = hari nagusia, OMTCrik ez
 yes = Bai
@@ -409,3 +428,15 @@ pointing-device-mouse = Sagua
 pointing-device-touchscreen = Ukipen-pantaila
 pointing-device-pen-digitizer = Boligrafo digitalizatzailea
 pointing-device-none = Erakusledun gailurik ez
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = Edukiaren analisia (DLP)
+content-analysis-active = Aktibo
+content-analysis-connected-to-agent = Agenteari konektatuta
+content-analysis-agent-path = Agentearen bidea
+content-analysis-agent-failed-signature-verification = Agenteak sinaduraren egiaztapena huts egin du
+content-analysis-request-count = Eskaera kopurua

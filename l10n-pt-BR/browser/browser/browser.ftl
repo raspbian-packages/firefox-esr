@@ -567,6 +567,11 @@ urlbar-result-action-search-w-engine = Pesquisar com { $engine }
 urlbar-result-action-sponsored = Patrocinado
 urlbar-result-action-switch-tab = Mudar para aba
 urlbar-result-action-visit = Visitar
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Mudar para aba · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Abrir endereço da área de transferência
 # Directs a user to press the Tab key to perform a search with the specified
@@ -596,6 +601,12 @@ urlbar-result-action-copy-to-clipboard = Copiar
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Pesquisar com { $engine }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -891,14 +902,27 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Quer abrir abas anteriores?</strong> Você pode restaurar a sessão anterior através do menu <img data-l10n-name="icon"/> do { -brand-short-name }, em Histórico.
 restore-session-startup-suggestion-button = Mostrar como fazer
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Sua organização bloqueou o acesso a arquivos locais neste computador
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
-data-reporting-notification-message = O { -brand-short-name } envia alguns dados automaticamente para a { -vendor-short-name } para que possamos aprimorar sua experiência.
+data-reporting-notification-message = O { -brand-short-name } envia alguns dados automaticamente para a { -vendor-short-name } para que possamos aprimorar sua experiência de uso.
 data-reporting-notification-button =
     .label = Escolher o que compartilhar
     .accesskey = E
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Navegação privativa
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Prevenção contra perda de dados (DLP) de { $agentName }. Clique para mais informações.
+content-analysis-panel-title = Proteção de dados
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Sua organização usa { $agentName } para se proteger contra perda de dados. <a data-l10n-name="info">Saiba mais</a>
 
 ## Unified extensions (toolbar) button
 

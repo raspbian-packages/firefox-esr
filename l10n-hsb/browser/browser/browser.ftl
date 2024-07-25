@@ -578,6 +578,11 @@ urlbar-result-action-search-w-engine = Z { $engine } pytać
 urlbar-result-action-sponsored = Sponserowany
 urlbar-result-action-switch-tab = K rajtarkej přeńć
 urlbar-result-action-visit = Wopytać
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = K rajtarkej přeńć · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Z mjezyskłada wopytać
 # Directs a user to press the Tab key to perform a search with the specified
@@ -607,6 +612,12 @@ urlbar-result-action-copy-to-clipboard = Kopěrować
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Z { $engine } pytać
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -902,6 +913,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Chceće předchadne rajtarki wočinić?</strong> Móžeće swoje předchadne posedźenje z nałoženskeho menija { -brand-short-name } <img data-l10n-name="icon"/> pod Historija wobnowić.
 restore-session-startup-suggestion-button = Pokazajće kak
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Waša organizacija je přistup k lokalnym datajam na tutym ličaku zablokowała.
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } do { -vendor-short-name } někotre daty sćele, zo bychmy móhli wašu praksu polěpšić.
@@ -910,6 +925,15 @@ data-reporting-notification-button =
     .accesskey = u
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Priwatny modus
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Profylaksa přećiwo zhubjenju datow (DLP) přez { $agentName }. Klikńće, zo byšće wjace informacijow dóstał.
+content-analysis-panel-title = Škit datow
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Waša organizacija { $agentName } wužiwa, zo by přećiwo zhubjenju datow škitała. <a data-l10n-name="info">Dalše informacije</a>
 
 ## Unified extensions (toolbar) button
 

@@ -203,6 +203,9 @@ media-cdm-capabilities = 功能
 # are not encrypted. It allows playback to start without having to wait for
 # license response, improving video start time and user experience.
 media-cdm-clear-lead = 不加密的前导段
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = 兼容 HDCP 2.2
 
 ##
 
@@ -262,6 +265,7 @@ try-newer-driver = 因您的显卡驱动版本而无法启用。请尝试更新�
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType 参数
 compositing = 合成
+support-font-determination = 字体可见性调试信息
 hardware-h264 = H264 硬件解码
 main-thread-no-omtc = 主线程，无 OMTC
 yes = 是
@@ -407,3 +411,15 @@ pointing-device-mouse = 鼠标
 pointing-device-touchscreen = 触摸屏
 pointing-device-pen-digitizer = 数位板
 pointing-device-none = 无定点设备
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = 内容分析（DLP）
+content-analysis-active = 已启用
+content-analysis-connected-to-agent = 已与程序连接
+content-analysis-agent-path = 程序路径
+content-analysis-agent-failed-signature-verification = 程序签名验证失败
+content-analysis-request-count = 请求数量

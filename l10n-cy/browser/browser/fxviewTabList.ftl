@@ -15,6 +15,10 @@ fxviewtabrow-time = { DATETIME($time, timeStyle: "short") }
 fxviewtabrow-tabs-list-tab =
     .title = Agorwch { $targetURI } mewn tab newydd
 # Variables:
+#   $tabTitle (string) - Title of tab being closed
+fxviewtabrow-close-tab-button =
+    .title = Cau { $tabTitle }
+# Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 fxviewtabrow-dismiss-tab-button =
     .title = Cau { $tabTitle }
@@ -26,7 +30,7 @@ fxviewtabrow-just-now-timestamp = Newydd ddigwydd
 
 fxviewtabrow-delete = Dileu
     .accesskey = D
-fxviewtabrow-forget-about-this-site = Anghofiwch am y wefan hon…
+fxviewtabrow-forget-about-this-site = Anghofio'r Wefan Hon…
     .accesskey = A
 fxviewtabrow-open-in-window = Agor mewn Ffenestr Newydd
     .accesskey = F
@@ -51,7 +55,30 @@ fxviewtabrow-move-tab-window = Symud i Ffenestr Newydd
     .accesskey = N
 fxviewtabrow-send-tab = Anfon Tab i Ddyfais
     .accesskey = D
+fxviewtabrow-pin-tab = Pinio Tab
+    .accesskey = P
+fxviewtabrow-unpin-tab = Dadbinio Tab
+    .accesskey = D
+fxviewtabrow-mute-tab = Tewi Tab
+    .accesskey = T
+fxviewtabrow-unmute-tab = Dad-dewi Tab
+    .accesskey = a
 # Variables:
 #   $tabTitle (string) - Title of the tab to which the context menu is associated
 fxviewtabrow-options-menu-button =
     .title = Dewisiadau ar gyfer { $tabTitle }
+# Variables:
+#   $tabTitle (string) - Title of tab being muted
+fxviewtabrow-mute-tab-button =
+    .title = Tewi { $tabTitle }
+# Variables:
+#   $tabTitle (string) - Title of tab being unmuted
+fxviewtabrow-unmute-tab-button =
+    .title = Dad-dewi { $tabTitle }
+
+## Strings below are to be used without context (tab title/URL) on mute/unmute buttons
+
+fxviewtabrow-mute-tab-button-no-context =
+    .title = Tewi tab
+fxviewtabrow-unmute-tab-button-no-context =
+    .title = Dad-dewi tab

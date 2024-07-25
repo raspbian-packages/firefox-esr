@@ -567,6 +567,11 @@ urlbar-result-action-search-w-engine = Αναζήτηση με { $engine }
 urlbar-result-action-sponsored = Χορηγία
 urlbar-result-action-switch-tab = Εναλλαγή σε καρτέλα
 urlbar-result-action-visit = Επίσκεψη
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Εναλλαγή σε καρτέλα · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Επίσκεψη από το πρόχειρο
 # Directs a user to press the Tab key to perform a search with the specified
@@ -596,6 +601,12 @@ urlbar-result-action-copy-to-clipboard = Αντιγραφή
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Αναζήτηση με { $engine }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -891,6 +902,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Άνοιγμα προηγούμενων καρτελών;</strong> Μπορείτε να ανακτήσετε την προηγούμενη συνεδρία σας από το μενού εφαρμογής του { -brand-short-name } <img data-l10n-name="icon"/>, στην ενότητα «Ιστορικό».
 restore-session-startup-suggestion-button = Εμφάνιση οδηγιών
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Η εταιρεία σας έχει αποκλείσει την πρόσβαση σε τοπικά αρχεία αυτού του υπολογιστή
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = Το { -brand-short-name } στέλνει αυτόματα μερικά δεδομένα στη { -vendor-short-name }, έτσι ώστε να μπορέσουμε να βελτιώσουμε την εμπειρία σας.
@@ -899,6 +914,15 @@ data-reporting-notification-button =
     .accesskey = ξ
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Ιδιωτική περιήγηση
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Πρόληψη απώλειας δεδομένων (DLP) του { $agentName }. Κάντε κλικ για περισσότερες πληροφορίες.
+content-analysis-panel-title = Προστασία δεδομένων
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Ο οργανισμός σας χρησιμοποιεί το { $agentName } για προστασία από απώλεια δεδομένων. <a data-l10n-name="info">Μάθετε περισσότερα</a>
 
 ## Unified extensions (toolbar) button
 

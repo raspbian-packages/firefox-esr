@@ -53,7 +53,7 @@ migration-imported-edge-reading-list = รายการอ่าน (จาก
 ## is installed as a Snap.
 
 migration-no-permissions-message = { -brand-short-name } ไม่มีสิทธิ์เข้าถึงโปรไฟล์ของเบราว์เซอร์อื่น ๆ ซึ่งติดตั้งบนอุปกรณ์นี้
-migration-no-permissions-instructions = หากต้องการนำเข้าข้อมูลจากเบราว์เซอร์อื่นต่อ ให้มอบสิทธิ์เข้าถึงโฟลเดอร์โปรไฟล์ของเบราว์เซอร์นั้นแก่ { -brand-short-name }
+migration-no-permissions-instructions = ถ้าต้องการนำเข้าข้อมูลจากเบราว์เซอร์อื่นต่อ ให้มอบสิทธิ์เข้าถึงโฟลเดอร์โปรไฟล์ของเบราว์เซอร์นั้นแก่ { -brand-short-name }
 migration-no-permissions-instructions-step1 = ให้เลือก “ดำเนินการต่อ”
 # The second step in getting permissions to read data for the selected
 # browser type.
@@ -76,6 +76,7 @@ migration-bookmarks-option-label = ที่คั่นหน้า
 # Edge, as this is the terminology for bookmarks on those browsers.
 migration-favorites-option-label = รายการโปรด
 migration-logins-and-passwords-option-label = การเข้าสู่ระบบและรหัสผ่านที่บันทึกไว้
+migration-passwords-option-label = รหัสผ่านที่บันทึกไว้
 migration-history-option-label = ประวัติการเรียกดู
 migration-extensions-option-label = ส่วนขยาย
 migration-form-autofill-option-label = ข้อมูลกรอกแบบฟอร์มอัตโนมัติ
@@ -186,7 +187,7 @@ migration-wizard-progress-icon-in-progress =
 migration-wizard-progress-icon-completed =
     .aria-label = เสร็จสมบูรณ์
 migration-safari-password-import-header = นำเข้ารหัสผ่านจาก Safari
-migration-safari-password-import-steps-header = หากต้องการนำเข้ารหัสผ่านจาก Safari:
+migration-safari-password-import-steps-header = ถ้าต้องการนำเข้ารหัสผ่านจาก Safari:
 migration-safari-password-import-step1 = ใน Safari ให้เปิดเมนู “Safari” แล้วไปที่ การตั้งค่า > รหัสผ่าน
 migration-safari-password-import-step2 = เลือกปุ่ม <img data-l10n-name="safari-icon-3dots"/> แล้วเลือก “ส่งออกรหัสผ่านทั้งหมด”
 migration-safari-password-import-step3 = บันทึกไฟล์รหัสผ่าน
@@ -268,6 +269,6 @@ migration-wizard-progress-success-formdata = ประวัติแบบฟ�
 # Variables:
 #  $quantity (Number): the number of successfully imported payment methods
 migration-wizard-progress-success-payment-methods = { $quantity } วิธีการชำระเงิน
-migration-wizard-safari-permissions-sub-header = หากต้องการนำเข้าที่คั่นหน้าและประวัติการเรียกดูจาก Safari:
+migration-wizard-safari-permissions-sub-header = ถ้าต้องการนำเข้าที่คั่นหน้าและประวัติการเรียกดูจาก Safari:
 migration-wizard-safari-instructions-continue = ให้เลือก “ดำเนินการต่อ”
 migration-wizard-safari-instructions-folder = เลือกโฟลเดอร์ Safari จากในรายการ แล้วเลือก “เปิด”

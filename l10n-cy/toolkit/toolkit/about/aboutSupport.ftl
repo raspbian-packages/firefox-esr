@@ -166,7 +166,7 @@ media-input-devices-title = Dyfeisiau Mewnbwn
 media-device-name = Enw
 media-device-group = Grŵp
 media-device-vendor = Gwerthwr
-media-device-state = Cyflwr
+media-device-state = Sir
 media-device-preferred = Amgen
 media-device-format = Fformat
 media-device-channels = Sianeli
@@ -200,6 +200,9 @@ media-cdm-capabilities = Galluoedd
 # are not encrypted. It allows playback to start without having to wait for
 # license response, improving video start time and user experience.
 media-cdm-clear-lead = Cychwyn Clir (Clear Lead)
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = Yn gydnaws â HDCP 2.2
 
 ##
 
@@ -299,6 +302,7 @@ try-newer-driver = Wedi ei rwystro ar gyfer eich gyrrwr graffigol chi. Ceisiwch 
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Paramedrau ClearType
 compositing = Cyfosod
+support-font-determination = Manylion Dadfygio Gwelededd Ffont
 hardware-h264 = Dadgodio Caledwedd H264
 main-thread-no-omtc = prif drywydd, dim OMTC
 yes = Iawn
@@ -444,3 +448,15 @@ pointing-device-mouse = Llygoden
 pointing-device-touchscreen = Sgrin Cyffwrdd
 pointing-device-pen-digitizer = Digidydd Pen
 pointing-device-none = Dim dyfeisiau pwyntio
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = Dadansoddi Cynnwys (DLP)
+content-analysis-active = Gweithredol
+content-analysis-connected-to-agent = Wedi'i gysylltu â'r Asiant
+content-analysis-agent-path = Llwybr Asiant
+content-analysis-agent-failed-signature-verification = Methodd Dilysiad Llofnod yr Asiant
+content-analysis-request-count = Nifer y Ceisiadau

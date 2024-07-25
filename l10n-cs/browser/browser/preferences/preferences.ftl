@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Najít nastavení
 managed-notice = Tento prohlížeč je spravován vaší organizací.
+managed-notice-info-icon =
+    .alt = Informace
 category-list =
     .aria-label = Kategorie
 pane-general-title = Obecné
@@ -250,6 +252,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Odstranit tento kontejner
 containers-remove-cancel-button = Neodstraňovat tento kontejner
+settings-tabs-show-image-in-preview =
+    .label = Zobrazit obrázek s náhledem při přejetí nad panelem
+    .accessKey = o
 
 ## General Section - Language & Appearance
 
@@ -278,6 +283,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Vaše nastavení upravuje vzhled stránky. <a data-l10n-name="colors-link">Nastavit barvy</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Vaše nastavení upravuje vzhled stránky.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer =
@@ -309,6 +318,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Pouze velikost textu
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Varování: Pokud zvolíte „Pouze velikost textu“ a vaše výchozí velikost není nastavena na 100%, může to způsobit chybné fungování některých stránek nebo obsahu.
 language-header = Jazyk
 choose-language-description = Vyberte jazyky pro zobrazování webových stránek
 choose-button =
@@ -666,6 +677,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Doporučení ze služby { $provider }
 home-prefs-recommended-by-description-new = Výjimečný obsah vybraný společností { $provider }, která je součástí rodiny { -brand-product-name(case: "gen") }
+home-prefs-recommended-by-header-generic =
+    .label = Doporučené příběhy
+home-prefs-recommended-by-description-generic = Výjimečný obsah od rodiny { -brand-product-name(case: "gen") }
 
 ##
 
@@ -812,6 +826,13 @@ sync-mobile-promo = Stáhněte si Firefox pro <img data-l10n-name="android-icon
 
 sync-profile-picture =
     .tooltiptext = Změnit profilový obrázek
+sync-profile-picture-with-alt =
+    .tooltiptext = Změnit profilový obrázek
+    .alt = Změnit profilový obrázek
+sync-profile-picture-account-problem =
+    .alt = Profilový obrázek účtu
+fxa-login-rejected-warning =
+    .alt = Varování
 sync-sign-out =
     .label = Odhlásit se…
     .accesskey = O
@@ -1124,6 +1145,7 @@ sitedata-delete-on-close =
         }
     .accesskey = c
 sitedata-delete-on-close-private-browsing = V trvalém režimu anonymního prohlížení { -brand-short-name } smaže cookies a data stránek vždy při svém ukončení.
+sitedata-delete-on-close-private-browsing2 = Na základě vašeho nastavení pro historii { -brand-short-name } smaže při ukončení prohlížeče cookies a údaje stránek z vaší relace.
 sitedata-allow-cookies-option =
     .label = Ukládat všechny cookies a data stránek
     .accesskey = a
@@ -1200,10 +1222,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Rychlé akce
     .accesskey = R
+addressbar-suggestions-settings = Nastavit našeptávání dotazů pro vyhledávač
 addressbar-locbar-showrecentsearches-option =
     .label = Zobrazit nedávná vyhledávání
     .accesskey = e
-addressbar-suggestions-settings = Nastavit našeptávání dotazů pro vyhledávač
 addressbar-quickactions-learn-more = Zjistit více
 
 ## Privacy Section - Content Blocking
@@ -1428,6 +1450,12 @@ collection-backlogged-crash-reports-with-link =
     { -brand-short-name.case-status ->
         [with-cases] Odesílat nevyřízená hlášení o pádech { -brand-short-name(case: "gen") } za vás <a data-l10n-name="crash-reports-link">Zjistit více</a>
        *[no-cases] Odesílat nevyřízená hlášení o pádech aplikace za vás <a data-l10n-name="crash-reports-link">Zjistit více</a>
+    }
+    .accesskey = c
+collection-backlogged-crash-reports =
+    { -brand-short-name.case-status ->
+        [with-cases] Odesílat nevyřízená hlášení o pádech { -brand-short-name(case: "gen") } za vás
+       *[no-cases] Odesílat nevyřízená hlášení o pádech aplikace za vás
     }
     .accesskey = c
 privacy-segmentation-section-header = Nové funkce, které zlepšují vaše prohlížení

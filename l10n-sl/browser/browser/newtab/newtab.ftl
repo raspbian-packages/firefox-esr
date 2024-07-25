@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Dodaj iskalnik
 newtab-topsites-add-shortcut-header = Nova bližnjica
 newtab-topsites-edit-topsites-header = Uredi glavno stran
 newtab-topsites-edit-shortcut-header = Uredi bližnjico
+newtab-topsites-add-shortcut-label = Dodaj bližnjico
 newtab-topsites-title-label = Naslov
 newtab-topsites-title-input =
     .placeholder = Vnesite ime
@@ -197,6 +198,7 @@ newtab-section-header-recent-activity = Nedavna dejavnost
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Priporoča { $provider }
+newtab-section-header-stories = Zgodbe, ki spodbujajo k razmisleku
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -205,6 +207,8 @@ newtab-empty-section-highlights = Začnite z brskanjem, mi pa vam bomo tu prikaz
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Zdaj ste seznanjeni z novicami. Vrnite se pozneje in si oglejte nove prispevke iz { $provider }. Komaj čakate? Izberite priljubljeno temo in odkrijte več velikih zgodb na spletu.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Zdaj ste seznanjeni z novicami. Vrnite se pozneje in si oglejte nove prispevke. Komaj čakate? Izberite priljubljeno temo in odkrijte več velikih zgodb na spletu.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -259,9 +263,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Bližnjice oglaševalcev
 newtab-custom-pocket-title = Priporoča { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Izjemna vsebina, ki jo pripravlja { -pocket-brand-name }, del družine { -brand-product-name }
-newtab-custom-pocket-toggle =
-    .label = Priporoča { -pocket-brand-name }
-    .description = Izjemna vsebina, ki jo pripravlja { -pocket-brand-name }, del družine { -brand-product-name }
+newtab-custom-stories-toggle =
+    .label = Priporočene zgodbe
+    .description = Izjemna vsebina, ki jo pripravlja družina { -brand-product-name }
 newtab-custom-pocket-sponsored = Zgodbe oglaševalcev
 newtab-custom-pocket-show-recent-saves = Prikaži nedavno shranjene strani
 newtab-custom-recent-title = Nedavna dejavnost

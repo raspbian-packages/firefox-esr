@@ -213,6 +213,9 @@ media-cdm-capabilities = Schopnosti
 # are not encrypted. It allows playback to start without having to wait for
 # license response, improving video start time and user experience.
 media-cdm-clear-lead = Nešifrovaný úvod (Clear Lead)
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = Kompatibilní s HDCP 2.2
 
 ##
 
@@ -297,6 +300,7 @@ try-newer-driver = Zakázáno kvůli verzi ovladače grafické karty. Zkuste akt
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Technologie ClearType
 compositing = Compositing
+support-font-determination = Informace ladění viditelnosti písma
 hardware-h264 = Hardwarové dekódování H264
 main-thread-no-omtc = hlavní vlákno, ne OMTC
 yes = Ano
@@ -442,3 +446,15 @@ pointing-device-mouse = Myš
 pointing-device-touchscreen = Dotyková obrazovka
 pointing-device-pen-digitizer = Digitální pero
 pointing-device-none = Žádná polohovací zařízení
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = Analýza obsahu (DLP)
+content-analysis-active = Aktivní
+content-analysis-connected-to-agent = Připojeno k agentovi
+content-analysis-agent-path = Cesta k agentovi
+content-analysis-agent-failed-signature-verification = Ověření podpisu agenta selhalo
+content-analysis-request-count = Počet žádostí

@@ -309,9 +309,11 @@ export function PopupNotifications(tabbrowser, panel, iconBox, options = {}) {
   );
 
   Services.obs.addObserver(this, "fullscreen-transition-start");
+  Services.obs.addObserver(this, "pointer-lock-entered");
 
   this.window.addEventListener("unload", () => {
     Services.obs.removeObserver(this, "fullscreen-transition-start");
+    Services.obs.removeObserver(this, "pointer-lock-entered");
   });
 
   this.window.addEventListener("activate", this, true);
@@ -361,7 +363,11 @@ PopupNotifications.prototype = {
   },
 
   observe(subject, topic) {
-    if (topic == "fullscreen-transition-start") {
+    // These observers apply to all windows.
+    if (
+      topic == "fullscreen-transition-start" ||
+      topic == "pointer-lock-entered"
+    ) {
       // Extend security delay if the panel is open.
       if (this.isPanelOpen) {
         let notification = this.panel.firstChild?.notification;
@@ -1336,9 +1342,12 @@ PopupNotifications.prototype = {
         n._recordTelemetryStat(TELEMETRY_STAT_OFFERED);
       }, this);
 
-      // We're about to open the panel while in a full screen transition. Extend
-      // the security delay.
-      if (this.window.isInFullScreenTransition) {
+      // We're about to open the panel while in a full screen transition or
+      // during pointer lock. Extend the security delay to avoid clickjacking.
+      if (
+        this.window.isInFullScreenTransition ||
+        this.window.PointerLock?.isActive
+      ) {
         this._extendSecurityDelay(notificationsToShow);
       }
 
@@ -1930,10 +1939,14 @@ PopupNotifications.prototype = {
     }
 
     if (type == "buttoncommand" || type == "secondarybuttoncommand") {
-      if (Services.focus.activeWindow != this.window) {
+      // TODO: Bug 1892756.
+      if (
+        Services.focus.activeWindow != this.window ||
+        notificationEl.matches(":-moz-window-inactive")
+      ) {
         Services.console.logStringMessage(
           "PopupNotifications._onButtonEvent: " +
-            "Button click happened before the window was focused"
+            "Button click happened before the window was focused / active"
         );
         this.window.focus();
         return;

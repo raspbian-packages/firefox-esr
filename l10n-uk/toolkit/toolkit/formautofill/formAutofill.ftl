@@ -47,3 +47,37 @@ credit-card-capture-save-new-button =
 credit-card-capture-update-button =
     .label = Оновити наявну картку
     .accessKey = о
+# Label for the button in the dropdown menu used to clear the populated form.
+autofill-clear-form-label = Очистити форму автозаповнення
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-addresses-label = Керувати адресами
+# Used as a label for the button, displayed at the bottom of the dropdown suggestion, to open Form Autofill browser preferences.
+autofill-manage-payment-methods-label = Керувати способами оплати
+
+## These are brand names and should only be translated when a locale-specific name for that brand is in common use
+
+autofill-card-network-amex = Аmerican Express
+autofill-card-network-cartebancaire = Сarte Bancaire
+autofill-card-network-diners = Dіners Club
+autofill-card-network-discover = Dіscover
+autofill-card-network-jcb = JCB
+autofill-card-network-mastercard = MasterCаrd
+autofill-card-network-mir = MIR
+autofill-card-network-unionpay = Uniоn Pay
+autofill-card-network-visa = Vіsa
+# The warning text that is displayed for informing users what categories are
+# about to be filled.  The text would be, for example,
+#   Also autofills organization, phone, email.
+# Variables:
+#   $categories - one or more of the categories, see autofill-category-X below
+autofill-phishing-warningmessage-extracategory = Також автоматично заповнює { $categories }
+# Variation when all are in the same category.
+# Variables:
+#   $categories - one or more of the categories
+autofill-phishing-warningmessage = Автоматично заповнює { $categories }
+# Used in autofill drop down suggestion to indicate what other categories Form Autofill will attempt to fill.
+autofill-category-address = адреса
+autofill-category-name = назва
+autofill-category-organization = організація
+autofill-category-tel = телефон
+autofill-category-email = електронна пошта

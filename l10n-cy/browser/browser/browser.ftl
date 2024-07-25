@@ -586,6 +586,11 @@ urlbar-result-action-search-w-engine = Chwilio gyda { $engine }
 urlbar-result-action-sponsored = Noddwyd
 urlbar-result-action-switch-tab = Newid i'r Tab
 urlbar-result-action-visit = Ymweld â
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Newid i Tab · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Ymweld o'ch clipfwrdd
 # Directs a user to press the Tab key to perform a search with the specified
@@ -615,6 +620,12 @@ urlbar-result-action-copy-to-clipboard = Copïo
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Chwilio gyda { $engine }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -733,7 +744,7 @@ bookmarks-tools-menu-button-visibility =
 ##
 
 bookmarks-search =
-    .label = Chwilio'r Nodau Tudalen
+    .label = Chwilio’r nodau tudalen
 bookmarks-tools =
     .label = Offer Nodau Tudalen
 bookmarks-subview-edit-bookmark =
@@ -910,6 +921,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Eisiau agor tabiau blaenorol?</strong> Gallwch adfer eich sesiwn flaenorol o ddewislen ap { -brand-short-name } <img data-l10n-name = "icon" />, o dan Hanes.
 restore-session-startup-suggestion-button = Dangos sut mae gwneud
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Mae eich sefydliad wedi rhwystro mynediad i ffeiliau lleol ar y cyfrifiadur hwn
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = Mae { -brand-short-name } yn anfon peth data yn awtomatig i { -vendor-short-name } fel bod modd i ni wella eich profiad.
@@ -918,6 +933,15 @@ data-reporting-notification-button =
     .accesskey = D
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Pori preifat
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Atal colli data (DLP) gan { $agentName }. Cliciwch am fwy o wybodaeth.
+content-analysis-panel-title = Diogelu data
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Mae eich sefydliad yn defnyddio { $agentName } i ddiogelu rhag colli data. <a data-l10n-name="info">Dysgu rhagor</a>
 
 ## Unified extensions (toolbar) button
 

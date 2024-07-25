@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਲੱਭੋ
 managed-notice = ਤੁਹਾਡੇ ਬਰਾਊਜ਼ਰ ਦਾ ਇੰਤਜ਼ਾਮ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵਲੋਂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।
+managed-notice-info-icon =
+    .alt = ਜਾਣਕਾਰੀ
 category-list =
     .aria-label = ਵਰਗ
 pane-general-title = ਆਮ
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = ਇਸ ਕਨਟੇਨਰ ਨੂੰ ਹਟਾਓ
 containers-remove-cancel-button = ਇਸ ਕਨਟੇਨਰ ਨੂੰ ਨਾ ਹਟਾਓ
+settings-tabs-show-image-in-preview =
+    .label = ਜਦੋਂ ਤੁਸੀਂ ਟੈਬ ਉੱਤੇ ਹੋਵੋ ਤਾਂ ਚਿੱਤਰ ਚਿੱਤਰ ਝਲਕ ਵੇਖੋ
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = ਤੁਹਾਡੀ ਰੰਗ ਚੋਣਾਂ ਵੈੱਬਸਾਈਟ ਦੀ ਦਿੱਖ ਨੂੰ ਅਣਡਿੱਠਾ ਕਰ ਦਿੰਦੀਆਂ ਹਨ। <a data-l10n-name="colors-link">ਰੰਗਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = ਤੁਹਾਡੀ ਰੰਗ ਚੋਣਾਂ ਵੈੱਬਸਾਈਟ ਦੀ ਦਿੱਖ ਨੂੰ ਅਣਡਿੱਠਾ ਕਰ ਦਿੰਦੀਆਂ ਹਨ।
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = <a data-l10n-name="themes-link">ਇਕਸਟੈਨਸ਼ਨਾਂ ਤੇ ਥੀਮ</a> ਵਿੱਚ { -brand-short-name } ਥੀਮਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = ਸਿਰਫ਼ ਲਿਖਤ ਜ਼ੂਮ ਕਰੋ
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = ਸਾਵਧਾਨ: ਜੇ ਤੁਸੀਂ “ਸਿਰਫ਼ ਲਿਖਤ ਨੂੰ ਜ਼ੂਮ ਕਰੋ” ਨੂੰ ਚੁਣਿਆ ਤਾਂ ਅਤੇ ਤੁਹਾਡੇ ਜ਼ੂਮ ਪੱਧਰ 100% ਸੈੱਟ ਨਾ ਹੋਇਆ ਤਾਂ ਕੁਝ ਸਾਈਟਾਂ ਜਾਂ ਸਮੱਗਰੀ ਠੀਕ ਤਰ੍ਹਾਂ ਕੰਮ ਨਹੀਂ ਕਰ ਸਕਦੀ ਹੈ।
 language-header = ਬੋਲੀ
 choose-language-description = ਸਫ਼ੇ ਨੂੰ ਵੇਖਣ ਲਈ ਆਪਣੀ ਪਸੰਦੀਦਾ ਬੋਲੀ ਚੁਣੋ
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = { $provider } ਵਲੋਂ ਸਿਫਾਰਸ਼ੀ
 home-prefs-recommended-by-description-new = { -brand-product-name } ਦੇ ਹਿੱਸੇ ਵਜੋਂ { $provider } ਵਲੋਂ ਖਾਸ ਇਕੱਤਰ ਕੀਤੀ ਸਮੱਗਰੀ
+home-prefs-recommended-by-header-generic =
+    .label = ਸਿਫ਼ਾਰਸ਼ੀ ਕਹਾਣੀਆਂ
+home-prefs-recommended-by-description-generic = { -brand-product-name } ਸਮੂਹ ਵਲੋਂ ਤਿਆਰ ਕੀਤੀ ਖਾਸ ਸਮੱਗਰੀ
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = ਆਪਣੇ ਮੋਬਾਈਲ ਡਿਵਾਈਸ ਨਾਲ
 
 sync-profile-picture =
     .tooltiptext = ਬਿਉਰਾ ਤਸਵੀਰ ਨੂੰ ਬਦਲੋ
+sync-profile-picture-with-alt =
+    .tooltiptext = ਬਿਉਰਾ ਤਸਵੀਰ ਨੂੰ ਬਦਲੋ
+    .alt = ਬਿਉਰਾ ਤਸਵੀਰ ਨੂੰ ਬਦਲੋ
+sync-profile-picture-account-problem =
+    .alt = ਖਾਤਾ ਪਰੋਫਾਈਲ ਤਸਵੀਰ
+fxa-login-rejected-warning =
+    .alt = ਚੇਤਾਵਨੀ
 sync-sign-out =
     .label = ਸਾਈਨ ਆਉਟ…
     .accesskey = g
@@ -720,7 +741,7 @@ sync-remove-account =
     .label = ਖਾਤੇ ਨੂੰ ਹਟਾਓ
     .accesskey = R
 sync-sign-in =
-    .label = ਸਾਇਨ ਇਨ
+    .label = ਸਾਈਨ ਇਨ
     .accesskey = g
 
 ## Sync section - enabling or disabling sync.
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = ਜਦੋਂ { -brand-short-name } ਬੰਦ ਹੋਵੇ ਤਾਂ ਕੂਕੀਜ਼ ਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਹਟਾਓ
     .accesskey = c
 sitedata-delete-on-close-private-browsing = ਪੱਕੇ ਤੌਰ ਉੱਤੇ ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ ਢੰਗ ਵਿੱਚ, { -brand-short-name } ਨੂੰ ਬੰਦ ਕਰਨ ਉੱਤੇ ਕੂਕੀਜ਼ ਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਹਮੇਸ਼ਾਂ ਹੀ ਸਾਫ਼ ਕੀਤਾ ਜਾਵੇਗਾ।
+sitedata-delete-on-close-private-browsing2 = ਤੁਹਾਡੀਆਂ ਅਤੀਤ ਸੈਟਿੰਗਾਂ ਦੇ ਮੁਤਾਬਕ ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਬਰਾਊਜ਼ਰ ਬੰਦ ਕਰਦੇ ਹੋ ਤਾਂ { -brand-short-name } ਤੁਹਾਡੇ ਸ਼ੈਸ਼ਨ ਤੋਂ ਕੂਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਹਟਾ ਦਿੰਦਾ ਹੈ।
 sitedata-allow-cookies-option =
     .label = ਕੂਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਮਨਜ਼ੂਰ ਕਰੋ
     .accesskey = A
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = ਫ਼ੌਰੀ ਕਾਰਵਾਈਆਂ
     .accesskey = Q
+addressbar-suggestions-settings = ਖੋਜ ਇੰਜਣ ਸੁਝਾਵਾਂ ਲਈ ਪਸੰਦਾਂ ਨੂੰ ਬਦਲੋ
 addressbar-locbar-showrecentsearches-option =
     .label = ਸੱਜਰੀਆਂ ਖੋਜਾਂ ਵੇਖਾਓ
     .accesskey = r
-addressbar-suggestions-settings = ਖੋਜ ਇੰਜਣ ਸੁਝਾਵਾਂ ਲਈ ਪਸੰਦਾਂ ਨੂੰ ਬਦਲੋ
 addressbar-quickactions-learn-more = ਹੋਰ ਜਾਣੋ
 
 ## Privacy Section - Content Blocking
@@ -1266,6 +1288,8 @@ addon-recommendations-link = ਹੋਰ ਜਾਣੋ
 # or builds with no Telemetry support available.
 collection-health-report-disabled = ਇਸ ਬਿਲਡ ਸੰਰਚਨਾ ਲਈ ਡਾਟਾ ਰਿਪੋਰਟ ਕਰਨਾ ਅਸਮਰੱਥ ਹੈ
 collection-backlogged-crash-reports-with-link = { -brand-short-name } ਨੂੰ ਤੁਹਾਡੇ ਤੌਰ ਉੱਤੇ ਬੈਕਲਾਗ ਕੀਤੀਆਂ ਕਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਭੇਜਣ ਦਿਓ <a data-l10n-name="crash-reports-link">ਹੋਰ ਜਾਣੋ</a>
+    .accesskey = c
+collection-backlogged-crash-reports = { -brand-short-name } ਨੂੰ ਤੁਹਾਡੇ ਤੌਰ ਉੱਤੇ ਬੈਕਲਾਗ ਕੀਤੀਆਂ ਕਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਭੇਜਣ ਦਿਓ
     .accesskey = c
 privacy-segmentation-section-header = ਨਵੇਂ ਫ਼ੀਚਰ, ਜੋ ਕਿ ਤੁਹਾਡੀ ਬਰਾਊਜ਼ਿੰਗ ਨੂੰ ਚਾਰ ਚੰਨ ਲਾਉਂਦੇ ਹਨ
 privacy-segmentation-section-description = ਜਦੋਂ ਅਸੀਂ ਫ਼ੀਚਰ ਦਿੰਦੇ ਹਾਂ, ਜੋ ਕਿ ਤੁਹਾਨੂੰ ਬਿਹਤਰ ਨਿੱਜੀ ਤਜਰਬਾ ਕਰਵਾਉਣ ਲਈ ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ ਵਰਤਦੇ ਹਨ।

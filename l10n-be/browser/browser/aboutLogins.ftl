@@ -130,6 +130,7 @@ login-item-edit-button = Змяніць
 about-logins-login-item-remove-button = Выдаліць
 login-item-origin-label = Адрас сайта
 login-item-tooltip-message = Упэўніцеся, што гэта дакладны адрас сайта, на якім вы ўваходзіце ў сістэму.
+about-logins-origin-tooltip2 = Увядзіце поўны адрас і пераканайцеся, што ён дакладна адпавядае месцу, дзе вы ўваходзіце.
 # Variables
 #   $webTitle (String) - Website title of the password being changed.
 about-logins-edit-password-tooltip = Пераканайцеся, што вы захоўваеце свой дзейны пароль для гэтага сайта. Змена пароля тут не мяняе яго на { $webTitle }.
@@ -177,6 +178,9 @@ about-logins-edit-login-os-auth-dialog-message-win = Каб змяніць ва�
 about-logins-edit-login-os-auth-dialog-message-macosx = рэдагаваць захаваны лагін
 # This message can be seen when attempting to edit a login in about:logins on Windows.
 about-logins-edit-login-os-auth-dialog-message2-win = Каб змяніць свой пароль, увядзіце свае ўліковыя дадзеныя для ўваходу ў Windows. Гэта дапамагае захоўваць бяспеку вашых уліковых запісаў.
+# This message can be seen when attempting to edit a login in about:logins
+# On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
+about-logins-edit-login-os-auth-dialog-message2-macosx = змяніць захаваны пароль
 # This message can be seen when attempting to reveal a password in about:logins on Windows.
 about-logins-reveal-password-os-auth-dialog-message-win = Каб пабачыць свой пароль, увядзіце свае ўліковыя дадзеныя для ўваходу ў Windows. Гэта дапамагае захоўваць бяспеку вашых уліковых запісаў.
 # This message can be seen when attempting to reveal a password in about:logins
@@ -192,6 +196,11 @@ about-logins-export-password-os-auth-dialog-message-win = Каб экспарт�
 # This message can be seen when attempting to export a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-export-password-os-auth-dialog-message-macosx = экспартаваць захаваныя лагіны і паролі
+# This message can be seen when attempting to export a password in about:logins on Windows.
+about-logins-export-password-os-auth-dialog-message2-win = Каб экспартаваць свае паролі, увядзіце свае ўліковыя дадзеныя для ўваходу ў Windows. Гэта дапамагае захоўваць бяспеку вашых уліковых запісаў.
+# This message can be seen when attempting to export a password in about:logins
+# On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
+about-logins-export-password-os-auth-dialog-message2-macosx = экспартаваць захаваныя паролі
 
 ## Primary Password notification
 
@@ -263,12 +272,55 @@ about-logins-confirm-remove-all-sync-dialog-message2 =
         [few] Гэта выдаліць усе лагіны, якія вы захавалі ў { -brand-short-name } на ўсіх прыладах, з якімі сінхранізаваны ваш уліковы запіс. Гэта таксама выдаліць папярэджанні аб уцечках, якія з'яўляюцца тут. Вы не зможаце адмяніць гэта дзеянне.
        *[many] Гэта выдаліць усе лагіны, якія вы захавалі ў { -brand-short-name } на ўсіх прыладах, з якімі сінхранізаваны ваш уліковы запіс. Гэта таксама выдаліць папярэджанні аб уцечках, якія з'яўляюцца тут. Вы не зможаце адмяніць гэта дзеянне.
     }
+# Checkbox for modal to confirm the removal of saved passwords
+about-logins-confirm-remove-all-dialog-checkbox-label2 =
+    { $count ->
+        [1] Так, выдаліць пароль
+        [one] Так, выдаліць пароль
+        [few] Так, выдаліць паролі
+       *[many] Так, выдаліць паролі
+    }
+# Title for modal to confirm the removal of all saved passwords when user is NOT synced
+about-logins-confirm-remove-all-dialog-title2 =
+    { $count ->
+        [one] Выдаліць усе { $count } пароляў?
+        [few] Выдаліць усе { $count } паролі?
+       *[many] Выдаліць усе { $count } пароляў?
+    }
+# Message for modal to confirm the removal of saved passwords when user is NOT synced
+about-logins-confirm-remove-all-dialog-message2 =
+    { $count ->
+        [1] Гэта выдаліць пароль, захаваны ў { -brand-short-name }, і любыя папярэджанні аб уцечках. Вы не зможаце адмяніць гэтае дзеянне.
+        [one] Гэта выдаліць пароль, захаваны ў { -brand-short-name }, і любыя папярэджанні аб уцечках. Вы не зможаце адмяніць гэтае дзеянне.
+        [few] Гэта выдаліць паролі, захаваныя ў { -brand-short-name }, і любыя папярэджанні аб уцечках. Вы не зможаце адмяніць гэтае дзеянне.
+       *[many] Гэта выдаліць паролі, захаваныя ў { -brand-short-name }, і любыя папярэджанні аб уцечках. Вы не зможаце адмяніць гэтае дзеянне.
+    }
+# Title for modal to confirm the removal of all saved passwords when user IS SYNCED
+about-logins-confirm-remove-all-sync-dialog-title2 =
+    { $count ->
+        [one] Выдаліць { $count } пароль з усіх прылад?
+        [few] Выдаліць усе { $count } паролі з усіх прылад?
+       *[many] Выдаліць усе { $count } пароляў з усіх прылад?
+    }
+# Message for modal to confirm the removal of saved passwords when user IS synced.
+about-logins-confirm-remove-all-sync-dialog-message3 =
+    { $count ->
+        [1] Гэта выдаліць пароль, які вы захавалі ў { -brand-short-name }, з усіх вашых сінхранізаваных прылад. Гэта таксама выдаліць папярэджанні аб уцечках, якія з'яўляюцца тут. Вы не зможаце адмяніць гэта дзеянне.
+        [one] Гэта выдаліць пароль, які вы захавалі ў { -brand-short-name }, з усіх вашых сінхранізаваных прылад. Гэта таксама выдаліць папярэджанні аб уцечках, якія з'яўляюцца тут. Вы не зможаце адмяніць гэта дзеянне.
+        [few] Гэта выдаліць усе паролі, якія вы захавалі ў { -brand-short-name }, з усіх вашых сінхранізаваных прылад. Гэта таксама выдаліць папярэджанні аб уцечках, якія з'яўляюцца тут. Вы не зможаце адмяніць гэта дзеянне.
+       *[many] Гэта выдаліць усе паролі, якія вы захавалі ў { -brand-short-name }, з усіх вашых сінхранізаваных прылад. Гэта таксама выдаліць папярэджанні аб уцечках, якія з'яўляюцца тут. Вы не зможаце адмяніць гэта дзеянне.
+    }
 
 ##
 
 about-logins-confirm-export-dialog-title = Экспарт лагінаў і пароляў
 about-logins-confirm-export-dialog-message = Вашы паролі будуць захаваны як звычайны тэкст (напр., BadP@ssw0rd), таму кожны, хто можа адкрыць экспартаваны файл, можа ўбачыць іх.
 about-logins-confirm-export-dialog-confirm-button = Экспартаваць…
+about-logins-confirm-export-dialog-title2 = Заўвага аб экспарце пароляў
+about-logins-confirm-export-dialog-message2 =
+    Калі вы экспартуеце, вашы паролі захоўваюцца ў файл з даступным для чытання тэкстам.
+    Калі вы скончыце выкарыстоўваць файл, мы рэкамендуем выдаліць яго, каб іншыя, хто карыстаецца гэтай прыладай, не змаглі бачыць вашы паролі.
+about-logins-confirm-export-dialog-confirm-button2 = Працягнуць экспарт
 about-logins-alert-import-title = Імпарт завершаны
 about-logins-alert-import-message = Паглядзець падрабязную зводку імпарту
 confirm-discard-changes-dialog-title = Адхіліць незахаваныя змены?
@@ -310,6 +362,11 @@ about-logins-export-file-picker-title = Экспартаваны файл лаг
 # The default file name shown in the file picker when exporting saved logins.
 # This must end in .csv
 about-logins-export-file-picker-default-filename = дадзеныя-для-ўваходу.csv
+# Title of the file picker dialog
+about-logins-export-file-picker-title2 = Экспарт пароляў з { -brand-short-name }
+# The default file name shown in the file picker when exporting saved logins.
+# This must end in .csv
+about-logins-export-file-picker-default-filename2 = passwords.csv
 about-logins-export-file-picker-export-button = Экспартаваць
 # A description for the .csv file format that may be shown as the file type
 # filter by the operating system.

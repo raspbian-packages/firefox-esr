@@ -12,10 +12,13 @@
 
 policy-3rdparty = Ορισμός πολιτικών που μπορούν να προσπελάσουν τα WebExtensions μέσω του chrome.storage.managed.
 policy-AllowedDomainsForApps = Καθορισμός τομέων στους οποίους επιτρέπεται πρόσβαση στο Google Workspace.
+policy-AllowFileSelectionDialogs = Να επιτρέπονται τα παράθυρα διαλόγου για επιλογή αρχείων.
 policy-AppAutoUpdate = Ενεργοποίηση ή απενεργοποίηση αυτόματων ενημερώσεων εφαρμογής.
 policy-AppUpdatePin = Αποτροπή ενημέρωσης του { -brand-short-name } πέρα από την καθορισμένη έκδοση.
 policy-AppUpdateURL = Ορισμός προσαρμοσμένου URL ενημέρωσης εφαρμογής.
 policy-Authentication = Ρύθμιση ενσωματωμένης ταυτοποίησης για ιστοτόπους που την υποστηρίζουν.
+policy-AutofillAddressEnabled = Ενεργοποίηση αυτόματης συμπλήρωσης διευθύνσεων.
+policy-AutofillCreditCardEnabled = Ενεργοποίηση αυτόματης συμπλήρωσης για μεθόδους πληρωμής.
 policy-AutoLaunchProtocolsFromOrigins = Καθορισμός μιας λίστας με εξωτερικά πρωτόκολλα που μπορούν να χρησιμοποιηθούν από καταχωρημένες προελεύσεις χωρίς να ζητηθεί άδεια από τον χρήστη.
 policy-BackgroundAppUpdate2 = Ενεργοποίηση ή απενεργοποίηση υπηρεσίας ενημερώσεων παρασκηνίου.
 policy-BlockAboutAddons = Αποκλεισμός πρόσβασης στη Διαχείριση προσθέτων (about:addons).
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = Αποκλεισμός πρόσβασης στη σε
 policy-Bookmarks = Δημιουργία σελιδοδεικτών στη γραμμή σελιδοδεικτών, στο μενού σελιδοδεικτών ή σε ένα συγκεκριμένο φάκελο μέσα τους.
 policy-CaptivePortal = Ενεργοποίηση ή απενεργοποίηση υποστήριξης πυλών υποδοχής.
 policy-CertificatesDescription = Προσθήκη πιστοποιητικών ή χρήση ενσωματωμένων πιστοποιητικών.
+policy-ContentAnalysis = Ενεργοποίηση ή απενεργοποίηση σύνδεσης παρόχου αποτροπής απώλειας δεδομένων.
 policy-Cookies = Αποδοχή ή άρνηση αιτημάτων αποθήκευσης cookie.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Ορισμός πολιτικών που σχετίζονται με τις θεματικές ενότητες.
@@ -121,6 +125,7 @@ policy-SSLVersionMax = Ορισμός μέγιστης έκδοσης SSL.
 policy-SSLVersionMin = Ορισμός ελάχιστης έκδοσης SSL.
 policy-StartDownloadsInTempDirectory = Εξαναγκαστική έναρξη λήψεων σε μια τοπική, προσωρινή τοποθεσία και όχι στον προεπιλεγμένο κατάλογο λήψεων.
 policy-SupportMenu = Προσθήκη προσαρμοσμένου στοιχείου μενού υποστήριξης στο μενού βοήθειας.
+policy-TranslateEnabled = Ενεργοποίηση ή απενεργοποίηση μετάφρασης ιστοσελίδων.
 policy-UserMessaging = Απόκρυψη ορισμένων μηνυμάτων από τον χρήστη.
 policy-UseSystemPrintDialog = Εκτύπωση μέσω του διαλόγου εκτύπωσης συστήματος.
 # “format” refers to the format used for the value of this policy.

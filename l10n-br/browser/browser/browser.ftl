@@ -582,6 +582,11 @@ urlbar-result-action-search-w-engine = Klask gant { $engine }
 urlbar-result-action-sponsored = Paeroniet
 urlbar-result-action-switch-tab = Mont d'an ivinell
 urlbar-result-action-visit = Gweladenniñ
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Mont d’an ivinell · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Gweladenniñ adalek ho kolver
 # Directs a user to press the Tab key to perform a search with the specified
@@ -611,6 +616,12 @@ urlbar-result-action-copy-to-clipboard = Eilañ
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Klask gant { $engine }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -906,6 +917,9 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Digeriñ an ivinelloù kent?</strong> Gallout a rit assav hoc'h estez kent adalek al lañser arload { -brand-short-name } <img data-l10n-name="icon"/>, dindan Roll istor
 restore-session-startup-suggestion-button = Diskouez din penaos ober
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } a dreuzkas roadennoù ent emgefreek da { -vendor-short-name } evit gwellaat ho skiant-prenet.
@@ -914,6 +928,7 @@ data-reporting-notification-button =
     .accesskey = D
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Merdeiñ prevez
+content-analysis-panel-title = Gwarez ar roadennoù
 
 ## Unified extensions (toolbar) button
 

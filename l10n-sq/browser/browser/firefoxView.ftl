@@ -12,6 +12,8 @@ menu-tools-firefox-view =
     .label = { -firefoxview-brand-name }
     .accesskey = F
 firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
 firefoxview-page-label =
     .label = { -firefoxview-brand-name }
 firefoxview-close-button =
@@ -51,6 +53,7 @@ firefoxview-syncedtabs-loading-header = Njëkohësim në ecuri e sipër
 firefoxview-syncedtabs-loading-description = Kur të keni mbaruar, do të shihni çfarëdo skedash që keni të hapura në pajisje të tjera. Rikontrolloni së shpejti.
 firefoxview-tabpickup-fxa-admin-disabled-header = Enti juaj ka çaktivizuar njëkohësimet
 firefoxview-tabpickup-fxa-admin-disabled-description = { -brand-short-name }-i s’është në gjendje të njëkohësojë skeda mes pajisjesh, ngaqë përgjegjësi juaj ka çaktivizuar njëkohësimet.
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name }-i s’është në gjendje të njëkohësojë skeda mes pajisjesh, ngaqë enti juaj ka çaktivizuar njëkohësimet.
 firefoxview-tabpickup-network-offline-header = Kontrolloni lidhjen tuaj internet
 firefoxview-tabpickup-network-offline-description = Nëse po përdorni një <em>firewall</em>, ose një ndërmjetës, kujdesuni që { -brand-short-name }-i të ketë leje të përdorë web-in.
 firefoxview-tabpickup-network-offline-primarybutton = Riprovoni
@@ -184,6 +187,8 @@ firefoxview-search-results-count =
 firefoxview-search-results-empty = Pa përfundime për “{ $query }”
 firefoxview-sort-history-by-date-label = Renditi sipas datash
 firefoxview-sort-history-by-site-label = Renditi sipas sajtesh
+firefoxview-sort-open-tabs-by-recency-label = Renditi sipas veprimtarive së fundi
+firefoxview-sort-open-tabs-by-order-label = Renditi sipas rendi skedash
 # Variables:
 #   $url (string) - URL that will be opened in the new tab
 firefoxview-opentabs-tab-row =
@@ -246,3 +251,25 @@ firefoxview-recentlyclosed-empty-description-two = Për të gjetur skeda hapur m
 
 firefoxview-syncedtabs-device-notabs = Pa skeda të hapura në këtë pajisje
 firefoxview-syncedtabs-connect-another-device = Lidhni pajisje tjetër
+firefoxview-pinned-tabs =
+    .title = Skeda të Fiksuara
+firefoxview-tabs =
+    .title = Skeda
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Kalo te { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Kalo te { $tabTitle } (E faqeruajtur)
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (E faqeruajtur) { $url }

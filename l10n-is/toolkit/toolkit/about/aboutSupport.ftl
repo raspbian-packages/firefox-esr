@@ -151,7 +151,7 @@ restart-in-troubleshoot-mode-label = Úrræðaleitarhamur…
 clear-startup-cache-title = Prófa að hreinsa skyndiminni ræsingar
 clear-startup-cache-label = Hreinsa skyndiminni ræsingar...
 startup-cache-dialog-title2 = Endurræsa { -brand-short-name } til að hreinsa skyndiminni ræsingar?
-startup-cache-dialog-body2 = Þetta mun ekki breyta stillingum þínum eða fjarlægja viðbætur.
+startup-cache-dialog-body2 = Þetta mun ekki breyta stillingum þínum eða fjarlægja forritsauka.
 restart-button-label = Endurræsa
 
 ## Media titles
@@ -200,6 +200,9 @@ media-cdm-capabilities = Hæfni
 # are not encrypted. It allows playback to start without having to wait for
 # license response, improving video start time and user experience.
 media-cdm-clear-lead = Ótruflað á undan
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = HDCP 2.2 samhæft
 
 ##
 
@@ -279,6 +282,7 @@ try-newer-driver = Lokað á fyrir þína útgáfu af skjárekli. Reyndu að upp
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType breytur
 compositing = Samsetning
+support-font-determination = Villuleitarupplýsingar um sýnileika leturs
 hardware-h264 = H264 kóðun í vélbúnaði
 main-thread-no-omtc = aðalþráður, ekkert OMTC
 yes = Já
@@ -424,3 +428,15 @@ pointing-device-mouse = Mús
 pointing-device-touchscreen = Snertiskjár
 pointing-device-pen-digitizer = Teiknipenni
 pointing-device-none = Engin bendiltæki
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = Greining efnis (DLP)
+content-analysis-active = Virkt
+content-analysis-connected-to-agent = Tengt við vinnslu
+content-analysis-agent-path = Slóð á vinnslu
+content-analysis-agent-failed-signature-verification = Vinnslu mistókst að staðfesta undirritun
+content-analysis-request-count = Fjöldi beiðna

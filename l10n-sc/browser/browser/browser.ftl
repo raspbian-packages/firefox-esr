@@ -279,6 +279,9 @@ quickactions-cmd-plugins = plugins
 # Opens the print dialog
 quickactions-print2 = Imprenta sa pàgina
 quickactions-cmd-print = imprenta
+# Opens the print dialog at the save to PDF option
+quickactions-savepdf = Sarva sa pàgina comente PDF
+quickactions-cmd-savepdf = pdf
 # Opens a new private browsing window
 quickactions-private2 = Aberi una ventana privada
 quickactions-cmd-private = navigatzione privada
@@ -347,7 +350,8 @@ identity-connection-not-secure = Connessione non segura
 identity-connection-secure = Connessione segura
 identity-connection-failure = Faddina de connessione
 identity-connection-internal = Custa est una pàgina { -brand-short-name } segura.
-identity-connection-file = Custa pàgina est archiviada in s'ordinadore tuo.
+identity-connection-file = Custa pàgina est archiviada in s’elaboradore tuo.
+identity-connection-associated = Custa pàgina est istada carrigada dae un’àtera pàgina.
 identity-extension-page = Custa pàgina est istada carrigada dae un'estensione.
 identity-active-blocked = { -brand-short-name } at blocadu partes de custa pàgina chi non sunt seguras.
 identity-custom-root = Connessione verificada dae un'emitente de tzertificados non reconnotu dae Mozilla.
@@ -361,7 +365,7 @@ identity-https-only-label2 = Atualiza in automàticu custu situ a una connession
 identity-https-only-dropdown-on =
     .label = Ativada
 identity-https-only-dropdown-off =
-    .label = Disativadada
+    .label = Disativada
 identity-https-only-dropdown-off-temporarily =
     .label = Disativada in manera temporànea
 identity-https-only-info-turn-on2 = Ativa sa modalidade «isceti HTTPS» pro custu situ si boles chi { -brand-short-name } agiornet sa connessione cando possìbile.
@@ -563,6 +567,13 @@ urlbar-result-action-search-w-engine = Chirca cun { $engine }
 urlbar-result-action-sponsored = Patrotzinadu
 urlbar-result-action-switch-tab = Passa a s'ischeda
 urlbar-result-action-visit = Bìsita
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Càmbia a s’ischeda · <span>{ $container }</span>
+# Allows the user to visit a URL that was previously copied to the clipboard.
+urlbar-result-action-visit-from-clipboard = Aberi dae sa punta de billete
 # Directs a user to press the Tab key to perform a search with the specified
 # engine.
 # Variables
@@ -615,6 +626,11 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = Atziones lestras
+# A label shown above the recent searches group in the urlbar results.
+# Variables
+#  $engine (String): the name of the search engine used to search.
+urlbar-group-recent-searches =
+    .label = Chircas reghentes
 
 ## Reader View toolbar buttons
 
@@ -880,6 +896,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Boles abèrrere is ischedas pretzedentes?</strong> Podes recuperare sa sessione pretzedente dae su menù de is aplicatziones { -brand-short-name } <img data-l10n-name="icon"/>, in sa cronologia.
 restore-session-startup-suggestion-button = Ammustra·mi comente
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = S’organizatzione tua at blocadu s’atzessu a is archìvios locales in custu elaboradore
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } imbiat in automàticu unos cantos datos a { -vendor-short-name } pro nde megiorare s'esperièntzia tua.
@@ -915,6 +935,21 @@ unified-extensions-button-quarantined =
 
 ## Private browsing reset button
 
+reset-pbm-toolbar-button =
+    .label = Serra sa sessione privada
+    .tooltiptext = Serra is sessiones privadas
+reset-pbm-panel-heading = Boles serrare sa sessione privada?
+reset-pbm-panel-description = Serra totu is ischedas privadas e cantzella cronologia, testimòngios e totu is datos de is àteros sitos.
+reset-pbm-panel-always-ask-checkbox =
+    .label = Pregunta·mi·ddu semper
+    .accesskey = P
+reset-pbm-panel-cancel-button =
+    .label = Annulla
+    .accesskey = A
+reset-pbm-panel-confirm-button =
+    .label = Cantzella is datos de sa sessione
+    .accesskey = C
+reset-pbm-panel-complete = Datos de sa sessione privada cantzellados
 
 ## Autorefresh blocker
 

@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Ychwanegu Peiriant Chwilio
 newtab-topsites-add-shortcut-header = Llwybr Byr Newydd
 newtab-topsites-edit-topsites-header = Golygu'r Hoff Wefan
 newtab-topsites-edit-shortcut-header = Golygu Llwybr Byr
+newtab-topsites-add-shortcut-label = Ychwanegu Llwybr Byr
 newtab-topsites-title-label = Teitl
 newtab-topsites-title-input =
     .placeholder = Rhoi teitl
@@ -199,6 +200,7 @@ newtab-section-header-recent-activity = Gweithgaredd diweddar
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Argymhellwyd gan { $provider }
+newtab-section-header-stories = Straeon sy’n procio’r meddwl
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -207,6 +209,8 @@ newtab-empty-section-highlights = Cychwynnwch bori ac fe ddangoswn rhai erthygla
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Rydych wedi dal i fynDewch nôl rhywbryd eto am fwy o'r straeon pwysicaf gan { $provider }. Methu aros? Dewiswch bwnc poblogaidd i ganfod straeon da o ar draws y we.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Rydych yn gyfredol. Dewch nôl yn ddiweddarach am fwy o straeon. Methu aros? Dewiswch bwnc poblogaidd i ganfod rhagor o straeon difyr o bob rhan o'r we.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -263,9 +267,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Llwybrau byr wedi'u noddi
 newtab-custom-pocket-title = Argymhellir gan  { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Cynnwys eithriadol wedi'i guradu gan { -pocket-brand-name }, rhan o deulu { -brand-product-name }
-newtab-custom-pocket-toggle =
-    .label = Argymhellir gan  { -pocket-brand-name }
-    .description = Cynnwys eithriadol wedi'i guradu gan { -pocket-brand-name }, rhan o deulu { -brand-product-name }
+newtab-custom-stories-toggle =
+    .label = Straeon cymeradwy
+    .description = Cynnwys eithriadol wedi'i gasglu gan deulu { -brand-product-name }
 newtab-custom-pocket-sponsored = Straeon wedi'u noddi
 newtab-custom-pocket-show-recent-saves = Dangos pethau gadwyd yn ddiweddar
 newtab-custom-recent-title = Gweithgaredd diweddar
@@ -275,3 +279,24 @@ newtab-custom-recent-toggle =
     .description = Detholiad o wefannau a chynnwys diweddar
 newtab-custom-close-button = Cau
 newtab-custom-settings = Rheoli rhagor o osodiadau
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Papurau wal
+newtab-wallpaper-reset = Ailosod i'r rhagosodiad
+newtab-wallpaper-light-red-panda = Panda coch
+newtab-wallpaper-light-mountain = Mynydd gwyn
+newtab-wallpaper-light-sky = Awyr gyda chymylau porffor a phinc
+newtab-wallpaper-light-color = Siapiau glas, pinc a melyn
+newtab-wallpaper-light-landscape = Tirwedd mynydd a niwlen las
+newtab-wallpaper-light-beach = Traeth gyda phalmwydd
+newtab-wallpaper-dark-aurora = Aurora Borealis
+newtab-wallpaper-dark-color = Siapiau coch a glas
+newtab-wallpaper-dark-panda = Panda coch wedi'i guddio yn y goedwig
+newtab-wallpaper-dark-sky = Tirwedd y ddinas gydag awyr y nos
+newtab-wallpaper-dark-mountain = Tirwedd mynydd
+newtab-wallpaper-dark-city = Tirwedd dinas borffor
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Llun gan <a data-l10n-name="name-link">{ $author_string }</a> ar <a data-l10n-name="webpage-link">{ $webpage_string }</a>

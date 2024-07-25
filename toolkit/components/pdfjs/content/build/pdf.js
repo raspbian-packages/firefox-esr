@@ -829,6 +829,18 @@ function normalizeUnicode(str) {
     return p1 ? p1.normalize("NFKC") : NormalizationMap.get(p2);
   });
 }
+const FontRenderOps = {
+  BEZIER_CURVE_TO: 0,
+  MOVE_TO: 1,
+  LINE_TO: 2,
+  QUADRATIC_CURVE_TO: 3,
+  RESTORE: 4,
+  SAVE: 5,
+  SCALE: 6,
+  TRANSFORM: 7,
+  TRANSLATE: 8
+};
+exports.FontRenderOps = FontRenderOps;
 
 /***/ }),
 /* 2 */
@@ -965,7 +977,6 @@ function getDocument(src) {
   };
   const transportParams = {
     ignoreErrors,
-    isEvalSupported,
     disableFontFace,
     fontExtraProperties,
     enableXfa,
@@ -2153,7 +2164,6 @@ class WorkerTransport {
           }
           const inspectFont = params.pdfBug && globalThis.FontInspector?.enabled ? (font, url) => globalThis.FontInspector.fontAdded(font, url) : null;
           const font = new _font_loader.FontFaceObject(exportedData, {
-            isEvalSupported: params.isEvalSupported,
             disableFontFace: params.disableFontFace,
             ignoreErrors: params.ignoreErrors,
             inspectFont
@@ -4760,7 +4770,6 @@ class FontLoader {
 exports.FontLoader = FontLoader;
 class FontFaceObject {
   constructor(translatedData, {
-    isEvalSupported = true,
     disableFontFace = false,
     ignoreErrors = false,
     inspectFont = null
@@ -4769,7 +4778,6 @@ class FontFaceObject {
     for (const i in translatedData) {
       this[i] = translatedData[i];
     }
-    this.isEvalSupported = isEvalSupported !== false;
     this.disableFontFace = disableFontFace === true;
     this.ignoreErrors = ignoreErrors === true;
     this._inspectFont = inspectFont;
@@ -4824,22 +4832,72 @@ class FontFaceObject {
         throw ex;
       }
       (0, _util.warn)(`getPathGenerator - ignoring character: "${ex}".`);
+    }
+    if (!Array.isArray(cmds) || cmds.length === 0) {
       return this.compiledGlyphs[character] = function (c, size) {};
     }
-    if (this.isEvalSupported && _util.FeatureTest.isEvalSupported) {
-      const jsBuf = [];
-      for (const current of cmds) {
-        const args = current.args !== undefined ? current.args.join(",") : "";
-        jsBuf.push("c.", current.cmd, "(", args, ");\n");
-      }
-      return this.compiledGlyphs[character] = new Function("c", "size", jsBuf.join(""));
-    }
-    return this.compiledGlyphs[character] = function (c, size) {
-      for (const current of cmds) {
-        if (current.cmd === "scale") {
-          current.args = [size, -size];
-        }
-        c[current.cmd].apply(c, current.args);
+     const commands = [];
+     for (let i = 0, ii = cmds.length; i < ii;) {
+       switch (cmds[i++]) {
+         case _util.FontRenderOps.BEZIER_CURVE_TO:
+           {
+             const [a, b, c, d, e, f] = cmds.slice(i, i + 6);
+             commands.push(ctx => ctx.bezierCurveTo(a, b, c, d, e, f));
+             i += 6;
+           }
+           break;
+         case _util.FontRenderOps.MOVE_TO:
+           {
+             const [a, b] = cmds.slice(i, i + 2);
+             commands.push(ctx => ctx.moveTo(a, b));
+             i += 2;
+           }
+           break;
+         case _util.FontRenderOps.LINE_TO:
+           {
+             const [a, b] = cmds.slice(i, i + 2);
+             commands.push(ctx => ctx.lineTo(a, b));
+             i += 2;
+           }
+           break;
+         case _util.FontRenderOps.QUADRATIC_CURVE_TO:
+           {
+             const [a, b, c, d] = cmds.slice(i, i + 4);
+             commands.push(ctx => ctx.quadraticCurveTo(a, b, c, d));
+             i += 4;
+           }
+           break;
+         case _util.FontRenderOps.RESTORE:
+           commands.push(ctx => ctx.restore());
+           break;
+         case _util.FontRenderOps.SAVE:
+           commands.push(ctx => ctx.save());
+           break;
+         case _util.FontRenderOps.SCALE:
+           _util.assert(commands.length === 2, "Scale command is only valid at the third position.");
+           break;
+         case _util.FontRenderOps.TRANSFORM:
+           {
+             const [a, b, c, d, e, f] = cmds.slice(i, i + 6);
+             commands.push(ctx => ctx.transform(a, b, c, d, e, f));
+             i += 6;
+           }
+           break;
+         case _util.FontRenderOps.TRANSLATE:
+           {
+             const [a, b] = cmds.slice(i, i + 2);
+             commands.push(ctx => ctx.translate(a, b));
+             i += 2;
+           }
+           break;
+       }
+     }
+     return this.compiledGlyphs[character] = function glyphDrawer(ctx, size) {
+       commands[0](ctx);
+       commands[1](ctx);
+       ctx.scale(size, -size);
+       for (let i = 2, ii = commands.length; i < ii; i++) {
+         commands[i](ctx);
       }
     };
   }
@@ -9375,11 +9433,13 @@ exports.FreeTextEditor = void 0;
 var _util = __w_pdfjs_require__(1);
 var _tools = __w_pdfjs_require__(5);
 var _editor = __w_pdfjs_require__(4);
+const EOL_PATTERN = /\r\n?|\n/g;
 class FreeTextEditor extends _editor.AnnotationEditor {
   #boundEditorDivBlur = this.editorDivBlur.bind(this);
   #boundEditorDivFocus = this.editorDivFocus.bind(this);
   #boundEditorDivInput = this.editorDivInput.bind(this);
   #boundEditorDivKeydown = this.editorDivKeydown.bind(this);
+  #boundEditorDivPaste = this.editorDivPaste.bind(this);
   #color;
   #content = "";
   #editorDivId = `${this.id}-editor`;
@@ -9495,6 +9555,7 @@ class FreeTextEditor extends _editor.AnnotationEditor {
     this.editorDiv.addEventListener("focus", this.#boundEditorDivFocus);
     this.editorDiv.addEventListener("blur", this.#boundEditorDivBlur);
     this.editorDiv.addEventListener("input", this.#boundEditorDivInput);
+    this.editorDiv.addEventListener("paste", this.#boundEditorDivPaste);
   }
   disableEditMode() {
     if (!this.isInEditMode()) {
@@ -9510,6 +9571,7 @@ class FreeTextEditor extends _editor.AnnotationEditor {
     this.editorDiv.removeEventListener("focus", this.#boundEditorDivFocus);
     this.editorDiv.removeEventListener("blur", this.#boundEditorDivBlur);
     this.editorDiv.removeEventListener("input", this.#boundEditorDivInput);
+    this.editorDiv.removeEventListener("paste", this.#boundEditorDivPaste);
     this.div.focus({
       preventScroll: true
     });
@@ -9539,13 +9601,10 @@ class FreeTextEditor extends _editor.AnnotationEditor {
     super.remove();
   }
   #extractText() {
-    const divs = this.editorDiv.getElementsByTagName("div");
-    if (divs.length === 0) {
-      return this.editorDiv.innerText;
-    }
     const buffer = [];
-    for (const div of divs) {
-      buffer.push(div.innerText.replace(/\r\n?|\n/, ""));
+    this.editorDiv.normalize();
+    for (const child of this.editorDiv.childNodes) {
+      buffer.push(FreeTextEditor.#getNodeContent(child));
     }
     return buffer.join("\n");
   }
@@ -9657,6 +9716,102 @@ class FreeTextEditor extends _editor.AnnotationEditor {
       this.editorDiv.contentEditable = true;
     }
     return this.div;
+  }
+  static #getNodeContent(node) {
+    return (node.nodeType === Node.TEXT_NODE ? node.nodeValue : node.innerText).replaceAll(EOL_PATTERN, "");
+  }
+  editorDivPaste(event) {
+    const clipboardData = event.clipboardData || window.clipboardData;
+    const {
+      types
+    } = clipboardData;
+    if (types.length === 1 && types[0] === "text/plain") {
+      return;
+    }
+    event.preventDefault();
+    const paste = FreeTextEditor.#deserializeContent(clipboardData.getData("text") || "").replaceAll(EOL_PATTERN, "\n");
+    if (!paste) {
+      return;
+    }
+    const selection = window.getSelection();
+    if (!selection.rangeCount) {
+      return;
+    }
+    this.editorDiv.normalize();
+    selection.deleteFromDocument();
+    const range = selection.getRangeAt(0);
+    if (!paste.includes("\n")) {
+      range.insertNode(document.createTextNode(paste));
+      this.editorDiv.normalize();
+      selection.collapseToStart();
+      return;
+    }
+    const {
+      startContainer,
+      startOffset
+    } = range;
+    const bufferBefore = [];
+    const bufferAfter = [];
+    if (startContainer.nodeType === Node.TEXT_NODE) {
+      const parent = startContainer.parentElement;
+      bufferAfter.push(startContainer.nodeValue.slice(startOffset).replaceAll(EOL_PATTERN, ""));
+      if (parent !== this.editorDiv) {
+        let buffer = bufferBefore;
+        for (const child of this.editorDiv.childNodes) {
+          if (child === parent) {
+            buffer = bufferAfter;
+            continue;
+          }
+          buffer.push(FreeTextEditor.#getNodeContent(child));
+        }
+      }
+      bufferBefore.push(startContainer.nodeValue.slice(0, startOffset).replaceAll(EOL_PATTERN, ""));
+    } else if (startContainer === this.editorDiv) {
+      let buffer = bufferBefore;
+      let i = 0;
+      for (const child of this.editorDiv.childNodes) {
+        if (i++ === startOffset) {
+          buffer = bufferAfter;
+        }
+        buffer.push(FreeTextEditor.#getNodeContent(child));
+      }
+    }
+    this.#content = `${bufferBefore.join("\n")}${paste}${bufferAfter.join("\n")}`;
+    this.#setContent();
+    const newRange = new Range();
+    let beforeLength = bufferBefore.reduce((acc, line) => acc + line.length, 0);
+    for (const {
+      firstChild
+    } of this.editorDiv.childNodes) {
+      if (firstChild.nodeType === Node.TEXT_NODE) {
+        const length = firstChild.nodeValue.length;
+        if (beforeLength <= length) {
+          newRange.setStart(firstChild, beforeLength);
+          newRange.setEnd(firstChild, beforeLength);
+          break;
+        }
+        beforeLength -= length;
+      }
+    }
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+  #setContent() {
+    this.editorDiv.replaceChildren();
+    if (!this.#content) {
+      return;
+    }
+    for (const line of this.#content.split("\n")) {
+      const div = document.createElement("div");
+      div.append(line ? document.createTextNode(line) : document.createElement("br"));
+      this.editorDiv.append(div);
+    }
+  }
+  #serializeContent() {
+    return this.#content.replaceAll("\xa0", " ");
+  }
+  static #deserializeContent(content) {
+    return content.replaceAll(" ", "\xa0");
   }
   get contentDiv() {
     return this.editorDiv;

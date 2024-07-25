@@ -94,6 +94,7 @@ tabbrowser-confirm-close-tabs-title =
        *[other] Serriñ { $tabCount } ivinell?
     }
 tabbrowser-confirm-close-tabs-button = Serriñ an ivinelloù
+tabbrowser-confirm-close-tabs-checkbox = Kadarnaat a-raok serriñ meur a ivinell
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
 
@@ -103,11 +104,11 @@ tabbrowser-confirm-close-tabs-button = Serriñ an ivinelloù
 #   $windowCount (Number): The number of windows that will be closed.
 tabbrowser-confirm-close-windows-title =
     { $windowCount ->
-        [one] Serriñ { $tabCount } prenestr?
-        [two] Serriñ { $tabCount } brenestr?
-        [few] Serriñ { $tabCount } frenestr?
-        [many] Serriñ { $tabCount } a brenestroù?
-       *[other] Serriñ { $tabCount } prenestr?
+        [one] Serriñ { $windowCount } prenestr?
+        [two] Serriñ { $windowCount } brenestr?
+        [few] Serriñ { $windowCount } frenestr?
+        [many] Serriñ { $windowCount } a brenestroù?
+       *[other] Serriñ { $windowCount } prenestr?
     }
 tabbrowser-confirm-close-windows-button =
     { PLATFORM() ->
@@ -166,6 +167,8 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Heglevat an ivinelloù
     .accesskey = H
+# This string is used as an additional tooltip and accessibility description for tabs playing audio
+tabbrowser-tab-audio-playing-description = O lenn an aodio
 
 ## Ctrl-Tab dialog
 

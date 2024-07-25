@@ -205,6 +205,9 @@ cfr-cbh-dismiss-button = ਹੁਣੇ ਨਹੀਂ
     .accesskey = N
 cookie-banner-blocker-cfr-header = { -brand-short-name } ਨੇ ਤੁਹਾਡੇ ਲਈ ਕੂਕੀਜ਼ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਈ
 cookie-banner-blocker-cfr-body = ਸਾਈਟਾਂ ਵਲੋਂ ਤੁਹਾਡੀ ਟੋਹ ਲੈਣਾ ਔਖਾ ਬਣਾਉਣ ਵਾਸਤੇ ਅਸੀਂ ਵੱਧ ਤੋਂ ਵੱਧ ਕੂਕੀ ਪੌਪ-ਅੱਪ ਤੋਂ ਆਪਣੇ-ਆਪ ਹੀ ਨਾਂਹ ਕਰਦੇ ਹਾਂ।
+cookie-banner-blocker-onboarding-header = { -brand-short-name } ਨੇ ਹੁਣੇ ਹੀ ਤੁਹਾਡੇ ਲਈ ਕੂਕੀ ਬੈਨਰ ਤੋਂ ਇਨਕਾਰ ਕੀਤਾ
+cookie-banner-blocker-onboarding-body = ਇਸ ਸਾਈਟ ਲਈ ਤੁਹਾਡੇ ਲਈ ਘੱਟ ਧਿਆਨ ਭਟਕਣਾ, ਘੱਟ ਕੂਕੀਜ਼ ਟਰੈਕਿੰਗ ਹੈ।
+cookie-banner-blocker-onboarding-learn-more = ਹੋਰ ਜਾਣੋ
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -234,10 +237,6 @@ fxa-sync-cfr-secondary = ਮੈਨੂੰ ਬਾਅਦ ਵਿੱਚ ਚੇਤੇ 
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = ਪੁਰਾਣਾ ਡਿਵਾਈਸ ਵਰਤ ਰਹੇ ਹੋ?
-device-migration-fxa-spotlight-body = ਆਪਣੇ ਡਿਵਾਈਸ ਦਾ ਬੈਕਅੱਪ ਲੈਣਾ ਨਾ ਭੁੱਲੋ ਤਾਂ ਕਿ ਖਾਸ ਕਰਕੇ ਨਵੇਂ ਡਿਵਾਈਸ ਉੱਤੇ ਬਦਲਣ ਦੇ ਦੌਰਾਨ ਬੁੱਕਮਾਰਕ ਅਤੇ ਪਾਸਵਰਡਾਂ ਵਰਗੀਆਂ ਖਾਸ ਜਾਣਕਾਰੀਆਂ ਗੁੰਮ ਨਾ ਜਾਣ।
-device-migration-fxa-spotlight-primary-button = ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਕਿਵੇਂ ਲਈਏ
-device-migration-fxa-spotlight-link = ਮੈਨੂੰ ਬਾਅਦ ਵਿੱਚ ਚੇਤੇ ਕਰਵਾਓ
 device-migration-fxa-spotlight-heavy-user-header = ਆਪਣੇ ਡਾਟੇ ਦਾ ਬੈਕਅੱਪ ਲੈਣਾ ਨਾ ਭੁੱਲੋ
 device-migration-fxa-spotlight-heavy-user-body = ਖਾਸ ਜਾਣਕਾਰੀ — ਜਿਵੇਂ ਬੁੱਕਮਾਰਕ ਅਤੇ ਪਾਸਵਰਡ — ਤੁਹਾਡੇ ਸਾਰੇ ਡਿਵਾਈਸਾਂ ਉੱਤੇ ਅੱਪਡੇਟ ਅਤੇ ਸੁਰੱਖਿਅਤ ਹੋਣ ਨੂੰ ਪੱਕਾ ਕਰੋ।
 device-migration-fxa-spotlight-heavy-user-primary-button = ਸ਼ੁਰੂ ਕਰੀਏ
@@ -272,3 +271,14 @@ launch-on-login-infobar-reject-button = ਹੁਣੇ ਨਹੀਂ
 launch-on-login-infobar-final-message = <strong>ਕੀ ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਕਰੋ ਤੋਂ ਹਰ  ਵਾਰ { -brand-short-name } ਨੂੰ ਖੋਲ੍ਹਣਾ ਹੈ?</strong> ਸ਼ੁਰੂਆਤੀ ਪਸੰਦਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰਨ ਲਈ ਸੈਟਿੰਗਾਂ ਵਿੱਚ “startup” ਲੱਭੋ।
 launch-on-login-infobar-final-reject-button = ਨਹੀਂ, ਧੰਨਵਾਦ
     .accesskey = N
+
+## Tail Fox Set Default Spotlight
+
+# This title is displayed together with the picture of a running fox with a long tail.
+# In English, this is a figure of speech meaning 'stop something from following you'.
+# If the localization of this message is challenging, consider using a simplified
+# alternative as a reference for translation: 'Keep unwanted trackers away'.
+tail-fox-spotlight-title = ਬੇਲੋੜੇ ਟਰੈਕਾਂ ਤੋਂ ਪਿੱਛੋਂ ਲਾਹੋ
+tail-fox-spotlight-subtitle = ਖਿਝਾਉਣ ਵਾਲੇ ਇਸ਼ਤਿਹਾਰੀ ਟਰੈਕਰਾਂ ਨੂੰ ਕਹੋ ਅਲਵਿਦਾ ਅਤੇ ਵੱਧ ਸੁਰੱਖਿਅਤ, ਤੇਜ਼ ਇੰਟਰਨੈੱਟ ਦੇ ਲਵੋ ਨਜ਼ਾਰੇ।
+tail-fox-spotlight-primary-button = ਮੇਰੇ ਲਿੰਕ { -brand-short-name } ਨਾਲ ਖੋਲ੍ਹੋ
+tail-fox-spotlight-secondary-button = ਹੁਣੇ ਨਹੀਂ

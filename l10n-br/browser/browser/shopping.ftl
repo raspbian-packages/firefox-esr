@@ -39,6 +39,7 @@ shopping-letter-grade-tooltip =
 ## Strings for the shopping message-bar
 
 shopping-message-bar-warning-stale-analysis-message-2 = Titouroù nevez zo da wiriañ
+shopping-message-bar-warning-stale-analysis-button = Gwiriañ diouzhtu
 shopping-message-bar-generic-error =
     .heading = Titour ebet da gaout evit poent
     .message = Emaomp o klask diskoulmañ ar gudenn-se. Deuit en-dro diwezhatoc’h.
@@ -50,6 +51,7 @@ shopping-message-bar-analysis-in-progress-message2 = Gallout a ra padout tro-dro
 # Variables:
 #  $percentage (Number) - The percentage complete that the analysis is, per our servers.
 shopping-message-bar-analysis-in-progress-with-amount = O wiriañ kalite an alioù ({ $percentage }%)
+shopping-message-bar-keep-closed-dismiss-button = Ket, trugarez
 
 ## Strings for the product review snippets card
 
@@ -86,6 +88,7 @@ shopping-review-reliability-label =
 
 shopping-analysis-explainer-label =
     .label = Penaos e priziomp kalite an alioù
+shopping-analysis-explainer-learn-more2 = Gouzout hiroc’h diwar-benn <a data-l10n-name="review-quality-url">an doare ma jaoj { -fakespot-brand-name } perzhded an alioù</a>.
 
 ## Strings for UrlBar button
 
@@ -101,6 +104,7 @@ shopping-sidebar-close-button2 =
 ## used in the name of the Firefox feature ('Review Checker'). If that is not
 ## possible - if these terms are not meaningfully different - that is OK.
 
+shopping-unanalyzed-product-header-2 = Titour ebet diwar-benn an alioù-se c’hoazh
 shopping-unanalyzed-product-analyze-button = Gwiriañ kalite an alioù
 
 ## Strings for the advertisement
@@ -112,6 +116,7 @@ ad-by-fakespot = Bruderezh gant { -fakespot-brand-name }
 ## Shopping survey strings.
 
 shopping-survey-headline = Skoazellit da wellaat { -brand-product-name }
+shopping-survey-q1-radio-3-label = Ali ebet
 shopping-survey-q2-radio-1-label = Ya
 shopping-survey-q2-radio-2-label = Ket
 shopping-survey-q2-radio-3-label = N’ouzon ket
@@ -125,6 +130,9 @@ shopping-survey-thanks =
 ## "price tag" refers to the price tag icon displayed in the address bar to
 ## access the feature.
 
+shopping-callout-not-opted-in-reminder-ignore-checkbox = Na ziskouez din en-dro
+shopping-callout-disabled-auto-open-button = Komprenet am eus
+shopping-callout-opted-out-button = Komprenet am eus
 
 ## Onboarding message strings.
 

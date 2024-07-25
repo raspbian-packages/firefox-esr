@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Canfod yn y Gosodiadau
 managed-notice = Mae eich porwr yn cael ei reoli gan eich sefydliad.
+managed-notice-info-icon =
+    .alt = Manylion
 category-list =
     .aria-label = Categorïau
 pane-general-title = Cyffredinol
@@ -215,6 +217,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Tynnu'r Cynhwysydd Hwn
 containers-remove-cancel-button = Peidio Tynnu'r Cynhwysydd Hwn
+settings-tabs-show-image-in-preview =
+    .label = Dangos ragolwg delwedd pan fyddwch chi'n hofran ar dab
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -239,6 +244,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Mae eich dewisiadau lliw yn drech nag gwedd gwefan. <a data-l10n-name="colors-link">Rheoli lliwiau</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Mae eich dewisiadau lliw yn drech nag gwedd gwefan.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Rheoli themâu { -brand-short-name } yn <a data-l10n-name="themes-link">Estyniadau a Themâu</a>
@@ -266,6 +275,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Chwyddo testun yn unig
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Rhybudd: Os fyddwch yn dewis “Chwyddo testun yn unig” ac nad yw'ch chwyddo rhagosodedig wedi'i osod i 100%, gall achosi i rai gwefannau neu gynnwys dorri.
 language-header = Iaith
 choose-language-description = Dewiswch eich dewis o iaith i ddangos tudalennau
 choose-button =
@@ -392,15 +403,15 @@ applications-use-os-default-label =
 
 applications-handle-new-file-types-description = Beth ddylai { -brand-short-name } ei wneud gyda ffeiliau eraill?
 applications-save-for-new-types =
-    .label = Cadw ffeiliau
-    .accesskey = C
+    .label = Cadw'r ffeiliau
+    .accesskey = f
 applications-ask-before-handling =
     .label = Gofyn a ydych am agor neu gadw ffeiliau
     .accesskey = G
 drm-content-header = Cynnwys Rheoli Hawliau Digidol (DRM)
 play-drm-content =
     .label = Chwarae cynnwys wedi ei reoli gan DRM
-    .accesskey = C
+    .accesskey = D
 play-drm-content-learn-more = Darllen rhagor
 update-application-title = Diweddariadau { -brand-short-name }
 update-application-description = Cadwch { -brand-short-name } yn gyfredol am y perfformiad, y sefydlogrwydd a'r diogelwch gorau.
@@ -571,12 +582,15 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Argymhellwyd gan { $provider }
 home-prefs-recommended-by-description-new = Cynnwys eithriadol wedi'u curadu gan { $provider }, rhan o deulu { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Straeon cymeradwy
+home-prefs-recommended-by-description-generic = Cynnwys eithriadol wedi'i gasglu gan deulu { -brand-product-name }
 
 ##
 
 home-prefs-recommended-by-learn-more = Sut mae'n gweithio
 home-prefs-recommended-by-option-sponsored-stories =
-    .label = Straeon wedi eu Noddi
+    .label = Straeon wedi’u noddi
 home-prefs-recommended-by-option-recent-saves =
     .label = Dangos Eitemau wedi'u Cadw'n Diweddar
 home-prefs-highlights-option-visited-pages =
@@ -696,7 +710,7 @@ containers-remove-button =
 sync-signedout-caption = Mynd â'ch  Gwe gyda Chi
 sync-signedout-description2 = Cydweddwch eich nodau tudalen, hanes, tabiau, cyfrineiriau, ychwanegion a dewisiadau ar draws eich holl ddyfeisiau.
 sync-signedout-account-signin3 =
-    .label = Mewngofnodi i gydweddu…
+    .label = Mewngofnodi i Sync…
     .accesskey = M
 # This message contains two links and two icon images.
 #   `<img data-l10n-name="android-icon"/>` - Android logo icon
@@ -712,6 +726,13 @@ sync-mobile-promo = Llwytho Firefox i lawr ar gyfer <img data-l10n-name="android
 
 sync-profile-picture =
     .tooltiptext = Newid llun proffil
+sync-profile-picture-with-alt =
+    .tooltiptext = Newid llun proffil
+    .alt = Newid llun proffil
+sync-profile-picture-account-problem =
+    .alt = Llun proffil cyfrif
+fxa-login-rejected-warning =
+    .alt = Rhybudd
 sync-sign-out =
     .label = Allgofnodi…
     .accesskey = A
@@ -791,7 +812,7 @@ sync-engine-history =
     .label = Hanes
     .accesskey = H
 sync-engine-tabs =
-    .label = Agor tabiau
+    .label = Tabiau ar agor
     .tooltiptext = Rhestr o'r hyn sydd ar agor ar bob dyfais wedi eu cydweddu
     .accesskey = T
 sync-engine-logins-passwords =
@@ -885,7 +906,7 @@ forms-breach-alerts =
     .accesskey = r
 forms-breach-alerts-learn-more-link = Darllen rhagor
 preferences-relay-integration-checkbox =
-    .label = Awgrymu arallewnau e-byst { -relay-brand-name } i ddiogelu eich cyfeiriad e-bost
+    .label = Awgrymu arallenwau e-byst { -relay-brand-name } i ddiogelu eich cyfeiriad e-bost
 preferences-relay-integration-checkbox2 =
     .label = Awgrymu arallenwau e-byst { -relay-brand-name } i ddiogelu eich cyfeiriad e-bost
     .accesskey = w
@@ -947,8 +968,8 @@ autofill-addresses-checkbox = Cadw a llanw cyfeiriadau
     .accesskey = l
 autofill-saved-addresses-button = Cyfeiriadau wedi'u cadw
     .accesskey = y
-autofill-payment-methods-checkbox-message = Cadw a llanw dulliau talu
-    .accesskey = d
+autofill-payment-methods-checkbox-message = Dulliau cadw a llanw taliadau
+    .accesskey = D
 autofill-payment-methods-checkbox-submessage = Yn cynnwys cardiau credyd a debyd
     .accesskey = Y
 autofill-saved-payment-methods-button = Dulliau talu wedi'u cadw
@@ -979,7 +1000,7 @@ history-remember-label = Bydd { -brand-short-name } yn
 history-remember-option-all =
     .label = Cofio hanes
 history-remember-option-never =
-    .label = Peidio cofio hanes
+    .label = Peidio â chofio hanes
 history-remember-option-custom =
     .label = Defnyddio gosodiadau cyfaddas ar gyfer hanes
 history-remember-description = Bydd { -brand-short-name } yn cofio eich hanes pori, llwytho i lawr, ffurflenni a chwilio.
@@ -1016,6 +1037,7 @@ sitedata-delete-on-close =
     .label = Dileu cwcis a data'r wefan pan fydd { -brand-short-name } yn cau
     .accesskey = D
 sitedata-delete-on-close-private-browsing = Yn y modd pori preifat parhaol, bydd cwcis a data'r wefan yn cael eu clirio bob tro pan fydd { -brand-short-name } yn cau.
+sitedata-delete-on-close-private-browsing2 = Yn seiliedig ar eich gosodiadau hanes, mae { -brand-short-name } yn dileu cwcis a data gwefan o'ch sesiwn pan fyddwch yn cau'r porwr.
 sitedata-allow-cookies-option =
     .label = Derbyn cwcis a data gan wefannau
     .accesskey = D
@@ -1092,10 +1114,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Gweithredoedd cyflym
     .accesskey = c
+addressbar-suggestions-settings = Newid dewisiadau am awgrymiadau peiriannau chwilio
 addressbar-locbar-showrecentsearches-option =
     .label = Dangos y chwilio diweddar
     .accesskey = D
-addressbar-suggestions-settings = Newid dewisiadau am awgrymiadau peiriannau chwilio
 addressbar-quickactions-learn-more = Darllen rhagor
 
 ## Privacy Section - Content Blocking
@@ -1257,7 +1279,7 @@ permissions-addon-exceptions =
 ## Privacy Section - Data Collection
 
 collection-header = Casglu Data a'r Defnydd o { -brand-short-name }
-collection-header2 = Casglu Data { -brand-short-name } a'i Ddefnydd
+collection-header2 = Casglu Data a'r Defnydd o { -brand-short-name }
     .searchkeywords = telemetreg
 collection-description = Rydym yn ceisio darparu dewisiadau i chi a chasglu dim ond beth sydd ei angen arnom i ddarparu a gwella { -brand-short-name } ar gyfer pawb. Rydym yn gofyn caniatâd bob tro cyn derbyn manylion personol.
 collection-privacy-notice = Hysbysiad Preifatrwydd
@@ -1277,6 +1299,8 @@ addon-recommendations-link = Darllen rhagor
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Mae adrodd ar ddata wedi ei analluogi ar gyfer ffurfweddiad yr adeiledd hwn
 collection-backlogged-crash-reports-with-link = Caniatáu i { -brand-short-name } anfon adroddiadau chwalu sydd wedi'u crynhoi ar eich rhan <a data-l10n-name="crash-reports-link">Darllen rhagor</a>
+    .accesskey = C
+collection-backlogged-crash-reports = Caniatáu i { -brand-short-name } anfon adroddiadau chwalu sydd wedi'u crynhoi ar eich rhan
     .accesskey = C
 privacy-segmentation-section-header = Nodweddion newydd sy'n gwella eich pori
 privacy-segmentation-section-description = Pan fyddwn yn cynnig nodweddion sy'n defnyddio'ch data i roi profiad mwy personol i chi:

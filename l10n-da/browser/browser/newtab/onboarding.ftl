@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Importer fra { $previou
 mr1-onboarding-theme-header = Du bestemmer
 mr1-onboarding-theme-subtitle = Gør { -brand-short-name } mere personlig med et tema.
 mr1-onboarding-theme-secondary-button-label = Ikke nu
+newtab-wallpaper-onboarding-title = Tilføj lidt farve
+newtab-wallpaper-onboarding-subtitle = Vælg en baggrund for at give siden Nyt faneblad et nyt udseende.
+newtab-wallpaper-onboarding-primary-button-label = Indstil baggrund
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Systemets tema
 mr1-onboarding-theme-label-light = Lyst
@@ -344,3 +347,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Når du har aktiveret
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } passer på dig
 onboarding-gratitude-security-and-privacy-subtitle = Tak for at du bruger { -brand-short-name }, støttet af Mozilla Foundation. Med din hjælp arbejder vi på at gøre internettet sikrere og mere tilgængeligt for alle.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Hvor længe har du anvendt { -brand-short-name }?
+onboarding-new-user-familiarity-based-survey-title = Hvor godt kender du { -brand-short-name }?
+onboarding-new-user-survey-subtitle = Din feedback er med til at gøre { -brand-short-name } endnu bedre.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Næste
+onboarding-new-user-survey-legal-link-label = Ved at klikke på "{ onboarding-new-user-survey-next-button-label }" accepterer du <a data-l10n-name="privacy_notice">privatlivserklæringen</a> for { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Jeg er helt ny
+onboarding-new-user-survey-time-based-option-2 = Mindre end 1 måned
+onboarding-new-user-survey-time-based-option-3 = Mere end 1 måned, regelmæssigt
+onboarding-new-user-survey-time-based-option-4 = Mere end 1 måned, lejlighedsvis
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Jeg er helt ny
+onboarding-new-user-survey-familiarity-based-option-2 = Jeg har brugt den en del
+onboarding-new-user-survey-familiarity-based-option-3 = Jeg er kender den meget godt
+onboarding-new-user-survey-familiarity-based-option-4 = Jeg har brugt den før, men det er et stykke tid siden

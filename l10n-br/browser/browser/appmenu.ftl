@@ -77,6 +77,19 @@ appmenu-remote-tabs-turn-on-sync =
 appmenu-remote-tabs-showmore =
     .label = Diskouez muioc'h a ivinelloù
     .tooltiptext = Diskouez muioc'h a ivinelloù eus an trevnad-mañ
+# This is shown when there are inactive tabs which are not being shown.
+# Variables
+# $count (Number) - The number of inactive tabs which are not being shown (at least 1)
+appmenu-remote-tabs-showinactive =
+    .label =
+        { $count ->
+            [one] Diskouez un ivinell dioberiant
+            [two] Diskouez { $count } ivinell dioberiant
+            [few] Diskouez { $count } ivinell dioberiant
+            [many] Diskouez { $count } ivinell dioberiant
+           *[other] Diskouez { $count } ivinell dioberiant
+        }
+    .tooltiptext = Diskouez an ivinelloù dioberiant war an trevnad-mañ
 # This is shown beneath the name of a device when that device has no open tabs
 appmenu-remote-tabs-notabs = Ivinell digor ebet
 # This is shown when Sync is configured but syncing tabs is disabled.
@@ -168,6 +181,11 @@ profiler-popup-capture-shortcut =
 # devtools/client/performance-new/shared/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
+
+# Presets and their l10n IDs are defined in the file
+# devtools/client/performance-new/shared/background.sys.mjs
+# Please take care that the same values are also defined in devtools' perftools.ftl.
+
 profiler-popup-presets-web-developer-description = Rakarventennoù erbedet evit diveugañ an arloadoù gant un overhead izel.
 profiler-popup-presets-web-developer-label =
     .label = Diorroer web
@@ -242,7 +260,7 @@ appmenu-help-exit-troubleshoot-mode =
 ## are mutually exclusive, so it's possible to use the same accesskey for both.
 
 appmenu-help-report-deceptive-site =
-    .label = Danevelliñ al lec'hienn dagus…
+    .label = Danevelliñ ul lec’hienn dagus…
     .accesskey = d
 appmenu-help-not-deceptive =
     .label = N'eo ket ul lec’hienn dagus…
@@ -257,3 +275,12 @@ appmenu-developer-tools-extensions =
     .label = Extensions for Developers
 appmenuitem-report-broken-site =
     .label = Danevelliñ ul lec'hienn torret
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Kevreit ouzh ho kont
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-description = Kuzhit ho chomlec’h postel hag ho niverenn bellgomz gwirion
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description = Gwarezit hoc’h oberiantiz enlinenn

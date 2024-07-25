@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Імпартаваць 
 mr1-onboarding-theme-header = Зрабіце яго сваім
 mr1-onboarding-theme-subtitle = Персаніфікуйце { -brand-short-name } з дапамогай тэмы.
 mr1-onboarding-theme-secondary-button-label = Не зараз
+newtab-wallpaper-onboarding-title = Паспрабуйце ўсплёск колеру
+newtab-wallpaper-onboarding-subtitle = Выберыце шпалеры, каб надаць новай картцы новы выгляд.
+newtab-wallpaper-onboarding-primary-button-label = Усталяваць шпалеры
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Сістэмная тэма
 mr1-onboarding-theme-label-light = Светлая
@@ -343,3 +346,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Калі вы сін�
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } прыкрывае вас
 onboarding-gratitude-security-and-privacy-subtitle = Дзякуй за выкарыстанне { -brand-short-name }, які падтрымліваецца Mozilla Foundation. З вашай падтрымкай мы працуем над тым, каб зрабіць Інтэрнэт больш бяспечным і даступным для кожнага.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Як доўга вы карыстаецеся { -brand-short-name }?
+onboarding-new-user-familiarity-based-survey-title = Наколькі вы знаёмыя з { -brand-short-name }?
+onboarding-new-user-survey-subtitle = Ваш водгук дапамагае зрабіць { -brand-short-name } яшчэ лепшым.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Далей
+onboarding-new-user-survey-legal-link-label = Выбіраючы “{ onboarding-new-user-survey-next-button-label },” вы згаджаецеся з <a data-l10n-name="privacy_notice">Паведамленнем аб прыватнасці</a> { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Я новенькі
+onboarding-new-user-survey-time-based-option-2 = Менш за 1 месяц
+onboarding-new-user-survey-time-based-option-3 = Больш за 1 месяц, рэгулярна
+onboarding-new-user-survey-time-based-option-4 = Больш за 1 месяц, часам
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Я новенькі
+onboarding-new-user-survey-familiarity-based-option-2 = Карыстаўся пэўны час
+onboarding-new-user-survey-familiarity-based-option-3 = Мне гэта добра знаёма
+onboarding-new-user-survey-familiarity-based-option-4 = Я выкарыстаў яго ў мінулым, але гэта было даўно

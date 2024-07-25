@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Lägg till sökmotor
 newtab-topsites-add-shortcut-header = Ny genväg
 newtab-topsites-edit-topsites-header = Redigera mest besökta
 newtab-topsites-edit-shortcut-header = Redigera genväg
+newtab-topsites-add-shortcut-label = Lägg till genväg
 newtab-topsites-title-label = Titel
 newtab-topsites-title-input =
     .placeholder = Ange en titel
@@ -198,6 +199,7 @@ newtab-section-header-recent-activity = Senaste aktivitet
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Rekommenderas av { $provider }
+newtab-section-header-stories = Tankeväckande berättelser
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -206,6 +208,8 @@ newtab-empty-section-highlights = Börja surfa, och vi visar några av de bästa
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Det finns inte fler. Kom tillbaka senare för fler huvudnyheter från { $provider }. Kan du inte vänta? Välj ett populärt ämne för att hitta fler bra nyheter från hela världen.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Det finns inte fler. Kom tillbaka senare för fler berättelser. Kan du inte vänta? Välj ett populärt ämne för att hitta fler bra berättelser från hela webben.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -258,9 +262,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Sponsrade genvägar
 newtab-custom-pocket-title = Rekommenderas av { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Särskilt innehåll valt av { -pocket-brand-name }, en del av familjen { -brand-product-name }
-newtab-custom-pocket-toggle =
-    .label = Rekommenderas av { -pocket-brand-name }
-    .description = Särskilt innehåll valt av { -pocket-brand-name }, en del av familjen { -brand-product-name }
+newtab-custom-stories-toggle =
+    .label = Rekommenderade berättelser
+    .description = Exceptionellt innehåll kurerat av { -brand-product-name }-familjen
 newtab-custom-pocket-sponsored = Sponsrade berättelser
 newtab-custom-pocket-show-recent-saves = Visa senast sparade
 newtab-custom-recent-title = Senaste aktivitet
@@ -270,3 +274,24 @@ newtab-custom-recent-toggle =
     .description = Ett urval av senaste webbplatser och innehåll
 newtab-custom-close-button = Stäng
 newtab-custom-settings = Hantera fler inställningar
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Bakgrundsbilder
+newtab-wallpaper-reset = Återställ till standardvärden
+newtab-wallpaper-light-red-panda = Röd panda
+newtab-wallpaper-light-mountain = Vita berg
+newtab-wallpaper-light-sky = Himmel med lila och rosa moln
+newtab-wallpaper-light-color = Blå, rosa och gula former
+newtab-wallpaper-light-landscape = Berglandskap med blå dimma
+newtab-wallpaper-light-beach = Strand med palmträd
+newtab-wallpaper-dark-aurora = Norrsken
+newtab-wallpaper-dark-color = Röda och blå former
+newtab-wallpaper-dark-panda = Röd panda dold i skogen
+newtab-wallpaper-dark-sky = Stadslandskap med en natthimmel
+newtab-wallpaper-dark-mountain = Landskap med berg
+newtab-wallpaper-dark-city = Lila stadslandskap
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Foto av <a data-l10n-name="name-link">{ $author_string }</a> från <a data-l10n-name="webpage-link">{ $webpage_string }</a>

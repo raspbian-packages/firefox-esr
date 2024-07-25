@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Tuo selaimesta { $previ
 mr1-onboarding-theme-header = Omalla tyylillä
 mr1-onboarding-theme-subtitle = Valitse { -brand-short-name }-teema makusi mukaan.
 mr1-onboarding-theme-secondary-button-label = Ei nyt
+newtab-wallpaper-onboarding-title = Lisää ripaus väriä
+newtab-wallpaper-onboarding-subtitle = Valitse taustakuva, joka antaa uudelle välilehdelle raikkaan ilmeen.
+newtab-wallpaper-onboarding-primary-button-label = Aseta taustakuva
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Järjestelmän teema
 mr1-onboarding-theme-label-light = Vaalea
@@ -344,3 +347,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Synkronoinnin myötä
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } huolehtii sinusta
 onboarding-gratitude-security-and-privacy-subtitle = Kiitos, että käytät Mozilla-säätiön tukemaa { -brand-short-name }ia. Tukesi avulla pyrimme tekemään Internetistä entistä turvallisemman ja helpommin saavutettavan kaikille.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Kuinka kauan olet käyttänyt { -brand-short-name }ia?
+onboarding-new-user-familiarity-based-survey-title = Kuinka tuttu { -brand-short-name } on sinulle?
+onboarding-new-user-survey-subtitle = Palautteesi auttaa tekemään { -brand-short-name }ista entistä paremman.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Seuraava
+onboarding-new-user-survey-legal-link-label = Valitsemalla “{ onboarding-new-user-survey-next-button-label }” hyväksyt  { -brand-product-name }in<a data-l10n-name="privacy_notice">tietosuojakäytännön</a>
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Olen aivan uusi
+onboarding-new-user-survey-time-based-option-2 = Alle kuukauden
+onboarding-new-user-survey-time-based-option-3 = Yli kuukauden, säännöllisesti
+onboarding-new-user-survey-time-based-option-4 = Yli kuukauden, satunnaisesti
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Olen aivan uusi
+onboarding-new-user-survey-familiarity-based-option-2 = Olen käyttänyt sitä jonkin verran
+onboarding-new-user-survey-familiarity-based-option-3 = Olen hyvin perehtynyt siihen
+onboarding-new-user-survey-familiarity-based-option-4 = Olen käyttänyt sitä aiemmin, mutta siitä on aikaa

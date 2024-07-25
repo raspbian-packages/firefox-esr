@@ -12,10 +12,13 @@
 
 policy-3rdparty = 設定 WebExtension 可透過 chrome.storage.managed 存取的政策。
 policy-AllowedDomainsForApps = 指定允許存取 Google Workspace 的網域。
+policy-AllowFileSelectionDialogs = 允許顯示檔案選擇對話框。
 policy-AppAutoUpdate = 開啟或關閉應用程式自動更新。
 policy-AppUpdatePin = 防止 { -brand-short-name } 更新超過特定版本。
 policy-AppUpdateURL = 自訂應用程式更新網址。
 policy-Authentication = 為支援的網站設定整合身分驗證方式。
+policy-AutofillAddressEnabled = 開啟地址自動填寫功能。
+policy-AutofillCreditCardEnabled = 開啟付款方式自動填寫功能。
 policy-AutoLaunchProtocolsFromOrigins = 列舉一組外部通訊協定的清單與來源網址，可不提示使用者就自動啟動外部通訊協定。
 policy-BackgroundAppUpdate2 = 啟用或停用背景更新程式。
 policy-BlockAboutAddons = 防止開啟附加元件管理員（about:addons）。
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = 防止開啟 about:support 頁面。
 policy-Bookmarks = 在書籤工具列、選單或當中的資料夾建立書籤。
 policy-CaptivePortal = 開啟或關閉支援 Captive portal。
 policy-CertificatesDescription = 新增憑證，或使用內建憑證。
+policy-ContentAnalysis = 啟用或停用與資料外洩防護軟體之間的連線。
 policy-Cookies = 允許或拒絕網站設定 Cookie。
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = 設定容器分頁相關政策。
@@ -35,8 +39,11 @@ policy-DisableAppUpdate = 防止瀏覽器更新。
 policy-DisableBuiltinPDFViewer = 停用 { -brand-short-name } 內建的 PDF 閱讀器 PDF.js。
 policy-DisableDefaultBrowserAgent = 不讓預設瀏覽器代理工具作任何事。僅對 Windows 有效，其他平台沒有代理工具可用。
 policy-DisableDeveloperTools = 防止使用開發者工具。
+policy-DisableEncryptedClientHello = 停用 TLS 的 Encrypted Client Hello（ECH）功能。
 policy-DisableFeedbackCommands = 停用於「說明」選單中傳送意見回饋的相關指令（「送出意見回饋」與「回報詐騙網站」）。
 policy-DisableFirefoxAccounts = 停用 { -fxaccount-brand-name }相關服務，包含 Sync。
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = 停用需要帳號才可使用的服務，包含 Sync。
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = 停用 Firefox Screenshots 功能。
 policy-DisableFirefoxStudies = 防止 { -brand-short-name } 進行使用者研究。
@@ -121,6 +128,7 @@ policy-SSLVersionMax = 設定最大 SSL 版本。
 policy-SSLVersionMin = 設定最小 SSL 版本。
 policy-StartDownloadsInTempDirectory = 強制在本機的暫存位置，而非預設下載目錄開始下載。
 policy-SupportMenu = 於說明選單內新增自訂的技術支援項目。
+policy-TranslateEnabled = 啟用或停用網頁翻譯功能。
 policy-UserMessaging = 不要對使用者顯示某些訊息。
 policy-UseSystemPrintDialog = 使用系統列印對話框列印。
 # “format” refers to the format used for the value of this policy.

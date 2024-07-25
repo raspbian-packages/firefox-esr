@@ -227,6 +227,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Zure kolore-hautapenek webgunearen itxura baliogabetzen dute. <a data-l10n-name="colors-link">Kudeatu koloreak</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Zure kolore-hautapenek webgunearen itxura baliogabetzen dute.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Kudeatu { -brand-short-name }(r)en itxurak <a data-l10n-name="themes-link">Hedapenak eta itxura</a> atalean
@@ -696,6 +700,9 @@ sync-mobile-promo = Deskargatu <img data-l10n-name="android-icon"/> <a data-l10n
 
 sync-profile-picture =
     .tooltiptext = Aldatu profileko argazkia
+sync-profile-picture-with-alt =
+    .tooltiptext = Aldatu profileko argazkia
+    .alt = Aldatu profileko argazkia
 sync-sign-out =
     .label = Amaitu saioa…
     .accesskey = A
@@ -1067,10 +1074,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Ekintza bizkorrak
     .accesskey = b
+addressbar-suggestions-settings = Aldatu bilaketa-motorren iradokizunetarako hobespenak
 addressbar-locbar-showrecentsearches-option =
     .label = Erakutsi azken bilaketak
     .accesskey = r
-addressbar-suggestions-settings = Aldatu bilaketa-motorren iradokizunetarako hobespenak
 addressbar-quickactions-learn-more = Argibide gehiago
 
 ## Privacy Section - Content Blocking
@@ -1230,6 +1237,8 @@ addon-recommendations-link = Argibide gehiago
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Datuen berri ematea desgaituta dago eraikitze-konfigurazio honetarako
 collection-backlogged-crash-reports-with-link = Baimendu { -brand-short-name }(r)i zure izenean hutsegite-txostenak atzeko planoan bidaltzea <a data-l10n-name="crash-reports-link">Argibide gehiago</a>
+    .accesskey = h
+collection-backlogged-crash-reports = Baimendu { -brand-short-name }(r)i zure izenean hutsegite-txostenak atzeko planoan bidaltzea
     .accesskey = h
 privacy-segmentation-section-header = Zure nabigazioa hobetzen duten eginbide berriak
 privacy-segmentation-section-description = Noiz eskaintzen ditugun esperientzia pertsonalizatuagoa emateko zure datuak erabiltzen dituzten eginbideak:

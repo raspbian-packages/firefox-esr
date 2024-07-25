@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Баптаулардан табу
 managed-notice = Браузеріңіз сіздің ұйымыңызбен басқаралады.
+managed-notice-info-icon =
+    .alt = Ақпарат
 category-list =
     .aria-label = Санаттар
 pane-general-title = Жалпы
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Бұл контейнерді өшіру
 containers-remove-cancel-button = Бұл контейнерді өшірмеу
+settings-tabs-show-image-in-preview =
+    .label = Бетке курсорды апарған кезде суреттің алдын ала қарауын көрсету
+    .accessKey = с
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Сіздің түс таңдауларыңыз веб-сайттың сыртқы көрінісін үстінен басады. <a data-l10n-name="colors-link">Түстерді басқару</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Сіздің түс таңдауларыңыз веб-сайттың сыртқы көрінісін үстінен басады.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = { -brand-short-name } темаларын <a data-l10n-name="themes-link">Кеңейтулер және темалар</a> ішінен басқарыңыз
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Тек мәтінді масштабтау
     .accesskey = т
+preferences-text-zoom-override-warning =
+    .message = Ескерту: «Тек мәтінді масштабтау» опциясын таңдасаңыз және үнсіз келісім бойынша масштабтау 100%-ға орнатылмаса, бұл кейбір сайттардың немесе мазмұнның бұзылуына әкелуі мүмкін.
 language-header = Тіл
 choose-language-description = Интернет-беттерді көрсету үшін тілді таңдаңыз
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Ұсынушы { $provider }
 home-prefs-recommended-by-description-new = { -brand-product-name } отбасының мүшесі болып табылатын, { $provider } жетекшілік ететін тамаша құрама
+home-prefs-recommended-by-header-generic =
+    .label = Ұсынылатын оқиғалар
+home-prefs-recommended-by-description-generic = { -brand-product-name } отбасымен қадағаланатын ерекше мазмұн
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Firefox қолданбасын <img data-l10n-name="android-
 
 sync-profile-picture =
     .tooltiptext = Профиль суретін ауыстыру
+sync-profile-picture-with-alt =
+    .tooltiptext = Профиль суретін ауыстыру
+    .alt = Профиль суретін ауыстыру
+sync-profile-picture-account-problem =
+    .alt = Тіркелгі профилінің суреті
+fxa-login-rejected-warning =
+    .alt = Ескерту
 sync-sign-out =
     .label = Шығу…
     .accesskey = Ш
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = { -brand-short-name } жабылған кезде cookies және сайттар деректерін өшіру
     .accesskey = ш
 sitedata-delete-on-close-private-browsing = Тұрақты жекелік шолу режимінде { -brand-short-name } жабылған кезде cookie файлдары және сайт деректері әрқашан өшірілетін болады.
+sitedata-delete-on-close-private-browsing2 = Сіздің тарих баптаулары негізінде { -brand-short-name } браузерді жапқан кезде сеансыңыздан cookie файлдары мен сайт деректерін өшіреді.
 sitedata-allow-cookies-option =
     .label = Cookies және сайт деректерін қабылдау
     .accesskey = а
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Жылдам әрекеттер
     .accesskey = к
+addressbar-suggestions-settings = Іздеу жүйесінің ұсыныстары үшін қалауларды өзгерту
 addressbar-locbar-showrecentsearches-option =
     .label = Жуырдағы іздеулерді көрсету
     .accesskey = р
-addressbar-suggestions-settings = Іздеу жүйесінің ұсыныстары үшін қалауларды өзгерту
 addressbar-quickactions-learn-more = Көбірек білу
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = Көбірек білу
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Деректер есептемесін беру бұл жинақта сөндірілген
 collection-backlogged-crash-reports-with-link = { -brand-short-name } үшін сіздің атыңыздан жиналған құлаулар хабарламаларын жіберуді рұқсат ету <a data-l10n-name="crash-reports-link">Көбірек білу</a>
+    .accesskey = с
+collection-backlogged-crash-reports = { -brand-short-name } үшін сіздің атыңыздан жиналған құлаулар хабарламаларын жіберуді рұқсат ету
     .accesskey = с
 privacy-segmentation-section-header = Шолуыңызды жақсартатын жаңа мүмкіндіктер
 privacy-segmentation-section-description = Сізге жеке тәжірибе беру үшін деректеріңізді пайдаланатын мүмкіндіктерді ұсынғанда:

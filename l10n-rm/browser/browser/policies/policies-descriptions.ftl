@@ -12,10 +12,13 @@
 
 policy-3rdparty = Definir directivas a las qualas WebExtensions pon acceder via chrome.storage.managed.
 policy-AllowedDomainsForApps = Definescha las domenas che dastgan acceder a Google Workspace.
+policy-AllowFileSelectionDialogs = Activar las fanestras da dialog per la tscherna da datotecas.
 policy-AppAutoUpdate = Activar u deactivar l'actualisaziun automatica da l'applicaziun.
 policy-AppUpdatePin = Impedir che { -brand-short-name } vegnia actualisà ad ina versiun pli nova che quella inditgada.
 policy-AppUpdateURL = Definir ina URL dad actualisaziun persunalisada per l'applicaziun.
 policy-Authentication = Configurar l'autentificaziun integrada per websites che la sustegnan.
+policy-AutofillAddressEnabled = Activar l’endataziun automatica per adressas.
+policy-AutofillCreditCardEnabled = Activar l’endataziun automatica per metodas da pajament.
 policy-AutoLaunchProtocolsFromOrigins = Definescha ina glista da protocols externs che pon vegnir utilisads da funtaunas inditgadas senza dumandar l'utilisader.
 policy-BackgroundAppUpdate2 = Activar u deactivar las actualisaziuns davos las culissas.
 policy-BlockAboutAddons = Bloccar l'access a l'administraziun da supplements (about:addons).
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = Bloccar l'access a la pagina about:support.
 policy-Bookmarks = Crear segnapaginas en la trav da segnapaginas, en il menu da segnapaginas u en in da lur sutordinaturs.
 policy-CaptivePortal = Activar u deactivar il sustegn per captive portal.
 policy-CertificatesDescription = Agiuntar certificats u utilisar certificats predefinids.
+policy-ContentAnalysis = Activar u deactivar la connexiun a l’agent per la prevenziun da la perdita da datas.
 policy-Cookies = Permetter u scumandar a websites da definir cookies.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Definir directivas che concernan containers.

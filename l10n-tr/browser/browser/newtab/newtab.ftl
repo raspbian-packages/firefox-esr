@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Arama motoru ekle
 newtab-topsites-add-shortcut-header = Yeni kısayol
 newtab-topsites-edit-topsites-header = Sık kullanılan siteyi düzenle
 newtab-topsites-edit-shortcut-header = Kısayolu düzenle
+newtab-topsites-add-shortcut-label = Kısayol ekle
 newtab-topsites-title-label = Başlık
 newtab-topsites-title-input =
     .placeholder = Başlık yazın
@@ -194,6 +195,7 @@ newtab-section-header-recent-activity = Son Etkinlikler
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } öneriyor
+newtab-section-header-stories = Merak uyandıran makaleler
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -201,7 +203,9 @@ newtab-empty-section-highlights = Gezinmeye başlayın. Son zamanlarda baktığ�
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
-newtab-empty-section-topstories = Hepsini bitirdiniz. Yeni { $provider } haberleri için daha fazla yine gelin. Beklemek istemiyor musunuz? İlginç yazılara ulaşmak için popüler konulardan birini seçebilirsiniz.
+newtab-empty-section-topstories = Hepsini bitirdiniz. Yeni { $provider } yazıları için yine gelin. Beklemek istemiyor musunuz? İlginç yazılara ulaşmak için popüler konulardan birini seçebilirsiniz.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Hepsini bitirdiniz. Yeni yazılar için daha sonra yine gelin. Beklemek istemiyor musunuz? İlginç yazılara ulaşmak için popüler konulardan birini seçebilirsiniz.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -220,7 +224,7 @@ newtab-pocket-new-topics-title = Daha fazla içeriğe ne dersiniz? { -pocket-bra
 newtab-pocket-more-recommendations = Daha fazla öneri
 newtab-pocket-learn-more = Daha fazla bilgi al
 newtab-pocket-cta-button = { -pocket-brand-name }’ı edinin
-newtab-pocket-cta-text = Sevdiğiniz yazıları { -pocket-brand-name }’a kaydedin, aklınız okumaya değer şeylerle doldurun.
+newtab-pocket-cta-text = Sevdiğiniz yazıları { -pocket-brand-name }’a kaydedin, aklınızı okumaya değer şeylerle doldurun.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name }, { -brand-product-name } ailesinin bir parçasıdır
 # A save to Pocket button that shows over the card thumbnail on hover.
 newtab-pocket-save = Kaydet
@@ -254,9 +258,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Sponsorlu kısayollar
 newtab-custom-pocket-title = { -pocket-brand-name } önerileri
 newtab-custom-pocket-subtitle = { -brand-product-name } ailesinin bir parçası olan { -pocket-brand-name }’ın seçtiği harika içerikler
-newtab-custom-pocket-toggle =
-    .label = { -pocket-brand-name } önerileri
-    .description = { -brand-product-name } ailesinin bir parçası olan { -pocket-brand-name }’ın seçtiği harika içerikler
+newtab-custom-stories-toggle =
+    .label = Önerilen makaleler
+    .description = { -brand-product-name } ailesinin seçtiği harika içerikler
 newtab-custom-pocket-sponsored = Sponsorlu haberler
 newtab-custom-pocket-show-recent-saves = Son kaydedilenleri göster
 newtab-custom-recent-title = Son etkinlikler
@@ -266,3 +270,24 @@ newtab-custom-recent-toggle =
     .description = Son kullanılan siteler ve içeriklerden bir seçki
 newtab-custom-close-button = Kapat
 newtab-custom-settings = Diğer ayarları yönet
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Duvar kâğıtları
+newtab-wallpaper-reset = Varsayılana sıfırla
+newtab-wallpaper-light-red-panda = Kızıl panda
+newtab-wallpaper-light-mountain = Beyaz dağ
+newtab-wallpaper-light-sky = Mor ve pembe bulutlu gökyüzü
+newtab-wallpaper-light-color = Mavi, pembe ve sarı şekiller
+newtab-wallpaper-light-landscape = Mavi sisli dağ manzarası
+newtab-wallpaper-light-beach = Palmiye ağaçlı sahil
+newtab-wallpaper-dark-aurora = Aurora Borealis
+newtab-wallpaper-dark-color = Kırmızı ve mavi şekiller
+newtab-wallpaper-dark-panda = Ormanda saklanan kızıl panda
+newtab-wallpaper-dark-sky = Gece gökyüzüyle şehir manzarası
+newtab-wallpaper-dark-mountain = Manzaralı dağ
+newtab-wallpaper-dark-city = Mor şehir manzarası
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Fotoğraf: <a data-l10n-name="name-link">{ $author_string }</a> / <a data-l10n-name="webpage-link">{ $webpage_string }</a>

@@ -12,10 +12,13 @@
 
 policy-3rdparty = הגדרת מדיניות שהרחבות WebExtensions יכולות לגשת אליהן באמצעות chrome.storage.managed.
 policy-AllowedDomainsForApps = הגדרת שמות מתחם המורשים לגשת ל־Google Workspace.
+policy-AllowFileSelectionDialogs = לאפשר תיבות דו־שיח לבחירת קבצים.
 policy-AppAutoUpdate = הפעלה או השבתה של עדכון אוטומטי ליישום.
 policy-AppUpdatePin = למנוע מ־{ -brand-short-name } להתעדכן מעבר לגרסה שצוינה.
 policy-AppUpdateURL = הגדרת כתובת מותאמת אישית לעדכון היישום.
 policy-Authentication = הגדרת אימות משולב לאתרים שתומכים בזה.
+policy-AutofillAddressEnabled = הפעלת מילוי אוטומטי עבור כתובות.
+policy-AutofillCreditCardEnabled = הפעלת מילוי אוטומטי עבור אמצעי תשלום.
 policy-AutoLaunchProtocolsFromOrigins = הגדרת רשימה של פרוטוקולים חיצוניים שניתן להשתמש בהם ממתחמים מסוימים מבלי להציג הודעה למשתמש.
 policy-BackgroundAppUpdate2 = הפעלה או השבתה של שירות המעדכן ברקע.
 policy-BlockAboutAddons = חסימת הגישה למנהל התוספות (about:addons).
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = חסימת הגישה לעמוד about:support.
 policy-Bookmarks = יצירת סימניות בסרגל הסימניות, תפריט הסימניות או בתיקייה מסוימת בתוכם.
 policy-CaptivePortal = הפעלה או השבתה של תמיכה ב־Captive Portal.
 policy-CertificatesDescription = הוספת אישורים או שימוש באישורים מובנים.
+policy-ContentAnalysis = הפעלה או השבתה של חיבור לסוכן למניעת אובדן נתונים.
 policy-Cookies = לאשר או לסרב להגדרת עוגיות מאתרים.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = הגדרת מדיניות הקשורה למגירות לשוניות.
@@ -35,8 +39,11 @@ policy-DisableAppUpdate = מניעת עדכון הדפדפן.
 policy-DisableBuiltinPDFViewer = השבתת PDF.js, מציג ה־PDF המובנה ב־{ -brand-short-name }.
 policy-DisableDefaultBrowserAgent = למנוע מסוכן הדפדפן ברירת המחדל מלבצע פעולות כלשהן. תקף ל־Windows בלבד; בסביבות אחרות אין את הסוכן הזה.
 policy-DisableDeveloperTools = חסימת גישה לכלי הפיתוח.
+policy-DisableEncryptedClientHello = השבתת השימוש בתכונת TLS בשם Encrypted Client Hello‏ (ECH).
 policy-DisableFeedbackCommands = השבתת פקודות לשליחת משוב מתפריט העזרה (שליחת משוב ודיווח על אתר מטעה).
 policy-DisableFirefoxAccounts = השבתת שירותים מבוססי { -fxaccount-brand-name(case: "a") }, לרבות Sync.
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = השבתת שירותים מבוססי חשבון, כולל סנכרון.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = השבתת התכונה Firefox Screenshots.
 policy-DisableFirefoxStudies = למנוע מ־{ -brand-short-name } להריץ מחקרים.
@@ -119,6 +126,7 @@ policy-SSLVersionMax = הגדרת גרסת ה־SSL המקסימלית.
 policy-SSLVersionMin = הגדרת גרסת ה־SSL המינימלית.
 policy-StartDownloadsInTempDirectory = לכפות על הורדות להתחיל במיקום מקומי וזמני במקום בתיקיית ההורדות המוגדרת כברירת המחדל.
 policy-SupportMenu = הוספת תפריט תמיכה בהתאמה אישית לתפריט העזרה.
+policy-TranslateEnabled = הפעלה או השבתה של תרגום דפי אינטרנט.
 policy-UserMessaging = לא להציג למשתמש הודעות מסוימות.
 policy-UseSystemPrintDialog = הדפסה באמצעות תיבת הדו־שיח להדפסה של המערכת.
 # “format” refers to the format used for the value of this policy.

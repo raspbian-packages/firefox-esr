@@ -12,10 +12,13 @@
 
 policy-3rdparty = WebExtension이 chrome.storage.managed를 통해 액세스할 수 있는 정책을 설정합니다.
 policy-AllowedDomainsForApps = Google Workspace에 액세스할 수 있는 도메인을 정의합니다.
+policy-AllowFileSelectionDialogs = 파일 선택 대화 상자를 허용합니다.
 policy-AppAutoUpdate = 애플리케이션 자동 업데이트를 사용하거나 사용하지 않게 합니다.
 policy-AppUpdatePin = { -brand-short-name }가 지정된 버전 이상으로 업데이트되지 않도록 합니다.
 policy-AppUpdateURL = 사용자 지정 앱 업데이트 URL을 설정합니다.
 policy-Authentication = 통합 인증을 지원하는 웹 사이트를 위한 설정을 합니다.
+policy-AutofillAddressEnabled = 주소 자동 채우기를 사용합니다.
+policy-AutofillCreditCardEnabled = 결제 방법에 자동 채우기를 사용합니다.
 policy-AutoLaunchProtocolsFromOrigins = 사용자에게 메시지를 표시하지 않고 나열된 출처에서 사용할 수 있는 외부 프로토콜 목록을 정의합니다.
 policy-BackgroundAppUpdate2 = 백그라운드 업데이터를 사용하거나 사용하지 않게 합니다.
 policy-BlockAboutAddons = 부가 기능 관리자(about:addons) 접근을 차단합니다.
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = about:support 페이지 접근을 차단합니다.
 policy-Bookmarks = 북마크 도구 모음, 북마크 메뉴 또는 그 안의 특정 폴더에 북마크를 만듭니다.
 policy-CaptivePortal = 종속 포털 지원을 사용하거나 사용하지 않게 합니다.
 policy-CertificatesDescription = 인증서를 추가하거나 기본 제공 인증서를 사용합니다.
+policy-ContentAnalysis = 데이터 손실 방지 에이전트에 대한 연결을 사용하거나 사용하지 않게 합니다.
 policy-Cookies = 웹 사이트의 쿠키 설정을 허용하거나 거부합니다.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = 컨테이너와 관련된 정책을 설정합니다.
@@ -35,8 +39,11 @@ policy-DisableAppUpdate = 브라우저가 업데이트 되지 않도록 합니�
 policy-DisableBuiltinPDFViewer = { -brand-short-name }에 내장된 PDF 뷰어인 PDF.js를 사용 안 합니다.
 policy-DisableDefaultBrowserAgent = 기본 브라우저 에이전트가 작업을 수행하지 못하도록 합니다. Windows에만 적용되며 다른 플랫폼에는 에이전트가 없습니다.
 policy-DisableDeveloperTools = 개발자 도구 접근을 차단합니다.
+policy-DisableEncryptedClientHello = TLS 기능 ECH(Encrypted Client Hello) 사용을 비활성화합니다.
 policy-DisableFeedbackCommands = 도움말 메뉴의 의견 보내기 명령 (의견 보내기 및 가짜 사이트 신고)을 사용 안 합니다.
 policy-DisableFirefoxAccounts = 동기화를 포함한 { -fxaccount-brand-name } 기반의 서비스를 사용 안 합니다.
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = 동기화를 포함한 계정 기반 서비스를 사용 안 합니다.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Firefox 스크린샷 기능을 사용 안 합니다.
 policy-DisableFirefoxStudies = { -brand-short-name } 연구 실행을 막습니다.
@@ -121,6 +128,7 @@ policy-SSLVersionMax = 최대 SSL 버전을 설정합니다.
 policy-SSLVersionMin = 최소 SSL 버전을 설정합니다.
 policy-StartDownloadsInTempDirectory = 기본 다운로드 디렉터리가 아닌 로컬 임시 위치에서 강제로 다운로드를 시작합니다.
 policy-SupportMenu = 도움말 메뉴에 사용자 지정 지원 메뉴 항목을 추가합니다.
+policy-TranslateEnabled = 웹 페이지 번역을 사용하거나 사용하지 않게 합니다.
 policy-UserMessaging = 사용자에게 특정 메시지를 표시하지 않습니다.
 policy-UseSystemPrintDialog = 시스템 인쇄 대화 상자를 사용하여 인쇄합니다.
 # “format” refers to the format used for the value of this policy.

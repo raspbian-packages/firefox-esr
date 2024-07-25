@@ -563,6 +563,11 @@ urlbar-result-action-search-w-engine = { $engine } 검색
 urlbar-result-action-sponsored = 스폰서
 urlbar-result-action-switch-tab = 탭 전환
 urlbar-result-action-visit = 방문
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = 탭 전환 · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = 클립보드에서 방문
 # Directs a user to press the Tab key to perform a search with the specified
@@ -592,6 +597,12 @@ urlbar-result-action-copy-to-clipboard = 복사
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = { $engine } 검색
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -887,6 +898,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>이전 탭을 여시겠습니까?</strong> { -brand-short-name } 애플리케이션 메뉴 <img data-l10n-name="icon"/>의 기록 아래에서 이전 세션을 복원할 수 있습니다.
 restore-session-startup-suggestion-button = 사용법 보기
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = 조직에서 이 컴퓨터의 로컬 파일에 대한 액세스를 차단했습니다.
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = 여러분이 보다 나은 경험을 할 수 있도록 { -brand-short-name }는 { -vendor-short-name }에 자동으로 일부 데이터를 전송합니다.
@@ -895,6 +910,15 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = 사생활 보호 모드
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = { $agentName }의 데이터 손실 방지(DLP)입니다. 자세한 내용을 보려면 누르세요.
+content-analysis-panel-title = 데이터 보호
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = 사용자의 조직은 { $agentName } 에이전트를 사용하여 데이터 손실을 방지합니다. <a data-l10n-name="info">더 알아보기</a>
 
 ## Unified extensions (toolbar) button
 
@@ -948,11 +972,11 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
-firefox-relay-offer-why-to-use-relay = 안전하고 사용하기 쉬운 마스크는 이메일 주소를 숨김으로써 신원을 보호하고 스팸을 방지합니다.
+firefox-relay-offer-why-to-use-relay = 안전하고 사용하기 쉬운 가리기는 이메일 주소를 숨김으로써 신원을 보호하고 스팸을 방지합니다.
 # Variables:
 #  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-provides = 이메일 마스크로 전송된 모든 이메일은 차단하지 않는 한 <strong>{ $useremail }</strong>(으)로 전달됩니다.
-firefox-relay-offer-legal-notice = "이메일 마스크 사용"을 클릭하면, <label data-l10n-name="tos-url">서비스 약관</label>및 <label data-l10n-name="privacy-url">개인정보처리방침</label>에 동의하는 것입니다.
+firefox-relay-offer-what-relay-provides = 이메일 가리기로 전송된 모든 이메일은 차단하지 않는 한 <strong>{ $useremail }</strong>(으)로 전달됩니다.
+firefox-relay-offer-legal-notice = "이메일 가리기 사용"을 클릭하면, <label data-l10n-name="tos-url">서비스 약관</label>및 <label data-l10n-name="privacy-url">개인정보처리방침</label>에 동의하는 것입니다.
 
 ## Add-on Pop-up Notifications
 

@@ -128,6 +128,10 @@ startup-restore-warn-on-quit =
     .label = Memperingatkan Anda saat keluar dari peramban
 disable-extension =
     .label = Nonaktifkan Ekstensi
+preferences-data-migration-header = Impor Data Peramban
+preferences-data-migration-button =
+    .label = Impor Data
+    .accesskey = I
 tabs-group-header = Tab
 ctrl-tab-recently-used-order =
     .label = Ctrl+Tab berputar melalui tab dalam urutan yang baru saja digunakan
@@ -203,6 +207,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Pilihan warna Anda mengesampingkan tampilan situs web. <a data-l10n-name="colors-link">Kelola warna</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Pilihan warna Anda mengesampingkan tampilan situs web.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Kelola tema { -brand-short-name } di <a data-l10n-name="themes-link">Ekstensi & Tema</a>
@@ -659,6 +667,9 @@ sync-mobile-promo = Unduh Firefox untuk <img data-l10n-name="android-icon"/> <a 
 
 sync-profile-picture =
     .tooltiptext = Ubah gambar profil
+sync-profile-picture-with-alt =
+    .tooltiptext = Ubah gambar profil
+    .alt = Ubah gambar profil
 sync-sign-out =
     .label = Keluar…
     .accesskey = K
@@ -792,6 +803,9 @@ pane-privacy-logins-and-passwords-header = Info Masuk & Sandi
 forms-ask-to-save-logins =
     .label = Minta untuk menyimpan info masuk dan kata sandi untuk situs web
     .accesskey = M
+
+## Privacy Section - Passwords
+
 forms-exceptions =
     .label = Pengecualian…
     .accesskey = c
@@ -844,6 +858,9 @@ primary-password-os-auth-dialog-message-win = Untuk membuat Sandi Utama, masukka
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = membuat Sandi Utama
 master-password-os-auth-dialog-caption = { -brand-full-name }
+
+## Privacy section - Autofill
+
 
 ## Privacy Section - History
 
@@ -1069,6 +1086,9 @@ permissions-microphone = Mikrofon
 permissions-microphone-settings =
     .label = Setelan…
     .accesskey = t
+permissions-speaker-settings =
+    .label = Pengaturan…
+    .accesskey = P
 permissions-notification = Notifikasi
 permissions-notification-settings =
     .label = Setelan…
@@ -1118,6 +1138,8 @@ addon-recommendations-link = Pelajari lebih lanjut
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Pelaporan data dinonaktifkan untuk konfigurasi build ini
 collection-backlogged-crash-reports-with-link = Izinkan { -brand-short-name } mengirim laporan kerusakan sebelumnya atas nama Anda <a data-l10n-name="crash-reports-link">Pelajari lebih lanjut</a>
+    .accesskey = l
+collection-backlogged-crash-reports = Izinkan { -brand-short-name } mengirim laporan kerusakan sebelumnya atas nama Anda
     .accesskey = l
 privacy-segmentation-section-header = Fitur baru yang meningkatkan penjelajahan Anda
 privacy-segmentation-section-description = Saat kami menawarkan fitur yang menggunakan data Anda untuk memberi Anda pengalaman yang lebih pribadi:

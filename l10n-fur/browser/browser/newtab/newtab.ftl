@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Zonte motôr di ricercje
 newtab-topsites-add-shortcut-header = Gnove scurte
 newtab-topsites-edit-topsites-header = Modifiche sît principâl
 newtab-topsites-edit-shortcut-header = Modifiche scurte
+newtab-topsites-add-shortcut-label = Zonte scurte
 newtab-topsites-title-label = Titul
 newtab-topsites-title-input =
     .placeholder = Inserìs un titul
@@ -199,6 +200,7 @@ newtab-section-header-recent-activity = Ativitât resinte
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Conseât di { $provider }
+newtab-section-header-stories = Storiis che a fasin pensâ
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -207,6 +209,8 @@ newtab-empty-section-highlights = Scomence a navigâ e, in cheste sezion, ti mos
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Tu sês rivât insom. Controle plui indenant par vê altris storiis di { $provider }. No tu rivis a spietâ? Selezione un argoment tra chei plui popolârs par cjatâ altris storiis interessantis ator pal web.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Nuie altri di gnûf. Torne controle plui indevant par altris storiis. No tu rivis a spietâ? Selezione un argoment di chei plui popolârs par scuvierzi altris storiis interessantis dal web.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -259,9 +263,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Scurtis sponsorizadis
 newtab-custom-pocket-title = Conseâts di { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Contignûts ecezionâi curâts di { -pocket-brand-name }, part de famee { -brand-product-name }
-newtab-custom-pocket-toggle =
-    .label = Conseâts di { -pocket-brand-name }
-    .description = Contignûts ecezionâi curâts di { -pocket-brand-name }, part de famee { -brand-product-name }
+newtab-custom-stories-toggle =
+    .label = Storiis conseadis
+    .description = Contignûts ecezionâl curât de famee di prodots { -brand-product-name }
 newtab-custom-pocket-sponsored = Storiis sponsorizadis
 newtab-custom-pocket-show-recent-saves = Mostre salvaments resints
 newtab-custom-recent-title = Ativitât resinte
@@ -271,3 +275,24 @@ newtab-custom-recent-toggle =
     .description = Une selezion di sîts e contignûts resints
 newtab-custom-close-button = Siere
 newtab-custom-settings = Gjestìs plui impostazions
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Fonts
+newtab-wallpaper-reset = Ripristine predefinît
+newtab-wallpaper-light-red-panda = Panda ros
+newtab-wallpaper-light-mountain = Montagne blancje
+newtab-wallpaper-light-sky = Cîl cun nui viole e rose
+newtab-wallpaper-light-color = Formis zalis, blu e rose
+newtab-wallpaper-light-landscape = Paisaç cun montagne involuçât intune fumate blu
+newtab-wallpaper-light-beach = Splaze cun palmis
+newtab-wallpaper-dark-aurora = Aurore boreâl
+newtab-wallpaper-dark-color = Formis rossis e blu
+newtab-wallpaper-dark-panda = Panda ros platât tal bosc
+newtab-wallpaper-dark-sky = Paisaç di citât cun cîl di gnot
+newtab-wallpaper-dark-mountain = Paisaç cun montagne
+newtab-wallpaper-dark-city = Paisaç citadin cun tonalitât viole
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Foto di <a data-l10n-name="name-link">{ $author_string }</a> su <a data-l10n-name="webpage-link">{ $webpage_string }</a>

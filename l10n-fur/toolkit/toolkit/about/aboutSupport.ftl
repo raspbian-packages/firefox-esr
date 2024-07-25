@@ -191,6 +191,18 @@ media-codec-support-lack-of-extension = Instale estension
 ## See EME Spec for more explanation for following technical terms
 ## https://w3c.github.io/encrypted-media/
 
+media-content-decryption-modules-title = Informazions sui modui di decifrazion contignûts
+media-key-system-name = Non Key System
+media-video-robustness = Soliditât video
+media-audio-robustness = Soliditât audio
+media-cdm-capabilities = Funzionalitâts
+# Clear Lead isn't defined in the spec, which means the the first few seconds
+# are not encrypted. It allows playback to start without having to wait for
+# license response, improving video start time and user experience.
+media-cdm-clear-lead = Inviament in clâr
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = Compatibilitât HDCP 2.2
 
 ##
 
@@ -270,6 +282,7 @@ try-newer-driver = Bloc par la version in funzion dal driver grafic. Inzorne il 
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Parametris ClearType
 compositing = Composizion
+support-font-determination = Informazions di debug pe visibilitât dai caratars
 hardware-h264 = Decodifiche H264 dal hardware
 main-thread-no-omtc = discussion principâl, no OMTC
 yes = Si
@@ -415,3 +428,15 @@ pointing-device-mouse = Mouse
 pointing-device-touchscreen = Schermi tatil
 pointing-device-pen-digitizer = Pene digjitâl
 pointing-device-none = Nissun dispositîf di pontament
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = Analisi contignûts (DLP)
+content-analysis-active = Ative
+content-analysis-connected-to-agent = Conetût al agjent
+content-analysis-agent-path = Percors agjent
+content-analysis-agent-failed-signature-verification = L'agjent nol à passât la verifiche de firme
+content-analysis-request-count = Cont des richiestis

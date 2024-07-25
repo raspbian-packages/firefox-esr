@@ -63,6 +63,7 @@ cfr-doorhanger-extension-total-users =
 
 cfr-doorhanger-bookmark-fxa-header = Embojuehe nde rechaukaha eimeha guive.
 cfr-doorhanger-bookmark-fxa-body = ¡Mba’eguasu jejuhu! Ko’ág̃a aníke epyta ko techaukaha’ỹre ne pumbyry popeguápe. Eñepyrũ { -fxaccount-brand-name } ndive.
+cfr-doorhanger-bookmark-fxa-body-2 = ¡Mba’eguasu jejuhu! Ko’ág̃a aníke epyta techaukaha’ỹre ne pumbyry popeguápe. Eñepyrũ mba’ete ndive.
 cfr-doorhanger-bookmark-fxa-link-text = Embojuehehína techaukaha...
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Emboty votõ
@@ -203,8 +204,9 @@ cfr-cbh-confirm-button = Embojevy kookie banner
     .accesskey = R
 cfr-cbh-dismiss-button = Ani ko’ág̃a
     .accesskey = N
-cookie-banner-blocker-cfr-header = { -brand-short-name } ojokóma kookiekuéra
-cookie-banner-blocker-cfr-body = Romboyke orejehegui heta kookie rovetã apysẽ rombohasyve hag̃ua tendakuéra nde rapykuehóvo.
+cookie-banner-blocker-onboarding-header = { -brand-short-name } omboyke kookie marandu’i nde rérape
+cookie-banner-blocker-onboarding-body = Sa’ive ñakãity, sa’ive kookie nde rapykuehóva ko tendápe.
+cookie-banner-blocker-onboarding-learn-more = Eikuaave
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -234,10 +236,6 @@ fxa-sync-cfr-secondary = Chemomandu’a ag̃ave
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = ¿Eiporuhína mba’e’oka itujavéva?
-device-migration-fxa-spotlight-body = Eñongatu ne mba’ekuaarã ambue hendápe ani hag̃ua okañy marandu takate’ỹha ikatúva techaukaha ha ñe’ẽñemi — eiporu mba’éramo ambue mba’e’oka.
-device-migration-fxa-spotlight-primary-button = Mba’éichapa añongatúta che mba’ekuaarã
-device-migration-fxa-spotlight-link = Chemomandu’a ag̃ave
 device-migration-fxa-spotlight-heavy-user-header = Eñongatu ne mba’ekuaarã tekorosãverã
 device-migration-fxa-spotlight-heavy-user-body = Ehecha ne marandu emomba’evéva, ha’éva techaukaha ha ñe’ẽñemi, tahekopyahu ha tahekorosã opaite mba’e’okápe.
 device-migration-fxa-spotlight-heavy-user-primary-button = Eñepyrũ
@@ -272,3 +270,14 @@ launch-on-login-infobar-reject-button = Ani ko’ág̃a
 launch-on-login-infobar-final-message = <strong>¿Embojuruja { -brand-short-name } emoñepyrũjeývo ne mohendaha?</strong> Eñangareko hag̃ua ñepyrũha erohoryvéva, eheka “ñepyrũ” ñembohekópe.
 launch-on-login-infobar-final-reject-button = Nahániri, aguyje
     .accesskey = N
+
+## Tail Fox Set Default Spotlight
+
+# This title is displayed together with the picture of a running fox with a long tail.
+# In English, this is a figure of speech meaning 'stop something from following you'.
+# If the localization of this message is challenging, consider using a simplified
+# alternative as a reference for translation: 'Keep unwanted trackers away'.
+tail-fox-spotlight-title = Eguereko mombyrymi umi tapykuehoha
+tail-fox-spotlight-subtitle = Emboyke umi marandu tapykuehoha ha eike ñanduti hekorosã ha ipya’evévape.
+tail-fox-spotlight-primary-button = Embojuruja juajuha { -brand-short-name } ndive
+tail-fox-spotlight-secondary-button = Ani ko’ág̃a

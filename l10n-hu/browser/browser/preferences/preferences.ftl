@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Keresés a Beállításokban
 managed-notice = A böngészőjét a szervezete kezeli.
+managed-notice-info-icon =
+    .alt = Információ
 category-list =
     .aria-label = Kategóriák
 pane-general-title = Általános
@@ -168,7 +170,7 @@ show-tabs-in-taskbar =
     .label = Lapok előnézetének megjelenítése a Windows tálcán
     .accesskey = L
 browser-containers-enabled =
-    .label = Konténer lapok engedélyezése
+    .label = Konténerlapok engedélyezése
     .accesskey = n
 browser-containers-learn-more = További tudnivalók
 browser-containers-settings =
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Konténer eltávolítása
 containers-remove-cancel-button = Ne távolítsa el a konténert
+settings-tabs-show-image-in-preview =
+    .label = Előnézeti kép megjelenítése, ha az egérmutatót egy lap fülé húzza
+    .accessKey = E
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Az Ön színválasztásai felülírják a webhely megjelenését. <a data-l10n-name="colors-link">Színek kezelése</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Az Ön színválasztásai felülírják a webhely megjelenését.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Kezelje a { -brand-short-name } témáit a <a data-l10n-name="themes-link">Kiegészítők és témák</a> lapon
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Csak a szöveg nagyítása
     .accesskey = v
+preferences-text-zoom-override-warning =
+    .message = Figyelmeztetés: Ha a „Csak szöveg nagyítása” lehetőséget választja, és az alapértelmezett nagyítás nem 100%-ra van állítva, az egyes webhelyek és tartalmak nem megfelelő működését okozhatja.
 language-header = Nyelv
 choose-language-description = Az oldalak megjelenítésére előnyben részesített nyelv megadása
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = A(z) { $provider } ajánlásával
 home-prefs-recommended-by-description-new = Kivételes tartalmak a { $provider } válogatásában, amely a { -brand-product-name } család része
+home-prefs-recommended-by-header-generic =
+    .label = Ajánlott történetek
+home-prefs-recommended-by-description-generic = Kivételes tartalmak a { -brand-product-name } család válogatásában
 
 ##
 
@@ -662,7 +676,7 @@ search-keyword-warning-bookmark = Olyan kulcsszót választott, amelyet jelenleg
 
 containers-back-button2 =
     .aria-label = Vissza a Beállításokhoz
-containers-header = Konténer lapok
+containers-header = Konténerlapok
 containers-add-button =
     .label = Új konténer hozzáadása
     .accesskey = a
@@ -696,6 +710,13 @@ sync-mobile-promo = Töltse le a Firefox for <img data-l10n-name="android-icon"/
 
 sync-profile-picture =
     .tooltiptext = Profilkép módosítása
+sync-profile-picture-with-alt =
+    .tooltiptext = Profilkép módosítása
+    .alt = Profilkép módosítása
+sync-profile-picture-account-problem =
+    .alt = Fiók profilképe
+fxa-login-rejected-warning =
+    .alt = Figyelmeztetés
 sync-sign-out =
     .label = Kijelentkezés…
     .accesskey = K
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Sütik és oldaladatok törlése a { -brand-short-name } bezárásakor
     .accesskey = S
 sitedata-delete-on-close-private-browsing = Állandó privát böngészési módban a sütik és a webhelyadatok mindig törölve lesznek a { -brand-short-name } bezárásakor.
+sitedata-delete-on-close-private-browsing2 = Az előzmények beállításai alapján a { -brand-short-name } törli a sütiket és a webhelyadatokat a munkamenetéből, amikor bezárja a böngészőt.
 sitedata-allow-cookies-option =
     .label = Sütik és oldaladatok elfogadása
     .accesskey = e
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Gyors műveletek
     .accesskey = r
+addressbar-suggestions-settings = Keresőszolgáltatás-javaslatok beállításainak módosítása
 addressbar-locbar-showrecentsearches-option =
     .label = Legutóbbi keresések megjelenítése
     .accesskey = L
-addressbar-suggestions-settings = Keresőszolgáltatás-javaslatok beállításainak módosítása
 addressbar-quickactions-learn-more = További tudnivalók
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = További tudnivalók
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Az adatjelentést letiltották ehhez a binárishoz
 collection-backlogged-crash-reports-with-link = Engedélyezés, hogy a { -brand-short-name } elküldje az elmaradt összeomlás-jelentéseket az Ön nevében <a data-l10n-name="crash-reports-link">További tudnivalók</a>
+    .accesskey = o
+collection-backlogged-crash-reports = Engedélyezés, hogy a { -brand-short-name } elküldje az elmaradt összeomlás-jelentéseket az Ön nevében
     .accesskey = o
 privacy-segmentation-section-header = Új funkciók, amelyek még jobbá teszik a böngészést
 privacy-segmentation-section-description = Amikor olyan funkciókat kínálunk, amelyek az Ön adatait használja, akkor a személyesebb élmény biztosítására használjuk fel:

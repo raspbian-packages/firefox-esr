@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Z { $previous } importo
 mr1-onboarding-theme-header = Přiswojće sej jón
 mr1-onboarding-theme-subtitle = Personalizujće { -brand-short-name } z drastu.
 mr1-onboarding-theme-secondary-button-label = Nic nětko
+newtab-wallpaper-onboarding-title = Wupruwujće barbowy woplusk
+newtab-wallpaper-onboarding-subtitle = Wubjerće pozadkowy wobraz, zo byšće swojemu nowemu rajtarkej nowy napohlad dał.
+newtab-wallpaper-onboarding-primary-button-label = Pozadkowy wobraz nastajić
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Systemowa drasta
 mr1-onboarding-theme-label-light = Swětły
@@ -344,3 +347,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Hdyž sće synchroniz
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } za wami steji
 onboarding-gratitude-security-and-privacy-subtitle = Wulki dźak, zo { -brand-short-name } wužiwaće, kotryž so wot załožby Mozilla Foundation spěchuje. Z wašej pomocu dźěłamy na tym, internet wěsćiši a přistupniši za kóždeho činić.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Kak dołho { -brand-short-name } hižo wužiwaće?
+onboarding-new-user-familiarity-based-survey-title = Kak derje znajeće { -brand-short-name }?
+onboarding-new-user-survey-subtitle = Waše měnjenja { -brand-short-name } samo polěpšeja.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Dale
+onboarding-new-user-survey-legal-link-label = Hdyž „{ onboarding-new-user-survey-next-button-label }“ wuběraće, zwoliće do <a data-l10n-name="privacy_notice">zdźělenki priwatnosće</a> { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Sym cyle nowy
+onboarding-new-user-survey-time-based-option-2 = Mjenje hač 1 měsac
+onboarding-new-user-survey-time-based-option-3 = Wjace hač 1 měsac, prawidłownje
+onboarding-new-user-survey-time-based-option-4 = Wjace hač 1 měsac, hdys a hdys
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Sym cyle nowy
+onboarding-new-user-survey-familiarity-based-option-2 = Sym jón hižo něštokróć wužiwał
+onboarding-new-user-survey-familiarity-based-option-3 = Znaju jón jara derje
+onboarding-new-user-survey-familiarity-based-option-4 = Sym jón w zańdźenosći wužiwał, ale je tomu hižo chwila

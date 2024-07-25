@@ -14,6 +14,8 @@ policy-3rdparty = Imposta criteri a cui le estensioni basate su tecnologia WebEx
 
 policy-AllowedDomainsForApps = Definisce i domini con cui è consentito accedere a Google Workspace.
 
+policy-AllowFileSelectionDialogs = Attiva le finestre di dialogo per la selezione di file.
+
 policy-AppAutoUpdate = Attiva o disattiva aggiornamenti automatici dell’applicazione.
 
 policy-AppUpdatePin = Impedisce l’aggiornamento di { -brand-short-name } a una versione superiore a quella indicata.
@@ -21,6 +23,10 @@ policy-AppUpdatePin = Impedisce l’aggiornamento di { -brand-short-name } a una
 policy-AppUpdateURL = Imposta URL personalizzato per aggiornamento applicazione.
 
 policy-Authentication = Configura autenticazione integrata per i siti in cui è supportata.
+
+policy-AutofillAddressEnabled = Attiva compilazione automatica per gli indirizzi.
+
+policy-AutofillCreditCardEnabled = Attiva compilazione automatica per i metodi di pagamento.
 
 policy-AutoLaunchProtocolsFromOrigins = Definisce un elenco di protocolli esterni che possono essere utilizzati dalle origini approvate senza chiedere conferma all’utente.
 
@@ -42,6 +48,8 @@ policy-CertificatesDescription = Aggiungi certificati o utilizza i certificati p
 
 policy-Cookies = Consenti o nega ai siti web di impostare cookie.
 
+policy-ContentAnalysis = Attiva o disattiva la connessione all’agente per la prevenzione della perdita di dati.
+
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Imposta criteri relativi alle schede contenitore.
 
@@ -59,9 +67,12 @@ policy-DisableDefaultBrowserAgent = Impedisci al “default browser agent” di 
 
 policy-DisableDeveloperTools = Blocca accesso agli strumenti di sviluppo.
 
+policy-DisableEncryptedClientHello = Disattiva la funzione TLS Encrypted Client Hello (ECH).
+
 policy-DisableFeedbackCommands = Disattiva i comandi per inviare feedback dal menu Aiuto (“Invia feedback…” e “Segnala un sito ingannevole…”).
 
 policy-DisableFirefoxAccounts = Disattiva i servizi basati sugli { -fxaccount-brand-name }, incluso Sync.
+policy-DisableFirefoxAccounts1 = Disattiva i servizi basati su account, incluso Sync.
 
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Disattiva Firefox Screenshots.
@@ -214,6 +225,8 @@ policy-StartDownloadsInTempDirectory = Forza l’avvio dei download in una carte
 
 policy-SupportMenu = Aggiungi una voce di menu personalizzata nel menu Aiuto.
 
+policy-TranslateEnabled = Attiva o disattiva la traduzione di pagine web.
+
 policy-UserMessaging = Non visualizzare determinati messaggi all’utente.
 
 policy-UseSystemPrintDialog = Stampa utilizzando la finestra di dialogo di sistema.
@@ -222,8 +235,3 @@ policy-UseSystemPrintDialog = Stampa utilizzando la finestra di dialogo di siste
 policy-WebsiteFilter = Impedisci l’accesso a determinati siti web. Consulta la documentazione per ulteriori dettagli sul formato da utilizzare.
 
 policy-Windows10SSO = Permetti l’utilizzo di Windows single sign-on per account Microsoft, account aziendale o dell’istituto di istruzione.
-
-
-
-
-

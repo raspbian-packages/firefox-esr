@@ -68,8 +68,13 @@ about-private-browsing-pin-promo-title = Gordetako cookie edo historiarik ez. Na
 about-private-browsing-cookie-banners-promo-header = Cookie iragarki-bandak kanpora!
 about-private-browsing-cookie-banners-promo-button = Murriztu cookie iragarki-bandak
 about-private-browsing-cookie-banners-promo-message = Utzi { -brand-short-name }(r)i cookie laster-leihoak automatikoki erantzuten, distraziorik gabeko nabigaziora itzul zaitezen. Ahal bada eskaera guztiak ukatuko ditu { -brand-short-name }(e)k.
+# Simplified version of the headline if the original text doesn't work
+# in your language: `{ -brand-short-name } will show fewer cookie requests`
+about-private-browsing-cookie-banners-promo-heading = { -brand-short-name } cookie iragarki-bandez arduratzen da
+about-private-browsing-cookie-banners-promo-body = Orain hainbat cookie iragarki-banda automatikoki baztertzen ditugu jarraipen gutxiago izan eta distraziorik gabeko nabigaziora itzul zaitezen.
 
 ## Strings for Felt Privacy v1 experiments in 119
 
 about-private-browsing-felt-privacy-v1-info-header = Ez utzi arrastorik gailu honetan
+about-private-browsing-felt-privacy-v1-info-body = { -brand-short-name }(e)k zure cookieak, historia eta guneetako datuak ezabatzen ditu leiho pribatu guztiak ixten dituzunean.
 about-private-browsing-felt-privacy-v1-info-link = Nork ikus lezake nire jarduera?

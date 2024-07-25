@@ -10,9 +10,9 @@ search-header =
 ## Variables
 ##   $domain - Domain name where add-ons are available (e.g. addons.mozilla.org)
 
-list-empty-get-extensions-message = Kit da dapout askouezhioù ha neuzioù war <a data-l10n-name="get-extensions"></a>
-list-empty-get-dictionaries-message = Kit da dapout geriadurioù war <a data-l10n-name="get-extensions"></a>
-list-empty-get-language-packs-message = Kit da dapout pakadoù yezh war <a data-l10n-name="get-extensions"></a>
+list-empty-get-extensions-message = Kit da dapout askouezhioù ha neuzioù war <a data-l10n-name="get-extensions">{ $domain }</a>
+list-empty-get-dictionaries-message = Kit da dapout geriadurioù war <a data-l10n-name="get-extensions">{ $domain }</a>
+list-empty-get-language-packs-message = Kit da dapout pakadoù yezh war <a data-l10n-name="get-extensions">{ $domain }</a>
 
 ##
 
@@ -139,6 +139,13 @@ addon-category-available-updates-title =
 addon-category-recent-updates = Hizivadurioù nevesañ
 addon-category-recent-updates-title =
     .title = Hizivadurioù nevesañ
+addon-category-sitepermission = Aotreoù al lec’hienn
+addon-category-sitepermission-title =
+    .title = Aotreoù al lec’hienn
+# String displayed in about:addons in the Site Permissions section
+# Variables:
+#  $host (string) - DNS host name for which the webextension enables permissions
+addon-sitepermission-host = Aotreoù al lec’hienn evit { $host }
 
 ## These are global warnings
 
@@ -206,6 +213,9 @@ shortcuts-no-addons = N'ho peus askouezh ebet gweredekaet.
 shortcuts-no-commands = An askouezhioù da-heul n'ho deus ket a verradenn:
 shortcuts-input =
     .placeholder = Biziatait ur verradenn
+# Accessible name for a trashcan icon button that removes an existent shortcut
+shortcuts-remove-button =
+    .aria-label = Lemel ar verradenn
 shortcuts-pageAction = Gweredekaat ar gwered pajenn
 shortcuts-sidebarAction = Diskouez/kuzhat ar varrenn gostez
 shortcuts-modifier-mac = Enkorfañ Ctrl, Alt pe ⌘
@@ -374,6 +384,7 @@ addon-detail-group-label-updates =
 addon-badge-private-browsing-allowed2 =
     .title = Aotreet er prenestroù prevez
     .aria-label = { addon-badge-private-browsing-allowed2.title }
+addon-detail-private-browsing-help = Ma’z eo aotreet e c’hall an askouezh haeziñ hoc’h obererezh enlinenn e-pad ar merdeiñ prevez. <a data-l10n-name="learn-more">Gouzout hiroc’h</a>
 addon-detail-private-browsing-allow = Aotren
 addon-detail-private-browsing-disallow = Na aotren
 # aria-label associated to the private browsing row to help screen readers to announce the group
@@ -394,6 +405,9 @@ addon-detail-group-label-quarantined-domains =
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
 
+addon-badge-recommended2 =
+    .title = { -brand-product-name } ne erbed nemet an askouezhioù a zouj d’hor reoladoù surentez hag efedusted
+    .aria-label = { addon-badge-recommended2.title }
 
 ##
 
@@ -413,6 +427,7 @@ plugin-heading = Merañ hoc'h enlugelladoù
 dictionary-heading = Merañ ho keriaduioù
 locale-heading = Merañ ho yezhoù
 updates-heading = Merañ ho hizivadurioù
+sitepermission-heading = Merañ hoc’h aotreoù lecʼhiennoù
 discover-heading = Personelait ho { -brand-short-name }
 shortcuts-heading = Merañ berradennoù an askouezhioù
 default-heading-search-label = Kavout muioc'h a askouezhioù

@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Іздеу жүйесін қосу
 newtab-topsites-add-shortcut-header = Жаңа жарлық
 newtab-topsites-edit-topsites-header = Топ сайтын түзету
 newtab-topsites-edit-shortcut-header = Жарлықты түзету
+newtab-topsites-add-shortcut-label = Жарлықты қосу
 newtab-topsites-title-label = Атауы
 newtab-topsites-title-input =
     .placeholder = Атауын енгізіңіз
@@ -118,7 +119,7 @@ newtab-privacy-modal-paragraph-2 =
     Қызықтыратын оқиғаларды сақтаумен қоса, біз сізге таңдамалы демеушілер
     ұсынған, тексерілген мазмұнды көрсетеміз. <strong>Шолу деректеріңіз сіздің жеке 
     { -brand-product-name } көшірмесінен ешқайда кетпейтініне сенімді болыңыз</strong> 
-    — оларға біз де, демеушілер де қатынай алмайды.
+    — оларға біз де, демеушілер де қол жеткізе алмайды.
 newtab-privacy-modal-link = Жекелік қалай жұмыс істейтінін жаңа бетте қараңыз
 
 ##
@@ -198,6 +199,7 @@ newtab-section-header-recent-activity = Соңғы белсенділігі
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Ұсынушы { $provider }
+newtab-section-header-stories = Ойландыратын оқиғалар
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -205,7 +207,9 @@ newtab-empty-section-highlights = Шолуды бастаңыз, сіз жақы
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
-newtab-empty-section-topstories = Дайын. { $provider } ұсынған көбірек мақалаларды алу үшін кейінірек тексеріңіз. Күте алмайсыз ба? Интернеттен көбірек тамаша мақалаларды алу үшін әйгілі теманы таңдаңыз.
+newtab-empty-section-topstories = Дайын. { $provider } ұсынған көбірек оқиғаларды алу үшін кейінірек тексеріңіз. Күте алмайсыз ба? Интернеттен көбірек тамаша оқиғаларды алу үшін әйгілі теманы таңдаңыз.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Дайын. Көбірек оқиғаларды алу үшін кейінірек тексеріңіз. Күте алмайсыз ба? Интернеттен көбірек тамаша оқиғаларды алу үшін әйгілі теманы таңдаңыз.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -257,9 +261,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Демеушілік жарлықтары
 newtab-custom-pocket-title = { -pocket-brand-name } ұсынған
 newtab-custom-pocket-subtitle = { -brand-product-name } отбасының мүшесі болып табылатын, { -pocket-brand-name } жетекшілік ететін тамаша құрама
-newtab-custom-pocket-toggle =
-    .label = { -pocket-brand-name } ұсынған
-    .description = { -brand-product-name } отбасының мүшесі болып табылатын, { -pocket-brand-name } жетекшілік ететін тамаша құрама
+newtab-custom-stories-toggle =
+    .label = Ұсынылатын оқиғалар
+    .description = { -brand-product-name } жетекшілік ететін тамаша құрама
 newtab-custom-pocket-sponsored = Демеушілер мақалалары
 newtab-custom-pocket-show-recent-saves = Соңғы сақтауларды көрсету
 newtab-custom-recent-title = Жуырдағы белсенділік
@@ -269,3 +273,24 @@ newtab-custom-recent-toggle =
     .description = Жуырдағы сайттар мен құрама таңдауы
 newtab-custom-close-button = Жабу
 newtab-custom-settings = Көбірек баптауларды басқару
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Түсқағаздар
+newtab-wallpaper-reset = Бастапқы түріне тастау
+newtab-wallpaper-light-red-panda = Қызыл панда
+newtab-wallpaper-light-mountain = Ақ тау
+newtab-wallpaper-light-sky = Күлгін және қызғылт бұлттары бар аспан
+newtab-wallpaper-light-color = Көк, қызғылт және сары пішіндер
+newtab-wallpaper-light-landscape = Көк тұман тау пейзажы
+newtab-wallpaper-light-beach = Пальма ағашы бар жағажай
+newtab-wallpaper-dark-aurora = Солтүстік шұғыласы
+newtab-wallpaper-dark-color = Қызыл және көк пішіндер
+newtab-wallpaper-dark-panda = Орманда жасырылған қызыл панда
+newtab-wallpaper-dark-sky = Түнгі аспаны бар қала пейзажы
+newtab-wallpaper-dark-mountain = Таулы пейзаж
+newtab-wallpaper-dark-city = Күлгін қала пейзажы
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = <a data-l10n-name="webpage-link">{ $webpage_string }</a> ішіндегі <a data-l10n-name="name-link">{ $author_string }</a>  ұсынған фото

@@ -574,6 +574,11 @@ urlbar-result-action-search-w-engine = Пошук з дапамогай { $engin
 urlbar-result-action-sponsored = Спонсарскі
 urlbar-result-action-switch-tab = Пераключыцца ў картку
 urlbar-result-action-visit = Наведаць
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Перайсці на картку · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Наведаць з буфера абмену
 # Directs a user to press the Tab key to perform a search with the specified
@@ -603,6 +608,12 @@ urlbar-result-action-copy-to-clipboard = Капіяваць
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Пошук з дапамогай { $engine }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -898,6 +909,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Адкрыць папярэднія карткі?</strong> Вы можаце аднавіць папярэдні сеанс з меню <img data-l10n-name="icon"/> праграмы { -brand-short-name }, у раздзеле "Гісторыя".
 restore-session-startup-suggestion-button = Паказаць мне як
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Ваша ўстанова заблакавала доступ да лакальных файлаў на гэтым камп'ютары
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } аўтаматычна дасылае асобныя дадзеныя ў { -vendor-short-name }, каб мы маглі палепшыць ваш досвед.
@@ -906,6 +921,15 @@ data-reporting-notification-button =
     .accesskey = В
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Прыватнае агляданне
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Прадухіленне страты дадзеных (DLP) ад { $agentName }. Націсніце, каб атрымаць дадатковую інфармацыю.
+content-analysis-panel-title = Абарона дадзеных
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Ваша арганізацыя выкарыстоўвае { $agentName } для абароны ад страты дадзеных. <a data-l10n-name="info">Падрабязней</a>
 
 ## Unified extensions (toolbar) button
 

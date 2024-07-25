@@ -163,7 +163,7 @@ urlbar-persistent-storage-blocked =
 urlbar-popup-blocked =
     .tooltiptext = I keni bllokuar flluskat për këtë sajt.
 urlbar-autoplay-media-blocked =
-    .tooltiptext = E keni bllokuar vetëluajtje mediash me tinguj tuaj për këtë sajt.
+    .tooltiptext = Keni bllokuar vetëluajtje mediash me tinguj për këtë sajt.
 urlbar-canvas-blocked =
     .tooltiptext = Për këtë sajt e keni bllokuar përftimin e të dhënave të kanavacës.
 urlbar-midi-blocked =
@@ -567,6 +567,11 @@ urlbar-result-action-search-w-engine = Kërko me { $engine }
 urlbar-result-action-sponsored = E sponsorizuar
 urlbar-result-action-switch-tab = Kalo te Skeda
 urlbar-result-action-visit = Vizitojeni
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Kaloni te Skeda · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Vizitojeni që nga e papastra
 # Directs a user to press the Tab key to perform a search with the specified
@@ -596,6 +601,12 @@ urlbar-result-action-copy-to-clipboard = Kopjoje
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Kërko me { $engine }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -891,6 +902,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Të hapen skeda të mëparshme?</strong> Sesionin tuaj të mëparshëm mund ta riktheni që nga menuja e aplikacionit { -brand-short-name } <img data-l10n-name="icon"/>, nën Historik.
 restore-session-startup-suggestion-button = Tregomëni se si
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Enti juaj e ka bllokuar hyrjen te kartela vendore në këtë kompjuter
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } dërgon vetvetiu disa të dhëna te { -vendor-short-name } që të mund të përmirësojmë punimin e tij për ju.
@@ -899,6 +914,15 @@ data-reporting-notification-button =
     .accesskey = Z
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Shfletim privat
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Parandalim humbjeje të dhënash (DLP) nga { $agentName }. Klikoni për më tepër hollësi.
+content-analysis-panel-title = Mbrojtje të dhënash
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Enti juaj përdor { $agentName } për mbrojtje kundër humbjesh të dhënash. <a data-l10n-name="info">Mësoni më tepër</a>
 
 ## Unified extensions (toolbar) button
 

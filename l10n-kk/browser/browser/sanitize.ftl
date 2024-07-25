@@ -19,6 +19,7 @@ sanitize-dialog-title-everything =
     .title = Бүкіл тарихты тазарту
     .style = min-width: 34em
 clear-data-settings-label = { -brand-short-name } жабылған кезде, келесілерді автоөшіруі тиіс
+sanitize-on-shutdown-description = { -brand-short-name } жабылған кезде барлық белгіленген элементтерді автоматты түрде өшіру.
 
 ## clear-time-duration-prefix is followed by a dropdown list, with
 ## values localized using clear-time-duration-value-* messages.
@@ -54,12 +55,19 @@ history-section-label = Тарих
 item-history-and-downloads =
     .label = Қарап шығу және жүктемелер тарихы
     .accesskey = ш
-item-browsing-and-search =
-    .label = Қаралған сайттан, сақталған форма деректері және іздеулер
-    .accesskey = р
+item-history-form-data-downloads =
+    .label = Тарих
+    .accesskey = Т
+item-history-form-data-downloads-description = Сайттарды шолу және жүктемелер тарихын, сақталған форма ақпаратын және іздеулерді тазартады
 item-cookies =
     .label = Cookies файлдары
     .accesskey = ф
+# Variables:
+#   $amount (Number) - Amount of site data currently stored on disk
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cookies-site-data-with-size =
+    .label = Cookie файлдары және сайт деректері ({ $amount } { $unit })
+    .accesskey = е
 item-cookies-site-data =
     .label = Cookies файлдары және сайт деректері
     .accesskey = е
@@ -70,6 +78,12 @@ item-active-logins =
 item-cache =
     .label = Кэш
     .accesskey = К
+# Variables:
+#   $amount (Number) - Amount of cached data
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cached-content-with-size =
+    .label = Уақытша кэштелген файлдар мен парақтар ({ $amount } { $unit })
+    .accesskey = ф
 item-cached-content =
     .label = Уақытша кэштелген файлдар мен парақтар
     .accesskey = ф
@@ -81,9 +95,6 @@ item-site-prefs =
     .label = Сайт баптаулары
     .accesskey = й
 item-site-prefs-description = Рұқсаттарыңыз бен сайт баптауларын бастапқы параметрлерге тастау
-item-download-history =
-    .label = Жүктеліп алынған файлдар тізімі
-    .accesskey = Ж
 data-section-label = Мәліметтер
 item-site-settings =
     .label = Сайт баптаулары
@@ -98,6 +109,8 @@ sanitize-button-ok =
     .label = Қазір тазарту
 sanitize-button-ok2 =
     .label = Тазарту
+sanitize-button-ok-on-shutdown =
+    .label = Өзгерістерді сақтау
 # The label for the default button between the user clicking it and the window
 # closing.  Indicates the items are being cleared.
 sanitize-button-clearing =

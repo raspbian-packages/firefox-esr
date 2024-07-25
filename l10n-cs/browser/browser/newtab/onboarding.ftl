@@ -69,6 +69,9 @@ mr1-onboarding-theme-subtitle =
        *[no-cases] Přizpůsobte si vzhled aplikace { -brand-short-name }
     }
 mr1-onboarding-theme-secondary-button-label = Teď ne
+newtab-wallpaper-onboarding-title = Zkuste barevný nádech
+newtab-wallpaper-onboarding-subtitle = Vyberte si tapetu, která dodá každému novému panelu nový vzhled.
+newtab-wallpaper-onboarding-primary-button-label = Nastavit tapetu
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Podle systému
 mr1-onboarding-theme-label-light = Světlý
@@ -472,8 +475,8 @@ onboarding-device-migration-primary-button-label = Přihlásit se
 onboarding-easy-setup-security-and-privacy-title = Rádi vás udržujeme v bezpečí
 onboarding-easy-setup-security-and-privacy-subtitle = Náš neziskový prohlížeč pomáhá zabránit společnostem v tajném sledování vašeho prohlížení webu.
 # Mobile download screen
-onboarding-mobile-download-security-and-privacy-title = Při přecházení mezi zařízeními buďte šifrovaní
-onboarding-mobile-download-security-and-privacy-subtitle = Po synchronizaci { -brand-short-name } zašifruje vaše hesla, záložky a další data. Navíc si můžete otevřít panely z jiných zařízení.
+onboarding-mobile-download-security-and-privacy-title = Bezpečný přenos dat mezi zařízeními
+onboarding-mobile-download-security-and-privacy-subtitle = Při synchronizaci { -brand-short-name } vaše hesla, záložky a další data šifruje. Navíc si můžete otevřít panely z jiných zařízení.
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } vám kryje záda
 onboarding-gratitude-security-and-privacy-subtitle =
@@ -481,3 +484,34 @@ onboarding-gratitude-security-and-privacy-subtitle =
         [with-cases] Děkujeme, že používáte { -brand-short-name(case: "acc") }, za kterým stojí nadace Mozilla Foundation. S vaší podporou pracujeme na tom, aby byl internet bezpečnější a přístupnější pro všechny.
        *[no-cases] Děkujeme, že používáte aplikaci { -brand-short-name }, za kterým stojí nadace Mozilla Foundation. S vaší podporou pracujeme na tom, aby byl internet bezpečnější a přístupnější pro všechny.
     }
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title =
+    { -brand-short-name.case-status ->
+        [with-cases] Jak dlouho používáte { -brand-short-name(case: "acc") }?
+       *[no-cases] Jak dlouho používáte aplikaci { -brand-short-name }?
+    }
+onboarding-new-user-familiarity-based-survey-title =
+    { -brand-short-name.case-status ->
+        [with-cases] Jak dobře znáte { -brand-short-name(case: "acc") }?
+       *[no-cases] Jak dobře znáte aplikaci { -brand-short-name }?
+    }
+onboarding-new-user-survey-subtitle =
+    { -brand-short-name.case-status ->
+        [with-cases] Vaše zpětná vazba pomáhá ještě více zlepšit { -brand-short-name(case: "acc") }.
+       *[no-cases] Vaše zpětná vazba pomáhá ještě více zlepšit aplikaci { -brand-short-name }.
+    }
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Další
+onboarding-new-user-survey-legal-link-label = Výběrem “{ onboarding-new-user-survey-next-button-label }” souhlasíte se <a data-l10n-name="privacy_notice">zásadami ochrany osobních údajů</a> { -brand-product-name(case: "gen") }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Jsem nováček
+onboarding-new-user-survey-time-based-option-2 = Méně než 1 měsíc
+onboarding-new-user-survey-time-based-option-3 = Méně než 1 měsíc, pravidelně
+onboarding-new-user-survey-time-based-option-4 = Méně než 1 měsíc, příležitostně
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Jsem nováček
+onboarding-new-user-survey-familiarity-based-option-2 = Několikrát jsem ho použil
+onboarding-new-user-survey-familiarity-based-option-3 = Znám jej velmi dobře
+onboarding-new-user-survey-familiarity-based-option-4 = V minulosti jsem jej používal, ale už je to nějaký čas

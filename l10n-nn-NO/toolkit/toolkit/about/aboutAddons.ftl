@@ -108,7 +108,7 @@ disabled-unsigned-heading =
     .value = Nokre tillegg er slått av
 disabled-unsigned-description = Desse utvidingane har ikkje blitt kontrollert for bruk i { -brand-short-name }. Du kan <label data-l10n-name="find-addons">finne erstatningar</label> eller spørje utviklaren om å få dei stadfesta.
 disabled-unsigned-learn-more = Les meir om tiltaka våre for å halde deg trygg på nettet.
-disabled-unsigned-devinfo = Utviklarar som er interesserte i å få utvidingane sine stadfesta kan fortsetje ved å lese <label data-l10n-name="learn-more">manualen vår</label>.
+disabled-unsigned-devinfo = Utviklarar som er interesserte i å få utvidingane sine stadfesta kan halde fram ved å lese <label data-l10n-name="learn-more">manualen vår</label>.
 plugin-deprecation-description = Saknar du noko? Nokre programtillegg er ikkje lenger støtta av { -brand-short-name }. <label data-l10n-name="learn-more">Les meir.</label>
 legacy-warning-show-legacy = Vis forelda utvidingar
 legacy-extensions =
@@ -220,6 +220,9 @@ shortcuts-no-addons = Du har ingen utvidinga aktiverte.
 shortcuts-no-commands = Følgjande utvidingar har ikkje snarvegar:
 shortcuts-input =
     .placeholder = Skriv inn ein snarveg
+# Accessible name for a trashcan icon button that removes an existent shortcut
+shortcuts-remove-button =
+    .aria-label = Fjern snarveg
 shortcuts-browserAction2 = Aktiver verktøylinjeknapp
 shortcuts-pageAction = Aktiver sidehandling
 shortcuts-sidebarAction = Vis/gøym sidepanelet

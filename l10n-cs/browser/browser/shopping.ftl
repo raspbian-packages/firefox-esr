@@ -68,6 +68,11 @@ shopping-message-bar-analysis-in-progress-with-amount = Kontrola kvality recenz�
 shopping-message-bar-page-not-supported =
     .heading = Tyto recenze nemůžeme zkontrolovat
     .message = Kvalitu recenzí některých typů produktů bohužel nemůžeme kontrolovat. Například dárkové karty a streamovaná videa, hudbu a hry.
+shopping-message-bar-keep-closed-header =
+    .heading = Ponechat zavřené?
+    .message = Nastavení můžete aktualizovat tak, aby byl nástroj Kontrola recenzí ve výchozím nastavení zavřený. Nyní se otevírá automaticky.
+shopping-message-bar-keep-closed-dismiss-button = Ne, děkuji
+shopping-message-bar-keep-closed-accept-button = Ano, ponechat zavřené
 
 ## Strings for the product review snippets card
 
@@ -93,6 +98,19 @@ shopping-settings-recommendations-toggle =
 shopping-settings-recommendations-learn-more2 = Občas se vám zobrazí reklamy na příslušné produkty. Inzerujeme pouze produkty se spolehlivými recenzemi. <a data-l10n-name="review-quality-url">Dozvědět se více</a>
 shopping-settings-opt-out-button = Vypnout kontrolu recenzí
 powered-by-fakespot = Kontrolu recenzí zajišťuje <a data-l10n-name="fakespot-link">{ -fakespot-brand-full-name }</a>.
+shopping-settings-auto-open-toggle =
+    .label = Automaticky otevírat Kontrolu recenzí
+# Description text for regions where we support three sites. Sites are limited to Amazon, Walmart and Best Buy.
+# Variables:
+#   $firstSite (String) - The first shopping page name
+#   $secondSite (String) - The second shopping page name
+#   $thirdSite (String) - The third shopping page name
+shopping-settings-auto-open-description-three-sites = Při prohlížení produktů na stránkách { $firstSite }, { $secondSite } a { $thirdSite }
+# Description text for regions where we support only one site (e.g. currently used in FR/DE with Amazon).
+# Variables:
+#   $currentSite (String) - The current shopping page name
+shopping-settings-auto-open-description-single-site = Při prohlížení produktů na stránce { $currentSite }
+shopping-settings-sidebar-enabled-state = Kontrola recenzí je <strong>zapnuta</strong>
 
 ## Strings for the adjusted rating component
 
@@ -183,6 +201,22 @@ shopping-callout-pdp-opted-in-title = Jsou tyto recenze spolehlivé? Zjistěte t
 shopping-callout-pdp-opted-in-subtitle = Otevřete nástroj pro kontrolu recenzí a zobrazte upravené hodnocení s odstraněnými nespolehlivými recenzemi. Navíc si můžete prohlédnout hlavní body z nedávných autentických recenzí.
 shopping-callout-closed-not-opted-in-title = Jedním klepnutím na spolehlivé recenze
 shopping-callout-closed-not-opted-in-subtitle = Vyzkoušejte nástroj pro kontrolu recenzí, kdykoli uvidíte cenovku. Získejte rychle informace od skutečných zákazníků — ještě před nákupem.
+shopping-callout-closed-not-opted-in-revised-title = Jedním klepnutím ke spolehlivým recenzím
+shopping-callout-closed-not-opted-in-revised-subtitle = Klepnutím na ikonu cenovky v adresním řádku se dostanete zpět do nástroje Kontrola recenzí.
+shopping-callout-closed-not-opted-in-revised-button = Rozumím
+shopping-callout-not-opted-in-reminder-title = Nakupujte s důvěrou
+shopping-callout-not-opted-in-reminder-subtitle = Nejste si jisti, zda jsou recenze produktů skutečné nebo falešné? Pomůže vám nástroj Review Checker od { -brand-product-name(case: "gen") }.
+shopping-callout-not-opted-in-reminder-open-button = Otevřít kontrolu recenzí
+shopping-callout-not-opted-in-reminder-close-button = Zavřít
+shopping-callout-not-opted-in-reminder-ignore-checkbox = Příště se už neptat
+shopping-callout-not-opted-in-reminder-img-alt =
+    .aria-label = Abstraktní ilustrace tří recenzí produktů. Jedna z nich je opatřena varovným symbolem, který naznačuje, že nemusí být důvěryhodná.
+shopping-callout-disabled-auto-open-title = Kontrola recenzí je nyní ve výchozím nastavení zavřená
+shopping-callout-disabled-auto-open-subtitle = Klepněte na ikonu cenovky v adresním řádku, kdykoli chcete zjistit, zda můžete důvěřovat recenzím produktu.
+shopping-callout-disabled-auto-open-button = Rozumím
+shopping-callout-opted-out-title = Kontrola recenzí je vypnuta
+shopping-callout-opted-out-subtitle = Chcete-li ji znovu zapnout, klepněte na ikonu cenovky v adresním řádku a postupujte podle pokynů.
+shopping-callout-opted-out-button = Rozumím
 
 ## Onboarding message strings.
 
@@ -206,7 +240,7 @@ shopping-onboarding-single-subtitle =
        *[no-cases] Před nákupem se podívejte, jak spolehlivé jsou recenze produktů na <b>{ $currentSite }</b>. Kontrola recenzí, experimentální funkce aplikace { -brand-product-name }, je zabudována přímo do prohlížeče.
     }
 shopping-onboarding-body = Pomocí funkce { -fakespot-brand-full-name } vám pomůžeme vyhnout se neobjektivním a neautentickým recenzím. Náš model umělé inteligence se neustále zdokonaluje, aby vás při nakupování chránil. <a data-l10n-name="learn_more">Dozvědět se více</a>
-shopping-onboarding-opt-in-privacy-policy-and-terms-of-use2 = Výběrem možnosti “{ shopping-onboarding-opt-in-button }“ souhlasíte se <a data-l10n-name="privacy_policy">zásadami { -fakespot-brand-name(case: "gen") } pro ochranu osobních údajů</a> a <a data-l10n-name="terms_of_use">podmínkami používání.</a>
+shopping-onboarding-opt-in-privacy-policy-and-terms-of-use3 = Výběrem možnosti “{ shopping-onboarding-opt-in-button }“ souhlasíte se <a data-l10n-name="privacy_policy">zásadami ochrany osobních údajů</a> { -brand-product-name(case: "gen") } a <a data-l10n-name="terms_of_use">podmínkami používání služby { -fakespot-brand-name }</a>.
 shopping-onboarding-opt-in-button = Ano, vyzkoušet
 shopping-onboarding-not-now-button = Teď ne
 shopping-onboarding-dialog-close-button =

@@ -177,6 +177,15 @@ media-capabilities-enumerate = Percórrer la basa de donadas
 
 ## Codec support table
 
+media-codec-support-lack-of-extension = Installar una extension
+
+## Media Content Decryption Modules (CDM)
+## See EME Spec for more explanation for following technical terms
+## https://w3c.github.io/encrypted-media/
+
+media-video-robustness = Robustesa vidèo
+media-audio-robustness = Robustesa àudio
+media-cdm-capabilities = Foncions
 
 ##
 
@@ -399,3 +408,6 @@ support-remote-features-status = Estat
 
 pointing-device-mouse = Mirga
 pointing-device-touchscreen = Ecran tactil
+
+## Content Analysis (DLP)
+

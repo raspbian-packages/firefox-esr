@@ -12,6 +12,8 @@ menu-tools-firefox-view =
     .label = { -firefoxview-brand-name }
     .accesskey = F
 firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
 firefoxview-page-label =
     .label = { -firefoxview-brand-name }
 firefoxview-close-button =
@@ -30,7 +32,7 @@ firefoxview-tabpickup-progress-label = { $percentValue }% hoàn thành
 firefoxview-tabpickup-step-signin-header = Chuyển đổi liền mạch giữa các thiết bị
 firefoxview-tabpickup-step-signin-description = Để truy cập các thẻ điện thoại của bạn tại đây, trước tiên hãy đăng nhập hoặc tạo tài khoản.
 firefoxview-tabpickup-step-signin-primarybutton = Tiếp tục
-firefoxview-syncedtabs-signin-header = Nhận các thẻ từ bất cứ đâu
+firefoxview-syncedtabs-signin-header = Lấy các thẻ từ bất cứ đâu
 firefoxview-syncedtabs-signin-description = Để xem các thẻ của bạn từ bất cứ nơi nào bạn sử dụng { -brand-product-name }, hãy đăng nhập vào tài khoản của bạn. Nếu bạn chưa có tài khoản, chúng tôi sẽ hướng dẫn bạn các bước để đăng ký.
 firefoxview-syncedtabs-signin-primarybutton = Đăng nhập hoặc đăng ký
 firefoxview-tabpickup-adddevice-header = Đồng bộ hóa { -brand-product-name } trên điện thoại hoặc máy tính bảng của bạn
@@ -51,6 +53,7 @@ firefoxview-syncedtabs-loading-header = Đang đồng bộ hóa
 firefoxview-syncedtabs-loading-description = Khi hoàn tất, bạn sẽ thấy mọi thẻ bạn đã mở trên các thiết bị khác. Hãy kiểm tra lại sau.
 firefoxview-tabpickup-fxa-admin-disabled-header = Tổ chức của bạn đã tắt đồng bộ hóa
 firefoxview-tabpickup-fxa-admin-disabled-description = { -brand-short-name } không thể đồng bộ hóa các thẻ giữa các thiết bị vì quản trị viên của bạn đã tắt đồng bộ hóa.
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } không thể đồng bộ hóa các thẻ giữa các thiết bị vì tổ chức của bạn đã tắt tính năng đồng bộ hóa.
 firefoxview-tabpickup-network-offline-header = Kiểm tra kết nối Internet của bạn
 firefoxview-tabpickup-network-offline-description = Nếu bạn đang sử dụng tường lửa hoặc proxy, hãy kiểm tra xem { -brand-short-name } có quyền truy cập web hay không.
 firefoxview-tabpickup-network-offline-primarybutton = Thử lại
@@ -70,11 +73,11 @@ firefoxview-tabpickup-signed-out-description = Để kết nối lại và lấy
 firefoxview-tabpickup-signed-out-description2 = Để kết nối lại và lấy các thẻ của bạn, hãy đăng nhập vào tài khoản của bạn.
 firefoxview-tabpickup-signed-out-primarybutton = Đăng nhập
 firefoxview-tabpickup-syncing = Thoải mái ngồi yên trong khi các thẻ của bạn đồng bộ hóa. Thông thường nó sẽ chỉ mất vài phút.
-firefoxview-mobile-promo-header = Nhận các thẻ từ điện thoại hoặc máy tính bảng của bạn
+firefoxview-mobile-promo-header = Lấy các thẻ từ điện thoại hoặc máy tính bảng của bạn
 firefoxview-mobile-promo-description = Để xem các thẻ trên di động mới nhất của bạn, hãy đăng nhập vào { -brand-product-name } trên iOS hoặc Android.
 firefoxview-mobile-promo-primarybutton = Tải { -brand-product-name } dành cho di động
 firefoxview-mobile-confirmation-header = 🎉 Tất cả đã xong!
-firefoxview-mobile-confirmation-description = Giờ đây, bạn có thể nhận các thẻ { -brand-product-name } từ máy tính bảng hoặc điện thoại của mình.
+firefoxview-mobile-confirmation-description = Giờ đây, bạn có thể lấy các thẻ { -brand-product-name } từ máy tính bảng hoặc điện thoại của mình.
 firefoxview-closed-tabs-title = Đã đóng gần đây
 firefoxview-closed-tabs-description2 = Mở lại các trang bạn đã đóng trong cửa sổ này.
 firefoxview-closed-tabs-placeholder-header = Không có thẻ nào đã đóng gần đây
@@ -180,6 +183,8 @@ firefoxview-search-results-count = { $count } trang web
 firefoxview-search-results-empty = Không có kết quả tìm kiếm cho “{ $query }”
 firefoxview-sort-history-by-date-label = Sắp xếp theo ngày
 firefoxview-sort-history-by-site-label = Sắp xếp theo trang web
+firefoxview-sort-open-tabs-by-recency-label = Sắp xếp theo hoạt động gần đây
+firefoxview-sort-open-tabs-by-order-label = Sắp xếp theo thứ tự thẻ
 # Variables:
 #   $url (string) - URL that will be opened in the new tab
 firefoxview-opentabs-tab-row =
@@ -242,3 +247,25 @@ firefoxview-recentlyclosed-empty-description-two = Để tìm các thẻ từ th
 
 firefoxview-syncedtabs-device-notabs = Không có thẻ đang mở trên thiết bị này
 firefoxview-syncedtabs-connect-another-device = Kết nối thiết bị khác
+firefoxview-pinned-tabs =
+    .title = Thẻ đã ghim
+firefoxview-tabs =
+    .title = Thẻ
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Chuyển sang { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Chuyển sang { $tabTitle } (Đã đánh dấu)
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Đã đánh dấu) { $url }

@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = 검색 엔진 추가
 newtab-topsites-add-shortcut-header = 새 바로 가기
 newtab-topsites-edit-topsites-header = 상위 사이트 편집
 newtab-topsites-edit-shortcut-header = 바로 가기 편집
+newtab-topsites-add-shortcut-label = 바로 가기 추가
 newtab-topsites-title-label = 제목
 newtab-topsites-title-input =
     .placeholder = 제목 입력
@@ -198,6 +199,7 @@ newtab-section-header-recent-activity = 최근 활동
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } 추천
+newtab-section-header-stories = 생각하게 하는 이야기
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -205,7 +207,9 @@ newtab-empty-section-highlights = 탐색을 시작하면 최근 방문하거나 
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
-newtab-empty-section-topstories = 다 왔습니다. { $provider }에서 제공하는 주요 기사를 다시 확인해 보세요. 기다릴 수 없습니까? 주제를 선택하면 웹에서 볼 수 있는 가장 재미있는 글을 볼 수 있습니다.
+newtab-empty-section-topstories = 다 왔습니다. { $provider }에서 제공하는 주요 기사를 다시 확인해 보세요. 기다릴 수 없습니까? 인기 주제를 선택하면 웹에서 볼 수 있는 가장 재미있는 글을 볼 수 있습니다.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = 다 왔습니다. 더 많은 이야기를 나중에 다시 확인해 보세요. 기다릴 수 없습니까? 인기 주제를 선택하면 웹에서 볼 수 있는 가장 재미있는 글을 볼 수 있습니다.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -257,9 +261,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = 스폰서 바로 가기
 newtab-custom-pocket-title = { -pocket-brand-name } 추천
 newtab-custom-pocket-subtitle = { -brand-product-name } 제품군의 일부인 { -pocket-brand-name }에서 선별한 뛰어난 콘텐츠
-newtab-custom-pocket-toggle =
-    .label = { -pocket-brand-name } 추천
-    .description = { -brand-product-name } 제품군의 일부인 { -pocket-brand-name }에서 선별한 뛰어난 콘텐츠
+newtab-custom-stories-toggle =
+    .label = 추천 이야기
+    .description = { -brand-product-name } 제품군이 선별한 뛰어난 콘텐츠
 newtab-custom-pocket-sponsored = 스폰서 소식
 newtab-custom-pocket-show-recent-saves = 최근 저장한 항목 표시
 newtab-custom-recent-title = 최근 활동
@@ -269,3 +273,24 @@ newtab-custom-recent-toggle =
     .description = 최근 사이트 및 콘텐츠 모음
 newtab-custom-close-button = 닫기
 newtab-custom-settings = 더 많은 설정 관리
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = 배경 화면
+newtab-wallpaper-reset = 기본값으로 재설정
+newtab-wallpaper-light-red-panda = 레서판다
+newtab-wallpaper-light-mountain = 하얀 산
+newtab-wallpaper-light-sky = 보라색과 분홍색 구름이 있는 하늘
+newtab-wallpaper-light-color = 파란색, 분홍색, 노란색 모양
+newtab-wallpaper-light-landscape = 푸른 안개 산 풍경
+newtab-wallpaper-light-beach = 야자수가 있는 해변
+newtab-wallpaper-dark-aurora = 북극 오로라
+newtab-wallpaper-dark-color = 빨간색과 파란색 모양
+newtab-wallpaper-dark-panda = 숲속에 숨어있는 레서판다
+newtab-wallpaper-dark-sky = 밤하늘이 있는 도시 풍경
+newtab-wallpaper-dark-mountain = 산 풍경
+newtab-wallpaper-dark-city = 보라색 도시 풍경
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = <a data-l10n-name="webpage-link">{ $webpage_string }</a>에 있는 <a data-l10n-name="name-link">{ $author_string }</a>의 사진

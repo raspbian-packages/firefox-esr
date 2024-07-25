@@ -5,7 +5,7 @@
 # This is the title of the page
 about-logging-title = Om logging
 about-logging-page-title = Logghandsamar
-about-logging-current-log-file = Gjeldande loggfil
+about-logging-current-log-file = Gjeldande loggfil:
 about-logging-new-log-file = Ny loggfil:
 about-logging-currently-enabled-log-modules = Aktiverte loggmodular for augneblinken:
 about-logging-log-tutorial = Sjå <a data-l10n-name="logging">HTTP-loggning</a> for instruksjonar om korleis du brukar dette verktyet.
@@ -38,6 +38,8 @@ about-logging-preset-networking-websocket-label = WebSockets
 about-logging-preset-networking-websocket-description = Loggmodular for å diagnostisere WebSocket-problem
 about-logging-preset-networking-http3-label = HTTP/3
 about-logging-preset-networking-http3-description = Loggmodular for å diagnostisere HTTP/3- og QUIC-problem
+about-logging-preset-networking-http3-upload-speed-label = HTTP/3-opplastingsfart
+about-logging-preset-networking-http3-upload-speed-description = Loggmodular for å diagnostisere problem med HTTP/3-opplastingsfart
 about-logging-preset-media-playback-label = Medieavspeling
 about-logging-preset-media-playback-description = Loggmodular for å diagnostisere problem med medieavspeling (ikkje for problem med videokonferansar)
 about-logging-preset-webrtc-label = WebRTC

@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Zoeken in Instellingen
 managed-notice = Uw browser wordt door uw organisatie beheerd.
+managed-notice-info-icon =
+    .alt = Informatie
 category-list =
     .aria-label = Categorieën
 pane-general-title = Algemeen
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Deze container verwijderen
 containers-remove-cancel-button = Deze container niet verwijderen
+settings-tabs-show-image-in-preview =
+    .label = Een afbeeldingsvoorbeeld tonen als u een tabblad aanwijst
+    .accessKey = w
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Uw kleurselecties hebben voorrang op het uiterlijk van de website. <a data-l10n-name="colors-link">Kleuren beheren</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Uw kleurselecties hebben voorrang op het uiterlijk van de website.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = U kunt { -brand-short-name }-thema’s beheren in <a data-l10n-name="themes-link">Extensies en thema’s</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Alleen tekst inzoomen
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Waarschuwing: als u ‘Alleen tekst zoomen’ selecteert en uw standaardzoom niet is ingesteld op 100%, kan dit ervoor zorgen dat bepaalde websites of inhoud niet goed werken.
 language-header = Taal
 choose-language-description = Talen van uw voorkeur kiezen voor het weergeven van webpagina’s
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Aanbevolen door { $provider }
 home-prefs-recommended-by-description-new = Uitzonderlijke inhoud, samengesteld door { $provider }, onderdeel van de { -brand-product-name }-familie
+home-prefs-recommended-by-header-generic =
+    .label = Aanbevolen verhalen
+home-prefs-recommended-by-description-generic = Uitzonderlijke inhoud, verzameld door de { -brand-product-name }-familie
 
 ##
 
@@ -631,7 +645,7 @@ search-show-search-term-option =
 search-show-suggestions-above-history-option =
     .label = Zoeksuggesties boven browsergeschiedenis tonen in adresbalkresultaten
 search-show-suggestions-private-windows =
-    .label = Zoeksuggesties weergeven in privévensters
+    .label = Zoeksuggesties tonen in privévensters
 suggestions-addressbar-settings-generic2 = Instellingen voor overige adresbalksuggesties wijzigen
 search-suggestions-cant-show = Zoeksuggesties worden niet in locatiebalkresultaten getoond, omdat u { -brand-short-name } hebt geconfigureerd om nooit geschiedenis te onthouden.
 search-one-click-header2 = Zoeksnelkoppelingen
@@ -696,6 +710,13 @@ sync-mobile-promo = Download Firefox voor <img data-l10n-name="android-icon"/> <
 
 sync-profile-picture =
     .tooltiptext = Profielafbeelding wijzigen
+sync-profile-picture-with-alt =
+    .tooltiptext = Profielafbeelding wijzigen
+    .alt = Profielafbeelding wijzigen
+sync-profile-picture-account-problem =
+    .alt = Accountprofielafbeelding
+fxa-login-rejected-warning =
+    .alt = Waarschuwing
 sync-sign-out =
     .label = Afmelden…
     .accesskey = f
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Cookies en websitegegevens verwijderen zodra { -brand-short-name } wordt gesloten
     .accesskey = C
 sitedata-delete-on-close-private-browsing = In permanente privénavigatiemodus worden cookies en websitegegevens altijd gewist zodra { -brand-short-name } wordt gesloten.
+sitedata-delete-on-close-private-browsing2 = Op basis van uw geschiedenisinstellingen verwijdert { -brand-short-name } cookies en websitegegevens uit uw sessie wanneer u de browser sluit.
 sitedata-allow-cookies-option =
     .label = Cookies en websitegegevens accepteren
     .accesskey = a
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Snelle acties
     .accesskey = S
+addressbar-suggestions-settings = Voorkeuren voor zoekmachinesuggesties wijzigen
 addressbar-locbar-showrecentsearches-option =
     .label = Recente zoekopdrachten tonen
     .accesskey = R
-addressbar-suggestions-settings = Voorkeuren voor zoekmachinesuggesties wijzigen
 addressbar-quickactions-learn-more = Meer info
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = Meer info
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Gegevensrapportage is uitgeschakeld voor deze buildconfiguratie
 collection-backlogged-crash-reports-with-link = { -brand-short-name } toestaan om namens u achterstallige crashrapporten te verzenden. <a data-l10n-name="crash-reports-link">Meer info</a>
+    .accesskey = c
+collection-backlogged-crash-reports = { -brand-short-name } toestaan om namens u achterstallige crashrapporten te verzenden.
     .accesskey = c
 privacy-segmentation-section-header = Nieuwe functies die uw browsen verbeteren
 privacy-segmentation-section-description = Wanneer we functies aanbieden die uw gegevens gebruiken om u een meer persoonlijke ervaring te bieden:

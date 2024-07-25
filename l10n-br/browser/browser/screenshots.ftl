@@ -21,6 +21,8 @@ screenshots-copy-button-title =
     .title = Eilañ an dapadenn-skramm er golver
 screenshots-cancel-button-title =
     .title = Nullañ
+screenshots-retry-button-title =
+    .title = Klask adtapout an dapadenn-skramm en-dro
 screenshots-meta-key =
     { PLATFORM() ->
         [macos] ⌘
@@ -42,3 +44,22 @@ screenshots-private-window-error-title = Diweredekaet eo { -screenshots-brand-na
 screenshots-private-window-error-details = Digarezit evit ar gudenn. Labourat a reomp war ar c'heweriuster-mañ evit ermaeziadennoù da zont.
 screenshots-generic-error-title = Chaous! Ur gudenn a zo savet gant { -screenshots-brand-name }.
 screenshots-generic-error-details = N'omp ket sur eus ar pezh a zo c'hoarvezet. Gallout a rit adklask pe kemer ur dapadenn eus ur bajenn all.
+screenshots-too-large-error-title = Krennet eo bet ho tapadenn-skramm rak re vras e oa
+screenshots-component-retry-button =
+    .title = Klask adtapout an dapadenn-skramm en-dro
+    .aria-label = Klask adtapout an dapadenn-skramm en-dro
+screenshots-component-copy-button-label = Eilañ
+screenshots-component-download-button-label = Pellgargañ
+
+## The below strings are used to capture keydown events so the strings should
+## not be changed unless the keyboard layout in the locale requires it.
+
+
+##
+
+# This string represents the selection size area
+# "x" here represents "by" (i.e 123 by 456)
+# Variables:
+#   $width (Number) - The width of the selection region in pixels
+#   $height (Number) - The height of the selection region in pixels
+screenshots-overlay-selection-region-size-2 = { $width } × { $height }

@@ -3,10 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 page-title = ਸਮੱਸਿਆ ਹੱਲ਼ ਜਾਣਕਾਰੀ
-page-subtitle =
-    ਇਹ ਸਫ਼ੇ ਉੱਤੇ ਤਕਨੀਕੀ ਜਾਣਕਾਰੀ ਹੈ, ਜੋ ਕਿ ਤੁਹਾਨੂੰ ਸਮੱਸਿਆ ਹੱਲ਼ ਕਰਨ ਲਈ ਫਾਇਦੇਮੰਦ
-    ਹੋ ਸਕਦੀ ਹੈ। ਜੇ ਤੁਸੀਂ { -brand-short-name } ਬਾਰੇ ਆਮ ਸਵਾਦ ਦੇ ਜਵਾਬ ਲੱਭ ਰਹੇ ਹੋ ਤਾਂ
-    ਸਾਡੀ <a data-l10n-name="support-link">ਸਪੋਰਟ ਵੈੱਬ ਸਾਈਟ</a> ਨੂੰ ਵੇਖੋ ਜੀ।
+page-subtitle = ਇਹ ਸਫ਼ੇ ਉੱਤੇ ਤਕਨੀਕੀ ਜਾਣਕਾਰੀ ਹੈ, ਜੋ ਕਿ ਤੁਹਾਨੂੰ ਸਮੱਸਿਆ ਹੱਲ਼ ਕਰਨ ਲਈ ਫਾਇਦੇਮੰਦ ਹੋ ਸਕਦੀ ਹੈ। ਜੇ ਤੁਸੀਂ { -brand-short-name } ਬਾਰੇ ਆਮ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਲੱਭ ਰਹੇ ਹੋ ਤਾਂ ਸਾਡੀ <a data-l10n-name="support-link">ਸਪੋਰਟ ਵੈੱਬ ਸਾਈਟ</a> ਨੂੰ ਵੇਖੋ ਜੀ।
 crashes-title = ਕਰੈਸ਼ ਰਿਪੋਰਟਾਂ
 crashes-id = ਰਿਪੋਰਟ ID
 crashes-send-date = ਭੇਜੀਆਂ
@@ -203,6 +200,9 @@ media-cdm-capabilities = ਸਮਰੱਥਾਵਾਂ
 # are not encrypted. It allows playback to start without having to wait for
 # license response, improving video start time and user experience.
 media-cdm-clear-lead = ਮੁੱਢ ਨੂੰ ਸਾਫ਼ ਕਰੋ
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = HDCP 2.2 ਅਨੁਕੂਲ
 
 ##
 
@@ -282,6 +282,7 @@ try-newer-driver = ਤੁਹਾਡੇ ਗਰਾਫਿਕਸ ਡਰਾਇਵਰ �
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType ਪੈਰਾਮੀਟਰ
 compositing = ਬਣਤਰ
+support-font-determination = ਫ਼ੌਂਟ ਦਿੱਖ ਡੀਬੱਗ ਜਾਣਕਾਰੀ
 hardware-h264 = ਹਾਰਡਵੇਅਰ H264 ਡੀਕੋਡਿੰਗ
 main-thread-no-omtc = ਮੁੱਖ ਥਰਿੱਡ, OMTC ਨਹੀਂ
 yes = ਹਾਂ
@@ -427,3 +428,15 @@ pointing-device-mouse = ਮਾਊਸ
 pointing-device-touchscreen = ਟੱਚ-ਸਕਰੀਨ
 pointing-device-pen-digitizer = ਪੈਨ ਡਿਜ਼ੀਟਾਈਜ਼ਰ
 pointing-device-none = ਕੋਈ ਪੁਆਇੰਟ ਕਰਨ ਵਾਲਾ ਡਿਵਾਈਸ ਨਹੀਂ ਹੈ
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = ਸਮੱਗਰੀ ਵਿਸ਼ਲੇਸ਼ਣ (DLP)
+content-analysis-active = ਸਰਗਰਮ
+content-analysis-connected-to-agent = ਏਜੰਟ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ
+content-analysis-agent-path = ਏਜੰਟ ਦਾ ਮਾਰਗ
+content-analysis-agent-failed-signature-verification = ਏਜੰਟ ਦਸਤਖ਼ਤ ਜਾਂਚ ਲਈ ਅਸਫ਼ਲ ਹੈ
+content-analysis-request-count = ਬੇਨਤੀ ਗਿਣਤੀ

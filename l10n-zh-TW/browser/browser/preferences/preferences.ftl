@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = 搜尋選項
 managed-notice = 您的瀏覽器受到組織管理。
+managed-notice-info-icon =
+    .alt = 資訊
 category-list =
     .aria-label = 分類
 pane-general-title = 一般
@@ -191,6 +193,9 @@ containers-remove-alert-title = 要移除這個容器嗎？
 containers-remove-alert-msg = 若您現在移除此容器，將關閉 { $count } 個容器分頁。您確定要移除此容器嗎？
 containers-remove-ok-button = 移除此容器
 containers-remove-cancel-button = 不要移除此容器
+settings-tabs-show-image-in-preview =
+    .label = 當滑鼠移動到分頁標籤上時，顯示分頁預覽
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -215,6 +220,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = 您選擇的配色會蓋過網站外觀的配色。<a data-l10n-name="colors-link">管理色彩</a>。
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = 您選擇的配色會蓋過網站外觀的配色。。
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = 到<a data-l10n-name="themes-link">擴充套件與佈景主題</a>管理 { -brand-short-name } 的佈景主題
@@ -242,6 +251,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = 只縮放文字
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = 警告：若您選擇「只縮放文字」，但未將預設縮放比例設定為 100%，可能造成某些網站或內容不正常。
 language-header = 語言
 choose-language-description = 請選擇瀏覽支援多國語言的網頁時要優先顯示哪種語言
 choose-button =
@@ -547,6 +558,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = { $provider } 推薦
 home-prefs-recommended-by-description-new = 由 { -brand-product-name } 的姊妹作 { $provider } 精心策展的內容
+home-prefs-recommended-by-header-generic =
+    .label = 推薦的文章
+home-prefs-recommended-by-description-generic = 由 { -brand-product-name } 產品家族精選的內容文章
 
 ##
 
@@ -684,6 +698,13 @@ sync-mobile-promo = 下載 Firefox for<img data-l10n-name="android-icon"/> <a da
 
 sync-profile-picture =
     .tooltiptext = 更改個人資料照片
+sync-profile-picture-with-alt =
+    .tooltiptext = 更改個人資料照片
+    .alt = 更改個人資料照片
+sync-profile-picture-account-problem =
+    .alt = 帳號個人資料照片
+fxa-login-rejected-warning =
+    .alt = 警告
 sync-sign-out =
     .label = 登出…
     .accesskey = g
@@ -734,7 +755,7 @@ prefs-syncing-button =
 sync-syncing-across-devices-heading = 您連線的裝置會同步下列項目:
 sync-currently-syncing-bookmarks = 書籤
 sync-currently-syncing-history = 瀏覽紀錄
-sync-currently-syncing-tabs = 開啟分頁
+sync-currently-syncing-tabs = 開啟的分頁
 sync-currently-syncing-logins-passwords = 登入資訊與密碼
 sync-currently-syncing-passwords = 密碼
 sync-currently-syncing-addresses = 地址
@@ -763,7 +784,7 @@ sync-engine-history =
     .label = 瀏覽紀錄
     .accesskey = r
 sync-engine-tabs =
-    .label = 開啟分頁
+    .label = 開啟的分頁
     .tooltiptext = 所有同步設備中，開啟的網頁清單
     .accesskey = T
 sync-engine-logins-passwords =
@@ -988,6 +1009,7 @@ sitedata-delete-on-close =
     .label = 關閉 { -brand-short-name } 時清除 Cookie 與網站資料
     .accesskey = C
 sitedata-delete-on-close-private-browsing = 在永久隱私瀏覽模式下，每次關閉 { -brand-short-name } 時就會清除 Cookie 與網站資料。
+sitedata-delete-on-close-private-browsing2 = 依照您的瀏覽紀錄設定，當您關閉瀏覽器後，{ -brand-short-name } 會自動刪除瀏覽階段中產生的 Cookie 與網站資料。
 sitedata-allow-cookies-option =
     .label = 允許網站設定 Cookie 與網站資料
     .accesskey = A
@@ -1049,7 +1071,7 @@ addressbar-locbar-clipboard-option =
     .label = 剪貼簿
     .accesskey = C
 addressbar-locbar-openpage-option =
-    .label = 開啟分頁
+    .label = 開啟的分頁
     .accesskey = O
 # Shortcuts refers to the shortcut tiles on the new tab page, previously known as top sites. Translation should be consistent.
 addressbar-locbar-shortcuts-option =
@@ -1064,10 +1086,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = 快速操作
     .accesskey = Q
+addressbar-suggestions-settings = 修改搜尋建議偏好設定
 addressbar-locbar-showrecentsearches-option =
     .label = 顯示近期搜尋項目
     .accesskey = r
-addressbar-suggestions-settings = 修改搜尋建議偏好設定
 addressbar-quickactions-learn-more = 了解更多
 
 ## Privacy Section - Content Blocking
@@ -1249,6 +1271,8 @@ addon-recommendations-link = 了解更多
 # or builds with no Telemetry support available.
 collection-health-report-disabled = 進行編譯設定時，已停用了資料回報功能
 collection-backlogged-crash-reports-with-link = 允許 { -brand-short-name } 以您的身分自動回報錯誤報告<a data-l10n-name="crash-reports-link">了解更多資訊</a>
+    .accesskey = c
+collection-backlogged-crash-reports = 允許 { -brand-short-name } 以您的身分自動回報錯誤報告
     .accesskey = c
 privacy-segmentation-section-header = 能加強您上網體驗的新功能
 privacy-segmentation-section-description = 當我們推出會使用您的資料來提供更個人化的上網體驗的新功能時：

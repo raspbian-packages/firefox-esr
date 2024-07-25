@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Lisää hakukone
 newtab-topsites-add-shortcut-header = Uusi oikotie
 newtab-topsites-edit-topsites-header = Muokkaa ykkössivustoa
 newtab-topsites-edit-shortcut-header = Muokkaa oikotietä
+newtab-topsites-add-shortcut-label = Lisää pikavalinta
 newtab-topsites-title-label = Otsikko
 newtab-topsites-title-input =
     .placeholder = Kirjoita otsikko
@@ -198,6 +199,7 @@ newtab-section-header-recent-activity = Viimeisin toiminta
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Suositukset lähteestä { $provider }
+newtab-section-header-stories = Ajatuksia herättäviä tarinoita
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -206,6 +208,8 @@ newtab-empty-section-highlights = Ala selata, niin tässä alkaa näkyä hyviä 
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Ei enempää suosituksia juuri nyt. Katso myöhemmin uudestaan lisää ykkösjuttuja lähteestä { $provider }. Etkö malta odottaa? Valitse suosittu aihe ja löydä lisää hyviä juttuja ympäri verkkoa.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Ei enempää suosituksia juuri nyt. Katso myöhemmin uudestaan lisää juttuja. Etkö malta odottaa? Valitse suosittu aihe ja löydä lisää hyviä juttuja ympäri verkkoa.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -258,9 +262,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Sponsoroidut oikotiet
 newtab-custom-pocket-title = { -pocket-brand-name } suosittelee
 newtab-custom-pocket-subtitle = Poikkeuksellista, valikoitua sisältöä { -pocket-brand-name }-palvelulta, osana { -brand-product-name }-perhettä
-newtab-custom-pocket-toggle =
-    .label = { -pocket-brand-name } suosittelee
-    .description = Poikkeuksellista, valikoitua sisältöä { -pocket-brand-name }-palvelulta, osana { -brand-product-name }-perhettä
+newtab-custom-stories-toggle =
+    .label = Suositellut tarinat
+    .description = Poikkeuksellista { -brand-product-name }-perheen kuratoimaa sisältöä
 newtab-custom-pocket-sponsored = Sponsoroidut tarinat
 newtab-custom-pocket-show-recent-saves = Näytä viimeisimmät tallennukset
 newtab-custom-recent-title = Viimeisin toiminta
@@ -270,3 +274,24 @@ newtab-custom-recent-toggle =
     .description = Valikoima viimeisimpiä sivustoja ja sisältöä
 newtab-custom-close-button = Sulje
 newtab-custom-settings = Muokkaa lisää asetuksia
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Taustakuvat
+newtab-wallpaper-reset = Palauta oletusarvo
+newtab-wallpaper-light-red-panda = Kultapanda
+newtab-wallpaper-light-mountain = Valkoinen vuori
+newtab-wallpaper-light-sky = Taivas violettien ja vaaleanpunaisten pilvien kera
+newtab-wallpaper-light-color = Siniset, vaaleanpunaiset ja keltaiset muodot
+newtab-wallpaper-light-landscape = Sinertävän usvan vuorimaisema
+newtab-wallpaper-light-beach = Ranta ja palmupuu
+newtab-wallpaper-dark-aurora = Revontulet
+newtab-wallpaper-dark-color = Punaiset ja siniset muodot
+newtab-wallpaper-dark-panda = Kultapanda metsän piilossa
+newtab-wallpaper-dark-sky = Kaupunkimaisema ja yötaivas
+newtab-wallpaper-dark-mountain = Vuorimaisema
+newtab-wallpaper-dark-city = Purppura kaupunkimaisema
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Kuva: <a data-l10n-name="name-link">{ $author_string }</a> sivustolla <a data-l10n-name="webpage-link">{ $webpage_string }</a>

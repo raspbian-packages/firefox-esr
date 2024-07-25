@@ -72,6 +72,8 @@ about-processes-tab-name = Ivinell: { $name }
 
 ## Utility process actor names
 
+# "Oracle" refers to an internal Firefox process and should be kept in English
+about-processes-utility-actor-js-oracle = JavaScript Oracle
 
 ## Displaying CPU (percentage and total)
 ## Variables:
@@ -94,6 +96,9 @@ about-processes-tab-name = Ivinell: { $name }
 ##    $deltaUnit (String) The unit in which to display $delta. See the definitions
 ##                        of `memory-unit-*`.
 
+# Common case.
+about-processes-total-memory-size-changed = { NUMBER($total, maximumFractionDigits: 0) }{ $totalUnit }
+    .title = Daskemm: { $deltaSign }{ NUMBER($delta, maximumFractionDigits: 0) }{ $deltaUnit }
 # Special case: no change.
 about-processes-total-memory-size-no-change = { NUMBER($total, maximumFractionDigits: 0) }{ $totalUnit }
 

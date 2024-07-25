@@ -169,16 +169,36 @@ webrtc-allow-share-camera-and-audio-capture = Aotren { $origin } da arverañ ho 
 webrtc-allow-share-screen-and-microphone = Aotren { $origin } da arveran ho mikro ha da welet ho skramm?
 webrtc-allow-share-screen-and-audio-capture = Aotren { $origin } da selaou ouzh aodio an ivinell ha da welet ho skramm?
 
+## Special phrasing for sharing devices when the origin is a file url.
+
+webrtc-allow-share-camera-with-file = Aotren ar restr lec’hel-mañ da arverañ ho kamera?
+webrtc-allow-share-microphone-with-file = Aotren ar restr lec’hel-mañ da arverañ ho klevell?
+webrtc-allow-share-screen-with-file = Aotren ar restr lec’hel-mañ da welet ho skramm?
+
 ## Variables:
 ##   $origin (String): the first party origin.
 ##   $thirdParty (String): the third party origin.
 
+webrtc-allow-share-audio-capture-unsafe-delegation = Aotren { $origin } da reiñ an aotre da { $thirdParty } da selaou ouzh aodio an ivinell?
+webrtc-allow-share-camera-unsafe-delegation = Aotren { $origin } da reiñ an aotre da { $thirdParty } da haeziñ ho kamera?
+webrtc-allow-share-microphone-unsafe-delegation = Aotren { $origin } da reiñ an aotre da { $thirdParty } da haeziñ ho mikrofon?
+webrtc-allow-share-screen-unsafe-delegation = Aotren { $origin } da reiñ an aotre da { $thirdParty } da welet ho skramm?
+# "Speakers" is used in a general sense that might include headphones or
+# another audio output connection.
+webrtc-allow-share-speaker-unsafe-delegation = Aotren { $origin } da reiñ an aotre da { $thirdParty } da haeziñ selaouelloù all?
+webrtc-allow-share-camera-and-microphone-unsafe-delegation = Aotren { $origin } da reiñ an aotre da { $thirdParty } da haeziñ ho kamera hag ho mikrofon?
+webrtc-allow-share-camera-and-audio-capture-unsafe-delegation = Aotren { $origin } da reiñ an aotre da { $thirdParty } da haeziñ ho kamera ha da selaou ouzh aodio an ivinell?
+webrtc-allow-share-screen-and-microphone-unsafe-delegation = Aotren { $origin } da reiñ an aotre da { $thirdParty } da haeziñ ho mikrofon ha da welet ho skramm?
+webrtc-allow-share-screen-and-audio-capture-unsafe-delegation = Aotren { $origin } da reiñ an aotre da { $thirdParty } da selaou ouzh aodio an ivinell ha da welet ho skramm?
 
 ##
 
+webrtc-share-screen-warning = Rannit ho skrammoù gant lec’hiennoù ho peus fiziañs enno hepken. En ur rannañ e c’hallit aotren lec’hiennoù touellus da furchal ha da laerez ho roadennoù prevez.
+webrtc-share-browser-warning = Rannit { -brand-short-name } gant lec’hiennoù ho peus fiziañs enno hepken. En ur rannañ e c’hallit aotren lec’hiennoù touellus da furchal ha da laerez ho roadennoù prevez.
 webrtc-share-screen-learn-more = Gouzout hiroc'h
 webrtc-pick-window-or-screen = Diuzit ar prenestr pe ar skramm
 webrtc-share-entire-screen = Skramm a-bezh
+webrtc-share-pipe-wire-portal = Ober gant arventennoù ar reizhad korvoiñ
 # Variables:
 #   $monitorIndex (String): screen number (digits 1, 2, etc).
 webrtc-share-monitor = Skramm { $monitorIndex }

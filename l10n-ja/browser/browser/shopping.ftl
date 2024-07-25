@@ -64,6 +64,11 @@ shopping-message-bar-analysis-in-progress-with-amount = レビュー品質を確
 shopping-message-bar-page-not-supported =
     .heading = これらのレビューを確認できません。
     .message = 残念ながら、いくつかの種類の製品はレビュー品質を確認することができません。例えば、ギフトカードやストリーミング動画、音楽、ゲームなど。
+shopping-message-bar-keep-closed-header =
+    .heading = 閉じておきますか？
+    .message = レビューチェッカーを既定で閉じておくように設定できます。今後はレビューチェッカーが自動的に開きます。
+shopping-message-bar-keep-closed-dismiss-button = いいえ、結構です
+shopping-message-bar-keep-closed-accept-button = はい、閉じておきます
 
 ## Strings for the product review snippets card
 
@@ -89,6 +94,19 @@ shopping-settings-recommendations-toggle =
 shopping-settings-recommendations-learn-more2 = 時々、関連製品の広告が表示されます。私たちは信頼できるレビューの付いた製品のみを広告します。<a data-l10n-name="review-quality-url">詳細情報</a>
 shopping-settings-opt-out-button = レビューチェッカーをオフにする
 powered-by-fakespot = レビューチェッカーは <a data-l10n-name="fakespot-link">{ -fakespot-brand-full-name }</a> の機能です。
+shopping-settings-auto-open-toggle =
+    .label = レビューチェッカーを自動的に開く
+# Description text for regions where we support three sites. Sites are limited to Amazon, Walmart and Best Buy.
+# Variables:
+#   $firstSite (String) - The first shopping page name
+#   $secondSite (String) - The second shopping page name
+#   $thirdSite (String) - The third shopping page name
+shopping-settings-auto-open-description-three-sites = { $firstSite } や { $secondSite }、{ $thirdSite } で製品を見るとき
+# Description text for regions where we support only one site (e.g. currently used in FR/DE with Amazon).
+# Variables:
+#   $currentSite (String) - The current shopping page name
+shopping-settings-auto-open-description-single-site = { $currentSite } で製品を見るとき
+shopping-settings-sidebar-enabled-state = レビューチェッカーが <strong>オン</strong> です
 
 ## Strings for the adjusted rating component
 
@@ -110,7 +128,6 @@ shopping-analysis-explainer-label =
 shopping-analysis-explainer-intro2 = 私たちは、{ -fakespot-brand-full-name } の AI 技術を用いて製品レビューの信頼性を確認します。これは製品そのものの品質ではなく、製品の信頼できるレビューへのアクセスを助けるものです。
 shopping-analysis-explainer-grades-intro = 私たちは、各製品のレビューを A から F までの <strong>レターグレード</strong> で評価します。
 shopping-analysis-explainer-adjusted-rating-description = <strong>調整されたレート</strong> は私たちが信頼するに足ると評価したレビューのみを基にしています。
-shopping-analysis-explainer-learn-more = 詳細は、<a data-l10n-name="review-quality-url">{ -fakespot-brand-full-name } によるレビュー品質の決定方法について</a> をご覧ください。
 shopping-analysis-explainer-learn-more2 = 詳細は、<a data-l10n-name="review-quality-url">{ -fakespot-brand-name } によるレビュー品質の決定方法について</a> をご覧ください。
 # This string includes the short brand name of one of the three supported
 # websites, which will be inserted without being translated.
@@ -172,6 +189,22 @@ shopping-callout-pdp-opted-in-title = これらのレビューは信頼できま
 shopping-callout-pdp-opted-in-subtitle = レビューチェッカーを開いてレートが調整されていないか調べ、信頼できないレビューを削除し、さらに最近の信頼できる確かなレビューに注目します。
 shopping-callout-closed-not-opted-in-title = ワンクリックで信頼できるレビューを見分けます
 shopping-callout-closed-not-opted-in-subtitle = 価格タグアイコンが表示されたらレビューチェッカーにおまかせください。購入する前に、本物の買い物客からの意見を聴きましょう。
+shopping-callout-closed-not-opted-in-revised-title = クリック 1 回で信頼できるレビューを確認
+shopping-callout-closed-not-opted-in-revised-subtitle = アドレスバー内の価格タグアイコンをクリックするだけでレビューチェッカーへ戻ります。
+shopping-callout-closed-not-opted-in-revised-button = 了解
+shopping-callout-not-opted-in-reminder-title = 信頼できる店
+shopping-callout-not-opted-in-reminder-subtitle = 製品のレビューが本物か偽物か分からないときは、{ -brand-product-name } のレビューチェッカーが役立ちます。
+shopping-callout-not-opted-in-reminder-open-button = レビューチェッカーを開く
+shopping-callout-not-opted-in-reminder-close-button = 閉じる
+shopping-callout-not-opted-in-reminder-ignore-checkbox = 今後は表示しない
+shopping-callout-not-opted-in-reminder-img-alt =
+    .aria-label = 3 つの製品レビューを表す抽象的なイラスト。一つには信頼できないことを示す警告シンボル付き。
+shopping-callout-disabled-auto-open-title = レビューチェッカーが既定で非表示になりました
+shopping-callout-disabled-auto-open-subtitle = アドレスバー内の価格タグアイコンをクリックすれば、いつでも製品レビューが信頼できるか確認できます。
+shopping-callout-disabled-auto-open-button = 了解
+shopping-callout-opted-out-title = レビューチェッカーはオフです
+shopping-callout-opted-out-subtitle = オンに戻すには、アドレスバー内の価格タグアイコンをクリックして指示に従ってください。
+shopping-callout-opted-out-button = 了解
 
 ## Onboarding message strings.
 
@@ -182,9 +215,12 @@ shopping-onboarding-headline = 製品レビューの信頼できるガイドを�
 #   $secondSite (str) - A second shopping page name
 #   $thirdSite (str) - A third shopping page name
 shopping-onboarding-dynamic-subtitle-1 = 購入する前に、<b>{ $currentSite }</b> の製品レビューがどのくらい信頼できるか調べましょう。{ -brand-product-name } による実験的な機能のレビューチェッカーはブラウザーに組み込まれています。これは <b>{ $secondSite }</b> や <b>{ $thirdSite }</b> でも動作します。
+# Subtitle for countries where we only support one shopping website (e.g. currently used in FR/DE with Amazon)
+# Variables:
+#   $currentSite (str) - The current shopping page name
+shopping-onboarding-single-subtitle = 購入する前に、<b>{ $currentSite }</b> の製品レビューがどのくらい信頼できるか調べましょう。{ -brand-product-name } による実験的な機能のレビューチェッカーはブラウザーに組み込まれています。
 shopping-onboarding-body = { -fakespot-brand-full-name } の協力を得て、ユーザーが偏った不確実なレビューに影響されないよう支援します。ユーザーの買い物を守るため、私たちの AI モデルは常に改善されています。<a data-l10n-name="learn_more">詳細情報</a>
-shopping-onboarding-opt-in-privacy-policy-and-terms-of-use = “{ shopping-onboarding-opt-in-button }“ を選択すると、{ -fakespot-brand-full-name } の <a data-l10n-name="privacy_policy">プライバシーポリシー</a> および <a data-l10n-name="terms_of_use">利用規約</a> に同意したものとみなされます。
-shopping-onboarding-opt-in-privacy-policy-and-terms-of-use2 = “{ shopping-onboarding-opt-in-button }“ を選択すると、{ -fakespot-brand-name } の <a data-l10n-name="privacy_policy">プライバシーポリシー</a> および <a data-l10n-name="terms_of_use">利用規約</a> に同意したものとみなされます。
+shopping-onboarding-opt-in-privacy-policy-and-terms-of-use3 = “{ shopping-onboarding-opt-in-button }“ を選択すると、{ -brand-product-name } の <a data-l10n-name="privacy_policy">プライバシーポリシー</a> および { -fakespot-brand-name } の <a data-l10n-name="terms_of_use">利用規約</a> に同意したものとみなされます。
 shopping-onboarding-opt-in-button = はい、試します
 shopping-onboarding-not-now-button = 後で
 shopping-onboarding-dialog-close-button =

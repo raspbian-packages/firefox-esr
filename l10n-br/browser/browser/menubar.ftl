@@ -149,6 +149,8 @@ menu-view-history-button =
     .label = Roll istor
 menu-view-synced-tabs-sidebar =
     .label = Ivinelloù goubredet
+menu-view-megalist-sidebar =
+    .label = Gerioù-tremen
 menu-view-full-zoom =
     .label = Zoum
     .accesskey = Z
@@ -346,7 +348,7 @@ menu-help-switch-device =
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =
-    .label = Danevelliñ al lec'hienn dagus…
+    .label = Danevelliñ ul lec’hienn dagus…
     .accesskey = d
 menu-help-not-deceptive =
     .label = N'eo ket ul lec’hienn dagus…

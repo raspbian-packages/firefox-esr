@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = { $previous } tarayıc�
 mr1-onboarding-theme-header = Zevkinize göre ayarlayın
 mr1-onboarding-theme-subtitle = { -brand-short-name } tarayıcınızı bir temayla kişiselleştirin.
 mr1-onboarding-theme-secondary-button-label = Şimdi değil
+newtab-wallpaper-onboarding-title = Farklı renkleri deneyin
+newtab-wallpaper-onboarding-subtitle = Yeni Sekme sayfanıza yeni bir görünüm kazandırmak için bir duvar kâğıdı seçin.
+newtab-wallpaper-onboarding-primary-button-label = Duvar kâğıdını ayarla
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Sistem teması
 mr1-onboarding-theme-label-light = Açık
@@ -269,7 +272,7 @@ mr2022-onboarding-colorway-description-innovator = <b>Siz bir yenilikçisiniz.</
 
 mr2022-onboarding-mobile-download-title = Bilgisayardan telefona, telefondan bilgisayara atlayın
 mr2022-onboarding-mobile-download-subtitle = Bir cihazınızdaki sekmelere diğer cihazınızdan ulaşıp kaldığınız yerden devam edebilirsiniz. Üstelik { -brand-product-name } kullandığınız her yerden yer imlerinize ve parolalarınıza erişebilirsiniz.
-mr2022-onboarding-mobile-download-cta-text = { -brand-product-name } mobil uygulamasını indirmek için QR kodunu okutun veya <a data-l10n-name="download-label">kendinize indirme linkini gönderin</a>.
+mr2022-onboarding-mobile-download-cta-text = { -brand-product-name } mobil uygulamasını indirmek için QR kodunu okutun veya <a data-l10n-name="download-label">kendinize indirme bağlantısını gönderin</a>.
 mr2022-onboarding-no-mobile-download-cta-text = { -brand-product-name } mobil uygulamasını indirmek için QR kodunu okutun.
 
 ## MR2022 Upgrade Dialog screens
@@ -344,3 +347,21 @@ onboarding-mobile-download-security-and-privacy-subtitle = Eşitleme yaptığın
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } sizi koruyor
 onboarding-gratitude-security-and-privacy-subtitle = Mozilla Vakfı tarafından geliştirilen { -brand-short-name } tarayıcısını kullandığınız için teşekkür ederiz. Desteğinizle interneti herkes için daha güvenli ve daha erişilebilir bir yere dönüştürüyoruz.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = { -brand-short-name } tarayıcısını ne zamandır kullanıyorsunuz?
+onboarding-new-user-familiarity-based-survey-title = { -brand-short-name } tarayıcısını ne kadar tanıyorsunuz?
+onboarding-new-user-survey-subtitle = Geri bildiriminiz { -brand-short-name } tarayıcısını daha da iyileştirmemize yardımcı oluyor.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = İleri
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Yeni kullanmaya başladım
+onboarding-new-user-survey-time-based-option-2 = 1 aydan az
+onboarding-new-user-survey-time-based-option-3 = 1 aydan çok, düzenli olarak
+onboarding-new-user-survey-time-based-option-4 = 1 aydan çok, ara sıra
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Yeni kullanmaya başladım
+onboarding-new-user-survey-familiarity-based-option-2 = Biraz kullandım
+onboarding-new-user-survey-familiarity-based-option-3 = Çok iyi tanıyorum
+onboarding-new-user-survey-familiarity-based-option-4 = Eskiden kullandım ama epey zaman geçti

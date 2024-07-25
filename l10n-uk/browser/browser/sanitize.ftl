@@ -8,7 +8,7 @@ sanitize-prefs2 =
 sanitize-prefs-style =
     .style = width: 17em
 sanitize-dialog-title2 =
-    .title = Очистити дані вебперегляду і куки
+    .title = Очистити дані перегляду і файли cookie
     .style = min-width: 34em
 sanitize-dialog-title =
     .title = Стерти недавню історію
@@ -19,6 +19,7 @@ sanitize-dialog-title-everything =
     .title = Стерти всю історію
     .style = min-width: 34em
 clear-data-settings-label = При закритті { -brand-short-name } повинен автоматично стирати
+sanitize-on-shutdown-description = Автоматично очищати всі позначені елементи, коли { -brand-short-name } закривається.
 
 ## clear-time-duration-prefix is followed by a dropdown list, with
 ## values localized using clear-time-duration-value-* messages.
@@ -54,14 +55,21 @@ history-section-label = Історія
 item-history-and-downloads =
     .label = Історію переглядів та завантажень
     .accesskey = г
-item-browsing-and-search =
-    .label = Відвідані сайти, збережені дані форм і пошуку
-    .accesskey = В
+item-history-form-data-downloads =
+    .label = Історія
+    .accesskey = І
+item-history-form-data-downloads-description = Очищує історію сайтів і завантажень, збережену інформацію форм і пошуку
 item-cookies =
-    .label = Куки
-    .accesskey = у
+    .label = Файли cookie
+    .accesskey = й
+# Variables:
+#   $amount (Number) - Amount of site data currently stored on disk
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cookies-site-data-with-size =
+    .label = Файли cookie та дані сайтів ({ $amount } { $unit })
+    .accesskey = й
 item-cookies-site-data =
-    .label = Куки і дані сайтів
+    .label = Файли cookie та дані сайтів
     .accesskey = и
 item-cookies-site-data-description = Може призвести до виходу на сайтах або очищення кошика для покупок
 item-active-logins =
@@ -70,6 +78,12 @@ item-active-logins =
 item-cache =
     .label = Кеш
     .accesskey = к
+# Variables:
+#   $amount (Number) - Amount of cached data
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cached-content-with-size =
+    .label = Тимчасові кешовані файли та сторінки ({ $amount } { $unit })
+    .accesskey = с
 item-cached-content =
     .label = Тимчасові кешовані файли та сторінки
     .accesskey = Т
@@ -81,9 +95,6 @@ item-site-prefs =
     .label = Налаштування сайтів
     .accesskey = Н
 item-site-prefs-description = Відновлює початкові налаштування дозволів і параметрів сайтів
-item-download-history =
-    .label = Список завантажених файлів
-    .accesskey = з
 data-section-label = Дані
 item-site-settings =
     .label = Налаштування сайтів
@@ -98,6 +109,8 @@ sanitize-button-ok =
     .label = Стерти зараз
 sanitize-button-ok2 =
     .label = Очистити
+sanitize-button-ok-on-shutdown =
+    .label = Зберегти зміни
 # The label for the default button between the user clicking it and the window
 # closing.  Indicates the items are being cleared.
 sanitize-button-clearing =

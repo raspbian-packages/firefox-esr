@@ -570,6 +570,11 @@ urlbar-result-action-search-w-engine = Zoeken met { $engine }
 urlbar-result-action-sponsored = Gesponsord
 urlbar-result-action-switch-tab = Wisselen naar tabblad
 urlbar-result-action-visit = Bezoeken
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Wisselen naar tabblad · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Bezoeken vanaf klembord
 # Directs a user to press the Tab key to perform a search with the specified
@@ -599,6 +604,12 @@ urlbar-result-action-copy-to-clipboard = Kopiëren
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Zoeken met { $engine }
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -894,6 +905,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Eerdere tabbladen openen?</strong> U kunt uw vorige sessie herstellen vanuit het toepassingsmenu van { -brand-short-name } <img data-l10n-name="icon"/>, onder Geschiedenis.
 restore-session-startup-suggestion-button = Tonen hoe
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Uw organisatie heeft toegang tot lokale bestanden op deze computer geblokkeerd.
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } verzendt automatisch een aantal gegevens naar { -vendor-short-name }, zodat we uw ervaring kunnen verbeteren.
@@ -902,6 +917,15 @@ data-reporting-notification-button =
     .accesskey = K
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Privénavigatie
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Voorkomen van gegevensverlies (Data Loss Prevention – DLP) door { $agentName }. Klik voor meer info.
+content-analysis-panel-title = Gegevensbescherming
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Uw organisatie gebruikt { $agentName } om u te beschermen tegen gegevensverlies. <a data-l10n-name="info">Meer info</a>
 
 ## Unified extensions (toolbar) button
 

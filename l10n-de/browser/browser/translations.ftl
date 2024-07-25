@@ -126,8 +126,6 @@ translations-manage-description = Laden Sie Sprachen für die Offline-Übersetzu
 translations-manage-all-language = Alle Sprachen
 translations-manage-download-button = Herunterladen
 translations-manage-delete-button = Löschen
-translations-manage-error-download = Beim Herunterladen der Sprachdateien ist ein Problem aufgetreten. Bitte versuchen Sie es erneut.
-translations-manage-error-delete = Beim Löschen der Sprachdateien ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.
 translations-manage-intro = Legen Sie Einstellungen für Sprachen und Website-Übersetzungen fest und verwalten Sie installierte Sprachen für die Offline-Übersetzung.
 translations-manage-install-description = Sprachen für Offline-Übersetzung installieren
 translations-manage-language-install-button =
@@ -135,12 +133,16 @@ translations-manage-language-install-button =
 translations-manage-language-install-all-button =
     .label = Alle installieren
     .accesskey = i
+translations-manage-language-download-button =
+    .label = Herunterladen
 translations-manage-language-remove-button =
     .label = Entfernen
 translations-manage-language-remove-all-button =
     .label = Alle entfernen
     .accesskey = e
 translations-manage-error-install = Beim Installieren der Sprachdateien ist ein Problem aufgetreten. Bitte versuchen Sie es erneut.
+translations-manage-error-download = Beim Herunterladen der Sprachdateien ist ein Problem aufgetreten. Bitte versuchen Sie es erneut.
+translations-manage-error-delete = Beim Löschen der Sprachdateien ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.
 translations-manage-error-remove = Beim Entfernen der Sprachdateien ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.
 translations-manage-error-list = Die Liste der verfügbaren Sprachen für die Übersetzung konnte nicht abgerufen werden. Aktualisieren Sie die Seite, um es erneut zu versuchen.
 translations-settings-title =
@@ -170,3 +172,26 @@ translations-settings-remove-all-sites-button =
 translations-settings-close-dialog =
     .buttonlabelaccept = Schließen
     .buttonaccesskeyaccept = S
+# Text displayed in the select translations panel header.
+select-translations-panel-header = Übersetzung
+# Text displayed above the from-language dropdown menu.
+select-translations-panel-from-label = Von
+select-translations-panel-cancel-button =
+    .label = Abbrechen
+select-translations-panel-translate-button =
+    .label = Übersetzen
+select-translations-panel-try-again-button =
+    .label = Erneut versuchen
+# Text displayed when the translation fails to complete.
+select-translations-panel-translation-failure-message =
+    .message = Beim Übersetzen ist ein Problem aufgetreten. Bitte versuchen Sie es erneut.
+# If your language requires declining the language name, a possible solution
+# is to adapt the structure of the phrase, or use a support noun, e.g.
+# `Sorry, we don't support the language yet: { $language }
+#
+# Variables:
+#   $language (string) - The language of the document.
+select-translations-panel-unsupported-language-message-known =
+    .message = Leider wird { $language } noch nicht unterstützt.
+select-translations-panel-unsupported-language-message-unknown =
+    .message = Leider wird diese Sprache noch nicht unterstützt.

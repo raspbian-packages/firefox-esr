@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Embojuaju hekaha
 newtab-topsites-add-shortcut-header = Mbopya’eha pyahu
 newtab-topsites-edit-topsites-header = Tenda Ojeikevéva Mbosako’i
 newtab-topsites-edit-shortcut-header = Mbopya’eha mbosako’i
+newtab-topsites-add-shortcut-label = Embojuaju jeike pya’eha
 newtab-topsites-title-label = Teratee
 newtab-topsites-title-input =
     .placeholder = Ehai herarã
@@ -197,6 +198,7 @@ newtab-section-header-recent-activity = Tembiapo ramovegua
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } he’i ndéve reike hag̃ua
+newtab-section-header-stories = Tembiasakue nemoakãngetáva
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -205,6 +207,8 @@ newtab-empty-section-highlights = Eñepyrũ eikundaha ha rohechaukáta ndéve mb
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Ko’ág̃a reikuaapáma ipyahúva. Eikejey ag̃ave ápe eikuaávo mombe’upy pyahu { $provider } oikuave’ẽva ndéve. Ndaikatuvéima reha’ãrõ? Eiporavo peteĩ ñe’ẽmbyrã ha emoñe’ẽve oĩvéva ñande yvy ape ári.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Ko’ág̃a reikuaapáma. Eikejey ag̃ave ápe eikuaave hag̃ua. ¿Nereha’ãrõkuaavéima? Eiporavo ñe’ẽrã ejuhu hag̃ua tembiasakue yvy ape arigua.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -257,9 +261,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Jeike pya’eha jehepyme’ẽpyre
 newtab-custom-pocket-title = { -pocket-brand-name } oñe’ẽporãha
 newtab-custom-pocket-subtitle = Tetepy iporãva { -pocket-brand-name } oiporavopyre, { -brand-product-name } mba’éva pegua
-newtab-custom-pocket-toggle =
-    .label = { -pocket-brand-name } oñe’ẽporãha
-    .description = Tetepy iporãva { -pocket-brand-name } oiporavopyre, { -brand-product-name } mba’éva pegua
+newtab-custom-stories-toggle =
+    .label = Tembiasakue momba’epyre
+    .description = Tetepy iporãva oiporavóva { -brand-product-name } reheguáva
 newtab-custom-pocket-sponsored = Tembiasakue jehepyme’ẽguáva
 newtab-custom-pocket-show-recent-saves = Ehechauka eñongaturamóva
 newtab-custom-recent-title = Tembiapo ramovegua
@@ -269,3 +273,24 @@ newtab-custom-recent-toggle =
     .description = Tenda jeporavo ha tetepy ramovegua
 newtab-custom-close-button = Mboty
 newtab-custom-settings = Eñangareko hetave ñembohekóre
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Mba’erechaha rugua
+newtab-wallpaper-reset = Emoñerũjey ypyguáramo
+newtab-wallpaper-light-red-panda = Panda pytã
+newtab-wallpaper-light-mountain = Yvyty morotĩ
+newtab-wallpaper-light-sky = Ára taijarai pytãũ ha pytãngy
+newtab-wallpaper-light-color = Ysaja hovy, pytãngy ja sa’yju
+newtab-wallpaper-light-landscape = Yvyty jehecha tatatina hovýva ndive
+newtab-wallpaper-light-beach = Yrembe’y jata’i ndive
+newtab-wallpaper-dark-aurora = Kuarahyresẽ yvategua
+newtab-wallpaper-dark-color = Ysaja pytã ha hovy
+newtab-wallpaper-dark-panda = Pánda pytã okañýva ñañandýpe
+newtab-wallpaper-dark-sky = Táva jehecha ára pytũmby ndive
+newtab-wallpaper-dark-mountain = Yvyty jehecha
+newtab-wallpaper-dark-city = Táva jehecha pytãũva
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Ta’ãnga <a data-l10n-name="name-link">{ $author_string }</a> <a data-l10n-name="webpage-link">{ $webpage_string }</a>-pe

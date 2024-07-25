@@ -40,16 +40,16 @@ reload-tabs =
     .label = ਟੈਬਾਂ ਮੁੜ-ਲੋਡ ਕਰੋ
     .accesskey = R
 pin-tab =
-    .label = ਟੈਬ ਨੂੰ ਪਿੰਨ ਕਰੋ
+    .label = ਟੈਬ ਨੂੰ ਟੰਗੋ
     .accesskey = P
 unpin-tab =
-    .label = ਟੈਬ ਨੂੰ ਅਣ-ਪਿੰਨ ਕਰੋ
-    .accesskey = b
+    .label = ਟੈਬ ਨੂੰ ਲਾਹੋ
+    .accesskey = p
 pin-selected-tabs =
-    .label = ਟੈਬਾਂ ਟੰਗੋ
+    .label = ਟੈਬਾਂ ਨੂੰ ਟੰਗੋ
     .accesskey = P
 unpin-selected-tabs =
-    .label = ਟੈਬਾਂ ਲਾਹੋ
+    .label = ਟੈਬਾਂ ਨੂੰ ਲਾਹੋ
     .accesskey = p
 bookmark-selected-tabs =
     .label = …ਟੈਬਾਂ ਬੁੱਕਮਾਰਕ ਕਰੋ
@@ -72,6 +72,9 @@ move-to-new-window =
 tab-context-close-multiple-tabs =
     .label = ਕਈ ਟੈਬਾਂ ਬੰਦ ਕਰੋ
     .accesskey = M
+tab-context-close-duplicate-tabs =
+    .label = ਡੁਪਲੀਕੇਟ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰੋ
+    .accesskey = u
 tab-context-share-url =
     .label = ਸਾਂਝਾ ਕਰੋ
     .accesskey = h
@@ -101,7 +104,6 @@ tab-context-move-tabs =
            *[other] ਟੈਬਾਂ ਭੇਜੋ
         }
     .accesskey = v
-
 tab-context-send-tabs-to-device =
     .label =
         { $tabCount ->

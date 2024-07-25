@@ -207,7 +207,7 @@ cfr-cbh-confirm-button = Argas banniel an toupinoù
     .accesskey = A
 cfr-cbh-dismiss-button = Ket bremañ
     .accesskey = K
-cookie-banner-blocker-cfr-header = { -brand-short-name } zo o paouez stankañ toupinoù evidoc'h
+cookie-banner-blocker-onboarding-learn-more = Gouzout hiroc’h
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -232,9 +232,6 @@ fxa-sync-cfr-secondary = Degas soñj din diwezhatoc’h
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = Emaoc'h oc'h ober gant ur benveg koshoc'h?
-device-migration-fxa-spotlight-primary-button = Penaos gwareziñ ma roadennoù
-device-migration-fxa-spotlight-link = Degas soñj din diwezhatoc’h
 device-migration-fxa-spotlight-heavy-user-header = N'ankouait ket da warediñ ho roadennoù
 device-migration-fxa-spotlight-heavy-user-primary-button = Kregiñ ganti
 device-migration-fxa-spotlight-older-device-primary-button = Krouiñ ur gont
@@ -250,6 +247,7 @@ pdf-default-notification-decline-button =
 
 ## Launch on login infobar notification
 
+launch-on-login-infobar-message = <strong>Digeriñ { -brand-short-name } bewech ma adloc’hit hoc’h urzhiataer?</strong> Bremañ e c’hellit lakaat { -brand-short-name } da zigeriñ ent-emgefreek pa adloc’hit ho trevnad.
 launch-on-login-learnmore = Gouzout hiroc’h
 launch-on-login-infobar-confirm-button = Ya, digeriñ { -brand-short-name }
     .accesskey = Y
@@ -259,5 +257,10 @@ launch-on-login-infobar-reject-button = Diwezhatoc’h
 ## These string variants are used when the “launch on login” infobar
 ## notification is displayed for a second time.
 
+launch-on-login-infobar-final-message = <strong>Digeriñ { -brand-short-name } bewech ma adloc’hit hoc’h urzhiataer?</strong> Evit merañ ho penndibaboù loc’hañ, klaskit “loc’hañ” e-barzh an arventennoù.
 launch-on-login-infobar-final-reject-button = Ket
     .accesskey = K
+
+## Tail Fox Set Default Spotlight
+
+tail-fox-spotlight-primary-button = Digeriñ ma ereoù gant { -brand-short-name }

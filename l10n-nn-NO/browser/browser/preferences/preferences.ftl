@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Søk i innstillingar
 managed-notice = Nettlessaren din vert administrert av organisasjonen din.
+managed-notice-info-icon =
+    .alt = Informasjon
 category-list =
     .aria-label = Kategoriar
 pane-general-title = Generelt
@@ -227,6 +229,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Fargevala dine overstyrer utsjånaden til nettstaden. <a data-l10n-name="colors-link">Handsam fargar</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Fargevala dine overstyrer utsjånaden til nettstaden.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Handsam { -brand-short-name }-tema i <a data-l10n-name="themes-link">Utvidingar og tema</a>
@@ -254,6 +260,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Forstørr berre tekst
     .accesskey = o
+preferences-text-zoom-override-warning =
+    .message = Åtvaring: Viss du vel «Forstørr bere tekst» og standard-zoomen ikkje er sett til 100 %, kan det føre til at enkelte nettstadar eller innhald ikkje fungerer korrekt.
 language-header = Språk
 choose-language-description = Vel føretrekte språk på nettsider
 choose-button =
@@ -304,7 +312,7 @@ download-always-ask-where =
     .label = Spør alltid om kvar eg vil lagre filer
     .accesskey = a
 applications-header = Program
-applications-description = Vel korleis { -brand-short-name } handsame filer du hentar frå nettet eller programma du brukar når du surfar.
+applications-description = Vel korleis { -brand-short-name } handsamar filer du hentar frå nettet eller programma du brukar når du surfar.
 applications-filter =
     .placeholder = Søk filtypar eller program
 applications-type-column =
@@ -466,6 +474,9 @@ browsing-use-smooth-scrolling =
 browsing-gtk-use-non-overlay-scrollbars =
     .label = Vis alltid rullefelt
     .accesskey = V
+browsing-always-underline-links =
+    .label = Understrek alltid lenker
+    .accesskey = U
 browsing-use-onscreen-keyboard =
     .label = Vis eit tøtsj-tastatur når nødvendig
     .accesskey = t
@@ -556,6 +567,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Tilrådd av { $provider }
 home-prefs-recommended-by-description-new = Eksepsjonelt innhald sett saman av { $provider }, ein del av { -brand-product-name }-familien
+home-prefs-recommended-by-header-generic =
+    .label = Tilrådde artiklar
+home-prefs-recommended-by-description-generic = Eineståande innhald utvalt av { -brand-product-name }-familien
 
 ##
 
@@ -609,6 +623,9 @@ search-suggestions-desc = Vel korleis forslag frå søkjemotoren skal visast.
 search-suggestions-option =
     .label = Tilby søkjeforslag
     .accesskey = T
+search-show-suggestions-option =
+    .label = Vis søkjeforslag
+    .accesskey = s
 search-show-suggestions-url-bar-option =
     .label = Vis søkjeforslag i adresselinja
     .accesskey = l
@@ -690,6 +707,11 @@ sync-mobile-promo = Last ned Firefox for <img data-l10n-name="android-icon"/> <a
 
 sync-profile-picture =
     .tooltiptext = Endre profilbilde
+sync-profile-picture-with-alt =
+    .tooltiptext = Endre profilbilde
+    .alt = Endre profilbilde
+fxa-login-rejected-warning =
+    .alt = Åtvaring
 sync-sign-out =
     .label = Logg ut…
     .accesskey = g
@@ -776,6 +798,10 @@ sync-engine-logins-passwords =
     .label = Innloggingar og passord
     .tooltiptext = Brukarnamn og passord som du har lagra
     .accesskey = l
+sync-engine-passwords =
+    .label = Passord
+    .tooltiptext = Passord du har lagra
+    .accesskey = P
 sync-engine-addresses =
     .label = Adresser
     .tooltiptext = Postadresser du har lagra (berre skrivebord)
@@ -784,6 +810,10 @@ sync-engine-creditcards =
     .label = Kredittkort
     .tooltiptext = Namn, nummer og forfallsdato (berre skrivebord)
     .accesskey = K
+sync-engine-payment-methods2 =
+    .label = Betalingsmåtar
+    .tooltiptext = Namn, kortnummer, og opphøyrsdatoar
+    .accesskey = n
 sync-engine-addons =
     .label = Tillegg
     .tooltiptext = Utvidingar og tema for Firefox desktop
@@ -833,12 +863,23 @@ forms-ask-to-save-logins =
 
 ## Privacy Section - Passwords
 
+# "Logins" is the former term for "Passwords". Users should find password settings
+# by searching for the former term "logins". It's not displayed in the UI.
+pane-privacy-passwords-header = Passord
+    .searchkeywords = innloggingar
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
+forms-ask-to-save-passwords =
+    .label = Spør om å lagre passord
+    .accesskey = S
 forms-exceptions =
     .label = Unntak…
     .accesskey = n
 forms-generate-passwords =
     .label = Foreslå og generer sterke passord
     .accesskey = o
+forms-suggest-passwords =
+    .label = Foreslå sterke passord
+    .accesskey = F
 forms-breach-alerts =
     .label = Vis varsel om passord for datalekkasjar på nettstadar
     .accesskey = p
@@ -852,6 +893,9 @@ forms-fill-logins-and-passwords =
     .accesskey = i
 forms-saved-logins =
     .label = Lagre innloggingar…
+    .accesskey = L
+forms-saved-passwords =
+    .label = Lagra passord
     .accesskey = L
 forms-primary-pw-use =
     .label = Bruk eit hovudpassord
@@ -876,6 +920,7 @@ forms-windows-sso =
     .label = Tillat Windows enkel innlogging for Microsoft-, arbeids- og skulekontoar.
 forms-windows-sso-learn-more-link = Les meir
 forms-windows-sso-desc = Handsam konton i einingsinnstillingane dine
+windows-passkey-settings-label = Handsam passnøkkel i systeminnstillingane
 
 ## OS Authentication dialog
 
@@ -1025,10 +1070,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Snøgghandlingar
     .accesskey = S
+addressbar-suggestions-settings = Endre innstillingar for søkjeforslag
 addressbar-locbar-showrecentsearches-option =
     .label = Vis nylege søk
     .accesskey = V
-addressbar-suggestions-settings = Endre innstillingar for søkjeforslag
 addressbar-quickactions-learn-more = Les meir
 
 ## Privacy Section - Content Blocking
@@ -1211,6 +1256,8 @@ addon-recommendations-link = Les meir
 collection-health-report-disabled = Datarapportering er deaktivert for denne byggekonfigurasjonen
 collection-backlogged-crash-reports-with-link = Tillat { -brand-short-name } å sende etterslepne krasjrapportar på dine vegne <a data-l10n-name="crash-reports-link">Les meir</a>
     .accesskey = T
+collection-backlogged-crash-reports = Tillat { -brand-short-name } å sende etterslepne krasjrapportar på dine vegne
+    .accesskey = T
 privacy-segmentation-section-header = Nye funksjonar som forbetrar surfinga di
 privacy-segmentation-section-description = Når vi tilbyr funksjonar som brukar dine data for å gi deg ei meir personleg oppleving:
 privacy-segmentation-radio-off =
@@ -1289,6 +1336,7 @@ preferences-doh-status-disabled = Av
 #   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
 preferences-doh-status-not-active = Ikkje aktiv ({ $reason })
 preferences-doh-group-message = Slå på sikker DNS med:
+preferences-doh-group-message2 = Aktiver DNS-over-HTTPS med:
 preferences-doh-expand-section =
     .tooltiptext = Meir informasjon
 preferences-doh-setting-default =

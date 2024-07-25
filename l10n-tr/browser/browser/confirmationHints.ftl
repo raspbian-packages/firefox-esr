@@ -7,7 +7,7 @@
 
 confirmation-hint-breakage-report-sent = Rapor gönderildi. Teşekkürler!
 confirmation-hint-login-removed = Hesap kaldırıldı!
-confirmation-hint-password-removed = Parola silindi
+confirmation-hint-password-removed = Parola kaldırıldı
 confirmation-hint-page-bookmarked = Yer imlerine kaydedildi
 confirmation-hint-password-saved = Parola kaydedildi!
 confirmation-hint-password-created = Parola kaydedildi
@@ -22,3 +22,10 @@ confirmation-hint-send-to-device = Gönderildi!
 confirmation-hint-firefox-relay-mask-created = Yeni maske oluşturuldu!
 confirmation-hint-firefox-relay-mask-reused = Mevcut maske yeniden kullanıldı!
 confirmation-hint-screenshot-copied = Ekran görüntüsü kopyalandı!
+# Variables:
+#   $tabCount (Number): The number of duplicate tabs closed, at least 1.
+confirmation-hint-duplicate-tabs-closed =
+    { $tabCount ->
+        [one] { $tabCount } sekme kapatıldı
+       *[other] { $tabCount } sekme kapatıldı
+    }

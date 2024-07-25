@@ -29,14 +29,6 @@ protections-panel-etp-off-header = Bu sitede gelişmiş izlenme koruması KAPALI
 ## custom element code.
 ##   $host (String): the hostname of the site that is being displayed.
 
-protections-panel-etp-on-toggle =
-    .label = Gelişmiş izlenme koruması
-    .description = Bu sitede açık
-    .aria-label = { $host } için korumaları devre dışı bırak
-protections-panel-etp-off-toggle =
-    .label = Gelişmiş izlenme koruması
-    .description = Bu sitede kapalı
-    .aria-label = { $host } için korumaları etkinleştir
 protections-panel-etp-toggle-on =
     .label = Gelişmiş izlenme koruması
     .description = Bu sitede açık
@@ -102,7 +94,7 @@ protections-panel-site-not-working-view-send-report = Rapor gönderin
 ##
 
 protections-panel-cross-site-tracking-cookies = Bu çerezler, internette yaptığınız şeyler hakkında veri toplamak için sizi siteden siteye takip eder. Reklam verenler ve analiz şirketleri gibi üçüncü taraflar tarafından yerleştirilirler.
-protections-panel-cryptominers = Kripto madencileri sayısal para madenciliğinde bulunmak için sisteminizin hesaplama gücünü kullanır. Kripto madencilik betikleri pilinizi tüketir, bilgisayarınızı yavaşlatır ve elektrik faturanızı kabartabilir.
+protections-panel-cryptominers = Kripto madencileri dijital para madenciliğinde bulunmak için sisteminizin hesaplama gücünü kullanır. Kripto madencilik betikleri pilinizi tüketir, bilgisayarınızı yavaşlatır ve elektrik faturanızı kabartabilir.
 protections-panel-fingerprinters = Parmak izi toplayıcılar profilinizi oluşturmak için tarayıcı ve bilgisayarınızdaki ayarları toplar. Bu dijital parmak izini kullanarak farklı web siteler arasında sizi takip edebilirler.
 protections-panel-tracking-content = Web siteleri; takip kodu içeren harici reklamlar, videolar ve başka içerikler yükleyebilir. Takip amaçlı içerikleri engellemek sitelerin daha hızlı yüklenmesini sağlayabilir ama bazı düğmeler, formlar ve giriş alanları çalışmayabilir.
 protections-panel-social-media-trackers = Sosyal ağlar, internette yaptıklarınızı, gördüklerinizi ve izlediklerinizi takip etmek için diğer web sitelerine takip kodları yerleştirir. Bu sayede sosyal medya şirketleri, sosyal medya profillerinizde paylaştıklarınızdan çok daha fazla şey öğrenebilir.
@@ -149,10 +141,10 @@ protections-panel-cookie-banner-blocker-view-turn-off-for-site = { $host } için
 protections-panel-cookie-banner-blocker-view-turn-on-for-site = Bu site için çerez bildirimlerini engelleme açılsın mı?
 protections-panel-cookie-banner-view-cookie-clear-warning = { -brand-short-name } bu sitenin çerezlerini temizleyip sayfayı tazeleyecek. Tüm çerezlerin temizlenmesi oturumunuzu kapatabilir veya alışveriş sepetlerinizi boşaltabilir.
 protections-panel-cookie-banner-view-turn-on-description = { -brand-short-name }, desteklenen sitelerdeki tüm çerez isteklerini otomatik olarak reddetmeye çalışır.
-protections-panel-cookie-banner-blocker-view-turn-on-description = Açtığınızda { -brand-short-name } bu sitedeki çerez bildirimlerini otomatik olarak reddetmeye çalışacaktır.
 protections-panel-cookie-banner-view-cancel = Vazgeç
 protections-panel-cookie-banner-view-turn-off = Kapat
 protections-panel-cookie-banner-view-turn-on = Aç
+protections-panel-cookie-banner-blocker-view-turn-on-description = Açtığınızda { -brand-short-name } bu sitedeki çerez bildirimlerini otomatik olarak reddetmeye çalışacaktır.
 protections-panel-cookie-banner-view-cancel-label =
     .label = Vazgeç
 protections-panel-cookie-banner-view-turn-off-label =
@@ -162,3 +154,9 @@ protections-panel-cookie-banner-view-turn-on-label =
 protections-panel-report-broken-site =
     .label = Bozuk siteyi rapor et
     .title = Bozuk siteyi rapor et
+
+## Protections panel info message
+
+cfr-protections-panel-header = Takip edilmeden gezin
+cfr-protections-panel-body = Verileriniz sizde kalsın. { -brand-short-name }, internette ne yaptığınızı öğrenmeye çalışan takip kodlarının çoğundan sizi korur.
+cfr-protections-panel-link-text = Daha fazla bilgi alın

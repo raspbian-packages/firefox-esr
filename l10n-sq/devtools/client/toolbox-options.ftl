@@ -38,6 +38,16 @@ options-collapse-attrs-tooltip =
 options-inspector-draggable-properties-label = Klikoni dhe tërhiqeni që të përpunoni vlera madhësie
 options-inspector-draggable-properties-tooltip =
     .title = Klikoni dhe tërhiqeni që të përpunoni vlera madhësie te pamja rregulla mbikëqyrësi.
+# The label for the checkbox option to enable simplified highlighting on page elements
+# within the inspector for users who enabled prefers-reduced-motion = reduce
+options-inspector-simplified-highlighters-label = Përdorni theksues më të thjeshtë, me prefers-reduced-motion
+options-inspector-simplified-highlighters-tooltip =
+    .title = Aktivizon theksues të thjeshtuar, kur prefers-reduced-motion është e aktivizuar. Vizatohen vija, në vend se drejtkëndësha të mbushur, përreth elementësh të theksuar, për të shmangur efekte xixëllimi.
+# The label for the checkbox option to make the Enter key move the focus to the next input
+# when editing a property name or value in the Inspector rules view
+options-inspector-rules-focus-next-on-enter-label = Kur shtypet tasti <kbd>Enter</kbd>, kaloje fokusin te ç’jepet në vazhdim
+options-inspector-rules-focus-next-on-enter-tooltip =
+    .title = Kur aktivizohet, shtypja e tastit Enter, kur përpunohet një përzgjedhës, një emër ose vlerë vetie, fokusi do të kalohet te fusha pasuese për dhënie.
 
 ## "Default Color Unit" options for the Inspector
 
@@ -46,7 +56,17 @@ options-default-color-unit-authored = Si e Autorit
 options-default-color-unit-hex = Hex
 options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
+options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Emra Ngjyrash
+
+## Web Console section
+
+# The heading
+options-webconsole-label = Konsol Web
+# The label for the checkbox that toggle whether the Split console is enabled
+options-webconsole-split-console-label = Aktivizo Konsolë të Ndarë
+options-webconsole-split-console-tooltip =
+    .title = Hap Konsolë të Ndarë me Tastin Esc
 
 ## Style Editor section
 

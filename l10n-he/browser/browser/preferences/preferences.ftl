@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = חיפוש בהגדרות
 managed-notice = הדפדפן שלך מנוהל על־ידי הארגון שלך.
+managed-notice-info-icon =
+    .alt = מידע
 category-list =
     .aria-label = קטגוריות
 pane-general-title = כללי
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = להסיר מגירה זו
 containers-remove-cancel-button = לא להסיר מגירה זו
+settings-tabs-show-image-in-preview =
+    .label = הצגת תצוגה מקדימה בעת ריחוף על לשונית
+    .accessKey = ת
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = בחירות הצבעים שלך דורסות את מראה האתר. <a data-l10n-name="colors-link">ניהול צבעים</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = בחירות הצבעים שלך דורסות את מראה האתר.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = ניהול ערכות נושא של { -brand-short-name } ב<a data-l10n-name="themes-link">הרחבות וערכות נושא</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = שינוי גודל טקסט בלבד
     .accesskey = ט
+preferences-text-zoom-override-warning =
+    .message = אזהרה: בחירה באפשרות ״שינוי גודל טקסט בלבד״ בעת שהמרחק מתצוגה ברירת המחדל שלך אינו מוגדר ל־100%, עלולה לגרום לאתרים או תוכן מסוים להישבר.
 language-header = שפה
 choose-language-description = בחירת השפה המועדפת עליך להצגת דפים
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = מומלץ על־ידי { $provider }
 home-prefs-recommended-by-description-new = תוכן יוצא דופן שנבחר בקפידה על־ידי { $provider }, חלק ממשפחת { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = סיפורים מומלצים
+home-prefs-recommended-by-description-generic = תוכן יוצא דופן שנבחר בקפידה על־ידי משפחת { -brand-product-name }
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = הורידו את Firefox עבור <img data-l10n-name="and
 
 sync-profile-picture =
     .tooltiptext = שינוי תמונת פרופיל
+sync-profile-picture-with-alt =
+    .tooltiptext = שינוי תמונת פרופיל
+    .alt = שינוי תמונת פרופיל
+sync-profile-picture-account-problem =
+    .alt = תמונת פרופיל חשבון
+fxa-login-rejected-warning =
+    .alt = אזהרה
 sync-sign-out =
     .label = התנתקות…
     .accesskey = ה
@@ -997,6 +1018,7 @@ sitedata-delete-on-close =
     .label = מחיקת עוגיות ונתוני אתרים עם סגירת { -brand-short-name }
     .accesskey = ח
 sitedata-delete-on-close-private-browsing = במצב גלישה פרטית קבועה, עוגיות ונתוני אתרים ינוקו תמיד כש־{ -brand-short-name } נסגר.
+sitedata-delete-on-close-private-browsing2 = בהתאם להגדרות ההיסטוריה שלך, { -brand-short-name } מוחק עוגיות ונתוני אתרים מההפעלה שלך בעת סגירת הדפדפן.
 sitedata-allow-cookies-option =
     .label = קבלת עוגיות ונתוני אתרים
     .accesskey = ק
@@ -1031,10 +1053,18 @@ sitedata-cookies-exceptions =
 
 ## Privacy Section - Cookie Banner Handling
 
+cookie-banner-handling-header = צמצום כרזות עוגיות
+cookie-banner-handling-description = ‏{ -brand-short-name } מנסה באופן אוטומטי לדחות בקשות עוגיות בכרזות עוגיות באתרים נתמכים.
 
 ## Privacy Section - Cookie Banner Blocking
 
+cookie-banner-blocker-header = חוסם כרזות עוגיות
+cookie-banner-blocker-description = כשאתר שואל האם הוא יכול להשתמש בעוגיות במצב גלישה פרטית, { -brand-short-name } מסרב עבורך באופן אוטומטי. רק באתרים נתמכים.
 cookie-banner-learn-more = מידע נוסף
+forms-handle-cookie-banners =
+    .label = צמצום כרזות עוגיות
+cookie-banner-blocker-checkbox-label =
+    .label = סירוב אוטומטי לכרזות עוגיות
 
 ## Privacy Section - Address Bar
 
@@ -1065,10 +1095,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = פעולות מהירות
     .accesskey = פ
+addressbar-suggestions-settings = שינוי העדפות של הצעות מנועי חיפוש
 addressbar-locbar-showrecentsearches-option =
     .label = הצגת חיפושים אחרונים
     .accesskey = ח
-addressbar-suggestions-settings = שינוי העדפות של הצעות מנועי חיפוש
 addressbar-quickactions-learn-more = מידע נוסף
 
 ## Privacy Section - Content Blocking
@@ -1249,6 +1279,8 @@ addon-recommendations-link = מידע נוסף
 # or builds with no Telemetry support available.
 collection-health-report-disabled = דיווח נתונים מנוטרל עבור תצורת בנייה זו
 collection-backlogged-crash-reports-with-link = לאפשר ל־{ -brand-short-name } לשלוח דיווחי קריסות שנשמרו בשמך <a data-l10n-name="crash-reports-link">מידע נוסף</a>
+    .accesskey = ק
+collection-backlogged-crash-reports = לאפשר ל־{ -brand-short-name } לשלוח דיווחי קריסות שנשמרו בשמך
     .accesskey = ק
 privacy-segmentation-section-header = תכונות חדשות שמשפרות את הגלישה שלך
 privacy-segmentation-section-description = כשאנחנו מציעים תכונות המשתמשות בנתונים שלך כדי להעניק לך חוויה אישית יותר:

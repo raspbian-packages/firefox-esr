@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = 新增搜尋引擎
 newtab-topsites-add-shortcut-header = 新增捷徑
 newtab-topsites-edit-topsites-header = 編輯熱門網站
 newtab-topsites-edit-shortcut-header = 編輯捷徑
+newtab-topsites-add-shortcut-label = 新增捷徑
 newtab-topsites-title-label = 標題
 newtab-topsites-title-input =
     .placeholder = 輸入標題
@@ -194,6 +195,7 @@ newtab-section-header-recent-activity = 近期動態
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } 推薦
+newtab-section-header-stories = 發人深省的文章
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -202,6 +204,8 @@ newtab-empty-section-highlights = 開始上網，我們就會把您在網路上�
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = 所有文章都讀完啦！晚點再來，{ $provider } 將提供更多推薦故事。等不及了？選擇熱門主題，看看 Web 上各式精采資訊。
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = 所有文章都讀完啦！晚點再來看看更多推薦故事。等不及了？選擇熱門主題，看看 Web 上各式精采資訊。
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -254,9 +258,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = 贊助捷徑
 newtab-custom-pocket-title = 由 { -pocket-brand-name } 推薦
 newtab-custom-pocket-subtitle = 由 { -brand-product-name } 的姊妹作 { -pocket-brand-name } 精心策展的內容
-newtab-custom-pocket-toggle =
-    .label = 由 { -pocket-brand-name } 推薦
-    .description = 由 { -brand-product-name } 的姊妹作 { -pocket-brand-name } 精心策展的內容
+newtab-custom-stories-toggle =
+    .label = 推薦的文章
+    .description = 由 { -brand-product-name } 產品家族精選的內容文章
 newtab-custom-pocket-sponsored = 贊助內容
 newtab-custom-pocket-show-recent-saves = 顯示近期儲存項目
 newtab-custom-recent-title = 近期動態
@@ -266,3 +270,24 @@ newtab-custom-recent-toggle =
     .description = 近期造訪過的網站與內容精選
 newtab-custom-close-button = 關閉
 newtab-custom-settings = 管理更多設定
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = 背景圖
+newtab-wallpaper-reset = 還原為預設值
+newtab-wallpaper-light-red-panda = 小貓熊
+newtab-wallpaper-light-mountain = 白色山脈
+newtab-wallpaper-light-sky = 紫色與粉紅色的天空
+newtab-wallpaper-light-color = 藍色、粉紅與黃色圖型
+newtab-wallpaper-light-landscape = 藍霧山景
+newtab-wallpaper-light-beach = 棕櫚樹海灘
+newtab-wallpaper-dark-aurora = 極光
+newtab-wallpaper-dark-color = 紅色與藍色圖型
+newtab-wallpaper-dark-panda = 隱藏在森林中的小貓熊
+newtab-wallpaper-dark-sky = 城市的夜空景觀
+newtab-wallpaper-dark-mountain = 山景
+newtab-wallpaper-dark-city = 紫色城市風景
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = 相片由 <a data-l10n-name="name-link">{ $author_string }</a> 於 <a data-l10n-name="webpage-link">{ $webpage_string }</a> 提供

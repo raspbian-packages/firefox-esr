@@ -108,6 +108,7 @@ about-logins-login-intro-heading-logged-in = Ingen synkroniserte innlogginger fu
 login-intro-description = Slik kan du få dine { -brand-product-name } innlogginger hit, om du har lagret de på en annen enhet
 login-intro-instructions-fxa = Lag eller logg inn på din { -fxaccount-brand-name } på enheten der dine innlogginger er lagret
 about-logins-login-intro-heading-message = Lagre passordene dine på et trygt sted
+login-intro-description2 = Alle passord du lagrer i { -brand-product-name } krypteres. Vi følger dessuten med på og varsler deg om du blir berørt av datalekkasjer. <a data-l10n-name="breach-alert-link">Lær mer</a>
 login-intro-instructions-fxa2 = Lag eller logg inn på din konto på enheten der dine innlogginger er lagret
 login-intro-instructions-fxa-settings = Gå til Innstillinger > Synkronisering > Slå på synkronisering … Merk av for innlogginger og passord.
 login-intro-instructions-fxa-passwords-help = Besøk <a data-l10n-name="passwords-help-link">passordstøtte</a> for mer hjelp.
@@ -249,11 +250,6 @@ about-logins-confirm-remove-all-sync-dialog-message =
         [1] Dette fjerner innloggingen du har lagret i { -brand-short-name } på alle enheter som er synkronisert med { -fxaccount-brand-name }. Dette vil også fjerne varsler om datalekkasjer som vises her. Du kan ikke angre denne handlingen.
        *[other] Dette fjerner alle innlogginger du har lagret i { -brand-short-name } på alle enheter som er synkronisert med { -fxaccount-brand-name }. Dette vil også fjerne varsler om datalekkasjer som vises her. Du kan ikke angre denne handlingen.
     }
-about-logins-confirm-remove-all-sync-dialog-message2 =
-    { $count ->
-        [1] Dette fjerner innloggingen du har lagret i { -brand-short-name } på alle enheter som er synkronisert med kontoen din. Dette vil også fjerne varsler om datalekkasjer som vises her. Du kan ikke angre denne handlingen.
-       *[other] Dette fjerner alle innlogginger du har lagret i { -brand-short-name } på alle enheter som er synkronisert med kontoen din. Dette vil også fjerne varsler om datalekkasjer som vises her. Du kan ikke angre denne handlingen.
-    }
 # Checkbox for modal to confirm the removal of saved passwords
 about-logins-confirm-remove-all-dialog-checkbox-label2 =
     { $count ->
@@ -275,8 +271,8 @@ about-logins-confirm-remove-all-dialog-message2 =
 # Title for modal to confirm the removal of all saved passwords when user IS SYNCED
 about-logins-confirm-remove-all-sync-dialog-title2 =
     { $count ->
-        [one] Fjern { $count } passord fra alle enhetene?
-       *[other] Fjern alle { $count } passord fra alle enhetene?
+        [one] Fjerne { $count } passord fra alle enhetene?
+       *[other] Fjerne alle { $count } passord fra alle enhetene?
     }
 # Message for modal to confirm the removal of saved passwords when user IS synced.
 about-logins-confirm-remove-all-sync-dialog-message3 =

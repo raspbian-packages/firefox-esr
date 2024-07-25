@@ -15,6 +15,10 @@ fxviewtabrow-time = { DATETIME($time, timeStyle: "short") }
 fxviewtabrow-tabs-list-tab =
     .title = { $targetURI } жаңа бетте ашу
 # Variables:
+#   $tabTitle (string) - Title of tab being closed
+fxviewtabrow-close-tab-button =
+    .title = { $tabTitle } бетін жабу
+# Variables:
 #   $tabTitle (string) - Title of tab being dismissed
 fxviewtabrow-dismiss-tab-button =
     .title = { $tabTitle } елемеу
@@ -51,7 +55,30 @@ fxviewtabrow-move-tab-window = Жаңа терезеге жылжыту
     .accesskey = т
 fxviewtabrow-send-tab = Бетті құрылғыға жіберу
     .accesskey = л
+fxviewtabrow-pin-tab = Бетті бекіту
+    .accesskey = Б
+fxviewtabrow-unpin-tab = Бетті босату
+    .accesskey = Б
+fxviewtabrow-mute-tab = Бет дыбысын басу
+    .accesskey = д
+fxviewtabrow-unmute-tab = Бет дыбысын іске қосу
+    .accesskey = д
 # Variables:
 #   $tabTitle (string) - Title of the tab to which the context menu is associated
 fxviewtabrow-options-menu-button =
     .title = { $tabTitle } опциялары
+# Variables:
+#   $tabTitle (string) - Title of tab being muted
+fxviewtabrow-mute-tab-button =
+    .title = { $tabTitle } дыбысын басу
+# Variables:
+#   $tabTitle (string) - Title of tab being unmuted
+fxviewtabrow-unmute-tab-button =
+    .title = { $tabTitle } дыбысын іске қосу
+
+## Strings below are to be used without context (tab title/URL) on mute/unmute buttons
+
+fxviewtabrow-mute-tab-button-no-context =
+    .title = Бет дыбысын басу
+fxviewtabrow-unmute-tab-button-no-context =
+    .title = Бет дыбысын іске қосу

@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = ਖੋਜ ਇੰਜਣ ਜੋੜੋ
 newtab-topsites-add-shortcut-header = ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ
 newtab-topsites-edit-topsites-header = ਉਪਰਲੀ ਸਾਈਟ ਸੋਧੋ
 newtab-topsites-edit-shortcut-header = ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਸੋਧੋ
+newtab-topsites-add-shortcut-label = ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਜੋੜੋ
 newtab-topsites-title-label = ਸਿਰਲੇਖ
 newtab-topsites-title-input =
     .placeholder = ਸਿਰਲੇਖ ਦਿਓ
@@ -197,6 +198,7 @@ newtab-section-header-recent-activity = ਤਾਜ਼ਾ ਸਰਗਰਮੀ
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } ਵਲੋਂ ਸਿਫਾਰਸ਼ੀ
+newtab-section-header-stories = ਸੋਚਣ ਲਈ ਮਜ਼ਬੂਰ ਕਰਨ ਵਾਲੇ ਲੇਖ
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -205,6 +207,8 @@ newtab-empty-section-highlights = ਬਰਾਊਜ਼ ਕਰਨਾ ਸ਼ੁਰ�
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = ਤੁਸੀਂ ਪੂਰਾ ਕਰ ਚੁੱਕੇ ਹੋ। { $provider } ਵਲੋਂ ਹੋਰ ਕਹਾਣੀਆਂ ਲਈ ਬਾਅਦ ਵਿੱਚ ਵਾਪਸ ਚੈਕ ਕਰੀਓ। ਉਡੀਕ ਨਹੀਂ ਕਰ ਸਕਦੇ? ਤਾਂ ਫੇਰ ਵੈੱਬ ਉਤੋਂ ਹੋਰ ਵਧੀਆ ਕਹਾਣੀਆਂ ਵਾਸਤੇ ਹਰਮਨਪਿਆਰੇ ਵਿਸ਼ੇ ਨੂੰ ਚੁਣੋ।
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = ਤੁਸੀਂ ਪੂਰਾ ਕਰ ਚੁੱਕੇ ਹੋ। ਹੋਰ ਕਹਾਣੀਆਂ ਲਈ ਬਾਅਦ ਵਿੱਚ ਵਾਪਸ ਚੈਕ ਕਰੀਓ। ਉਡੀਕ ਨਹੀਂ ਕਰ ਸਕਦੇ? ਤਾਂ ਫੇਰ ਵੈੱਬ ਉਤੋਂ ਹੋਰ ਵਧੀਆ ਕਹਾਣੀਆਂ ਵਾਸਤੇ ਹਰਮਨਪਿਆਰੇ ਵਿਸ਼ੇ ਨੂੰ ਚੁਣੋ।
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -257,9 +261,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = ਸਪਾਂਸਰ ਕੀਤੇ ਸ਼ਾਰਟਕੱਟ
 newtab-custom-pocket-title = { -pocket-brand-name } ਵਲੋਂ ਸਿਫਾਰਸ਼ ਕੀਤੇ
 newtab-custom-pocket-subtitle = { -brand-product-name } ਦੇ ਹਿੱਸੇ ਵਜੋਂ { -pocket-brand-name } ਵਲੋਂ ਖਾਸ ਇਕੱਤਰ ਕੀਤੀ ਸਮੱਗਰੀ
-newtab-custom-pocket-toggle =
-    .label = { -pocket-brand-name } ਵਲੋਂ ਸਿਫਾਰਸ਼ ਕੀਤੇ
-    .description = { -brand-product-name } ਦੇ ਹਿੱਸੇ ਵਜੋਂ { -pocket-brand-name } ਵਲੋਂ ਖਾਸ ਇਕੱਤਰ ਕੀਤੀ ਸਮੱਗਰੀ
+newtab-custom-stories-toggle =
+    .label = ਸਿਫ਼ਾਰਸ਼ੀ ਕਹਾਣੀਆਂ
+    .description = { -brand-product-name } ਸਮੂਹ ਵਲੋਂ ਤਿਆਰੀ ਕੀਤੀ ਖਾਸ ਸਮੱਗਰੀ
 newtab-custom-pocket-sponsored = ਸਪਾਂਸਰ ਕੀਤੀਆਂ ਕਹਾਣੀਆਂ
 newtab-custom-pocket-show-recent-saves = ਸੱਜਰੇ ਸੰਭਾਲੇ ਵੇਖੋ
 newtab-custom-recent-title = ਤਾਜ਼ਾ ਸਰਗਰਮੀ
@@ -269,3 +273,24 @@ newtab-custom-recent-toggle =
     .description = ਤਾਜ਼ਾ ਸਾਈਟਾਂ ਤੇ ਸਮੱਗਰੀ ਦੀ ਚੋਣ
 newtab-custom-close-button = ਬੰਦ ਕਰੋ
 newtab-custom-settings = ਹੋਰ ਸੈਟਿੰਗਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = ਵਾਲਪੇਪਰ
+newtab-wallpaper-reset = ਮੂਲ ਲਈ ਮੁੜ-ਸੈੱਟ ਕਰੋ
+newtab-wallpaper-light-red-panda = ਲਾਲ ਪਾਂਡਾ
+newtab-wallpaper-light-mountain = ਚਿੱਟਾ ਪਹਾੜ
+newtab-wallpaper-light-sky = ਜਾਮਨੀ ਅਤੇ ਗੁਲਾਬੀ ਬੱਦਲਾਂ ਨਾਲ ਅਸਮਾਨ
+newtab-wallpaper-light-color = ਨੀਲਾ, ਗੁਲਾਬੀ ਅਤੇ ਪੀਲੀਆਂ ਸ਼ਕਲਾਂ
+newtab-wallpaper-light-landscape = ਨੀਲੀ ਧੁੰਦ ਵਾਲਾ ਪਹਾੜੀ ਦ੍ਰਿਸ਼
+newtab-wallpaper-light-beach = ਪਾਮ ਦੇ ਰੁੱਖ ਨਾਲ ਬੀਚ
+newtab-wallpaper-dark-aurora = ਅਰੋਰਾ ਬੋਰਿਲਿਸ
+newtab-wallpaper-dark-color = ਲਾਲ ਅਤੇ ਨੀਲੀਆਂ ਸ਼ਕਲਾਂ
+newtab-wallpaper-dark-panda = ਜੰਗਲ ਵਿੱਚ ਲੁਕਿਆ ਫਿਰਦਾ ਲਾਲ ਪਾਂਡਾ
+newtab-wallpaper-dark-sky = ਨੀਲੇ ਅੰਬਰ ਨਾਲ ਸ਼ਹਿਰ ਦਾ ਦ੍ਰਿਸ਼
+newtab-wallpaper-dark-mountain = ਲੈਂਡਸਕੇਪ ਪਹਾੜ
+newtab-wallpaper-dark-city = ਜਾਮਨੀ ਸ਼ਹਿਰੀ ਦ੍ਰਿਸ਼
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = <a data-l10n-name="name-link">{ $author_string }</a> ਵਲੋਂ <a data-l10n-name="webpage-link">{ $webpage_string }</a> ਉੱਤੇ ਪਾਈ ਫ਼ੋਟੋ

@@ -7,6 +7,7 @@
 
 confirmation-hint-breakage-report-sent = Tramess il rapport. Grazia!
 confirmation-hint-login-removed = Allontanà l'infurmaziun d'annunzia!
+confirmation-hint-password-removed = Allontanà il pled-clav!
 confirmation-hint-page-bookmarked = Memorisà en ils segnapaginas
 confirmation-hint-password-saved = Memorisà il pled-clav!
 confirmation-hint-password-created = Memorisà il pled-clav
@@ -21,3 +22,10 @@ confirmation-hint-send-to-device = Tramess!
 confirmation-hint-firefox-relay-mask-created = Creà in nov alias!
 confirmation-hint-firefox-relay-mask-reused = Reutilisà in alias existent!
 confirmation-hint-screenshot-copied = Copià il maletg dal visur!
+# Variables:
+#   $tabCount (Number): The number of duplicate tabs closed, at least 1.
+confirmation-hint-duplicate-tabs-closed =
+    { $tabCount ->
+        [one] Serrà { $tabCount } tab
+       *[other] Serrà { $tabCount } tabs
+    }

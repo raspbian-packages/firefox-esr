@@ -12,10 +12,13 @@
 
 policy-3rdparty = Nastavi, do katerih pravilnikov lahko dostopajo razširitve WebExtensions preko chrome.storage.managed.
 policy-AllowedDomainsForApps = Določi domene, ki jim je dovoljen dostop do Google Workspace.
+policy-AllowFileSelectionDialogs = Dovoli pogovorna okna za izbiro datotek.
 policy-AppAutoUpdate = Omogoči ali onemogoči samodejne posodobitve programa.
-policy-AppUpdatePin = { -brand-short-name(sklon: "dajalnik") } prepreči posodobitev preko določene različice.
+policy-AppUpdatePin = { -brand-short-name(sklon: "dajalnik") } prepreči posodobitev prek določene različice.
 policy-AppUpdateURL = Nastavi poljuben URL za posodobitve programa.
 policy-Authentication = Nastavi integrirano overjanje za spletna mesta, ki ga podpirajo.
+policy-AutofillAddressEnabled = Omogoči samodejno izpolnjevanje naslovov.
+policy-AutofillCreditCardEnabled = Omogoči samodejno izpolnjevanje plačilnih sredstev.
 policy-AutoLaunchProtocolsFromOrigins = Določi seznam zunanjih protokolov, ki jih je mogoče uporabiti z navedenih virov brez poziva uporabniku.
 policy-BackgroundAppUpdate2 = Omogoči ali onemogoči storitev za posodobitve v ozadju.
 policy-BlockAboutAddons = Zavrni dostop do upravitelja dodatkov (about:addons).
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = Zavrni dostop do strani about:support.
 policy-Bookmarks = Ustvarjaj zaznamke v orodni vrstici, meniju zaznamkov ali v določeni mapi.
 policy-CaptivePortal = Omogoči ali onemogoči podporo za prestrezni portal.
 policy-CertificatesDescription = Dodaj digitalna potrdila ali uporabi vgrajena potrdila.
+policy-ContentAnalysis = Omogoči ali onemogoči povezovanje s agentom za preprečevanje izgube podatkov.
 policy-Cookies = Spletnim mestom dovoli ali prepovej nastavljanje piškotkov.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Nastavi pravilnike, povezane z vsebniki.
@@ -121,6 +125,7 @@ policy-SSLVersionMax = Nastavi najnovejšo dovoljeno različico SSL.
 policy-SSLVersionMin = Nastavi najstarejšo dovoljeno različico SSL.
 policy-StartDownloadsInTempDirectory = Vsili shranjevanje prenosov na lokalno začasno mesto namesto v privzeto mapo za prenose.
 policy-SupportMenu = Dodaj poljubno povezavo za podporo v meni Pomoč.
+policy-TranslateEnabled = Omogoči ali onemogoči prevajanje spletnih strani.
 policy-UserMessaging = Uporabniku ne prikazuj določenih sporočil.
 policy-UseSystemPrintDialog = Tiskaj s pomočjo pogovornega okna sistema.
 # “format” refers to the format used for the value of this policy.

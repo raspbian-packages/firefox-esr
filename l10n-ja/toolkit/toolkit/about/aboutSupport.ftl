@@ -185,6 +185,23 @@ media-codec-support-unsupported = 未対応
 media-codec-support-error = コーデック対応情報が利用できません。メディアファイルの再生後に再度試してください。
 media-codec-support-lack-of-extension = 拡張機能をインストール
 
+## Media Content Decryption Modules (CDM)
+## See EME Spec for more explanation for following technical terms
+## https://w3c.github.io/encrypted-media/
+
+media-content-decryption-modules-title = コンテンツ復号モジュール (CDM) 情報
+media-key-system-name = 鍵システム名
+media-video-robustness = 動画の頑強性
+media-audio-robustness = 音声の頑強性
+media-cdm-capabilities = 機能
+# Clear Lead isn't defined in the spec, which means the the first few seconds
+# are not encrypted. It allows playback to start without having to wait for
+# license response, improving video start time and user experience.
+media-cdm-clear-lead = 平文リード
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = HDCP 2.2 互換
+
 ##
 
 intl-title = 国際化とローカライズ
@@ -243,6 +260,7 @@ try-newer-driver = グラフィックドライバーのバージョンが対応�
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType パラメーター
 compositing = 画像処理
+support-font-determination = フォント表示のデバッグ情報
 hardware-h264 = ハードウェア H264 デコード
 main-thread-no-omtc = メインスレッド、OMTC なし
 yes = はい
@@ -388,3 +406,15 @@ pointing-device-mouse = マウス
 pointing-device-touchscreen = タッチスクリーン
 pointing-device-pen-digitizer = デジタイザーペン
 pointing-device-none = ポインティングデバイスなし
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = コンテンツ解析 (DLP)
+content-analysis-active = 有効
+content-analysis-connected-to-agent = エージェントへの接続
+content-analysis-agent-path = エージェントのパス
+content-analysis-agent-failed-signature-verification = エージェントによる署名検証の失敗
+content-analysis-request-count = 要求回数

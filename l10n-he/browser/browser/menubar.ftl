@@ -122,7 +122,7 @@ menu-edit-find-again =
     .label = מצא שוב
     .accesskey = ש
 menu-edit-bidi-switch-text-direction =
-    .label = הפוך כיוון כתיבה
+    .label = היפוך כיוון כתיבה
     .accesskey = כ
 
 ## View Menu
@@ -145,6 +145,8 @@ menu-view-history-button =
     .label = היסטוריה
 menu-view-synced-tabs-sidebar =
     .label = לשוניות מסונכרנות
+menu-view-megalist-sidebar =
+    .label = ססמאות
 menu-view-full-zoom =
     .label = מרחק מתצוגה
     .accesskey = ת

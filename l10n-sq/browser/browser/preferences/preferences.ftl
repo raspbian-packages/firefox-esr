@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Gjej në Rregullime
 managed-notice = Shfletuesi juaj administrohet nga enti juaj.
+managed-notice-info-icon =
+    .alt = Informacion
 category-list =
     .aria-label = Kategori
 pane-general-title = Të përgjithshme
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Hiqe këtë Kontejner
 containers-remove-cancel-button = Mos e hiq këtë Kontejner
+settings-tabs-show-image-in-preview =
+    .label = Shfaq një paraparje figure, kur kaloni kursorin sipër një skede
+    .accessKey = q
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Përzgjedhjet tuaja për ngjyrat po anashkalojnë pamjen e sajtit. <a data-l10n-name="colors-link">Administroni ngjyra</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Përzgjedhjet tuaja për ngjyrat po anashkalojnë pamjen e sajtit.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Administroni tema { -brand-short-name }, që nga <a data-l10n-name="themes-link">Zgjerime & Tema</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Zoom vetëm për tekst
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Kujdes: Nëse përzgjidhni “Zoom vetëm tekst” dhe shkalla parazgjedhje për zoom-in s’është caktuar 100%, mund të bëjë që disa sajte, ose lëndë të mos funksionojë.
 language-header = Gjuhë
 choose-language-description = Zgjidhni gjuhën tuaj të parapëlqyer për shfaqje faqesh
 choose-button =
@@ -403,7 +414,7 @@ update-application-auto =
     .label = T’i instalojë vetvetiu përditësimet (e këshillueshme)
     .accesskey = v
 update-application-check-choose =
-    .label = Të kontrollojë për përditësime, por t’ju lejojë të zgjidhni të instalojen apo jo
+    .label = Të kontrollojë për përditësime, por t’ju lejojë të zgjidhni të instalohen apo jo
     .accesskey = k
 update-application-manual =
     .label = Të mos kontrollojë kurrë për përditësime (nuk rekomandohet)
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Rekomanduar nga { $provider }
 home-prefs-recommended-by-description-new = Lëndë e jashtëzakonshme, në kujdesin e { $provider }, pjesë e familjes { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = Histori të rekomanduara
+home-prefs-recommended-by-description-generic = Lëndë e veçantë, nën kujdesin e familjes { -brand-product-name }
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Që të kryeni njëkohësim te pajisja juaj celulare, shkark
 
 sync-profile-picture =
     .tooltiptext = Ndryshoni foto profili
+sync-profile-picture-with-alt =
+    .tooltiptext = Ndryshoni foto profili
+    .alt = Ndryshoni foto profili
+sync-profile-picture-account-problem =
+    .alt = Foto profili llogarie
+fxa-login-rejected-warning =
+    .alt = Kujdes
 sync-sign-out =
     .label = Dilni…
     .accesskey = D
@@ -911,6 +932,7 @@ forms-windows-sso =
     .label = Lejo hyrje njëshe Windows për llogari Microsoft, pune, apo shkolle
 forms-windows-sso-learn-more-link = Mësoni më tepër
 forms-windows-sso-desc = Administroni llogari që nga rregullimet e pajisjes tuaj
+windows-passkey-settings-label = Administroni kyçkalime te rregullime sistemi
 
 ## OS Authentication dialog
 
@@ -988,7 +1010,7 @@ history-clear-button =
 
 ## Privacy Section - Site Data
 
-sitedata-header = Cookies dhe të Dhëna Sajtesh
+sitedata-header = “Cookies” dhe të Dhëna Sajtesh
 sitedata-total-size-calculating = Po njehsohet madhësi të dhënash sajtesh dhe fshehtine…
 # Variables:
 #   $value (number) - Value of the unit (for example: 4.6, 500)
@@ -996,9 +1018,10 @@ sitedata-total-size-calculating = Po njehsohet madhësi të dhënash sajtesh dhe
 sitedata-total-size = Cookie-t, të dhënat tuaja të sajteve dhe fshehtina përdorin deri sot { $value } { $unit } hapësirë disku.
 sitedata-learn-more = Mësoni më tepër
 sitedata-delete-on-close =
-    .label = Fshi cookies dhe të dhëna sajti, kur mbyllet { -brand-short-name }-i
+    .label = Fshi “cookies” dhe të dhëna sajti, kur mbyllet { -brand-short-name }-i
     .accesskey = F
 sitedata-delete-on-close-private-browsing = Nën mënyrën shfletim i përhershëm privat, cookie-t dhe të dhënat e sajtit do të spastrohen përherë, kur mbyllet { -brand-short-name }-i.
+sitedata-delete-on-close-private-browsing2 = Bazuar në rregullimet tuaja për historikun, kur mbyllni shfletuesin, { -brand-short-name }-i fshin nga sesioni juaj “cookies” dhe të dhëna sajtesh.
 sitedata-allow-cookies-option =
     .label = Prano të dhëna cookie-sh dhe sajti
     .accesskey = P
@@ -1014,9 +1037,9 @@ sitedata-option-block-cross-site-trackers =
 sitedata-option-block-cross-site-tracking-cookies =
     .label = “Cookies” gjurmimi nga sajte në sajte
 sitedata-option-block-cross-site-cookies =
-    .label = Cookie-t për gjurmim nga sajti në sajt dhe izolo “cookies” të tjera palësh të treta
+    .label = Cookie-t për gjurmim nga sajte në sajte dhe izolo “cookies” të tjera palësh të treta
 sitedata-option-block-unvisited =
-    .label = Cookies nga sajte të pavizituar
+    .label = “Cookies” nga sajte të pavizituar
 sitedata-option-block-all-cross-site-cookies =
     .label = Krejt cookie-t palë të treta (mund të shkaktojë mosfunksionim të disa sajteve)
 sitedata-option-block-all =
@@ -1075,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Veprime të shpejta
     .accesskey = V
+addressbar-suggestions-settings = Ndryshoni parapëlqimet mbi sugjerime nga motorë kërkimi
 addressbar-locbar-showrecentsearches-option =
     .label = Shfaq kërkime së fundi
     .accesskey = k
-addressbar-suggestions-settings = Ndryshoni parapëlqimet mbi sugjerime nga motorë kërkimi
 addressbar-quickactions-learn-more = Mësoni më tepër
 
 ## Privacy Section - Content Blocking
@@ -1116,10 +1139,10 @@ content-blocking-private-windows = Lëndë gjurmimi në Dritare Private
 content-blocking-cross-site-cookies-in-all-windows2 = “Cookies” palësh të treta në krejt dritaret
 content-blocking-cross-site-tracking-cookies = “Cookies” gjurmimi nga sajte në sajte
 content-blocking-all-cross-site-cookies-private-windows = “Cookies” palësh të treta në Dritare Private
-content-blocking-cross-site-tracking-cookies-plus-isolate = Cookie-t për gjurmim nga sajti në sajt dhe izolo cookie-t e mbetura
+content-blocking-cross-site-tracking-cookies-plus-isolate = Cookie-t për gjurmim nga sajte në sajte dhe izolo cookie-t e mbetura
 content-blocking-social-media-trackers = Gjurmues prej mediash shoqërore
 content-blocking-all-cookies = Krejt cookie-t
-content-blocking-unvisited-cookies = Cookies nga sajte të pavizituar
+content-blocking-unvisited-cookies = “Cookies” nga sajte të pavizituar
 content-blocking-all-windows-tracking-content = Gjurmim lënde në krejt dritaret
 content-blocking-all-cross-site-cookies = Krejt “cookiet” nga palë të treta
 content-blocking-cryptominers = Nxjerrës kriptomonedhash
@@ -1153,7 +1176,7 @@ content-blocking-option-private =
     .accesskey = V
 content-blocking-tracking-protection-change-block-list = Ndryshoni listë bllokimesh
 content-blocking-cookies-label =
-    .label = Cookies
+    .label = “Cookies”
     .accesskey = C
 content-blocking-expand-section =
     .tooltiptext = Më tepër hollësi
@@ -1244,7 +1267,7 @@ collection-header2 = Grumbullim dhe Përdorim të Dhënash nga { -brand-short-na
     .searchkeywords = telemetri
 collection-description = Përpiqemi t’ju japim mundësi zgjedhjesh dhe grumbullojmë vetëm ç’na duhet për të ofruar dhe përmirësuar { -brand-short-name }-in për këdo. Kërkojmë përherë leje, përpara se të marrim të dhëna personale.
 collection-privacy-notice = Shënim Privatësie
-collection-health-report-telemetry-disabled = S’e lejoni më { -vendor-short-name } të marrë të dhëna teknike dhe ndërveprimesh. Krejt të dhënat e dikurshme do të fshihen brenda 30 ditësh.
+collection-health-report-telemetry-disabled = S’e lejoni më { -vendor-short-name }-n të marrë të dhëna teknike dhe ndërveprimesh. Krejt të dhënat e dikurshme do të fshihen brenda 30 ditësh.
 collection-health-report-telemetry-disabled-link = Mësoni më tepër
 collection-health-report =
     .label = Lejojeni { -brand-short-name }-in të dërgojë te { -vendor-short-name } të dhëna teknike dhe ndërveprimesh
@@ -1260,6 +1283,8 @@ addon-recommendations-link = Mësoni më tepër
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Raportimi i të dhënave është i çaktivizuar për këtë formësim montimi
 collection-backlogged-crash-reports-with-link = Lejojeni { -brand-short-name }-in të dërgojë raporte vithisjesh të mëparshme në emrin tuaj <a data-l10n-name="crash-reports-link">Mësoni më tepër</a>
+    .accesskey = c
+collection-backlogged-crash-reports = Lejojeni { -brand-short-name }-in të dërgojë raporte vithisjesh të mëparshme në emrin tuaj
     .accesskey = c
 privacy-segmentation-section-header = Veçori të reja që thellojnë shfletimin tuaj
 privacy-segmentation-section-description = Kur ofrojmë veçori që përdorin të dhënat tuaja për t’ju dhënë ju një punim më personal:
@@ -1304,7 +1329,7 @@ certs-thirdparty-toggle =
 space-alert-over-5gb-settings-button =
     .label = Hap Rregullimet
     .accesskey = H
-space-alert-over-5gb-message2 = <strong>{ -brand-short-name }-it po i mbarohet hapësira në disk.</strong> Lënda e sajteve mund të mos shfaqet si duhet. Mundësi të spastroni të dhëna të depozituara që nga Rregullime > Privatësi & Siguri > Cookies dhe Të dhëna Sajtesh.
+space-alert-over-5gb-message2 = <strong>{ -brand-short-name }-it po i mbarohet hapësira në disk.</strong> Lënda e sajteve mund të mos shfaqet si duhet. Mundësi të spastroni të dhëna të depozituara që nga Rregullime > Privatësi & Siguri > “Cookies” dhe Të dhëna Sajtesh.
 space-alert-under-5gb-message2 = <strong>{ -brand-short-name }-it po i mbarohet hapësira në disk.</strong> Lënda e sajteve mund të mos shfaqet si duhet. Që të optimizoni përdorimin tuaj të diskut për punim më të mirë të shfletimin, vizitoni “Mësoni Më Tepër”.
 
 ## Privacy Section - HTTPS-Only

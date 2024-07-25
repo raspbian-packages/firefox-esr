@@ -567,6 +567,11 @@ urlbar-result-action-search-w-engine = Søk med { $engine }
 urlbar-result-action-sponsored = Sponset
 urlbar-result-action-switch-tab = Bytt til fane
 urlbar-result-action-visit = Besøk
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Bytt til fane · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Besøk fra utklippstavlen
 # Directs a user to press the Tab key to perform a search with the specified
@@ -891,6 +896,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Åpne tidligere faner?</strong> Du kan gjenopprette den forrige økten fra { -brand-short-name }-programmenyen <img data-l10n-name="icon"/>, under Historikk.
 restore-session-startup-suggestion-button = Vis meg hvordan
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Organisasjonen din har blokkert tilgang til lokale filer på denne datamaskinen
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name } sender automatisk noen data til { -vendor-short-name } slik at vi kan forbedre opplevelsen din.
@@ -899,6 +908,15 @@ data-reporting-notification-button =
     .accesskey = V
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Privat nettlesing
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Forebygging av datatap (DLP) av { $agentName }. Klikk for mer info.
+content-analysis-panel-title = Databeskyttelse
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Organisasjonen din bruker { $agentName } for å beskytte mot tap av data. <a data-l10n-name="info">Les mer</a>
 
 ## Unified extensions (toolbar) button
 

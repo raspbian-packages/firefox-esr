@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Find i indstillinger
 managed-notice = Din browser bliver forvaltet af din organisation.
+managed-notice-info-icon =
+    .alt = Information
 category-list =
     .aria-label = Kategorier
 pane-general-title = Generelt
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Fjern denne kontekst
 containers-remove-cancel-button = Fjern ikke denne kontekst
+settings-tabs-show-image-in-preview =
+    .label = Forhåndsvis når musemarkøren er over et faneblad
+    .accessKey = m
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Dine farvevalg tilsidesætter webstedets udseende. <a data-l10n-name="colors-link">Håndter farver</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Dine farvevalg tilsidesætter webstedets udseende.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Håndter { -brand-short-name }-temaer i <a data-l10n-name="themes-link">Udvidelser og temaer</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Zoom kun tekst
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Advarsel: Hvis du vælger "Zoom kun tekst" og din standard-indstilling for zoom ikke er sat til 100%, kan det medføre at nogle websteder eller indhold ikke fungerer korrekt.
 language-header = Sprog
 choose-language-description = Vælg dit foretrukne sprog at få vist sider i
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Anbefalet af { $provider }
 home-prefs-recommended-by-description-new = Interessant indhold udvalgt af { $provider }, en del af { -brand-product-name }-familien
+home-prefs-recommended-by-header-generic =
+    .label = Anbefalede historier
+home-prefs-recommended-by-description-generic = Interessant indhold udvalgt af { -brand-product-name }-holdet
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Hent Firefox til <img data-l10n-name="android-icon"/> <a dat
 
 sync-profile-picture =
     .tooltiptext = Skift profilbillede
+sync-profile-picture-with-alt =
+    .tooltiptext = Skift profilbillede
+    .alt = Skift profilbillede
+sync-profile-picture-account-problem =
+    .alt = Kontoens profilbillede
+fxa-login-rejected-warning =
+    .alt = Advarsel
 sync-sign-out =
     .label = Log ud…
     .accesskey = u
@@ -794,9 +815,9 @@ sync-engine-creditcards =
     .label = Betalingskort
     .tooltiptext = Navne, numre og udløbsdatoer (kun til computer)
     .accesskey = e
-sync-engine-payment-methods =
+sync-engine-payment-methods2 =
     .label = Betalingsmetoder
-    .tooltiptext = Navne, kortnumre og udløbsdatoer (kun til computer)
+    .tooltiptext = Navne, kortnumre og udløbsdatoer
     .accesskey = e
 sync-engine-addons =
     .label = Tilføjelser
@@ -844,11 +865,25 @@ pane-privacy-logins-and-passwords-header = Logins og adgangskoder
 forms-ask-to-save-logins =
     .label = Spørg om at gemme logins og adgangskoder til websteder
     .accesskey = l
+
+## Privacy Section - Passwords
+
+# "Logins" is the former term for "Passwords". Users should find password settings
+# by searching for the former term "logins". It's not displayed in the UI.
+pane-privacy-passwords-header = Adgangskoder
+    .searchkeywords = logins
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
+forms-ask-to-save-passwords =
+    .label = Spørg om at gemme adgangskoder
+    .accesskey = p
 forms-exceptions =
     .label = Undtagelser…
     .accesskey = U
 forms-generate-passwords =
     .label = Hjælp med at lave stærke adgangskoder
+    .accesskey = s
+forms-suggest-passwords =
+    .label = Foreslå stærke adgangskoder
     .accesskey = s
 forms-breach-alerts =
     .label = Vis advarsler om adgangskoder for hackede websteder
@@ -856,6 +891,9 @@ forms-breach-alerts =
 forms-breach-alerts-learn-more-link = Læs mere
 preferences-relay-integration-checkbox =
     .label = Foreslå { -relay-brand-name }-mail-masker for at beskytte din mailadresse
+preferences-relay-integration-checkbox2 =
+    .label = Foreslå { -relay-brand-name }-mail-masker for at beskytte din mailadresse
+    .accesskey = F
 relay-integration-learn-more-link = Læs mere
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
@@ -863,6 +901,13 @@ forms-fill-logins-and-passwords =
     .accesskey = i
 forms-saved-logins =
     .label = Gemte logins…
+    .accesskey = G
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-usernames-and-passwords =
+    .label = Udfyld brugernavne og adgangskoder automatisk
+    .accesskey = U
+forms-saved-passwords =
+    .label = Gemte adgangskoder
     .accesskey = G
 forms-primary-pw-use =
     .label = Benyt en hovedadgangskode
@@ -887,6 +932,7 @@ forms-windows-sso =
     .label = Tillad Windows enkeltlogon for Microsoft-, arbejds- og skole-konti
 forms-windows-sso-learn-more-link = Læs mere
 forms-windows-sso-desc = Håndter konti i dine enhedsindstillinger
+windows-passkey-settings-label = Håndter adgangsnøgler i operativsystemets indstillinger
 
 ## OS Authentication dialog
 
@@ -898,6 +944,28 @@ primary-password-os-auth-dialog-message-win = For at oprette en hovedadgangskode
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = oprette en hovedadgangskode
 master-password-os-auth-dialog-caption = { -brand-full-name }
+
+## Privacy section - Autofill
+
+pane-privacy-autofill-header = Autofyld
+autofill-addresses-checkbox = Gem og udfyld adresser
+    .accesskey = u
+autofill-saved-addresses-button = Gemte adresser
+    .accesskey = G
+autofill-payment-methods-checkbox-message = Gem og udfyld betalingsmetoder
+    .accesskey = b
+autofill-payment-methods-checkbox-submessage = Inkluder kredit- og debetkort
+    .accesskey = n
+autofill-saved-payment-methods-button = Gemte betalingsmetoder
+    .accesskey = m
+autofill-reauth-checkbox =
+    { PLATFORM() ->
+        [macos] Kræv MacOS-godkendelse for at udfylde og redigere betalingsmetoder
+        [windows] Kræv Windows-godkendelse for at udfylde og redigere betalingsmetoder
+        [linux] Kræv Linux-godkendelse for at udfylde og redigere betalingsmetoder
+       *[other] Kræv godkendelse for at udfylde og redigere betalingsmetoder
+    }
+    .accesskey = o
 
 ## Privacy Section - History
 
@@ -953,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Slet cookies og websteds-data, når { -brand-short-name } lukkes
     .accesskey = l
 sitedata-delete-on-close-private-browsing = I permanent privat browsing-tilstand bliver cookies og webstedsdata altid slettet, når { -brand-short-name } afsluttes.
+sitedata-delete-on-close-private-browsing2 = På baggrund af dine indstillinger for historik sletter { -brand-short-name } cookies og webstedsdata fra din session, når du lukker browseren.
 sitedata-allow-cookies-option =
     .label = Accepter cookies og websteds-data
     .accesskey = A
@@ -1029,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Hurtige handlinger
     .accesskey = H
+addressbar-suggestions-settings = Skift indstillinger for søgeforslag
 addressbar-locbar-showrecentsearches-option =
     .label = Vis seneste søgninger
     .accesskey = s
-addressbar-suggestions-settings = Skift indstillinger for søgeforslag
 addressbar-quickactions-learn-more = Læs mere
 
 ## Privacy Section - Content Blocking
@@ -1214,6 +1283,8 @@ addon-recommendations-link = Læs mere
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Data-rapportering er deaktiveret for denne build-konfiguration
 collection-backlogged-crash-reports-with-link = Tillad at { -brand-short-name } sender ophobede fejlrapporter på dine vegne <a data-l10n-name="crash-reports-link">Læs mere</a>
+    .accesskey = o
+collection-backlogged-crash-reports = Tillad at { -brand-short-name } sender ophobede fejlrapporter på dine vegne
     .accesskey = o
 privacy-segmentation-section-header = Nye funktioner, der forbedrer din browsing
 privacy-segmentation-section-description = Når vi tilbyder funktioner, der brugere dine data til at give dig en mere personlig oplevelse:

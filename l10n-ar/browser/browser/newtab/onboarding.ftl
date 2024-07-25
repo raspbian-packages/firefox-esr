@@ -118,8 +118,16 @@ mr2-onboarding-start-browsing-button-label = ابدأ التصفح
 ##   $systemLanguage (String) - The name of the system language, e.g "Español (ES)"
 ##   $appLanguage (String) - The name of the language shipping in the browser build, e.g. "English (EN)"
 
+onboarding-live-language-header = اختر لغتك
+mr2022-onboarding-live-language-text = { -brand-short-name } يتحدّث لغتك
 mr2022-language-mismatch-subtitle = بفضل مجتمعنا، ترجمت { -brand-short-name } بأكثر من 90 لغة. يبدو أن نظامك يستخدم { $systemLanguage }، و { -brand-short-name } يستخدم { $appLanguage }.
+onboarding-live-language-button-label-downloading = جارٍ تنزيل حزمة اللغة لـ{ $negotiatedLanguage }…
+onboarding-live-language-waiting-button = جارٍ الحصول على اللغات المتاحة...
+onboarding-live-language-installing = جارٍ تثبيت حزمة اللغة لـ{ $negotiatedLanguage }...
+mr2022-onboarding-live-language-switch-to = التبديل إلى { $negotiatedLanguage }
 mr2022-onboarding-live-language-continue-in = واصِل في { $appLanguage }
+onboarding-live-language-secondary-cancel-download = ألغِ
+onboarding-live-language-skip-button-label = تخطَّ
 
 ## Firefox 100 Thank You screens
 
@@ -183,6 +191,7 @@ mr2022-onboarding-import-primary-button-label-no-attribution = استورِده�
 mr2022-onboarding-colorway-title = اختر اللون الذي يلهمك
 mr2022-onboarding-colorway-subtitle = يمكن للأصوات المستقلة أن تغير الثقافة.
 mr2022-onboarding-colorway-primary-button-label-continue = حدد و واصِل
+mr2022-onboarding-existing-colorway-checkbox-label = اجعل { -firefox-home-brand-name } صفحتك الرئيسية الملونة
 mr2022-onboarding-colorway-label-default = الافتراضي
 mr2022-onboarding-colorway-tooltip-default2 =
     .title = ألوان { -brand-short-name } الحالية
@@ -252,3 +261,9 @@ mr2022-onboarding-default-image-alt =
 onboarding-device-migration-title = مرحبا بعودتك!
 onboarding-device-migration-subtitle = لِج إلى { -fxaccount-brand-name(capitalization: "sentence") } لتجلب علاماتك وكلمات السر والتأريخ معك على جهازك الجديد.
 onboarding-device-migration-primary-button-label = لِج
+
+## The following screens have been updated to use security and privacy focused strings:
+
+
+## New user time and familiarity survey strings
+

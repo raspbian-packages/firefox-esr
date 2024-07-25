@@ -19,6 +19,7 @@ sanitize-dialog-title-everything =
     .title = Cyłu historiju wuprózdnić
     .style = min-width: 34em
 clear-data-settings-label = Při začinjenju měł { -brand-short-name } wšitko awtomatisce zhašeć
+sanitize-on-shutdown-description = Wšě wubrane zapiski awtomatisce zhašeć, hdyž so { -brand-short-name } začinja.
 
 ## clear-time-duration-prefix is followed by a dropdown list, with
 ## values localized using clear-time-duration-value-* messages.
@@ -54,12 +55,19 @@ history-section-label = Historija
 item-history-and-downloads =
     .label = Přehladowanska a sćehnjenska historija
     .accesskey = P
-item-browsing-and-search =
-    .label = Wopytane sydła, składowane formularowe informacije a pytanja
-    .accesskey = W
+item-history-form-data-downloads =
+    .label = Historija
+    .accesskey = H
+item-history-form-data-downloads-description = Zhaša historiju sydłow a sćehnjenjow, składowane formularowe informacije a pytanja
 item-cookies =
     .label = Placki
     .accesskey = c
+# Variables:
+#   $amount (Number) - Amount of site data currently stored on disk
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cookies-site-data-with-size =
+    .label = Placki a daty sydła ({ $amount } { $unit })
+    .accesskey = P
 item-cookies-site-data =
     .label = Placki a sydłowe daty
     .accesskey = l
@@ -70,6 +78,12 @@ item-active-logins =
 item-cache =
     .label = Pufrowak
     .accesskey = u
+# Variables:
+#   $amount (Number) - Amount of cached data
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cached-content-with-size =
+    .label = Nachwilu pufrowane dataje a strony ({ $amount } { $unit })
+    .accesskey = c
 item-cached-content =
     .label = Nachwilne pufrowane dataje a strony
     .accesskey = c
@@ -81,9 +95,6 @@ item-site-prefs =
     .label = Sydłowe nastajenja
     .accesskey = d
 item-site-prefs-description = Staja waše prawa a nastajenja sydła na prěnjotne nastajenja wróćo
-item-download-history =
-    .label = Lisćina sćehnjenych datajow
-    .accesskey = L
 data-section-label = Daty
 item-site-settings =
     .label = Sydłowe nastajenja
@@ -98,6 +109,8 @@ sanitize-button-ok =
     .label = Nětko wuprózdnić
 sanitize-button-ok2 =
     .label = Zhašeć
+sanitize-button-ok-on-shutdown =
+    .label = Změny składować
 # The label for the default button between the user clicking it and the window
 # closing.  Indicates the items are being cleared.
 sanitize-button-clearing =

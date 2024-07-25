@@ -63,6 +63,7 @@ cfr-doorhanger-extension-total-users =
 
 cfr-doorhanger-bookmark-fxa-header = Yer imlerinize her yerden ulaşın.
 cfr-doorhanger-bookmark-fxa-body = Bu yer imine mobil cihazlarınızdan da ulaşmak istemez miydiniz? Hemen { -fxaccount-brand-name } açın.
+cfr-doorhanger-bookmark-fxa-body-2 = Bu yer imine mobil cihazlarınızdan da ulaşmak istemez miydiniz? Hemen hesap açın.
 cfr-doorhanger-bookmark-fxa-link-text = Yer imlerini eşitle…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Kapat düğmesi
@@ -137,7 +138,7 @@ spotlight-peace-mind-header = Yanınızdayız
 spotlight-peace-mind-body = { -brand-short-name } her ay kullanıcı başına ortalama 3.000 takip kodunu engelliyor. Çünkü bizce hiçbir şey, özellikle takip kodları gibi can sıkıcı unsurlar, iyi bir internetle aranıza girmemeli.
 spotlight-pin-primary-button =
     { PLATFORM() ->
-        [macos] Dock’a sabitle
+        [macos] Dock’ta tut
        *[other] Görev çubuğuna sabitle
     }
 spotlight-pin-secondary-button = Şimdi değil
@@ -155,7 +156,7 @@ spotlight-pin-secondary-button = Şimdi değil
 ## The button labels are fitted into narrow fixed-width buttons by
 ## Windows and therefore must be as narrow as possible.
 
-mr2022-background-update-toast-title = Yeni { -brand-short-name }. Daha çok gizlilik. Daha az izleyici.
+mr2022-background-update-toast-title = Yeni { -brand-short-name }. Daha çok gizlilik. Daha az takip kodu.
 mr2022-background-update-toast-text = Bugüne kadarki en güçlü izlenme korumamızla güncellenen en yeni { -brand-short-name }’u şimdi deneyin.
 # This button label will be fitted into a narrow fixed-width button by
 # Windows. Try to not exceed the width of the English text (compare it
@@ -175,7 +176,7 @@ firefoxview-cfr-primarybutton = Deneyin
 firefoxview-cfr-secondarybutton = Şimdi değil
     .accesskey = m
 firefoxview-cfr-header-v2 = Kaldığınız yerden hızlıca devam edin
-firefoxview-cfr-body-v2 = { -firefoxview-brand-name } ile yakın zamanda kapattığınız sekmeleri geri getirebilir ve cihazlarınız arasında kolayca şekilde geçiş yapabilirsiniz.
+firefoxview-cfr-body-v2 = { -firefoxview-brand-name } ile yakın zamanda kapattığınız sekmeleri geri getirebilir ve cihazlarınız arasında kolayca geçiş yapabilirsiniz.
 
 ## Firefox View Spotlight
 
@@ -204,8 +205,9 @@ cfr-cbh-confirm-button = Çerez bildirimlerini reddet
     .accesskey = r
 cfr-cbh-dismiss-button = Şimdi değil
     .accesskey = m
-cookie-banner-blocker-cfr-header = { -brand-short-name } sizin için çerezleri engelledi
-cookie-banner-blocker-cfr-body = Sitelerin sizi takip etmesini zorlaştırmak için birçok çerez bildirimini otomatik olarak reddediyoruz.
+cookie-banner-blocker-onboarding-header = { -brand-short-name } sizin için bir çerez bildirimini reddetti
+cookie-banner-blocker-onboarding-body = Bu site dikkatinizi daha az dağıtacak, çerezler sizi daha az izleyecek.
+cookie-banner-blocker-onboarding-learn-more = Daha fazla bilgi alın
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -229,24 +231,20 @@ set-default-pdf-handler-primary = Anladım
 fxa-sync-cfr-header = Yeni bir cihaza geçmeyi düşünüyor musunuz?
 fxa-sync-cfr-body = { -brand-product-name } tarayıcısını yüklediğiniz her yere yer imleriniz, parolalarınız ve sekmeleriniz de sizinle birlikte gelsin.
 fxa-sync-cfr-primary = Bilgi al
-    .accesskey = D
+    .accesskey = B
 fxa-sync-cfr-secondary = Daha sonra hatırlat
     .accesskey = D
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = Eski bir cihaz mı kullanıyorsunuz?
-device-migration-fxa-spotlight-body = Yeni bir cihaza geçiş yaparken yer imleri ve parolalar gibi önemli bilgilerinizin kaybolmaması için için verilerinizi yedekleyin.
-device-migration-fxa-spotlight-primary-button = Verilerimi nasıl yedekleyebilirim?
-device-migration-fxa-spotlight-link = Daha sonra hatırlat
 device-migration-fxa-spotlight-heavy-user-header = Verilerinizi yedeklemeyi unutmayın
-device-migration-fxa-spotlight-heavy-user-body = Yer imleriniz ve parolalarınız gibi önemli bilgilerinizin tüm cihazlarınızda güncel kalsın ve korunsun.
+device-migration-fxa-spotlight-heavy-user-body = Yer imleriniz ve parolalarınız gibi önemli bilgileriniz tüm cihazlarınızda güncel kalsın ve korunsun.
 device-migration-fxa-spotlight-heavy-user-primary-button = Başla
 device-migration-fxa-spotlight-older-device-header = { -brand-product-name } ile içiniz rahat olsun
 device-migration-fxa-spotlight-older-device-body = Hesabınıza bağladığınız tüm cihazlarınızda önemli bilgileriniz güncel ve güvende kalır.
 device-migration-fxa-spotlight-older-device-primary-button = Hesap oluştur
 device-migration-fxa-spotlight-getting-new-device-header-2 = Yeni bir cihaza geçmeyi düşünüyor musunuz?
-device-migration-fxa-spotlight-getting-new-device-body = Verilerinizi hemen yedekleyin, cihazınız gelince kullanıma hazır olun.
+device-migration-fxa-spotlight-getting-new-device-body-2 = Yeni bir cihaza geçerken yer imlerinizi, geçmişinizi ve parolalarınızı yanınızda götürmek isterseniz birkaç basit adımda işe başlayabilirsiniz.
 device-migration-fxa-spotlight-getting-new-device-primary-button = Verilerimi nasıl yedekleyebilirim?
 
 ## Set as Default PDF Reader Infobar
@@ -273,3 +271,14 @@ launch-on-login-infobar-reject-button = Şimdi değil
 launch-on-login-infobar-final-message = <strong>Bilgisayarınızı her yeniden başlattığınızda { -brand-short-name } açılsın mı?</strong> Başlangıç tercihlerinizi yönetmek için ayarlarda “başlangıç” terimini arayabilirsiniz.
 launch-on-login-infobar-final-reject-button = Hayır
     .accesskey = H
+
+## Tail Fox Set Default Spotlight
+
+# This title is displayed together with the picture of a running fox with a long tail.
+# In English, this is a figure of speech meaning 'stop something from following you'.
+# If the localization of this message is challenging, consider using a simplified
+# alternative as a reference for translation: 'Keep unwanted trackers away'.
+tail-fox-spotlight-title = İstenmeyen takip kodlarına izinizi kaybettirin
+tail-fox-spotlight-subtitle = Can sıkıcı reklam takip kodlarını engelleyerek daha güvenli, daha hızlı bir internet deneyimine kavuşun.
+tail-fox-spotlight-primary-button = Bağlantılarımı { -brand-short-name } ile aç
+tail-fox-spotlight-secondary-button = Şimdi değil

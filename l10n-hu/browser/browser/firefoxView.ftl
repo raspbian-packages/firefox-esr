@@ -12,6 +12,8 @@ menu-tools-firefox-view =
     .label = { -firefoxview-brand-name }
     .accesskey = F
 firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
 firefoxview-page-label =
     .label = { -firefoxview-brand-name }
 firefoxview-close-button =
@@ -51,6 +53,7 @@ firefoxview-syncedtabs-loading-header = Szinkronizáció folyamatban
 firefoxview-syncedtabs-loading-description = Ha elkészül, akkor látni fogja a más eszközökön megnyitott lapokat. Nézzen vissza később.
 firefoxview-tabpickup-fxa-admin-disabled-header = A szervezete letiltotta a szinkronizálást
 firefoxview-tabpickup-fxa-admin-disabled-description = A { -brand-short-name } nem tudja szinkronizálni a lapokat az eszközök között, mert a rendszergazda letiltotta a szinkronizálást.
+firefoxview-tabpickup-fxa-disabled-by-policy-description = A { -brand-short-name } nem tudja szinkronizálni a lapokat az eszközök között, mert a szervezete letiltotta a szinkronizálást.
 firefoxview-tabpickup-network-offline-header = Ellenőrizze internetkapcsolatát
 firefoxview-tabpickup-network-offline-description = Ha tűzfalat vagy proxyt használ, ellenőrizze, hogy a { -brand-short-name } jogosult-e a web elérésére.
 firefoxview-tabpickup-network-offline-primarybutton = Próbálja újra
@@ -184,6 +187,8 @@ firefoxview-search-results-count =
 firefoxview-search-results-empty = Nincs találat a következőre: „{ $query }”
 firefoxview-sort-history-by-date-label = Rendezés dátum szerint
 firefoxview-sort-history-by-site-label = Rendezés webhely szerint
+firefoxview-sort-open-tabs-by-recency-label = Rendezés a legutóbbi tevékenység szerint
+firefoxview-sort-open-tabs-by-order-label = Rendezés lapsorrend szerint
 # Variables:
 #   $url (string) - URL that will be opened in the new tab
 firefoxview-opentabs-tab-row =
@@ -246,3 +251,25 @@ firefoxview-recentlyclosed-empty-description-two = Ha régebbi lapokat szeretne 
 
 firefoxview-syncedtabs-device-notabs = Nincsenek nyitott lapok ezen az eszközön
 firefoxview-syncedtabs-connect-another-device = Másik eszköz csatlakoztatása
+firefoxview-pinned-tabs =
+    .title = Rögzített lapok
+firefoxview-tabs =
+    .title = Lapok
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Váltás erre: { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Váltás erre (könyvjelzőzve): { $tabTitle }
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = (Könyvjelzőzve) { $url }

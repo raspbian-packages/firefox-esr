@@ -43,6 +43,11 @@ options-inspector-draggable-properties-tooltip =
 options-inspector-simplified-highlighters-label = prefers-reduced-motion опциясымен қарапайымдау маркерлерді қолдану
 options-inspector-simplified-highlighters-tooltip =
     .title = prefers-reduced-motion опциясы іске қосулы кезінде қарапайымдау маркерлерді іске қосады. Жыпылықтау әсерлерін болдырмау үшін түспен ерекшеленген элементтердің айналасында толтырылған тіктөртбұрыштардың орнына сызықтар салады.
+# The label for the checkbox option to make the Enter key move the focus to the next input
+# when editing a property name or value in the Inspector rules view
+options-inspector-rules-focus-next-on-enter-label = <kbd>Enter</kbd> арқылы келесі енгізу өрісіне фокусты орнату
+options-inspector-rules-focus-next-on-enter-tooltip =
+    .title = Іске қосылған кезде селекторды, қасиет атауын немесе мәнді түзету кезінде Enter пернесін басу фокусты келесі енгізуге жылжытады.
 
 ## "Default Color Unit" options for the Inspector
 
@@ -53,6 +58,15 @@ options-default-color-unit-hsl = HSL(A)
 options-default-color-unit-rgb = RGB(A)
 options-default-color-unit-hwb = HWB
 options-default-color-unit-name = Түстер аттары
+
+## Web Console section
+
+# The heading
+options-webconsole-label = Веб консолі
+# The label for the checkbox that toggle whether the Split console is enabled
+options-webconsole-split-console-label = Бөлінген консольді іске қосу
+options-webconsole-split-console-tooltip =
+    .title = Бөлінген консольді Esc пернесімен ашу
 
 ## Style Editor section
 

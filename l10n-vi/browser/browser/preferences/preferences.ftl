@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Tìm kiếm trong Cài đặt
 managed-notice = Trình duyệt của bạn đang được quản lý bởi tổ chức của bạn.
+managed-notice-info-icon =
+    .alt = Thông tin
 category-list =
     .aria-label = Thể loại
 pane-general-title = Tổng quát
@@ -191,6 +193,9 @@ containers-remove-alert-title = Xóa ngăn chứa này?
 containers-remove-alert-msg = Nếu bạn xóa ngăn chứa này bây giờ, { $count } thẻ trong ngăn chứa sẽ bị đóng. Bạn có chắc muốn xóa ngăn chứa này?
 containers-remove-ok-button = Xóa ngăn chứa này
 containers-remove-cancel-button = Không xóa ngăn chứa này
+settings-tabs-show-image-in-preview =
+    .label = Hiển thị hình ảnh xem trước khi bạn di chuột trên thẻ
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -215,6 +220,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Các lựa chọn màu sắc của bạn đang ghi đè diện mạo trang web. <a data-l10n-name="colors-link">Quản lý màu</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Các lựa chọn màu sắc của bạn đang ghi đè diện mạo trang web.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Quản lý chủ đề { -brand-short-name } trong <a data-l10n-name="themes-link">Tiện ích mở rộng & chủ đề</a>
@@ -242,6 +251,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Chỉ thu phóng văn bản
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Cảnh báo: Nếu bạn chọn “Chỉ phóng to văn bản” và thu phóng mặc định của bạn không được đặt thành 100%, nó có thể khiến một số trang web hoặc nội dung bị hỏng.
 language-header = Ngôn ngữ
 choose-language-description = Chọn ngôn ngữ ưu tiên bạn muốn để hiển thị trang
 choose-button =
@@ -547,6 +558,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Được đề xuất bởi { $provider }
 home-prefs-recommended-by-description-new = Nội dung đặc biệt do { $provider }, một phần của { -brand-product-name }, quản lý
+home-prefs-recommended-by-header-generic =
+    .label = Câu chuyện được đề xuất
+home-prefs-recommended-by-description-generic = Nội dung đặc biệt được quản lý bởi gia đình { -brand-product-name }
 
 ##
 
@@ -680,6 +694,13 @@ sync-mobile-promo = Tải Firefox cho <img data-l10n-name="android-icon"/> <a da
 
 sync-profile-picture =
     .tooltiptext = Đổi hình hồ sơ
+sync-profile-picture-with-alt =
+    .tooltiptext = Đổi hình hồ sơ
+    .alt = Đổi hình hồ sơ
+sync-profile-picture-account-problem =
+    .alt = Ảnh đại diện cho tài khoản
+fxa-login-rejected-warning =
+    .alt = Cảnh báo
 sync-sign-out =
     .label = Đăng xuất…
     .accesskey = g
@@ -840,7 +861,7 @@ forms-ask-to-save-passwords =
     .label = Hỏi để lưu mật khẩu
     .accesskey = A
 forms-exceptions =
-    .label = Ngoại trừ…
+    .label = Ngoại lệ…
     .accesskey = x
 forms-generate-passwords =
     .label = Đề xuất và tạo mật khẩu mạnh
@@ -984,6 +1005,7 @@ sitedata-delete-on-close =
     .label = Xóa cookie và dữ liệu trang web khi đóng { -brand-short-name }
     .accesskey = c
 sitedata-delete-on-close-private-browsing = Trong chế độ duyệt riêng tư, cookie và dữ liệu trang web sẽ luôn bị xóa khi { -brand-short-name } bị đóng.
+sitedata-delete-on-close-private-browsing2 = Dựa trên cài đặt lịch sử của bạn, { -brand-short-name } xóa cookie và dữ liệu trang web khỏi phiên của bạn khi bạn đóng trình duyệt.
 sitedata-allow-cookies-option =
     .label = Cho phép cookie và dữ liệu trang
     .accesskey = A
@@ -1042,7 +1064,7 @@ addressbar-locbar-bookmarks-option =
     .label = Dấu trang
     .accesskey = k
 addressbar-locbar-clipboard-option =
-    .label = Khay nhớ tạm
+    .label = Bộ nhớ tạm
     .accesskey = C
 addressbar-locbar-openpage-option =
     .label = Các thẻ đang mở
@@ -1060,10 +1082,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Hành động nhanh
     .accesskey = Q
+addressbar-suggestions-settings = Thay đổi tùy chỉnh phần gợi ý của công cụ tìm kiếm
 addressbar-locbar-showrecentsearches-option =
     .label = Hiển thị các tìm kiếm gần đây
     .accesskey = F
-addressbar-suggestions-settings = Thay đổi tùy chỉnh phần gợi ý của công cụ tìm kiếm
 addressbar-quickactions-learn-more = Tìm hiểu thêm
 
 ## Privacy Section - Content Blocking
@@ -1212,14 +1234,14 @@ permissions-block-popups =
 # "popup" is a misspelling that is more popular than the correct spelling of
 # "pop-up" so it's included as a search keyword, not displayed in the UI.
 permissions-block-popups-exceptions-button =
-    .label = Ngoại trừ…
+    .label = Ngoại lệ…
     .accesskey = E
     .searchkeywords = cửa sổ bật lên
 permissions-addon-install-warning =
     .label = Cảnh báo khi trang web cố gắng cài đặt tiện ích
     .accesskey = W
 permissions-addon-exceptions =
-    .label = Ngoại trừ…
+    .label = Ngoại lệ…
     .accesskey = E
 
 ## Privacy Section - Data Collection
@@ -1245,6 +1267,8 @@ addon-recommendations-link = Tìm hiểu thêm
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Dữ liệu báo cáo bị vô hiệu hóa với cấu hình này
 collection-backlogged-crash-reports-with-link = Cho phép { -brand-short-name } thay mặt bạn gửi báo cáo sự cố tồn đọng <a data-l10n-name="crash-reports-link">Tìm hiểu thêm</a>
+    .accesskey = c
+collection-backlogged-crash-reports = Cho phép { -brand-short-name } thay mặt bạn gửi báo cáo sự cố tồn đọng
     .accesskey = c
 privacy-segmentation-section-header = Các tính năng mới nâng cao khả năng duyệt web của bạn
 privacy-segmentation-section-description = Khi chúng tôi cung cấp các tính năng sử dụng dữ liệu của bạn để mang lại cho bạn trải nghiệm cá nhân hơn:
@@ -1360,7 +1384,7 @@ preferences-doh-checkbox-warn =
 preferences-doh-select-resolver = Chọn nhà cung cấp:
 preferences-doh-exceptions-description = { -brand-short-name } sẽ không sử dụng DNS an toàn trên các trang web này
 preferences-doh-manage-exceptions =
-    .label = Quản lý ngoại trừ…
+    .label = Quản lý ngoại lệ…
     .accesskey = x
 
 ## The following strings are used in the Download section of settings

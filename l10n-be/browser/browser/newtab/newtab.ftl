@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Дадаць пашукавік
 newtab-topsites-add-shortcut-header = Новы цэтлік
 newtab-topsites-edit-topsites-header = Рэдагаваць папулярны сайт
 newtab-topsites-edit-shortcut-header = Рэдагаваць цэтлік
+newtab-topsites-add-shortcut-label = Дадаць цэтлік
 newtab-topsites-title-label = Загаловак
 newtab-topsites-title-input =
     .placeholder = Увядзіце назву
@@ -198,6 +199,7 @@ newtab-section-header-recent-activity = Апошняя актыўнасць
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Рэкамендавана { $provider }
+newtab-section-header-stories = Гісторыі, якія прымушаюць задумацца
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -206,6 +208,8 @@ newtab-empty-section-highlights = Пачніце агляданне, і мы п�
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Гатова. Праверце пазней, каб убачыць больш матэрыялаў ад { $provider }. Не жадаеце чакаць? Выберыце папулярную тэму, каб знайсці больш цікавых матэрыялаў з усяго Інтэрнэту.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Гатова. Праверце пазней, каб убачыць больш матэрыялаў. Не жадаеце чакаць? Выберыце папулярную тэму, каб знайсці больш цікавых матэрыялаў з усяго Інтэрнэту.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -259,9 +263,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Спонсарскія цэтлікі
 newtab-custom-pocket-title = Рэкамендавана { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Выключнае змесціва, куратарам якога з'яўляецца { -pocket-brand-name }, частка сям'і { -brand-product-name }
-newtab-custom-pocket-toggle =
-    .label = Рэкамендавана { -pocket-brand-name }
-    .description = Выключнае змесціва, куратарам якога з'яўляецца { -pocket-brand-name }, частка сям'і { -brand-product-name }
+newtab-custom-stories-toggle =
+    .label = Рэкамендаваныя гісторыі
+    .description = Выключнае змесціва, курыраванае сямействам { -brand-product-name }
 newtab-custom-pocket-sponsored = Артыкулы ад спонсараў
 newtab-custom-pocket-show-recent-saves = Паказваць апошнія захаванні
 newtab-custom-recent-title = Апошняя актыўнасць
@@ -271,3 +275,24 @@ newtab-custom-recent-toggle =
     .description = Падборка нядаўніх сайтаў і змесціва
 newtab-custom-close-button = Закрыць
 newtab-custom-settings = Кіраваць дадатковымі наладамі
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Шпалеры
+newtab-wallpaper-reset = Скінуць да прадвызначаных
+newtab-wallpaper-light-red-panda = Чырвоная панда
+newtab-wallpaper-light-mountain = Белая гара
+newtab-wallpaper-light-sky = Неба з фіялетавымі і ружовымі аблокамі
+newtab-wallpaper-light-color = Сінія, ружовыя і жоўтыя формы
+newtab-wallpaper-light-landscape = Горны пейзаж з блакітнага туману
+newtab-wallpaper-light-beach = Пляж з пальмамі
+newtab-wallpaper-dark-aurora = Палярнае ззянне
+newtab-wallpaper-dark-color = Чырвоныя і сінія фігуры
+newtab-wallpaper-dark-panda = Чырвоная панда схаваная ў лесе
+newtab-wallpaper-dark-sky = Гарадскі пейзаж з начным небам
+newtab-wallpaper-dark-mountain = Горны пейзаж
+newtab-wallpaper-dark-city = Пурпурны гарадскі пейзаж
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Фота <a data-l10n-name="name-link">{ $author_string }</a> з <a data-l10n-name="webpage-link">{ $webpage_string }</a>

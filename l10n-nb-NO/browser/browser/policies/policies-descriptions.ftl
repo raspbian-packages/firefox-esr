@@ -12,10 +12,13 @@
 
 policy-3rdparty = Angi policyer som WebExtensions kan få tilgang til via chrome.storage.managed.
 policy-AllowedDomainsForApps = Definier domener som får tilgang til Google Workspace.
+policy-AllowFileSelectionDialogs = Tillat dialogvindu for valg av filer.
 policy-AppAutoUpdate = Slå på eller slå av automatisk programoppdateringer.
 policy-AppUpdatePin = Forhindre at { -brand-short-name } oppdateres utover den angitte versjonen.
 policy-AppUpdateURL = Angi egendefinert programoppdateringsadresse.
 policy-Authentication = Konfigurer integrert godkjenning for nettsteder som støtter det.
+policy-AutofillAddressEnabled = Aktiver autofyll for adresser.
+policy-AutofillCreditCardEnabled = Aktiver autofyll for betalingsmåter.
 policy-AutoLaunchProtocolsFromOrigins = Definer en liste over eksterne protokoller som kan brukes fra listede kilder uten å spørre brukeren.
 policy-BackgroundAppUpdate2 = Slå på eller av bakgrunnsoppdatereren.
 policy-BlockAboutAddons = Blokker tilgang til Utvidelsesbehandleren (about:addons).
@@ -25,6 +28,7 @@ policy-BlockAboutSupport = Blokker tilgang til about:support-siden.
 policy-Bookmarks = Opprett bokmerker i bokmerkeverktøylinjen, i bokmerkermenyen eller en nærmere angitt mappe i dem.
 policy-CaptivePortal = Aktiver eller deaktiver støtte for captive portal.
 policy-CertificatesDescription = Legg til sertifikater eller bruk innebygde sertifikater.
+policy-ContentAnalysis = Aktiver eller deaktiver tilkobling til forhindre-tap-av-data-agenten.
 policy-Cookies = Tillat eller nekt nettsteder å lagre infokapsler.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Angi policyer relatert til beholdere.
@@ -121,6 +125,7 @@ policy-SSLVersionMax = Angi den maksimale SSL-versjonen.
 policy-SSLVersionMin = Angi den minimale SSL-versjonen.
 policy-StartDownloadsInTempDirectory = Tving nedlastinger til å starte på en lokal, midlertidig plassering i stedet for standard nedlastingskatalog.
 policy-SupportMenu = Legg til et tilpasset menyelement med hjelp i hjelpemenyen.
+policy-TranslateEnabled = Slå på eller av nettsideoversettelse.
 policy-UserMessaging = Ikke vis visse meldinger til brukeren.
 policy-UseSystemPrintDialog = Skriv ut ved hjelp av systemets utskriftsdialogvindu.
 # “format” refers to the format used for the value of this policy.

@@ -78,7 +78,7 @@ translations-panel-error-load-languages = לא ניתן לטעון שפות
 translations-panel-error-load-languages-hint = נא לבדוק את החיבור שלך לרשת ולנסות שוב.
 translations-panel-error-load-languages-hint-button =
     .label = ניסיון חוזר
-translations-panel-error-unsupported = תרגום אינו זמין עבור דף זה
+translations-panel-error-unsupported = התרגום אינו זמין עבור דף זה
 translations-panel-error-dismiss-button =
     .label = הבנתי
 translations-panel-error-change-button =
@@ -126,8 +126,6 @@ translations-manage-description = הורדת שפות לתרגום לא מקוו
 translations-manage-all-language = כל השפות
 translations-manage-download-button = הורדה
 translations-manage-delete-button = מחיקה
-translations-manage-error-download = אירעה שגיאה בהורדת קובצי השפה. נא לנסות שוב.
-translations-manage-error-delete = אירעה שגיאה במחיקת קובצי השפה. נא לנסות שוב.
 translations-manage-intro = באפשרותך להגדיר את השפה שלך ואת ההעדפות שלך לתרגום האתרים, ולנהל שפות המותקנות עבור תרגום לא מקוון.
 translations-manage-install-description = התקנת שפות לתרגום לא מקוון
 translations-manage-language-install-button =
@@ -135,12 +133,21 @@ translations-manage-language-install-button =
 translations-manage-language-install-all-button =
     .label = התקנת הכל
     .accesskey = ת
+translations-manage-intro-2 = באפשרותך להגדיר את השפה שלך ואת ההעדפות שלך לתרגום האתרים, ולנהל שפות שהורדו עבור תרגום לא מקוון.
+translations-manage-download-description = הורדת שפות לתרגום לא מקוון
+translations-manage-language-download-button =
+    .label = הורדה
+translations-manage-language-download-all-button =
+    .label = הורדת הכול
+    .accesskey = ה
 translations-manage-language-remove-button =
     .label = הסרה
 translations-manage-language-remove-all-button =
     .label = הסרת הכל
     .accesskey = ס
 translations-manage-error-install = אירעה שגיאה בהתקנת קובצי השפה. נא לנסות שוב.
+translations-manage-error-download = אירעה שגיאה בהורדת קובצי השפה. נא לנסות שוב.
+translations-manage-error-delete = אירעה שגיאה במחיקת קובצי השפה. נא לנסות שוב.
 translations-manage-error-remove = אירעה שגיאה בהסרת קובצי השפה. נא לנסות שוב.
 translations-manage-error-list = נכשל לקבל את רשימת השפות הזמינות לתרגום. ניתן לרענן את הדף כדי לנסות שוב.
 translations-settings-title =
@@ -170,3 +177,35 @@ translations-settings-remove-all-sites-button =
 translations-settings-close-dialog =
     .buttonlabelaccept = סגירה
     .buttonaccesskeyaccept = ס
+# Text displayed in the right-click context menu for translating
+# the text of a hyperlink to a yet-to-be-determined language.
+main-context-menu-translate-link-text =
+    .label = תרגום טקסט הקישור…
+    .accesskey = ת
+# Text displayed in the right-click context menu for translating
+# the text of a hyperlink to a target language.
+#
+# Variables:
+#   $language (string) - The localized display name of the target language
+main-context-menu-translate-link-text-to-language =
+    .label = תרגום טקסט הקישור ל{ $language }
+    .accesskey = ת
+select-translations-panel-cancel-button =
+    .label = ביטול
+select-translations-panel-translate-button =
+    .label = תרגום
+select-translations-panel-try-again-button =
+    .label = ניסיון חוזר
+# Text displayed when the translation fails to complete.
+select-translations-panel-translation-failure-message =
+    .message = אירעה שגיאה בתרגום. נא לנסות שוב.
+# If your language requires declining the language name, a possible solution
+# is to adapt the structure of the phrase, or use a support noun, e.g.
+# `Sorry, we don't support the language yet: { $language }
+#
+# Variables:
+#   $language (string) - The language of the document.
+select-translations-panel-unsupported-language-message-known =
+    .message = איננו תומכים ב{ $language } עדיין, עמך הסליחה.
+select-translations-panel-unsupported-language-message-unknown =
+    .message = איננו תומכים בשפה זו עדיין, עמך הסליחה.

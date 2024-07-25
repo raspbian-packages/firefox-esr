@@ -274,11 +274,25 @@ about-logins-confirm-remove-all-dialog-title2 =
         [one] ¿Emboguete { $count } ñe’ẽñemi?
        *[other] ¿Emboguete { $count } ñe’ẽñeminguéra?
     }
+# Message for modal to confirm the removal of saved passwords when user is NOT synced
+about-logins-confirm-remove-all-dialog-message2 =
+    { $count ->
+        [1] Kóva omboguéta umi ñe’ẽñemi ñongatupyre { -brand-short-name } pegua ha oimeraẽva kyhyjerã ñembogua rehegua. Ndaikatúi embojevy ko mba’e.
+        [one] Kóva omboguéta umi ñe’ẽñemi ñongatupyre { -brand-short-name } pegua ha oimeraẽva kyhyjerã ñembogua rehegua. Ndaikatúi embojevy ko mba’e.
+       *[other] Kóva omboguéta umi ñe’ẽñemi ñongatupyre { -brand-short-name } pegua ha oimeraẽva kyhyjerã ñembogua rehegua. Ndaikatúi embojevy ko mba’e.
+    }
 # Title for modal to confirm the removal of all saved passwords when user IS SYNCED
 about-logins-confirm-remove-all-sync-dialog-title2 =
     { $count ->
         [one] ¿Emboguete ñe’ẽñemi { $count } opaite mba’e’okágui?
        *[other] ¿Emboguete ñe’ẽñemi { $count } opaite mba’e’okágui?
+    }
+# Message for modal to confirm the removal of saved passwords when user IS synced.
+about-logins-confirm-remove-all-sync-dialog-message3 =
+    { $count ->
+        [1] Kóva omboguéta opaite ñe’ẽñemi ñongatupyre { -brand-short-name } pegua ne mba’e’okakuéra ojuehepyréva. Kóva avei omboguéta oimeraẽva ñembogua kyhyjerã osẽva ko’ápe. Ndaikatumo’ãi emboguevi ko tembiapo.
+        [one] Kóva omboguéta opaite ñe’ẽñemi ñongatupyre { -brand-short-name } pegua ne mba’e’okakuéra ojuehepyréva. Kóva avei omboguéta oimeraẽva ñembogua kyhyjerã osẽva ko’ápe. Ndaikatumo’ãi emboguevi ko tembiapo.
+       *[other] Kóva omboguéta opaite ñe’ẽñemi ñongatupyre { -brand-short-name } pegua ne mba’e’okakuéra ojuehepyréva. Kóva avei omboguéta oimeraẽva ñembogua kyhyjerã osẽva ko’ápe. Ndaikatumo’ãi emboguevi ko tembiapo.
     }
 
 ##
@@ -287,6 +301,9 @@ about-logins-confirm-export-dialog-title = Emba’ereraha tembiapo ñepyrũ ha �
 about-logins-confirm-export-dialog-message = Ñe’ẽñemi oñeñongatúta moñe’ẽrãrõ (techapyrã, BadP@ssw0rd) oimeraẽva ombojurujakuaáva marandurenda rahaukapyre ikatu ohecha.
 about-logins-confirm-export-dialog-confirm-button = Emba’egueraha…
 about-logins-confirm-export-dialog-title2 = Jehaipy ñe’ẽñemi guerahauka rehegua
+about-logins-confirm-export-dialog-message2 =
+    Erahaukávo, ne ñe’ẽñeminguéra oñeñongatu marandurenda oñemoñe’ẽkuaávape.
+    Eiporupa vove marandurenda, embogue ani hag̃ua ambue tapicha oiporúva ko mba’e’oka ohecha ne ñe’ẽñeminguéra.
 about-logins-confirm-export-dialog-confirm-button2 = Eguerahauka gueteri
 about-logins-alert-import-title = Emba’eguerupáma
 about-logins-alert-import-message = Ehechapaite emba’egueruva’ekue

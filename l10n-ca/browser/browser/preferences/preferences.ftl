@@ -227,6 +227,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = La vostra selecció de colors modifica l'aparença dels llocs web. <a data-l10n-name="colors-link">Gestiona els colors</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = La vostra selecció de colors modifica l'aparença dels llocs web.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Gestioneu els temes del { -brand-short-name } a <a data-l10n-name="themes-link">Extensions i temes</a>
@@ -612,6 +616,9 @@ search-suggestions-desc = Trieu com voleu que es mostrin els suggeriments dels m
 search-suggestions-option =
     .label = Mostra suggeriments de cerca
     .accesskey = s
+search-show-suggestions-option =
+    .label = Mostra suggeriments de cerca
+    .accesskey = M
 search-show-suggestions-url-bar-option =
     .label = Mostra suggeriments de cerca als resultats de la barra d'adreces
     .accesskey = l
@@ -693,6 +700,9 @@ sync-mobile-promo = Baixeu el Firefox per a l'<img data-l10n-name="android-icon"
 
 sync-profile-picture =
     .tooltiptext = Canvia la imatge de perfil
+sync-profile-picture-with-alt =
+    .tooltiptext = Canvia la imatge de perfil
+    .alt = Canvia la imatge de perfil
 sync-sign-out =
     .label = Tanca la sessió…
     .accesskey = T
@@ -745,8 +755,10 @@ sync-currently-syncing-bookmarks = Adreces d'interès
 sync-currently-syncing-history = Historial
 sync-currently-syncing-tabs = Pestanyes obertes
 sync-currently-syncing-logins-passwords = Inicis de sessió i contrasenyes
+sync-currently-syncing-passwords = Contrasenyes
 sync-currently-syncing-addresses = Adreces
 sync-currently-syncing-creditcards = Targetes de crèdit
+sync-currently-syncing-payment-methods = Formes de pagament
 sync-currently-syncing-addons = Complements
 sync-currently-syncing-settings = Paràmetres
 sync-change-options =
@@ -777,6 +789,10 @@ sync-engine-logins-passwords =
     .label = Inicis de sessió i contrasenyes
     .tooltiptext = Noms d'usuari i contrasenyes que heu desat
     .accesskey = I
+sync-engine-passwords =
+    .label = Contrasenyes
+    .tooltiptext = Contrasenyes que heu desat
+    .accesskey = C
 sync-engine-addresses =
     .label = Adreces
     .tooltiptext = Adreces postals que heu desat (només a l'ordinador)
@@ -785,6 +801,10 @@ sync-engine-creditcards =
     .label = Targetes de crèdit
     .tooltiptext = Noms, números i dates de venciment (només a l'ordinador)
     .accesskey = c
+sync-engine-payment-methods2 =
+    .label = Formes de pagament
+    .tooltiptext = Noms, números de targetes i dates d'expiració
+    .accesskey = p
 sync-engine-addons =
     .label = Complements
     .tooltiptext = Extensions i temes per al Firefox d'escriptori
@@ -831,6 +851,17 @@ pane-privacy-logins-and-passwords-header = Inicis de sessió i contrasenyes
 forms-ask-to-save-logins =
     .label = Demana si vull desar les dades d'inici de sessió i contrasenyes dels llocs web
     .accesskey = d
+
+## Privacy Section - Passwords
+
+# "Logins" is the former term for "Passwords". Users should find password settings
+# by searching for the former term "logins". It's not displayed in the UI.
+pane-privacy-passwords-header = Contrasenyes
+    .searchkeywords = inicis de sessió
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
+forms-ask-to-save-passwords =
+    .label = Demana desar les contrasenyes
+    .accesskey = D
 forms-exceptions =
     .label = Excepcions…
     .accesskey = x
@@ -851,6 +882,9 @@ forms-fill-logins-and-passwords =
 forms-saved-logins =
     .label = Inicis de sessió desats…
     .accesskey = I
+forms-saved-passwords =
+    .label = Contrasenyes desades
+    .accesskey = d
 forms-primary-pw-use =
     .label = Utilitza una contrasenya principal
     .accesskey = U
@@ -885,6 +919,12 @@ primary-password-os-auth-dialog-message-win = Per crear una contrasenya principa
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = crear una contrasenya principal
 master-password-os-auth-dialog-caption = { -brand-full-name }
+
+## Privacy section - Autofill
+
+pane-privacy-autofill-header = Emplenament automàtic
+autofill-saved-addresses-button = Adreces desades
+    .accesskey = d
 
 ## Privacy Section - History
 
@@ -1016,10 +1056,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Accions ràpides
     .accesskey = r
+addressbar-suggestions-settings = Canvia les preferències dels suggeriments de motors de cerca
 addressbar-locbar-showrecentsearches-option =
     .label = Mostra les cerques recents
     .accesskey = r
-addressbar-suggestions-settings = Canvia les preferències dels suggeriments de motors de cerca
 addressbar-quickactions-learn-more = Més informació
 
 ## Privacy Section - Content Blocking
@@ -1201,6 +1241,8 @@ addon-recommendations-link = Més informació
 # or builds with no Telemetry support available.
 collection-health-report-disabled = L'informe de dades està desactivat en la configuració d'aquesta versió
 collection-backlogged-crash-reports-with-link = Permet que el { -brand-short-name } enviï els informes de fallada pendents automàticament <a data-l10n-name="crash-reports-link">Més informació</a>
+    .accesskey = f
+collection-backlogged-crash-reports = Permet que el { -brand-short-name } enviï els informes de fallada pendents automàticament
     .accesskey = f
 privacy-segmentation-section-header = Noves funcions que milloren la navegació
 privacy-segmentation-section-description = Quan us oferim funcions que utilitzen les vostres dades per oferir-vos una experiència més personal:

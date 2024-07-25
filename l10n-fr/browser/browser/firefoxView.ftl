@@ -12,6 +12,8 @@ menu-tools-firefox-view =
     .label = { -firefoxview-brand-name }
     .accesskey = F
 firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
 firefoxview-page-label =
     .label = { -firefoxview-brand-name }
 firefoxview-close-button =
@@ -51,6 +53,7 @@ firefoxview-syncedtabs-loading-header = Synchronisation en cours
 firefoxview-syncedtabs-loading-description = Une fois terminée, vous verrez ici tous les onglets ouverts sur vos autres appareils. Revenez vite.
 firefoxview-tabpickup-fxa-admin-disabled-header = Votre organisation a désactivé la synchronisation
 firefoxview-tabpickup-fxa-admin-disabled-description = { -brand-short-name } ne peut pas synchroniser d’onglets entre appareils car votre administrateur·trice a désactivé la synchronisation.
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } ne peut pas synchroniser d’onglets entre appareils car votre organisation a désactivé la synchronisation.
 firefoxview-tabpickup-network-offline-header = Vérifiez votre connexion à Internet
 firefoxview-tabpickup-network-offline-description = Si vous utilisez un pare-feu ou un proxy, vérifiez que { -brand-short-name } a l’autorisation d’accéder au Web.
 firefoxview-tabpickup-network-offline-primarybutton = Réessayer
@@ -184,6 +187,8 @@ firefoxview-search-results-count =
 firefoxview-search-results-empty = Pas de résultats pour « { $query } »
 firefoxview-sort-history-by-date-label = Trier par date
 firefoxview-sort-history-by-site-label = Trier par site
+firefoxview-sort-open-tabs-by-recency-label = Trier par activité récente
+firefoxview-sort-open-tabs-by-order-label = Trier par onglets
 # Variables:
 #   $url (string) - URL that will be opened in the new tab
 firefoxview-opentabs-tab-row =
@@ -246,3 +251,25 @@ firefoxview-recentlyclosed-empty-description-two = Pour retrouver des onglets pl
 
 firefoxview-syncedtabs-device-notabs = Aucun onglet ouvert sur cet appareil
 firefoxview-syncedtabs-connect-another-device = Connecter un autre appareil
+firefoxview-pinned-tabs =
+    .title = Onglets épinglés
+firefoxview-tabs =
+    .title = Onglets
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+    .title = Aller sur { $tabTitle }
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+    .title = Aller sur { $tabTitle } (dans les marque-pages)
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+    .title = { $url } (dans les marque-pages)

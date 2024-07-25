@@ -87,6 +87,8 @@ about-debugging-refresh-usb-devices-button = ਡਿਵਾਈਸ ਤਾਜ਼ਾ 
 about-debugging-setup-title = ਸੈਟਅੱਪ
 # Introduction text in the Setup page to explain how to configure remote debugging.
 about-debugging-setup-intro = ਜਿਸ ਕਨੈਕਸ਼ਨ ਢੰਗ ਨਾਲ ਤੁਸੀਂ ਆਪਣੇ ਡਿਵਾਈਸ ਨੂੰ ਰਿਮੋਟ ਤੋਂ ਡੀਬੱਗ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਉਸ ਦੀ ਸੰਰਚਨਾ ਕਰੋ।
+# Explanatory text in the Setup page about what the 'This Firefox' page is for
+about-debugging-setup-this-firefox2 = <a>{ about-debugging-this-firefox-runtime-name }</a> ਨੂੰ { -brand-shorter-name } ਦੇ ਇਸ ਵਰਜ਼ਨ ਲਈ ਇਕਸਟੈਨਸ਼ਨਾਂ ਅਤੇ ਸਰਵਿਸ ਵਰਕਰਾਂ ਨੂੰ ਡੀਬੱਗ ਕਰਨ ਲਈ ਵਰਤੋਂ।
 # Title of the heading Connect section of the Setup page.
 about-debugging-setup-connect-heading = ਡਿਵਾਈਸ ਕਨੈਕਟ ਕਰੋ
 # USB section of the Setup page
@@ -108,7 +110,7 @@ about-debugging-setup-usb-step-enable-dev-menu2 = ਆਪਣੇ ਐਂਡਰਾ�
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = ਐਂਡਰਾਇਡ ਡਿਵੈਲਪਰ ਮੀਨੂ ਵਿੱਚ USB ਡੀਬਗਿੰਗ ਨੂੰ ਸਮਰੱਥ ਬਣਾਓ।
 # USB section step by step guide
-about-debugging-setup-usb-step-enable-debug-firefox2 = ਐਂਡਰਾਇਡ ਡਿਵਾਈਸ ਤੇ ਫਾਇਰਫਾਕਸ ਵਿਚ USB ਡੀਬੱਗਿੰਗ ਨੂੰ ਸਮਰੱਥ ਬਣਾਓ।
+about-debugging-setup-usb-step-enable-debug-firefox2 = Android ਡਿਵਾਈਸ ਉੱਤੇ Firefox ਵਿੱਚ USB ਡੀਬੱਗਿੰਗ ਨੂੰ ਸਮਰੱਥ ਬਣਾਓ।
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = ਐਂਡਰਾਈਡ ਡਿਵਾਈਸ ਨੂੰ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।
 # Text shown in the USB section of the setup page with a link to troubleshoot connection errors.
@@ -247,7 +249,7 @@ about-debugging-extension-location =
 # Text displayed for extensions in "runtime" pages, before displaying the extension's ID.
 # For instance "geckoprofiler@mozilla.com" or "{ed26ddcb-5611-4512-a89a-51b8db81cfb2}".
 about-debugging-extension-id =
-    .label = ਇਕਸਟੈਂਸ਼ਨ ਆਈਡੀ
+    .label = ਇਕਸਟੈਨਸ਼ਨ ਆਈਡੀ
 # Text displayed for extensions in "runtime" pages, before displaying the status of the
 # extension background script.
 about-debugging-extension-backgroundscript =

@@ -110,6 +110,7 @@ login-intro-instructions-fxa-settings = Avaa Asetukset > Synkronointi > Ota synk
 login-intro-instructions-fxa-passwords-help = Käy <a data-l10n-name="passwords-help-link">salasanatuessa</a> saadaksesi lisätietoja.
 about-logins-intro-browser-only-import = Jos kirjautumistietojasi on tallennettu toiseen selaimeen, voit <a data-l10n-name="import-link">tuoda ne { -brand-product-name }iin</a>
 about-logins-intro-import2 = Jos kirjautumistietosi on tallennettu { -brand-product-name }-selaimen ulkopuolelle, voit <a data-l10n-name="import-browser-link">tuoda ne toisesta selaimesta</a> tai <a data-l10n-name="import-file-link">tiedostosta</a>
+about-logins-intro-import3 = Lisää salasana valitsemalla yllä oleva plusmerkkipainike. Voit myös <a data-l10n-name="import-browser-link">tuoda salasanoja toisesta selaimesta</a> tai <a data-l10n-name="import-file-link">tiedostosta</a> a>.
 
 ## Login
 
@@ -120,6 +121,7 @@ login-item-edit-button = Muokkaa
 about-logins-login-item-remove-button = Poista
 login-item-origin-label = Verkkosivuston osoite
 login-item-tooltip-message = Tarkista, että tämä on sama osoite, josta kirjaudut sisään.
+about-logins-origin-tooltip2 = Anna koko osoite ja varmista, että se vastaa tarkasti sen sivun osoitetta, jolla kirjaudut sisään.
 # Variables
 #   $webTitle (String) - Website title of the password being changed.
 about-logins-edit-password-tooltip = Varmista, että tallennat tämän sivuston nykyisen salasanasi. Salasanan vaihtaminen tässä ei muuta sitä sivustolla { $webTitle }.
@@ -165,6 +167,11 @@ about-logins-edit-login-os-auth-dialog-message-win = Jatka muokkaamaan kirjautum
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-edit-login-os-auth-dialog-message-macosx = muokata tallennettua kirjautumistietoa
+# This message can be seen when attempting to edit a login in about:logins on Windows.
+about-logins-edit-login-os-auth-dialog-message2-win = Jos haluat muokata salasanaasi, anna Windows-kirjautumistietosi. Tämä auttaa suojaamaan tilisi.
+# This message can be seen when attempting to edit a login in about:logins
+# On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
+about-logins-edit-login-os-auth-dialog-message2-macosx = muokata tallennettua salasanaa
 # This message can be seen when attempting to reveal a password in about:logins on Windows.
 about-logins-reveal-password-os-auth-dialog-message-win = Katso salasana kirjoittamalla Windows-kirjautumistiedot. Tämä auttaa suojaamaan tilejäsi.
 # This message can be seen when attempting to reveal a password in about:logins
@@ -180,6 +187,11 @@ about-logins-export-password-os-auth-dialog-message-win = Jatka kirjautumistieto
 # This message can be seen when attempting to export a password in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-export-password-os-auth-dialog-message-macosx = viedä tallennetut käyttäjätunnukset ja salasanat
+# This message can be seen when attempting to export a password in about:logins on Windows.
+about-logins-export-password-os-auth-dialog-message2-win = Vie salasanasi antamalla Windows-kirjautumistietosi. Tämä auttaa suojaamaan tilisi.
+# This message can be seen when attempting to export a password in about:logins
+# On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
+about-logins-export-password-os-auth-dialog-message2-macosx = viedä tallennetut salasanat
 
 ## Primary Password notification
 
@@ -251,6 +263,26 @@ about-logins-confirm-remove-all-dialog-title2 =
     { $count ->
         [one] Poistetaanko { $count } salasana?
        *[other] Poistetaanko kaikki { $count } salasanaa?
+    }
+# Message for modal to confirm the removal of saved passwords when user is NOT synced
+about-logins-confirm-remove-all-dialog-message2 =
+    { $count ->
+        [1] Tämä poistaa { -brand-short-name }iin tallennetun salasanan ja kaikki tietovuotoilmoitukset. Tätä toimintoa ei voi kumota.
+        [one] Tämä poistaa { -brand-short-name }iin tallennetut salasanat ja kaikki tietovuotoilmoitukset. Tätä toimintoa ei voi kumota.
+       *[other] Tämä poistaa { -brand-short-name }iin tallennetut salasanat ja kaikki tietovuotoilmoitukset. Tätä toimintoa ei voi kumota.
+    }
+# Title for modal to confirm the removal of all saved passwords when user IS SYNCED
+about-logins-confirm-remove-all-sync-dialog-title2 =
+    { $count ->
+        [one] Poistetaanko { $count } salasana kaikilta laitteilta?
+       *[other] Poistetaanko kaikki { $count } salasanaa kaikilta laitteilta?
+    }
+# Message for modal to confirm the removal of saved passwords when user IS synced.
+about-logins-confirm-remove-all-sync-dialog-message3 =
+    { $count ->
+        [1] Tämä poistaa { -brand-short-name }iin tallennetun salasanan kaikilta synkronoiduilta laitteiltasi. Tämä poistaa myös kaikki täällä näkyvät tietovuotoilmoitukset. Tätä toimintoa ei voi kumota.
+        [one] Tämä poistaa { -brand-short-name }iin tallennetut salasanat kaikilta synkronoiduilta laitteiltasi. Tämä poistaa myös kaikki täällä näkyvät tietovuotoilmoitukset. Tätä toimintoa ei voi kumota.
+       *[other] Tämä poistaa { -brand-short-name }iin tallennetut salasanat kaikilta synkronoiduilta laitteiltasi. Tämä poistaa myös kaikki täällä näkyvät tietovuotoilmoitukset. Tätä toimintoa ei voi kumota.
     }
 
 ##

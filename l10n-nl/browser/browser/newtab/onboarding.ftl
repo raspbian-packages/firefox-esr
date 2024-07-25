@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Importeren uit { $previ
 mr1-onboarding-theme-header = Maak het van uzelf
 mr1-onboarding-theme-subtitle = Personaliseer { -brand-short-name } met een thema.
 mr1-onboarding-theme-secondary-button-label = Niet nu
+newtab-wallpaper-onboarding-title = Probeer een vleugje kleur
+newtab-wallpaper-onboarding-subtitle = Kies een achtergrond om uw Nieuw-tabbladpagina een frisse uitstraling te geven.
+newtab-wallpaper-onboarding-primary-button-label = Achtergrond instellen
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Systeemthema
 mr1-onboarding-theme-label-light = Licht
@@ -344,3 +347,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Wanneer u bent gesync
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } is er voor u
 onboarding-gratitude-security-and-privacy-subtitle = Bedankt voor het gebruik van { -brand-short-name }, ondersteund door de Mozilla Foundation. Met uw steun werken we eraan om het internet voor iedereen veiliger en meer toegankelijk te maken.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Hoe lang gebruikt u { -brand-short-name } al?
+onboarding-new-user-familiarity-based-survey-title = Hoe bekend bent u met { -brand-short-name }?
+onboarding-new-user-survey-subtitle = Uw feedback helpt { -brand-short-name } nog beter te maken.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Volgende
+onboarding-new-user-survey-legal-link-label = Door ‘{ onboarding-new-user-survey-next-button-label }’ te selecteren, gaat u akkoord met de <a data-l10n-name="privacy_notice">Privacyverklaring</a> van { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Ik ben helemaal nieuw
+onboarding-new-user-survey-time-based-option-2 = Minder dan een maand
+onboarding-new-user-survey-time-based-option-3 = Meer dan een maand, regelmatig
+onboarding-new-user-survey-time-based-option-4 = Meer dan een maand, af en toe
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Ik ben helemaal nieuw
+onboarding-new-user-survey-familiarity-based-option-2 = Ik heb het wat gebruikt
+onboarding-new-user-survey-familiarity-based-option-3 = Ik ben er heel bekend mee
+onboarding-new-user-survey-familiarity-based-option-4 = Ik heb het in het verleden gebruikt, maar het is een poosje geleden

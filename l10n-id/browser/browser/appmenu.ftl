@@ -77,6 +77,12 @@ appmenu-remote-tabs-turn-on-sync =
 appmenu-remote-tabs-showmore =
     .label = Tampilkan Tab Lainnya
     .tooltiptext = Tampilkan lebih banyak dari perangkat ini
+# This is shown when there are inactive tabs which are not being shown.
+# Variables
+# $count (Number) - The number of inactive tabs which are not being shown (at least 1)
+appmenu-remote-tabs-showinactive =
+    .label = Tampilkan { $count } tab tidak aktif
+    .tooltiptext = Tampilkan tab tidak aktif di perangkat ini
 # This is shown beneath the name of a device when that device has no open tabs
 appmenu-remote-tabs-notabs = Tak ada tab terbuka
 # This is shown when Sync is configured but syncing tabs is disabled.
@@ -168,6 +174,11 @@ profiler-popup-capture-shortcut =
 # devtools/client/performance-new/shared/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
+
+# Presets and their l10n IDs are defined in the file
+# devtools/client/performance-new/shared/background.sys.mjs
+# Please take care that the same values are also defined in devtools' perftools.ftl.
+
 profiler-popup-presets-web-developer-description = Prasetel yang direkomendasikan untuk sebagian besar debugging aplikasi web, dengan overhead yang rendah.
 profiler-popup-presets-web-developer-label =
     .label = Pengembang Web
@@ -257,3 +268,12 @@ appmenu-developer-tools-extensions =
     .label = Ekstensi untuk Pengembang
 appmenuitem-report-broken-site =
     .label = Laporkan situs yang rusak
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = Masuk ke akun Anda
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Dapatkan peringatan kebocoran data
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description = Lindungi aktivitas daring Anda

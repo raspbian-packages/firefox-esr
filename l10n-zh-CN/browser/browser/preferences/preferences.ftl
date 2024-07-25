@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = 在设置中查找
 managed-notice = 您的浏览器正由组织管理。
+managed-notice-info-icon =
+    .alt = 信息
 category-list =
     .aria-label = 分类
 pane-general-title = 常规
@@ -199,6 +201,9 @@ containers-remove-alert-title = 移除此身份？
 containers-remove-alert-msg = 如果您现在移除此身份，{ $count } 个身份标签页将被关闭。您是否确定移除此身份？
 containers-remove-ok-button = 移除此身份
 containers-remove-cancel-button = 不移除此身份
+settings-tabs-show-image-in-preview =
+    .label = 悬停在标签页上时显示预览图
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -223,6 +228,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = 您的颜色选择将覆盖网站外观。<a data-l10n-name="colors-link">管理颜色</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = 您的颜色选择将覆盖网站外观。
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = 到<a data-l10n-name="themes-link">扩展和主题</a>管理 { -brand-short-name } 主题
@@ -250,6 +259,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = 仅缩放文本
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = 警告：若选择“仅缩放文本”，而默认缩放比例不设为 100%，则可能导致某些网站或内容异常。
 language-header = 语言
 choose-language-description = 选择您想要优先使用哪种语言显示页面
 choose-button =
@@ -331,7 +342,7 @@ applications-use-os-default =
         }
 applications-use-other =
     .label = 使用其他…
-applications-select-helper = 选择助手应用程序
+applications-select-helper = 选择对应应用程序
 applications-manage-app =
     .label = 应用程序详细信息…
 applications-always-ask =
@@ -555,6 +566,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = { $provider } 推荐
 home-prefs-recommended-by-description-new = 由 { -brand-product-name } 旗下 { $provider } 策划的特别内容
+home-prefs-recommended-by-header-generic =
+    .label = 推荐文章
+home-prefs-recommended-by-description-generic = 由 { -brand-product-name } 系列产品推荐的精选内容
 
 ##
 
@@ -625,7 +639,7 @@ search-show-suggestions-above-history-option =
 search-show-suggestions-private-windows =
     .label = 在隐私窗口中显示搜索建议
 suggestions-addressbar-settings-generic2 = 更改其他地址栏建议设置
-search-suggestions-cant-show = 由于您已经设置 { -brand-short-name } 不要记住浏览历史，地址栏中将不会显示搜索建议。
+search-suggestions-cant-show = 由于您已经设置 { -brand-short-name } 不记录浏览历史，地址栏中将不会显示搜索建议。
 search-one-click-header2 = 快捷搜索
 search-one-click-desc = 请选择在地址栏和搜索栏输入关键词时，您希望显示在下方的其他可选用的搜索引擎。
 search-choose-engine-column =
@@ -688,6 +702,13 @@ sync-mobile-promo = 在 <img data-l10n-name="android-icon"/> <a data-l10n-name="
 
 sync-profile-picture =
     .tooltiptext = 更改头像
+sync-profile-picture-with-alt =
+    .tooltiptext = 更改头像
+    .alt = 更改头像
+sync-profile-picture-account-problem =
+    .alt = 账户头像
+fxa-login-rejected-warning =
+    .alt = 警告
 sync-sign-out =
     .label = 退出登录…
     .accesskey = g
@@ -709,7 +730,7 @@ sync-verify-account =
     .label = 验证账户
     .accesskey = V
 sync-remove-account =
-    .label = 移除账号
+    .label = 移除账户
     .accesskey = p
 sync-sign-in =
     .label = 登录
@@ -919,7 +940,7 @@ master-password-os-auth-dialog-caption = { -brand-full-name }
 ## Privacy section - Autofill
 
 pane-privacy-autofill-header = 自动填写
-autofill-addresses-checkbox = 保存和自动填写密码
+autofill-addresses-checkbox = 保存和自动填写地址
     .accesskey = a
 autofill-saved-addresses-button = 保存的地址
     .accesskey = S
@@ -992,6 +1013,7 @@ sitedata-delete-on-close =
     .label = 关闭 { -brand-short-name } 时删除 Cookie 与网站数据
     .accesskey = C
 sitedata-delete-on-close-private-browsing = 永久启用隐私浏览模式后，每次关闭 { -brand-short-name } 时都会清除 Cookie 和网站数据。
+sitedata-delete-on-close-private-browsing2 = 根据您的历史记录设置，{ -brand-short-name } 将在关闭浏览器时删除浏览期间产生的 Cookie 和网站数据。
 sitedata-allow-cookies-option =
     .label = 接受 Cookie 和网站数据
     .accesskey = A
@@ -1068,10 +1090,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = 快捷操作
     .accesskey = Q
+addressbar-suggestions-settings = 更改搜索引擎建议的首选项
 addressbar-locbar-showrecentsearches-option =
     .label = 显示近期搜索
     .accesskey = r
-addressbar-suggestions-settings = 更改搜索引擎建议的首选项
 addressbar-quickactions-learn-more = 详细了解
 
 ## Privacy Section - Content Blocking
@@ -1253,6 +1275,8 @@ addon-recommendations-link = 详细了解
 # or builds with no Telemetry support available.
 collection-health-report-disabled = 在此构建配置下数据反馈被禁用
 collection-backlogged-crash-reports-with-link = 允许 { -brand-short-name } 代您发送积压的崩溃报告 <a data-l10n-name="crash-reports-link">详细了解</a>
+    .accesskey = c
+collection-backlogged-crash-reports = 允许 { -brand-short-name } 代您发送积压的崩溃报告
     .accesskey = c
 privacy-segmentation-section-header = 增强浏览体验的新功能
 privacy-segmentation-section-description = 当我们推出需使用您数据以提供更个性化的上网体验的新功能时：

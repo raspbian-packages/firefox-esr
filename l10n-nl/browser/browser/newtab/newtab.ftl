@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Zoekmachine toevoegen
 newtab-topsites-add-shortcut-header = Nieuwe snelkoppeling
 newtab-topsites-edit-topsites-header = Topwebsite bewerken
 newtab-topsites-edit-shortcut-header = Snelkoppeling bewerken
+newtab-topsites-add-shortcut-label = Snelkoppeling toevoegen
 newtab-topsites-title-label = Titel
 newtab-topsites-title-input =
     .placeholder = Voer een titel in
@@ -198,6 +199,7 @@ newtab-section-header-recent-activity = Recente activiteit
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Aanbevolen door { $provider }
+newtab-section-header-stories = Verhalen die tot nadenken stemmen
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -206,6 +208,8 @@ newtab-empty-section-highlights = Begin met surfen, en we tonen hier een aantal 
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = U bent weer bij. Kijk later nog eens voor meer topverhalen van { $provider }. Kunt u niet wachten? Selecteer een populair onderwerp voor meer geweldige verhalen van het hele web.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = U bent weer bij. Kijk later nog eens voor meer verhalen. Kunt u niet wachten? Selecteer een populair onderwerp voor meer geweldige verhalen van het hele web.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -258,9 +262,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Gesponsorde snelkoppelingen
 newtab-custom-pocket-title = Aanbevolen door { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Uitzonderlijke inhoud, samengesteld door { -pocket-brand-name }, onderdeel van de { -brand-product-name }-familie
-newtab-custom-pocket-toggle =
-    .label = Aanbevolen door { -pocket-brand-name }
-    .description = Uitzonderlijke inhoud, samengesteld door { -pocket-brand-name }, onderdeel van de { -brand-product-name }-familie
+newtab-custom-stories-toggle =
+    .label = Aanbevolen verhalen
+    .description = Uitzonderlijke inhoud, verzameld door de { -brand-product-name }-familie
 newtab-custom-pocket-sponsored = Gesponsorde verhalen
 newtab-custom-pocket-show-recent-saves = Onlangs opgeslagen items tonen
 newtab-custom-recent-title = Recente activiteit
@@ -270,3 +274,24 @@ newtab-custom-recent-toggle =
     .description = Een selectie van recente websites en inhoud
 newtab-custom-close-button = Sluiten
 newtab-custom-settings = Meer instellingen beheren
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Achtergronden
+newtab-wallpaper-reset = Standaardwaarden
+newtab-wallpaper-light-red-panda = Rode panda
+newtab-wallpaper-light-mountain = Witte berg
+newtab-wallpaper-light-sky = Lucht met paarse en roze wolken
+newtab-wallpaper-light-color = Blauwe, roze en gele vormen
+newtab-wallpaper-light-landscape = Berglandschap met blauwe mist
+newtab-wallpaper-light-beach = Strand met palmboom
+newtab-wallpaper-dark-aurora = Aurora Borealis
+newtab-wallpaper-dark-color = Rode en blauwe vormen
+newtab-wallpaper-dark-panda = Rode panda verborgen in bos
+newtab-wallpaper-dark-sky = Stadslandschap met een nachtelijke hemel
+newtab-wallpaper-dark-mountain = Landschap met berg
+newtab-wallpaper-dark-city = Paars stadslandschap
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Foto door <a data-l10n-name="name-link">{ $author_string }</a> op <a data-l10n-name="webpage-link">{ $webpage_string }</a>

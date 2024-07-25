@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = Finna í stillingum
 managed-notice = Vafranum er stjórnað af kerfisstjórum þínum.
+managed-notice-info-icon =
+    .alt = Upplýsingar
 category-list =
     .aria-label = Flokkar
 pane-general-title = Almennt
@@ -104,7 +106,7 @@ extension-controlling-proxy-config = <img data-l10n-name ="icon"/><strong>{ $nam
 #
 # <img data-l10n-name="addons-icon"/> will be replaced with Add-ons icon
 # <img data-l10n-name="menu-icon"/> will be replaced with Menu icon
-extension-controlled-enable = Til að virkja viðbót farðu þá í <img data-l10n-name="addons-icon"/> viðbætur í <img data-l10n-name="menu-icon"/> valmyndinni.
+extension-controlled-enable = Til að virkja forritsaukann farðu þá í <img data-l10n-name="addons-icon"/> viðbætur í <img data-l10n-name="menu-icon"/> valmyndinni.
 
 ## Preferences UI Search Results
 
@@ -134,7 +136,7 @@ windows-launch-on-login-disabled = Þessi kjörstilling hefur verið gerð óvir
 startup-restore-warn-on-quit =
     .label = Aðvara þegar vafra er lokað
 disable-extension =
-    .label = Slökkva á viðbót
+    .label = Slökkva á forritsauka
 preferences-data-migration-header = Flytja inn vafragögn
 preferences-data-migration-description = Flyttu inn bókamerki, lykilorð, feril og sjálfvirk útfyllingargögn í { -brand-short-name }.
 preferences-data-migration-button =
@@ -203,6 +205,9 @@ containers-remove-alert-msg =
     }
 containers-remove-ok-button = Fjarlægja þetta sérefni
 containers-remove-cancel-button = Ekki fjarlægja þetta sérefni
+settings-tabs-show-image-in-preview =
+    .label = Sýna forskoðun mynda þegar þú lætur bendilinn svífa yfir flipa
+    .accessKey = h
 
 ## General Section - Language & Appearance
 
@@ -227,6 +232,10 @@ preferences-web-appearance-choice-input-dark =
 # This can appear when using windows HCM or "Override colors: always" without
 # system colors.
 preferences-web-appearance-override-warning = Litaval þitt yfirtekur útlit vefsvæðisins. <a data-l10n-name="colors-link">Sýsla með liti</a>
+# This can appear when using windows HCM or "Override colors: always" without
+# system colors.
+preferences-web-appearance-override-warning2 =
+    .message = Litaval þitt yfirtekur útlit vefsvæðisins.
 # This message contains one link. It can be moved within the sentence as needed
 # to adapt to your language, but should not be changed.
 preferences-web-appearance-footer = Sýslaðu með { -brand-short-name } þemu í <a data-l10n-name="themes-link">Forritsaukar og þemu</a>
@@ -254,6 +263,8 @@ preferences-default-zoom-value =
 preferences-zoom-text-only =
     .label = Stækka/minnka einungis texta
     .accesskey = t
+preferences-text-zoom-override-warning =
+    .message = Viðvörun: Ef þú velur „Stækka/minnka einungis texta“ og sjálfgefni aðdrátturinn þinn er ekki stilltur á 100%, getur það valdið því að sum vefsvæði eða efni verði fyrir hnjaski.
 language-header = Tungumál
 choose-language-description = Veldu þau tungumál sem hafa forgang við birtingu vefsíðu
 choose-button =
@@ -559,6 +570,9 @@ home-prefs-shortcuts-by-option-sponsored =
 home-prefs-recommended-by-header =
     .label = Með þessu mælir { $provider }
 home-prefs-recommended-by-description-new = Úrvalsefni í umsjón { $provider }, hluta af { -brand-product-name } fjölskyldunni
+home-prefs-recommended-by-header-generic =
+    .label = Sögur sem mælt er með
+home-prefs-recommended-by-description-generic = Úrvalsefni sem safnað hefur verið af aðstandendum { -brand-product-name }
 
 ##
 
@@ -696,6 +710,13 @@ sync-mobile-promo = Sæktu Firefox fyrir <img data-l10n-name="android-icon"/> <a
 
 sync-profile-picture =
     .tooltiptext = Breyta notandamynd
+sync-profile-picture-with-alt =
+    .tooltiptext = Breyta notandamynd
+    .alt = Breyta notandamynd
+sync-profile-picture-account-problem =
+    .alt = Auðkennismynd reiknings
+fxa-login-rejected-warning =
+    .alt = Aðvörun
 sync-sign-out =
     .label = Útskráning…
     .accesskey = g
@@ -1000,6 +1021,7 @@ sitedata-delete-on-close =
     .label = Eyða vefkökum og síðugögnum þegar { -brand-short-name } er lokað
     .accesskey = k
 sitedata-delete-on-close-private-browsing = Þegar huliðsvafur er alltaf virkt, munu vefkökum og vefsvæðagögnum ávallt verða eytt þegar { -brand-short-name } er lokað.
+sitedata-delete-on-close-private-browsing2 = Byggt á stillingum vafurferilsins þíns, eyðir { -brand-short-name } vefkökum og gögnum vefsvæða úr lotunni þinni þegar þú lokar vafranum.
 sitedata-allow-cookies-option =
     .label = Samþykkja vefkökur og síðugögn
     .accesskey = A
@@ -1076,10 +1098,10 @@ addressbar-locbar-engines-option =
 addressbar-locbar-quickactions-option =
     .label = Flýtiaðgerðir
     .accesskey = g
+addressbar-suggestions-settings = Breyta stillingum fyrir ábendingar leitarvéla
 addressbar-locbar-showrecentsearches-option =
     .label = Sýna nýlegar leitir
     .accesskey = r
-addressbar-suggestions-settings = Breyta stillingum fyrir ábendingar leitarvéla
 addressbar-quickactions-learn-more = Kanna nánar
 
 ## Privacy Section - Content Blocking
@@ -1261,6 +1283,8 @@ addon-recommendations-link = Fræðast meira
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Gagnaskýrslur eru óvirkar í þessari útgáfu
 collection-backlogged-crash-reports-with-link = Leyfa { -brand-short-name } að senda bakraktar hrunskýrslur fyrir þína hönd <a data-l10n-name="crash-reports-link">Frekari upplýsingar</a>
+    .accesskey = y
+collection-backlogged-crash-reports = Leyfa { -brand-short-name } að senda bakraktar hrunskýrslur fyrir þína hönd
     .accesskey = y
 privacy-segmentation-section-header = Nýir eiginleikar sem bæta vafrið þitt
 privacy-segmentation-section-description = Þegar við bjóðum upp á eiginleika sem nota gögnin þín til að veita þér persónulegri upplifun:

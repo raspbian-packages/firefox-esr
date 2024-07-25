@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Importar de { $previous
 mr1-onboarding-theme-header = Personalisa lo
 mr1-onboarding-theme-subtitle = Personalisa { -brand-short-name } con un thema.
 mr1-onboarding-theme-secondary-button-label = Non ora
+newtab-wallpaper-onboarding-title = Prova un tocco de color
+newtab-wallpaper-onboarding-subtitle = Eliger un fundo pro dar a tu Nove scheda un apparentia fresc.
+newtab-wallpaper-onboarding-primary-button-label = Fixar un fundo de schermo
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Thema del systema
 mr1-onboarding-theme-label-light = Clar
@@ -343,3 +346,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Quando tu es synchron
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } es tu supporto
 onboarding-gratitude-security-and-privacy-subtitle = Gratias pro usar { -brand-short-name }, supportate per Mozilla Foundation. Con tu supporto, nos labora pro render internet plus secur r plus accessibile pro totes.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Desde quante tempore usa tu { -brand-short-name }?
+onboarding-new-user-familiarity-based-survey-title = Quanto sape tu re { -brand-short-name }?
+onboarding-new-user-survey-subtitle = Tu commentarios adjuta nos a render { -brand-short-name } sempre melior.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Sequente
+onboarding-new-user-survey-legal-link-label = Seligente “{ onboarding-new-user-survey-next-button-label },” tu concorda con le { -brand-product-name }’s <a data-l10n-name="privacy_notice">Aviso de confidentialitate</a>
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Io justo comenciava
+onboarding-new-user-survey-time-based-option-2 = Minus que 1 mense
+onboarding-new-user-survey-time-based-option-3 = Plus que un mense, regularmente
+onboarding-new-user-survey-time-based-option-4 = Plus que un mense, occasionalmente
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Io justo comenciava
+onboarding-new-user-survey-familiarity-based-option-2 = Io lo usava aliquando
+onboarding-new-user-survey-familiarity-based-option-3 = Io lo cognosce multo ben
+onboarding-new-user-survey-familiarity-based-option-4 = Io olim lo usava, ma desde tempore

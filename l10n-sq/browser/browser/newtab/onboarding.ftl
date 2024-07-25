@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = Importo prej { $previou
 mr1-onboarding-theme-header = Bëjeni tuajin
 mr1-onboarding-theme-subtitle = Personalizojeni { -brand-short-name }-in me një temë.
 mr1-onboarding-theme-secondary-button-label = Jo tani
+newtab-wallpaper-onboarding-title = Shtoni pakëz ngjyrë
+newtab-wallpaper-onboarding-subtitle = Zgjidhni një sfond, për t’i dhënë një pamje të re Skedës tuaj të Re.
+newtab-wallpaper-onboarding-primary-button-label = Caktoni sfond
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Temë sistemi
 mr1-onboarding-theme-label-light = E çelët
@@ -341,3 +344,22 @@ onboarding-mobile-download-security-and-privacy-subtitle = Kur keni bërë njëk
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } ju mbron krahët
 onboarding-gratitude-security-and-privacy-subtitle = Faleminderit që përdorni { -brand-short-name }-in, që ka nga pas Mozilla Foundation. Me përkrahjen tuaj, po punojmë për ta bërë internetin më të hapur dhe të përdorshëm për këdo.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = Prej sa kohësh e përdorni { -brand-short-name }-in?
+onboarding-new-user-familiarity-based-survey-title = Sa i familjarizuar jeni me { -brand-short-name }-in?
+onboarding-new-user-survey-subtitle = Përshtypjet tuaja ndihmojnë për ta bërë { -brand-short-name }-in edhe më të mirë.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = Pasuesi
+onboarding-new-user-survey-legal-link-label = Duke përzgjedhur “{ onboarding-new-user-survey-next-button-label },” pajtoheni me { -brand-product-name }’s <a data-l10n-name="privacy_notice">Shënim Privatësie</a>
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = Jam fringo i ri
+onboarding-new-user-survey-time-based-option-2 = Më pak se 1 muaj
+onboarding-new-user-survey-time-based-option-3 = Më shumë se 1 muaj, rregullisht
+onboarding-new-user-survey-time-based-option-4 = Më shumë se 1 muaj, me raste
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Jam fringo i ri
+onboarding-new-user-survey-familiarity-based-option-2 = E kam përdorur ca herë
+onboarding-new-user-survey-familiarity-based-option-3 = Jam shumë i familjarizuar me të
+onboarding-new-user-survey-familiarity-based-option-4 = E kam përdorur në të kaluarën, por u bënë kohë

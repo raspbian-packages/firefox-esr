@@ -45,6 +45,7 @@ newtab-topsites-add-search-engine-header = Suchmaschine hinzufügen
 newtab-topsites-add-shortcut-header = Neue Verknüpfung
 newtab-topsites-edit-topsites-header = Wichtige Seite bearbeiten
 newtab-topsites-edit-shortcut-header = Verknüpfung bearbeiten
+newtab-topsites-add-shortcut-label = Verknüpfung hinzufügen
 newtab-topsites-title-label = Titel
 newtab-topsites-title-input =
     .placeholder = Name eingeben
@@ -198,6 +199,7 @@ newtab-section-header-recent-activity = Neueste Aktivität
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Empfohlen von { $provider }
+newtab-section-header-stories = Geschichten, die zum Nachdenken anregen
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -206,6 +208,8 @@ newtab-empty-section-highlights = Surfen Sie los und wir zeigen Ihnen hier einig
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Jetzt kennen Sie die Neuigkeiten. Schauen Sie später wieder vorbei, um neue Informationen von { $provider } zu erhalten. Können Sie nicht warten? Wählen Sie ein beliebtes Thema und lesen Sie weitere interessante Geschichten aus dem Internet.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Jetzt kennen Sie die Neuigkeiten. Schauen Sie später wieder vorbei, um neue Artikel zu erhalten. Können Sie nicht warten? Wählen Sie ein beliebtes Thema und lesen Sie weitere interessante Geschichten aus dem Internet.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -258,9 +262,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Gesponserte Verknüpfungen
 newtab-custom-pocket-title = Empfohlen von { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Besondere Inhalte ausgewählt von { -pocket-brand-name }, Teil der { -brand-product-name }-Familie
-newtab-custom-pocket-toggle =
-    .label = Empfohlen von { -pocket-brand-name }
-    .description = Besondere Inhalte ausgewählt von { -pocket-brand-name }, Teil der { -brand-product-name }-Familie
+newtab-custom-stories-toggle =
+    .label = Empfohlene Geschichten
+    .description = Besondere Inhalte ausgewählt von der { -brand-product-name }-Familie
 newtab-custom-pocket-sponsored = Gesponserte Inhalte
 newtab-custom-pocket-show-recent-saves = Zuletzt hinzugefügte Einträge anzeigen
 newtab-custom-recent-title = Neueste Aktivität
@@ -270,3 +274,20 @@ newtab-custom-recent-toggle =
     .description = Eine Auswahl kürzlich besuchter Websites und Inhalte
 newtab-custom-close-button = Schließen
 newtab-custom-settings = Weitere Einstellungen verwalten
+
+## New Tab Wallpapers
+
+newtab-wallpaper-title = Hintergrundbilder
+newtab-wallpaper-reset = Standard wiederherstellen
+newtab-wallpaper-light-red-panda = Roter Panda
+newtab-wallpaper-light-mountain = Weißer Berg
+newtab-wallpaper-light-sky = Himmel mit violetten und rosafarbenen Wolken
+newtab-wallpaper-light-color = Blaue, rosa und gelbe Formen
+newtab-wallpaper-light-landscape = Berglandschaft mit blauem Nebel
+newtab-wallpaper-light-beach = Strand mit Palme
+newtab-wallpaper-dark-aurora = Aurora Borealis
+newtab-wallpaper-dark-color = Rote und blaue Formen
+newtab-wallpaper-dark-panda = Roter Panda im Wald versteckt
+newtab-wallpaper-dark-sky = Stadtlandschaft mit Nachthimmel
+newtab-wallpaper-dark-mountain = Berg in der Landschaft
+newtab-wallpaper-dark-city = Violette Stadtlandschaft

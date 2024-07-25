@@ -51,7 +51,7 @@ login-list-count =
 # Variables
 #   $count (number) - Number of filtered logins
 #   $total (number) - Total number of logins
-login-list-filtered-count = { $count } 次/共 { $total } 次登录
+login-list-filtered-count = { $count } / { $total } 条登录信息
 # Variables
 #   $count (number) - Number of logins
 login-list-count2 = { $count } 个密码
@@ -96,11 +96,11 @@ login-intro-description = 若您曾在其他设备上将登录信息保存到 { 
 login-intro-instructions-fxa = 在您保存登录信息的设备，注册或登录 { -fxaccount-brand-name }
 about-logins-login-intro-heading-message = 集中一处，安全保存密码
 login-intro-description2 = 所有保存到 { -brand-product-name } 的密码都受加密保护。我们还会关注外泄事件动态，并在您的账户受影响时向您发出警报。<a data-l10n-name="breach-alert-link">详细了解</a>
-login-intro-instructions-fxa2 = 在您保存登录信息的设备上注册或登录账户。
+login-intro-instructions-fxa2 = 在您保存登录信息的设备上创建或登录账户。
 login-intro-instructions-fxa-settings = 前往“设置”>“同步”>“开启同步…”，勾选“登录名和密码”复选框。
 login-intro-instructions-fxa-passwords-help = 若需更多帮助，请访问<a data-l10n-name="passwords-help-link">密码支持</a>页面。
 about-logins-intro-browser-only-import = 若登录信息保存在其他浏览器，您可以<a data-l10n-name="import-link">导入到 { -brand-product-name }</a>
-about-logins-intro-import2 = 若您的登录信息并未存储在 { -brand-product-name }，可以<a data-l10n-name="import-browser-link">从另一浏览器</a>或<a data-l10n-name="import-file-link">文件</a>导入
+about-logins-intro-import2 = 若您的登录信息并未保存在 { -brand-product-name }，可以<a data-l10n-name="import-browser-link">从另一浏览器</a>或<a data-l10n-name="import-file-link">文件</a>导入
 about-logins-intro-import3 = 选择上方的加号按钮即可添加密码，也可以<a data-l10n-name="import-browser-link">从其他浏览器</a>或<a data-l10n-name="import-file-link">从文件</a>导入密码。
 
 ## Login
@@ -234,11 +234,6 @@ about-logins-confirm-remove-all-sync-dialog-message =
     { $count ->
        *[other] 将在您所有与 { -fxaccount-brand-name }同步的设备上，移除保存在 { -brand-short-name } 的登录信息，以及在此显示的任何数据外泄警报。此操作不可撤销。
     }
-about-logins-confirm-remove-all-sync-dialog-message2 =
-    { $count ->
-        [1] 将在您所有受同步的设备上，移除保存在 { -brand-short-name } 中的登录信息，以及在此显示的数据外泄警报。此操作不可撤销。
-       *[other] 将在您所有受同步的设备上，移除保存在 { -brand-short-name } 中的登录信息，以及在此显示的数据外泄警报。此操作不可撤销。
-    }
 # Checkbox for modal to confirm the removal of saved passwords
 about-logins-confirm-remove-all-dialog-checkbox-label2 =
     { $count ->
@@ -290,7 +285,7 @@ about-logins-breach-alert-link = 前往 { $hostname }
 ## Vulnerable Password notification
 
 about-logins-vulnerable-alert-title = 弱密码
-about-logins-vulnerable-alert-text2 = 此密码已用于另一个可能已遭外泄的账号。重复使用登录信息会使您的所有账号面临风险。请更改此密码。
+about-logins-vulnerable-alert-text2 = 此密码已用于另一个可能已遭外泄的账户。重复使用登录信息会使您的所有账户面临风险。请更改此密码。
 # Variables:
 #   $hostname (String) - The hostname of the website associated with the login, e.g. "example.com"
 about-logins-vulnerable-alert-link = 前往 { $hostname }

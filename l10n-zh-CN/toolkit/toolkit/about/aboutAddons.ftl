@@ -61,7 +61,7 @@ detail-update-manual =
 detail-private-browsing-label = 在隐私窗口中运行
 # Some add-ons may elect to not run in private windows by setting incognito: not_allowed in the manifest.  This
 # cannot be overridden by the user.
-detail-private-disallowed-label = 不支持隐私窗口
+detail-private-disallowed-label = 不允许在隐私窗口中运行
 detail-private-disallowed-description2 = 隐私浏览时不会运行此扩展。<a data-l10n-name="learn-more">详细了解</a>
 # Some special add-ons are privileged, run in private windows automatically, and this permission can't be revoked
 detail-private-required-label = 会自动于隐私浏览窗口中运作
@@ -217,6 +217,9 @@ shortcuts-no-addons = 您没有启用任何扩展。
 shortcuts-no-commands = 下列扩展没有快捷键：
 shortcuts-input =
     .placeholder = 输入一个快捷键
+# Accessible name for a trashcan icon button that removes an existent shortcut
+shortcuts-remove-button =
+    .aria-label = 移除快捷方式
 shortcuts-browserAction2 = 激活工具栏按钮
 shortcuts-pageAction = 激活页面动作
 shortcuts-sidebarAction = 切换侧栏
@@ -438,7 +441,7 @@ discover-heading = 让 { -brand-short-name } 有您的个性
 shortcuts-heading = 管理扩展快捷键
 default-heading-search-label = 寻找更多附加组件
 addons-heading-search-input =
-    .placeholder = 在 addons.mozilla.org 搜索
+    .placeholder = 搜索 addons.mozilla.org
 addon-page-options-button =
     .title = 用于所有附加组件的工具
 

@@ -61,6 +61,7 @@ cfr-doorhanger-extension-total-users =
 
 cfr-doorhanger-bookmark-fxa-header = 어디서나 북마크 동기화
 cfr-doorhanger-bookmark-fxa-body = 멋진 발견! 이제 다른 휴대 기기에서도 이 북마크를 사용해 보세요. { -fxaccount-brand-name }로 시작해 보세요.
+cfr-doorhanger-bookmark-fxa-body-2 = 멋진 발견! 이제 다른 휴대 기기에서도 이 북마크를 사용해 보세요. 계정을 시작해 보세요.
 cfr-doorhanger-bookmark-fxa-link-text = 북마크 지금 동기화…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = 닫기 버튼
@@ -201,8 +202,9 @@ cfr-cbh-confirm-button = 쿠키 배너 거부
     .accesskey = R
 cfr-cbh-dismiss-button = 나중에
     .accesskey = N
-cookie-banner-blocker-cfr-header = { -brand-short-name }가 쿠키를 차단했습니다.
-cookie-banner-blocker-cfr-body = 사이트에서 사용자를 추적하기 어렵게 하기 위해 자동으로 많은 쿠키 팝업을 거부합니다.
+cookie-banner-blocker-onboarding-header = { -brand-short-name }가 쿠키 배너를 거부했습니다.
+cookie-banner-blocker-onboarding-body = 방해 요소가 줄어들고, 이 사이트에서 사용자를 추적하는 쿠키가 줄어듭니다.
+cookie-banner-blocker-onboarding-learn-more = 더 알아보기
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -232,10 +234,6 @@ fxa-sync-cfr-secondary = 나중에 알림
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = 오래된 기기를 사용하시나요?
-device-migration-fxa-spotlight-body = 특히 새 기기로 전환하는 경우 북마크 및 비밀번호와 같은 중요한 정보를 잃지 않도록 데이터를 백업하세요.
-device-migration-fxa-spotlight-primary-button = 내 데이터를 백업하는 방법
-device-migration-fxa-spotlight-link = 나중에 알림
 device-migration-fxa-spotlight-heavy-user-header = 데이터를 백업하는 것을 잊지 마세요
 device-migration-fxa-spotlight-heavy-user-body = 북마크, 비밀번호 등 중요한 정보가 모든 기기에서 업데이트되고 보호되는지 확인하세요.
 device-migration-fxa-spotlight-heavy-user-primary-button = 시작하기
@@ -270,3 +268,14 @@ launch-on-login-infobar-reject-button = 나중에
 launch-on-login-infobar-final-message = <strong>컴퓨터를 다시 시작할 때마다 { -brand-short-name }를 여시겠습니까?</strong> 시작 설정을 관리하려면, 설정에서 "시작"을 검색하세요.
 launch-on-login-infobar-final-reject-button = 아니요
     .accesskey = N
+
+## Tail Fox Set Default Spotlight
+
+# This title is displayed together with the picture of a running fox with a long tail.
+# In English, this is a figure of speech meaning 'stop something from following you'.
+# If the localization of this message is challenging, consider using a simplified
+# alternative as a reference for translation: 'Keep unwanted trackers away'.
+tail-fox-spotlight-title = 성가신 추적기로부터 벗어나세요
+tail-fox-spotlight-subtitle = 귀찮은 광고 추적기와 작별하고 더 안전하고 빠른 인터넷 경험을 누리세요.
+tail-fox-spotlight-primary-button = { -brand-short-name }로 내 링크 열기
+tail-fox-spotlight-secondary-button = 나중에

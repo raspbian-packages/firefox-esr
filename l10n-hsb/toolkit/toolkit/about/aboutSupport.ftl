@@ -200,6 +200,9 @@ media-cdm-capabilities = Kmanosće
 # are not encrypted. It allows playback to start without having to wait for
 # license response, improving video start time and user experience.
 media-cdm-clear-lead = Zawod wuprózdnić
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = Z HDCP 2.2 kompatibelny
 
 ##
 
@@ -289,6 +292,7 @@ try-newer-driver = Za wašu wersiju grafiskeho ćěrjaka zablokowany. Spytajće 
 # there are no good translations, these are only used in about:support
 clear-type-parameters = Parametry ClearType
 compositing = Compositing
+support-font-determination = Informacije wo pytanju problemow za widźomnosć pismow
 hardware-h264 = Hardwarowe dekodowanje H264
 main-thread-no-omtc = hłowna nitka, žadyn OMTC
 yes = Haj
@@ -434,3 +438,15 @@ pointing-device-mouse = Myška
 pointing-device-touchscreen = Dótknjenska wobrazowka
 pointing-device-pen-digitizer = Digitalizowak pisaka
 pointing-device-none = Žane pokazowanske graty
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = Analyza wobsaha (DLP)
+content-analysis-active = Aktiwny
+content-analysis-connected-to-agent = Z agentom zwjazany
+content-analysis-agent-path = Šćežka agenta
+content-analysis-agent-failed-signature-verification = Agent njemóžeše signaturu přepruwować
+content-analysis-request-count = Ličba naprašowanjow

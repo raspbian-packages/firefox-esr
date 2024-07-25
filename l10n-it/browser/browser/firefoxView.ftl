@@ -12,6 +12,8 @@ menu-tools-firefox-view =
     .label = { -firefoxview-brand-name }
     .accesskey = F
 firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
 firefoxview-page-label =
     .label = { -firefoxview-brand-name }
 firefoxview-close-button =
@@ -49,8 +51,9 @@ firefoxview-syncedtabs-synctabs-description = Per visualizzare le schede da altr
 firefoxview-syncedtabs-synctabs-checkbox = Permetti la sincronizzazione delle schede aperte
 firefoxview-syncedtabs-loading-header = Sincronizzazione in corso
 firefoxview-syncedtabs-loading-description = Una volta completata, le schede aperte in qualsiasi altro dispositivo verranno visualizzate qui. Controlla più tardi.
-firefoxview-tabpickup-fxa-admin-disabled-header = La tua azienda ha disattivato la sincronizzazione
+firefoxview-tabpickup-fxa-admin-disabled-header = La tua organizzazione ha disattivato la sincronizzazione
 firefoxview-tabpickup-fxa-admin-disabled-description = { -brand-short-name } non è in grado di sincronizzare le schede tra i tuoi dispositivi in quanto un amministratore ha disattivato la sincronizzazione.
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } non è in grado di sincronizzare le schede tra i tuoi dispositivi in quanto la tua organizzazione ha disattivato la sincronizzazione.
 firefoxview-tabpickup-network-offline-header = Verifica la tua connessione a Internet
 firefoxview-tabpickup-network-offline-description = Se utilizzi un firewall o un proxy, verifica che { -brand-short-name } abbia il permesso di accedere a Internet.
 firefoxview-tabpickup-network-offline-primarybutton = Riprova
@@ -193,6 +196,8 @@ firefoxview-search-results-empty = Nessun risultato per “{ $query }”
 
 firefoxview-sort-history-by-date-label = Ordina per data
 firefoxview-sort-history-by-site-label = Ordina per sito
+firefoxview-sort-open-tabs-by-recency-label = Ordina per attività recente
+firefoxview-sort-open-tabs-by-order-label = Mantieni l’ordine delle schede
 # Variables:
 #   $url (string) - URL that will be opened in the new tab
 firefoxview-opentabs-tab-row =
@@ -253,10 +258,33 @@ firefoxview-recentlyclosed-empty-description-two = Per trovare schede che hai ch
 
 ##
 
-
 ## This message is displayed below the name of another connected device when it doesn't have any open tabs.
 
 firefoxview-syncedtabs-device-notabs = Nessuna scheda aperta in questo dispositivo
 firefoxview-syncedtabs-connect-another-device = Connetti un altro dispositivo
 
+firefoxview-pinned-tabs =
+  .title = Schede appuntate
+
+firefoxview-tabs =
+  .title = Schede
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+firefoxview-opentabs-pinned-tab =
+  .title = Passa a { $tabTitle }
+
+# This tooltip will be shown for a pinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-pinned-tab =
+  .title = Passa a { $tabTitle } (nei segnalibri)
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
+
+# This tooltip will be shown for an unpinned tab whose URL is currently bookmarked.
+firefoxview-opentabs-bookmarked-tab =
+  .title = { $url } (nei segnalibri)
 

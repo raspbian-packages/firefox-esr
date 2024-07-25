@@ -190,6 +190,23 @@ media-codec-support-unsupported = Ikke understøttet
 media-codec-support-error = Information om understøttelse af codec er ikke tilgængelig. Afspil en mediefil og prøv igen.
 media-codec-support-lack-of-extension = Installer udvidelse
 
+## Media Content Decryption Modules (CDM)
+## See EME Spec for more explanation for following technical terms
+## https://w3c.github.io/encrypted-media/
+
+media-content-decryption-modules-title = Informationer om moduler til indholdskryptering (Content Decryption Modules (CDM))
+media-key-system-name = Navn på nøglesystem
+media-video-robustness = Video-robusthed
+media-audio-robustness = Lyd-robusthed
+media-cdm-capabilities = Funktioner
+# Clear Lead isn't defined in the spec, which means the the first few seconds
+# are not encrypted. It allows playback to start without having to wait for
+# license response, improving video start time and user experience.
+media-cdm-clear-lead = Ikke-krypteret start
+# We choose 2.2 as this is the version which the video provider usually want to have in order to stream 4K video securely
+# HDCP version https://w3c.github.io/encrypted-media/#idl-def-hdcpversion
+media-hdcp-22-compatible = HDCP 2.2-kompatibel
+
 ##
 
 intl-title = Tilpasning til andre sprog og lande
@@ -268,6 +285,7 @@ try-newer-driver = Ikke understøttet i denne grafik-driver-version. Prøv at op
 # there are no good translations, these are only used in about:support
 clear-type-parameters = ClearType parametre
 compositing = Komposition
+support-font-determination = Info til at fejlsøge synlighed af skrifttyper
 hardware-h264 = H264-afkodning i hardware
 main-thread-no-omtc = main thread, ingen OMTC
 yes = Ja
@@ -413,3 +431,15 @@ pointing-device-mouse = Mus
 pointing-device-touchscreen = Touchscreen
 pointing-device-pen-digitizer = Digital pen
 pointing-device-none = Ingen pegeredskaber
+
+## Content Analysis (DLP)
+
+# DLP stands for Data Loss Prevention, an industry term for external software
+# that enterprises can set up to prevent sensitive data from being transferred
+# to external websites.
+content-analysis-title = Indholdsanalyse (DLP)
+content-analysis-active = Aktiv
+content-analysis-connected-to-agent = Forbundet til agent
+content-analysis-agent-path = Sti til agent
+content-analysis-agent-failed-signature-verification = Agenten kunne ikke verificere signaturen
+content-analysis-request-count = Antal forespørgsler

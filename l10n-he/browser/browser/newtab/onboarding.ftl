@@ -53,6 +53,9 @@ mr1-onboarding-import-primary-button-label-attribution = ייבוא מ־{ $previ
 mr1-onboarding-theme-header = התאמה לטעם האישי שלך
 mr1-onboarding-theme-subtitle = התאמה אישית של { -brand-short-name } עם ערכת נושא.
 mr1-onboarding-theme-secondary-button-label = לא כעת
+newtab-wallpaper-onboarding-title = אולי איזה מגע של צבע
+newtab-wallpaper-onboarding-subtitle = ניתן לבחור בתמונת רקע כדי לתת ללשונית החדשה שלך מראה רענן.
+newtab-wallpaper-onboarding-primary-button-label = הגדרת תמונת רקע
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = ערכת הנושא של המערכת
 mr1-onboarding-theme-label-light = בהירה
@@ -178,6 +181,8 @@ mr2022-onboarding-easy-setup-import-checkbox-label = ייבוא מהדפדפן �
 # The metaphor is that when they open their Firefox browser, it helps them discover an amazing internet.
 # If this translation does not make sense in your language, feel free to use the word "discover."
 mr2022-onboarding-welcome-pin-header = לגלות אינטרנט מדהים
+# Subtitle is used on onboarding page for new users page when Firefox is not pinned
+mr2022-onboarding-welcome-pin-subtitle = אפשר להפעיל את { -brand-short-name } מכל מקום בלחיצה אחת. כל הפעלה היא בחירה באינטרנט פתוח ועצמאי יותר.
 # Primary button string used on welcome page for when Firefox is not pinned.
 mr2022-onboarding-pin-primary-button-label =
     { PLATFORM() ->
@@ -187,6 +192,8 @@ mr2022-onboarding-pin-primary-button-label =
 
 ## MR2022 Existing User Pin Firefox Screen Strings
 
+# Title used on multistage onboarding page for existing users when Firefox is not pinned
+mr2022-onboarding-existing-pin-header = תודה על החום והאהבה ל־{ -brand-product-name }
 mr2022-onboarding-existing-pin-checkbox-label = להוסיף גם את ‏{ -brand-short-name } במצב גלישה פרטית
 
 ## MR2022 New User Set Default screen strings
@@ -199,6 +206,7 @@ mr2022-onboarding-set-default-primary-button-label = הגדרת { -brand-short-n
 ## These strings will be used on the welcome page
 ## when Firefox is already set to default and pinned.
 
+mr2022-onboarding-get-started-primary-button-label = התקנה תוך שניות
 
 ## MR2022 Import Settings screen strings
 
@@ -211,6 +219,9 @@ mr2022-onboarding-import-primary-button-label-no-attribution = ייבוא מהד
 ## Playmaker. You create…") to "X: you…" ("Playmaker: You create…"). This might
 ## help creating a more inclusive translation.
 
+mr2022-onboarding-colorway-title = בחירה בצבע שהכי מעורר את ההשראה שלך
+mr2022-onboarding-colorway-subtitle = קולות עצמאיים יכולים לשנות תרבות.
+mr2022-onboarding-colorway-primary-button-label-continue = הגדרה והמשך
 mr2022-onboarding-existing-colorway-checkbox-label = להפוך את { -firefox-home-brand-name } לדף הבית הצבעוני שלך
 mr2022-onboarding-colorway-label-default = ברירת מחדל
 mr2022-onboarding-colorway-tooltip-default2 =
@@ -219,6 +230,8 @@ mr2022-onboarding-colorway-description-default = <b>שימוש בצבעי { -bra
 
 ## MR2022 Multistage Mobile Download screen strings
 
+mr2022-onboarding-mobile-download-title = דילוג מהמחשב הנייד לטלפון ובחזרה
+mr2022-onboarding-no-mobile-download-cta-text = יש לסרוק את קוד ה־QR כדי להוריד את { -brand-product-name } למכשיר הנייד.
 
 ## MR2022 Upgrade Dialog screens
 ## Pin private window screen shown only for users who don't have Firefox private pinned
@@ -240,6 +253,8 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = הצגת מיד�
 
 ## MR2022 Multistage Gratitude screen strings
 
+mr2022-onboarding-gratitude-title = בעזרתך נבנה את האינטרנט טוב יותר
+mr2022-onboarding-gratitude-subtitle = תודה לך על השימוש ב־{ -brand-short-name }ֿ, שפועל בגיבוי קרן Mozilla. עם התמיכה שלך, אנו פועלים כדי להפוך את האינטרנט לפתוח, נגיש וטוב יותר למען הכלל.
 mr2022-onboarding-gratitude-primary-button-label = מה חדש
 mr2022-onboarding-gratitude-secondary-button-label = התחלת גלישה
 
@@ -279,5 +294,28 @@ onboarding-device-migration-primary-button-label = כניסה
 
 ## The following screens have been updated to use security and privacy focused strings:
 
+# Easy setup screen
+onboarding-easy-setup-security-and-privacy-title = אנחנו אוהבים לשמור עליך
+onboarding-easy-setup-security-and-privacy-subtitle = הדפדפן שלנו שמגובה בקרן ללא מטרות רווח מסייע למנוע מחברות לעקוב אחריך בסתר ברחבי הרשת.
 # Mobile download screen
 onboarding-mobile-download-security-and-privacy-title = להישאר מוצפן במעבר בין מכשירים
+onboarding-gratitude-security-and-privacy-subtitle = תודה לך על השימוש ב־{ -brand-short-name }ֿ, שפועל בגיבוי קרן Mozilla. עם התמיכה שלך, אנו פועלים כדי להפוך את האינטרנט לבטוח ונגיש יותר למען הכלל.
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = במשך כמה זמן השתמשת ב־{ -brand-short-name }?
+onboarding-new-user-familiarity-based-survey-title = עד כמה { -brand-short-name } מוכר לך?
+onboarding-new-user-survey-subtitle = המשוב שלך עוזר להפוך את { -brand-short-name } לטוב עוד יותר.
+# When translating "next" it means the next screen in onboarding.
+onboarding-new-user-survey-next-button-label = הבא
+onboarding-new-user-survey-legal-link-label = בחירה ב״{ onboarding-new-user-survey-next-button-label }״ מהווה הסכמה ל<a data-l10n-name="privacy_notice">הצהרת הפרטיות</a> של { -brand-product-name }
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-time-based-option-1 = אני חדש לגמרי
+onboarding-new-user-survey-time-based-option-2 = פחות מחודש
+onboarding-new-user-survey-time-based-option-3 = יותר מחודש, באופן קבוע
+onboarding-new-user-survey-time-based-option-4 = יותר מחודש, מדי פעם
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = אני חדש לגמרי
+onboarding-new-user-survey-familiarity-based-option-2 = השתמשתי בו קצת
+onboarding-new-user-survey-familiarity-based-option-3 = אני מאוד מכיר את זה
+onboarding-new-user-survey-familiarity-based-option-4 = השתמשתי בו בעבר, אבל עבר זמן מה

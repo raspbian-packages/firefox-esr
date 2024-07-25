@@ -70,7 +70,7 @@ urlbar-eme-notification-anchor =
 urlbar-web-authn-anchor =
     .tooltiptext = Web kimlik doğrulaması panelini aç
 urlbar-canvas-notification-anchor =
-    .tooltiptext = Kanvas çıkarma iznini yönetme
+    .tooltiptext = Canvas veri ayıklama iznini yönet
 urlbar-web-rtc-share-microphone-notification-anchor =
     .tooltiptext = Siteyle mikrofonumu paylaşmayı yönet
 urlbar-default-notification-anchor =
@@ -165,7 +165,7 @@ urlbar-popup-blocked =
 urlbar-autoplay-media-blocked =
     .tooltiptext = Bu sitenin sesli medya dosyalarını otomatik oynatmasını engellediniz.
 urlbar-canvas-blocked =
-    .tooltiptext = Bu sitenin kanvastan veri ayıklamasını engellediniz.
+    .tooltiptext = Bu sitenin canvas’tan veri ayıklamasını engellediniz.
 urlbar-midi-blocked =
     .tooltiptext = Bu sitenin MIDI erişimini engellediniz.
 urlbar-install-blocked =
@@ -388,7 +388,7 @@ identity-remove-cert-exception =
     .accesskey = k
 identity-description-insecure = Bu siteye bağlantınız size özel değil. Gönderdiğiniz bilgiler (parolalar, mesajlar, kredi kartı bilgileri vb.) başkaları tarafından görülebilir.
 identity-description-insecure-login-forms = Bu sayfaya yazdığınız hesap bilgileri güvende değildir ve saldırganlar tarafından ele geçirilebilir.
-identity-description-weak-cipher-intro = Bu siteye bağlatnınız zayıf bir şifreleme kullanıyor ve size özel değil.
+identity-description-weak-cipher-intro = Bu siteye bağlantınız zayıf bir şifreleme kullanıyor ve gizli değil.
 identity-description-weak-cipher-risk = Başkaları bilgilerinizi görebilir veya web sitesinin davranışını değiştirebilir.
 identity-description-active-blocked2 = { -brand-short-name } bu sayfanın güvenli olmayan kısımlarını engelledi.
 identity-description-passive-loaded = Bağlantınız size özel değil ve bu siteyle paylaştığınız bilgiler başkaları tarafından görülebilir.
@@ -469,7 +469,7 @@ popup-select-microphone-device =
 popup-select-microphone-icon =
     .tooltiptext = Mikrofon
 popup-select-speaker-icon =
-    .tooltiptext = Hoparlör
+    .tooltiptext = Ses aygıtları
 popup-select-window-or-screen =
     .label = Pencere veya ekran:
     .accesskey = P
@@ -569,6 +569,11 @@ urlbar-result-action-search-w-engine = { $engine } ile ara
 urlbar-result-action-sponsored = Sponsorlu
 urlbar-result-action-switch-tab = Sekmeye geç
 urlbar-result-action-visit = Ziyaret et
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Sekmeye geç · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Panodan ziyaret et
 # Directs a user to press the Tab key to perform a search with the specified
@@ -598,6 +603,12 @@ urlbar-result-action-copy-to-clipboard = Kopyala
 # Variables
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
+
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = { $engine } ile ara
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -636,7 +647,7 @@ reader-view-enter-button =
     .aria-label = Okuyucu Görünümü'ne geç
 # This should match menu-view-close-readerview in menubar.ftl
 reader-view-close-button =
-    .aria-label = Okuyucu Görünümü'nü kapat
+    .aria-label = Okuyucu görünümünü kapat
 
 ## Picture-in-Picture urlbar button
 ## Variables:
@@ -893,6 +904,10 @@ tabs-toolbar-list-all-tabs =
 restore-session-startup-suggestion-message = <strong>Önceki sekmeler açılsın mı?</strong> Önceki oturumunuzu { -brand-short-name } menüsündeki (<img data-l10n-name="icon"/>) “Geçmiş” kısmından geri yükleyebilirsiniz.
 restore-session-startup-suggestion-button = Nasıl yapacağımı göster
 
+## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
+
+filepicker-blocked-infobar = Kuruluşunuz bu bilgisayardaki yerel dosyalara erişimi engelledi
+
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
 data-reporting-notification-message = { -brand-short-name }, deneyiminizi geliştirebilmemiz için bazı verileri otomatik olarak { -vendor-short-name } sunucularına gönderir.
@@ -901,6 +916,15 @@ data-reporting-notification-button =
     .accesskey = N
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Gizli gezinti
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = { $agentName } veri kaybı önleme (DLP). Daha fazla bilgi için tıklayın.
+content-analysis-panel-title = Veri koruması
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text = Kuruluşunuz veri kaybını önlemek için { $agentName } kullanıyor. <a data-l10n-name="info">Daha fazla bilgi al</a>
 
 ## Unified extensions (toolbar) button
 

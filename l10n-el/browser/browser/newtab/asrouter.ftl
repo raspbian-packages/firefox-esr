@@ -63,6 +63,7 @@ cfr-doorhanger-extension-total-users =
 
 cfr-doorhanger-bookmark-fxa-header = Συγχρονίστε παντού τους σελιδοδείκτες σας.
 cfr-doorhanger-bookmark-fxa-body = Εξαιρετική ανακάλυψη! Μην ξεχάσετε να αποθηκεύσετε αυτόν τον σελιδοδείκτη στις κινητές συσκευές σας. Ξεκινήστε με έναν { -fxaccount-brand-name(case: "acc", capitalization: "lower") }.
+cfr-doorhanger-bookmark-fxa-body-2 = Εξαιρετική ανακάλυψη! Μην ξεχάσετε να αποθηκεύσετε αυτόν τον σελιδοδείκτη στις κινητές συσκευές σας. Ξεκινήστε με έναν λογαριασμό.
 cfr-doorhanger-bookmark-fxa-link-text = Συγχρονισμός σελιδοδεικτών τώρα…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Κουμπί κλεισίματος
@@ -203,8 +204,9 @@ cfr-cbh-confirm-button = Απόρριψη μηνυμάτων για cookie
     .accesskey = Α
 cfr-cbh-dismiss-button = Όχι τώρα
     .accesskey = χ
-cookie-banner-blocker-cfr-header = Το { -brand-short-name } μόλις απέκλεισε τα cookie για εσάς
-cookie-banner-blocker-cfr-body = Απορρίπτουμε αυτόματα πολλά αναδυόμενα παράθυρα για cookie, ώστε να καταστεί δύσκολη η καταγραφή σας από ιστοτόπους.
+cookie-banner-blocker-onboarding-header = Το { -brand-short-name } μόλις απέρριψε ένα μήνυμα cookie για εσάς
+cookie-banner-blocker-onboarding-body = Λιγότεροι περισπασμοί, λιγότερα cookie που σας παρακολουθούν σε αυτόν τον ιστότοπο.
+cookie-banner-blocker-onboarding-learn-more = Μάθετε περισσότερα
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -234,10 +236,6 @@ fxa-sync-cfr-secondary = Υπενθύμιση αργότερα
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = Χρησιμοποιείτε παλαιότερη συσκευή;
-device-migration-fxa-spotlight-body = Δημιουργήστε αντίγραφα ασφαλείας των δεδομένων σας για να βεβαιωθείτε ότι δεν θα χάσετε σημαντικές πληροφορίες, όπως σελιδοδείκτες και κωδικούς πρόσβασης — ειδικά εάν μεταβείτε σε μια νέα συσκευή.
-device-migration-fxa-spotlight-primary-button = Δημιουργία αντιγράφων ασφαλείας δεδομένων
-device-migration-fxa-spotlight-link = Υπενθύμιση αργότερα
 device-migration-fxa-spotlight-heavy-user-header = Μην ξεχάσετε να δημιουργήσετε αντίγραφα ασφαλείας των δεδομένων σας
 device-migration-fxa-spotlight-heavy-user-body = Βεβαιωθείτε ότι οι σημαντικές πληροφορίες, όπως σελιδοδείκτες και κωδικοί πρόσβασης, παραμένουν ενημερωμένες και ασφαλείς σε όλες τις συσκευές σας.
 device-migration-fxa-spotlight-heavy-user-primary-button = Έναρξη
@@ -272,3 +270,14 @@ launch-on-login-infobar-reject-button = Όχι τώρα
 launch-on-login-infobar-final-message = <strong>Ανοίγετε το { -brand-short-name } κάθε φορά που επανεκκινείτε τον υπολογιστή σας;</strong> Για να διαχειριστείτε τις προτιμήσεις εκκίνησης, αναζητήστε «εκκίνηση» στις ρυθμίσεις.
 launch-on-login-infobar-final-reject-button = Όχι, ευχαριστώ
     .accesskey = χ
+
+## Tail Fox Set Default Spotlight
+
+# This title is displayed together with the picture of a running fox with a long tail.
+# In English, this is a figure of speech meaning 'stop something from following you'.
+# If the localization of this message is challenging, consider using a simplified
+# alternative as a reference for translation: 'Keep unwanted trackers away'.
+tail-fox-spotlight-title = Κρατήστε μακριά τους ενοχλητικούς ιχνηλάτες
+tail-fox-spotlight-subtitle = Πείτε αντίο στους ενοχλητικούς ιχνηλάτες διαφημίσεων και απολαύστε μια πιο ασφαλή και γρήγορη εμπειρία στο διαδίκτυο.
+tail-fox-spotlight-primary-button = Άνοιγμα συνδέσμων με το { -brand-short-name }
+tail-fox-spotlight-secondary-button = Όχι τώρα

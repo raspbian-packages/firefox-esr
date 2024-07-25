@@ -79,7 +79,7 @@ about-debugging-sidebar-support-icon =
     .alt = Help icon
 # Text displayed in a sidebar button to refresh the list of USB devices. Clicking on it
 # will attempt to update the list of devices displayed in the sidebar.
-about-debugging-refresh-usb-devices-button = Refresh devices
+about-debugging-refresh-usb-devices-button = Freskaat an trevnadoù
 
 # Setup Page strings
 
@@ -265,6 +265,8 @@ about-debugging-extension-id =
 # Displayed for extension using a non-persistent background page (either an event page or
 # background service worker) when the background script is currently running.
 about-debugging-extension-backgroundscript-status-running = O seveniñ
+# Displayed for extension using a non-persistent background page when is currently stopped.
+about-debugging-extension-backgroundscript-status-stopped = Stopped
 # This string is displayed as a label of the button that pushes a test payload
 # to a service worker.
 # Note this relates to the "Push" API, which is normally not localized so it is
@@ -290,7 +292,7 @@ about-debugging-worker-fetch-not-listening =
 # worker instance is active).
 about-debugging-worker-status-running = Running
 # Displayed for service workers in runtime pages that are registered but stopped.
-about-debugging-worker-status-stopped = Stopped
+about-debugging-worker-status-stopped = Ehanet
 # Displayed for service workers in runtime pages that are registering.
 about-debugging-worker-status-registering = Registering
 # Displayed for service workers in runtime pages, to label the scope of a worker

@@ -9,6 +9,12 @@
 # NOTE: For Engineers, please don't re-use these strings outside of the menubar.
 
 
+# NOTE: For English locales, strings in this file should be in APA-style Title Case.
+# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
+#
+# NOTE: For Engineers, please don't reuse these strings outside of the menubar.
+
+
 ## Application Menu (macOS only)
 
 menu-application-preferences =
@@ -144,6 +150,8 @@ menu-view-history-button =
     .label = التأريخ
 menu-view-synced-tabs-sidebar =
     .label = الألسنة المُزامنة
+menu-view-megalist-sidebar =
+    .label = كلمات السرّ
 menu-view-full-zoom =
     .label = قرّب
     .accesskey = ر
@@ -237,6 +245,8 @@ menu-bookmarks-manage =
     .label = أدِر العلامات
 menu-bookmark-tab =
     .label = علّم اللسان الحالي…
+menu-edit-bookmark =
+    .label = حرّر هذه العلامة…
 # "Search" is a verb, as in "Search in bookmarks"
 menu-bookmarks-search =
     .label = ابحث في العلامات
@@ -344,3 +354,5 @@ menu-help-report-deceptive-site =
 menu-help-not-deceptive =
     .label = هذا ليس موقعًا مخادعًا…
     .accesskey = خ
+menu-report-broken-site =
+    .label = أبلِغ عن موقع معطوب
