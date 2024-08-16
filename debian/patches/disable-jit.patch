@@ -1,0 +1,41 @@
+From: Peter Michael Green <plugwash@raspbian.org>
+Subject: Disable jit.
+
+
+---
+
+diff --git a/js/moz.configure b/js/moz.configure
+index 7a241cac76d..a040b58407f 100644
+--- a/js/moz.configure
++++ b/js/moz.configure
+@@ -154,18 +154,18 @@ set_define("ENABLE_RECORD_TUPLE", enable_record_tuple)
+ # =======================================================
+ @depends(target, "--enable-record-tuple")
+ def jit_default(target, enable_record_tuple):
+-    if enable_record_tuple:
+-        return False
+-    if target.cpu in (
+-        "x86",
+-        "x86_64",
+-        "arm",
+-        "aarch64",
+-        "mips32",
+-        "mips64",
+-        "loongarch64",
+-    ):
+-        return True
++    #if enable_record_tuple:
++    #    return False
++    #if target.cpu in (
++    #    "x86",
++    #    "x86_64",
++    #    "arm",
++    #    "aarch64",
++    #    "mips32",
++    #    "mips64",
++    #    "loongarch64",
++    #):
++    #    return True
+     return False
+ 
+ 
