@@ -39,8 +39,11 @@ policy-DisableAppUpdate = Impedir l'actualisaziun dal navigatur.
 policy-DisableBuiltinPDFViewer = Deactivar PDF.js, il lectur per PDFs integrà en { -brand-short-name }.
 policy-DisableDefaultBrowserAgent = Impedir ch'il navigatur «default browser agent» exequeschia x ina acziun. Funcziuna mo sin Windows; autras plattafurmas n'han betg l'agent.
 policy-DisableDeveloperTools = Bloccar l'access als utensils per sviluppaders.
+policy-DisableEncryptedClientHello = Deactivar l’utilisaziun da la funcziun TLS Encrypted Client Hello (ECH).
 policy-DisableFeedbackCommands = Deactivar ils cumonds per trametter resuns en il menu d'agid (Trametter in resun e Rapportar ina pagina che engiona).
 policy-DisableFirefoxAccounts = Deactivar ils servetschs che sa basan sin { -fxaccount-brand-name }, inclus Sync.
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = Deactivar servetschs che pretendan in conto, tranter auter la sincronisaziun.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Deactivar Firefox Screenshots.
 policy-DisableFirefoxStudies = Impedir che { -brand-short-name } exequeschia studis.
@@ -81,6 +84,8 @@ policy-Handlers = Configurar la gestiun dad applicaziuns da standard.
 policy-HardwareAcceleration = Sche «false», deactivar l'acceleraziun cun agid da la hardware.
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = Definir la pagina da partenza e tut tenor basegn impedir la modificaziun da l'opziun.
+policy-HttpAllowlist = Origins che na vegnan betg midads a HTTPS.
+policy-HttpsOnlyMode = Permetter l’activaziun dal modus «mo HTTPS».
 policy-InstallAddonsPermission = Permetter a tschertas websites dad installar supplements.
 policy-LegacyProfiles = Deactivar la funcziun che pretenda in profil separà per mintga installaziun
 
@@ -105,6 +110,9 @@ policy-OverrideFirstRunPage = Surscriver la pagina che vegn mussada suenter avai
 policy-OverridePostUpdatePage = Surscriver la pagina «What's New» che vegn mussada suenter actualisaziuns. Definir questa directiva cun ina valur vida per impedir che la pagina vegnia mussada.
 policy-PasswordManagerEnabled = Activar la memorisaziun da pleds-clav en l'administraziun da pleds-clav.
 policy-PasswordManagerExceptions = Impedir che { -brand-short-name } memoriseschia pleds-clav per websites specificas.
+# Post-quantum refers to cryptography that is safe from attacks by quantum
+# computers. See https://en.wikipedia.org/wiki/Post-quantum_cryptography
+policy-PostQuantumKeyAgreementEnabled = Activar l’acceptaziun da clavs post-quantum per TLS.
 # PDF.js and PDF should not be translated
 policy-PDFjs = Deactivar u configurar PDF.js, il lectur per PDFs integrà en { -brand-short-name }.
 policy-Permissions2 = Configurar permissiuns per camera, microfon, posiziun, notificaziuns e la reproducziun automatica.
@@ -125,6 +133,7 @@ policy-SSLVersionMax = Definir la versiun maximala da SSL.
 policy-SSLVersionMin = Definir la versiun minimala da SSL.
 policy-StartDownloadsInTempDirectory = Sfurzar las telechargias en in lieu local, temporar empè da las cumenzar en l'ordinatur da telechargiadas predefinì.
 policy-SupportMenu = Agiuntar in element da menu persunalisà en il menu d'agid.
+policy-TranslateEnabled = Activar u deactivar la translaziun da paginas web.
 policy-UserMessaging = Betg mussar tscherts messadis a l'utilisader.
 policy-UseSystemPrintDialog = Stampar cun agid dal dialog da stampa dal sistem.
 # “format” refers to the format used for the value of this policy.

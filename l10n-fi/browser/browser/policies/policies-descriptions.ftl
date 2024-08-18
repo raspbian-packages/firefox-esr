@@ -39,6 +39,7 @@ policy-DisableAppUpdate = Estä selainta päivittymästä.
 policy-DisableBuiltinPDFViewer = Poista käytöstä PDF.js, { -brand-short-name }in sisäänrakennettu PDF-katselin.
 policy-DisableDefaultBrowserAgent = Estä oletusselainagenttia tekemästä mitään. Tällä on vaikutusta vain Windowsissa, koska agenttia ei ole muille ympäristöille.
 policy-DisableDeveloperTools = Estä pääsy web-työkaluihin.
+policy-DisableEncryptedClientHello = Poista käytöstä TLS-ominaisuus Encrypted Client Hello (ECH).
 policy-DisableFeedbackCommands = Estä komennot, joilla voi antaa palautetta Ohje-valikosta (Anna palautetta ja Ilmoita petollinen sivusto).
 policy-DisableFirefoxAccounts = Poista käytöstä { -fxaccount-brand-name }-pohjaiset palvelut, mukaan lukien Sync.
 # This string is in the process of being deprecated in favor of policy-DisableAccounts.
@@ -83,6 +84,7 @@ policy-Handlers = Määritä oletussovelluskäsittelijät.
 policy-HardwareAcceleration = Jos epätosi, poista laitteistokiihdytys käytöstä.
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = Aseta ja valinnaisesti lukitse aloitussivu.
+policy-HttpsOnlyMode = Salli, että "Vain HTTPS"-tila on mahdollista ottaa käyttöön.
 policy-InstallAddonsPermission = Salli tiettyjen sivustojen asentaa lisäosia.
 policy-LegacyProfiles = Poista käytöstä ominaisuus, joka pakottaa erillisen profiilin kullekin asennukselle
 
@@ -107,6 +109,9 @@ policy-OverrideFirstRunPage = Korvaa ensimmäisen käynnistyskerran sivu. Aseta 
 policy-OverridePostUpdatePage = Korvaa päivityksen jälkeinen ”Mitä uutta” -sivu. Aseta tämä käytäntö tyhjäksi, jos haluat poistaa päivityksen jälkeisen sivun käytöstä.
 policy-PasswordManagerEnabled = Ota käyttöön salasanojen tallennus salasanojen hallintaan.
 policy-PasswordManagerExceptions = Estä { -brand-short-name }ia tallentamasta tiettyjen sivustojen salasanoja.
+# Post-quantum refers to cryptography that is safe from attacks by quantum
+# computers. See https://en.wikipedia.org/wiki/Post-quantum_cryptography
+policy-PostQuantumKeyAgreementEnabled = Ota käyttöön kvanttiturvallinen avainsopimus TLS:lle.
 # PDF.js and PDF should not be translated
 policy-PDFjs = Poista käytöstä tai määritä PDF.js, { -brand-short-name }in sisäänrakennettu PDF-katselin.
 policy-Permissions2 = Aseta kameran, mikrofonin, sijainnin, ilmoitusten ja automaattisen toiston käyttöoikeuksien asetukset.

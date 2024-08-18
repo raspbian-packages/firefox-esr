@@ -2,7 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-migration-wizard-selection-header = Ներմուծեք դիտարկիչի տվյալները
+migration-wizard-selection-header = Ներմուծել դիտարկիչի տվյալները
+migration-wizard-selection-list = Ընտրեք այն տվյալները, որոնք ցանկանում եք ներմուծել:
 # Shown in the new migration wizard's dropdown selector for choosing the browser
 # to import from. This variant is shown when the selected browser doesn't support
 # user profiles, and so we only show the browser name.
@@ -59,7 +60,7 @@ migration-no-permissions-instructions-step1 = Ընտրեք «Շարունակե�
 
 migration-all-available-data-label = Ներմուծել բոլոր հասանելի տվյալները
 migration-no-selected-data-label = Ներմուծման համար տվյալներ չկան
-migration-selected-data-label = Ներմուծեք ընտրված տվյալները
+migration-selected-data-label = Ներմուծել ընտրված տվյալները
 
 ##
 
@@ -70,7 +71,7 @@ migration-bookmarks-option-label = Էջանիշեր
 migration-favorites-option-label = Ընտրյալներ
 migration-logins-and-passwords-option-label = Պահված մուտքագրումներ և գաղտնաբառեր
 migration-passwords-option-label = Պահված գաղտնաբառեր
-migration-history-option-label = Զննարկման պատմությունը
+migration-history-option-label = Դիտարկման պատմություն
 migration-extensions-option-label = Ընդլայնումներ
 migration-form-autofill-option-label = Ձևաթղթի ինքնալրացման տվյալները
 migration-payment-methods-option-label = Վճարամիջոցներ

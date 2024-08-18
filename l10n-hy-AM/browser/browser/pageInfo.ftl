@@ -208,7 +208,7 @@ media-image-type =
 #   $scaledx (number) - The scaled horizontal size of an image
 #   $scaledy (number) - The scaled vertical size of an image
 media-dimensions-scaled =
-    .value = { $dimx }px × { $dimy }px (մասշտաբը` { $scaledx }px × { $scaledy }px)
+    .value = { $dimx }px × { $dimy }px (սանդում` { $scaledx }px × { $scaledy }px)
 # This string is used to display the size of an image in pixels
 # Variables:
 #   $dimx (number) - The horizontal size of an image
@@ -232,6 +232,6 @@ media-block-image =
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
 page-info-page =
-    .title = Էջի Մասին - { $website }
+    .title = Էջի տեղեկություն. { $website }
 page-info-frame =
-    .title = Շրջանակի մասին - { $website }
+    .title = Շրջանակի տեղեկություն. { $website }

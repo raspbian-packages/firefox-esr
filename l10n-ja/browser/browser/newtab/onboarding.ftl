@@ -51,6 +51,9 @@ mr1-onboarding-import-primary-button-label-attribution = { $previous } からイ
 mr1-onboarding-theme-header = 自分らしく
 mr1-onboarding-theme-subtitle = テーマで { -brand-short-name } をパーソナライズできます。
 mr1-onboarding-theme-secondary-button-label = 後で
+newtab-wallpaper-onboarding-title = カラフルな壁紙を試しましょう
+newtab-wallpaper-onboarding-subtitle = 壁紙を選んで新しいタブをカラフルに彩りましょう。
+newtab-wallpaper-onboarding-primary-button-label = 壁紙を設定
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = システムテーマ
 mr1-onboarding-theme-label-light = Light
@@ -244,8 +247,8 @@ mr2022-onboarding-colorway-tooltip-dreamer2 =
 mr2022-onboarding-colorway-description-dreamer = <b>Dreamer</b>: 大胆に幸運を引き寄せろ。夢を掲げるあなたの姿は人の勇気を呼び覚ます。
 mr2022-onboarding-colorway-label-innovator = Innovator
 mr2022-onboarding-colorway-tooltip-innovator2 =
-    .title = Innovator (橙)
-mr2022-onboarding-colorway-description-innovator = <b>Innovator</b>: あらゆる場所で機会を掴め。あなたがもたらす革新は周囲の人生を震わせる。
+    .title = Innovator (オレンジ)
+mr2022-onboarding-colorway-description-innovator = <b>Innovator</b>: あらゆる場所で機会をつかめ。あなたがもたらす革新は周囲の人生を震わせる。
 
 ## MR2022 Multistage Mobile Download screen strings
 

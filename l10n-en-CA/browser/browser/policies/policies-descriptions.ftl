@@ -39,8 +39,11 @@ policy-DisableAppUpdate = Prevent the browser from updating.
 policy-DisableBuiltinPDFViewer = Disable PDF.js, the built-in PDF viewer in { -brand-short-name }.
 policy-DisableDefaultBrowserAgent = Prevent the default browser agent from taking any actions. Only applicable to Windows; other platforms don’t have the agent.
 policy-DisableDeveloperTools = Block access to the developer tools.
+policy-DisableEncryptedClientHello = Disable use of the TLS feature Encrypted Client Hello (ECH).
 policy-DisableFeedbackCommands = Disable commands to send feedback from the Help menu (Submit Feedback and Report Deceptive Site).
 policy-DisableFirefoxAccounts = Disable { -fxaccount-brand-name } based services, including Sync.
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = Disable account-based services, including sync.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Disable the Firefox Screenshots feature.
 policy-DisableFirefoxStudies = Prevent { -brand-short-name } from running studies.
@@ -81,6 +84,8 @@ policy-Handlers = Configure default application handlers.
 policy-HardwareAcceleration = If false, turn off hardware acceleration.
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = Set and optionally lock the homepage.
+policy-HttpAllowlist = Origins that will not be upgraded to HTTPS.
+policy-HttpsOnlyMode = Allow HTTPS-Only Mode to be enabled.
 policy-InstallAddonsPermission = Allow certain websites to install add-ons.
 policy-LegacyProfiles = Disable the feature enforcing a separate profile for each installation.
 
@@ -105,6 +110,9 @@ policy-OverrideFirstRunPage = Override the first run page. Set this policy to bl
 policy-OverridePostUpdatePage = Override the post-update “What’s New” page. Set this policy to blank if you want to disable the post-update page.
 policy-PasswordManagerEnabled = Enable saving passwords to the password manager.
 policy-PasswordManagerExceptions = Prevent { -brand-short-name } from saving passwords for specific sites.
+# Post-quantum refers to cryptography that is safe from attacks by quantum
+# computers. See https://en.wikipedia.org/wiki/Post-quantum_cryptography
+policy-PostQuantumKeyAgreementEnabled = Enable post-quantum key agreement for TLS.
 # PDF.js and PDF should not be translated
 policy-PDFjs = Disable or configure PDF.js, the built-in PDF viewer in { -brand-short-name }.
 policy-Permissions2 = Configure permissions for camera, microphone, location, notifications, and autoplay.

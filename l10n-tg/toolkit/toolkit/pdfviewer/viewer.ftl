@@ -295,6 +295,15 @@ pdfjs-editor-ink-button-label = Расмкашӣ
 pdfjs-editor-stamp-button =
     .title = Илова ё таҳрир кардани тасвирҳо
 pdfjs-editor-stamp-button-label = Илова ё таҳрир кардани тасвирҳо
+pdfjs-editor-highlight-button =
+    .title = Ҷудокунӣ
+pdfjs-editor-highlight-button-label = Ҷудокунӣ
+pdfjs-highlight-floating-button =
+    .title = Ҷудокунӣ
+pdfjs-highlight-floating-button1 =
+    .title = Ҷудокунӣ
+    .aria-label = Ҷудокунӣ
+pdfjs-highlight-floating-button-label = Ҷудокунӣ
 
 ## Remove button for the various kind of editor.
 
@@ -320,6 +329,8 @@ pdfjs-editor-stamp-add-image-button =
 pdfjs-editor-stamp-add-image-button-label = Илова кардани тасвир
 # This refers to the thickness of the line used for free highlighting (not bound to text)
 pdfjs-editor-free-highlight-thickness-input = Ғафсӣ
+pdfjs-editor-free-highlight-thickness-title =
+    .title = Иваз кардани ғафсӣ ҳангоми ҷудокунии унсурҳо ба ғайр аз матн
 pdfjs-free-text =
     .aria-label = Муҳаррири матн
 pdfjs-free-text-default-content = Нависед…

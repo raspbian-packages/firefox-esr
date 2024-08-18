@@ -39,8 +39,11 @@ policy-DisableAppUpdate = Забараніць абнаўленне браўзе
 policy-DisableBuiltinPDFViewer = Адключыць PDF.js, убудаваны ў { -brand-short-name } праглядальнік PDF.
 policy-DisableDefaultBrowserAgent = Прадухіліць любыя дзеянні агента тыповага браўзера. Тычыцца толькі Windows; на іншых платформах няма агента.
 policy-DisableDeveloperTools = Забараніць доступ да прылад распрацоўшчыка.
+policy-DisableEncryptedClientHello = Адключыць выкарыстанне функцыі TLS Encrypted Client Hello (ECH).
 policy-DisableFeedbackCommands = Адключыць каманды для адпраўкі зваротнай сувязі праз меню Даведкі («Падаць водгук» і «Паведаміць аб падробленым сайце»).
 policy-DisableFirefoxAccounts = Адключыць сэрвісы, заснаваныя на { -fxaccount-brand-name }, у тым ліку Сінхранізацыю.
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = Адключыць службы на аснове ўліковага запісу, уключаючы сінхранізацыю.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Адключыць функцыю Firefox Screenshots.
 policy-DisableFirefoxStudies = Прадухіляць запуск даследаванняў у { -brand-short-name }.
@@ -81,6 +84,8 @@ policy-Handlers = Наладзіць прадвызначаныя апрацоў
 policy-HardwareAcceleration = Калі false, адключыць апаратнае паскарэнне.
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = Усталяваць хатнюю старонку і па жаданні забараніць змяненне.
+policy-HttpAllowlist = Крыніцы, якія не будуць абноўлены да HTTPS.
+policy-HttpsOnlyMode = Дазволіць уключэнне рэжыму «Толькі HTTPS».
 policy-InstallAddonsPermission = Дазволіць пэўным вэб-сайтам усталёўваць дадаткі.
 policy-LegacyProfiles = Адключыць функцыю, якая забяспечвае асобны профіль для кожнай ўсталёўкі
 
@@ -105,6 +110,9 @@ policy-OverrideFirstRunPage = Перавызначыць старонку пер
 policy-OverridePostUpdatePage = Перавызначыць старонку "Што новага" пасля абнаўлення. Усталюйце гэту палітыку ў пустое значэнне, калі хочаце выключыць старонку пасля абнаўлення.
 policy-PasswordManagerEnabled = Уключыць захаванне пароляў у менеджары пароляў.
 policy-PasswordManagerExceptions = Не дазваляць { -brand-short-name } захоўваць паролi для пэўных сайтаў.
+# Post-quantum refers to cryptography that is safe from attacks by quantum
+# computers. See https://en.wikipedia.org/wiki/Post-quantum_cryptography
+policy-PostQuantumKeyAgreementEnabled = Уключыць постквантавае пагадненне ключоў для TLS.
 # PDF.js and PDF should not be translated
 policy-PDFjs = Адключыць або наладзіць PDF.js, убудаваны ў { -brand-short-name } праглядальнік PDF.
 policy-Permissions2 = Наладзіць дазволы для камеры, мікрафона, месцазнаходжання, абвестак і аўтапрайгравання.

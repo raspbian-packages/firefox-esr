@@ -919,6 +919,7 @@ private-browsing-indicator-label = Yksityinen selaus
 #   $agentName (String): The name of the DLP agent that is connected
 content-analysis-indicator-tooltip =
     .tooltiptext = Tietojen menetyksen estäminen (DLP), tekijä { $agentName }. Napsauta saadaksesi lisätietoja.
+content-analysis-panel-title = Tietojen suojaus
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
 content-analysis-panel-text = Organisaatiosi käyttää ohjelmistoa { $agentName } suojautuakseen tietojen menetykseltä. <a data-l10n-name="info">Lisätietoja</a>
@@ -1015,3 +1016,16 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = Näytä ”{ $popupURI }”
+
+## File-picker crash notification ("FilePickerCrashed.sys.mjs")
+
+
+# Button used with file-picker-crashed-save-default. Opens the folder in Windows
+# Explorer, with the saved file selected and in focus.
+#
+# The wording here should be consistent with the Windows variant of
+# `downloads-cmd-show-menuitem-2` and similar messages.
+
+file-picker-crashed-show-in-folder =
+    .label = Näytä kansiossa
+    .accessKey = K

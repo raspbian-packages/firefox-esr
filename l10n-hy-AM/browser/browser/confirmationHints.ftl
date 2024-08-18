@@ -5,17 +5,17 @@
 
 ## Confirmation hints
 
-confirmation-hint-breakage-report-sent = Զեկույցը ուղարկվեց։ Շնորհակալություն։
+confirmation-hint-breakage-report-sent = Զեկույցն ուղարկվեց։ Շնորհակալությու՛ն։
 confirmation-hint-login-removed = Մուտքագրումը հեռացվեց:
 confirmation-hint-password-removed = Գաղտնաբառը հեռացվեց:
 confirmation-hint-page-bookmarked = Պահված է էջանիշներում
 confirmation-hint-password-saved = Գաղտնաբառը պահպանվել է։
 confirmation-hint-password-created = Գաղտնաբառը պահպանվել է
-confirmation-hint-password-updated = Գաղտնաբառը թարմացվել է
-confirmation-hint-address-created = Հասցեն պահվել է
+confirmation-hint-password-updated = Գաղտնաբառը թարմացվեց
+confirmation-hint-address-created = Հասցեն պահվեց
 confirmation-hint-address-updated = Հասցեն թարմացվել է
-confirmation-hint-credit-card-created = Քարտը պահվել է
-confirmation-hint-credit-card-updated = Քարտը թարմացվել է
+confirmation-hint-credit-card-created = Քարտը պահվեց
+confirmation-hint-credit-card-updated = Քարտը թարմացվեց
 confirmation-hint-pin-tab = Ամրացված։
 confirmation-hint-pin-tab-description = Այն բացելու համար ներդիրին աջ-կտտացրեք։
 confirmation-hint-send-to-device = Ուղարկվեց

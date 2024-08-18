@@ -1,4 +1,4 @@
-firefox-esr (115.12.0esr-1+rpi1) trixie-staging; urgency=medium
+firefox-esr (115.14.0esr-1+rpi1) trixie-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -31,7 +31,36 @@ firefox-esr (115.12.0esr-1+rpi1) trixie-staging; urgency=medium
   [changes introduced in 115.3.0esr-1+rpi1 by Peter Michael Green]
   * Disable conflicting include in js/src/jit/shared/AtomicOperations-shared-jit.cpp
 
- -- Peter Michael Green <plugwash@raspbian.org>  Thu, 25 Jul 2024 12:08:54 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Sun, 18 Aug 2024 18:58:34 +0000
+
+firefox-esr (115.14.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2024-34, also known as:
+    CVE-2024-7519, CVE-2024-7521, CVE-2024-7522, CVE-2024-7524,
+    CVE-2024-7525, CVE-2024-7526, CVE-2024-7527, CVE-2024-7529,
+    CVE-2024-7531.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 07 Aug 2024 07:10:56 +0900
+
+firefox-esr (115.13.0esr-2) unstable; urgency=medium
+
+  * gfx/cairo/libpixman/src/pixman-arm-simd-asm.S: Adjust arm assembly for
+    binutils change.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 24 Jul 2024 08:00:28 +0900
+
+firefox-esr (115.13.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2024-30, also known as:
+    CVE-2024-6600, CVE-2024-6601, CVE-2024-6602, CVE-2024-6603,
+    CVE-2024-6604.
+
+  * debian/repack.py, debian/upstream.mk: Handle the upstream l10n migration
+    to github.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 10 Jul 2024 05:11:05 +0900
 
 firefox-esr (115.12.0esr-1) unstable; urgency=medium
 

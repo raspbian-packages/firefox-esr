@@ -206,6 +206,8 @@ newtab-empty-section-highlights = Тамошокунии сомонаҳоро о
 # Variables:
 #   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Шумо ҳамаро хондед. Барои хондани ҳикояҳои ҷолиби дигар аз «{ $provider }» дертар биёед. Интизор шуда наметавонед? Барои пайдо кардани ҳикояҳои бузург аз саросари Интернет, мавзуи маълумеро интихоб намоед.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
+newtab-empty-section-topstories-generic = Шумо ҳамаро хондед. Барои хондани ҳикояҳои дигар дертар биёед. Интизор шуда наметавонед? Барои пайдо кардани ҳикояҳои бузург аз саросари Интернет, мавзуи маълумеро интихоб намоед.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -229,6 +231,12 @@ newtab-pocket-pocket-firefox-family = { -pocket-brand-name } қисми оила
 # A save to Pocket button that shows over the card thumbnail on hover.
 newtab-pocket-save = Нигоҳ доштан
 newtab-pocket-saved = Нигоҳ дошта шуд
+
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
+newtab-toast-dismiss-button =
+    .title = Нодида гузарондан
+    .aria-label = Нодида гузарондан
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
 
@@ -258,6 +266,9 @@ newtab-custom-row-selector =
 newtab-custom-sponsored-sites = Миёнбурҳои сарпарастӣ
 newtab-custom-pocket-title = Аз тарафи { -pocket-brand-name } тавсия дода мешавад
 newtab-custom-pocket-subtitle = Муҳтавои мустасно аз тарафи { -pocket-brand-name }, қисми оилаи { -brand-product-name } дастгирӣ карда мешавад
+newtab-custom-stories-toggle =
+    .label = Ҳикояҳои тавсияшуда
+    .description = Маводҳои истисноӣ, ки аз ҷониби оилаи «{ -brand-product-name }» таҳия шудааст
 newtab-custom-pocket-sponsored = Мақолаҳои сарпарастӣ
 newtab-custom-pocket-show-recent-saves = Намоиш додани маводҳои охирин
 newtab-custom-recent-title = Фаъолияти охирин
@@ -265,9 +276,101 @@ newtab-custom-recent-subtitle = Интихоби сомонаҳо ва муҳт�
 newtab-custom-recent-toggle =
     .label = Фаъолияти охирин
     .description = Интихоби сомонаҳо ва муҳтавои охирин
+newtab-custom-weather-toggle =
+    .label = Обу ҳаво
+    .description = Ҳолати обу ҳаво барои имрӯз
 newtab-custom-close-button = Пӯшидан
 newtab-custom-settings = Идоракунии танзимоти бештар
 
 ## New Tab Wallpapers
 
 newtab-wallpaper-title = Тасвирҳои замина
+newtab-wallpaper-reset = Ба ҳолати пешфарз барқарор кунед
+newtab-wallpaper-light-red-panda = Пандаи сурх
+newtab-wallpaper-light-mountain = Кӯҳи сафед
+newtab-wallpaper-light-sky = Осмон бо абрҳои лоҷувард ва гулобӣ
+newtab-wallpaper-light-color = Шаклҳои кабуд, гулобӣ ва зард
+newtab-wallpaper-light-landscape = Манзараи кӯҳӣ бо тумани кабуд
+newtab-wallpaper-light-beach = Соҳил бо дарахти хурмо
+newtab-wallpaper-dark-aurora = Дурахши қутбӣ
+newtab-wallpaper-dark-color = Шаклҳои сурх ва кабуд
+newtab-wallpaper-dark-panda = Пандаи сурх дар ҷангал пинҳон шудааст
+newtab-wallpaper-dark-sky = Манзараи шаҳр бо осмони шабона
+newtab-wallpaper-dark-mountain = Манзараи кӯҳӣ
+newtab-wallpaper-dark-city = Манзараи шаҳри лоҷувард
+
+## Solid Colors
+
+newtab-wallpaper-category-title-colors = Рангҳои яклухт
+newtab-wallpaper-blue = Кабуд
+newtab-wallpaper-light-blue = Кабуди равшан
+newtab-wallpaper-light-purple = Лоҷуварди равшан
+newtab-wallpaper-light-green = Сабзи равшан
+newtab-wallpaper-green = Сабз
+newtab-wallpaper-beige = Қаҳваранг
+newtab-wallpaper-yellow = Зард
+newtab-wallpaper-orange = Норинҷӣ
+newtab-wallpaper-pink = Гулобӣ
+newtab-wallpaper-light-pink = Гулобии равшан
+newtab-wallpaper-red = Сурх
+newtab-wallpaper-dark-blue = Кабди торик
+newtab-wallpaper-dark-purple = Лоҷуварди торик
+newtab-wallpaper-dark-green = Сабзи торик
+newtab-wallpaper-brown = Қаҳвагӣ
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = Мавҳум
+newtab-wallpaper-abstract-green = Шаклҳои сабз
+newtab-wallpaper-abstract-blue = Шаклҳои кабуд
+newtab-wallpaper-abstract-purple = Шаклҳои лоҷувард
+newtab-wallpaper-abstract-orange = Шаклҳои норинҷӣ
+newtab-wallpaper-gradient-orange = Тағйирёбии норинҷӣ ва голубӣ
+newtab-wallpaper-abstract-blue-purple = Шаклҳои кабуд ва норинҷӣ
+
+## Photographs
+
+newtab-wallpaper-category-title-photographs = Суратҳо
+newtab-wallpaper-white-mountains = Кӯҳҳои сафед
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Акс аз ҷониби <a data-l10n-name="name-link">{ $author_string }</a> дар <a data-l10n-name="webpage-link">{ $webpage_string }</a>
+newtab-wallpaper-feature-highlight-header = Чакраҳои рангро кӯшиш намоед
+newtab-wallpaper-feature-highlight-button = Фаҳмидам
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .title = Нодида гузарондан
+    .aria-label = Пӯшидани равзанаҳои зоҳиршаванда
+feature-highlight-wallpaper =
+    .title = { -newtab-wallpaper-feature-highlight-header }
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
+
+## New Tab Weather
+
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast =
+    .title = Дидани обу ҳаво дар { $provider }
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ Реклама
+newtab-weather-menu-change-location = Иваз кардани макон
+newtab-weather-change-location-search-input = Ҷустуҷӯи макон
+newtab-weather-menu-weather-display = Намоиши обу ҳаво
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = Одӣ
+newtab-weather-menu-change-weather-display-simple = Гузариш ба намуди одӣ
+newtab-weather-menu-weather-display-option-detailed = Ботафсил
+newtab-weather-menu-change-weather-display-detailed = Гузариш ба намуди ботафсил
+newtab-weather-menu-temperature-units = Воҳидҳои ченаки ҳарорат
+newtab-weather-menu-temperature-option-fahrenheit = Фаренгейт
+newtab-weather-menu-temperature-option-celsius = Селсий
+newtab-weather-menu-change-temperature-units-fahrenheit = Гузариш ба Фаренгейт
+newtab-weather-menu-change-temperature-units-celsius = Гузариш ба Селсий
+newtab-weather-menu-hide-weather = Нинҳон кардани обу ҳаво дар варақаи нав
+newtab-weather-menu-learn-more = Маълумоти бештар
+# This message is shown if user is working offline
+newtab-weather-error-not-available = Айни ҳол маълумот дар бораи обу ҳаво дастнорас аст.

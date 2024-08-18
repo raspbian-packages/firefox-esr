@@ -1,2 +1,2 @@
-20240603145132
-https://hg.mozilla.org/releases/mozilla-esr115/rev/6b05ad1f5f2dbb0d47ac169115e250ff3776289c
+20240801134912
+https://hg.mozilla.org/releases/mozilla-esr115/rev/e1174a2473ad7e8fdde28d29e2e9e14ae1f15a72

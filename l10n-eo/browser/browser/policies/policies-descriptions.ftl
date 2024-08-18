@@ -28,6 +28,7 @@ policy-BlockAboutSupport = Bloki aliron al la paĝo about:support.
 policy-Bookmarks = Krei legosignojn en la ilaro de legosignoj, en la menuo de legosignoj, aŭ en dosierujo sub ili.
 policy-CaptivePortal = Aktivigi aŭ malaktivigi subtenon por kapta portalo.
 policy-CertificatesDescription = Aldoni atestilojn aŭ uzi inkluzivitajn atestilojn.
+policy-ContentAnalysis = Aktivigi aŭ malaktivigi la konekton al la agento kontraŭ perdo de datumoj.
 policy-Cookies = Permesi aŭ bloki al retejoj konservi kuketojn.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Dinifi politikojn, kiuj rilatas ingojn.
@@ -38,8 +39,11 @@ policy-DisableAppUpdate = Malpermesi al retumilo ĝisdatigiĝi.
 policy-DisableBuiltinPDFViewer = Malaktivigi PDF.js (PDF-legilo inkluzivita en { -brand-short-name }).
 policy-DisableDefaultBrowserAgent = Eviti ke la norma retumila agento faru ion ajn. Tio nur aplikeblas al Windows, ĉar aliaj sistemoj ne havas tiun agenton.
 policy-DisableDeveloperTools = Bloki aliron al la iloj por programistoj.
+policy-DisableEncryptedClientHello = Malaktivigi la uzon de TLS Encrypted Client Hello (ECH).
 policy-DisableFeedbackCommands = Malaktivigi eblojn “sendi opiniojn” kaj “denunci trompan retejon” en la menuo de helpo.
 policy-DisableFirefoxAccounts = Malaktivigi servojn bazitaj sur { -fxaccount-brand-name }, inkluzive Speguladon.
+# This string is in the process of being deprecated in favor of policy-DisableAccounts.
+policy-DisableFirefoxAccounts1 = Malaktivigi servojn kiuj postulas konton, tio inkluzivas speguladon.
 # Firefox Screenshots is the name of the feature, and should not be translated.
 policy-DisableFirefoxScreenshots = Malaktivigi la etendaĵon Firefox Screenshots.
 policy-DisableFirefoxStudies = Malpermesi al { -brand-short-name } fari studojn.
@@ -80,6 +84,8 @@ policy-Handlers = Agordi la normajn programajn traktilojn.
 policy-HardwareAcceleration = Se estas "malvera" la aparata akcelo estos malŝaltita.
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = Difini kaj havi la eblon ŝlosi la ekan paĝon.
+policy-HttpAllowlist = Originoj, kiuj ne estos ŝanĝitaj al HTTPS.
+policy-HttpsOnlyMode = Permesi aktivigon de HTTPS-nuran reĝimon.
 policy-InstallAddonsPermission = Permesi al kelkaj retejoj la instalon de aldonaĵoj.
 policy-LegacyProfiles = Malaktivigi la trajton, kiu postulas malsamajn profilojn por ĉiu instalaĵo.
 
@@ -104,6 +110,9 @@ policy-OverrideFirstRunPage = Ŝanĝi la paĝon de unua starto. Lasu tiun ĉi po
 policy-OverridePostUpdatePage = Ŝanĝi la postĝisdatigan paĝon "Kio estas nova". Lasu tiun ĉi politikon malplena se vi volas malaktivigi la paĝon post ĝisdatigo.
 policy-PasswordManagerEnabled = Aktivigi konservadon de pasvortoj en la pasvorta administrilo.
 policy-PasswordManagerExceptions = Malpermesi al { -brand-short-name } konservi pasvortojn por specifaj retejoj.
+# Post-quantum refers to cryptography that is safe from attacks by quantum
+# computers. See https://en.wikipedia.org/wiki/Post-quantum_cryptography
+policy-PostQuantumKeyAgreementEnabled = Aktivigi la akcepton de postkvantuma ŝlosilo por TLS.
 # PDF.js and PDF should not be translated
 policy-PDFjs = Malaktivigi aŭ agordi PDF.js, la integritan legilon de PDF en { -brand-short-name }.
 policy-Permissions2 = Agordi permesojn por filmilo, mikrofono, pozicio,sciigoj kaj aŭtomata ludado.
@@ -124,6 +133,7 @@ policy-SSLVersionMax = Difini la minimuman version de SSL.
 policy-SSLVersionMin = Difini la maksimuman version de SSL.
 policy-StartDownloadsInTempDirectory = Devige komenci elŝutojn en loka, provizora loko anstataŭ la norma elŝuta dosierujo.
 policy-SupportMenu = Aldoni personecigitan menueron al la helpa menuo.
+policy-TranslateEnabled = Aktivigi aŭ malaktivigi tradukon de retpaĝoj.
 policy-UserMessaging = Ne montri specifajn mesaĝojn al la uzanto.
 policy-UseSystemPrintDialog = Presi per la sistema presa dialogo.
 # “format” refers to the format used for the value of this policy.
