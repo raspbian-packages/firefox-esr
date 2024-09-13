@@ -1,4 +1,4 @@
-firefox-esr (115.14.0esr-1+rpi1) trixie-staging; urgency=medium
+firefox-esr (115.15.0esr-1+rpi1) trixie-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -31,7 +31,15 @@ firefox-esr (115.14.0esr-1+rpi1) trixie-staging; urgency=medium
   [changes introduced in 115.3.0esr-1+rpi1 by Peter Michael Green]
   * Disable conflicting include in js/src/jit/shared/AtomicOperations-shared-jit.cpp
 
- -- Raspbian forward porter <root@raspbian.org>  Sun, 18 Aug 2024 18:58:34 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Fri, 13 Sep 2024 03:57:03 +0000
+
+firefox-esr (115.15.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2024-41, also known as:
+    CVE-2024-8381, CVE-2024-8382, CVE-2024-8383, CVE-2024-8384.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 04 Sep 2024 05:28:04 +0900
 
 firefox-esr (115.14.0esr-1) unstable; urgency=medium
 
