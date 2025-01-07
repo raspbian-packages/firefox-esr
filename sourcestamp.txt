@@ -1,0 +1,2 @@
+20241218153108
+https://hg.mozilla.org/releases/mozilla-esr128/rev/4f008c71b12e001ae54b7fcd4787b266764c28bf
