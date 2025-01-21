@@ -86,6 +86,9 @@ elif CONFIG['TARGET_CPU'] == 'arm':
             'pixman-arm-neon.c',
         ]
         SOURCES['pixman-arm-neon.c'].flags += CONFIG['NEON_FLAGS']
+        if CONFIG['CC_TYPE'] == 'clang':
+            SOURCES['pixman-arm-neon-asm-bilinear.S'].flags += ['-fno-integrated-as']
+            SOURCES['pixman-arm-neon-asm.S'].flags += ['-fno-integrated-as']
     if CONFIG['HAVE_ARM_SIMD']:
         DEFINES['USE_ARM_SIMD'] = True
         SOURCES += [
