@@ -1,0 +1,25 @@
+From: Mike Hommey <mh@glandium.org>
+Date: Wed, 22 Jan 2025 08:03:51 +0900
+Subject: Bug 1942738 - Move the .fpu neon directive around.
+
+---
+ gfx/ycbcr/yuv_convert_arm.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gfx/ycbcr/yuv_convert_arm.cpp b/gfx/ycbcr/yuv_convert_arm.cpp
+index 7d58fa4..76df7e5 100644
+--- a/gfx/ycbcr/yuv_convert_arm.cpp
++++ b/gfx/ycbcr/yuv_convert_arm.cpp
+@@ -53,11 +53,11 @@ void __attribute((noinline,optimize("-fomit-frame-pointer")))
+      * q13, q14, q15            - various constants (#16, #149, #204, #50, #104, #154)
+      */
+     asm volatile (
+-".fpu neon\n"
+ /* Allow to build on targets not supporting neon, and force the object file
+  * target to avoid bumping the final binary target */
+ ".arch armv7-a\n"
+ ".object_arch armv4t\n"
++".fpu neon\n"
+ ".macro convert_macroblock size\n"
+ /* load up to 16 source pixels */
+ 	".if \\size == 16\n"
