@@ -1,0 +1,23 @@
+From: Mike Hommey <mh@glandium.org>
+Date: Tue, 21 Jan 2025 14:35:22 +0900
+Subject: Bug 1942738 - Don't use clang's integrated assembler to compile
+ pixman ARM neon code. r?build
+
+---
+ gfx/cairo/libpixman/src/moz.build | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/gfx/cairo/libpixman/src/moz.build b/gfx/cairo/libpixman/src/moz.build
+index a48e2ba..c588f2d 100644
+--- a/gfx/cairo/libpixman/src/moz.build
++++ b/gfx/cairo/libpixman/src/moz.build
+@@ -86,6 +86,9 @@ elif CONFIG['TARGET_CPU'] == 'arm':
+             'pixman-arm-neon.c',
+         ]
+         SOURCES['pixman-arm-neon.c'].flags += CONFIG['NEON_FLAGS']
++        if CONFIG['CC_TYPE'] == 'clang':
++            SOURCES['pixman-arm-neon-asm-bilinear.S'].flags += ['-fno-integrated-as']
++            SOURCES['pixman-arm-neon-asm.S'].flags += ['-fno-integrated-as']
+     if CONFIG['HAVE_ARM_SIMD']:
+         DEFINES['USE_ARM_SIMD'] = True
+         SOURCES += [
