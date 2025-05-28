@@ -1,0 +1,96 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Callout dialog primary button to advance to next screen
+callout-primary-advance-button-label = Selanjutnya
+# Callout dialog primary button to complete the feature tour
+callout-primary-complete-button-label = Paham!
+
+## Firefox View feature tour strings
+
+# "Tab pickup" refers to the section in Firefox View that displays open
+# tabs from other devices
+callout-firefox-view-tab-pickup-title = Lompat antar perangkat dengan pengambilan tab
+callout-firefox-view-tab-pickup-subtitle = Ambil tab terbuka dari ponsel Anda dengan cepat dan buka di sini untuk alur kerja maksimal.
+callout-firefox-view-recently-closed-title = Dapatkan kembali tab tertutup Anda dalam sekejap
+callout-firefox-view-recently-closed-subtitle = Semua tab tertutup Anda akan secara ajaib muncul di sini. Tak perlu khawatir lagi akan menutup situs secara tidak sengaja.
+callout-firefox-view-colorways-title = Tambahkan percikan warna
+# "Shade" refer to different color options in each colorway.
+callout-firefox-view-colorways-subtitle = Pilih warna yang berbicara dengan Anda dengan ragam warna. Hanya di { -brand-product-name }.
+callout-firefox-view-colorways-reminder-title = Jelajahi ragam warna terbaru kami
+# “Shades” refers to the different color options in each colorways
+callout-firefox-view-colorways-reminder-subtitle = Warnai peramban Anda dengan nuansa ikonik ini, terinspirasi oleh suara independen. Hanya di { -brand-product-name }.
+
+## Continuous Onboarding - Firefox View: Tab pick up
+
+# “Boost your browsing” refers to the added benefit the user receives from having
+# access to the same browsing experience when moving from one browser to another.
+# Alternative: ”Improve your browsing experience with tab pickup”
+continuous-onboarding-firefox-view-tab-pickup-title = Tingkatkan penjelajahan Anda dengan fitur pengambilan tab
+continuous-onboarding-firefox-view-tab-pickup-subtitle = Akses tab terbuka Anda dari perangkat mana pun. Dan juga, sinkronkan markah, sandi, dan lainnya.
+continuous-onboarding-firefox-view-tab-pickup-primary-button-label = Mulai
+
+## PDF.js Feature Tour Strings
+
+callout-pdfjs-edit-title = Edit PDF dengan alat teks terbaru kami
+callout-pdfjs-edit-body-a = Isi formulir, tambahkan komentar, atau buat catatan langsung di { -brand-short-name }.
+callout-pdfjs-edit-body-b = Tak perlu mencari editor daring gratisan. Isi formulir, tambah komentar, atau buat catatan langsung di { -brand-short-name }.
+callout-pdfjs-edit-button = Lanjut
+callout-pdfjs-draw-title = Tandatangani dokumen dengan alat gambar terbaru kami
+# “Mark up” refers to the process of “annotating” or adding free hand text or diagramming to the document.
+callout-pdfjs-draw-body-a = Tandai PDF, lalu simpan perubahan Anda.
+# “Mark up” refers to the process of “annotating” or adding free hand text or diagramming to the document.
+callout-pdfjs-draw-body-b = Tak perlu mencetak dan memindai. Tandai PDF, lalu simpan perubahan Anda.
+callout-pdfjs-draw-button = Paham!
+
+## Firefox View Discoverability Strings
+
+fx-view-discoverability-title = Tidak bermaksud menutup tab tersebut?
+fx-view-discoverability-subtitle = Temukan dan buka kembali dengan cepat di sini. Kami menyimpan riwayat tab yang baru saja ditutup untuk Anda.
+fx-view-discoverability-primary-button-label = Buka { -firefoxview-brand-name }
+fx-view-discoverability-secondary-button-label = Tutup
+
+## Split Dismiss Button Labels
+
+# Blocks the message from showing again
+split-dismiss-button-dont-show-option-label = Jangan tampilkan rekomendasi ini lagi
+# Dismisses message and reduces frequency of message
+split-dismiss-button-show-fewer-option-label = Tampilkan lebih sedikit rekomendasi
+# Opens about:preferences#general-cfrfeatures
+split-dismiss-button-manage-settings-option-label = Kelola pengaturan
+
+## Sidebar Strings
+
+sidebar-button-callout-title = Tampilkan judul tab di bilah samping
+sidebar-button-callout-subtitle = Gunakan tombol bilah samping untuk memperluas bilah samping, sehingga Anda dapat melihat judul tab.
+
+## Sidebar Callout Survey Strings
+
+sidebar-callout-survey-title = Bantu tingkatkan { -brand-short-name }
+sidebar-callout-survey-satisfaction-question = Seberapa puaskah Anda dengan pengalaman bilah samping di { -brand-short-name }?
+sidebar-callout-survey-privacy-notice-link = Pemberitahuan Privasi
+sidebar-callout-survey-very-satisfied = Sangat puas
+sidebar-callout-survey-satisfied = Puas
+sidebar-callout-survey-neutral = Netral
+sidebar-callout-survey-dissatisfied-2 = Tidak puas
+sidebar-callout-survey-very-dissatisfied-2 = Sangat tidak puas
+sidebar-callout-survey-dont-use-it = Saya tidak menggunakannya
+sidebar-callout-survey-productive-question =
+    Sejauh mana Anda setuju atau tidak setuju dengan pernyataan ini:<br/>
+    “Bilah samping { -brand-short-name } membantu saya menjadi lebih produktif”?
+sidebar-callout-survey-strongly-agree = Sangat Setuju
+sidebar-callout-survey-agree = Setuju
+sidebar-callout-survey-disagree = Tidak Setuju
+sidebar-callout-survey-strongly-disagree = Sangat tidak setuju
+sidebar-callout-survey-features-question = Berikut ini adalah fitur bilah samping potensial. Mana yang paling meningkatkan produktivitas Anda di { -brand-short-name }?
+sidebar-callout-survey-split-view = Lihat dua situs web sekaligus, dalam tampilan terpisah secara berdampingan
+sidebar-callout-survey-keep-website-open = Jaga situs web, seperti surel atau kalender, terbuka di bilah samping saat Anda menjelajah
+sidebar-callout-survey-saved-websites-2 = Akses cepat ke markah Anda
+sidebar-callout-survey-none-of-above = Tidak satu pun di atas
+sidebar-callout-survey-submit = Kirim
+sidebar-callout-survey-thank-you = Terima kasih atas tanggapan Anda!
+sidebar-genai-survey-satisfaction-question = Seberapa puaskah Anda dengan akses ke chatbot AI di bilah samping?
+sidebar-genai-survey-productive-question =
+    Sejauh mana Anda setuju atau tidak setuju dengan pernyataan ini:<br/>
+    “Bot obrolan AI di bilah samping membantu saya menjadi lebih produktif”?
