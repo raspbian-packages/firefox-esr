@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = Приватный просмотр { -brand-shortcut-name }
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = Приватный просмотр { -brand-full-name }
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — Приватный просмотр { -brand-full-name }
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — Приватный просмотр { -brand-full-name }
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name } — { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Приватный просмотр { -brand-full-name }
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — Приватный просмотр
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — Приватный просмотр { -brand-full-name }
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — Приватный просмотр
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Приватный просмотр
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -309,6 +367,10 @@ quickactions-cmd-viewsource = просмотр исходного текста, 
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Узнать больше о Быстрых действиях
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Нажмите вкладку для выбора:
 
 ## Bookmark Panel
 
@@ -552,6 +614,8 @@ urlbar-go-button =
     .tooltiptext = Перейти по введённому адресу
 urlbar-page-action-button =
     .tooltiptext = Действия на странице
+urlbar-revert-button =
+    .tooltiptext = Показать адрес в Строке местоположения
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -612,6 +676,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = Поиск через { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Поиск в { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Поиск с помощью { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Выберите поисковую систему
+urlbar-searchmode-bookmarks =
+    .label = Закладки
+urlbar-searchmode-tabs =
+    .label = Вкладки
+urlbar-searchmode-history =
+    .label = Журнал
+urlbar-searchmode-actions =
+    .label = Действия
+urlbar-searchmode-exit-button =
+    .tooltiptext = Закрыть
+urlbar-searchmode-popup-description = В этот раз искать в:
+urlbar-searchmode-popup-search-settings = Параметры поиска
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, выберите поисковую систему
+    .tooltiptext = { $engine }, выберите поисковую систему
+urlbar-searchmode-button-no-engine =
+    .label = Ярлык не выбран, выберите ярлык
+    .tooltiptext = Ярлык не выбран, выберите ярлык
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -621,6 +717,12 @@ urlbar-result-action-search-bookmarks = Искать в закладках
 urlbar-result-action-search-history = Искать в журнале
 urlbar-result-action-search-tabs = Искать во вкладках
 urlbar-result-action-search-actions = Искать в действиях
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Переключиться на { $group }
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = Открыть { $group }
 
 ## Labels shown above groups of urlbar results
 
@@ -934,6 +1036,9 @@ data-reporting-notification-button =
     .accesskey = В
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Приватный просмотр
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Приватный просмотр
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -942,7 +1047,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Защита данных
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = Ваша организация использует { $agentName } для защиты от утечек данных. <a data-l10n-name="info">Подробнее</a>
+content-analysis-panel-text-styled = Ваша организация использует <b>{ $agentName }</b> для защиты от потери данных. <a data-l10n-name="info">Подробнее</a>
 
 ## Unified extensions (toolbar) button
 
@@ -967,6 +1072,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Расширения
         Некоторые расширения не разрешены
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Расширения
+    .tooltiptext =
+        Расширения
+        Некоторые расширения отключены
 
 ## Private browsing reset button
 
@@ -1007,6 +1121,7 @@ firefox-relay-offer-legal-notice = Нажимая «Использовать п�
 popup-notification-addon-install-unsigned =
     .value = (Не проверено)
 popup-notification-xpinstall-prompt-learn-more = Узнайте больше о безопасной установке дополнений
+popup-notification-xpinstall-prompt-block-url = Узнать подробнее
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = Запуск в приватных окнах

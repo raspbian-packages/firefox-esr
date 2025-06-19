@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = Engellenmiş sayfa
 neterror-captive-portal-page-title = Ağa giriş yap
 neterror-dns-not-found-title = Sunucu bulunamadı
 neterror-malformed-uri-page-title = Geçersiz URL
+general-body-title = Dikkatli olun. Doğru görünmeyen bir şeyler var.
 
 ## Error page actions
 
@@ -41,6 +42,8 @@ neterror-generic-error = { -brand-short-name } bilinmeyen bir nedenden dolayı b
 neterror-load-error-try-again = Site geçici olarak kapalı veya çok meşgul olabilir. Biraz bekleyip yeniden deneyin.
 neterror-load-error-connection = Hiçbir sayfayı açamıyorsanız bilgisayarınızın ağ bağlantısını kontrol edin.
 neterror-load-error-firewall = Bilgisayarınız veya ağınız güvenlik duvarı veya vekil sunucu ile korunuyorsa { -brand-short-name } uygulamasının web’e erişim izni olduğundan emin olun.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Bir yerel ağ sayfasını yüklemeye çalışıyorsanız lütfen macOS Gizlilik ve Güvenlik ayarlarından { -brand-short-name } uygulamasına Yerel Ağ izinlerinin verildiğini kontrol edin.
 neterror-captive-portal = İnternete erişebilmek için önce bu ağa giriş yapmalısınız.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +67,7 @@ neterror-dns-not-found-trr-offline = İnternete bağlı değilsiniz.
 neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } bu web sitesini bulamadı.
 neterror-dns-not-found-trr-server-problem = { $trrDomain } ile ilgili bir sorun oluştu.
 neterror-dns-not-found-bad-trr-url = Geçersiz URL.
+neterror-dns-not-found-system-sleep = Sistem uyku modunda.
 neterror-dns-not-found-trr-unknown-problem = Beklenmeyen sorun.
 
 ## Native fallback specific messages
@@ -147,3 +151,8 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = <b>{ $mitm }</b> size tanı
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b>, HTTP Sıkı Aktarım Güvenliği (HSTS) denilen bir güvenlik ilkesi uyguluyor. Bu nedenle { -brand-short-name } bu siteye yalnızca güvenli bir şekilde bağlanabilir. Bu siteye ayrıcalık tanıyarak siteyi ziyaret edemezsiniz.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Sorun büyük ihtimalle sitenin kendisinden kaynaklandığı için sizin yapabileceğiniz bir şey yok.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Hata kodu: { $responsestatus } { $responsestatustext }

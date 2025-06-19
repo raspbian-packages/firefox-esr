@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Fermi langeton
+           *[other] Fermi { $tabCount } langetojn
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,16 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Ludi { $tabCount } langetojn
         }
 
+## Tooltips for tab audio control
+
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Malsilentigi langeton
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Silentigi langeton
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Ludi langeton
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -69,6 +90,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = Ĉu fermi { $tabCount } langetojn?
 tabbrowser-confirm-close-tabs-button = Fermi langetojn
+tabbrowser-ask-close-tabs-checkbox = Demandi antaŭ ol fermi plurajn langetojn
 tabbrowser-confirm-close-tabs-checkbox = Konfirmi antaŭ fermi plurajn langetojn
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -91,7 +113,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Ĉu fermi fenestron kaj fini { -b
 tabbrowser-confirm-close-tabs-with-key-button = Fini { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Demandi antaŭ ol fini per { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Konfirmi antaŭ ol fini per { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = Ĉu fini { -brand-short-name } aŭ ĉu fermi la nunan langeton?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Fini { -brand-short-name }
+       *[other] Fini { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Fermi nunan langeton
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -115,6 +151,9 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ne montri ĉi tiun dialogon denove.
 
 tabbrowser-confirm-close-duplicate-tabs-title = Atento!
 tabbrowser-confirm-close-duplicate-tabs-text = Ni lasos la lastan aktivan langeton malfermita
+tabbrowser-confirm-close-all-duplicate-tabs-title = Ĉu fermi duobligitajn langetojn?
+tabbrowser-confirm-close-all-duplicate-tabs-text = Duobligitaj langetoj en tiu ĉi fenestro estos fermitaj. La laste aktiva langeto restos malfermita.
+tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Fermi langetojn
 
 ##
 
@@ -158,3 +197,96 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Malsilentigi langeton
 tabbrowser-manager-close-tab =
     .tooltiptext = Fermi langeton
+
+## Tab Groups
+
+tab-group-editor-title-create = Krei grupon de langetoj
+tab-group-editor-title-edit = Administri grupon de langetoj
+tab-group-editor-name-label = Nomo
+tab-group-editor-name-field =
+    .placeholder = Ekzemplo: Aĉetumo
+tab-group-editor-cancel =
+    .label = Nuligi
+    .accesskey = N
+tab-group-editor-color-selector =
+    .aria-label = Koloro de grupo de langetoj
+tab-group-editor-color-selector-blue = Blua
+tab-group-editor-color-selector-purple = Purpura
+tab-group-editor-color-selector-cyan = Cejanblua
+tab-group-editor-color-selector-orange = Oranĝa
+tab-group-editor-color-selector-yellow = Flava
+tab-group-editor-color-selector-pink = Roza
+tab-group-editor-color-selector-green = Verda
+tab-group-editor-color-selector-gray = Griza
+tab-group-editor-color-selector-red = Ruĝa
+tab-group-menu-header = Grupoj de langetoj
+tab-context-unnamed-group =
+    .label = Grupo sen nomo
+tab-group-name-default = Grupo sen nomo
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Aldoni langeton al nova grupo
+           *[other] Aldoni langetojn al nova grupo
+        }
+    .accesskey = g
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Aldoni langeton al grupo
+           *[other] Aldoni langetojn al grupo
+        }
+    .accesskey = G
+tab-group-editor-action-new-tab =
+    .label = Nova langeto en grupo
+tab-group-editor-action-new-window =
+    .label = Movi grupon al nova fenestro
+tab-group-editor-action-save =
+    .label = Konservi kaj fermi grupon
+tab-group-editor-action-ungroup =
+    .label = Malgrupigi langetojn
+tab-group-editor-action-delete =
+    .label = Forigi grupon
+tab-group-editor-done =
+    .label = Farita
+    .accessKey = F
+tab-context-reopen-tab-group =
+    .label = Denove malfermi grupon de langetoj
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Forigi el grupo
+           *[other] Forigi el grupoj
+        }
+    .accesskey = F
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Movi grupon al nova fenestro
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Movi grupon al tiu ĉi fenestro
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Forigi grupon
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Malfermi grupon en tiu ĉi fenestro
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Malfermi grupon en nova fenestro

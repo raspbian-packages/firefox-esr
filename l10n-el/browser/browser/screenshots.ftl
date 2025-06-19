@@ -38,7 +38,7 @@ screenshots-connection-error-title = Δεν μπορούμε να συνδεθο
 screenshots-connection-error-details = Ελέγξτε τη σύνδεσή σας στο Internet. Εάν είστε σε θέση να συνδεθείτε στο Internet, ίσως υπάρχει ένα προσωρινό πρόβλημα με την υπηρεσία { -screenshots-brand-name }.
 screenshots-login-error-details = Δεν μπορέσαμε να αποθηκεύσουμε την λήψη σας γιατί υπάρχει κάποιο πρόβλημα με την υπηρεσία { -screenshots-brand-name }. Προσπαθήστε ξανά αργότερα.
 screenshots-unshootable-page-error-title = Δεν μπορούμε να λάβουμε στιγμιότυπο αυτής της σελίδας.
-screenshots-unshootable-page-error-details = Δεν μπορεί να γίνει λήψη στιγμιότυπου καθώς αυτή δεν είναι μια τυπική ιστοσελίδα.
+screenshots-unshootable-page-error-details = Δεν είναι δυνατή η λήψη στιγμιότυπου οθόνης, καθώς αυτή δεν είναι μια τυπική ιστοσελίδα.
 screenshots-empty-selection-error-title = Η επιλογή σας είναι πολύ μικρή
 screenshots-private-window-error-title = Το { -screenshots-brand-name } είναι απενεργοποιημένο στη λειτουργία ιδιωτικής περιήγησης
 screenshots-private-window-error-details = Λυπούμαστε για την ταλαιπωρία. Εργαζόμαστε πάνω σε αυτό το χαρακτηριστικό για μελλοντικές εκδόσεις.
@@ -56,18 +56,6 @@ screenshots-component-cancel-button =
            *[other] Ακύρωση (Esc)
         }
     .aria-label = Ακύρωση
-# Variables
-#   $shortcut (String) - A keyboard shortcut for copying the screenshot.
-screenshots-component-copy-button =
-    .title = Αντιγραφή ({ $shortcut })
-    .aria-label = Αντιγραφή
-screenshots-component-copy-button-label = Αντιγραφή
-# Variables
-#   $shortcut (String) - A keyboard shortcut for saving/downloading the screenshot.
-screenshots-component-download-button =
-    .title = Λήψη ({ $shortcut })
-    .aria-label = Λήψη
-screenshots-component-download-button-label = Λήψη
 # Variables
 #   $shortcut (String) - A keyboard shortcut for copying the screenshot.
 screenshots-component-copy-button-2 = Αντιγραφή
@@ -88,14 +76,10 @@ screenshots-component-copy-key = C
 ##
 
 # This string represents the selection size area
-# "x" here represents "by" (i.e 123 by 456)
-# Variables:
-#   $width (Number) - The width of the selection region in pixels
-#   $height (Number) - The height of the selection region in pixels
-screenshots-overlay-selection-region-size-2 = { $width } x { $height }
-# This string represents the selection size area
 # "×" here represents "by" (i.e 123 by 456)
 # Variables:
 #   $width (Number) - The width of the selection region in pixels
 #   $height (Number) - The height of the selection region in pixels
 screenshots-overlay-selection-region-size-3 = { $width } × { $height }
+screenshots-overlay-preview-face-label =
+    .aria-label = Επιλέξτε αυτήν την περιοχή

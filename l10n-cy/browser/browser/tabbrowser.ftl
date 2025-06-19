@@ -13,6 +13,21 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [zero] Cau tab
+            [one] Cau { $tabCount } tab
+            [two] Cau { $tabCount } dab
+            [few] Cau { $tabCount } tab
+            [many] Cau { $tabCount } tab
+           *[other] Cau { $tabCount } tab
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -85,6 +100,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Chwarae { $tabCount } tab
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -101,6 +119,7 @@ tabbrowser-confirm-close-tabs-title =
        *[other] Cau { $tabCount } tab?
     }
 tabbrowser-confirm-close-tabs-button = Cau tabiau
+tabbrowser-ask-close-tabs-checkbox = Gofyn cyn cau tabiau niferus
 tabbrowser-confirm-close-tabs-checkbox = Cadarnhau cyn cau tabiau lluosog
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -131,7 +150,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Cau ffenestr a gadael { -brand-sh
 tabbrowser-confirm-close-tabs-with-key-button = Gadael { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Gofyn cyn gadael gyda { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Cadarnhau cyn gadael gyda { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = Gadael { -brand-short-name } neu gau'r tab cyfredol?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Gadael { -brand-short-name }
+       *[other] Gadael { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Cau'r tab cyfredol
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -155,6 +188,11 @@ tabbrowser-confirm-caretbrowsing-checkbox = Peidio dangos y blwch deialog yma et
 
 tabbrowser-confirm-close-duplicate-tabs-title = Rhybudd
 tabbrowser-confirm-close-duplicate-tabs-text = Byddwn yn cadw'r tab gweithredol olaf ar agor
+tabbrowser-confirm-close-all-duplicate-tabs-title = Cau tabiau dyblyg?
+tabbrowser-confirm-close-all-duplicate-tabs-text =
+    Byddwn yn cau tabiau dyblyg yn y ffenestr hon. Bydd y tab
+    gweithredol olaf yn aros ar agor.
+tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Cau tabiau
 
 ##
 
@@ -206,3 +244,100 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Dad-dewi tab
 tabbrowser-manager-close-tab =
     .tooltiptext = Cau tab
+
+## Tab Groups
+
+tab-group-editor-title-create = Creu grŵp tabiau
+tab-group-editor-title-edit = Rheoli grŵp tabiau
+tab-group-editor-name-label = Enw
+tab-group-editor-name-field =
+    .placeholder = Enghraifft: Siopa
+tab-group-editor-cancel =
+    .label = Diddymu
+    .accesskey = D
+tab-group-menu-header = Grwpiau tabiau
+tab-context-unnamed-group =
+    .label = Grŵp heb ei enwi
+tab-group-name-default = Grŵp dienw
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Ychwanegu Tabiau i Grŵp Newydd
+            [zero] Ychwanegu Tabiau i Grŵp Newydd
+            [one] Ychwanegu Tab i Grŵp Newydd
+            [two] Ychwanegu Tabiau i Grŵp Newydd
+            [few] Ychwanegu Tabiau i Grŵp Newydd
+            [many] Ychwanegu Tabiau i Grŵp Newydd
+           *[other] Ychwanegu Tabiau i Grŵp Newydd
+        }
+    .accesskey = T
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Ychwanegu Tabiau i Grŵp
+            [zero] Ychwanegu Tabiau i Grŵp
+            [one] Ychwanegu Tab i Grŵp
+            [two] Ychwanegu Tabiau i Grŵp
+            [few] Ychwanegu Tabiau i Grŵp
+            [many] Ychwanegu Tabiau i Grŵp
+           *[other] Ychwanegu Tabiau i Grŵp
+        }
+    .accesskey = G
+tab-group-editor-action-new-tab =
+    .label = Tab newydd yn y grŵp
+tab-group-editor-action-new-window =
+    .label = Symud grŵp i ffenestr newydd
+tab-group-editor-action-save =
+    .label = Cadw a chau'r grŵp
+tab-group-editor-action-ungroup =
+    .label = Dad-grwpio tabiau
+tab-group-editor-action-delete =
+    .label = Dileu grŵp
+tab-group-editor-done =
+    .label = Gorffen
+    .accessKey = G
+tab-context-reopen-tab-group =
+    .label = Ailagor grŵp tabiau
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Tynnu o'r Grwpiau
+            [zero] Tynnu o'r Grwpiau
+            [one] Tynnu o'r Grŵp
+            [two] Tynnu o'r Grwpiau
+            [few] Tynnu o'r Grwpiau
+            [many] Tynnu o'r Grwpiau
+           *[other] Tynnu o'r Grwpiau
+        }
+    .accesskey = T
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Symud Grŵp i Ffenestr Newydd
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Symud Grŵp i'r Ffenestr Hon
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Dileu Grŵp
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Agor Grŵp yn y Ffenestr Hon
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Agor Grŵp mewn Ffenestr Newydd

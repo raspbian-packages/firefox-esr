@@ -53,6 +53,8 @@ mr1-onboarding-import-primary-button-label-attribution = Importar desde { $previ
 mr1-onboarding-theme-header = Fágao seu
 mr1-onboarding-theme-subtitle = Personalice o { -brand-short-name } cun tema.
 mr1-onboarding-theme-secondary-button-label = Agora non
+newtab-wallpaper-onboarding-title = Probar un toque de cor
+newtab-wallpaper-onboarding-primary-button-label = Establecer fondo de pantalla
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Tema do sistema
 mr1-onboarding-theme-label-light = Claro
@@ -221,7 +223,9 @@ mr2022-onboarding-set-default-subtitle = Use un navegador apoiado por unha organ
 mr2022-onboarding-get-started-primary-subtitle = A nosa última versión está construída pensando en ti, polo que é máis fácil que nunca navegar pola web. Está chea de funcións que che encantarán.
 mr2022-onboarding-get-started-primary-button-label = Configurar en segundos
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Configuración ultrarrápida
 mr2022-onboarding-import-subtitle = Configura { -brand-short-name } como che guste. Engade os teus marcadores, contrasinais e moito máis desde o teu navegador anterior.
@@ -332,6 +336,13 @@ onboarding-device-migration-title = Benvido de novo!
 onboarding-device-migration-subtitle = Inicie sesión no seu { -fxaccount-brand-name(capitalization: "sentence") } para recuperar os seus marcadores, contrasinais e historial consigo no seu novo dispositivo.
 onboarding-device-migration-primary-button-label = Acceder
 
+## Add-ons Picker screen
+
+amo-picker-title = Personalizar o seu { -brand-short-name }
+amo-picker-install-button-label = Engadir a { -brand-short-name }
+amo-picker-install-complete-label = Instalado
+amo-picker-collection-link = Explore máis complementos
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -339,6 +350,8 @@ onboarding-easy-setup-security-and-privacy-title = Encántanos telo seguro
 onboarding-easy-setup-security-and-privacy-subtitle = O noso navegador sen ánimo de lucro axuda a evitar que as empresas o sigan en segredo pola web.
 # Mobile download screen
 onboarding-mobile-download-security-and-privacy-title = Manteña todo cifrado cando salte entre dispositivos
+# Gratitude screen
+onboarding-gratitude-security-and-privacy-title = { -brand-short-name } protéxeo
 
 ## New user time and familiarity survey strings
 
@@ -352,3 +365,15 @@ onboarding-new-user-survey-time-based-option-3 = Máis de 1 mes, regularmente
 onboarding-new-user-survey-familiarity-based-option-1 = Son novo
 onboarding-new-user-survey-familiarity-based-option-2 = Useino algo
 onboarding-new-user-survey-familiarity-based-option-3 = Estou moi familiarizado con iso
+
+## UI strings for the sidebar and vertical tabs
+
+
+## New user onboarding checklist
+
+
+## Tab Groups feature onboarding strings
+
+
+## Multi Profiles feature onboarding messages
+

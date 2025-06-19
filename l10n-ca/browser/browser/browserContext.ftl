@@ -166,7 +166,7 @@ main-context-menu-copy-link-simple =
 # query parameters used to track users across sites.
 main-context-menu-strip-on-share-link =
     .label = Copia l'enllaç sense seguiment del lloc
-    .accesskey = p
+    .accesskey = u
 
 ## Media (video/audio) controls
 ##
@@ -290,9 +290,7 @@ main-context-menu-send-to-device =
     .label = Envia la pàgina al dispositiu
     .accesskey = d
 
-## The access keys for "Use Saved Login" and "Use Saved Password"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-use-saved-login =
     .label = Utilitza un inici de sessió desat

@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Փակել ներդիր
+           *[other] Փակել { $tabCount } ներդիրները
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] նվագարկել { $tabCount } ներդիրները
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -97,6 +111,10 @@ tabbrowser-confirm-close-tabs-with-key-button = Փակել { -brand-short-name }
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Հաստատեք նախքան { $quitKey }-ով լքելը
 
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+
 ## Confirmation dialog when opening multiple tabs simultaneously
 
 tabbrowser-confirm-open-multiple-tabs-title = Հաստատել բացումը
@@ -114,6 +132,9 @@ tabbrowser-confirm-open-multiple-tabs-checkbox = Զգուշացնել բազմա
 tabbrowser-confirm-caretbrowsing-title = Ակտիվ կուրսոր
 tabbrowser-confirm-caretbrowsing-message = F7 կոճակի սեղմումը անջատում կամ միացնում է ակտիվ կուրսորը: Այսյուրահատկությունը դնում է շարժական կուրսոր վեբ էջերում՝ հնարավորություն տալով ընտրել տեքստը ստեղնաշարով: Դուք ցանկանո՞ւմ եք ակտիվացնել այն:
 tabbrowser-confirm-caretbrowsing-checkbox = Այլևս չույց չտալ այս պատուհանը
+
+## Confirmation dialog for closing all duplicate tabs
+
 
 ##
 
@@ -153,3 +174,13 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Միացնել ձայնը
 tabbrowser-manager-close-tab =
     .tooltiptext = Փակել ներդիրը
+
+## Tab Groups
+
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+
+## Open/saved tab group context menu
+

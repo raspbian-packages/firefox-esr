@@ -15,7 +15,7 @@ policy-AllowedDomainsForApps = Adja meg azokat a domaineket, amelyek hozzáférh
 policy-AllowFileSelectionDialogs = Fájlválasztó párbeszédablakok engedélyezése.
 policy-AppAutoUpdate = Az automatikus alkalmazásfrissítés engedélyezése vagy letiltása.
 policy-AppUpdatePin = A { -brand-short-name } megakadályozása abban, hogy a megadott verzión túl frissüljön.
-policy-AppUpdateURL = Egyéni alkalmazás-frissítési URL megadása.
+policy-AppUpdateURL = Egyéni alkalmazásfrissítési webcím megadása.
 policy-Authentication = Integrált hitelesítés beállítása azokhoz a weboldalakhoz, melyek támogatják.
 policy-AutofillAddressEnabled = Automatikus címkitöltés engedélyezése.
 policy-AutofillCreditCardEnabled = Fizetési módok automatikus kitöltésének engedélyezése.
@@ -74,7 +74,7 @@ policy-ExemptDomainFileTypePairsFromFileTypeDownloadWarnings = A fájlok kiterje
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
-policy-Extensions = Kiegészítők telepítése, eltávolítása vagy zárolása. A Telepítés lehetőség URL-t vagy útvonalat vár paraméterként. Az Eltávolítás és Zárolás kiegészítőazonosítót vár.
+policy-Extensions = Kiegészítők telepítése, eltávolítása vagy zárolása. A Telepítés lehetőség webcímet vagy útvonalat vár paraméterként. Az Eltávolítás és Zárolás kiegészítőazonosítót vár.
 policy-ExtensionSettings = Kezelje a kiegészítők telepítésének összes vonatkozását.
 policy-ExtensionUpdate = Az automatikus kiegészítőfrissítések engedélyezése vagy letiltása.
 policy-FirefoxHome2 = A { -firefox-home-brand-name } beállítása.
@@ -119,6 +119,7 @@ policy-Permissions2 = A kamera, mikrofon, helyadatok, értesítések és automat
 policy-PictureInPicture = Kép a képben engedélyezése vagy letiltása.
 policy-PopupBlocking = Bizonyos weboldalak alapértelmezetten jeleníthessenek meg felugró ablakokat.
 policy-Preferences = Értékek beállítása és zárolása a beállítások egy részhalmazánál.
+policy-PrivateBrowsingModeAvailability = A privát böngészési mód elérhetőségének beállítása.
 policy-PromptForDownloadLocation = Kérdezze meg, hogy hová legyenek letöltve a fájlok.
 policy-Proxy = Proxy-beállítások konfigurálása.
 policy-RequestedLocales = Adja meg a kért területi beállításokat az alkalmazásnak, az Ön által előnyben részesített sorrendben.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Nyomtatás a rendszer nyomtatási párbeszédablak
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Weboldalak felkeresésének blokkolása. Lásd a dokumentációt a formátum részleteiért.
 policy-Windows10SSO = Lehetővé teszi a Windows egyszeri bejelentkezésének használatát a microsoftos, munkahelyi és iskolai fiókok számára.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Egyszeri bejelentkezés engedélyezése a Microsoft Entra-fiókokhoz.

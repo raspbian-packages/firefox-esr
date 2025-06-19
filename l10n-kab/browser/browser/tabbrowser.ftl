@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Mdel Iccer
+           *[other] Mdel { $tabCount } iccaren
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Urar imesli n { $tabCount } waccaren
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -69,6 +83,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = Mdel { $tabCount } accaren?
 tabbrowser-confirm-close-tabs-button = Mdel iccaren
+tabbrowser-ask-close-tabs-checkbox = Ssuter send amdal n waṭas n waccaren
 tabbrowser-confirm-close-tabs-checkbox = Sentem send amdal n waṭas n waccaren
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -91,7 +106,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Mdel asfaylu syen eǧǧ { -brand-
 tabbrowser-confirm-close-tabs-with-key-button = Eǧǧ { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Ssuter send ad teffɣeḍ s { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Sentem send tuffɣa s { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = Ffeɣ seg { -brand-short-name } neɣ mdel iccer amiran?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Ffeɣ { -brand-short-name }
+       *[other] Ffeɣ { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Mdel iccer amiran
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -110,6 +139,12 @@ tabbrowser-confirm-open-multiple-tabs-checkbox = Lɣu-yid ticki ẓẓay { -bran
 tabbrowser-confirm-caretbrowsing-title = Tunigin s teḥnaccaṭ
 tabbrowser-confirm-caretbrowsing-message = Asiti ɣef F7 ad irmed neɣ ad isens tunigin s teḥnaccat. Tamahilt-a ad tsers taḥnaccaṭ i ileḥḥun  deg yisebtar n web, ayen ara ak-yeǧǧen ad tferneḍ aḍris s unasiw. Tebɣiḍ ad tremdeḍ tunigin s teḥnaccaṭ?
 tabbrowser-confirm-caretbrowsing-checkbox = Ur iy-id-skan ara akka d asawen tanaka-yagi n udiwenni.
+
+## Confirmation dialog for closing all duplicate tabs
+
+tabbrowser-confirm-close-duplicate-tabs-title = Ḥader
+tabbrowser-confirm-close-all-duplicate-tabs-title = Mdel accaren i d-yettεawden?
+tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Mdel accaren
 
 ##
 
@@ -153,3 +188,44 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Kkes tasusmi n yiccer
 tabbrowser-manager-close-tab =
     .tooltiptext = Mdel Iccer
+
+## Tab Groups
+
+tab-group-editor-title-create = Rnu agraw n waccaren
+tab-group-editor-title-edit = Sefrek agraw n waccaren
+tab-group-editor-name-label = Isem
+tab-group-editor-cancel =
+    .label = Sefsex
+    .accesskey = S
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-group-editor-action-new-tab =
+    .label = Iccer amaynut deg ugraw
+tab-group-editor-action-new-window =
+    .label = Senkez agraw ɣer usfaylu amaynut
+tab-group-editor-action-save =
+    .label = Sekles syen ffeɣ seg ugraw
+tab-group-editor-action-ungroup =
+    .label = Sefruri accaren
+tab-group-editor-action-delete =
+    .label = Kkes agraw
+tab-group-editor-done =
+    .label = Yemmed
+    .accessKey = D
+tab-context-reopen-tab-group =
+    .label = Ales alday n ugraw n waccaren
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Kkes seg ugraw
+            [one] Kkes seg ugraw
+           *[other] Kkes seg yigrawen
+        }
+    .accesskey = K
+
+## Open/saved tab group context menu
+

@@ -5,7 +5,6 @@
 
 ##
 ## Localization for remote types defined in RemoteType.h
-##
 
 process-type-web = Cuntegn dal web
 # process used to run privileged about pages,
@@ -30,7 +29,6 @@ process-type-prealloc = Preallocà
 
 ##
 ## Localization for Gecko process types defined in GeckoProcessTypes.h
-##
 
 process-type-default = Principal
 process-type-tab = Tab
@@ -41,6 +39,8 @@ process-type-gpu = GPU
 process-type-socket = Socket
 # process used to decode media
 process-type-rdd = RDD
+# process used to run inference
+process-type-inference = Inferenza
 # process used to run some IPC actor in their own sandbox
 process-type-utility = Actur IPC en sandbox
 process-type-utility-actor-audio-decoder-generic = Program da servetsch decodaziun audio generic
@@ -53,7 +53,6 @@ process-type-utility-actor-windows-file-dialog = Program da servetsch dialog da 
 
 ##
 ## Other
-##
 
 # fallback
 process-type-unknown = Nunenconuschent

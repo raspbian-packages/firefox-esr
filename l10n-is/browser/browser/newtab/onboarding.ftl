@@ -189,6 +189,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Haltu { -brand-short-name } í dokkunni
        *[other] Festu { -brand-short-name } á verkefnastikuna
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Festu { -brand-short-name } við verkefnastikuna og upphafsvalmyndina
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -224,7 +226,9 @@ mr2022-onboarding-set-default-subtitle = Notaðu vafra sem studdur er af sjálfs
 mr2022-onboarding-get-started-primary-subtitle = Nýjasta útgáfan okkar er byggð með þarfir þínar í huga, sem gerir það auðveldara en nokkru sinni fyrr að skjótast um vefinn. Þarna er fullt af eiginleikum sem við höldum að þú munir kunna að meta.
 mr2022-onboarding-get-started-primary-button-label = Settu upp á nokkrum sekúndum
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Uppsetning í einum grænum
 mr2022-onboarding-import-subtitle = Settu upp { -brand-short-name } eins og þér hentar. Bættu við bókamerkjunum þínum, lykilorðum og fleiru úr gamla vafranum þínum.
@@ -336,6 +340,14 @@ onboarding-device-migration-subtitle = Skráðu þig inn á { -fxaccount-brand-n
 onboarding-device-migration-subtitle2 = Skráðu þig inn á reikninginn þinn til að hafa bókamerkin þín, lykilorð og feril með þér yfir á nýja tækið þitt.
 onboarding-device-migration-primary-button-label = Skrá inn
 
+## Add-ons Picker screen
+
+amo-picker-title = Sérsníddu { -brand-short-name }
+amo-picker-subtitle = Forritsaukar eru eins og aukaforrit fyrir vafrann þinn og gera þér kleift að vernda lykilorð, sækja myndskeið, finna tilboð, loka fyrir pirrandi auglýsingar, breyta útliti vafrans og margt fleira.
+amo-picker-install-button-label = Bæta við { -brand-short-name }
+amo-picker-install-complete-label = Uppsett
+amo-picker-collection-link = Skoðaðu fleiri viðbætur
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -347,6 +359,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = Þegar þú hefur sam
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } hefur stuðning af þér
 onboarding-gratitude-security-and-privacy-subtitle = Takk fyrir að nota { -brand-short-name }, sem stutt er af Mozilla stofnuninni. Með stuðningi þínum erum við að vinna að því að gera internetið öruggara, aðgengilegra og betra fyrir alla.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Samstilltu gögnin þín milli tækja
+onboarding-sign-up-description = Skráðu þig fyrir reikningi og allar mikilvægar upplýsingar þínar - lykilorð, bókamerki og fleira - verða geymdar á öruggan hátt og verða aðgengilegar þegar þú skráir þig inn á hvaða tæki sem er.
+onboarding-sign-up-button = Nýskráðu þig eða skráðu þig inn
+onboarding-sign-up-secondary-button = Fara að vafra
 
 ## New user time and familiarity survey strings
 
@@ -366,3 +383,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Ég er byrjandi
 onboarding-new-user-survey-familiarity-based-option-2 = Ég hef notað það eitthvað
 onboarding-new-user-survey-familiarity-based-option-3 = Ég er þekki það ágætlega
 onboarding-new-user-survey-familiarity-based-option-4 = Ég hef notaði það áður, en fyrir nokkru síðan
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Segðu okkur hvar þú vilt hafa flipana þína
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Skiptu um þetta hvenær sem er í stillingum hliðarstikunnar.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Þínir flipar, á þinn hátt
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Ertu með marga flipa opna? Prófaðu að hafa flipana þína á hliðinni til að straumlínulaga umhverfið. Eða hafðu það klassískt með flipana efst. Skiptu á milli hvenær sem er.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Veldu framsetningu flipa
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Til að fá straumlínulagað útlit sem getur hjálpað þér að halda einbeitingu, skaltu prófa að setja flipana til hliðar. Eða hafðu það klassískt með flipana efst. Skiptu um útlit hvenær sem er.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Flipar til hliðar
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Flipar efst
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Lóðréttir flipar eru hér
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Kynntu þér lóðrétta flipa
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Prófaðu flipana þína til hliðar. Breyttu því hvenær sem þú vilt í stillingum hliðarstikunnar.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Prófa lóðrétta flipa
+onboarding-flair-text = Nýtt!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Halda láréttum flipum
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Vafragluggi sem sýnir flipa meðfram hlið skjásins sem hluta af { -brand-shorter-name } hliðarstikunni.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Vafragluggi sem sýnir flipa meðfram hlið skjásins sem hluta af { -brand-shorter-name } hliðarstikunni.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Vafragluggi sem sýnir flipa efst.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Vafragluggi sem sýnir flipa efst.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Prófaðu gervigreindar-spjallkerfi í hliðarstikunni
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Taktu saman yfirlit í efni á vefnum, fáðu hugmyndir, gerðu drög að skilaboðum - allt á meðan þú vafrar. Veldu úr mörgum þjónustuveitum. Skiptu um hvenær sem er. <a data-l10n-name="learn-more">Frekari upplýsingar</a>
+onboarding-genai-sidebar-primary-button = Veldu spjallkerfi
+onboarding-genai-sidebar-secondary-button = Fara að vafra
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Ljúka við að setja upp { -brand-short-name }?
+onboarding-checklist-subtitle = Ljúktu þessum skrefum til að fá sem mest út úr vafrinu þínu.
+onboarding-checklist-set-default = Gerðu { -brand-short-name } að sjálfgefnum vafra
+onboarding-checklist-pin = Festu { -brand-short-name } á verkefnastikuna
+onboarding-checklist-import = Flytja inn úr fyrri vafra
+onboarding-checklist-extension = Bæta við forritsauka
+onboarding-checklist-sign-up = Nýskráðu þig eða skráðu þig inn á reikninginn þinn
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Prófaðu flipahópa fyrir minni þrengsli og meiri einbeitingu
+tab-groups-onboarding-feature-callout-subtitle = Skipulegðu þig með því að draga einn flipa ofan á annan til að búa til fyrsta hópinn þinn.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Heilsaðu upp á notkunarsnið í { -brand-product-name }
+multi-profile-spotlight-body = Skiptu auðveldlega á milli þess að vafra fyrir vinnu og skemmtun. Notkunarsnið halda vafurupplýsingunum þínum algjörlega aðskildum, þar á meðal leitarferli og lykilorðum, svo þú getir haft skipulagið á hreinu.
+multi-profile-spotlight-cta = Búðu til notkunarsnið
+multi-profile-callout-title = Búðu til mismunandi snið fyrir vinnu og skemmtun
+multi-profile-callout-subtitle = Notkunarsnið gera þér kleift að halda vafurupplýsingunum þínum, eins og leitarferli og lykilorðum, algjörlega aðskildum.
+multi-profile-callout-cta = Búðu til notkunarsnið

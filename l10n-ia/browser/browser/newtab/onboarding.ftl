@@ -188,6 +188,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Retene { -brand-short-name } in Dock
        *[other] Clava { -brand-short-name } al barra de apps
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Fixar { -brand-short-name } al barra de apps e al menu Initiar
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -223,7 +225,9 @@ mr2022-onboarding-set-default-subtitle = Usa un navigator sustenite per un organ
 mr2022-onboarding-get-started-primary-subtitle = Nostre ultime version es construite circa te, rendente le navigation del web plus facile que jammais. Es replete de functiones que nos crede que tu va adorar.
 mr2022-onboarding-get-started-primary-button-label = Configura lo in secundas
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Installation fulminee
 mr2022-onboarding-import-subtitle = Configura { -brand-short-name } como te place. Adde le marcapaginas, contrasignos e multo plus de tu navigator ancian.
@@ -335,6 +339,14 @@ onboarding-device-migration-subtitle = Accede a tu { -fxaccount-brand-name } pro
 onboarding-device-migration-subtitle2 = Accede a tu conto pro portar con te marcapaginas, contrasignos, e chronologia sur tu nove apparato.
 onboarding-device-migration-primary-button-label = Aperir session
 
+## Add-ons Picker screen
+
+amo-picker-title = Personalisa tu { -brand-short-name }
+amo-picker-subtitle = Extensiones es como apps pro tu navigator, e illes te permitte de proteger contrasignos, discargar videos, trovar accordos, blocar enoiose annuncios publicitari, cambiar como tu navigator pare, e multo plus.
+amo-picker-install-button-label = Adder a { -brand-short-name }
+amo-picker-install-complete-label = Installate
+amo-picker-collection-link = Discoperi altere additivos
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -346,6 +358,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = Quando tu es synchron
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } es tu supporto
 onboarding-gratitude-security-and-privacy-subtitle = Gratias pro usar { -brand-short-name }, supportate per Mozilla Foundation. Con tu supporto, nos labora pro render internet plus secur r plus accessibile pro totes.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Synchronisa tu datos inter apparatos
+onboarding-sign-up-description = Inscribe te a un conto e tote tu info importante, contrasignos, marcapaginas, e altero, sera con securitate immagazinate e disponibile quando tu accede a qualcunque apparato.
+onboarding-sign-up-button = Inscribe te o accede
+onboarding-sign-up-secondary-button = Comencia a navigar
 
 ## New user time and familiarity survey strings
 
@@ -365,3 +382,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Io justo comenciava
 onboarding-new-user-survey-familiarity-based-option-2 = Io lo usava aliquando
 onboarding-new-user-survey-familiarity-based-option-3 = Io lo cognosce multo ben
 onboarding-new-user-survey-familiarity-based-option-4 = Io olim lo usava, ma desde tempore
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Dice nos ubi tu amarea tener tu schedas
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Muta lo quandocunque tu vole in le parametro del barra lateral.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Tu schedas, a tu maniera
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Tene tu multe schedas aperte? Prova tu schedas al latere pro un vision plus simplificate. O mantene lo classic con schedas sur le summitate.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Selige le disposition de tu schedas
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Pro un vision simplificate que pote adjutar te a star concentrate, prova tu schedas al latere. O mantene lo classic con schedas sur le summitate.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Schedas sur le latere
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Schedas sur le parte superior
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Ecce le schedas vertical
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Presentante schedas vertical
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Tenta tu schedas sur le latere. Muta lo quandocunque tu vole in le parametro del barra lateral.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Tenta schedas vertical
+onboarding-flair-text = Nove!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Mantener le schedas horizontal
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Un fenestra de navigator monstrante schedas preter le latere del schermo como parte del barra lateral de { -brand-shorter-name }.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Un fenestra de navigator monstrante schedas preter le latere del schermo como parte del barra lateral de { -brand-shorter-name }.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Un fenestra de navigator monstrante schedas preter su summitate.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Un fenestra de navigator monstrante schedas preter su summitate.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Prova un chatbot IA in le barra lateral
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Resumer contento de web, liberemente exponer ideas, minutas de message, toto quando tu naviga. Seliger ab plure fornitores. Muta lo quandocunque tu vole. <a data-l10n-name="learn-more">Pro saper plus</a>
+onboarding-genai-sidebar-primary-button = Elige un chatbot
+onboarding-genai-sidebar-secondary-button = Comenciar a navigar
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Completar le configuration de { -brand-short-name }
+onboarding-checklist-subtitle = Completa iste passos pro obtener le maximo de tu experientia de navigation.
+onboarding-checklist-set-default = Face de { -brand-short-name } tu navigator predefinite
+onboarding-checklist-pin = Adde { -brand-short-name } al barra de apps
+onboarding-checklist-import = Importa ab le previe navigator
+onboarding-checklist-extension = Adde un extension
+onboarding-checklist-sign-up = Registrate o accede a tu conto
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Prova le gruppos de schedas pro minus disordine, plus concentration
+tab-groups-onboarding-feature-callout-subtitle = Organisa te trahente un scheda al summitate de un altere pro crear tu prime gruppo.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Saluta le profilos de { -brand-product-name }
+multi-profile-spotlight-body = Facilemente passa inter le navigation pro labor e illo pro amusamento. Le profilos mantene tu informationes de navigation, includite chronologia de recerca e contrasignos, totalmente separate de maniera que tu pote restar organisate.
+multi-profile-spotlight-cta = Crear un profilo
+multi-profile-callout-title = Crear profilos differente pro labor e amusamento
+multi-profile-callout-subtitle = Le profilos te permitte mantener tu informationes de navigation, como le chronologia de recerca e le contrasignos, totalmente separate.
+multi-profile-callout-cta = Crear un profilo

@@ -13,6 +13,8 @@ newtab-personalize-icon-label =
     .aria-label = Personalize gnove schede
 newtab-personalize-dialog-label =
     .aria-label = Personalize
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +111,7 @@ newtab-menu-save-to-pocket = Salve su { -pocket-brand-name }
 newtab-menu-delete-pocket = Elimine di { -pocket-brand-name }
 newtab-menu-archive-pocket = Archivie in { -pocket-brand-name }
 newtab-menu-show-privacy-info = I nestris patrocinadôrs e la tô riservatece
+newtab-menu-about-fakespot = Informazions su { -fakespot-brand-name }
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -201,6 +204,8 @@ newtab-section-header-recent-activity = Ativitât resinte
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Conseât di { $provider }
 newtab-section-header-stories = Storiis che a fasin pensâ
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Lis sieltis di vuê par te
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -232,6 +237,8 @@ newtab-pocket-cta-button = Oten { -pocket-brand-name }
 newtab-pocket-cta-text = Salve lis storiis che ti plasin in { -pocket-brand-name } e nudrìs il to cjâf cun leturis apassionantis.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } al è part de famee { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Salve
 newtab-pocket-saved = Salvât
 
@@ -243,6 +250,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = No mi interesse
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Graciis. La tô opinion nus judarà a miorâ il to feed.
 newtab-toast-thumbs-up-or-down = Graciis. La tô opinion nus judarà a miorâ il to feed.
 newtab-toast-dismiss-button =
     .title = Siere
@@ -308,6 +318,8 @@ newtab-wallpaper-dark-panda = Panda ros platât tal bosc
 newtab-wallpaper-dark-sky = Paisaç di citât cun cîl di gnot
 newtab-wallpaper-dark-mountain = Paisaç cun montagne
 newtab-wallpaper-dark-city = Paisaç citadin cun tonalitât viole
+newtab-wallpaper-dark-fox-anniversary = Une bolp sul marcjepît dongje di un bosc
+newtab-wallpaper-light-fox-anniversary = Une bolp intun cjamp jerbôs cuntun paesaç di montagne infumatât
 
 ## Solid Colors
 
@@ -372,6 +384,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Sponsorizât
 newtab-weather-menu-change-location = Cambie localitât
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Cîr localitât
+    .aria-label = Cîr localitât
 newtab-weather-change-location-search-input = Cîr localitât
 newtab-weather-menu-weather-display = Visualizazion meteo
 # Display options are:
@@ -390,3 +405,59 @@ newtab-weather-menu-hide-weather = Plate il meteo ae Gnove schede
 newtab-weather-menu-learn-more = Plui informazions
 # This message is shown if user is working offline
 newtab-weather-error-not-available = I dâts sul meteo in chest moment no son disponibii.
+
+## Topic Labels
+
+newtab-topic-label-business = Economie
+newtab-topic-label-career = Cariere
+newtab-topic-label-education = Educazion
+newtab-topic-label-arts = Intratigniment
+newtab-topic-label-food = Mangjative
+newtab-topic-label-health = Salût
+newtab-topic-label-hobbies = Zûcs
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Financis personâls
+newtab-topic-label-society-parenting = Educazion dai fîs
+newtab-topic-label-government = Politiche
+newtab-topic-label-education-science = Sience
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Mioraments personâi
+newtab-topic-label-sports = Sports
+newtab-topic-label-tech = Tecnologjie
+newtab-topic-label-travel = Viaçs
+newtab-topic-label-home = Cjase e zardin
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Selezione i argoments par regolâ il to feed
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Sielç doi o plui argoments. I nestris esperts curadôrs a daran prioritât aes storiis plui adatis ai tiei interès. Tu puedis inzornâ lis tôs preferencis cuant che tu vûs.
+newtab-topic-selection-save-button = Salve
+newtab-topic-selection-cancel-button = Anule
+newtab-topic-selection-button-maybe-later = Magari plui indevant
+newtab-topic-selection-privacy-link = Scuvierç cemût che o gjestìn e o protezìn i dâts
+newtab-topic-selection-button-update-interests = Inzorne i tiei interès
+newtab-topic-selection-button-pick-interests = Sielç i tiei interès
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

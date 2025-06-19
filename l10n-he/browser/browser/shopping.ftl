@@ -89,6 +89,9 @@ shopping-show-less-button = להציג פחות
 
 shopping-settings-label =
     .label = הגדרות
+shopping-settings-recommendations-toggle2 =
+    .label = הצגת המלצות ותוכן ממומן
+shopping-settings-recommendations-learn-more3 = ‏{ -brand-product-name } לא משתף את הנתונים האישיים שלך, כך שההמלצות האלה לא יעקבו אחריך ברחבי הרשת. <a data-l10n-name="review-quality-url">מידע נוסף</a>
 shopping-settings-recommendations-toggle =
     .label = הצגת פרסומות בבודק הסקירות
 shopping-settings-recommendations-learn-more2 = מדי פעם יוצגו פרסומות עבור מוצרים רלוונטיים. אנו מפרסמים רק מוצרים בעלי סקירות אמינות. <a data-l10n-name="review-quality-url">מידע נוסף</a>
@@ -160,12 +163,13 @@ shopping-unanalyzed-product-analyze-button = בדיקת איכות הסקירו�
 
 ## Strings for the advertisement
 
+shopping-sponsored-label = ממומן
 ad-by-fakespot = פרסומת מאת { -fakespot-brand-name }
 
 ## Shopping survey strings.
 
 shopping-survey-headline = עזרה בשיפור { -brand-product-name }
-shopping-survey-question-one = עד כמה היית מרוצה מחויית בודק הסקירות ב־{ -brand-product-name }?
+shopping-survey-question-one = עד כמה הינך מרוצה מחווית בודק הסקירות ב־{ -brand-product-name }?
 shopping-survey-q1-radio-1-label = מאוד מרוצה
 shopping-survey-q1-radio-2-label = מרוצה
 shopping-survey-q1-radio-3-label = נטרלי
@@ -180,6 +184,18 @@ shopping-survey-submit-button-label = שליחה
 shopping-survey-terms-link = תנאי שימוש
 shopping-survey-thanks =
     .heading = תודה על המשוב שלך!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = נשמע לשמוע מדוע כיבית את בודק הסקירות. ניתן לסמן מספר אפשרויות אם יש בכך צורך.
+shopping-survey-thanks-title = תודה על המשוב שלך!
+shopping-survey-opted-out-hard-to-understand = זה קשה להבנה
+shopping-survey-opted-out-too-slow = זה איטי מידי
+shopping-survey-opted-out-not-accurate = זה לא מדויק
+shopping-survey-opted-out-not-helpful = זה לא מועיל לי
+shopping-survey-opted-out-check-myself = אעדיף לבדוק סקירות בעצמי
+shopping-survey-opted-out-other = אחר
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

@@ -8,11 +8,18 @@
 newtab-page-title = แท็บใหม่
 newtab-settings-button =
     .title = ปรับแต่งหน้าแท็บใหม่ของคุณ
+newtab-personalize-settings-icon-label =
+    .title = ปรับแต่งแท็บใหม่
+    .aria-label = การตั้งค่า
+newtab-settings-dialog-label =
+    .aria-label = การตั้งค่า
 newtab-personalize-icon-label =
     .title = ปรับแท็บใหม่ให้เป็นส่วนตัว
     .aria-label = ปรับแท็บใหม่ให้เป็นส่วนตัว
 newtab-personalize-dialog-label =
     .aria-label = ปรับให้เป็นแบบส่วนตัว
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = บันทึกไปยัง { -pocket-brand-n
 newtab-menu-delete-pocket = ลบจาก { -pocket-brand-name }
 newtab-menu-archive-pocket = เก็บถาวรใน { -pocket-brand-name }
 newtab-menu-show-privacy-info = สปอนเซอร์ของเราและความเป็นส่วนตัวของคุณ
+newtab-menu-about-fakespot = เกี่ยวกับ { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = ปิดกั้น
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = เลิกติดตามหัวข้อ
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = กิจกรรมล่าสุด
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = แนะนำโดย { $provider }
 newtab-section-header-stories = เรื่องราวที่จุดประกายความคิด
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = บทความคัดสรรสำหรับคุณประจำวันนี้
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,8 +247,26 @@ newtab-pocket-cta-button = รับ { -pocket-brand-name }
 newtab-pocket-cta-text = บันทึกเรื่องราวที่คุณรักลงใน { -pocket-brand-name } และเติมเต็มสมองของคุณด้วยบทความที่น่าหลงใหล
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } เป็นส่วนหนึ่งของตระกูล { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = บันทึก
 newtab-pocket-saved = บันทึกแล้ว
+
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
+# Clicking the thumbs up button for this story will result in more stories like this one being recommended
+newtab-pocket-thumbs-up-tooltip =
+    .title = เรื่องราวที่คล้ายกัน
+# Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
+newtab-pocket-thumbs-down-tooltip =
+    .title = ฉันไม่สนใจ
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = ขอบคุณ ความคิดเห็นของคุณจะช่วยเราปรับปรุงฟีดของคุณให้ดีขึ้น
+newtab-toast-thumbs-up-or-down = ขอบคุณ ความคิดเห็นของคุณจะช่วยเราปรับปรุงฟีดของคุณให้ดีขึ้น
+newtab-toast-dismiss-button =
+    .title = ปิด
+    .aria-label = ปิด
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
 
@@ -293,10 +327,61 @@ newtab-wallpaper-dark-panda = แพนด้าแดงที่ซ่อน�
 newtab-wallpaper-dark-sky = วิวเมืองใต้ท้องฟ้ายามค่ำคืน
 newtab-wallpaper-dark-mountain = วิวภูเขา
 newtab-wallpaper-dark-city = วิวเมืองสีม่วง
+newtab-wallpaper-dark-fox-anniversary = สุนัขจิ้งจอกอยู่บนทางเท้าใกล้ป่าแห่งหนึ่ง
+newtab-wallpaper-light-fox-anniversary = สุนัขจิ้งจอกอยู่ในทุ่งหญ้าที่มีทิวทัศน์ภูเขาซึ่งเต็มไปด้วยหมอก
+
+## Solid Colors
+
+newtab-wallpaper-category-title-colors = สีทึบ
+newtab-wallpaper-blue = น้ำเงิน
+newtab-wallpaper-light-blue = น้ำเงินอ่อน
+newtab-wallpaper-light-purple = ม่วงอ่อน
+newtab-wallpaper-light-green = เขียวอ่อน
+newtab-wallpaper-green = เขียว
+newtab-wallpaper-beige = เบจ
+newtab-wallpaper-yellow = เหลือง
+newtab-wallpaper-orange = ส้ม
+newtab-wallpaper-pink = ชมพู
+newtab-wallpaper-light-pink = ชมพูอ่อน
+newtab-wallpaper-red = แดง
+newtab-wallpaper-dark-blue = น้ำเงินเข้ม
+newtab-wallpaper-dark-purple = ม่วงเข้ม
+newtab-wallpaper-dark-green = เขียวเข้ม
+newtab-wallpaper-brown = น้ำตาล
+
+## Abstract
+
+newtab-wallpaper-category-title-abstract = นามธรรม
+newtab-wallpaper-abstract-green = รูปร่างสีเขียว
+newtab-wallpaper-abstract-blue = รูปร่างสีน้ำเงิน
+newtab-wallpaper-abstract-purple = รูปร่างสีม่วง
+newtab-wallpaper-abstract-orange = รูปร่างสีส้ม
+newtab-wallpaper-gradient-orange = ไล่ระดับสีส้มและชมพู
+newtab-wallpaper-abstract-blue-purple = รูปร่างสีน้ำเงินและสีม่วง
+
+## Photographs
+
+newtab-wallpaper-category-title-photographs = ภาพถ่าย
+newtab-wallpaper-beach-at-sunrise = ชายหาดตอนพระอาทิตย์ขึ้น
+newtab-wallpaper-beach-at-sunset = ชายหาดตอนพระอาทิตย์ตก
+newtab-wallpaper-storm-sky = ท้องฟ้ามีพายุ
+newtab-wallpaper-sky-with-pink-clouds = ท้องฟ้ามีเมฆสีชมพู
+newtab-wallpaper-red-panda-yawns-in-a-tree = แพนด้าแดงหาวอยู่บนต้นไม้
+newtab-wallpaper-white-mountains = ภูเขาสีขาว
 # Variables
 #   $author_string (String) - The name of the creator of the photo.
 #   $webpage_string (String) - The name of the webpage where the photo is located.
 newtab-wallpaper-attribution = ภาพถ่ายโดย <a data-l10n-name="name-link">{ $author_string }</a> จาก <a data-l10n-name="webpage-link">{ $webpage_string }</a>
+newtab-wallpaper-feature-highlight-header = ลองเลือกสีสันที่คุณชอบ
+newtab-wallpaper-feature-highlight-content = เปลี่ยนโฉมแท็บใหม่ของคุณด้วยภาพพื้นหลัง
+newtab-wallpaper-feature-highlight-button = เข้าใจแล้ว
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .title = ปิด
+    .aria-label = ปิดป็อปอัป
+feature-highlight-wallpaper =
+    .title = { -newtab-wallpaper-feature-highlight-header }
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
 
 ## New Tab Weather
 
@@ -308,6 +393,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = สนับสนุนโดย { $provider }
 newtab-weather-menu-change-location = เปลี่ยนตำแหน่งที่ตั้ง
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = ค้นหาตำแหน่งที่ตั้ง
+    .aria-label = ค้นหาตำแหน่งที่ตั้ง
 newtab-weather-change-location-search-input = ค้นหาตำแหน่งที่ตั้ง
 newtab-weather-menu-weather-display = การแสดงผลพยากรณ์อากาศ
 # Display options are:
@@ -326,3 +414,66 @@ newtab-weather-menu-hide-weather = ซ่อนพยากรณ์อากา
 newtab-weather-menu-learn-more = เรียนรู้เพิ่มเติม
 # This message is shown if user is working offline
 newtab-weather-error-not-available = ไม่มีข้อมูลพยากรณ์อากาศในขณะนี้
+
+## Topic Labels
+
+newtab-topic-label-business = ธุรกิจ
+newtab-topic-label-career = อาชีพ
+newtab-topic-label-education = การศึกษา
+newtab-topic-label-arts = ความบันเทิง
+newtab-topic-label-food = อาหาร
+newtab-topic-label-health = สุขภาพ
+newtab-topic-label-hobbies = เกมมิ่ง
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = เงิน
+newtab-topic-label-society-parenting = การเลี้ยงลูก
+newtab-topic-label-government = การเมือง
+newtab-topic-label-education-science = วิทยาศาสตร์
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = เคล็ดลับการใช้ชีวิต
+newtab-topic-label-sports = กีฬา
+newtab-topic-label-tech = เทคโนโลยี
+newtab-topic-label-travel = การท่องเที่ยว
+newtab-topic-label-home = บ้านและสวน
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = เลือกหัวข้อเพื่อปรับแต่งฟีดของคุณ
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = เลือกหัวข้อสองหัวข้อขึ้นไป ผู้เชี่ยวชาญของเราจะจัดลำดับความสำคัญของเรื่องราวที่ปรับให้เหมาะกับความสนใจของคุณ ซึ่งสามารถอัปเดตได้ตลอดเวลา
+newtab-topic-selection-save-button = บันทึก
+newtab-topic-selection-cancel-button = ยกเลิก
+newtab-topic-selection-button-maybe-later = ไว้ภายหลัง
+newtab-topic-selection-privacy-link = เรียนรู้ว่าเราปกป้องและจัดการข้อมูลอย่างไร
+newtab-topic-selection-button-update-interests = ปรับเปลี่ยนความสนใจของคุณ
+newtab-topic-selection-button-pick-interests = เลือกความสนใจของคุณ
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = ติดตาม
+newtab-section-following-button = ติดตามอยู่
+newtab-section-unfollow-button = เลิกติดตาม
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = คุณแน่ใจหรือไม่ว่าต้องการปิดกั้นส่วนนี้?
+newtab-section-confirm-block-section-p2 = ส่วนที่ถูกปิดกั้นจะไม่ปรากฏในฟีดของคุณอีกต่อไป
+newtab-section-block-section-button = ปิดกั้นส่วนนี้
+newtab-section-cancel-button = ยังไม่ทำตอนนี้
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

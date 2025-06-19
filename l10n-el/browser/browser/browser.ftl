@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = Ιδιωτική περιήγηση { -brand-shortcut-name }
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = Ιδιωτική περιήγηση { -brand-full-name }
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — Ιδιωτική περιήγηση { -brand-full-name }
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — Ιδιωτική περιήγηση { -brand-full-name }
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name } — { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Ιδιωτική περιήγηση { -brand-full-name }
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — Ιδιωτική περιήγηση
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — Ιδιωτική περιήγηση { -brand-full-name }
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — Ιδιωτική περιήγηση
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Ιδιωτική περιήγηση
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -309,6 +367,10 @@ quickactions-cmd-viewsource = προβολή πηγής, πηγαίος κώδι
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Μάθετε περισσότερα για τις γρήγορες ενέργειες
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Πατήστε Tab για επιλογή:
 
 ## Bookmark Panel
 
@@ -547,6 +609,8 @@ urlbar-go-button =
     .tooltiptext = Μετάβαση στη διεύθυνση της γραμμής διευθύνσεων
 urlbar-page-action-button =
     .tooltiptext = Ενέργειες σελίδας
+urlbar-revert-button =
+    .tooltiptext = Εμφάνιση διεύθυνσης στη γραμμή τοποθεσίας
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -607,6 +671,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = Αναζήτηση με { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Αναζήτηση σε { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Αναζήτηση με { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Επιλογή μηχανής αναζήτησης
+urlbar-searchmode-bookmarks =
+    .label = Σελιδοδείκτες
+urlbar-searchmode-tabs =
+    .label = Καρτέλες
+urlbar-searchmode-history =
+    .label = Ιστορικό
+urlbar-searchmode-actions =
+    .label = Ενέργειες
+urlbar-searchmode-exit-button =
+    .tooltiptext = Κλείσιμο
+urlbar-searchmode-popup-description = Αυτήν τη φορά αναζήτηση με:
+urlbar-searchmode-popup-search-settings = Ρυθμίσεις αναζήτησης
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, επιλογή μηχανής αναζήτησης
+    .tooltiptext = { $engine }, επιλογή μηχανής αναζήτησης
+urlbar-searchmode-button-no-engine =
+    .label = Δεν έχει επιλεγεί συντόμευση, επιλέξτε συντόμευση
+    .tooltiptext = Δεν έχει επιλεγεί συντόμευση, επιλέξτε συντόμευση
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -616,6 +712,12 @@ urlbar-result-action-search-bookmarks = Αναζήτηση σελιδοδεικ�
 urlbar-result-action-search-history = Αναζήτηση ιστορικού
 urlbar-result-action-search-tabs = Αναζήτηση καρτελών
 urlbar-result-action-search-actions = Αναζήτηση ενεργειών
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Εναλλαγή σε «{ $group }»
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = Άνοιγμα «{ $group }»
 
 ## Labels shown above groups of urlbar results
 
@@ -929,6 +1031,9 @@ data-reporting-notification-button =
     .accesskey = ξ
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Ιδιωτική περιήγηση
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Ιδιωτική περιήγηση
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -937,7 +1042,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Προστασία δεδομένων
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = Ο οργανισμός σας χρησιμοποιεί το { $agentName } για προστασία από απώλεια δεδομένων. <a data-l10n-name="info">Μάθετε περισσότερα</a>
+content-analysis-panel-text-styled = Ο οργανισμός σας χρησιμοποιεί το <b>{ $agentName }</b> για προστασία από απώλεια δεδομένων. <a data-l10n-name="info">Μάθετε περισσότερα</a>
 
 ## Unified extensions (toolbar) button
 
@@ -962,6 +1067,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Επεκτάσεις
         Ορισμένες επεκτάσεις δεν επιτρέπονται
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Επεκτάσεις
+    .tooltiptext =
+        Επεκτάσεις
+        Ορισμένες επεκτάσεις είναι απενεργοποιημένες
 
 ## Private browsing reset button
 
@@ -1002,6 +1116,7 @@ firefox-relay-offer-legal-notice = Κάνοντας κλικ στο «Χρήση
 popup-notification-addon-install-unsigned =
     .value = (Μη επαληθευμένο)
 popup-notification-xpinstall-prompt-learn-more = Μάθετε περισσότερα σχετικά με την ασφαλή εγκατάσταση πρόσθετων
+popup-notification-xpinstall-prompt-block-url = Προβολή λεπτομερειών
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = Εκτέλεση σε ιδιωτικά παράθυρα

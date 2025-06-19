@@ -119,6 +119,7 @@ policy-Permissions2 = Ffurfweddwch y caniatâd ar gyfer camera, meicroffon, lleo
 policy-PictureInPicture = Galluogi neu analluogi Llun-mewn-Llun.
 policy-PopupBlocking = Caniatáu rhai gwefannau i ddangos llamlenni drwy ragosodiad.
 policy-Preferences = Gosod a chloi gwerth is-set o ddewisiadau.
+policy-PrivateBrowsingModeAvailability = Gosod argaeledd y modd pori preifat.
 policy-PromptForDownloadLocation = Gofynnwch ble i gadw ffeiliau wrth eu llwytho i lawr.
 policy-Proxy = Ffurfweddu gosodiadau eilydd
 policy-RequestedLocales = Gosodwch y rhestr o locales gofynnol ar gyfer y rhaglen yn ôl eich trefn dewis.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Argraffu gan ddefnyddio deialog argraffu'r system.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Rhwystro gwefannau rhag derbyn ymweliadau. Gw. dogfennaeth am ragor o wybodaeth ar y fformat.
 policy-Windows10SSO = Caniatáu mewngofnodiad unigol ar gyfer cyfrifon Microsoft, gwaith ac ysgol.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Caniatáu mewngofnodi sengl ar gyfer cyfrifon Microsoft Entra.

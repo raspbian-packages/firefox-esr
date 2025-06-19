@@ -21,6 +21,28 @@ browser-main-window-window-titles =
     .data-title-private = { -brand-full-name } అంతరంగిక విహరణ
     .data-content-title-default = { $content-title } — { -brand-full-name }
     .data-content-title-private = { $content-title } — { -brand-full-name } అంతరంగిక విహరణ
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+browser-main-window-mac-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — అంతరంగిక విహారణ
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — అంతరంగిక విహారణ
 # This gets set as the initial title, and is overridden as soon as we start
 # updating the titlebar based on loaded tabs or private browsing state.
 # This should match the `data-title-default` attribute in both
@@ -29,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } అంతరంగిక విహారణ
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } ఆంతరంగిక విహారణ
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } ఆంతరంగిక విహారణ
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } ఆంతరంగిక విహారణ
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name } — { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — { -brand-full-name } ఆంతరంగిక విహారణ
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name }— ఆంతరంగిక విహారణ
+    .data-title-default-with-profile = { $profile-name }—{ -brand-full-name }
+    .data-title-private-with-profile = { $profile-name }—{ -brand-full-name } ఆంతరంగిక విహారణ
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title }— ఆంతరంగిక విహారణ
+    .data-content-title-default-with-profile = { $content-title }—{ $profile-name }
+    .data-content-title-private-with-profile = { $content-title }—{ $profile-name }— ఆంతరంగిక విహారణ
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -84,6 +164,8 @@ urlbar-search-tips-confirm-short = అర్థమైంది
 # localized equivalent.
 urlbar-tip-icon-description =
     .alt = చిట్కా:
+urlbar-result-menu-button =
+    .title = మెనూని తెరువు
 urlbar-result-menu-button-feedback = ప్రతిస్పందన
     .title = మెనూని తెరువు
 urlbar-result-menu-learn-more =
@@ -216,8 +298,20 @@ quickactions-cmd-bookmarks = ఇష్టాంశాలు
 # Opens a SUMO article explaining how to clear history
 quickactions-clearhistory = చరిత్రను తుడిచివేయి
 quickactions-cmd-downloads = దింపుకోళ్ళు
+# Opens the print dialog at the save to PDF option
+quickactions-savepdf = పేజీని PDFగా భద్రపరుచు
 quickactions-cmd-private = అంతరంగిక విహారణ
+# Restarts the browser
+quickactions-restart = { -brand-short-name }‌ను పునఃప్రారంభించు
+# Opens the screenshot tool
+quickactions-screenshot3 = తెరపట్టు తీసుకోండి
+quickactions-cmd-settings = అమరికలు, ప్రాధాన్యతలు, ఎంపికలు
+# Opens about:addons page in the themes section
+quickactions-themes = అలంకారాల నిర్వహణ
 quickactions-cmd-themes = అలంకారాలు
+quickactions-cmd-update = తాజాకరించు
+# Opens the view-source UI with current pages source
+quickactions-viewsource2 = పేజీ మూలాన్ని చూడండి
 
 ## Bookmark Panel
 
@@ -260,6 +354,7 @@ identity-connection-secure = సురక్షిత అనుసంధాన�
 identity-connection-failure = అనుసంధాన వైఫల్యం
 identity-connection-internal = ఇది సురక్షిత { -brand-short-name } పేజీ.
 identity-connection-file = ఈ పేజీ మీ కంప్యూటర్లో భద్రమైవుంది.
+identity-connection-associated = ఈ పేజీ వేరొక పేజీ నుండి తెరవబడింది.
 identity-extension-page = ఈ పేజీ ఒక పొడగింత నుండి తెరవబడింది.
 identity-active-blocked = ఈ పేజీలో సురక్షితంకాని భాగాలను { -brand-short-name } నిరోధించింది.
 identity-custom-root = మొజిల్లాచే గుర్తించబడని ధ్రువపత్ర జారీదారు అనుసంధానాన్ని నిర్ధారించారు.
@@ -344,6 +439,7 @@ browser-tab-mute =
 browser-import-button2 =
     .label = ఇష్టాంశాలను దిగుమతిచేయి…
     .tooltiptext = మరొక విహారిణి నుండి { -brand-short-name } లోనికి ఇష్టాంశాలను దిగుమతి చేసుకోండి.
+bookmarks-toolbar-empty-message = త్వరగా చేరుకోడానికి, మీ ఇష్టాంశాలను ఇక్కడ ఇష్టాంశాల పట్టీ మీద పెట్టుకోండి. <a data-l10n-name="manage-bookmarks">ఇష్టాంశాల నిర్వహణ…</a>
 
 ## WebRTC Pop-up notifications
 
@@ -359,6 +455,9 @@ popup-select-microphone-icon =
     .tooltiptext = మైక్రోఫోను
 popup-select-speaker-icon =
     .tooltiptext = స్పీకర్లు
+popup-select-window-or-screen =
+    .label = కిటికీ లేదా తెర:
+    .accesskey = W
 popup-all-windows-shared = మీ తెర మీద కనిపించే అన్ని విండోలు పంచుకోబడతాయి.
 
 ## WebRTC window or screen share tab switch warning
@@ -440,7 +539,7 @@ urlbar-result-action-search-in-private = అంతరంగిక కిటి�
 # "Search", and we would like to avoid strings like "Search MSN Search".
 # Variables
 #  $engine (String): the name of a search engine
-urlbar-result-action-search-w-engine = { $engine } తో అన్వేషించు
+urlbar-result-action-search-w-engine = { $engine }‌తో వెతకండి
 urlbar-result-action-sponsored = ప్రాయోజితం
 urlbar-result-action-switch-tab = ట్యాబుకు మారండి
 urlbar-result-action-visit = చూడండి
@@ -454,6 +553,18 @@ urlbar-result-action-calculator-result = = { $result }
 
 ## Strings used for buttons in the urlbar
 
+urlbar-searchmode-bookmarks =
+    .label = ఇష్టాంశాలు
+urlbar-searchmode-tabs =
+    .label = ట్యాబులు
+urlbar-searchmode-history =
+    .label = చరిత్ర
+urlbar-searchmode-actions =
+    .label = చర్యలు
+urlbar-searchmode-exit-button =
+    .tooltiptext = మూసివేయి
+urlbar-searchmode-popup-description = ఈసారి దీనితో వెతుకు:
+urlbar-searchmode-popup-search-settings = వెతుకుడు అమరికలు
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -478,6 +589,14 @@ urlbar-group-search-suggestions =
 # A label shown above Quick Actions in the urlbar results.
 urlbar-group-quickactions =
     .label = త్వరిత చర్యలు
+# A label shown above the recent searches group in the urlbar results.
+# Variables
+#  $engine (String): the name of the search engine used to search.
+urlbar-group-recent-searches =
+    .label = ఇటీవలి వెతుకులాటలు
+urlbar-result-menu-trending-why =
+    .label = ఇది నాకు ఎందుకు కనిపిస్తుంది?
+    .accesskey = W
 
 ## Reader View toolbar buttons
 
@@ -715,20 +834,38 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = అంతరంగిక విహారణ
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = అంతరంగిక విహరణ
 
 ## Unified extensions (toolbar) button
 
+unified-extensions-button =
+    .label = పొడగింతలు
+    .tooltiptext = పొడగింతలు
 
 ## Unified extensions button when permission(s) are needed.
 ## Note that the new line is intentionally part of the tooltip.
 
+unified-extensions-button-permissions-needed =
+    .label = పొడగింతలు
+    .tooltiptext =
+        పొడగింతలు
+        అనుమతులు కావాలి
 
 ## Unified extensions button when some extensions are quarantined.
 ## Note that the new line is intentionally part of the tooltip.
 
 
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+
 ## Private browsing reset button
 
+reset-pbm-panel-always-ask-checkbox =
+    .label = ఎల్లప్పుడూ అడుగు
+    .accesskey = A
 reset-pbm-panel-cancel-button =
     .label = రద్దుచేయి
     .accesskey = C
@@ -749,6 +886,11 @@ refresh-blocked-allow =
 popup-notification-addon-install-unsigned =
     .value = (నిర్ధారించబడనిది)
 popup-notification-xpinstall-prompt-learn-more = పొడగింతలను సురక్షితంగా స్థాపించుకోవడం గురించి ఇంకా తెలుసుకోండి
+popup-notification-xpinstall-prompt-block-url = వివరాలను చూడండి
+# Note: Access key is set to P to match "Private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox =
+    .label = అంతరంగిక కిటికీలలో నడుపు
+    .accesskey = P
 
 ## Pop-up warning
 
@@ -774,3 +916,16 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = '{ $popupURI }' చూపించు
+
+## File-picker crash notification ("FilePickerCrashed.sys.mjs")
+
+
+# Button used with file-picker-crashed-save-default. Opens the folder in Windows
+# Explorer, with the saved file selected and in focus.
+#
+# The wording here should be consistent with the Windows variant of
+# `downloads-cmd-show-menuitem-2` and similar messages.
+
+file-picker-crashed-show-in-folder =
+    .label = సంచయంలో చూపించు
+    .accessKey = F

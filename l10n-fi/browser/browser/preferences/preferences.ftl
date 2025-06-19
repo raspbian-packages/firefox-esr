@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Lähetä sivustoille Älä seuraa -signaali, että et halua sinua seurattavan
+do-not-track-removal = "Älä seuraa"-signaali ei ole enää tuettu
 do-not-track-description2 =
     .label = Lähetä verkkosivustoille "Älä seuraa"-pyyntö
     .accesskey = ä
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Avaa { -brand-short-name } automaattisesti, kun tietokoneesi käynnistyy
     .accesskey = O
 windows-launch-on-login-disabled = Tämä asetus on poistettu käytöstä Windowsissa. Jos haluat muuttaa sitä, siirry kohtaan <a data-l10n-name="startup-link">Käynnistyssovellukset</a> asetuksissa.
+windows-launch-on-login-profile-disabled = Ota tämä asetus käyttöön valitsemalla "{ profile-manager-use-selected.label }" "Valitse käyttäjäprofiili"-ikkunassa.
 startup-restore-warn-on-quit =
     .label = Varoita, kun selainta ollaan sulkemassa
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Avaa linkit välilehtiin uusien ikkunoiden sijasta
     .accesskey = A
+ask-on-close-multiple-tabs =
+    .label = Kysy ennen useiden välilehtien sulkemista
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Kysy ennen pikanäppäimellä { $quitKey } lopettamista
+    .accesskey = ä
 confirm-on-close-multiple-tabs =
     .label = Vahvista ennen kuin useat välilehdet suljetaan
     .accesskey = s
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Tallentamasi tai vierailemasi sivustot
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponsoroidut oikotiet
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Suositukset lähteestä { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Näytä hakuehdotukset osoitepalkkihauissa
     .accesskey = o
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Näytä hakuehdot tulossivujen osoitepalkissa
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Luottokortit
 sync-currently-syncing-payment-methods = Maksutavat
 sync-currently-syncing-addons = Lisäosat
 sync-currently-syncing-settings = Asetukset
+sync-manage-options =
+    .label = Hallinnoi synkronointia…
+    .accesskey = s
 sync-change-options =
     .label = Muuta…
     .accesskey = M
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Asetukset
     .tooltiptext = Muuttamasi yleiset asetukset sekä tietosuoja- ja turvallisuusasetukset
     .accesskey = A
+sync-choose-what-to-sync-dialog4 =
+    .title = Hallitse mitä kaikille yhdistetyille laitteillesi synkronoidaan
+    .style = min-width: 36em;
+    .buttonlabelaccept = Tallenna
+    .buttonaccesskeyaccept = T
+    .buttonlabelextra2 = Katkaise yhteys…
+    .buttonaccesskeyextra2 = K
 
 ## The device name controls.
 
@@ -1360,13 +1386,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name(case: "ablative") }
 
 httpsonly-header = Vain HTTPS -tila
 httpsonly-description = HTTPS:n avulla { -brand-short-name } muodostaa suojatun ja salatun yhteyden vierailemiisi sivustoihin. Useimmat sivustot tukevat HTTPS:ää, ja jos ”Vain HTTPS”-tila on käytössä, { -brand-short-name } muuntaa kaikki yhteydet käyttämään HTTPS:ää.
+httpsonly-description2 = { -brand-short-name } luo suojattuja ja salattuja yhteyksiä sivustoihin, joissa käyt. { -brand-short-name } varoittaa, jos yhteys ei ole suojattu, kun "Vain HTTPS"-tila on käytössä.
 httpsonly-learn-more = Lue lisää
 httpsonly-radio-enabled =
     .label = Käytä ”Vain HTTPS”-tilaa kaikissa ikkunoissa
+httpsonly-radio-enabled2 =
+    .label = Käytä vain HTTPS:ää kaikissa ikkunoissa
 httpsonly-radio-enabled-pbm =
     .label = Käytä ”Vain HTTPS”-tilaa vain yksityisissä ikkunoissa
+httpsonly-radio-enabled-pbm2 =
+    .label = Käytä vain HTTPS:ää yksityisissä ikkunoissa
 httpsonly-radio-disabled =
     .label = Älä käytä ”Vain HTTPS”-tilaa
+httpsonly-radio-disabled2 =
+    .label = Kokeile ensin HTTPS:ää, mutta salli yhteydet, jotka eivät ole suojattuja
 
 ## DoH Section
 

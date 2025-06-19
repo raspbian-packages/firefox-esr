@@ -8,11 +8,18 @@
 newtab-page-title = Nouvel onglet
 newtab-settings-button =
     .title = Personnaliser la page Nouvel onglet
+newtab-personalize-settings-icon-label =
+    .title = Personnaliser la page Nouvel onglet
+    .aria-label = Paramètres
+newtab-settings-dialog-label =
+    .aria-label = Paramètres
 newtab-personalize-icon-label =
     .title = Personnaliser la page de nouvel onglet
     .aria-label = Personnaliser la page de nouvel onglet
 newtab-personalize-dialog-label =
     .aria-label = Personnaliser
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Enregistrer dans { -pocket-brand-name }
 newtab-menu-delete-pocket = Supprimer de { -pocket-brand-name }
 newtab-menu-archive-pocket = Archiver dans { -pocket-brand-name }
 newtab-menu-show-privacy-info = Nos sponsors et votre vie privée
+newtab-menu-about-fakespot = À propos de { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Bloquer
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Ne plus suivre ce sujet
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -196,6 +210,8 @@ newtab-section-header-recent-activity = Activité récente
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Recommandations par { $provider }
 newtab-section-header-stories = Des articles qui font réfléchir
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Notre sélection du jour
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -227,6 +243,8 @@ newtab-pocket-cta-button = Installer { -pocket-brand-name }
 newtab-pocket-cta-text = Enregistrez les articles que vous aimez dans { -pocket-brand-name }, et stimulez votre imagination avec des lectures fascinantes.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } fait partie de la famille { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Enregistrer
 newtab-pocket-saved = Enregistrée
 
@@ -238,6 +256,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Pas pour moi
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Merci. Votre retour nous aide à améliorer votre flux.
 newtab-toast-thumbs-up-or-down = Merci. Votre retour nous aide à améliorer votre flux.
 newtab-toast-dismiss-button =
     .title = Ignorer
@@ -303,6 +324,8 @@ newtab-wallpaper-dark-panda = Panda roux caché dans la forêt
 newtab-wallpaper-dark-sky = Paysage de ville avec un ciel nocturne
 newtab-wallpaper-dark-mountain = Paysage de montagne
 newtab-wallpaper-dark-city = Paysage de ville avec une teinte violette
+newtab-wallpaper-dark-fox-anniversary = Un renard sur des pavés près d’une forêt
+newtab-wallpaper-light-fox-anniversary = Un renard dans un pré avec un paysage montagneux embrumé
 
 ## Solid Colors
 
@@ -367,6 +390,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Sponsorisé
 newtab-weather-menu-change-location = Changer de lieu
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Rechercher un lieu
+    .aria-label = Rechercher un lieu
 newtab-weather-change-location-search-input = Rechercher un lieu
 newtab-weather-menu-weather-display = Affichage météo
 # Display options are:
@@ -385,3 +411,74 @@ newtab-weather-menu-hide-weather = Masquer la météo sur la page Nouvel onglet
 newtab-weather-menu-learn-more = En savoir plus
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Les données météo ne sont pas disponibles pour le moment.
+
+## Topic Labels
+
+newtab-topic-label-business = Affaires
+newtab-topic-label-career = Carrière
+newtab-topic-label-education = Enseignement
+newtab-topic-label-arts = Divertissement
+newtab-topic-label-food = Nourriture
+newtab-topic-label-health = Santé
+newtab-topic-label-hobbies = Jeu vidéo
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Argent
+newtab-topic-label-society-parenting = Parentalité
+newtab-topic-label-government = Politique
+newtab-topic-label-education-science = Science
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Astuces du quotidien
+newtab-topic-label-sports = Sports
+newtab-topic-label-tech = Technologie
+newtab-topic-label-travel = Voyage
+newtab-topic-label-home = Maison et extérieur
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Sélectionnez des sujets pour affiner votre flux
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Choisissez au moins deux sujets. Nos spécialistes en sélection d’articles donnent la priorité aux articles qui correspondent à vos centres d’intérêt. Vous pouvez modifier vos choix à tout moment.
+newtab-topic-selection-save-button = Enregistrer
+newtab-topic-selection-cancel-button = Annuler
+newtab-topic-selection-button-maybe-later = Peut-être plus tard
+newtab-topic-selection-privacy-link = Découvrez comment nous protégeons et gérons les données
+newtab-topic-selection-button-update-interests = Mettre à jour vos centres d’intérêt
+newtab-topic-selection-button-pick-interests = Choisir vos centres d’intérêt
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Suivre
+newtab-section-following-button = Suivi
+newtab-section-unfollow-button = Ne plus suivre
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Bloquer
+newtab-section-blocked-button = Bloqué
+newtab-section-unblock-button = Débloquer
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Voulez-vous vraiment bloquer cette section ?
+newtab-section-confirm-block-section-p2 = Les sections bloquées n’apparaîtront plus dans votre flux.
+newtab-section-block-section-button = Bloquer cette section
+newtab-section-cancel-button = Plus tard
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Sujets
+newtab-section-mangage-topics-button =
+    .label = Sujets suivis et bloqués
+newtab-section-mangage-topics-followed-topics-subtitle = Sujets suivis
+newtab-section-mangage-topics-blocked-topics-subtitle = Sujets bloqués

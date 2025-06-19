@@ -112,6 +112,8 @@ about-debugging-setup-usb-step-enable-dev-menu2 = Aktivizoni menu Zhvilluesi te 
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = Aktivizoni Diagnostikim USB te Menuja Zhvillues e Android-it.
 # USB section step by step guide
+about-debugging-setup-usb-step-enable-file-transfer = Aktivizoni shpërngulje kartelash dhe garantoni se pajisja juaj s’gjendet nën mënyrën vetëm-ngarkim.
+# USB section step by step guide
 about-debugging-setup-usb-step-enable-debug-firefox2 = Aktivizoni Diagnostikim USB te Firefox-i në pajisjen Android.
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Lidheni pajisjen Android me kompjuterin tuaj.
@@ -313,6 +315,9 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Shërbim Push
+# Displayed for service workers in runtime pages, to label the origin of a worker.
+about-debugging-worker-origin =
+    .label = Origjinë
 # Displayed as title of the inspect button when service worker debugging is disabled.
 about-debugging-worker-inspect-action-disabled =
     .title = Inspektimi i Service Worker-it është aktualisht i çaktivizuar për { -brand-shorter-name } multiproces

@@ -104,8 +104,11 @@ appmenu-fxa-sync-and-save-data2 = 同期してデータを保存
 appmenu-fxa-signed-in-label = ログイン
 appmenu-fxa-setup-sync =
     .label = 同期をオンにする...
+appmenu-fxa-setup-sync-new = オンにする
 appmenuitem-save-page =
     .label = 名前を付けてページを保存...
+appmenuitem-fxa-sync-off-title = 同期はオフです
+appmenuitem-fxa-sync-off-description = ブックマークやパスワードなどを保護し、どこからでもアクセスできるようにしましょう。
 
 ## What's New panel in App menu.
 
@@ -163,9 +166,11 @@ profiler-popup-capture-shortcut =
 ## Profiler presets
 ## They are shown in the popup's select box.
 
+
 # Presets and their l10n IDs are defined in the file
 # devtools/client/performance-new/shared/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
+
 
 # Presets and their l10n IDs are defined in the file
 # devtools/client/performance-new/shared/background.sys.mjs
@@ -271,5 +276,19 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = データ漏洩の警告を受け取ります
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = 実際のメールアドレスと電話番号を隠します
+appmenuitem-services-relay-description = メールマスクダッシュボードを起動します
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = ユーザーのオンラインプライバシーを保護します
+appmenu-services-header = マイサービス
+appmenu-other-protection-header = { -vendor-short-name } が提供する他の保護ツールをお試しください:
+
+## Profiles panel
+
+appmenu-profiles = プロファイル
+appmenu-other-profiles = 他のプロファイル
+appmenu-manage-profiles =
+    .label = プロファイルを管理
+appmenu-create-profile =
+    .label = 新しいプロファイル
+appmenu-edit-profile =
+    .aria-label = プロファイルを編集

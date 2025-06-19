@@ -16,6 +16,11 @@ about-glean-interface-description =
     μια βιβλιοθήκη συλλογής δεδομένων που χρησιμοποιείται στα έργα της { -vendor-short-name }.
     Αυτό το περιβάλλον χρήστη έχει σχεδιαστεί για τη χειροκίνητη <a data-l10n-name="fog-link">δοκιμή της ενοργάνισης</a>
     από προγραμματιστές και δοκιμαστές.
+about-glean-category-about-glean = Σχετικά με το { -glean-brand-name }
+about-glean-category-manual-testing = Χειροκίνητη δοκιμή
+about-glean-category-adhoc-testing = Δοκιμή Ad Hoc
+about-glean-category-profiler = Χρήση του εργαλείου προφίλ
+about-glean-category-about-data = Σχετικά με τα δεδομένα
 about-glean-upload-enabled = Η μεταφόρτωση δεδομένων είναι ενεργοποιημένη.
 about-glean-upload-disabled = Η μεταφόρτωση δεδομένων είναι απενεργοποιημένη.
 about-glean-upload-enabled-local = Η μεταφόρτωση δεδομένων είναι ενεργοποιημένη μόνο για αποστολή σε τοπικό διακομιστή.
@@ -101,7 +106,18 @@ about-glean-adhoc-note =
     Αυτό σημαίνει ότι οι κατηγορίες και τα ονόματα των μετρήσεων μορφοποιούνται σε
     <code>camelCase</code>, σε αντίθεση με τα API των Rust και C++.
 controls-button-label-verbose = Εφαρμογή ρυθμίσεων και υποβολή ping
+about-glean-feedback-settings-only =
+    .message = Οι ρυθμίσεις εφαρμόστηκαν!
+about-glean-feedback-settings-and-ping =
+    .message = Οι ρυθμίσεις εφαρμόστηκαν και έγινε αποστολή του ping!
 about-glean-about-data-header = Σχετικά με τα δεδομένα
+about-glean-about-data-list-item-dictionary =
+    Για να περιηγηθείτε στη λίστα των δεδομένων που συλλέγονται από το { -glean-brand-name } ανά εφαρμογή, συμβουλευτείτε το
+    <a data-l10n-name="glean-dictionary-link">Λεξικό του { -glean-brand-name }</a>.
+about-glean-about-data-list-item-about-telemetry =
+    Για να περιηγηθείτε στα δεδομένα που συλλέγονται από την τηλεμετρία παλαιού τύπου, συμβουλευτείτε
+    το <a data-l10n-name="about-telemetry-link">about:telemetry</a>.
+about-glean-about-data-list-item-firefox-profiler = Για να καταγράψετε ένα προφίλ επιδόσεων και να δείτε όλες τις καταγεγραμμένες μετρήσεις, χρησιμοποιήστε το <a data-l10n-name="about-glean-firefox-profiler">{ -profiler-brand-name }</a>.
 about-glean-about-data-explanation =
     Για να περιηγηθείτε στη λίστα των συλλεγμένων δεδομένων, συμβουλευτείτε το
     <a data-l10n-name="glean-dictionary-link">Λεξικό του { -glean-brand-name }</a>.

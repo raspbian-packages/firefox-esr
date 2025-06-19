@@ -22,6 +22,12 @@ text-action-copy =
     .accesskey = o
 text-action-copy-shortcut =
     .key = C
+# "Copy Clean Link" means that Firefox will remove things from the link you
+# copied, like items that identify you for advertising purposes, and other items
+# sites add into URLs to help them deliver a certain browsing experience.
+text-action-copy-clean-link =
+    .label = Kopiera ren länk
+    .accesskey = K
 # This command copies the link, removing additional
 # query parameters used to track users across sites.
 text-action-strip-on-share =
@@ -38,6 +44,9 @@ text-action-paste-shortcut =
 text-action-delete =
     .label = Ta bort
     .accesskey = T
+text-action-reveal-password =
+    .label = Avslöja lösenord
+    .accesskey = A
 text-action-select-all =
     .label = Markera allt
     .accesskey = a

@@ -8,11 +8,18 @@
 newtab-page-title = ਨਵੀਂ ਟੈਬ
 newtab-settings-button =
     .title = ਆਪਣੇ ਨਵੀਂ ਟੈਬ ਸਫ਼ੇ ਨੂੰ ਆਪਣੇ ਮੁਤਾਬਕ ਢਾਲੋ
+newtab-personalize-settings-icon-label =
+    .title = ਨਵੀਂ ਟੈਬ ਨੂੰ ਨਿੱਜੀ ਬਣਾਓ
+    .aria-label = ਸੈਟਿੰਗਾਂ
+newtab-settings-dialog-label =
+    .aria-label = ਸੈਟਿੰਗਾਂ
 newtab-personalize-icon-label =
     .title = ਨਵੀਂ ਟੈਬ ਨਿੱਜੀ ਬਣਾਓ
     .aria-label = ਨਵੀਂ ਟੈਬ ਨਿੱਜੀ ਬਣਾਓ
 newtab-personalize-dialog-label =
     .aria-label = ਆਪਣਾ ਬਣਾਓ
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = { -pocket-brand-name } ਵਿੱਚ ਸੰਭਾਲ
 newtab-menu-delete-pocket = { -pocket-brand-name } ਤੋਂ ਹਟਾਓ
 newtab-menu-archive-pocket = { -pocket-brand-name } ਵਿੱਚ ਪੁਰਾਲੇਖਬੱਧ ਕਰੋ
 newtab-menu-show-privacy-info = ਸਾਡੇ ਸਪਾਂਸਰ ਅਤੇ ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ
+newtab-menu-about-fakespot = { -fakespot-brand-name } ਬਾਰੇ
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = ਪਾਬੰਦੀ
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = ਵਿਸ਼ੇ ਨੂੰ ਅਣ-ਫ਼ਾਲੋ ਕਰੋ
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -177,7 +191,7 @@ newtab-section-menu-remove-section = ਸੈਕਸ਼ਨ ਹਟਾਓ
 newtab-section-menu-collapse-section = ਸੈਕਸ਼ਨ ਨੂੰ ਸਮੇਟੋ
 newtab-section-menu-expand-section = ਸੈਕਸ਼ਨ ਦੀ ਫੈਲਾਓ
 newtab-section-menu-manage-section = ਸੈਕਸ਼ਨ ਦਾ ਬੰਦੋਬਸਤ
-newtab-section-menu-manage-webext = ਇਕਸਟੈਨਸ਼ਨਾਂ ਦਾ ਬੰਦੋਬਸਤ
+newtab-section-menu-manage-webext = ਇਕਸਟੈਨਸ਼ਨ ਦਾ ਇੰਤਜ਼ਾਮ
 newtab-section-menu-add-topsite = ਚੋਟੀ ਦੀਆਂ ਸਾਈਟਾਂ ਜੋੜੋ
 newtab-section-menu-add-search-engine = ਖੋਜ ਇੰਜਣ ਜੋੜੋ
 newtab-section-menu-move-up = ਉੱਤੇ ਭੇਜੋ
@@ -199,6 +213,8 @@ newtab-section-header-recent-activity = ਤਾਜ਼ਾ ਸਰਗਰਮੀ
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } ਵਲੋਂ ਸਿਫਾਰਸ਼ੀ
 newtab-section-header-stories = ਸੋਚਣ ਲਈ ਮਜ਼ਬੂਰ ਕਰਨ ਵਾਲੇ ਲੇਖ
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = ਤੁਹਾਡੇ ਲਈ ਅੱਜ ਦੀਆਂ ਚੋਣਾਂ
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -230,6 +246,8 @@ newtab-pocket-cta-button = { -pocket-brand-name } ਲਵੋ
 newtab-pocket-cta-text = { -pocket-brand-name } ਵਿਚ ਆਪਣੀਆਂ ਕਹਾਣੀਆਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰੋ, ਅਤੇ ਆਪਣੇ ਮਨ ਨੂੰ ਦਿਲਚਸਪ ਪੜ੍ਹ ਕੇ ਮਜਬੂਰ ਕਰੋ।
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } { -brand-product-name } ਗਰੁੱਪ ਦਾ ਭਾਗ ਹੈ
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = ਸੰਭਾਲੋ
 newtab-pocket-saved = ਸੰਭਾਲਿਆ
 
@@ -241,6 +259,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = ਮੇਰੇ ਲਈ ਨਹੀਂ
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = ਧੰਨਵਾਦ! ਤੁਹਾਡਾ ਸੁਝਾਅ ਸਾਡੀ ਫੀਡ ਸੁਧਾਰਨ ਲਈ ਮਦਦਗਾਰ ਹੋਵੇਗਾ।
 newtab-toast-thumbs-up-or-down = ਧੰਨਵਾਦ! ਤੁਹਾਡਾ ਸੁਝਾਅ ਸਾਡੀ ਫੀਡ ਸੁਧਾਰਨ ਲਈ ਮਦਦਗਾਰ ਹੋਵੇਗਾ।
 newtab-toast-dismiss-button =
     .title = ਖ਼ਾਰਜ ਕਰੋ
@@ -306,6 +327,8 @@ newtab-wallpaper-dark-panda = ਜੰਗਲ ਵਿੱਚ ਲੁਕਿਆ ਫਿ�
 newtab-wallpaper-dark-sky = ਨੀਲੇ ਅੰਬਰ ਨਾਲ ਸ਼ਹਿਰ ਦਾ ਦ੍ਰਿਸ਼
 newtab-wallpaper-dark-mountain = ਲੈਂਡਸਕੇਪ ਪਹਾੜ
 newtab-wallpaper-dark-city = ਜਾਮਨੀ ਸ਼ਹਿਰੀ ਦ੍ਰਿਸ਼
+newtab-wallpaper-dark-fox-anniversary = ਜੰਗਲ ਨੇੜਲੇ ਰਾਹ ਉੱਤੇ ਲੂੰਬੜੀ
+newtab-wallpaper-light-fox-anniversary = ਧੁੰਦ ਵਿੱਚ ਲੁਕੇ ਪਹਾੜ ਦੇ ਕੋਲ ਘਾਹ ਦੇ ਖੇਤ ਵਿੱਚ ਲੂੰਬੜੀ
 
 ## Solid Colors
 
@@ -370,6 +393,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ ਸਪਾਂਸਰ
 newtab-weather-menu-change-location = ਟਿਕਾਣੇ ਨੂੰ ਬਦਲੋ
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = ਟਿਕਾਣੇ ਨੂੰ ਖੋਜੋ
+    .aria-label = ਟਿਕਾਣੇ ਨੂੰ ਖੋਜੋ
 newtab-weather-change-location-search-input = ਟਿਕਾਣੇ ਨੂੰ ਖੋਜੋ
 newtab-weather-menu-weather-display = ਮੌਸਮ ਦੀ ਝਲਕ
 # Display options are:
@@ -388,3 +414,76 @@ newtab-weather-menu-hide-weather = ਨਵੀਂ ਟੈਬ ਉੱਤੇ ਮੌਸ
 newtab-weather-menu-learn-more = ਹੋਰ ਜਾਣੋ
 # This message is shown if user is working offline
 newtab-weather-error-not-available = ਮੌਸਮ ਦਾ ਡਾਟਾ ਹਾਲੇ ਮੌਜੂਦ ਨਹੀਂ ਹੈ।
+
+## Topic Labels
+
+newtab-topic-label-business = ਵਪਾਰਕ
+newtab-topic-label-career = ਕੈਰੀਅਰ
+newtab-topic-label-education = ਸਿੱਖਿਆ
+newtab-topic-label-arts = ਮਨੋਰੰਜਨ
+newtab-topic-label-food = ਖਾਣ-ਪੀਣ
+newtab-topic-label-health = ਸਿਹਤ
+newtab-topic-label-hobbies = ਗੇਮਾਂ
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = ਪੈਸਾ
+newtab-topic-label-society-parenting = ਮਾਪੇ
+newtab-topic-label-government = ਰਾਜਨੀਤੀ
+newtab-topic-label-education-science = ਵਿਗਿਆਨ
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = ਜ਼ਿੰਦਗੀ ਦੇ ਟੋਟਕੇ
+newtab-topic-label-sports = ਖੇਡਾਂ
+newtab-topic-label-tech = ਤਕਨੀਕੀ
+newtab-topic-label-travel = ਯਾਤਰਾ
+newtab-topic-label-home = ਘਰ ਤੇ ਬਗੀਚੀ
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = ਆਪਣੀ ਫ਼ੀਡ ਨੂੰ ਮੁਆਫ਼ਕ ਬਣਾਉਣ ਲਈ ਵਿਸ਼ਿਆਂ ਨੂੰ ਚੁਣੋ
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = ਦੋ ਜਾਂ ਵੱਧ ਵਿਸ਼ਿਆਂ ਨੂੰ ਚੁਣੋ। ਸਾਡੇ ਮਾਹਰ ਨਿਗਰਾਨ ਤੁਹਾਡੀਆਂ ਦਿਲਚਪੀਆਂ ਮੁਤਾਬਕ ਕਹਾਣੀਆਂ ਨੂੰ ਤਰਜੀਹ ਦਿੰਦੇ ਹਨ। ਕਿਸੇ ਵੀ ਵੇਲੇ ਅੱਪਡੇਟ ਕਰੋ।
+newtab-topic-selection-save-button = ਸੰਭਾਲੋ
+newtab-topic-selection-cancel-button = ਰੱਦ ਕਰੋ
+newtab-topic-selection-button-maybe-later = ਫੇਰ ਕਦੇ
+newtab-topic-selection-privacy-link = ਜਾਣੋ ਕਿ ਅਸੀਂ ਡਾਟੇ ਨੂੰ ਕਿਵੇਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦੇ ਅਤੇ ਇਸ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰਦੇ ਹਾਂ
+newtab-topic-selection-button-update-interests = ਆਪਣੀਆਂ ਦਿਲਚਸਪੀਆਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ
+newtab-topic-selection-button-pick-interests = ਆਪਣੀਆਂ ਦਿਲਚਸਪੀਆਂ ਨੂੰ ਚੁਣੋ
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = ਫ਼ਾਲੋ ਕਰੋ
+newtab-section-following-button = ਫ਼ਾਲੋ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ
+newtab-section-unfollow-button = ਅਣ-ਫ਼ਾਲੋ ਕਰੋ
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = ਪਾਬੰਦੀ ਲਾਓ
+newtab-section-blocked-button = ਪਾਬੰਦੀ ਲਗਾਈ
+newtab-section-unblock-button = ਪਾਬੰਦੀ ਹਟਾਓ
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = ਕੀ ਤੁਸੀਂ ਇਸ ਭਾਗ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?
+newtab-section-confirm-block-section-p2 = ਪਾਬੰਦੀ ਲਗਾਇਆ ਭਾਗ ਤੁਹਾਡੀ ਫੀਡ ਵਿੱਚ ਦਿਕਾਈ ਨਹੀਂ ਦੇਵੇਗਾ।
+newtab-section-block-section-button = ਇਸ ਭਾਗ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਓ
+newtab-section-cancel-button = ਹੁਣੇ ਨਹੀਂ
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = ਵਿਸ਼ੇ:
+newtab-section-mangage-topics-button =
+    .label = ਫ਼ਾਲੋ ਅਤੇ ਪਾਬੰਦੀ ਲਾਏ ਵਿਸ਼ੇ
+newtab-section-mangage-topics-followed-topics-subtitle = ਫ਼ਾਲੋ ਕੀਤੇ ਵਿਸ਼ੇ
+newtab-section-mangage-topics-followed-topics-empty-state = ਤੁਸੀਂ ਹਾਲੇ ਕਿਸੇ ਵੀ ਵਿਸ਼ੇ ਨੂੰ ਫ਼ਾਲੋ ਨਹੀਂ ਕੀਤਾ ਹੈ।
+newtab-section-mangage-topics-blocked-topics-subtitle = ਪਾਬੰਦੀ ਲਾਏ ਵਿਸ਼ੇ
+newtab-section-mangage-topics-blocked-topics-empty-state = ਤੁਸੀਂ ਹਾਲੇ ਕਿਸੇ ਵੀ ਵਿਸ਼ੇ ਉੱਤੇ ਪਾਬੰਦੀ ਨਹੀਂ ਲਾਈ ਹੈ।

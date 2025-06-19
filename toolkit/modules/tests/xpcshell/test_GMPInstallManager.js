@@ -14,7 +14,9 @@ const { setTimeout } = ChromeUtils.importESModule(
 const { FileUtils } = ChromeUtils.importESModule(
   "resource://gre/modules/FileUtils.sys.mjs"
 );
-const { HttpServer } = ChromeUtils.import("resource://testing-common/httpd.js");
+const { HttpServer } = ChromeUtils.importESModule(
+  "resource://testing-common/httpd.sys.mjs"
+);
 const { Preferences } = ChromeUtils.importESModule(
   "resource://gre/modules/Preferences.sys.mjs"
 );
@@ -126,7 +128,10 @@ add_test(function test_checkForAddons_uninitWithoutInstall() {
     () => installManager.checkForAddons()
   );
   promise.then(res => {
-    Assert.ok(res.usedFallback);
+    Assert.equal(res.addons.length, 2);
+    for (let addon of res.addons) {
+      Assert.ok(addon.usedFallback);
+    }
     installManager.uninit();
     run_next_test();
   });
@@ -143,7 +148,10 @@ add_test(function test_checkForAddons_noResponse() {
     () => installManager.checkForAddons()
   );
   promise.then(res => {
-    Assert.ok(res.usedFallback);
+    Assert.equal(res.addons.length, 2);
+    for (let addon of res.addons) {
+      Assert.ok(addon.usedFallback);
+    }
     installManager.uninit();
     run_next_test();
   });
@@ -191,7 +199,10 @@ add_test(function test_checkForAddons_wrongResponseXML() {
     () => installManager.checkForAddons()
   );
   promise.then(res => {
-    Assert.ok(res.usedFallback);
+    Assert.equal(res.addons.length, 2);
+    for (let addon of res.addons) {
+      Assert.ok(addon.usedFallback);
+    }
     installManager.uninit();
     run_next_test();
   });
@@ -208,7 +219,10 @@ add_test(function test_checkForAddons_404Error() {
     () => installManager.checkForAddons()
   );
   promise.then(res => {
-    Assert.ok(res.usedFallback);
+    Assert.equal(res.addons.length, 2);
+    for (let addon of res.addons) {
+      Assert.ok(addon.usedFallback);
+    }
     installManager.uninit();
     run_next_test();
   });
@@ -237,7 +251,10 @@ add_test(function test_checkForAddons_abort() {
   }, 100);
 
   promise.then(res => {
-    Assert.ok(res.usedFallback);
+    Assert.equal(res.addons.length, 2);
+    for (let addon of res.addons) {
+      Assert.ok(addon.usedFallback);
+    }
     installManager.uninit();
     run_next_test();
   });
@@ -257,7 +274,10 @@ add_test(function test_checkForAddons_timeout() {
     () => installManager.checkForAddons()
   );
   promise.then(res => {
-    Assert.ok(res.usedFallback);
+    Assert.equal(res.addons.length, 2);
+    for (let addon of res.addons) {
+      Assert.ok(addon.usedFallback);
+    }
     installManager.uninit();
     run_next_test();
   });
@@ -290,7 +310,10 @@ add_test(function test_checkForAddons_bad_ssl() {
     () => installManager.checkForAddons()
   );
   promise.then(res => {
-    Assert.ok(res.usedFallback);
+    Assert.equal(res.addons.length, 2);
+    for (let addon of res.addons) {
+      Assert.ok(addon.usedFallback);
+    }
     installManager.uninit();
     if (PREF_KEY_URL_OVERRIDE_BACKUP) {
       Preferences.set(GMPPrefs.KEY_URL_OVERRIDE, PREF_KEY_URL_OVERRIDE_BACKUP);
@@ -314,7 +337,10 @@ add_test(function test_checkForAddons_notXML() {
   );
 
   promise.then(res => {
-    Assert.ok(res.usedFallback);
+    Assert.equal(res.addons.length, 2);
+    for (let addon of res.addons) {
+      Assert.ok(addon.usedFallback);
+    }
     installManager.uninit();
     run_next_test();
   });
@@ -551,13 +577,34 @@ add_task(async function test_checkForAddons_contentSignatureSuccess() {
     // Smoke test the results are as expected.
     // If the checkForAddons fails we'll get a fallback config,
     // so we'll get incorrect addons and these asserts will fail.
-    Assert.equal(res.usedFallback, false);
-    Assert.equal(res.addons.length, 5);
+    Assert.equal(res.addons.length, 7);
     Assert.equal(res.addons[0].id, "test1");
+    Assert.equal(res.addons[0].usedFallback, false);
+    Assert.deepEqual(res.addons[0].mirrorURLs, []);
     Assert.equal(res.addons[1].id, "test2");
+    Assert.equal(res.addons[1].usedFallback, false);
+    Assert.deepEqual(res.addons[1].mirrorURLs, []);
     Assert.equal(res.addons[2].id, "test3");
+    Assert.equal(res.addons[2].usedFallback, false);
+    Assert.deepEqual(res.addons[2].mirrorURLs, []);
     Assert.equal(res.addons[3].id, "test4");
+    Assert.equal(res.addons[3].usedFallback, false);
+    Assert.deepEqual(res.addons[3].mirrorURLs, []);
     Assert.equal(res.addons[4].id, undefined);
+    Assert.equal(res.addons[4].usedFallback, false);
+    Assert.deepEqual(res.addons[4].mirrorURLs, []);
+    Assert.equal(res.addons[5].id, "test6");
+    Assert.equal(res.addons[5].usedFallback, false);
+    Assert.deepEqual(res.addons[5].mirrorURLs, [
+      "http://alt.example.com/test6.xpi",
+    ]);
+    Assert.equal(res.addons[5].mirrorURLs.length, 1);
+    Assert.equal(res.addons[6].id, "test7");
+    Assert.equal(res.addons[6].usedFallback, false);
+    Assert.deepEqual(res.addons[6].mirrorURLs, [
+      "http://alt.example.com/test7.xpi",
+      "http://alt2.example.com/test7.xpi",
+    ]);
   } catch (e) {
     Assert.ok(false, "checkForAddons should succeed");
   }
@@ -611,15 +658,40 @@ add_task(async function test_checkForAddons_contentSignatureFailure() {
     // Smoke test the results are as expected.
     // Check addons will succeed above, but it will have fallen back to local
     // config. So the results will not be those from the HTTP server.
-    Assert.equal(res.usedFallback, true);
     // Some platforms don't have fallback config for all GMPs, but we should
     // always get at least 1.
     Assert.greaterOrEqual(res.addons.length, 1);
     if (res.addons.length == 1) {
       Assert.equal(res.addons[0].id, "gmp-widevinecdm");
+      Assert.equal(res.addons[0].usedFallback, true);
+      Assert.ok(res.addons[0].URL.startsWith("https://edgedl.me.gvt1.com"));
+      Assert.equal(res.addons[0].mirrorURLs.length, 1);
+      Assert.ok(
+        res.addons[0].mirrorURLs[0].startsWith("https://www.google.com")
+      );
     } else {
       Assert.equal(res.addons[0].id, "gmp-gmpopenh264");
+      Assert.equal(res.addons[0].usedFallback, true);
+      Assert.ok(
+        res.addons[0].URL.startsWith("http://ciscobinary.openh264.org")
+      );
+      Assert.deepEqual(res.addons[0].mirrorURLs, []);
       Assert.equal(res.addons[1].id, "gmp-widevinecdm");
+      Assert.equal(res.addons[1].usedFallback, true);
+      Assert.ok(res.addons[1].URL.startsWith("https://edgedl.me.gvt1.com"));
+      Assert.equal(res.addons[1].mirrorURLs.length, 1);
+      Assert.ok(
+        res.addons[1].mirrorURLs[0].startsWith("https://www.google.com")
+      );
+      if (res.addons.length >= 3) {
+        Assert.equal(res.addons[2].id, "gmp-widevinecdm-l1");
+        Assert.equal(res.addons[2].usedFallback, true);
+        Assert.ok(res.addons[2].URL.startsWith("https://edgedl.me.gvt1.com"));
+        Assert.equal(res.addons[2].mirrorURLs.length, 1);
+        Assert.ok(
+          res.addons[2].mirrorURLs[0].startsWith("https://www.google.com")
+        );
+      }
     }
   } catch (e) {
     Assert.ok(false, "checkForAddons should succeed");
@@ -984,19 +1056,29 @@ add_task(async function test_checkForAddons_telemetry_certPinning() {
  */
 async function test_checkForAddons_installAddon(
   id,
-  includeSize,
-  wantInstallReject
+  sizeConfig,
+  defaultConfig,
+  mirrorConfig,
+  secondMirrorConfig,
+  expectedError
 ) {
   info(
     "Running installAddon for id: " +
       id +
-      ", includeSize: " +
-      includeSize +
-      " and wantInstallReject: " +
-      wantInstallReject
+      ", sizeConfig: " +
+      sizeConfig +
+      ", defaultConfig: " +
+      defaultConfig +
+      ", mirrorConfig: " +
+      mirrorConfig +
+      ", secondMirrorConfig: " +
+      secondMirrorConfig +
+      ", expectedError: " +
+      expectedError
   );
+
   let httpServer = new HttpServer();
-  let dir = FileUtils.getDir("TmpD", [], true);
+  let dir = FileUtils.getDir("TmpD", []);
   httpServer.registerDirectory("/", dir);
   httpServer.start(-1);
   let testserverPort = httpServer.identity.primaryPort;
@@ -1010,9 +1092,44 @@ async function test_checkForAddons_installAddon(
   let hashFunc = "sha256";
   let expectedDigest = await IOUtils.computeHexDigest(zipFile.path, hashFunc);
   let fileSize = zipFile.fileSize;
-  if (wantInstallReject) {
+  if (sizeConfig === "mismatch") {
     fileSize = 1;
   }
+
+  let badZipURL;
+  let badZipFileName;
+  let badZipFile;
+  if (
+    defaultConfig === "mismatch" ||
+    mirrorConfig === "mismatch" ||
+    secondMirrorConfig === "mismatch"
+  ) {
+    let badData = "e~=0.5772156648";
+    badZipFileName = "test_" + id + "_bad_GMP.zip";
+    badZipFile = createNewZipFile(badZipFileName, badData);
+    badZipURL = URL_HOST + ":" + testserverPort + "/" + badZipFileName;
+  }
+
+  let missingZipURL = zipURL + ".missing";
+
+  function selectUrl(config) {
+    switch (config) {
+      case "success":
+        return zipURL;
+      case "not_found":
+        return missingZipURL;
+      case "mismatch":
+        return badZipURL;
+      case "none":
+        return null;
+      default:
+        throw new Error("bad config " + config);
+    }
+  }
+
+  let defaultURL = selectUrl(defaultConfig);
+  let mirrorURL = selectUrl(mirrorConfig);
+  let secondMirrorURL = selectUrl(secondMirrorConfig);
 
   let responseXML =
     '<?xml version="1.0"?>' +
@@ -1021,17 +1138,20 @@ async function test_checkForAddons_installAddon(
     '        <addon id="' +
     id +
     '-gmp-gmpopenh264"' +
-    '               URL="' +
-    zipURL +
-    '"' +
+    (defaultURL ? ' URL="' + defaultURL + '"' : "") +
     '               hashFunction="' +
     hashFunc +
     '"' +
     '               hashValue="' +
     expectedDigest +
     '"' +
-    (includeSize ? ' size="' + fileSize + '"' : "") +
-    '               version="1.1"/>' +
+    (sizeConfig !== "none" ? ' size="' + fileSize + '"' : "") +
+    '               version="1.1">' +
+    (mirrorURL ? '          <mirror URL="' + mirrorURL + '"/>' : "") +
+    (secondMirrorURL
+      ? '          <mirror URL="' + secondMirrorURL + '"/>'
+      : "") +
+    "        </addon>" +
     "  </addons>" +
     "</updates>";
 
@@ -1047,7 +1167,7 @@ async function test_checkForAddons_installAddon(
 
   try {
     let extractedPaths = await installManager.installAddon(gmpAddon);
-    if (wantInstallReject) {
+    if (sizeConfig === "mismatch") {
       Assert.ok(false); // installAddon() should have thrown.
     }
     Assert.equal(extractedPaths.length, 1);
@@ -1085,20 +1205,333 @@ async function test_checkForAddons_installAddon(
 
     // Cleanup
     extractedFile.parent.remove(true);
-    zipFile.remove(false);
     httpServer.stop(function () {});
     installManager.uninit();
+    Assert.equal(expectedError, null, "Succeeded without errors");
   } catch (ex) {
+    Assert.ok(
+      ex?.message?.match(expectedError),
+      ex?.message + " matches " + expectedError
+    );
+  } finally {
     zipFile.remove(false);
-    if (!wantInstallReject) {
-      do_throw("install update should not reject " + ex.message);
+    if (badZipFile) {
+      badZipFile.remove(false);
     }
   }
 }
 
-add_task(test_checkForAddons_installAddon.bind(null, "1", true, false));
-add_task(test_checkForAddons_installAddon.bind(null, "2", false, false));
-add_task(test_checkForAddons_installAddon.bind(null, "3", true, true));
+add_task(
+  async function test_checkForAddons_installAddon_includeSize_successURL_noMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "includeSize_successURL_noMirror",
+      /* sizeConfig */ "include",
+      /* defaultConfig */ "success",
+      /* mirrorConfig */ "none",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_successURL_noMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_successURL_noMirror",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "success",
+      /* mirrorConfig */ "none",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_mismatchSize_successURL_noMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "mismatchSize_successURL_noMirror",
+      /* sizeConfig */ "mismatch",
+      /* defaultConfig */ "success",
+      /* mirrorConfig */ "none",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ /Downloaded file was \d+ bytes but expected \d+ bytes/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_includeSize_notFoundURL_noMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "includeSize_notFoundURL_noMirror",
+      /* sizeConfig */ "include",
+      /* defaultConfig */ "not_found",
+      /* mirrorConfig */ "none",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ /File download failed/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_notFoundURL_noMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_notFoundURL_noMirror",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "not_found",
+      /* mirrorConfig */ "none",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ /File download failed/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_includeSize_mismatchURL_noMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "includeSize_mismatchURL_noMirror",
+      /* sizeConfig */ "include",
+      /* defaultConfig */ "mismatch",
+      /* mirrorConfig */ "none",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ /Hash was [\w`]+ but expected [\w`]+/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_mismatchURL_noMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_mismatchURL_noMirror",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "mismatch",
+      /* mirrorConfig */ "none",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ /Hash was [\w`]+ but expected [\w`]+/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_includeSize_successURL_successMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "includeSize_successURL_successMirror",
+      /* sizeConfig */ "include",
+      /* defaultConfig */ "success",
+      /* mirrorConfig */ "success",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_successURL_successMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_successURL_successMirror",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "success",
+      /* mirrorConfig */ "success",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_mismatchSize_successURL_successMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "mismatchSize_successURL_successMirror",
+      /* sizeConfig */ "mismatch",
+      /* defaultConfig */ "success",
+      /* mirrorConfig */ "success",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ /Downloaded file was \d+ bytes but expected \d+ bytes/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_includeSize_notFoundURL_successMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "includeSize_notFoundURL_successMirror",
+      /* sizeConfig */ "include",
+      /* defaultConfig */ "not_found",
+      /* mirrorConfig */ "success",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_notFoundURL_successMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_notFoundURL_successMirror",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "not_found",
+      /* mirrorConfig */ "success",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_mismatchSize_notFoundURL_successMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "mismatchSize_notFoundURL_successMirror",
+      /* sizeConfig */ "mismatch",
+      /* defaultConfig */ "not_found",
+      /* mirrorConfig */ "success",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ /File download failed/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_includeSize_mismatchURL_successMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "includeSize_mismatchURL_successMirror",
+      /* sizeConfig */ "include",
+      /* defaultConfig */ "mismatch",
+      /* mirrorConfig */ "success",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_mismatchURL_successMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_mismatchURL_successMirror",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "mismatch",
+      /* mirrorConfig */ "success",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_mismatchSize_mismatchURL_successMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "mismatchSize_mismatchURL_successMirror",
+      /* sizeConfig */ "mismatch",
+      /* defaultConfig */ "mismatch",
+      /* mirrorConfig */ "success",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ /Downloaded file was \d+ bytes but expected \d+ bytes/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_mismatchURL_mismatchMirror() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_mismatchURL_mismatchMirror",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "mismatch",
+      /* mirrorConfig */ "mismatch",
+      /* secondMirrorConfig */ "none",
+      /* expectedError */ /Hash was [\w`]+ but expected [\w`]+/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_notFoundURL_notFoundMirrors() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_notFoundURL_notFoundMirrors",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "not_found",
+      /* mirrorConfig */ "not_found",
+      /* secondMirrorConfig */ "not_found",
+      /* expectedError */ /File download failed/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_notFoundURL_notFoundAndSuccessMirrors() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_notFoundURL_notFoundAndSuccessMirrors",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "not_found",
+      /* mirrorConfig */ "not_found",
+      /* secondMirrorConfig */ "success",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_mismatchURL_mismatchMirrors() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_mismatchURL_mismatchMirrors",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "mismatch",
+      /* mirrorConfig */ "mismatch",
+      /* secondMirrorConfig */ "mismatch",
+      /* expectedError */ /Hash was [\w`]+ but expected [\w`]+/
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_noSize_mismatchURL_mismatchAndSuccessMirrors() {
+    await test_checkForAddons_installAddon(
+      /* id */ "noSize_mismatchURL_mismatchAndSuccessMirrors",
+      /* sizeConfig */ "none",
+      /* defaultConfig */ "mismatch",
+      /* mirrorConfig */ "mismatch",
+      /* secondMirrorConfig */ "success",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_includeSize_successURL_notFoundMirrors() {
+    await test_checkForAddons_installAddon(
+      /* id */ "includeSize_successURL_notFoundMirrors",
+      /* sizeConfig */ "include",
+      /* defaultConfig */ "success",
+      /* mirrorConfig */ "not_found",
+      /* secondMirrorConfig */ "not_found",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_includeSize_successURL_mismatchMirrors() {
+    await test_checkForAddons_installAddon(
+      /* id */ "includeSize_successURL_mismatchMirrors",
+      /* sizeConfig */ "include",
+      /* defaultConfig */ "success",
+      /* mirrorConfig */ "mismatch",
+      /* secondMirrorConfig */ "mismatch",
+      /* expectedError */ null
+    );
+  }
+);
+
+add_task(
+  async function test_checkForAddons_installAddon_includeSize_mismatchURL_successAndMismatchMirrors() {
+    await test_checkForAddons_installAddon(
+      /* id */ "includeSize_mismatchURL_successAndMismatchMirrors",
+      /* sizeConfig */ "include",
+      /* defaultConfig */ "mismatch",
+      /* mirrorConfig */ "success",
+      /* secondMirrorConfig */ "mismatch",
+      /* expectedError */ null
+    );
+  }
+);
 
 /**
  * Tests simpleCheckAndInstall when autoupdate is disabled for a GMP
@@ -1194,7 +1627,7 @@ add_test(function test_installAddon_noServer() {
       GMPInstallManager.overrideLeaveDownloadedZip = true;
       let installPromise = installManager.installAddon(gmpAddon);
       installPromise.then(
-        extractedPaths => {
+        () => {
           do_throw("No server for install should reject");
         },
         err => {
@@ -1238,7 +1671,8 @@ add_task(async function test_GMPExtractor_paths() {
     "dummy_gmp.zip"
   );
   let tempDirName = "TmpDir#猫";
-  let tempDir = FileUtils.getDir("TmpD", [tempDirName], true);
+  let tempDir = FileUtils.getDir("TmpD", [tempDirName]);
+  tempDir.create(Ci.nsIFile.DIRECTORY_TYPE, FileUtils.PERMS_DIRECTORY);
   let zipPath = PathUtils.join(tempDir.path, "dummy_gmp.zip");
   await IOUtils.copy(srcPath, zipPath);
   // The path inside the profile dir we'll extract to. Make sure we handle
@@ -1275,7 +1709,7 @@ add_task(async function test_GMPExtractor_paths() {
   if (AppConstants.platform == "macosx") {
     await Assert.rejects(
       IOUtils.getMacXAttr(extractedFile, "com.apple.quarantine"),
-      /NotFoundError: The file `.+' does not have an extended attribute `com.apple.quarantine'/,
+      /NotFoundError: Could not get extended attribute `com.apple.quarantine' from `.+': the file does not have the attribute/,
       "The 'com.apple.quarantine' attribute should not be present"
     );
   }
@@ -1342,8 +1776,8 @@ function mockRequest(inputStatus, inputResponse, options) {
   this._options = options || {};
 }
 mockRequest.prototype = {
-  overrideMimeType(aMimetype) {},
-  setRequestHeader(aHeader, aValue) {},
+  overrideMimeType() {},
+  setRequestHeader() {},
   status: null,
   channel: { set notificationCallbacks(aVal) {} },
   open(aMethod, aUrl) {
@@ -1357,7 +1791,7 @@ mockRequest.prototype = {
   },
   responseXML: null,
   responseText: null,
-  send(aBody) {
+  send() {
     executeSoon(() => {
       try {
         if (this._options.dropRequest) {
@@ -1445,9 +1879,8 @@ mockRequest.prototype = {
       }
     }
   },
-  addEventListener(aEvent, aValue, aCapturing) {
-    // eslint-disable-next-line no-eval
-    eval("this._on" + aEvent + " = aValue");
+  addEventListener(aEvent, aValue) {
+    this[`_on${aEvent}`] = aValue;
   },
   get wrappedJSObject() {
     return this;
@@ -1468,7 +1901,7 @@ function createNewZipFile(zipName, data) {
   let zipWriter = Cc["@mozilla.org/zipwriter;1"].createInstance(
     Ci.nsIZipWriter
   );
-  let zipFile = FileUtils.getFile("TmpD", [zipName]);
+  let zipFile = new FileUtils.File(PathUtils.join(PathUtils.tempDir, zipName));
   if (zipFile.exists()) {
     zipFile.remove(false);
   }
@@ -1598,7 +2031,7 @@ function getTestServerForContentSignatureTests() {
   // `cat toolkit/mozapps/extensions/test/xpcshell/data/productaddons/good.xml | ./mach python security/manager/ssl/tests/unit/test_content_signing/pysign.py`
   // If test certificates are regenerated, this signature must also be.
   const goodXmlContentSignature =
-    "7QYnPqFoOlS02BpDdIRIljzmPr6BFwPs1z1y8KJUBlnU7EVG6FbnXmVVt5Op9wDzgvhXX7th8qFJvpPOZs_B_tHRDNJ8SK0HN95BAN15z3ZW2r95SSHmU-fP2JgoNOR3";
+    "7QYnPqFoOlS02BpDdIRIljzmPr6BFwPs1z1y8KJUBlnU7EVG6FbnXmVVt5Op9wDzHeN7pJOM7ANmTqU50IbHnV8q87wmY83QL4p6NZzjsFnWolFmwK2ZjlLnhyxFcVSz";
 
   // Setup endpoint to handle x5u lookups correctly.
   const validX5uPath = "/valid_x5u";

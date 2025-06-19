@@ -89,6 +89,9 @@ shopping-show-less-button = 折叠
 
 shopping-settings-label =
     .label = 设置
+shopping-settings-recommendations-toggle2 =
+    .label = 显示推荐内容和赞助内容
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } 不会共享您的个人数据。因此，此类推荐内容不会在网络上跟踪您。<a data-l10n-name="review-quality-url">详细了解</a>
 shopping-settings-recommendations-toggle =
     .label = 在核查评价中展示广告
 shopping-settings-recommendations-learn-more2 = 您会偶尔看到相关产品的广告。我们只宣传获得可靠评价的产品。<a data-l10n-name="review-quality-url">详细了解</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = 核查评价质量
 
 more-to-consider-ad-label =
     .label = 可参考其他商品
+shopping-sponsored-label = 赞助推广
 ad-by-fakespot = { -fakespot-brand-name } 提供的广告
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = 提交
 shopping-survey-terms-link = 使用条款
 shopping-survey-thanks =
     .heading = 感谢反馈！
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = 请告诉我们您关闭“核查评价”的原因。根据需要可以多选。
+shopping-survey-thanks-title = 感谢反馈！
+shopping-survey-opted-out-hard-to-understand = 难以理解
+shopping-survey-opted-out-too-slow = 太慢了
+shopping-survey-opted-out-not-accurate = 不准确
+shopping-survey-opted-out-not-helpful = 对我没帮助
+shopping-survey-opted-out-check-myself = 我更愿意自己核查评价
+shopping-survey-opted-out-other = 其他
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

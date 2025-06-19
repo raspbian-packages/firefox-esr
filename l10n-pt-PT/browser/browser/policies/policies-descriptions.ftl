@@ -116,9 +116,10 @@ policy-PostQuantumKeyAgreementEnabled = Ativar o acordo de chaves pós-quântico
 # PDF.js and PDF should not be translated
 policy-PDFjs = Desativar ou configurar o PDF.js, o visualizador integrado de PDF do { -brand-short-name }.
 policy-Permissions2 = Configurar as permissões para a câmara, microfone, localização, notificações e reprodução automática.
-policy-PictureInPicture = Ativar ou desativar o vídeo em janela flutuante.
+policy-PictureInPicture = Ativar ou desativar a janela flutuante.
 policy-PopupBlocking = Permitir que determinados sites mostrem pop-ups por predefinição.
 policy-Preferences = Definir e bloquear o valor para um subconjunto de preferências.
+policy-PrivateBrowsingModeAvailability = Definir a disponibilidade do modo de navegação privada.
 policy-PromptForDownloadLocation = Perguntar onde guardar os ficheiros durante a transferência.
 policy-Proxy = Configurar definições proxy.
 policy-RequestedLocales = Definir a lista de idiomas solicitados para a aplicação por ordem de preferência.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Imprimir utilizando a janela de impressão do sist
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Impedir que sites sejam visitados. Consulte a documentação para mais detalhes sobre o formato.
 policy-Windows10SSO = Permitir a autenticação única para contas da Microsoft, trabalho e escola.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Permitir o início de sessão único para contas Microsoft Entra.

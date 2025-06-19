@@ -126,6 +126,7 @@ translations-manage-description = Deskargatu hizkuntzak lineaz kanpoko itzulpene
 translations-manage-all-language = Hizkuntza guztiak
 translations-manage-download-button = Deskargatu
 translations-manage-delete-button = Ezabatu
+translations-manage-intro-2 = Ezarri zure hizkuntza eta guneen itzulpenerako hobespenak eta kudeatu lineaz kanpoko itzulpenerako deskargatuta dauden hizkuntzak.
 translations-manage-download-description = Deskargatu hizkuntzak lineaz kanpoko itzulpenerako
 translations-manage-language-download-button =
     .label = Deskargatu
@@ -186,8 +187,22 @@ main-context-menu-translate-selection-to-language =
 main-context-menu-translate-link-text =
     .label = Itzuli loturaren testua…
     .accesskey = n
+# Text displayed in the right-click context menu for translating
+# the text of a hyperlink to a target language.
+#
+# Variables:
+#   $language (string) - The localized display name of the target language
+main-context-menu-translate-link-text-to-language =
+    .label = Itzuli loturaren testua { $language } hizkuntzara
+    .accesskey = u
 # Text displayed in the select translations panel header.
 select-translations-panel-header = Itzulpena
+# Text displayed above the from-language dropdown menu.
+select-translations-panel-from-label = Nondik
+# Text displayed above the to-language dropdown menu.
+select-translations-panel-to-label = Nora
+# Text displayed above the try-another-source-language dropdown menu.
+select-translations-panel-try-another-language-label = Probatu beste iturburu-hizkuntza bat
 select-translations-panel-cancel-button =
     .label = Utzi
 # Text displayed on the copy button before it is clicked.
@@ -198,10 +213,16 @@ select-translations-panel-copy-button-copied =
     .label = Kopiatuta
 select-translations-panel-done-button =
     .label = Eginda
+select-translations-panel-translate-full-page-button =
+    .label = Itzuli orri guztia
 select-translations-panel-translate-button =
     .label = Itzuli
 select-translations-panel-try-again-button =
     .label = Saiatu berriro
+# Text displayed as a placeholder when the panel is idle.
+select-translations-panel-idle-placeholder-text = Itzulitako testua hemen agertuko da.
+# Text displayed as a placeholder when the panel is actively translating.
+select-translations-panel-translating-placeholder-text = Itzultzen…
 select-translations-panel-init-failure-message =
     .message = Ezin dira hizkuntzak kargatu. Egiaztatu zure Interneterako konexioa eta saiatu berriro.
 # Text displayed when the translation fails to complete.

@@ -119,6 +119,7 @@ policy-Permissions2 = Наладзіць дазволы для камеры, м�
 policy-PictureInPicture = Уключыць або выключыць выяву ў выяве.
 policy-PopupBlocking = Дазволіць пэўным вэб-сайтам тыпова паказваць усплыўныя вокны.
 policy-Preferences = Устанавіць і зафіксаваць значэнне для падмноства пераваг.
+policy-PrivateBrowsingModeAvailability = Наладзіць доступ да рэжыму прыватнага аглядання.
 policy-PromptForDownloadLocation = Пытаць, куды захаваць файлы, пры сцягванні.
 policy-Proxy = Наладзіць параметры проксі.
 policy-RequestedLocales = Усталяваць пералік запытаных моў для праграмы ў парадку пераважання.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Друкаваць з дапамогай сіст
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Забараніць наведванне вэб-сайтаў. За падрабязнасцямі фармату гл. дакументацыю.
 policy-Windows10SSO = Дазволіць адзіны ўваход Windows для ўліковых запісаў Microsoft, працоўных і школьных уліковых запісаў.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Дазволіць адзіны ўваход для ўліковых запісаў Microsoft Entra.

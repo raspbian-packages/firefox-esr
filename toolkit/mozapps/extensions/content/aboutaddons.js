@@ -10,6 +10,7 @@
 "use strict";
 
 ChromeUtils.defineESModuleGetters(this, {
+  AMBrowserExtensionsImport: "resource://gre/modules/AddonManager.sys.mjs",
   AddonManager: "resource://gre/modules/AddonManager.sys.mjs",
   AddonRepository: "resource://gre/modules/addons/AddonRepository.sys.mjs",
   BuiltInThemes: "resource:///modules/BuiltInThemes.sys.mjs",
@@ -20,13 +21,6 @@ ChromeUtils.defineESModuleGetters(this, {
   ExtensionParent: "resource://gre/modules/ExtensionParent.sys.mjs",
   ExtensionPermissions: "resource://gre/modules/ExtensionPermissions.sys.mjs",
   PrivateBrowsingUtils: "resource://gre/modules/PrivateBrowsingUtils.sys.mjs",
-});
-
-XPCOMUtils.defineLazyGetter(this, "extensionStylesheets", () => {
-  const { ExtensionParent } = ChromeUtils.importESModule(
-    "resource://gre/modules/ExtensionParent.sys.mjs"
-  );
-  return ExtensionParent.extensionStylesheets;
 });
 
 XPCOMUtils.defineLazyPreferenceGetter(
@@ -261,14 +255,16 @@ async function getAddonMessageInfo(addon) {
   if (addon.blocklistState === STATE_BLOCKED) {
     return {
       linkUrl: await addon.getBlocklistURL(),
-      messageId: "details-notification-blocked",
+      linkId: "details-notification-blocked-link",
+      messageId: "details-notification-blocked2",
       messageArgs: { name },
       type: "error",
     };
   } else if (isDisabledUnsigned(addon)) {
     return {
       linkUrl: SUPPORT_URL + "unsigned-addons",
-      messageId: "details-notification-unsigned-and-disabled",
+      linkId: "details-notification-unsigned-and-disabled-link",
+      messageId: "details-notification-unsigned-and-disabled2",
       messageArgs: { name },
       type: "error",
     };
@@ -278,27 +274,29 @@ async function getAddonMessageInfo(addon) {
       addon.blocklistState !== STATE_SOFTBLOCKED)
   ) {
     return {
-      messageId: "details-notification-incompatible",
+      messageId: "details-notification-incompatible2",
       messageArgs: { name, version: Services.appinfo.version },
-      type: "warning",
+      type: "error",
     };
   } else if (!isCorrectlySigned(addon)) {
     return {
       linkUrl: SUPPORT_URL + "unsigned-addons",
-      messageId: "details-notification-unsigned",
+      linkId: "details-notification-unsigned-link",
+      messageId: "details-notification-unsigned2",
       messageArgs: { name },
       type: "warning",
     };
   } else if (addon.blocklistState === STATE_SOFTBLOCKED) {
     return {
       linkUrl: await addon.getBlocklistURL(),
-      messageId: "details-notification-softblocked",
+      linkId: "details-notification-softblocked-link",
+      messageId: "details-notification-softblocked2",
       messageArgs: { name },
       type: "warning",
     };
   } else if (addon.isGMPlugin && !addon.isInstalled && addon.isActive) {
     return {
-      messageId: "details-notification-gmp-pending",
+      messageId: "details-notification-gmp-pending2",
       messageArgs: { name },
       type: "warning",
     };
@@ -324,12 +322,12 @@ function checkForUpdate(addon) {
             onDownloadFailed: failed,
             onInstallCancelled: failed,
             onInstallFailed: failed,
-            onInstallEnded: (...args) => {
+            onInstallEnded: () => {
               detachUpdateHandler(install);
               install.removeListener(updateListener);
               resolve({ installed: true, pending: false, found: true });
             },
-            onInstallPostponed: (...args) => {
+            onInstallPostponed: () => {
               detachUpdateHandler(install);
               install.removeListener(updateListener);
               resolve({ installed: false, pending: true, found: true });
@@ -377,7 +375,7 @@ const OPTIONS_TYPE_MAP = {
 
 // Check if an add-on has the provided options type, accounting for the pref
 // to disable inline options.
-function getOptionsType(addon, type) {
+function getOptionsType(addon) {
   return OPTIONS_TYPE_MAP[addon.optionsType];
 }
 
@@ -579,7 +577,7 @@ var DiscoveryAPI = {
   },
 
   get clientIdDiscoveryEnabled() {
-    // These prefs match Discovery.jsm for enabling clientId cookies.
+    // These prefs match Discovery.sys.mjs for enabling clientId cookies.
     return (
       Services.prefs.getBoolPref(PREF_RECOMMENDATION_ENABLED, false) &&
       Services.prefs.getBoolPref(PREF_TELEMETRY_ENABLED, false) &&
@@ -751,6 +749,8 @@ class GlobalWarnings extends MessageBarStackElement {
       this.setWarning("update-security", { action: true });
     } else if (!AddonManager.checkCompatibility) {
       this.setWarning("check-compatibility", { action: true });
+    } else if (AMBrowserExtensionsImport.canCompleteOrCancelInstalls) {
+      this.setWarning("imported-addons", { action: true });
     } else {
       this.removeWarning();
     }
@@ -764,22 +764,42 @@ class GlobalWarnings extends MessageBarStackElement {
       this.removeWarning();
     }
     if (!this.globalWarning) {
-      this.globalWarning = document.createElement("message-bar");
+      this.globalWarning = document.createElement("moz-message-bar");
       this.globalWarning.setAttribute("warning-type", type);
-      let textContainer = document.createElement("span");
-      document.l10n.setAttributes(textContainer, `extensions-warning-${type}`);
-      this.globalWarning.appendChild(textContainer);
+      let { messageId, buttonId } = this.getGlobalWarningL10nIds(type);
+      document.l10n.setAttributes(this.globalWarning, messageId);
+      this.globalWarning.setAttribute("data-l10n-attrs", "message");
       if (opts && opts.action) {
         let button = document.createElement("button");
-        document.l10n.setAttributes(
-          button,
-          `extensions-warning-${type}-button`
-        );
+        document.l10n.setAttributes(button, buttonId);
         button.setAttribute("action", type);
+        button.setAttribute("slot", "actions");
         this.globalWarning.appendChild(button);
       }
       this.appendChild(this.globalWarning);
     }
+  }
+
+  getGlobalWarningL10nIds(type) {
+    const WARNING_TYPE_TO_L10NID_MAPPING = {
+      "safe-mode": {
+        messageId: "extensions-warning-safe-mode2",
+      },
+      "update-security": {
+        messageId: "extensions-warning-update-security2",
+        buttonId: "extensions-warning-update-security-button",
+      },
+      "check-compatibility": {
+        messageId: "extensions-warning-check-compatibility2",
+        buttonId: "extensions-warning-check-compatibility-button",
+      },
+      "imported-addons": {
+        messageId: "extensions-warning-imported-addons2",
+        buttonId: "extensions-warning-imported-addons-button",
+      },
+    };
+
+    return WARNING_TYPE_TO_L10NID_MAPPING[type];
   }
 
   removeWarning() {
@@ -798,6 +818,9 @@ class GlobalWarnings extends MessageBarStackElement {
         case "check-compatibility":
           AddonManager.checkCompatibility = true;
           break;
+        case "imported-addons":
+          AMBrowserExtensionsImport.completeInstalls();
+          break;
       }
     }
   }
@@ -811,6 +834,10 @@ class GlobalWarnings extends MessageBarStackElement {
   }
 
   onCheckUpdateSecurityChanged() {
+    this.refresh();
+  }
+
+  onBrowserExtensionsImportChanged() {
     this.refresh();
   }
 }
@@ -872,7 +899,7 @@ class AddonPageHeader extends HTMLElement {
           window.history.back();
           break;
         case pageOptionsMenuButton:
-          if (e.mozInputSource == MouseEvent.MOZ_SOURCE_KEYBOARD) {
+          if (e.inputSource == MouseEvent.MOZ_SOURCE_KEYBOARD) {
             this.pageOptionsMenu.toggle(e);
           }
           break;
@@ -1037,7 +1064,7 @@ class AddonPageOptions extends HTMLElement {
     }
   }
 
-  async checkForUpdates(e) {
+  async checkForUpdates() {
     let message = document.getElementById("updates-message");
     message.state = "updating";
     message.hidden = false;
@@ -1396,10 +1423,23 @@ class SidebarFooter extends HTMLElement {
       labelL10nId: "addons-settings-button",
       onClick: e => {
         e.preventDefault();
-        windowRoot.ownerGlobal.switchToTabHavingURI("about:preferences", true, {
-          ignoreFragment: "whenComparing",
-          triggeringPrincipal: systemPrincipal,
-        });
+        let hasAboutSettings = windowRoot.ownerGlobal.switchToTabHavingURI(
+          "about:settings",
+          false,
+          {
+            ignoreFragment: "whenComparing",
+          }
+        );
+        if (!hasAboutSettings) {
+          windowRoot.ownerGlobal.switchToTabHavingURI(
+            "about:preferences",
+            true,
+            {
+              ignoreFragment: "whenComparing",
+              triggeringPrincipal: systemPrincipal,
+            }
+          );
+        }
       },
     });
 
@@ -1573,67 +1613,6 @@ class PluginOptions extends AddonOptions {
 }
 customElements.define("plugin-options", PluginOptions);
 
-class FiveStarRating extends HTMLElement {
-  static get observedAttributes() {
-    return ["rating"];
-  }
-
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot.append(importTemplate("five-star-rating"));
-  }
-
-  set rating(v) {
-    this.setAttribute("rating", v);
-  }
-
-  get rating() {
-    let v = parseFloat(this.getAttribute("rating"), 10);
-    if (v >= 0 && v <= 5) {
-      return v;
-    }
-    return 0;
-  }
-
-  get ratingBuckets() {
-    // 0    <= x <  0.25 = empty
-    // 0.25 <= x <  0.75 = half
-    // 0.75 <= x <= 1    = full
-    // ... et cetera, until x <= 5.
-    let { rating } = this;
-    return [0, 1, 2, 3, 4].map(ratingStart => {
-      let distanceToFull = rating - ratingStart;
-      if (distanceToFull < 0.25) {
-        return "empty";
-      }
-      if (distanceToFull < 0.75) {
-        return "half";
-      }
-      return "full";
-    });
-  }
-
-  connectedCallback() {
-    this.renderRating();
-  }
-
-  attributeChangedCallback() {
-    this.renderRating();
-  }
-
-  renderRating() {
-    let starElements = this.shadowRoot.querySelectorAll(".rating-star");
-    for (let [i, part] of this.ratingBuckets.entries()) {
-      starElements[i].setAttribute("fill", part);
-    }
-    document.l10n.setAttributes(this, "five-star-rating", {
-      rating: this.rating,
-    });
-  }
-}
-customElements.define("five-star-rating", FiveStarRating);
-
 class ProxyContextMenu extends HTMLElement {
   openPopupAtScreen(...args) {
     // prettier-ignore
@@ -1729,6 +1708,7 @@ class InlineOptionsBrowser extends HTMLElement {
     browser.setAttribute("disableglobalhistory", "true");
     browser.setAttribute("messagemanagergroup", "webext-browsers");
     browser.setAttribute("id", "addon-inline-options");
+    browser.setAttribute("class", "addon-inline-options");
     browser.setAttribute("transparent", "true");
     browser.setAttribute("forcemessagemanager", "true");
     browser.setAttribute("autocompletepopup", "PopupAutoComplete");
@@ -1765,10 +1745,7 @@ class InlineOptionsBrowser extends HTMLElement {
       readyPromise = promiseEvent("load", browser, true);
     }
 
-    let stack = document.createXULElement("stack");
-    stack.classList.add("inline-options-stack");
-    stack.appendChild(browser);
-    this.appendChild(stack);
+    this.appendChild(browser);
     this.browser = browser;
 
     // Force bindings to apply synchronously.
@@ -1822,7 +1799,10 @@ class InlineOptionsBrowser extends HTMLElement {
       };
 
       if (optionsBrowserStyle) {
-        browserOptions.stylesheets = extensionStylesheets;
+        // aboutaddons.js is not used on Android. extension.css is included in
+        // Firefox desktop and Thunderbird.
+        // eslint-disable-next-line mozilla/no-browser-refs-in-toolkit
+        browserOptions.stylesheets = ["chrome://browser/content/extension.css"];
       }
 
       mm.sendAsyncMessage("Extension:InitBrowser", browserOptions);
@@ -2116,11 +2096,11 @@ class AddonDetails extends HTMLElement {
     }
   }
 
-  onDisabled(addon) {
+  onDisabled() {
     this.extensionShutdown();
   }
 
-  onEnabled(addon) {
+  onEnabled() {
     this.extensionStartup();
   }
 
@@ -2233,6 +2213,23 @@ class AddonDetails extends HTMLElement {
     });
   }
 
+  updateQuarantinedDomainsUserAllowed() {
+    const { addon } = this;
+    let quarantinedDomainsUserAllowedRow = this.querySelector(
+      ".addon-detail-row-quarantined-domains"
+    );
+    if (addon.canChangeQuarantineIgnored) {
+      quarantinedDomainsUserAllowedRow.hidden = false;
+      quarantinedDomainsUserAllowedRow.nextElementSibling.hidden = false;
+      quarantinedDomainsUserAllowedRow.querySelector(
+        `[value="${addon.quarantineIgnoredByUser ? 1 : 0}"]`
+      ).checked = true;
+    } else {
+      quarantinedDomainsUserAllowedRow.hidden = true;
+      quarantinedDomainsUserAllowedRow.nextElementSibling.hidden = true;
+    }
+  }
+
   async render() {
     let { addon } = this;
     if (!addon) {
@@ -2296,6 +2293,8 @@ class AddonDetails extends HTMLElement {
       pbRow.querySelector(`[value="${isAllowed ? 1 : 0}"]`).checked = true;
     }
 
+    this.updateQuarantinedDomainsUserAllowed();
+
     // Author.
     let creatorRow = this.querySelector(".addon-detail-row-author");
     if (addon.creator) {
@@ -2348,8 +2347,8 @@ class AddonDetails extends HTMLElement {
 
     // Rating.
     let ratingRow = this.querySelector(".addon-detail-row-rating");
-    if (addon.averageRating) {
-      ratingRow.querySelector("five-star-rating").rating = addon.averageRating;
+    if (addon.reviewURL) {
+      ratingRow.querySelector("moz-five-star").rating = addon.averageRating;
       let reviews = ratingRow.querySelector("a");
       reviews.href = formatUTMParams(
         "addons-manager-reviews-link",
@@ -2452,45 +2451,27 @@ class AddonCard extends HTMLElement {
 
   async setAddonPermission(permission, type, action) {
     let { addon } = this;
-    let origins = [],
-      permissions = [];
+    let perms = { origins: [], permissions: [] };
+
     if (!["add", "remove"].includes(action)) {
       throw new Error("invalid action for permission change");
     }
-    if (type == "permission") {
-      if (
-        action == "add" &&
-        !addon.optionalPermissions.permissions.includes(permission)
-      ) {
-        throw new Error("permission missing from manifest");
-      }
-      permissions = [permission];
-    } else if (type == "origin") {
-      if (action === "add") {
-        let { origins } = addon.optionalPermissions;
-        let patternSet = new MatchPatternSet(origins, { ignorePath: true });
-        if (!patternSet.subsumes(new MatchPattern(permission))) {
-          throw new Error("origin missing from manifest");
-        }
-      }
-      origins = [permission];
 
-      // If this is one of the "all sites" permissions
-      if (Extension.isAllSitesPermission(permission)) {
-        // Grant/revoke ALL "all sites" optional permissions from the manifest.
-        origins = addon.optionalPermissions.origins.filter(perm =>
-          Extension.isAllSitesPermission(perm)
-        );
-      }
+    if (type === "permission") {
+      perms.permissions = [permission];
+    } else if (type === "origin") {
+      perms.origins = [permission];
     } else {
       throw new Error("unknown permission type changed");
     }
-    let policy = WebExtensionPolicy.getByID(addon.id);
-    ExtensionPermissions[action](
-      addon.id,
-      { origins, permissions },
-      policy?.extension
+
+    let normalized = ExtensionPermissions.normalizeOptional(
+      perms,
+      addon.optionalPermissions
     );
+
+    let policy = WebExtensionPolicy.getByID(addon.id);
+    ExtensionPermissions[action](addon.id, normalized, policy?.extension);
   }
 
   async handleEvent(e) {
@@ -2598,7 +2579,7 @@ class AddonCard extends HTMLElement {
           break;
         case "more-options":
           // Open panel on click from the keyboard.
-          if (e.mozInputSource == MouseEvent.MOZ_SOURCE_KEYBOARD) {
+          if (e.inputSource == MouseEvent.MOZ_SOURCE_KEYBOARD) {
             this.panel.toggle(e);
           }
           break;
@@ -2632,34 +2613,43 @@ class AddonCard extends HTMLElement {
       this.setAddonPermission(permission, type, fname);
     } else if (e.type == "change") {
       let { name } = e.target;
-      if (name == "autoupdate") {
-        addon.applyBackgroundUpdates = e.target.value;
-      } else if (name == "private-browsing") {
-        let policy = WebExtensionPolicy.getByID(addon.id);
-        let extension = policy && policy.extension;
-
-        if (e.target.value == "1") {
-          await ExtensionPermissions.add(
-            addon.id,
-            PRIVATE_BROWSING_PERMS,
-            extension
-          );
-        } else {
-          await ExtensionPermissions.remove(
-            addon.id,
-            PRIVATE_BROWSING_PERMS,
-            extension
-          );
+      switch (name) {
+        case "autoupdate": {
+          addon.applyBackgroundUpdates = e.target.value;
+          break;
         }
-        // Reload the extension if it is already enabled. This ensures any
-        // change on the private browsing permission is properly handled.
-        if (addon.isActive) {
-          this.reloading = true;
-          // Reloading will trigger an enable and update the card.
-          addon.reload();
-        } else {
-          // Update the card if the add-on isn't active.
-          this.update();
+        case "private-browsing": {
+          let policy = WebExtensionPolicy.getByID(addon.id);
+          let extension = policy && policy.extension;
+
+          if (e.target.value == "1") {
+            await ExtensionPermissions.add(
+              addon.id,
+              PRIVATE_BROWSING_PERMS,
+              extension
+            );
+          } else {
+            await ExtensionPermissions.remove(
+              addon.id,
+              PRIVATE_BROWSING_PERMS,
+              extension
+            );
+          }
+          // Reload the extension if it is already enabled. This ensures any
+          // change on the private browsing permission is properly handled.
+          if (addon.isActive) {
+            this.reloading = true;
+            // Reloading will trigger an enable and update the card.
+            addon.reload();
+          } else {
+            // Update the card if the add-on isn't active.
+            this.update();
+          }
+          break;
+        }
+        case "quarantined-domains-user-allowed": {
+          addon.quarantineIgnoredByUser = e.target.value == "1";
+          break;
         }
       }
     } else if (e.type == "mousedown") {
@@ -2825,6 +2815,7 @@ class AddonCard extends HTMLElement {
 
     const {
       linkUrl,
+      linkId,
       messageId,
       messageArgs,
       type = "",
@@ -2832,18 +2823,17 @@ class AddonCard extends HTMLElement {
 
     if (messageId) {
       document.l10n.pauseObserving();
-      document.l10n.setAttributes(
-        messageBar.querySelector("span"),
-        messageId,
-        messageArgs
-      );
+      document.l10n.setAttributes(messageBar, messageId, messageArgs);
+      messageBar.setAttribute("data-l10n-attrs", "message");
 
       const link = messageBar.querySelector("button");
       if (linkUrl) {
-        document.l10n.setAttributes(link, `${messageId}-link`);
+        document.l10n.setAttributes(link, linkId);
         link.setAttribute("url", linkUrl);
+        link.setAttribute("slot", "actions");
         link.hidden = false;
       } else {
+        link.removeAttribute("slot");
         link.hidden = true;
       }
 
@@ -2960,18 +2950,18 @@ class AddonCard extends HTMLElement {
     this.sendEvent("update-postponed");
   }
 
-  onDisabled(addon) {
+  onDisabled() {
     if (!this.reloading) {
       this.update();
     }
   }
 
-  onEnabled(addon) {
+  onEnabled() {
     this.reloading = false;
     this.update();
   }
 
-  onInstalled(addon) {
+  onInstalled() {
     // When a temporary addon is reloaded, onInstalled is triggered instead of
     // onEnabled.
     this.reloading = false;
@@ -2993,6 +2983,10 @@ class AddonCard extends HTMLElement {
       this.details.update();
     } else if (addon.type == "plugin" && changed.includes("userDisabled")) {
       this.update();
+    }
+
+    if (this.details && changed.includes("quarantineIgnoredByUser")) {
+      this.details.updateQuarantinedDomainsUserAllowed();
     }
   }
 
@@ -3133,9 +3127,9 @@ class RecommendedAddonCard extends HTMLElement {
     let hasStats = false;
     if (addon.averageRating) {
       hasStats = true;
-      card.querySelector("five-star-rating").rating = addon.averageRating;
+      card.querySelector("moz-five-star").rating = addon.averageRating;
     } else {
-      card.querySelector("five-star-rating").hidden = true;
+      card.querySelector("moz-five-star").hidden = true;
     }
 
     if (addon.dailyUsers) {
@@ -3294,7 +3288,7 @@ class AddonList extends HTMLElement {
   }
 
   getPendingUninstallBar(addon) {
-    return this.querySelector(`message-bar[addon-id="${addon.id}"]`);
+    return this.querySelector(`moz-message-bar[addon-id="${addon.id}"]`);
   }
 
   sortByFn(aAddon, bAddon) {
@@ -3348,26 +3342,24 @@ class AddonList extends HTMLElement {
 
   addPendingUninstallBar(addon) {
     const stack = this.pendingUninstallStack;
-    const mb = document.createElement("message-bar");
+    const mb = document.createElement("moz-message-bar");
     mb.setAttribute("addon-id", addon.id);
-    mb.setAttribute("type", "generic");
+    mb.setAttribute("type", "info");
 
-    const addonName = document.createElement("span");
-    addonName.setAttribute("data-l10n-name", "addon-name");
-    const message = document.createElement("span");
-    message.append(addonName);
     const undo = document.createElement("button");
     undo.setAttribute("action", "undo");
     undo.addEventListener("click", () => {
       addon.cancelUninstall();
     });
+    undo.setAttribute("slot", "actions");
 
-    document.l10n.setAttributes(message, "pending-uninstall-description", {
+    document.l10n.setAttributes(mb, "pending-uninstall-description2", {
       addon: addon.name,
     });
+    mb.setAttribute("data-l10n-attrs", "message");
     document.l10n.setAttributes(undo, "pending-uninstall-undo-button");
 
-    mb.append(message, undo);
+    mb.appendChild(undo);
     stack.append(mb);
   }
 
@@ -3893,7 +3885,7 @@ class TaarMessageBar extends HTMLElement {
     if (this.childElementCount == 0 && !this.hidden) {
       this.appendChild(importTemplate("taar-notice"));
       this.addEventListener("click", this);
-      this.messageBar = this.querySelector("message-bar");
+      this.messageBar = this.querySelector("moz-message-bar");
       this.messageBar.addEventListener("message-bar:user-dismissed", this);
     }
   }

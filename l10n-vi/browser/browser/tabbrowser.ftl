@@ -13,6 +13,13 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext = Đóng { $tabCount } thẻ
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -37,6 +44,9 @@ tabbrowser-unmute-tab-audio-background-tooltip =
 tabbrowser-unblock-tab-audio-tooltip =
     .label = Phát âm thanh { $tabCount } thẻ
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -45,6 +55,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = Đóng { $tabCount } thẻ?
 tabbrowser-confirm-close-tabs-button = Đóng thẻ
+tabbrowser-ask-close-tabs-checkbox = Hỏi trước khi đóng nhiều thẻ
 tabbrowser-confirm-close-tabs-checkbox = Xác nhận trước khi đóng nhiều thẻ
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -67,7 +78,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Đóng cửa sổ và thoát { -b
 tabbrowser-confirm-close-tabs-with-key-button = Thoát { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Hỏi trước khi thoát khi nhấn { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Xác nhận trước khi thoát bằng { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = Thoát { -brand-short-name } hoặc đóng thẻ hiện tại?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Thoát { -brand-short-name }
+       *[other] Thoát { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Đóng thẻ hiện tại
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -139,3 +164,85 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Bỏ tắt tiếng thẻ
 tabbrowser-manager-close-tab =
     .tooltiptext = Đóng thẻ
+
+## Tab Groups
+
+tab-group-editor-title-create = Tạo nhóm thẻ
+tab-group-editor-title-edit = Quản lý nhóm thẻ
+tab-group-editor-name-label = Tên
+tab-group-editor-name-field =
+    .placeholder = Ví dụ: Mua sắm
+tab-group-editor-cancel =
+    .label = Huỷ bỏ
+    .accesskey = C
+tab-group-menu-header = Nhóm thẻ
+tab-context-unnamed-group =
+    .label = Nhóm không tên
+tab-group-name-default = Nhóm chưa có tên
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Thêm thẻ vào nhóm mới
+           *[other] Thêm các thẻ vào nhóm mới
+        }
+    .accesskey = G
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Thêm thẻ vào nhóm
+           *[other] Thêm các thẻ vào nhóm
+        }
+    .accesskey = G
+tab-group-editor-action-new-tab =
+    .label = Thẻ mới trong nhóm
+tab-group-editor-action-new-window =
+    .label = Chuyển nhóm sang cửa sổ mới
+tab-group-editor-action-save =
+    .label = Lưu và đóng nhóm
+tab-group-editor-action-ungroup =
+    .label = Bỏ nhóm thẻ
+tab-group-editor-action-delete =
+    .label = Xoá nhóm
+tab-group-editor-done =
+    .label = Xong
+    .accessKey = D
+tab-context-reopen-tab-group =
+    .label = Mở lại nhóm thẻ
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Xoá khỏi nhóm
+           *[other] Xoá khỏi các nhóm
+        }
+    .accesskey = R
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Di chuyển nhóm sang cửa sổ mới
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Di chuyển nhóm đến cửa sổ này
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Xoá nhóm
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Mở nhóm trong cửa sổ này
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Mở nhóm trong cửa sổ mới

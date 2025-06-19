@@ -8,11 +8,18 @@
 newtab-page-title = Նոր ներդիր
 newtab-settings-button =
     .title = Հարմարեցրեք ձեր Նոր Ներդիր էջը
+newtab-personalize-settings-icon-label =
+    .title = Անհատականացնել նոր ներդիրը
+    .aria-label = Կարգավորումներ
+newtab-settings-dialog-label =
+    .aria-label = Կարգավորումներ
 newtab-personalize-icon-label =
     .title = Անհատականացնել նոր ներդիրը
     .aria-label = Անհատականացնել նոր ներդիրը
 newtab-personalize-dialog-label =
     .aria-label = Անհատականացնել
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -23,17 +30,17 @@ newtab-search-box-search-button =
 # Variables:
 #   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-text = Որոնեք { $engine }-ով կամ մուտքագրեք հասցեն
-newtab-search-box-handoff-text-no-engine = Մուտքագրեք կայքի հասցե կամ որոնում
+newtab-search-box-handoff-text-no-engine = Որոնեք կամ մուտքագրեք հասցե
 # Variables:
 #   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-input =
-    .placeholder = Որոնեք { $engine }-ով կամ մուտքագրեք հասցեն
-    .title = Որոնեք { $engine }-ով կամ մուտքագրեք հասցեն
-    .aria-label = Որոնեք { $engine }-ով կամ մուտքագրեք հասցեն
+    .placeholder = Որոնեք { $engine }-ով կամ մուտքագրեք հասցե
+    .title = Որոնեք { $engine }-ով կամ մուտքագրեք հասցե
+    .aria-label = Որոնեք { $engine }-ով կամ մուտքագրեք հասցե
 newtab-search-box-handoff-input-no-engine =
-    .placeholder = Որոնեք կամ մուտքագրեք հասցեն
-    .title = Որոնեք կամ մուտքագրեք հասցեն
-    .aria-label = Որոնեք կամ մուտքագրեք հասցեն
+    .placeholder = Որոնեք կամ մուտքագրեք հասցե
+    .title = Որոնեք կամ մուտքագրեք հասցե
+    .aria-label = Որոնեք կամ մուտքագրեք հասցե
 newtab-search-box-text = Որոնել համացանցում
 newtab-search-box-input =
     .placeholder = Որոնել համացանցում
@@ -53,8 +60,8 @@ newtab-topsites-url-label = URL
 newtab-topsites-url-input =
     .placeholder = Մուտքագրեք կամ տեղադրեք URL
 newtab-topsites-url-validation = Անհրաժեշտ է վավեր URL
-newtab-topsites-image-url-label = Հարմարեցված նկարի URL
-newtab-topsites-use-image-link = Օգտագործել հարմարեցված նկար...
+newtab-topsites-image-url-label = Հարմարեցված պատկերի URL
+newtab-topsites-use-image-link = Օգտագործել հարմարեցված պատկեր...
 newtab-topsites-image-validation = Նկարը չհաջողվեց բեռնել: Փորձեք այլ URL.
 
 ## Top Sites - General form dialog buttons. These are verbs/actions.
@@ -109,6 +116,7 @@ newtab-menu-save-to-pocket = Պահպանել { -pocket-brand-name }-ում
 newtab-menu-delete-pocket = Ջնջել { -pocket-brand-name }-ից
 newtab-menu-archive-pocket = Արխիվացնել { -pocket-brand-name }-ում
 newtab-menu-show-privacy-info = Մեր հովանավորները և ձեր գաղտնիությունը
+newtab-menu-about-fakespot = { -fakespot-brand-name }-ի մասին
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -197,6 +205,9 @@ newtab-section-header-recent-activity = Վերջին ակտիվություն
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Առաջարկվում է { $provider }
+newtab-section-header-stories = Մտահանգման պատմություններով
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Այսօրվա ընտրությունը ձեզ համար
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -224,8 +235,26 @@ newtab-pocket-learn-more = Իմանալ ավելին
 newtab-pocket-cta-button = Ստանալ { -pocket-brand-name }
 newtab-pocket-cta-text = Խնայեք ձեր սիրած պատմությունները { -pocket-brand-name }, և ձեր միտքը վառեցրեք հետաքրքրաշարժ ընթերցանությամբ:
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Պահել
 newtab-pocket-saved = Պահված է
+
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
+# Clicking the thumbs up button for this story will result in more stories like this one being recommended
+newtab-pocket-thumbs-up-tooltip =
+    .title = Ավելի շատ նման
+# Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
+newtab-pocket-thumbs-down-tooltip =
+    .title = Ինձ համար չէ
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Շնորհակալություն։ Ձեր կարծիքը կօգնի մեզ բարելավել ձեր հոսքը:
+newtab-toast-thumbs-up-or-down = Շնորհակալություն։ Ձեր կարծիքը կօգնի մեզ բարելավել ձեր հոսքը:
+newtab-toast-dismiss-button =
+    .title = Բաց թողնել
+    .aria-label = Բաց թողնել
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
 
@@ -253,12 +282,16 @@ newtab-custom-row-selector =
     }
 newtab-custom-sponsored-sites = Հովանավորված դյուրանցումներ
 newtab-custom-pocket-title = Խորհուրդ է տրվում { -pocket-brand-name }-ի կողմից
+newtab-custom-pocket-sponsored = Հովանավորված պատմություններ
 newtab-custom-pocket-show-recent-saves = Ցուցադրել վերջին պահումները
 newtab-custom-recent-title = Վերջին ակտիվություն
 newtab-custom-recent-subtitle = Վերջին կայքերի և բովանդակության ընտրում
 newtab-custom-recent-toggle =
     .label = Վերջին ակտիվություն
     .description = Վերջին կայքերի և բովանդակության ընտրում
+newtab-custom-weather-toggle =
+    .label = Եղանակ
+    .description = Այսօրվա կանխատեսումը մի հայացքով
 newtab-custom-close-button = Փակել
 newtab-custom-settings = Կառավարել լրացուցիչ կարգավորումները
 
@@ -266,22 +299,117 @@ newtab-custom-settings = Կառավարել լրացուցիչ կարգավոր�
 
 newtab-wallpaper-title = Պաստառներ
 newtab-wallpaper-reset = Վերակայել սկզբնադիրը
+newtab-wallpaper-light-red-panda = Կարմիր պանդա
+newtab-wallpaper-light-mountain = Սպիտակ լեռ
+newtab-wallpaper-light-sky = Երկինք մանուշակագույն և վարդագույն ամպերով
+newtab-wallpaper-light-color = Կապույտ, վարդագույն և դեղին ձևեր
+newtab-wallpaper-light-landscape = Կապույտ մառախուղ լեռնային լանդշաֆտ
+newtab-wallpaper-light-beach = Լողափ արմավենու ծառով
+newtab-wallpaper-dark-aurora = Ավրորա Բորեալիս
+newtab-wallpaper-dark-color = Կարմիր և կապույտ ձևեր
+newtab-wallpaper-dark-panda = Կարմիր պանդան թաքնված է անտառում
+newtab-wallpaper-dark-sky = Քաղաքի լանդշաֆտ գիշերային երկնքով
+newtab-wallpaper-dark-mountain = Լանդշաֆտային լեռ
+newtab-wallpaper-dark-city = Մանուշակագույն քաղաքի լանդշաֆտ
+newtab-wallpaper-dark-fox-anniversary = Աղվեսը մայթին անտառի մոտ
+newtab-wallpaper-light-fox-anniversary = Աղվեսը խոտածածկ դաշտում՝ մառախլապատ լեռնային լանդշաֆտով
 
 ## Solid Colors
 
+newtab-wallpaper-category-title-colors = Կոշտ գույներ
+newtab-wallpaper-blue = Կապույտ
+newtab-wallpaper-light-blue = Բաց կապույտ
+newtab-wallpaper-light-purple = Բաց մանուշակագույն
+newtab-wallpaper-light-green = Բաց կանաչ
+newtab-wallpaper-green = Կանաչ
+newtab-wallpaper-beige = Բեժ
+newtab-wallpaper-yellow = Դեղին
+newtab-wallpaper-orange = Նարնջագույն
+newtab-wallpaper-pink = Վարդագույն
+newtab-wallpaper-light-pink = Բաց վարդագույն
+newtab-wallpaper-red = Կարմիր
+newtab-wallpaper-dark-blue = Մուգ կապույտ
+newtab-wallpaper-dark-purple = Մուգ մանուշակագույն
+newtab-wallpaper-dark-green = Մուգ կանաչ
+newtab-wallpaper-brown = Շագանակագույն
 
 ## Abstract
 
+newtab-wallpaper-category-title-abstract = Վերացական
+newtab-wallpaper-abstract-green = Կանաչ ձևեր
+newtab-wallpaper-abstract-blue = Կապույտ ձևեր
+newtab-wallpaper-abstract-purple = Մանուշակագույն ձևեր
+newtab-wallpaper-abstract-orange = Նարնջագույն ձևեր
+newtab-wallpaper-gradient-orange = Գրադիենտ նարնջագույն և վարդագույն
+newtab-wallpaper-abstract-blue-purple = Կապույտ և մանուշակագույն ձևեր
 
 ## Photographs
 
+newtab-wallpaper-category-title-photographs = Լուսանկարներ
+newtab-wallpaper-beach-at-sunrise = Լողափ արևածագին
+newtab-wallpaper-beach-at-sunset = Լողափ մայրամուտին
+newtab-wallpaper-storm-sky = Փոթորիկ երկինք
+newtab-wallpaper-sky-with-pink-clouds = Երկինք վարդագույն ամպերով
+newtab-wallpaper-red-panda-yawns-in-a-tree = Կարմիր պանդան հորանջում է ծառի վրա
+newtab-wallpaper-white-mountains = Սպիտակ լեռներ
+# Variables
+#   $author_string (String) - The name of the creator of the photo.
+#   $webpage_string (String) - The name of the webpage where the photo is located.
+newtab-wallpaper-attribution = Լուսանկարի հեղինակ՝ <a data-l10n-name="name-link">{ $author_string }</a>, <a data-l10n-name="webpage-link">{ $webpage_string }</a>-ում
+newtab-wallpaper-feature-highlight-header = Փորձեք գույն շաղ տալ
+newtab-wallpaper-feature-highlight-content = Ձեր նոր ներդիրին թարմ տեսք տվեք պաստառներով:
+newtab-wallpaper-feature-highlight-button = Հասկացա
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .title = Բաց թողնել
+    .aria-label = Փակել թռուցիկը
 
 ## New Tab Weather
 
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast =
+    .title = Տեսեք կանխատեսումը { $provider }-ում
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ Հովանավորվում է
 newtab-weather-menu-change-location = Փոխել գտնվելու վայրը
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Որոնել գտնվելու վայրը
+    .aria-label = Որոնել գտնվելու վայրը
 newtab-weather-change-location-search-input = Որոնել գտնվելու վայրը
 newtab-weather-menu-weather-display = Եղանակի ցուցադրում
 # Display options are:
 # - Simple: Displays a current weather condition icon and the current temperature
 # - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
 newtab-weather-menu-weather-display-option-simple = Պարզ
+newtab-weather-menu-change-weather-display-simple = Փոխել պարզ տեսքի
+newtab-weather-menu-weather-display-option-detailed = Մանրամասներ
+newtab-weather-menu-change-weather-display-detailed = Անցնել մանրամասն դիտմանը
+newtab-weather-menu-temperature-units = Ջերմաստիճանի միավորներ
+newtab-weather-menu-temperature-option-fahrenheit = Ֆարենհեյթ
+newtab-weather-menu-temperature-option-celsius = Ցելսիուս
+newtab-weather-menu-change-temperature-units-fahrenheit = Փոխարկել ֆարենհեյթին
+newtab-weather-menu-change-temperature-units-celsius = Փոխարկել ցելսիուսին
+
+## Topic Labels
+
+
+## Topic Selection Modal
+
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

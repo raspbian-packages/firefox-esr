@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } – { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Lap bezárása
+           *[other] { $tabCount } lap bezárása
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] { $tabCount } lap lejátszása
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -69,6 +83,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = Bezár { $tabCount } lapot?
 tabbrowser-confirm-close-tabs-button = Lapok bezárása
+tabbrowser-ask-close-tabs-checkbox = Rákérdezés több lap bezárása előtt
 tabbrowser-confirm-close-tabs-checkbox = Megerősítés több lap bezárása előtt
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -91,7 +106,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Bezárja az ablakot és kilép a 
 tabbrowser-confirm-close-tabs-with-key-button = Kilépés a { -brand-short-name }ból
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Rákérdezés a { $quitKey } billentyűvel történő kilépés előtt
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Megerősítés a { $quitKey }ból történő kilépés előtt
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = Kilép a { -brand-short-name(case: "elative") } vagy bezárja a jelenlegi lapot?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Kilépés a { -brand-short-name(case: "elative") }
+       *[other] Kilépés a { -brand-short-name(case: "elative") }
+    }
+tabbrowser-confirm-close-tab-only-button = Jelenlegi lap bezárása
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -116,6 +145,9 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ne jelenjen meg többet ez a párbes
 tabbrowser-confirm-close-duplicate-tabs-title = Figyelem!
 tabbrowser-confirm-close-duplicate-tabs-text = Az utolsó aktív lap nyitva marad
 tabbrowser-confirm-close-all-duplicate-tabs-title = Bezárja az ismétlődő lapokat?
+tabbrowser-confirm-close-all-duplicate-tabs-text =
+    Az ebben az ablakban ismétlődő lapok bezárásra kerülnek.
+    Az utolsó aktív lap nyitva marad.
 tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Lapok bezárása
 
 ##
@@ -160,3 +192,88 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Lap visszahangosítása
 tabbrowser-manager-close-tab =
     .tooltiptext = Lap bezárása
+
+## Tab Groups
+
+tab-group-editor-title-create = Lapcsoport létrehozása
+tab-group-editor-title-edit = Lapcsoport kezelése
+tab-group-editor-name-label = Név
+tab-group-editor-name-field =
+    .placeholder = Példa: Vásárlás
+tab-group-editor-cancel =
+    .label = Mégse
+    .accesskey = M
+tab-group-menu-header = Lapcsoportok
+tab-context-unnamed-group =
+    .label = Névtelen csoport
+tab-group-name-default = Névtelen csoport
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Lap hozzáadása új csoporthoz
+            [one] Lapok hozzáadása új csoporthoz
+           *[other] Lapok hozzáadása új csoporthoz
+        }
+    .accesskey = c
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Lap hozzáadása csoporthoz
+            [one] Lapok hozzáadása csoporthoz
+           *[other] Lapok hozzáadása csoporthoz
+        }
+    .accesskey = c
+tab-group-editor-action-new-tab =
+    .label = Új lap a csoportban
+tab-group-editor-action-new-window =
+    .label = Csoport áthelyezése új ablakba
+tab-group-editor-action-save =
+    .label = Mentés és csoport bezárása
+tab-group-editor-action-ungroup =
+    .label = Lapok csoportosításának megszüntetése
+tab-group-editor-action-delete =
+    .label = Csoport törlése
+tab-group-editor-done =
+    .label = Kész
+    .accessKey = K
+tab-context-reopen-tab-group =
+    .label = Lapcsoport újranyitása
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Eltávolítás a csoportból
+            [one] Eltávolítás a csoportokból
+           *[other] Eltávolítás a csoportokból
+        }
+    .accesskey = E
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Csoport áthelyezése új ablakba
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Csoport áthelyezése ebbe az ablakba
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Csoport törlése
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Csoport megnyitása ebben az ablakban
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Csoport megnyitása új ablakban

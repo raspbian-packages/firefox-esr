@@ -176,6 +176,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] 將 { -brand-short-name } 保留在 Dock
        *[other] 將 { -brand-short-name } 釘選到工具列
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = 將 { -brand-short-name } 釘選到工具列與開始選單
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -211,7 +213,9 @@ mr2022-onboarding-set-default-subtitle = 使用由非營利組織在背後開發
 mr2022-onboarding-get-started-primary-subtitle = 最新版本是圍繞您打造的。讓您更簡單就可在網路中探索，希望您也會喜歡我們推出的滿滿功能。
 mr2022-onboarding-get-started-primary-button-label = 幾秒鐘就能設定完成
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = 設定光速快
 mr2022-onboarding-import-subtitle = 根據您的喜好來設定 { -brand-short-name }。可從您的舊瀏覽器匯入書籤、密碼與更多資料。
@@ -284,7 +288,7 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = 顯示詳細資�
 ## MR2022 Multistage Gratitude screen strings
 
 mr2022-onboarding-gratitude-title = 您正在幫助我們打造更好的網路環境
-mr2022-onboarding-gratitude-subtitle = 感謝您使用由 Mozilla Foundation 所支持開發的 { -brand-short-name }。透過您的支援，我們努力讓網路環境變得更好、更開放、更可被所有人使用。
+mr2022-onboarding-gratitude-subtitle = 感謝您使用由 Mozilla 基金會開發的 { -brand-short-name }。透過您的支援，我們努力讓網路環境變得更好、更開放、更可被所有人使用。
 mr2022-onboarding-gratitude-primary-button-label = 看看有什麼新鮮事
 mr2022-onboarding-gratitude-secondary-button-label = 開始上網
 
@@ -323,6 +327,14 @@ onboarding-device-migration-subtitle = 登入您的 { -fxaccount-brand-name(capi
 onboarding-device-migration-subtitle2 = 登入帳號後，即可將書籤、密碼、上網紀錄帶到新裝置。
 onboarding-device-migration-primary-button-label = 登入
 
+## Add-ons Picker screen
+
+amo-picker-title = 自訂您的 { -brand-short-name }
+amo-picker-subtitle = 擴充套件就像是在您的瀏覽器中安裝應用程式，這些套件可讓您保護密碼、下載影音內容、購物比價、封鎖討人厭的廣告、更改瀏覽器外觀等等功能。
+amo-picker-install-button-label = 新增至 { -brand-short-name }
+amo-picker-install-complete-label = 已安裝
+amo-picker-collection-link = 探索更多附加元件
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -333,7 +345,12 @@ onboarding-mobile-download-security-and-privacy-title = 在不同裝置間切換
 onboarding-mobile-download-security-and-privacy-subtitle = 資料同步完成後，{ -brand-short-name } 即可加密您的網站密碼、書籤與更多資料。另外還可以直接取得您在其他裝置上開啟的分頁。
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } 是您的堅強後盾
-onboarding-gratitude-security-and-privacy-subtitle = 感謝您使用由 Mozilla Foundation 所支持開發的 { -brand-short-name }。透過您的支援，我們努力讓網路環境變得更安全、更可被所有人使用。
+onboarding-gratitude-security-and-privacy-subtitle = 感謝您使用由 Mozilla 基金會開發的 { -brand-short-name }。透過您的支援，我們努力讓網路環境變得更安全、更可被所有人使用。
+# Sign up or Sign in screen
+onboarding-sign-up-title = 在不同裝置間同步資料
+onboarding-sign-up-description = 註冊一組帳號，即可將您的所有重要資訊（密碼、書籤等資訊）安全地儲存下來，並且在登入的裝置中同步使用。
+onboarding-sign-up-button = 註冊或登入
+onboarding-sign-up-secondary-button = 開始上網
 
 ## New user time and familiarity survey strings
 
@@ -353,3 +370,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = 我剛開始使用
 onboarding-new-user-survey-familiarity-based-option-2 = 我大概會用
 onboarding-new-user-survey-familiarity-based-option-3 = 我很熟悉操作
 onboarding-new-user-survey-familiarity-based-option-4 = 我曾經用過，但已經好一陣子了
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = 告訴我們您想將分頁列放在哪裡
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = 可以到側邊欄設定中隨時切換。
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = 用您的方式管理分頁
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = 開啟很多分頁嗎？可以將分頁放到畫面側邊，讓畫面更流暢；也可以繼續放在畫面頂部，或隨時切換。
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = 選擇您的分頁版面
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = 若想讓畫面更流暢，可以將分頁放到畫面側邊；也可以繼續放在畫面頂部，或隨時切換。
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = 放在側邊
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = 放在頂端
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = 垂直分頁將顯示於此處
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = 正式推出垂直分頁功能
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = 試試看將分頁列移到側邊，可在側邊欄設定中隨時切換。
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = 試用垂直分頁標籤功能
+onboarding-flair-text = 新功能！
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = 保留水平分頁標籤
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = 於 { -brand-shorter-name } 側邊欄顯示分頁列的瀏覽器視窗。
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = 於 { -brand-shorter-name } 側邊欄顯示分頁列的瀏覽器視窗。
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = 於頂端顯示分頁列的瀏覽器視窗。
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = 於頂端顯示分頁列的瀏覽器視窗。
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = 在側邊欄試用 AI 聊天機器人
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = 一邊上網一邊摘要網頁內容、找出新點子、撰寫訊息草稿。多套機器人可供使用，並可隨時切換。<a data-l10n-name="learn-more">更多資訊</a>
+onboarding-genai-sidebar-primary-button = 挑選一套機器人
+onboarding-genai-sidebar-secondary-button = 開始上網
+
+## New user onboarding checklist
+
+onboarding-checklist-title = 完成設定 { -brand-short-name }
+onboarding-checklist-subtitle = 完成下列步驟，讓您獲得最完整的的上網體驗。
+onboarding-checklist-set-default = 將 { -brand-short-name } 設為預設瀏覽器
+onboarding-checklist-pin = 將 { -brand-short-name } 釘選到工具列
+onboarding-checklist-import = 從先前使用的瀏覽器匯入資料
+onboarding-checklist-extension = 新增擴充套件
+onboarding-checklist-sign-up = 註冊或登入帳號
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = 試用分頁群組，減少雜亂、更能專注
+tab-groups-onboarding-feature-callout-subtitle = 將一個分頁拖曳到另一個分頁，即可建立第一個分頁群組。
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = 跟 { -brand-product-name } 設定檔切換功能說聲嗨！
+multi-profile-spotlight-body = 設定檔中包含您的搜尋紀錄、密碼等上網資訊，不同設定檔間彼此完全隔離，您可輕鬆切換、更能管理工作與私人上網情境。
+multi-profile-spotlight-cta = 建立設定檔
+multi-profile-callout-title = 為工作與私人上網情境，建立不同設定檔
+multi-profile-callout-subtitle = 您可以透過不同設定檔完全隔離搜尋紀錄、網站密碼等上網資訊。
+multi-profile-callout-cta = 建立設定檔

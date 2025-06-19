@@ -89,6 +89,8 @@ shopping-show-less-button = Ehechauka’ive
 
 shopping-settings-label =
     .label = Ñemboheko
+shopping-settings-recommendations-toggle2 =
+    .label = Ehechauka ñemoñe’ẽ ha tetepy jeykekóva
 shopping-settings-recommendations-toggle =
     .label = Ehechauka ñemurã marandu’i rechajeyhápe
 shopping-settings-recommendations-learn-more2 = Ehecháta ñemurã sapy’apy’a apopyre iporãva rehegua. Romoherakuã apopyre ojejeroviaha oñónte. <a data-l10n-name="review-quality-url">Eikuaave</a>
@@ -162,6 +164,7 @@ shopping-unanalyzed-product-analyze-button = Ehechajey marandu’i porãngue
 
 more-to-consider-ad-label =
     .label = Ehecha emomba’e hag̃ua
+shopping-sponsored-label = Pytyvõpyréva
 ad-by-fakespot = { -fakespot-brand-name } moñemurã
 
 ## Shopping survey strings.
@@ -182,6 +185,10 @@ shopping-survey-submit-button-label = Emondo
 shopping-survey-terms-link = Jeporurã reko
 shopping-survey-thanks =
     .heading = ¡Aguyje nde jehaipyrére!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

@@ -4,18 +4,27 @@
 
 tabbrowser-empty-tab-title = Filă nouă
 tabbrowser-empty-private-tab-title = Filă privată nouă
-
 tabbrowser-menuitem-close-tab =
     .label = Închide fila
 tabbrowser-menuitem-close =
     .label = Închide
-
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Închide fila
+            [few] Închide { $tabCount } file
+           *[other] Închide { $tabCount } de file
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -70,6 +79,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Redă { $tabCount } de file
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -81,6 +93,10 @@ tabbrowser-confirm-close-tabs-checkbox = Confirmă înainte de a închide mai mu
 
 ## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
 ## Windows does not show a prompt on quit when using the keyboard shortcut by default.
+
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
 
 
 ## Confirmation dialog when opening multiple tabs simultaneously
@@ -100,6 +116,9 @@ tabbrowser-confirm-open-multiple-tabs-checkbox = Avertizează-mă când deschide
 tabbrowser-confirm-caretbrowsing-title = Navigare la cursor
 tabbrowser-confirm-caretbrowsing-message = Apăsarea pe F7 activează sau dezactivează navigarea la cursor. Acestă funcție plasează un cursor mobil în paginile web, permițându-ți să selectezi textul cu tastatura. Vrei să activezi navigarea la cursor?
 tabbrowser-confirm-caretbrowsing-checkbox = Nu mai afișa această casetă de dialog.
+
+## Confirmation dialog for closing all duplicate tabs
+
 
 ##
 
@@ -134,4 +153,14 @@ tabbrowser-ctrl-tab-list-all-tabs =
         }
 
 ## Tab manager menu buttons
+
+
+## Tab Groups
+
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+
+## Open/saved tab group context menu
 

@@ -89,6 +89,9 @@ shopping-show-less-button = Sýna minna
 
 shopping-settings-label =
     .label = Stillingar
+shopping-settings-recommendations-toggle2 =
+    .label = Sýna tillögur og kostað efni
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } deilir ekki persónulegum gögnum þínum, þannig að þessar ráðleggingar munu ekki fylgja þér á internetinu. <a data-l10n-name="review-quality-url">Frekari upplýsingar</a>
 shopping-settings-recommendations-toggle =
     .label = Birta auglýsingar í umsagnaskoðun
 shopping-settings-recommendations-learn-more2 = Þú munt sjá einstaka auglýsingar fyrir tengdar vörur. Allar auglýsingar verða að uppfylla gæðastaðla okkar vegna umsagna. <a data-l10n-name="review-quality-url">Frekari upplýsingar</a>
@@ -164,6 +167,7 @@ shopping-unanalyzed-product-analyze-button = Athugaðu gæði umsagna
 
 more-to-consider-ad-label =
     .label = Fleira sem mætti skoða
+shopping-sponsored-label = Kostað
 ad-by-fakespot = Auglýsing frá { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -184,6 +188,18 @@ shopping-survey-submit-button-label = Senda inn
 shopping-survey-terms-link = Notkunarskilmálar
 shopping-survey-thanks =
     .heading = Takk fyrir álit þitt!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Láttu okkur vita hvers vegna þú slökktir á umsagnaskoðuninni. Veldu margar ef þörf krefur.
+shopping-survey-thanks-title = Takk fyrir álit þitt!
+shopping-survey-opted-out-hard-to-understand = Það er erfitt að skilja þetta
+shopping-survey-opted-out-too-slow = Það er of hægvirkt
+shopping-survey-opted-out-not-accurate = Það er ekki nákvæmt
+shopping-survey-opted-out-not-helpful = Það er ekki gagnlegt fyrir mig
+shopping-survey-opted-out-check-myself = Ég vil frekar skoða umsagnir sjálf/ur
+shopping-survey-opted-out-other = Annað
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

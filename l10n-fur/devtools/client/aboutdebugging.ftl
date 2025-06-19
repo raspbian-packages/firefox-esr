@@ -112,6 +112,8 @@ about-debugging-setup-usb-step-enable-dev-menu2 = Ative il menù Svilupadôr sul
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = Ative lis operazions di debug vie USB intal menù Svilupadôr di Android.
 # USB section step by step guide
+about-debugging-setup-usb-step-enable-file-transfer = Ative il trasferiment files e siguriti che il dispositîf nol sedi in modalitât dome-ricjarie.
+# USB section step by step guide
 about-debugging-setup-usb-step-enable-debug-firefox2 = Ative lis operazions di debug vie USB in Firefox sul dispositîf Android.
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Conet il dispositîf Android al computer.
@@ -311,6 +313,9 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Servizi Push
+# Displayed for service workers in runtime pages, to label the origin of a worker.
+about-debugging-worker-origin =
+    .label = Origjin
 # Displayed as title of the inspect button when service worker debugging is disabled.
 about-debugging-worker-inspect-action-disabled =
     .title = Pal moment la ispezion dal Service Worker e je disativade pe version multiprocès di { -brand-shorter-name }

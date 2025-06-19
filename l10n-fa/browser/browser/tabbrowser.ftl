@@ -4,18 +4,26 @@
 
 tabbrowser-empty-tab-title = زبانهٔ جدید
 tabbrowser-empty-private-tab-title = زبانهٔ خصوصی جدید
-
 tabbrowser-menuitem-close-tab =
     .label = بستن زبانه
 tabbrowser-menuitem-close =
     .label = بستن
-
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] بستن زبانه
+           *[other] بستن { $tabCount } زبانه
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -64,6 +72,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] پخش { $tabCount } زبانه
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -96,6 +107,10 @@ tabbrowser-confirm-close-tabs-with-key-button = خروج از { -brand-short-nam
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = قبل از خروج با { $quitKey } سوال بپرس
 
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+
 ## Confirmation dialog when opening multiple tabs simultaneously
 
 tabbrowser-confirm-open-multiple-tabs-title = تأیید باز کردن
@@ -114,13 +129,15 @@ tabbrowser-confirm-caretbrowsing-title = مرور با مکان‌نما
 tabbrowser-confirm-caretbrowsing-message = با فشار دادن F7، مرور با مکان‌نما روشن یا خاموش می‌شود. این ویژگی یک مکان‌نما متحرک در صفحات وب قرار می‌دهد که به شما امکانِ انتخاب متن را با صفحه کلید می‌دهد. آیا می خواهید مرور با مکان‌نما را روشن کنید؟
 tabbrowser-confirm-caretbrowsing-checkbox = این را دوباره به من نشان نده.
 
+## Confirmation dialog for closing all duplicate tabs
+
+
 ##
 
 # Variables:
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = به اعلان‌هایی از این دست از { $domain } اجازه دهید تا شما را به زبانهٔ آنها هدایت کنند
-
 tabbrowser-customizemode-tab-title = سفارشی‌سازی { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -148,4 +165,14 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = فهرست تمام { $tabCount } زبانه‌ها
 
 ## Tab manager menu buttons
+
+
+## Tab Groups
+
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+
+## Open/saved tab group context menu
 

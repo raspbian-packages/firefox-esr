@@ -16,7 +16,7 @@ about-logins-login-filter2 =
 create-login-button =
     .title = Добавяне на парола
 fxaccounts-sign-in-text = Вземете паролите си на всички ваши устройства
-fxaccounts-sign-in-sync-button = Вписване в Sync
+fxaccounts-sign-in-sync-button = Впишете се, за да синхронизирате
 fxaccounts-avatar-button =
     .title = Управление на профила
 
@@ -25,7 +25,7 @@ fxaccounts-avatar-button =
 menu =
     .title = Отваря менюто
 # This menuitem is only visible on Windows and macOS
-about-logins-menu-menuitem-import-from-another-browser = Внасяне от друг четец…
+about-logins-menu-menuitem-import-from-another-browser = Внасяне от друг браузър…
 about-logins-menu-menuitem-import-from-a-file = Внасяне от файл…
 about-logins-menu-menuitem-export-logins = Изнасяне на регистрации…
 about-logins-menu-menuitem-remove-all-logins = Премахване на всички регистрации…
@@ -82,7 +82,7 @@ login-list-last-changed-option = Последна промяна
 login-list-last-used-option = Последно използване
 login-list-intro-title = Няма намерени регистрации
 login-list-intro-title2 = Няма запазени пароли
-login-list-intro-description = Като запазите парола в { -brand-product-name }, тя ще се покаже тук.
+login-list-intro-description = Като запазите парола във { -brand-product-name }, тя ще се покаже тук.
 about-logins-login-list-empty-search-title = Няма намерени регистрации
 about-logins-login-list-empty-search-title2 = Няма намерени пароли
 about-logins-login-list-empty-search-description = Няма резултати, отговарящи на търсенето.
@@ -105,14 +105,14 @@ about-logins-list-section-week = Последните 7 дни
 
 about-logins-login-intro-heading-logged-out2 = Търсите запазените си регистрации? Включете синхронизирането или ги внесете.
 about-logins-login-intro-heading-logged-in = Не са намерени синхронизирани регистрации.
-login-intro-description = Ако сте запазили данните си за вход в { -brand-product-name } на друго устройство, ето как да ги вземете тук:
-login-intro-instructions-fxa = Създайте или влезте в { -fxaccount-brand-name } на устройството, където са запазени вашите данни за вход
+login-intro-description = Ако сте запазили данните си за вход във { -brand-product-name } на друго устройство, ето как да ги вземете тук:
+login-intro-instructions-fxa = Създайте или влезте във { -fxaccount-brand-name } на устройството, където са запазени вашите данни за вход
 about-logins-login-intro-heading-message = Запазете паролите си на безопасно място
-login-intro-description2 = Всички пароли, които запазвате в { -brand-product-name }, са шифровани. Освен това следим за пробиви в сигурността и ако сте засегнати, ви предупреждаваме. <a data-l10n-name="breach-alert-link">Научете повече</a>
+login-intro-description2 = Всички пароли, които запазвате във { -brand-product-name }, са шифровани. Освен това следим за пробиви в сигурността и ако сте засегнати, ви предупреждаваме. <a data-l10n-name="breach-alert-link">Научете повече</a>
 login-intro-instructions-fxa2 = Създайте или влезте в профила на устройството, където са запазени вашите данни за вход
-login-intro-instructions-fxa-settings = Отворете "Настройки" > Sync > Включване на синхронизиране… Изберете отметката за регистрации и пароли.
+login-intro-instructions-fxa-settings = Отворете "Настройки" > Sync > Вписване за синхронизиране… Изберете отметката за регистрации и пароли.
 login-intro-instructions-fxa-passwords-help = Посетете <a data-l10n-name="passwords-help-link">поддръжка на пароли</a> за помощ.
-about-logins-intro-browser-only-import = Ако вашите регистрации са запазени в друг мрежов четец, можете да ги <a data-l10n-name="import-link">внесете във { -brand-product-name }</a>.
+about-logins-intro-browser-only-import = Ако вашите регистрации са запазени в друг браузър, можете да ги <a data-l10n-name="import-link">внесете във { -brand-product-name }</a>.
 about-logins-intro-import2 = Ако вашите регистрации се съхраняват извън { -brand-product-name }, можете <a data-l10n-name="import-browser-link">да ги внесете от друг четец</a> или <a data-l10n-name="import-file-link">от файл</a>
 about-logins-intro-import3 = За да добавите парола използвайте бутона със знак плюс. Също можете <a data-l10n-name="import-browser-link">да ги внесете от друг четец</a> или <a data-l10n-name="import-file-link">от файл</a>
 
@@ -140,6 +140,8 @@ login-item-copied-username-button-text = Копирано!
 login-item-password-label = Парола
 login-item-password-reveal-checkbox =
     .aria-label = Показване на паролата
+login-item-password-conceal-checkbox =
+    .aria-label = Скриване на паролата
 login-item-copy-password-button-text = Копиране
 login-item-copied-password-button-text = Копирано!
 login-item-save-changes-button = Запазване
@@ -171,6 +173,13 @@ about-logins-edit-login-os-auth-dialog-message-win = За да променит�
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-edit-login-os-auth-dialog-message-macosx = промяна на запазени регистрации
+# The macOS strings are preceded by the operating system with "Firefox is trying to ".
+# This message can be seen when attempting to disable osauth in about:preferences.
+about-logins-os-auth-dialog-message =
+    { PLATFORM() ->
+        [macos] промени настройките на паролите
+       *[other] { -brand-short-name } се опитва да промени настройките на паролите. Използвайте вашето устройство за вписване, за да разрешите това.
+    }
 # This message can be seen when attempting to edit a login in about:logins on Windows.
 about-logins-edit-login-os-auth-dialog-message2-win = За да промените паролата, въведете данните си за вход в Windows. Това се прави с цел защита на вашите регистрации.
 # This message can be seen when attempting to edit a login in about:logins
@@ -290,7 +299,7 @@ about-logins-confirm-export-dialog-title2 = Бележка относно изн
 about-logins-confirm-export-dialog-message2 =
     При изнасяне, паролите се записват във файл като текст.
     Когато приключите с използването на файла, препоръчваме да го изтриете, за да не могат другите, които използват същото устройство, да видят паролите ви.
-about-logins-confirm-export-dialog-confirm-button2 = Напред с изнасянето
+about-logins-confirm-export-dialog-confirm-button2 = Продължете с изнасянето
 about-logins-alert-import-title = Внасянето е завършено
 about-logins-alert-import-message = Подробен отчет за внасянето
 confirm-discard-changes-dialog-title = Отказвате се от промените?
@@ -417,10 +426,10 @@ about-logins-import-dialog-error-unable-to-read-title = Грешка при ан
 about-logins-import-dialog-error-unable-to-read-description = Уверете се, че избраният файл е CSV или TSV.
 about-logins-import-dialog-error-no-logins-imported = Не са внесени регистраци
 about-logins-import-dialog-error-learn-more = Научете повече
-about-logins-import-dialog-error-try-import-again = Опитайте внасянето отново ...
+about-logins-import-dialog-error-try-import-again = Опитайте внасянето отново...
 about-logins-import-dialog-error-cancel = Отказ
 about-logins-import-report-title = Отчет за внасянето
-about-logins-import-report-description = Регистрации и пароли внесени в { -brand-short-name }.
+about-logins-import-report-description = Регистрации и пароли внесени във { -brand-short-name }.
 about-logins-import-report-description2 = Пароли внесени в/ъв { -brand-short-name }.
 #
 # Variables:

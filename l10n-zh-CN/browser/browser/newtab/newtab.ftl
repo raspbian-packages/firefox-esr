@@ -8,11 +8,18 @@
 newtab-page-title = 新标签页
 newtab-settings-button =
     .title = 定制您的新标签页
+newtab-personalize-settings-icon-label =
+    .title = 个性化新标签页
+    .aria-label = 设置
+newtab-settings-dialog-label =
+    .aria-label = 设置
 newtab-personalize-icon-label =
     .title = 个性化标签页
     .aria-label = 个性化标签页
 newtab-personalize-dialog-label =
     .aria-label = 个性化
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -67,7 +74,7 @@ newtab-topsites-add-button = 添加
 
 ## Top Sites - Delete history confirmation dialog.
 
-newtab-confirm-delete-history-p1 = 确定删除此页面在您的历史记录中的所有记录？
+newtab-confirm-delete-history-p1 = 您确定要删除此页面在您的历史记录中的所有记录吗？
 # "This action" refers to deleting a page from history.
 newtab-confirm-delete-history-p2 = 此操作无法撤销。
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = 保存到 { -pocket-brand-name }
 newtab-menu-delete-pocket = 从 { -pocket-brand-name } 删除
 newtab-menu-archive-pocket = 在 { -pocket-brand-name } 中存档
 newtab-menu-show-privacy-info = 我们的赞助商＆您的隐私
+newtab-menu-about-fakespot = 关于 { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = 屏蔽
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = 取消关注主题
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -196,6 +210,8 @@ newtab-section-header-recent-activity = 近期动态
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } 推荐
 newtab-section-header-stories = 精选文章
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = 今日专属荐读
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -227,6 +243,8 @@ newtab-pocket-cta-button = 获取 { -pocket-brand-name }
 newtab-pocket-cta-text = 将您喜爱的故事保存到 { -pocket-brand-name }，用精彩的读物为思想注入活力。
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } 是 { -brand-product-name } 系列产品的一部分
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = 保存
 newtab-pocket-saved = 已保存
 
@@ -234,10 +252,13 @@ newtab-pocket-saved = 已保存
 
 # Clicking the thumbs up button for this story will result in more stories like this one being recommended
 newtab-pocket-thumbs-up-tooltip =
-    .title = 相似推荐
+    .title = 再多来点
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = 不感兴趣
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = 谢谢，您的反馈有助于我们改进为您提供的推送。
 newtab-toast-thumbs-up-or-down = 谢谢，您的反馈有助于我们改进为您提供的推送。
 newtab-toast-dismiss-button =
     .title = 知道了
@@ -302,6 +323,8 @@ newtab-wallpaper-dark-panda = 躲在森林里的小熊猫
 newtab-wallpaper-dark-sky = 夜空下的城市景观
 newtab-wallpaper-dark-mountain = 山地景观
 newtab-wallpaper-dark-city = 紫色城市景观
+newtab-wallpaper-dark-fox-anniversary = 树林旁边人行道上的狐狸
+newtab-wallpaper-light-fox-anniversary = 迷蒙山景中草地上的狐狸
 
 ## Solid Colors
 
@@ -344,7 +367,7 @@ newtab-wallpaper-white-mountains = 皑白山脉
 # Variables
 #   $author_string (String) - The name of the creator of the photo.
 #   $webpage_string (String) - The name of the webpage where the photo is located.
-newtab-wallpaper-attribution = 照片由 <a data-l10n-name="name-link">{ $author_string }</a> 在 <a data-l10n-name="webpage-link">{ $webpage_string }</a> 上发布
+newtab-wallpaper-attribution = 照片由 <a data-l10n-name="name-link">{ $author_string }</a> 发布于 <a data-l10n-name="webpage-link">{ $webpage_string }</a>
 newtab-wallpaper-feature-highlight-header = 试用新色彩
 newtab-wallpaper-feature-highlight-content = 选张壁纸，给新标签页加点新鲜感。
 newtab-wallpaper-feature-highlight-button = 知道了
@@ -366,6 +389,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ 赞助
 newtab-weather-menu-change-location = 更改位置
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = 搜索位置
+    .aria-label = 搜索位置
 newtab-weather-change-location-search-input = 搜索位置
 newtab-weather-menu-weather-display = 天气信息显示方式
 # Display options are:
@@ -384,3 +410,76 @@ newtab-weather-menu-hide-weather = 隐藏新标签页上的天气信息
 newtab-weather-menu-learn-more = 详细了解
 # This message is shown if user is working offline
 newtab-weather-error-not-available = 目前无法获取天气数据。
+
+## Topic Labels
+
+newtab-topic-label-business = 商业
+newtab-topic-label-career = 职场
+newtab-topic-label-education = 教育
+newtab-topic-label-arts = 娱乐
+newtab-topic-label-food = 饮食
+newtab-topic-label-health = 健康
+newtab-topic-label-hobbies = 游戏
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = 理财
+newtab-topic-label-society-parenting = 育儿
+newtab-topic-label-government = 政治
+newtab-topic-label-education-science = 科学
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = 自我提升
+newtab-topic-label-sports = 体育
+newtab-topic-label-tech = 科技
+newtab-topic-label-travel = 旅行
+newtab-topic-label-home = 家庭与园艺
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = 选择主题，让推送内容更合您胃口
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = 请选择两个或更多主题。我们的专业采编团队会按照您的喜好，优先呈上专属推荐，您还可以随时刷新。
+newtab-topic-selection-save-button = 保存
+newtab-topic-selection-cancel-button = 取消
+newtab-topic-selection-button-maybe-later = 以后再说
+newtab-topic-selection-privacy-link = 了解我们保护和管理数据的方式
+newtab-topic-selection-button-update-interests = 更新您感兴趣的主题
+newtab-topic-selection-button-pick-interests = 选择您感兴趣的主题
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = 关注
+newtab-section-following-button = 正在关注
+newtab-section-unfollow-button = 取消关注
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = 屏蔽
+newtab-section-blocked-button = 已屏蔽
+newtab-section-unblock-button = 取消屏蔽
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = 确定要屏蔽此部分吗？
+newtab-section-confirm-block-section-p2 = 将不再向您推送被屏蔽的部分。
+newtab-section-block-section-button = 屏蔽此部分
+newtab-section-cancel-button = 暂时不要
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = 主题
+newtab-section-mangage-topics-button =
+    .label = 关注和屏蔽的主题
+newtab-section-mangage-topics-followed-topics-subtitle = 关注的主题
+newtab-section-mangage-topics-followed-topics-empty-state = 没有已关注的主题。
+newtab-section-mangage-topics-blocked-topics-subtitle = 屏蔽的主题
+newtab-section-mangage-topics-blocked-topics-empty-state = 没有已屏蔽的主题

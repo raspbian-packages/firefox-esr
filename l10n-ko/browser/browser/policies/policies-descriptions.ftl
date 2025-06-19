@@ -119,6 +119,7 @@ policy-Permissions2 = 카메라, 마이크, 위치, 알림 및 자동 재생에 
 policy-PictureInPicture = 화면 속 화면을 사용하거나 사용하지 않게 합니다.
 policy-PopupBlocking = 기본으로 특정 웹 사이트가 팝업을 보여주도록 허용합니다.
 policy-Preferences = 설정의 하위 집합에 대한 값을 설정하고 잠급니다.
+policy-PrivateBrowsingModeAvailability = 사생활 보호 모드의 가용성을 설정합니다.
 policy-PromptForDownloadLocation = 다운로드시 파일 저장 위치를 물어봅니다.
 policy-Proxy = 프록시 설정을 구성합니다.
 policy-RequestedLocales = 애플리케이션의 요청된 로케일의 목록을 설정 순서로 설정합니다.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = 시스템 인쇄 대화 상자를 사용하여 인
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = 특정 웹 사이트 방문을 차단합니다. 자세한 형식에 대해서는 문서를 참고하세요.
 policy-Windows10SSO = Microsoft, 회사 및 학교 계정에 Windows Single Sign-On을 허용합니다.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Microsoft Entra 계정에 Single Sign-On을 허용합니다.

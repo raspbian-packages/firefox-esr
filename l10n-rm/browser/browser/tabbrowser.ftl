@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Serrar il tab
+           *[other] Serrar { $tabCount } tabs
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,16 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Far ir il tun da { $tabCount } tabs
         }
 
+## Tooltips for tab audio control
+
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Reactivar il tun dal tab
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Deactivar il tun dal tab
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Far ir il tun dal tab
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -69,6 +90,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = Serrar { $tabCount } tabs?
 tabbrowser-confirm-close-tabs-button = Serrar ils tabs
+tabbrowser-ask-close-tabs-checkbox = Dumandar avant che serrar plirs tabs
 tabbrowser-confirm-close-tabs-checkbox = Confermar avant che serrar plirs tabs
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -91,7 +113,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Serrar la fanestra e terminar { -
 tabbrowser-confirm-close-tabs-with-key-button = Terminar { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Dumandar avant che terminar cun { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Confermar cun { $quitKey } avant che terminar
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = Terminar { -brand-short-name } u serrar il tab actual?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Terminar { -brand-short-name }
+       *[other] Terminar { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Serrar il tab actual
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -163,3 +199,96 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Reactivar il tun dal tab
 tabbrowser-manager-close-tab =
     .tooltiptext = Serrar il tab
+
+## Tab Groups
+
+tab-group-editor-title-create = Crear ina gruppa da tabs
+tab-group-editor-title-edit = Administrar la gruppa da tabs
+tab-group-editor-name-label = Num
+tab-group-editor-name-field =
+    .placeholder = Exempel: far cumpras
+tab-group-editor-cancel =
+    .label = Interrumper
+    .accesskey = I
+tab-group-editor-color-selector =
+    .aria-label = Colur da la gruppa da tabs
+tab-group-editor-color-selector-blue = Blau
+tab-group-editor-color-selector-purple = Violet
+tab-group-editor-color-selector-cyan = Cian
+tab-group-editor-color-selector-orange = Oransch
+tab-group-editor-color-selector-yellow = Mellen
+tab-group-editor-color-selector-pink = Rosa
+tab-group-editor-color-selector-green = Verd
+tab-group-editor-color-selector-gray = Grisch
+tab-group-editor-color-selector-red = Cotschen
+tab-group-menu-header = Gruppas da tabs
+tab-context-unnamed-group =
+    .label = Gruppa senza num
+tab-group-name-default = Gruppa senza num
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Agiuntar il tab ad ina nova gruppa
+           *[other] Agiuntar ils tabs ad ina nova gruppa
+        }
+    .accesskey = g
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Agiuntar il tab a la gruppa
+           *[other] Agiuntar ils tabs a la gruppa
+        }
+    .accesskey = g
+tab-group-editor-action-new-tab =
+    .label = Nov tab en la gruppa
+tab-group-editor-action-new-window =
+    .label = Spustar la gruppa en ina nova fanestra
+tab-group-editor-action-save =
+    .label = Memorisar e serrar la gruppa
+tab-group-editor-action-ungroup =
+    .label = Degruppar ils tabs
+tab-group-editor-action-delete =
+    .label = Stizzar la gruppa
+tab-group-editor-done =
+    .label = Finì
+    .accessKey = F
+tab-context-reopen-tab-group =
+    .label = Reavrir la gruppa da tabs
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Allontanar da la gruppa
+           *[other] Allontanar da las gruppas
+        }
+    .accesskey = A
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Spustar la gruppa en ina nova fanestra
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Spustar la gruppa en questa fanestra
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Stizzar la gruppa
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Avrir la gruppa en questa fanestra
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Avrir la gruppa en ina nova fanestra

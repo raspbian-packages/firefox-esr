@@ -64,6 +64,7 @@ neterror-dns-not-found-trr-offline = Du er ikkje kopla til internett.
 neterror-dns-not-found-trr-unknown-host2 = Denne nettstaden vart ikkje funnen av { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Det er eit problem med { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = Ugyldig nettadresse.
+neterror-dns-not-found-system-sleep = Systemet er i kvilemodus.
 neterror-dns-not-found-trr-unknown-problem = Uventa problem.
 
 ## Native fallback specific messages
@@ -147,3 +148,7 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Viss du ikkje kjenner til <
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> har ein tryggingspolicy kalla HTTP Strict Transport Security (HSTS), som betyr at { -brand-short-name } berre kan kople til han trygt. Du kan ikkje leggje til eit unntak for å besøkje denne nettstaden.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Feilkode: { $responsestatus } { $responsestatustext }

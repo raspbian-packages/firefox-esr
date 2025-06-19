@@ -5,7 +5,7 @@
 
 "use strict";
 
-/* exported attachUpdateHandler, detachUpdateHandler, gBrowser,
+/* exported attachUpdateHandler, detachUpdateHandler,
  *          getBrowserElement, installAddonsFromFilePicker,
  *          isCorrectlySigned, isDisabledUnsigned, isDiscoverEnabled,
  *          isPending, loadReleaseNotes, openOptionsInTab, promiseEvent,
@@ -65,6 +65,10 @@ function installPromptHandler(info) {
   let oldPerms = info.existingAddon.userPermissions;
   if (!oldPerms) {
     // Updating from a legacy add-on, let it proceed
+    return Promise.resolve();
+  }
+
+  if (info.existingAddon.isInstalledByEnterprisePolicy) {
     return Promise.resolve();
   }
 
@@ -150,13 +154,13 @@ function shouldShowPermissionsPrompt(addon) {
     return false;
   }
 
-  let perms = addon.userPermissions;
+  let perms = addon.installPermissions;
   return perms?.origins.length || perms?.permissions.length;
 }
 
 function showPermissionsPrompt(addon) {
   return new Promise(resolve => {
-    const permissions = addon.userPermissions;
+    const permissions = addon.installPermissions;
     const target = getBrowserElement();
 
     const onAddonEnabled = () => {
@@ -196,21 +200,6 @@ function showPermissionsPrompt(addon) {
   });
 }
 
-// Stub tabbrowser implementation for use by the tab-modal alert code
-// when an alert/prompt/confirm method is called in a WebExtensions options_ui
-// page (See Bug 1385548 for rationale).
-var gBrowser = {
-  getTabModalPromptBox(browser) {
-    const parentWindow = window.docShell.chromeEventHandler.ownerGlobal;
-
-    if (parentWindow.gBrowser) {
-      return parentWindow.gBrowser.getTabModalPromptBox(browser);
-    }
-
-    return null;
-  },
-};
-
 function isCorrectlySigned(addon) {
   // Add-ons without an "isCorrectlySigned" property are correctly signed as
   // they aren't the correct type for signing.
@@ -237,7 +226,11 @@ async function installAddonsFromFilePicker() {
   ]);
   const nsIFilePicker = Ci.nsIFilePicker;
   var fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-  fp.init(window, dialogTitle.value, nsIFilePicker.modeOpenMultiple);
+  fp.init(
+    window.browsingContext,
+    dialogTitle.value,
+    nsIFilePicker.modeOpenMultiple
+  );
   try {
     fp.appendFilter(filterName.value, "*.xpi;*.jar;*.zip");
     fp.appendFilters(nsIFilePicker.filterAll);

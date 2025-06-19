@@ -41,6 +41,8 @@ neterror-generic-error = { -brand-short-name } осы парақты белгі�
 neterror-load-error-try-again = Сайт уақытша қолжетімсіз, немесе сұранымдарға толы шығар. Кейінірек қайталап көріңіз.
 neterror-load-error-connection = Басқа да сайттарды аша алмасаңыз, компьютеріңіздің желіге байланысу баптауларын тексеріңіз.
 neterror-load-error-firewall = Компьютер немесе желі желіаралық экранмен немесе прокси-сервермен қорғалған болса – { -brand-short-name } үшін Интернетке шығуға рұқсат бар екеніне көз жеткізіңіз.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Жергілікті желі бетін жүктеп алғыңыз келсе, { -brand-short-name } қолданбасына macOS Жекелік және қауіпсіздік параметрлерінде Жергілікті желі рұқсаттары берілгенін тексеріңіз.
 neterror-captive-portal = Интернетке қатынау үшін бұл желіге кіруіңіз керек.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +66,7 @@ neterror-dns-not-found-trr-offline = Сіз интернетке қосылма�
 neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } бұл веб-сайтты таба алмады.
 neterror-dns-not-found-trr-server-problem = { $trrDomain } доменіне қатысты мәселе бар.
 neterror-dns-not-found-bad-trr-url = Жарамсыз URL.
+neterror-dns-not-found-system-sleep = Жүйе ұйқы режимінде.
 neterror-dns-not-found-trr-unknown-problem = Күтпеген мәселе.
 
 ## Native fallback specific messages
@@ -147,3 +150,4 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Егер сізге <b>{ $m
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> сайтының HTTP Strict Transport Security (HSTS) деп аталатын қауіпсіздік саясаты бар, бұл дегеніміз, { -brand-short-name } оған тек қауіпсіз түрде байланыса алады. Бұл веб-сайт үшін ережеден тыс жағдайды қоса алмайсыз.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Ешнәрсе емес сияқты, себебі сайттың өзінде мәселе болуы мүмкін.

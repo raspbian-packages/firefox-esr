@@ -14,7 +14,6 @@
 #include "mozilla/ipc/BackgroundChild.h"
 #include "mozilla/dom/Document.h"
 #include "mozilla/dom/Promise.h"
-#include "mozilla/Unused.h"
 #include "nsContentUtils.h"
 #include "nsISupportsImpl.h"  // for MOZ_COUNT_CTOR, MOZ_COUNT_DTOR
 #include "MIDILog.h"
@@ -49,10 +48,6 @@ MIDIPort::MIDIPort(nsPIDOMWindowInner* aWindow)
 }
 
 MIDIPort::~MIDIPort() {
-  if (mMIDIAccessParent) {
-    mMIDIAccessParent->RemovePortListener(this);
-    mMIDIAccessParent = nullptr;
-  }
   if (Port()) {
     // If the IPC port channel is still alive at this point, it means we're
     // probably CC'ing this port object. Send the shutdown message to also clean
@@ -75,7 +70,7 @@ bool MIDIPort::Initialize(const MIDIPortInfo& aPortInfo, bool aSysexEnabled,
   }
 
   nsAutoCString origin;
-  nsresult rv = nsContentUtils::GetASCIIOrigin(uri, origin);
+  nsresult rv = nsContentUtils::GetWebExposedOriginSerialization(uri, origin);
   if (NS_FAILED(rv)) {
     return false;
   }
@@ -105,14 +100,14 @@ bool MIDIPort::Initialize(const MIDIPortInfo& aPortInfo, bool aSysexEnabled,
   mPortHolder.Init(port.forget());
   LOG("MIDIPort::Initialize (%s, %s)",
       NS_ConvertUTF16toUTF8(Port()->Name()).get(),
-      MIDIPortTypeValues::strings[uint32_t(Port()->Type())].value);
+      GetEnumString(Port()->Type()).get());
   return true;
 }
 
 void MIDIPort::UnsetIPCPort() {
   LOG("MIDIPort::UnsetIPCPort (%s, %s)",
       NS_ConvertUTF16toUTF8(Port()->Name()).get(),
-      MIDIPortTypeValues::strings[uint32_t(Port()->Type())].value);
+      GetEnumString(Port()->Type()).get());
   mPortHolder.Clear();
 }
 
@@ -192,13 +187,6 @@ already_AddRefed<Promise> MIDIPort::Close(ErrorResult& aError) {
   return p.forget();
 }
 
-void MIDIPort::Notify(const void_t& aVoid) {
-  LOG("MIDIPort::notify MIDIAccess shutting down, dropping reference.");
-  // If we're getting notified, it means the MIDIAccess parent object is dead.
-  // Nullify our copy.
-  mMIDIAccessParent = nullptr;
-}
-
 void MIDIPort::FireStateChangeEvent() {
   if (!GetOwner()) {
     return;  // Ignore changes once we've been disconnected from the owner
@@ -239,8 +227,8 @@ void MIDIPort::FireStateChangeEvent() {
 
   // Fire MIDIAccess events first so that the port is no longer in the port
   // maps.
-  if (mMIDIAccessParent) {
-    mMIDIAccessParent->FireConnectionEvent(this);
+  if (RefPtr<MIDIAccess> access = mMIDIAccessParent.get()) {
+    access->FireConnectionEvent(this);
   }
 
   MIDIConnectionEventInit init;

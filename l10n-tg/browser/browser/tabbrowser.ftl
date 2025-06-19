@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } — { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Пӯшидани варақа
+           *[other] Пӯшидани { $tabCount } варақа
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,16 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Пахш кардани садо дар { $tabCount } варақа
         }
 
+## Tooltips for tab audio control
+
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Фаъол кардани садо дар варақа
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Хомӯш кардани садо дар варақа
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Пахш кардани варақа
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -69,6 +90,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = { $tabCount } варақро мепӯшед?
 tabbrowser-confirm-close-tabs-button = Пӯшидани варақаҳо
+tabbrowser-ask-close-tabs-checkbox = Пурсидан пеш аз пӯшидани якчанд варақа
 tabbrowser-confirm-close-tabs-checkbox = Тасдиқ кардан пеш аз пӯшидани якчанд варақа
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -91,7 +113,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Равзанаро мепӯшед
 tabbrowser-confirm-close-tabs-with-key-button = Аз { -brand-short-name } баромадан
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Пеш аз баромад ба воситаи { $quitKey } тасдиқ карда шавад
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Пеш аз баромад ба воситаи { $quitKey } тасдиқ карда шавад
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = «{ -brand-short-name }»-ро хомӯш мекунед ё ин ки варақаи ҷориро мепӯшед?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Аз «{ -brand-short-name }» баромадан
+       *[other] Хомӯш кардани «{ -brand-short-name }»
+    }
+tabbrowser-confirm-close-tab-only-button = Пӯшидани варақаи ҷорӣ
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -115,6 +151,11 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ин равзанаи гуфтугӯ
 
 tabbrowser-confirm-close-duplicate-tabs-title = Диққат
 tabbrowser-confirm-close-duplicate-tabs-text = Мо варақаи фаъоли охиринро кушода нигоҳ медорем
+tabbrowser-confirm-close-all-duplicate-tabs-title = Варақаҳои такрориро мепӯшед?
+tabbrowser-confirm-close-all-duplicate-tabs-text =
+    Мо дар ин равзана варақаҳои такрориро мепӯшем.
+    Варақаи фаъоли охирин кушода меистад.
+tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Пӯшидани варақаҳо
 
 ##
 
@@ -158,3 +199,96 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Фаъол кардани садо дар варақа
 tabbrowser-manager-close-tab =
     .tooltiptext = Пӯшидани варақа
+
+## Tab Groups
+
+tab-group-editor-title-create = Эҷод кардани гурӯҳи варақаҳо
+tab-group-editor-title-edit = Идора кардани гурӯҳи варақаҳо
+tab-group-editor-name-label = Ном
+tab-group-editor-name-field =
+    .placeholder = Масалан: Харидорӣ
+tab-group-editor-cancel =
+    .label = Бекор кардан
+    .accesskey = Б
+tab-group-editor-color-selector =
+    .aria-label = Ранги гурӯҳи варақа
+tab-group-editor-color-selector-blue = Кабуд
+tab-group-editor-color-selector-purple = Лоҷувард
+tab-group-editor-color-selector-cyan = Осмонӣ
+tab-group-editor-color-selector-orange = Норинҷӣ
+tab-group-editor-color-selector-yellow = Зард
+tab-group-editor-color-selector-pink = Гулобӣ
+tab-group-editor-color-selector-green = Сабз
+tab-group-editor-color-selector-gray = Хокистарӣ
+tab-group-editor-color-selector-red = Сурх
+tab-group-menu-header = Гурӯҳҳои варақаҳо
+tab-context-unnamed-group =
+    .label = Гурӯҳи беном
+tab-group-name-default = Гурӯҳи беном
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Илова кардани варақа ба гурӯҳи нав
+           *[other] Илова кардани варақаҳо ба гурӯҳи нав
+        }
+    .accesskey = Г
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Илова кардани варақа ба гурӯҳ
+           *[other] Илова кардани варақаҳо ба гурӯҳ
+        }
+    .accesskey = Г
+tab-group-editor-action-new-tab =
+    .label = Варақаи нав дар гурӯҳ
+tab-group-editor-action-new-window =
+    .label = Гузаронидани гурӯҳ ба равзанаи нав
+tab-group-editor-action-save =
+    .label = Нигоҳ доштан ва пӯшидани гурӯҳ
+tab-group-editor-action-ungroup =
+    .label = Ҷудо кардани варақаҳо аз гурӯҳ
+tab-group-editor-action-delete =
+    .label = Нест кардани гурӯҳ
+tab-group-editor-done =
+    .label = Тайёр
+    .accessKey = Т
+tab-context-reopen-tab-group =
+    .label = Барқарор кардани гурӯҳи варақаҳо
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Тоза кардан аз гурӯҳ
+           *[other] Тоза кардан аз гурӯҳ
+        }
+    .accesskey = Т
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Гузаронидани гурӯҳ ба равзанаи нав
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Гузаронидани гурӯҳ ба ин равзана
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Нест кардани гурӯҳ
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Кушодани гурӯҳ дар ин равзана
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Кушодани гурӯҳ дар равзанаи нав

@@ -9,6 +9,7 @@
 
 #include "mozilla/ComputedTiming.h"
 #include "mozilla/dom/Animation.h"
+#include "mozilla/AnimatedPropertyID.h"
 #include "mozilla/StyleAnimationValue.h"
 #include "AnimationCommon.h"
 
@@ -19,11 +20,12 @@ namespace dom {
 
 class CSSTransition final : public Animation {
  public:
-  explicit CSSTransition(nsIGlobalObject* aGlobal)
+  explicit CSSTransition(nsIGlobalObject* aGlobal,
+                         const AnimatedPropertyID& aProperty)
       : Animation(aGlobal),
         mPreviousTransitionPhase(TransitionPhase::Idle),
         mNeedsNewAnimationIndexWhenRun(false),
-        mTransitionProperty(eCSSProperty_UNKNOWN) {}
+        mTransitionProperty(aProperty) {}
 
   JSObject* WrapObject(JSContext* aCx,
                        JS::Handle<JSObject*> aGivenProto) override;
@@ -49,16 +51,20 @@ class CSSTransition final : public Animation {
   }
 
   void CancelFromStyle(PostRestyleMode aPostRestyle) {
+    Animation::Cancel(aPostRestyle);
+
     // The animation index to use for compositing will be established when
     // this transition next transitions out of the idle state but we still
     // update it now so that the sort order of this transition remains
     // defined until that moment.
     //
     // See longer explanation in CSSAnimation::CancelFromStyle.
+    //
+    // Note: We have to update |mAnimationIndex| after calling
+    // Animation::Cancel(), which enqueues transitioncancel event, to make sure
+    // we have the correct |mAnimationIndex| in AnimationEventInfo.
     mAnimationIndex = sNextAnimationIndex++;
     mNeedsNewAnimationIndexWhenRun = true;
-
-    Animation::Cancel(aPostRestyle);
 
     // It is important we do this *after* calling Cancel().
     // This is because Cancel() will end up posting a restyle and
@@ -70,12 +76,14 @@ class CSSTransition final : public Animation {
 
   void SetEffectFromStyle(KeyframeEffect*);
 
-  void Tick() override;
+  void Tick(TickState&) override;
 
-  nsCSSPropertyID TransitionProperty() const;
+  const AnimatedPropertyID& TransitionProperty() const;
   AnimationValue ToValue() const;
 
-  bool HasLowerCompositeOrderThan(const CSSTransition& aOther) const;
+  bool HasLowerCompositeOrderThan(
+      const Maybe<EventContext>& aContext, const CSSTransition& aOther,
+      const Maybe<EventContext>& aOtherContext) const;
   EffectCompositor::CascadeLevel CascadeLevel() const override {
     return IsTiedToMarkup() ? EffectCompositor::CascadeLevel::Transitions
                             : EffectCompositor::CascadeLevel::Animations;
@@ -197,7 +205,7 @@ class CSSTransition final : public Animation {
   // information in order to determine if there is an existing transition
   // for a given style change. We can't store that information on the
   // effect however since it can be replaced using the Web Animations API.
-  nsCSSPropertyID mTransitionProperty;
+  AnimatedPropertyID mTransitionProperty;
   AnimationValue mTransitionToValue;
 
   // This is the start value to be used for a check for whether a

@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = ਪਾਬੰਦੀ ਲਗਾਇਆ ਸ�
 neterror-captive-portal-page-title = ਨੈੱਟਵਰਕ ਲਈ ਲਾਗਇਨ ਕਰੋ
 neterror-dns-not-found-title = ਸਰਵਰ ਨਹੀਂ ਲੱਭਿਆ
 neterror-malformed-uri-page-title = ਅਢੁੱਕਵਾਂ URL
+general-body-title = ਧਿਆਨ ਰੱਖੋ। ਕੁਝ ਸਹੀ ਨਹੀਂ ਜਾਪਦਾ ਹੈ।
 
 ## Error page actions
 
@@ -41,6 +42,8 @@ neterror-generic-error = { -brand-short-name } ਕੁਝ ਕਾਰਨਾਂ ਕ�
 neterror-load-error-try-again = ਸਾਇਟ ਆਰਜ਼ੀ ਰੂਪ ਵਿੱਚ ਅਣ-ਉਪਲੱਬਧ ਹੋ ਸਕਦੀ ਹੈ ਜਾਂ ਬਹੁਤ ਰੁੱਝੀ ਹੋ ਹੋ ਸਕਦੀ ਹੈ। ਕੁਝ ਪਲਾਂ ਬਾਅਦ ਕੋਸ਼ਿਸ਼ ਕਰੋ।
 neterror-load-error-connection = ਜੇ ਤੁਸੀਂ ਕੋਈ ਵੀ ਸਫ਼ੇ ਨੂੰ ਲੋਡ ਕਰਨ ਲਈ ਅਸਫ਼ਲ ਹੋ ਤਾਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਦੇ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਨੂੰ ਚੈੱਕ ਕਰੋ।
 neterror-load-error-firewall = ਜੇ ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਜਾਂ ਨੈੱਟਵਰਕ ਫਾਇਰਵਾਲ ਜਾਂ ਪਰਾਕਸੀ ਰਾਹੀਂ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਹੈ ਤਾਂ ਯਕੀਨੀ ਬਣਾਓ ਕਿ { -brand-short-name } ਨੂੰ ਵੈੱਬ ਵਰਤਣ ਲਈ ਅਧਿਕਾਰ ਹੈ।
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = ਜੇ ਤੁਸੀਂ ਲੋਕਲ ਨੈੱਟਵਰਕ ਸਫ਼ੇ ਨੂੰ ਲੋਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ ਤਾਂ macOS Privacy & Security ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾਂਚ ਕਰੋ ਕਿ ਕੀ { -brand-short-name } ਨੂੰ ਲੋਕਲ ਨੈੱਟਵਰਕ ਇਜਾਜ਼ਤਾਂ ਲਈ ਮਨਜ਼ੂਰੀ ਦਿੱਤੀ ਹੈ।
 neterror-captive-portal = ਇਸ ਤੋਂ ਪਹਿਲਾਂ ਕਿ ਤੁਸੀਂ ਇੰਟਰਨੈੱਟ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕੋ, ਤੁਹਾਨੂੰ ਇਸ ਨੈੱਟਵਰਕ ਲਈ ਲਾਗਇਨ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +67,7 @@ neterror-dns-not-found-trr-offline = ਤੁਸੀਂ ਇੰਟਰਨੈੱਟ �
 neterror-dns-not-found-trr-unknown-host2 = ਇਹ ਵੈੱਬਸਾਈਟ { $trrDomain } ਨੂੰ ਨਹੀਂ ਲੱਭੀ ਹੈ।
 neterror-dns-not-found-trr-server-problem = { $trrDomain } ਨਾਲ ਸਮੱਸਿਆ ਸੀ।
 neterror-dns-not-found-bad-trr-url = ਅਢੁੱਕਵਾਂ URL ਹੈ।
+neterror-dns-not-found-system-sleep = ਸਿਸਟਮ ਸਲੀਪ ਮੋਡ ਵਿੱਚ ਹੈ।
 neterror-dns-not-found-trr-unknown-problem = ਅਚਾਨਕ ਗਲਤੀ ਆਈ ਹੈ।
 
 ## Native fallback specific messages
@@ -147,3 +151,9 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = ਜੇ ਤੁਸੀਂ <b>{
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> ਕੋਲ ਸੁਰੱਖਿਆ ਪਾਲਸੀ ਹੈ, ਜਿਸ ਨੂੰ HTTP ਸਟਰਿਕਟ ਟਰਾਂਸਪੋਰਟ ਸਕਿਉਰਟੀ (HSTS) ਕਹਿੰਦੇ ਹਨ, ਜਿਸ ਦਾ ਅਰਥ ਹੈ ਕਿ { -brand-short-name } ਇਸ ਨਾਲ ਸਿਰਫ਼ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਹੀ ਕਨੈਕਟ ਹੋ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਛੋਟ ਨਹੀਂ ਦੇ ਸਕਦੇ ਹੋ।
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = ਸ਼ਾਇਦ ਕੁਝ ਵੀ ਨਹੀਂ, ਕਿਉਂਕਿ ਸ਼ਾਇਦ ਇਹ ਸਮੱਸਿਆ ਤਾਂ ਸਾਈਟ ਨਾਲ ਹੈ।
+certerror-blocked-by-corp-headers-description = ਕਈ ਵਾਰ ਵੈੱਬਸਾਈਟਾਂ ਖੁਦ ਅਤੇ ਤੁਹਾਡੇ ਵਰਗੇ ਲੋਕਾਂ ਤੋਂ ਹੋਰ ਸਾਈਟਾਂ ਨਾਲ ਅਣਚਾਹੇ ਤਾਲਮੇਲ ਤੋਂ ਸੁਰੱਖਿਆ ਸੈਟਅੱਪ ਕਰਦੀਆਂ ਹਨ।
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = ਗਲਤੀ ਕੋਡ: { $responsestatus } { $responsestatustext }

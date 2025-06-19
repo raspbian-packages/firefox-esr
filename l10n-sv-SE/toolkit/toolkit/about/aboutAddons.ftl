@@ -293,6 +293,14 @@ find-more-themes = Hitta fler teman
 # used for screen readers.
 addon-options-button =
     .aria-label = Fler alternativ
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro2 =
+    Tillägg och teman låter dig anpassa { -brand-product-name }. De kan stärka integriteten,
+    förbättra produktiviteten, förbättra media, ändra hur { -brand-product-name } ser ut och
+    så mycket mer. Dessa små program är ofta utvecklade av en tredje part. Här är
+    ett urval { -brand-product-name } <a data-l10n-name="learn-more-trigger">rekommenderar</a>
+    för exceptionell säkerhet, prestanda och funktionalitet.
 
 ## Add-on actions
 
@@ -425,6 +433,7 @@ available-updates-heading = Tillgängliga uppdateringar
 recent-updates-heading = Senaste uppdateringar
 release-notes-loading = Laddar…
 release-notes-error = Tyvärr, men det gick inte att läsa in versionsfakta.
+addon-permissions-empty2 = Detta tillägg kräver inga behörigheter.
 addon-permissions-empty = Detta tillägg kräver inga behörigheter
 addon-permissions-required = Nödvändiga behörigheter för kärnfunktionalitet:
 addon-permissions-optional = Valfria behörigheter för extra funktionalitet:
@@ -474,10 +483,24 @@ details-notification-unsigned-and-disabled-link = Mer information
 details-notification-unsigned = { $name } kunde inte verifieras för användning i { -brand-short-name }. Fortsätt med försiktighet.
 details-notification-unsigned2 =
     .message = { $name } kunde inte verifieras för användning i { -brand-short-name }. Fortsätt med försiktighet.
+details-notification-hard-blocked-extension =
+    .message = Det här tillägget är blockerat på grund av att det bryter mot Mozillas policyer och har inaktiverats.
+details-notification-hard-blocked-other =
+    .message = Det här tillägget är blockerat på grund av att det bryter mot Mozillas policyer och har inaktiverats.
 details-notification-unsigned-link = Mer information
 details-notification-blocked = { $name } har inaktiverats av säkerhets- eller stabilitetsskäl.
 details-notification-blocked2 =
     .message = { $name } har inaktiverats av säkerhets- eller stabilitetsskäl.
+details-notification-blocked-link2 = Se detaljer
+details-notification-soft-blocked-extension-disabled =
+    .message = Det här tillägget är begränsat på grund av att det bryter mot Mozillas policyer och har inaktiverats. Du kan aktivera det, men det kan vara riskabelt.
+details-notification-soft-blocked-extension-enabled =
+    .message = Det här tillägget bryter mot Mozillas policyer. Att använda det kan vara riskabelt.
+details-notification-soft-blocked-other-disabled =
+    .message = Det här tillägget är begränsat på grund av att det bryter mot Mozillas policyer och har inaktiverats. Du kan aktivera det, men det kan vara riskabelt.
+details-notification-soft-blocked-other-enabled =
+    .message = Det här tillägget bryter mot Mozillas policyer. Att använda det kan vara riskabelt.
+details-notification-softblocked-link2 = Se detaljer
 details-notification-blocked-link = Mer information
 details-notification-softblocked = { $name } har kända säkerhets- eller stabilitetsproblem.
 details-notification-softblocked2 =

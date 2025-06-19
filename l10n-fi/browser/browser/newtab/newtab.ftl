@@ -8,11 +8,18 @@
 newtab-page-title = Uusi välilehti
 newtab-settings-button =
     .title = Muokkaa Uusi välilehti -sivua
+newtab-personalize-settings-icon-label =
+    .title = Mukauta uutta välilehteä
+    .aria-label = Asetukset
+newtab-settings-dialog-label =
+    .aria-label = Asetukset
 newtab-personalize-icon-label =
     .title = Muokkaa uutta välilehteä
     .aria-label = Muokkaa uutta välilehteä
 newtab-personalize-dialog-label =
     .aria-label = Muokkaa
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Tallenna { -pocket-brand-name }-palveluun
 newtab-menu-delete-pocket = Poista { -pocket-brand-name }-palvelusta
 newtab-menu-archive-pocket = Arkistoi { -pocket-brand-name }-palveluun
 newtab-menu-show-privacy-info = Tukijamme ja yksityisyytesi
+newtab-menu-about-fakespot = Tietoja { -fakespot-brand-name }ista
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Estä
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Lopeta aiheen seuraaminen
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Viimeisin toiminta
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Suositukset lähteestä { $provider }
 newtab-section-header-stories = Ajatuksia herättäviä tarinoita
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Tämän päivän valinnat sinulle
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = Hanki { -pocket-brand-name }
 newtab-pocket-cta-text = Tallenna tykkäämäsi tekstit { -pocket-brand-name }iin ja ravitse mieltäsi kiinnostavilla teksteillä.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } on osa { -brand-product-name }-perhettä
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Tallenna
 newtab-pocket-saved = Tallennettu
 
@@ -242,6 +260,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Ei minulle
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Kiitos. Palautteesi auttaa meitä parantamaan syötettäsi.
 newtab-toast-thumbs-up-or-down = Kiitos. Palautteesi auttaa meitä parantamaan syötettäsi.
 newtab-toast-dismiss-button =
     .title = Hylkää
@@ -307,6 +328,8 @@ newtab-wallpaper-dark-panda = Kultapanda metsän piilossa
 newtab-wallpaper-dark-sky = Kaupunkimaisema ja yötaivas
 newtab-wallpaper-dark-mountain = Vuorimaisema
 newtab-wallpaper-dark-city = Purppura kaupunkimaisema
+newtab-wallpaper-dark-fox-anniversary = Kettu jalkakäytävällä lähellä metsää
+newtab-wallpaper-light-fox-anniversary = Kettu ruohopellolla ja sumuinen vuoristomaisema
 
 ## Solid Colors
 
@@ -371,6 +394,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Sponsoroitu
 newtab-weather-menu-change-location = Vaihda sijaintia
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Hae sijaintia
+    .aria-label = Hae sijaintia
 newtab-weather-change-location-search-input = Hae sijaintia
 newtab-weather-menu-weather-display = Sään näkymä
 # Display options are:
@@ -389,3 +415,76 @@ newtab-weather-menu-hide-weather = Piilota sää uudessa välilehdessä
 newtab-weather-menu-learn-more = Lue lisää
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Säätiedot eivät ole tällä hetkellä saatavilla.
+
+## Topic Labels
+
+newtab-topic-label-business = Liiketoiminta
+newtab-topic-label-career = Ura
+newtab-topic-label-education = Koulutus
+newtab-topic-label-arts = Viihde
+newtab-topic-label-food = Ruoka
+newtab-topic-label-health = Terveys
+newtab-topic-label-hobbies = Pelaaminen
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Raha-asiat
+newtab-topic-label-society-parenting = Vanhemmuus
+newtab-topic-label-government = Politiikka
+newtab-topic-label-education-science = Tiede
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Niksit
+newtab-topic-label-sports = Urheilu
+newtab-topic-label-tech = Tekniikka
+newtab-topic-label-travel = Matkailu
+newtab-topic-label-home = Koti ja puutarha
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Hienosäädä syötettä valitsemalla aiheita
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Valitse vähintään kaksi aihetta. Asiantuntevat kuraattorimme priorisoivat kiinnostuksen kohteidesi mukaan räätälöityjä tarinoita. Päivitä milloin tahansa.
+newtab-topic-selection-save-button = Tallenna
+newtab-topic-selection-cancel-button = Peruuta
+newtab-topic-selection-button-maybe-later = Ehkä myöhemmin
+newtab-topic-selection-privacy-link = Lue lisää, kuinka suojaamme ja hallitsemme tietoja
+newtab-topic-selection-button-update-interests = Päivitä kiinnostuksen kohteesi
+newtab-topic-selection-button-pick-interests = Valitse kiinnostuksen kohteesi
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Seuraa
+newtab-section-following-button = Seurataan
+newtab-section-unfollow-button = Lopeta seuraaminen
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Estä
+newtab-section-blocked-button = Estetty
+newtab-section-unblock-button = Poista esto
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Haluatko varmasti estää tämän osion?
+newtab-section-confirm-block-section-p2 = Estetty osio ei enää näy syötteessäsi.
+newtab-section-block-section-button = Estä tämä osio
+newtab-section-cancel-button = Ei nyt
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Aiheet
+newtab-section-mangage-topics-button =
+    .label = Seuratut ja estetyt aiheet
+newtab-section-mangage-topics-followed-topics-subtitle = Seuratut aiheet
+newtab-section-mangage-topics-followed-topics-empty-state = Et ole vielä seurannut yhtäkään aihetta.
+newtab-section-mangage-topics-blocked-topics-subtitle = Estetyt aiheet
+newtab-section-mangage-topics-blocked-topics-empty-state = Et ole vielä estänyt yhtäkään aihetta.

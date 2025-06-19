@@ -41,6 +41,8 @@ neterror-generic-error = Vì lý do nào đó, { -brand-short-name } không th�
 neterror-load-error-try-again = Trang web này có thể bị gián đoạn tạm thời hoặc do quá tải. Hãy thử lại trong chốc lát.
 neterror-load-error-connection = Nếu bạn không thể mở bất kì trang nào, hãy kiểm tra kết nối mạng.
 neterror-load-error-firewall = Nếu máy tính hoặc mạng của bạn được bảo vệ bởi tường lửa hoặc proxy, hãy chắc chắn rằng { -brand-short-name } được phép truy cập Web.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Nếu bạn đang cố tải một trang mạng cục bộ, vui lòng kiểm tra xem { -brand-short-name } đã được cấp quyền Mạng cục bộ trong cài đặt Quyền riêng tư & bảo mật trên macOS hay chưa.
 neterror-captive-portal = Bạn cần đăng nhập vào mạng trước khi có thể truy cập Internet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +66,7 @@ neterror-dns-not-found-trr-offline = Bạn không kết nối với Internet.
 neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } không tìm thấy trang web này.
 neterror-dns-not-found-trr-server-problem = Đã xảy ra sự cố với { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = URL không hợp lệ.
+neterror-dns-not-found-system-sleep = Hệ thống đang ở chế độ ngủ.
 neterror-dns-not-found-trr-unknown-problem = Sự cố không xác định.
 
 ## Native fallback specific messages
@@ -147,3 +150,8 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Nếu bạn không quen v�
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> có chính sách bảo mật được gọi là HTTP Strict Transport Security (HSTS), có nghĩa là { -brand-short-name } chỉ có thể kết nối với nó một cách an toàn. Bạn không thể thêm ngoại lệ để truy cập trang web này.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Có vẻ không có gì, vì rất có thể trang web đó có vấn đề.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Mã lỗi: { $responsestatus } { $responsestatustext }

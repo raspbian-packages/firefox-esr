@@ -47,9 +47,6 @@ DIST = trixie
 endif
 ifneq (,$(filter bpo% deb%,$(DEBIAN_RELEASE_EXTRA)))
 DEBIAN_TARGET := $(subst bpo,,$(subst deb,,$(DEBIAN_RELEASE_EXTRA)))
-ifneq (,$(filter 10%,$(DEBIAN_TARGET)))
-DIST = buster
-endif
 ifneq (,$(filter 11%,$(DEBIAN_TARGET)))
 DIST = bullseye
 endif

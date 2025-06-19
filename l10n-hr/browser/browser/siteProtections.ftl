@@ -22,7 +22,7 @@ content-blocking-cookies-view-blocked-label =
 #   $domain (String): the domain of the site.
 content-blocking-cookies-view-remove-button =
     .tooltiptext = Izbriši iznimku kolačića za { $domain }
-tracking-protection-icon-active = Blokiranje pratitelja društvenih mreža, kolačića za praćenje između stranica i jedinstvenih otisaka.
+tracking-protection-icon-active = Blokiranje programa za praćenje društvenih mreža, kolačići za praćenje na različitim web stranicama i prikupljači digitalnih otisaka.
 tracking-protection-icon-active-container =
     .aria-label = { tracking-protection-icon-active }
 tracking-protection-icon-disabled = Pojačana zaštita od praćenja je ISKLJUČENA za ovu stranicu.
@@ -97,7 +97,7 @@ protections-footer-blocked-tracker-counter-no-tooltip =
 # In English this looks like "Firefox blocked over 10,000 trackers since October 2019"
 protections-milestone =
     { $trackerCount ->
-        [one] { -brand-short-name } je blokirao { $trackerCount } pratitelja od { DATETIME($date, year: "numeric", month: "long") }
-        [few] { -brand-short-name } je blokirao { $trackerCount } pratitelja od { DATETIME($date, year: "numeric", month: "long") }
-       *[other] { -brand-short-name } je blokirao { $trackerCount } pratitelja od { DATETIME($date, year: "numeric", month: "long") }
+        [one] { -brand-short-name } je blokirao { $trackerCount } program za praćenje od { DATETIME($date, year: "numeric", month: "long") }
+        [few] { -brand-short-name } je blokirao { $trackerCount } programa za praćenje od { DATETIME($date, year: "numeric", month: "long") }
+       *[other] { -brand-short-name } je blokirao { $trackerCount } programa za praćenje od { DATETIME($date, year: "numeric", month: "long") }
     }

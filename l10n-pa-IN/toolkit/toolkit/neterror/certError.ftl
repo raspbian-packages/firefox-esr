@@ -18,6 +18,9 @@ cert-error-trust-signature-algorithm-disabled = ਇਹ ਸਰਟੀਫਿਕੇ�
 cert-error-trust-expired-issuer = ਸਰਟੀਫਿਕੇਟ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਹੈ, ਕਿਉਂਕਿ ਜਾਰੀ ਕਰਤਾ ਸਰਟੀਫਿਕੇਟ ਦੀ ਮਿਆਦ ਪੁੱਗ ਚੁੱਕੀ ਹੈ।
 cert-error-trust-self-signed = ਸਰਟੀਫਿਕੇਟ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਹੈ, ਕਿਉਂਕਿ ਇਸ ਉੱਤੇ ਖੁਦ ਦੇ ਦਸਤਖਤ ਹਨ।
 cert-error-trust-symantec = GeoTrust, RapidSSL, Symantec, Thawte, ਅਤੇ VeriSign ਰਾਹੀਂ ਜਾਰੀ ਕੀਤੇ ਸਰਟੀਫਿਕੇਟ ਹੁਣ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਮੰਨੇ ਜਾਂਦੇ, ਕਿਉਂਕਿ ਇਹ ਸਰਟੀਫਿਕੇਟ ਅਥਾਰਟੀਆਂ ਅਤੀਤ ਵਿਚ ਸੁਰੱਖਿਆ ਅਮਲਾਂ ਦੀ ਪਾਲਣਾ ਕਰਨ ਵਿੱਚ ਅਸਫਲ ਰਹੀਆਂ ਹਨ।
+# Variables:
+#   $hostname (string) - Hostname of the website with cert error.
+cert-error-trust-certificate-transparency = { -brand-short-name } { $hostname } ਉੱਤੇ ਭਰੋਸਾ ਨਹੀਂ ਕਰਦਾ ਹੈ, ਕਿਉਂਕਿ ਇਹ ਪਬਲਿਕ ਸਰਟੀਫਿਕੇਟ ਪਾਰਦਰਸ਼ਤਾ ਲੋੜਾਂ ਉੱਤੇ ਖ਼ਰਾ ਨਹੀਂ ਉੱਤਰਨ ਨੂੰ ਸਿੱਧ ਨਹੀਂ ਕਰ ਸਕਦਾ ਹੈ।
 cert-error-untrusted-default = ਸਰਟੀਫਿਕੇਟ ਇੱਕ ਭਰੋਸੇਯੋਗ ਸਰੋਤ ਨਹੀਂ ਆਇਆ ਹੈ।
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
@@ -68,6 +71,20 @@ open-in-new-window-for-csp-or-xfo-error = ਸਾਈਟ ਨੂੰ ਨਵੀਂ �
 # Variables:
 #   $hostname (string) - Hostname of the website blocked by csp or xfo error.
 csp-xfo-blocked-long-desc = ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਨੂੰ ਬਚਾਉਣ ਲਈ { $hostname } { -brand-short-name } ਨੂੰ ਸਫ਼ਾ ਦਿਖਾਉਣ ਨਹੀਂ ਦੇਵੇਗਾ, ਜੇ ਹੋਰ ਸਾਈਟ ਨੇ ਇਸ ਨੂੰ ਵਿੱਚ ਜੋੜਿਆ ਤਾਂ। ਇਹ ਸਫ਼ਾ ਵੇਖ ਲਈ ਤੁਹਾਨੂੰ ਇਸ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ 'ਚ ਖੋਲ੍ਹਣਾ ਪਵੇਗਾ।
+fp-certerror-view-certificate-link = ਸਾਈਟ ਦਾ ਸਰਟੀਫਿਕੇਟ ਵੇਖੋ
+fp-certerror-return-to-previous-page-recommended-button = ਪਿੱਛੇ ਜਾਓ (ਸਿਫਾਰਸ਼ੀ)
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-self-signed-what-can-you-do-body = ਕੁਝ ਖਾਸ ਨਹੀਂ। ਇਹ ਖੁਦ ਸਾਈਟ ਨਾਲ ਵੀ ਸਮੱਸਿਆ ਜਾਪਦੀ ਹੈ।
+fp-certerror-self-signed-important-note = ਖਾਸ ਸੂਚਨਾ: ਜੇ ਤੁਸੀਂ ਕਾਰਪੋਰੇਟ ਇੰਟਰਾਨੈੱਟ ਉੱਤੇ ਇਸ ਸਾਈਟ ਨੂੰ ਵੇਖ ਰਹੇ ਹੋ ਤਾਂ ਤੁਹਾਡੇ IT ਸਟਾਫ ਵਲੋਂ ਖੁਦ-ਸਾਈਨ ਕੀਤੇ ਸਰਟੀਫਿਕੇਟ ਵਰਤੇ ਜਾ ਰਹੇ ਹੋ ਸਕਦੇ ਹਨ। ਇਸ ਦੀ ਪਰਮਾਣਕਿਤਾ ਦੀ ਜਾਂਚ ਕਰਨ ਲਈ ਤੁਸੀਂ ਉਹਨਾਂ ਤੋਂ ਮਦਦ ਲੈ ਸਕਦੇ ਹੋ।
+# Variables:
+#   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
+fp-cert-error-code = ਗ਼ਲਤੀ ਕੋਡ: { $error }
+# Variables:
+#   $datetime (Date) - Current datetime.
+fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+fp-learn-more-about-secure-connection-failures = ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਅਸਫ਼ਲਤਾ ਬਾਰੇ ਹੋਰ ਜਾਣੋ
+fp-learn-more-about-cert-issues = ਇਸ ਕਿਸਮ ਦੇ ਸਰਟੀਫਿਕੇਟ ਮਸਲਿਆਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ
+fp-learn-more-about-time-related-errors = ਸਮੇਂ ਨਾਲ ਸੰਬੰਧਿਤ ਗ਼ਲਤੀਆਂ ਬਾਰੇ ਸਮੱਸਿਆ ਹੱਲ਼ ਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ
 
 ## Messages used for certificate error titles
 
@@ -92,6 +109,7 @@ contentEncodingError-title = ਸਮਗੱਰੀ ਇੰਕੋਡਿੰਗ ਗਲ�
 unsafeContentType-title = ਅਸੁਰੱਖਿਅਤ ਫਾਈਲ ਕਿਸਮ
 netReset-title = ਕਨੈਕਸ਼ਨ ਰੀ-ਸੈੱਟ ਕੀਤਾ ਗਿਆ
 netTimeout-title = ਕਨੈਕਸ਼ਨ ਟਾਈਮ-ਆਉਟ ਹੋ ਗਿਆ
+serverError-title = ਇਸ ਸਾਈਟ ਨਾਲ ਵੀ ਸਮੱਸਿਆ ਹੋ ਸਕਦੀ ਹੈ
 unknownProtocolFound-title = ਐਡਰੈਸ ਦੀ ਸਮਝ ਨਹੀਂ ਆਈ
 proxyConnectFailure-title = ਪਰਾਕਸੀ ਸਰਵਰ ਕਨੈਕਸ਼ਨਾਂ ਤੋਂ ਇਨਕਾਰ ਕਰ ਰਿਹਾ ਹੈ
 proxyResolveFailure-title = ਪਰਾਕਸੀ ਸਰਵਰ ਲੱਭਣ ਲਈ ਅਸਮਰੱਥ ਹੈ
@@ -108,3 +126,20 @@ networkProtocolError-title = ਨੈੱਟਵਰਕ ਪਰੋਟੋਕਾਲ ਗ�
 nssBadCert-title = ਸਾਵਧਾਨ: ਅੱਗੇ ਸੰਭਾਵਿਤ ਸੁਰੱਖਿਆ ਖ਼ਤਰਾ ਹੈ
 nssBadCert-sts-title = ਕਨੈਕਟ ਨਹੀਂ ਹੈ: ਸੰਭਾਵਿਤ ਸੁਰੱਖਿਆ ਮਸਲਾ
 certerror-mitm-title = ਸਾਫਟਵੇਅਰ { -brand-short-name } ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਤੋਂ ਰੋਕਦਾ ਹੈ
+
+## Felt Privacy V1 Strings
+
+fp-certerror-page-title = ਸਾਵਧਾਨ: ਸੁਰੱਖਿਆ ਖ਼ਤਰਾ
+fp-certerror-body-title = ਧਿਆਨ ਰੱਖੋ। ਕੁਝ ਸਹੀ ਨਹੀਂ ਜਾਪਦਾ ਹੈ।
+fp-certerror-why-site-dangerous = ਸਾਈਟ ਨੂੰ ਖ਼ਤਰਨਾਕ ਕੀ ਬਣਾਉਂਦਾ ਹੈ?
+fp-certerror-what-can-you-do = ਇਸ ਬਾਰੇ ਤੁਸੀਂ ਕੀ ਕਰ ਸਕਦੇ ਹੋ?
+fp-certerror-advanced-title = ਤਕਨੀਕੀ
+fp-certerror-advanced-button = ਤਕਨੀਕੀ
+fp-certerror-hide-advanced-button = ਤਕਨੀਕੀ ਓਹਲੇ ਕਰੋ
+
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-certerror-override-exception-button = { $hostname } ਨਾਲ ਜਾਰੀ ਰੱਖੋ (ਖ਼ਤਰਨਾਕ)
+fp-certerror-intro = { -brand-short-name } ਨੇ <strong>{ $hostname }</strong> ਲਈ ਸੰਭਾਵੀ ਗੰਭੀਰ ਸੁਰੱਖਿਆ ਮਸਲਾ ਲੱਭਿਆ ਹੈ। ਕੋਈ ਸਾਈਟ ਵਰਗਾ ਭੇਸ ਬਣ ਕੇ ਕਰੈਡਿਟ ਕਾਰਡ ਜਾਣਕਾਰੀ, ਪਾਸਵਰਡ ਜਾਂ ਈਮੇਲਾਂ ਚੋਰੀ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।
+fp-certerror-expired-into = { -brand-short-name } ਨੇ <strong>{ $hostname }</strong> ਲਈ ਸੁਰੱਖਿਆ ਮਸਲਾ ਲੱਭਿਆ ਹੈ। ਜਾਂ ਤਾਂ ਇਹ ਸਾਈਟ ਸਹੀ ਸੈਟ ਅੱਪ ਨਹੀਂ ਕੀਤੀ ਹੈ ਜਾਂ ਤੁਹਾਡੇ ਡਿਵਾਈਸ ਦੀ ਘੜੀ ਲਈ ਤਾਰੀਖ/ਸਮਾਂ ਗਲਤ ਸੈਟ ਕੀਤਾ ਹੈ।

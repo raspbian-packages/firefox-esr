@@ -2,18 +2,23 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 ### "FOG", "Glean", and "Glean SDK" should remain in English.
 
 -fog-brand-name = FOG
 -glean-brand-name = Glean
 glean-sdk-brand-name = { -glean-brand-name } SDK
 glean-debug-ping-viewer-brand-name = { -glean-brand-name } デバッグ Ping ビューアー
-
 about-glean-page-title2 = { -glean-brand-name } について
 about-glean-header = { -glean-brand-name } について
 about-glean-interface-description =
     <a data-l10n-name="glean-sdk-doc-link">{ glean-sdk-brand-name }</a> は { -vendor-short-name } プロジェクトで利用されているデータ収集ライブラリーです。
     このインターフェイスは開発者とテスターにより手動の <a data-l10n-name="fog-link">テスト計測器</a> で使用されることを想定しています。
+about-glean-category-about-glean = { -glean-brand-name } について
+about-glean-category-manual-testing = 手動テスト
+about-glean-category-adhoc-testing = アドホックテスト
+about-glean-category-profiler = Profiler を使用
+about-glean-category-about-data = データについて
 about-glean-upload-enabled = データのアップロードが有効です。
 about-glean-upload-disabled = データのアップロードが無効です。
 about-glean-upload-enabled-local = データのアップロードはローカルサーバーへの送信のみ有効です。
@@ -37,8 +42,10 @@ about-glean-glean-android = <code>MOZ_GLEAN_ANDROID</code>: { $glean-android-def
 # Variables:
 #   $moz-official-define-value (Boolean): the value of the MOZILLA_OFFICIAL define.
 # Do not translate strings between <code> </code> tags.
-about-glean-moz-official =<code>MOZILLA_OFFICIAL</code>: { $moz-official-define-value }
-
+about-glean-moz-official = <code>MOZILLA_OFFICIAL</code>: { $moz-official-define-value }
+about-glean-additional-links =
+    データの記録と確認を行う別の手段の説明は、
+    <strong>データについて</strong> タブを参照してください。
 about-glean-about-testing-header = テストについて
 # This message is followed by a numbered list.
 about-glean-manual-testing =
@@ -78,7 +85,28 @@ about-glean-adhoc-explanation2 = さらに <i>アドホック</i> なテスト�
 about-glean-adhoc-note =
     開発ツールのコンソールを使用して Glean JS API を操作しているので注意してください。
     これは、メトリクスのカテゴリー名とメトリクス名が Rust や C++ API と異なる <code>camelCase</code> で初期化されることを意味します。
+about-glean-profiler-explanation =
+    記録されたすべてのメトリクスを確認するには { -profiler-brand-name } を使用してください。
+    まず、<a data-l10n-name="firefox-profiler-link">パフォーマンスプロファイルを捕捉</a>してください。
+    プロファイルを捕捉したら、<q>Marker Chart</q> を選択し、<q>Telemetry</q> の下のマーカーを確認してください。
+about-glean-profiler-explanation-profiler =
+    パフォーマンスプロファイルでは、収集したすべてのメトリクス、収集した時刻、収集した正確な値を確認できます。それぞれのマーカーにカーソルを合わせると、正確な値が適切なタイミングで収集されているか検証できます。
 controls-button-label-verbose = 設定を適用して Ping を送信
-
+about-glean-feedback-settings-only =
+    .message = 設定を適用しました
+about-glean-feedback-settings-and-ping =
+    .message = 設定を適用して Ping を送信しました
 about-glean-about-data-header = データについて
+about-glean-about-data-description =
+    確認したいデータに合わせて、いくつか別のツールがあります。
+about-glean-about-data-description-list-intro =
+    特定のユースケースのためのツールは、下記のリストを参照してください:
+about-glean-about-data-list-item-dictionary =
+    { -glean-brand-name } でアプリケーションごとに収集したデータのリストの閲覧は、<a data-l10n-name="glean-dictionary-link">{ -glean-brand-name } Dictionary</a> で調べてください。
+about-glean-about-data-list-item-about-telemetry =
+    従来のテレメトリーで収集したデータの閲覧は、<a data-l10n-name="about-telemetry-link">about:telemetry</a> で調べてください。
+about-glean-about-data-list-item-debug-ping-viewer =
+    デバッグタグの閲覧や完全な Ping の確認、ライブイベントストリームの確認、視覚的なメトリクスの表示は、<a data-l10n-name="glean-debug-ping-viewer">{ glean-debug-ping-viewer-brand-name }</a> で調べてください。
+about-glean-about-data-list-item-firefox-profiler =
+    パフォーマンスプロファイルの記録と、記録したすべてのメトリクスの確認は <a data-l10n-name="about-glean-firefox-profiler">{ -profiler-brand-name }</a> を使用してください。
 about-glean-about-data-explanation = 収集したデータのリストの閲覧は、<a data-l10n-name="glean-dictionary-link">{ -glean-brand-name } Dictionary</a> で調べてください。

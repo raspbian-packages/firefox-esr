@@ -77,17 +77,10 @@ appmenu-remote-tabs-turn-on-sync =
 appmenu-remote-tabs-showmore =
     .label = Rādīt vairāk cilņu
     .tooltiptext = Rādīt vairāk ciļņu no šīs ierīces
-# This is shown when there are inactive tabs which are not being shown.
-# Variables
-# $count (Number) - The number of inactive tabs which are not being shown (at least 1)
-appmenu-remote-tabs-showinactive =
-    .label =
-        { $count ->
-            [zero] Rādīt { $count } neaktīvu cilni
-            [one] Rādīt { $count } neaktīvās cilnes
-           *[other] Rādīt { $count } neaktīvu ciļņu
-        }
-    .tooltiptext = Rādīt neaktīvās cilnes uz šīs ierīces
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Neaktīvās cilnes
+    .tooltiptext = Apskatīt neaktīvās cilnes, kas ir uz šīs ierīces
 # This is shown beneath the name of a device when that device has no open tabs
 appmenu-remote-tabs-notabs = Nav atvērtu cilņu
 # This is shown when Sync is configured but syncing tabs is disabled.
@@ -115,8 +108,11 @@ appmenu-fxa-sync-and-save-data2 = Sinhronizēt un saglabāt datus
 appmenu-fxa-signed-in-label = Pierakstīties
 appmenu-fxa-setup-sync =
     .label = Ieslēgt sinhronizāciju…
+appmenu-fxa-setup-sync-new = Ieslēgt
 appmenuitem-save-page =
     .label = Saglabāt lapu kā…
+appmenuitem-fxa-sync-off-title = Sinhronizācija ir izslēgta
+appmenuitem-fxa-sync-off-description = Aizsargājiet un piekļūstiet savām grāmatzīmēm, parolēm un vēl no jebkuras vietas.
 
 ## What's New panel in App menu.
 
@@ -203,6 +199,9 @@ profiler-popup-presets-power-description = Priekšiestatījums enerģijas izmant
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = Enerģija
+profiler-popup-presets-debug-description = Priekšiestatījums atkļūdošanai ar { -brand-shorter-name }. Augsts virstēriņš, izmantojiet nevis darbam, kam ir vajadzīga augsta veiktspēja, bet lai saprastu pārlūkprogrammas uzvedību.
+profiler-popup-presets-debug-label =
+    .label = Atkļūdošana
 profiler-popup-presets-custom-label =
     .label = Pielāgots
 
@@ -281,5 +280,19 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Saņemt brīdinājumus par datu noplūdēm
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Maskējiet savu īsto e-pastu un tālruni
+appmenuitem-services-relay-description = Atvērt e-pasta masku informācijas paneli
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Aizsargājiet savas tiešsaistes aktivitātes
+appmenu-services-header = Mani pakalpojumi
+appmenu-other-protection-header = Izmēģiniet citus aizsardzības rīkus no { -vendor-short-name }:
+
+## Profiles panel
+
+appmenu-profiles = Profili
+appmenu-other-profiles = Citi profili
+appmenu-manage-profiles =
+    .label = Pārvaldīt profilus
+appmenu-create-profile =
+    .label = Jauns profils
+appmenu-edit-profile =
+    .aria-label = Rediģēt profilu

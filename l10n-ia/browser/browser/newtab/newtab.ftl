@@ -8,11 +8,18 @@
 newtab-page-title = Nove scheda
 newtab-settings-button =
     .title = Personalisar tu pagina de nove scheda
+newtab-personalize-settings-icon-label =
+    .title = Personalisar le scheda nove
+    .aria-label = Parametros
+newtab-settings-dialog-label =
+    .aria-label = Parametros
 newtab-personalize-icon-label =
     .title = Personalisar nove scheda
     .aria-label = Personalisar nove scheda
 newtab-personalize-dialog-label =
     .aria-label = Personalisar
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Salvar in { -pocket-brand-name }
 newtab-menu-delete-pocket = Deler de { -pocket-brand-name }
 newtab-menu-archive-pocket = Archivar in { -pocket-brand-name }
 newtab-menu-show-privacy-info = Nostre sponsores e tu vita private
+newtab-menu-about-fakespot = A proposito de { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Blocar
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Non plus sequer le argumento
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -196,6 +210,8 @@ newtab-section-header-recent-activity = Recente activitate
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Recommendate per { $provider }
 newtab-section-header-stories = Historias que face pensar
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Selectiones hodierne pro te
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -227,6 +243,8 @@ newtab-pocket-cta-button = Obtener { -pocket-brand-name }
 newtab-pocket-cta-text = Salva le articulos que tu ama in { -pocket-brand-name }, e alimenta tu mente con lecturas fascinante.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } es parte del familia de { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Salvar
 newtab-pocket-saved = Salvate
 
@@ -238,6 +256,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Non me interessa
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Gratias. Cognoscer tu opinion nos adjuta a meliorar tu canal.
 newtab-toast-thumbs-up-or-down = Gratias. Cognoscer tu opinion nos adjuta a meliorar tu canal.
 newtab-toast-dismiss-button =
     .title = Dimitter
@@ -303,6 +324,8 @@ newtab-wallpaper-dark-panda = Panda rubie celate in bosco
 newtab-wallpaper-dark-sky = Paisage urban con un celo nocturne
 newtab-wallpaper-dark-mountain = Paisage montan
 newtab-wallpaper-dark-city = Paisage urban purpuree
+newtab-wallpaper-dark-fox-anniversary = Un vulpe sur le pavimento presso un bosco
+newtab-wallpaper-light-fox-anniversary = Un vulpe in un prato con un brumose paisage montan
 
 ## Solid Colors
 
@@ -367,6 +390,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Sponsorisate
 newtab-weather-menu-change-location = Cambiar loco
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Cercar loco
+    .aria-label = Cercar loco
 newtab-weather-change-location-search-input = Cercar loco
 newtab-weather-menu-weather-display = Visualisation meteo
 # Display options are:
@@ -385,3 +411,76 @@ newtab-weather-menu-hide-weather = Celar meteo sur Nove scheda
 newtab-weather-menu-learn-more = Pro saper plus
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Datos meteo non es disponibile al momento.
+
+## Topic Labels
+
+newtab-topic-label-business = Negotios
+newtab-topic-label-career = Carriera
+newtab-topic-label-education = Education
+newtab-topic-label-arts = Intertenimento
+newtab-topic-label-food = Alimentos
+newtab-topic-label-health = Sanitate
+newtab-topic-label-hobbies = Jocos
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Moneta
+newtab-topic-label-society-parenting = Education
+newtab-topic-label-government = Politica
+newtab-topic-label-education-science = Scientia
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Auto-amelioration
+newtab-topic-label-sports = Sports
+newtab-topic-label-tech = Technologia
+newtab-topic-label-travel = Viages
+newtab-topic-label-home = Casa e jardin
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Selige le themas pro le accordo fin de tu fluxo
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Selige duo o plus themas. Nostre curatores experte da prioritate al historias apte a tu interesses. Actualisa quando tu lo vole.
+newtab-topic-selection-save-button = Salvar
+newtab-topic-selection-cancel-button = Cancellar
+newtab-topic-selection-button-maybe-later = Forsan un altere vice
+newtab-topic-selection-privacy-link = Apprende como nos protege e gere le datos
+newtab-topic-selection-button-update-interests = Actualisa tu interesses
+newtab-topic-selection-button-pick-interests = Selige tu interesses
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Sequer
+newtab-section-following-button = Sequente
+newtab-section-unfollow-button = Non plus sequer
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Blocar
+newtab-section-blocked-button = Blocate
+newtab-section-unblock-button = Disblocar
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Desira tu vermente blocar iste section?
+newtab-section-confirm-block-section-p2 = Le section blocate non plus apparera in tu fluxo.
+newtab-section-block-section-button = Blocar iste section
+newtab-section-cancel-button = Non ora
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Argumentos
+newtab-section-mangage-topics-button =
+    .label = Themas sequite e blocate
+newtab-section-mangage-topics-followed-topics-subtitle = Themas sequite
+newtab-section-mangage-topics-followed-topics-empty-state = Tu non ha sequite alcun thema ancora.
+newtab-section-mangage-topics-blocked-topics-subtitle = Themas blocate
+newtab-section-mangage-topics-blocked-topics-empty-state = Tu non ha blocate alcun thema ancora.

@@ -153,8 +153,8 @@ fx100-thank-you-hero-text =
 fx100-thank-you-subtitle = Είναι η 100η μας έκδοση! Σας ευχαριστούμε για τη βοήθειά σας για ένα καλύτερο, υγιέστερο διαδίκτυο.
 fx100-thank-you-pin-primary-button-label =
     { PLATFORM() ->
-        [macos] Καρφίτσωμα { -brand-short-name } στο Dock
-       *[other] Καρφίτσωμα { -brand-short-name } στη γραμμή εργασιών
+        [macos] Διατήρηση του { -brand-short-name } στο Dock
+       *[other] Καρφίτσωμα του { -brand-short-name } στη γραμμή εργασιών
     }
 fx100-upgrade-thanks-header = 100 Ευχαριστώ
 # Message shown with a start-browsing button. Emphasis <em> should be for "you"
@@ -188,6 +188,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Διατήρηση του { -brand-short-name } στο Dock
        *[other] Καρφίτσωμα του { -brand-short-name } στη γραμμή εργασιών
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Καρφίτσωμα του { -brand-short-name } στη γραμμή εργασιών και το μενού έναρξης
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -223,7 +225,9 @@ mr2022-onboarding-set-default-subtitle = Χρησιμοποιήστε ένα π�
 mr2022-onboarding-get-started-primary-subtitle = Η πιο πρόσφατη έκδοσή μας έχει προσαρμοστεί στις ανάγκες σας, κάνοντας πιο εύκολη από ποτέ την περιήγησή σας στο διαδίκτυο. Είναι γεμάτη με λειτουργίες που πιστεύουμε ότι θα λατρέψετε.
 mr2022-onboarding-get-started-primary-button-label = Ρύθμιση σε δευτερόλεπτα
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Αστραπιαία ρύθμιση
 mr2022-onboarding-import-subtitle = Ρυθμίστε το { -brand-short-name } όπως σας αρέσει. Προσθέστε σελιδοδείκτες, κωδικούς πρόσβασης και πολλά άλλα από το παλιό σας πρόγραμμα περιήγησης.
@@ -335,6 +339,14 @@ onboarding-device-migration-subtitle = Συνδεθείτε στον { -fxaccoun
 onboarding-device-migration-subtitle2 = Συνδεθείτε στον λογαριασμό σας για να μεταφέρετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και το ιστορικό σας στη νέα σας συσκευή.
 onboarding-device-migration-primary-button-label = Σύνδεση
 
+## Add-ons Picker screen
+
+amo-picker-title = Προσαρμόστε το { -brand-short-name } σας
+amo-picker-subtitle = Οι επεκτάσεις είναι σαν εφαρμογές για το πρόγραμμα περιήγησής σας και σας επιτρέπουν να προστατεύσετε τους κωδικούς πρόσβασής σας, να κάνετε λήψη βίντεο, να βρείτε προσφορές, να αποκλείσετε ενοχλητικές διαφημίσεις, να αλλάξετε την εμφάνιση του προγράμματος περιήγησής σας και πολλά άλλα.
+amo-picker-install-button-label = Προσθήκη στο { -brand-short-name }
+amo-picker-install-complete-label = Εγκαταστάθηκε
+amo-picker-collection-link = Εξερεύνηση περισσότερων προσθέτων
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -346,6 +358,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = Όταν κάνετε
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = Το { -brand-short-name } στο πλευρό σας
 onboarding-gratitude-security-and-privacy-subtitle = Σας ευχαριστούμε που χρησιμοποιείτε το { -brand-short-name }, που υποστηρίζεται από το Mozilla Foundation. Με την υποστήριξή σας, εργαζόμαστε για να κάνουμε το διαδίκτυο ασφαλέστερο και πιο προσβάσιμο για όλους.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Συγχρονισμός δεδομένων μεταξύ συσκευών
+onboarding-sign-up-description = Δημιουργήστε έναν λογαριασμό και όλες οι αποθηκευμένες πληροφορίες σας — κωδικοί πρόσβασης, σελιδοδείκτες και πολλά άλλα — θα αποθηκευτούν με ασφάλεια και θα είναι διαθέσιμες όταν κάνετε σύνδεση σε οποιαδήποτε συσκευή.
+onboarding-sign-up-button = Εγγραφή ή σύνδεση
+onboarding-sign-up-secondary-button = Έναρξη περιήγησης
 
 ## New user time and familiarity survey strings
 
@@ -365,3 +382,68 @@ onboarding-new-user-survey-familiarity-based-option-1 = Είμαι αρχάρι�
 onboarding-new-user-survey-familiarity-based-option-2 = Το έχω χρησιμοποιήσει λίγο
 onboarding-new-user-survey-familiarity-based-option-3 = Είμαι πολύ εξοικειωμένος με αυτό
 onboarding-new-user-survey-familiarity-based-option-4 = Το χρησιμοποιούσα στο παρελθόν, αλλά έχει περάσει καιρός
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Πείτε μας πού θα θέλετε τις καρτέλες σας
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Αλλάξτε την επιλογή ανά πάσα στιγμή από τις ρυθμίσεις της πλαϊνής γραμμής.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Οι καρτέλες σας, με τον δικό σας τρόπο
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Επιλέξτε τη διάταξη καρτελών σας
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Καρτέλες στο πλάι
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Καρτέλες στο πάνω μέρος
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Οι κάθετες καρτέλες είναι εδώ
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Παρουσίαση των κάθετων καρτελών
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Δοκιμάστε τις καρτέλες σας στο πλάι. Αλλάξτε την επιλογή ανά πάσα στιγμή από τις ρυθμίσεις της πλαϊνής γραμμής.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Δοκιμάστε τις κάθετες καρτέλες
+onboarding-flair-text = Νέο!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Διατήρηση οριζόντιων καρτελών
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Ένα παράθυρο του προγράμματος περιήγησης που εμφανίζει τις καρτέλες στα πλάγια της οθόνης ως μέρος της πλαϊνής γραμμής του { -brand-shorter-name }.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Ένα παράθυρο του προγράμματος περιήγησης που εμφανίζει τις καρτέλες στα πλάγια της οθόνης ως μέρος της πλαϊνής γραμμής του { -brand-shorter-name }.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Ένα παράθυρο του προγράμματος περιήγησης που εμφανίζει τις καρτέλες στο πάνω μέρος.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Ένα παράθυρο του προγράμματος περιήγησης που εμφανίζει τις καρτέλες στο πάνω μέρος.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Δοκιμάστε ένα AI chatbot στην πλαϊνή γραμμή
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Συνοψίστε διαδικτυακό περιεχόμενο, βρείτε νέες ιδέες, δημιουργήστε προσχέδια μηνυμάτων — όλα αυτά κατά την περιήγησή σας. Επιλέξτε ανάμεσα σε πολλαπλούς παρόχους. Αλλάξτε την επιλογή σας ανά πάσα στιγμή. <a data-l10n-name="learn-more">Μάθετε περισσότερα</a>
+onboarding-genai-sidebar-primary-button = Επιλογή chatbot
+onboarding-genai-sidebar-secondary-button = Έναρξη περιήγησης
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Ολοκλήρωση ρύθμισης του { -brand-short-name }
+onboarding-checklist-subtitle = Ολοκληρώστε αυτά τα βήματα για να αξιοποιήσετε στο έπακρο την εμπειρία περιήγησής σας.
+onboarding-checklist-set-default = Ορισμός του { -brand-short-name } ως προεπιλογής
+onboarding-checklist-pin = Καρφίτσωμα του { -brand-short-name } στη γραμμή εργασιών
+onboarding-checklist-import = Εισαγωγή από προηγούμενο πρόγραμμα περιήγησης
+onboarding-checklist-extension = Προσθήκη επέκτασης
+onboarding-checklist-sign-up = Εγγραφή ή σύνδεση σε λογαριασμό
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Δοκιμάστε τις ομάδες καρτελών για λιγότερη ακαταστασία, περισσότερη συγκέντρωση
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Πείτε «γεια» στα προφίλ του { -brand-product-name }
+multi-profile-spotlight-cta = Δημιουργία προφίλ
+multi-profile-callout-title = Δημιουργήστε διαφορετικά προφίλ για εργασία και διασκέδαση
+multi-profile-callout-cta = Δημιουργία προφίλ

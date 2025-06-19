@@ -119,6 +119,7 @@ policy-Permissions2 = Indstil tilladelser for kamera, mikrofon, position, besked
 policy-PictureInPicture = Slå Billede-i-billede til eller fra.
 policy-PopupBlocking = Tillad bestemte websteder at vise pop op-vinduer som standard.
 policy-Preferences = Indstil og lås værdien for en undergruppe af indstillingerne.
+policy-PrivateBrowsingModeAvailability = Indstil adgang til privat browsing-tilstand.
 policy-PromptForDownloadLocation = Spørg hvor hentede filer skal gemmes.
 policy-Proxy = Opsæt proxy-indstillinger.
 policy-RequestedLocales = Vælg rækkefølgen af sprog, der skal anvendes i programmet.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Udskriv ved at bruge systemets udskriftsdialog.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Bloker websteder fra at blive besøgt. Se dokumentationen for detaljer om formatet.
 policy-Windows10SSO = Tillad Windows enkeltlogon for Microsoft-, arbejds- og skole-konti.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Tillad enkeltlogon for Microsoft Entra-konti.

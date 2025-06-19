@@ -7,6 +7,9 @@ sanitize-prefs2 =
     .style = min-width: 40em
 sanitize-prefs-style =
     .style = width: 20em
+sanitize-dialog-title2 =
+    .title = Изчистване на данните от сърфиране и бисквитките
+    .style = min-width: 34em
 sanitize-dialog-title =
     .title = Изчистване на скорошната история
     .style = min-width: 34em
@@ -16,6 +19,7 @@ sanitize-dialog-title-everything =
     .title = Изчистване на цялата история
     .style = min-width: 34em
 clear-data-settings-label = При затваряне на { -brand-short-name } автоматично да бъдат изчиствани
+sanitize-on-shutdown-description = Автоматично изчистване на всички отметнати елементи при затваряне на { -brand-short-name }.
 
 ## clear-time-duration-prefix is followed by a dropdown list, with
 ## values localized using clear-time-duration-value-* messages.
@@ -37,6 +41,10 @@ clear-time-duration-value-last-2-hours =
     .label = Последните два часа
 clear-time-duration-value-last-4-hours =
     .label = Последните четири часа
+# Variables:
+#   $midnightTime (String) - Time of midnight (00:00 hours) - to inform the user that history will be cleared after midnight
+clear-time-duration-value-since-midnight =
+    .label = От { $midnightTime }
 clear-time-duration-value-today =
     .label = Днес
 clear-time-duration-value-everything =
@@ -51,19 +59,50 @@ history-section-label = История
 item-history-and-downloads =
     .label = История на разглеждане и изтегляния
     .accesskey = с
+item-history-form-data-downloads =
+    .label = История
+    .accesskey = И
+item-history-form-data-downloads-description = Изчиства историята на страниците и изтеглянията, информацията за запазените формуляри и всички търсения
 item-cookies =
     .label = Бисквитки
     .accesskey = Б
+# Variables:
+#   $amount (Number) - Amount of site data currently stored on disk
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cookies-site-data-with-size =
+    .label = Бисквитки и данни на страници ({ $amount } { $unit })
+    .accesskey = Б
+item-cookies-site-data =
+    .label = Бисквитки и данни на страници
+    .accesskey = Б
+item-cookies-site-data-description = Това действие може да ви отпише от някои сайтове или да изтрие нещата в пазарската количка
 item-active-logins =
     .label = Вписвания в сайтове
     .accesskey = В
 item-cache =
     .label = Склад
     .accesskey = с
+# Variables:
+#   $amount (Number) - Amount of cached data
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cached-content-with-size =
+    .label = Временно кеширани файлове и страници ({ $amount } { $unit })
+    .accesskey = ш
+item-cached-content =
+    .label = Временно кеширани файлове и страници
+    .accesskey = В
+item-cached-content-description = Изчиства кешираните данни, които помагат за по-бързото зареждане на сайтове
 item-form-search-history =
     .label = История на формуляри и търсения
     .accesskey = ф
+item-site-prefs =
+    .label = Настройки на сайтове
+    .accesskey = Н
+item-site-prefs-description = Нулиране на дадените разрешения и предпочитания за сайтовете до оригиналните им настройки
 data-section-label = Данни
+item-site-settings =
+    .label = Настройки на сайтове
+    .accesskey = Н
 item-offline-apps =
     .label = Данни за сайтове без мрежа
     .accesskey = м
@@ -74,6 +113,8 @@ sanitize-button-ok =
     .label = Изчистване
 sanitize-button-ok2 =
     .label = Изчистване
+sanitize-button-ok-on-shutdown =
+    .label = Запазване на промените
 # The label for the default button between the user clicking it and the window
 # closing.  Indicates the items are being cleared.
 sanitize-button-clearing =

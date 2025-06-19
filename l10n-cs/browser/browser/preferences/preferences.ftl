@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Říci webovým stránkám pomocí signálu Do Not Track, že nechcete být sledováni
+do-not-track-removal = Funkce “Do Not Track” již není podporována
 do-not-track-description2 =
     .label = Posílat stránkám žádost Do Not Track
     .accesskey = D
@@ -177,6 +178,7 @@ windows-launch-on-login =
         }
     .accesskey = O
 windows-launch-on-login-disabled = Tato předvolba byla v systému Windows zakázána. Chcete-li ji změnit, navštivte <a data-l10n-name="startup-link">Spouštěné aplikace</a> v nastavení systému.
+windows-launch-on-login-profile-disabled = Povolte tuto předvolbu zaškrtnutím "{ profile-manager-use-selected.label }" v okně "Výběr profilu uživatele".
 startup-restore-warn-on-quit =
     .label = Varovat při ukončování prohlížeče
 disable-extension =
@@ -197,6 +199,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Otevírat odkazy v panelech místo v nových oknech
     .accesskey = O
+ask-on-close-multiple-tabs =
+    .label = Zeptat se před zavřením více panelů
+    .accesskey = p
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Zeptat se před ukončením zkratkou { $quitKey }
+    .accesskey = k
 confirm-on-close-multiple-tabs =
     .label = Vždy se zeptat při zavírání více panelů
     .accesskey = V
@@ -679,8 +692,7 @@ home-prefs-shortcuts-description = Uložené nebo navštěvované stránky
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponzorované zkratky
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Doporučení ze služby { $provider }
@@ -756,6 +768,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Našeptávat dotazy pro vyhledávač také v adresním řádku
     .accesskey = e
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Na stránkách s výsledky zobrazovat v panelu s adresou hledané výrazy
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -903,6 +919,9 @@ sync-currently-syncing-creditcards = Platební karty
 sync-currently-syncing-payment-methods = Způsoby platby
 sync-currently-syncing-addons = Doplňky
 sync-currently-syncing-settings = Nastavení
+sync-manage-options =
+    .label = Spravovat synchronizaci…
+    .accesskey = S
 sync-change-options =
     .label = Změnit…
     .accesskey = Z
@@ -955,6 +974,13 @@ sync-engine-settings =
     .label = Nastavení
     .tooltiptext = Nastavení v sekcích Obecné a Soukromí a zabezpečení
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = Správa synchronizace všech připojených zařízení
+    .style = min-width: 36em;
+    .buttonlabelaccept = Uložit
+    .buttonaccesskeyaccept = U
+    .buttonlabelextra2 = Odpojit…
+    .buttonaccesskeyextra2 = O
 
 ## The device name controls.
 
@@ -1042,7 +1068,7 @@ forms-primary-pw-use =
     .accesskey = P
 # This operation requires the user to authenticate with the operating system (device sign-in)
 forms-os-reauth =
-    .label = Vyžadovat heslo k účtu na zařízení na vyplnění a správu hesel
+    .label = K vyplňování a správě hesel vyžadovat přihlášení se do zařízení
 forms-primary-pw-learn-more-link = Zjistit více
 # This string uses the former name of the Primary Password feature
 # ("Master Password" in English) so that the preferences can be found
@@ -1437,6 +1463,13 @@ collection-health-report-telemetry-disabled =
        *[no-cases] Odesílat organizaci { -vendor-short-name } technická data a data o interakcích není nadále povoleno. Všechna historická data budou smazána během 30 dnů.
     }
 collection-health-report-telemetry-disabled-link = Zjistit více
+collection-usage-ping =
+    .label = Odeslat ping o denní frekvenci organizaci { -vendor-short-name }
+    .accesskey = p
+collection-usage-ping-description = To organizaci { -vendor-short-name } pomáhá odhadnout počet aktivních uživatelů.
+collection-health-report2 =
+    .label = Odesílat technická data a data o interakcích organizaci { -vendor-short-name }
+    .accesskey = t
 collection-health-report =
     .label =
         { -vendor-short-name.case-status ->
@@ -1445,6 +1478,14 @@ collection-health-report =
         }
     .accesskey = r
 collection-health-report-link = Zjistit více
+collection-health-report-description =
+    { -brand-product-name.case-status ->
+        [with-cases] To nám pomáhá vylepšovat funkce, výkon a stabilitu { -brand-product-name(case: "gen") }.
+       *[no-cases] To nám pomáhá vylepšovat funkce, výkon a stabilitu aplikace { -brand-product-name }.
+    }
+collection-studies2 =
+    .label = Instalovat a spouštět studie
+collection-studies-description = Vyzkoušejte funkce a nápady dříve, než budou veřejně dostupné.
 collection-studies =
     .label =
         { -brand-short-name.case-status ->
@@ -1456,6 +1497,16 @@ collection-studies-link =
         [with-cases] Zobrazit studie { -brand-short-name(case: "gen") }
        *[no-cases] Zobrazit studie aplikace { -brand-short-name }
     }
+addon-recommendations2 =
+    .label = Povolit personalizovaná doporučení rozšíření
+addon-recommendations-description = Nechte si doporučovat rozšíření pro zlepšení vašeho prohlížení.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Pro tuto konfiguraci sestavení je hlášení dat vypnuto.
+collection-backlogged-crash-reports2 =
+    .label = Automaticky odesílat hlášení o pádech
+    .accesskey = m
+collection-backlogged-crash-reports-description = To pomáhá organizaci { -vendor-short-name } diagnostikovat a opravovat problémy s prohlížečem. Hlášení mohou obsahovat osobní nebo citlivé údaje.
 addon-recommendations =
     .label =
         { -brand-short-name.case-status ->
@@ -1556,13 +1607,20 @@ httpsonly-description =
         [with-cases] Protokol HTTPS poskytuje zabezpečené, šifrované spojení mezi { -brand-short-name(case: "ins") } a navštěvovanými webovými stránkami. Většina webů protokol HTTPS podporuje, a pokud je zapnut režim „pouze HTTPS“, bude { -brand-short-name } navazovat spojení jen skrze protokol HTTPS.
        *[no-cases] Protokol HTTPS poskytuje zabezpečené, šifrované spojení mezi aplikací { -brand-short-name } a navštěvovanými webovými stránkami. Většina webů protokol HTTPS podporuje, a pokud je zapnut režim „pouze HTTPS“, bude { -brand-short-name } navazovat spojení jen skrze protokol HTTPS.
     }
+httpsonly-description2 = { -brand-short-name } vytváří bezpečné a šifrované spojení se stránkami, které navštěvujete. { -brand-short-name } vás upozorní, pokud připojení není zabezpečené, když je zapnuto „pouze HTTPS“.
 httpsonly-learn-more = Zjistit více
 httpsonly-radio-enabled =
     .label = Zapnout režim „pouze HTTPS“ ve všech oknech
+httpsonly-radio-enabled2 =
+    .label = Použít ve všech oknech pouze HTTPS
 httpsonly-radio-enabled-pbm =
     .label = Zapnout režim „pouze HTTPS“ v anonymních oknech
+httpsonly-radio-enabled-pbm2 =
+    .label = Použít HTTPS pouze v anonymních oknech
 httpsonly-radio-disabled =
     .label = Nezapínat režim „pouze HTTPS“
+httpsonly-radio-disabled2 =
+    .label = Nejprve zkusit HTTPS, ale povolit i nezabezpečená připojení
 
 ## DoH Section
 

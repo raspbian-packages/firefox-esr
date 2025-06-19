@@ -14,3 +14,7 @@ all-tabs-menu-manage-user-context =
     .accesskey = i
 all-tabs-menu-close-duplicate-tabs =
     .label = Fermi duobligitajn langetojn
+all-tabs-menu-close-all-duplicate-tabs =
+    .label = Fermi ĉiujn duobligitajn langetojn
+all-tabs-menu-synced-tabs =
+    .label = Langetoj el aliaj aparatoj

@@ -13,6 +13,18 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [zero] Aizvērt { $tabCount } cilnes
+            [one] Aizvērt { $tabCount } cilni
+           *[other] Aizvērt { $tabCount } cilnes
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -67,6 +79,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Atskaņot { $tabCount } cilnes
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -109,6 +124,10 @@ tabbrowser-confirm-close-tabs-with-key-button = Aizvērt { -brand-short-name }
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Apstiprināt pirms aizvērt ar { $quitKey }
 
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+
 ## Confirmation dialog when opening multiple tabs simultaneously
 
 tabbrowser-confirm-open-multiple-tabs-title = Apstipriniet atvēršanu
@@ -126,6 +145,16 @@ tabbrowser-confirm-open-multiple-tabs-checkbox = Brīdināt mani, kad vairāku c
 tabbrowser-confirm-caretbrowsing-title = Pārvietošanās ar kursoru
 tabbrowser-confirm-caretbrowsing-message = Nospiežot F7, pārslēdz pārvietošanos ar kursoru. Šī iespēja tīmekļa lapās ievieto pārvietojamu teksta kursoru, kas ļauj iezīmēt tekstu ar tastatūras palīdzību. Vai vēlaties ieslēgt pārvietošanos ar kursoru?
 tabbrowser-confirm-caretbrowsing-checkbox = Nerādīt man vairs šo dialoglodziņu.
+
+## Confirmation dialog for closing all duplicate tabs
+
+tabbrowser-confirm-close-duplicate-tabs-title = Uzmanību
+tabbrowser-confirm-close-duplicate-tabs-text = Mēs atstāsim atvērtu pēdējo aktīvo cilni
+tabbrowser-confirm-close-all-duplicate-tabs-title = Aizvērt dublētās cilnes?
+tabbrowser-confirm-close-all-duplicate-tabs-text =
+    Mēs aizvērsim dublētās cilnes šajā logā. Pēdējā aktīvā
+    cilne paliks atvērta.
+tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Aizvērt cilnes
 
 ##
 
@@ -174,3 +203,13 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Atjaunot skaņu cilnei
 tabbrowser-manager-close-tab =
     .tooltiptext = Aizvērt cilni
+
+## Tab Groups
+
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+
+## Open/saved tab group context menu
+

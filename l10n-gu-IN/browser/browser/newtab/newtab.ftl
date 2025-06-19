@@ -23,12 +23,10 @@ newtab-topsites-edit-topsites-header = ટોચની સાઇટ સંપા
 newtab-topsites-title-label = શીર્ષક
 newtab-topsites-title-input =
     .placeholder = શીર્ષક દાખલ કરો
-
 newtab-topsites-url-label = URL
 newtab-topsites-url-input =
     .placeholder = URL ટાઇપ કરો અથવા પેસ્ટ કરો
 newtab-topsites-url-validation = માન્ય URL આવશ્યક છે
-
 newtab-topsites-image-url-label = વૈવિધ્યપૂર્ણ છબી URL
 newtab-topsites-use-image-link = વૈવિધ્યપૂર્ણ છબીનો ઉપયોગ કરો…
 newtab-topsites-image-validation = છબી લોડ થવામાં નિષ્ફળ. એક અલગ URL અજમાવી જુઓ.
@@ -41,8 +39,6 @@ newtab-topsites-save-button = સાચવો
 newtab-topsites-preview-button = પૂર્વદર્શન
 newtab-topsites-add-button = ઉમેરો
 
-## Top Sites - Delete history confirmation dialog. 
-
 ## Top Sites - Delete history confirmation dialog.
 
 newtab-confirm-delete-history-p1 = શું તમે ખરેખર તમારા ઇતિહાસમાંથી આ પૃષ્ઠનાં દરેક ઘટકને કાઢી નાખવા માંગો છો?
@@ -51,16 +47,16 @@ newtab-confirm-delete-history-p2 = આ ક્રિયા પૂર્વવત�
 
 ## Top Sites - Sponsored label
 
+
 ## Context Menu - Action Tooltips.
 
 # General tooltip for context menus.
 newtab-menu-section-tooltip =
     .title = મેનૂ ખોલો
     .aria-label = મેનૂ ખોલો
-
 # This tooltip is for the context menu of Pocket cards or Topsites
 # Variables:
-#  $title (String): The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
 newtab-menu-content-tooltip =
     .title = મેનૂ ખોલો
     .aria-label = { $title } માટે સંદર્ભ મેનૂ ખોલો
@@ -84,15 +80,13 @@ newtab-menu-archive-pocket = { -pocket-brand-name } માં સંગ્રહ
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
+
 ##
 
 # Bookmark is a noun in this case, "Remove bookmark".
 newtab-menu-remove-bookmark = બુકમાર્ક કાઢો
 # Bookmark is a verb here.
 newtab-menu-bookmark = બુકમાર્ક
-
-## Context Menu - Downloaded Menu. "Download" in these cases is not a verb, 
-## it is a noun. As in, "Copy the link that belongs to this downloaded item".
 
 ## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
 ## it is a noun. As in, "Copy the link that belongs to this downloaded item".
@@ -122,9 +116,6 @@ newtab-label-recommended = વલણ
 newtab-label-saved = { -pocket-brand-name } પર સાચવ્યું
 newtab-label-download = ડાઉનલોડ કરેલું
 
-## Section Menu: These strings are displayed in the section context menu and are 
-## meant as a call to action for the given section.
-
 ## Section Menu: These strings are displayed in the section context menu and are
 ## meant as a call to action for the given section.
 
@@ -141,22 +132,21 @@ newtab-section-menu-privacy-notice = ખાનગી સૂચના
 
 ## Section aria-labels
 
+
 ## Section Headers.
 
 newtab-section-header-topsites = ટોચની સાઇટ્સ
 # Variables:
-#  $provider (String): Name of the corresponding content provider.
+#   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } દ્વારા ભલામણ
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
 newtab-empty-section-highlights = બ્રાઉઝ કરવું પ્રારંભ કરો અને અમે અહીં કેટલાક સરસ લેખો, વિડિઓઝ અને અન્ય પૃષ્ઠો દર્શાવીશું જે તમે તાજેતરમાં મુલાકાત લીધાં છે અથવા બુકમાર્ક કર્યા છે.
-
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
-#  $provider (String): Name of the content provider for this section, e.g "Pocket".
+#   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = તમે પકડાઈ ગયા છો. { $provider } તરફથી વધુ ટોચની વાતો માટે પછીથી પાછા તપાસો. રાહ નથી જોઈ શકતા? સમગ્ર વેબ પરથી વધુ સુંદર વાર્તાઓ શોધવા માટે એક લોકપ્રિય વિષય પસંદ કરો.
-
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -175,10 +165,11 @@ newtab-pocket-more-recommendations = વધુ ભલામણો
 newtab-pocket-cta-button = { -pocket-brand-name } મેળવો
 newtab-pocket-cta-text = { -pocket-brand-name } તમને જે કથાઓ ગમે છે તે સાચવો, અને તમારા મનને રસપ્રદ વાંચન સાથે ઉત્તેજિત કરો.
 
-## Pocket Final Card Section.
-## This is for the final card in the Pocket grid.
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
+
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
@@ -187,4 +178,41 @@ newtab-error-fallback-info = ઊફ્ફ, આ સામગ્રીને લ�
 newtab-error-fallback-refresh-link = ફરી પ્રયાસ કરવા માટે પૃષ્ઠને તાજું કરો.
 
 ## Customization Menu
+
+
+## New Tab Wallpapers
+
+
+## Solid Colors
+
+
+## Abstract
+
+
+## Photographs
+
+
+## New Tab Weather
+
+
+## Topic Labels
+
+
+## Topic Selection Modal
+
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+
+## Panel in the Customize menu section to manage followed and blocked topics
 

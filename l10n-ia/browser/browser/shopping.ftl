@@ -89,6 +89,9 @@ shopping-show-less-button = Monstrar minus
 
 shopping-settings-label =
     .label = Parametros
+shopping-settings-recommendations-toggle2 =
+    .label = Monstrar recommendationes e contento sponsorisate
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } non comparti tu datos personal, assi iste recommendationes non te sequera circum internet. <a data-l10n-name="review-quality-url">Pro saper plus</a>
 shopping-settings-recommendations-toggle =
     .label = Monstrar avisos publicitari in verificator de recension
 shopping-settings-recommendations-learn-more2 = Tu videra avisos publicitari occasional pro productos pertinente. Nos solo clama productos con recensiones fidabile. <a data-l10n-name="review-quality-url">Pro saper plus</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Controlar qualitate de recension
 
 more-to-consider-ad-label =
     .label = Altero a considerar
+shopping-sponsored-label = Sponsorisate
 ad-by-fakespot = Aviso publicitari per { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Inviar
 shopping-survey-terms-link = Terminos de uso
 shopping-survey-thanks =
     .heading = Gratias pro tu commentario!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Per favor face nos saper perque tu disactivava le Verificator de recension. Selige plure si necessari.
+shopping-survey-thanks-title = Gratias pro tu commentario!
+shopping-survey-opted-out-hard-to-understand = Il es difficile a comprender
+shopping-survey-opted-out-too-slow = Il es troppo lente
+shopping-survey-opted-out-not-accurate = Il non es correcte
+shopping-survey-opted-out-not-helpful = Il non es utile pro me
+shopping-survey-opted-out-check-myself = Io prefererea verificar le recensiones io mesme
+shopping-survey-opted-out-other = Altero
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

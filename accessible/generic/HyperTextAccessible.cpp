@@ -7,15 +7,12 @@
 #include "HyperTextAccessible-inl.h"
 
 #include "nsAccessibilityService.h"
-#include "nsAccessiblePivot.h"
 #include "nsIAccessibleTypes.h"
 #include "AccAttributes.h"
-#include "DocAccessible.h"
 #include "HTMLListAccessible.h"
 #include "LocalAccessible-inl.h"
-#include "Pivot.h"
 #include "Relation.h"
-#include "Role.h"
+#include "mozilla/a11y/Role.h"
 #include "States.h"
 #include "TextAttrs.h"
 #include "TextLeafRange.h"
@@ -30,26 +27,20 @@
 #include "nsContainerFrame.h"
 #include "nsFrameSelection.h"
 #include "nsILineIterator.h"
-#include "nsIInterfaceRequestorUtils.h"
-#include "nsIScrollableFrame.h"
 #include "nsIMathMLFrame.h"
 #include "nsLayoutUtils.h"
 #include "nsRange.h"
-#include "nsTextFragment.h"
 #include "mozilla/Assertions.h"
-#include "mozilla/BinarySearch.h"
 #include "mozilla/EditorBase.h"
 #include "mozilla/HTMLEditor.h"
 #include "mozilla/IntegerRange.h"
-#include "mozilla/MathAlgorithms.h"
 #include "mozilla/PresShell.h"
-#include "mozilla/StaticPrefs_layout.h"
+#include "mozilla/ScrollContainerFrame.h"
+#include "mozilla/SelectionMovementUtils.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/HTMLBRElement.h"
-#include "mozilla/dom/HTMLHeadingElement.h"
 #include "mozilla/dom/Selection.h"
 #include "gfxSkipChars.h"
-#include <algorithm>
 
 using namespace mozilla;
 using namespace mozilla::a11y;
@@ -564,15 +555,7 @@ nsresult HyperTextAccessible::SetSelectionRange(int32_t aStartPos,
   NS_ENSURE_STATE(domSel);
 
   // Set up the selection.
-  for (const uint32_t idx : Reversed(IntegerRange(1u, domSel->RangeCount()))) {
-    MOZ_ASSERT(domSel->RangeCount() == idx + 1);
-    RefPtr<nsRange> range{domSel->GetRangeAt(idx)};
-    if (!range) {
-      break;  // The range count has been changed by somebody else.
-    }
-    domSel->RemoveRangeAndUnselectFramesAndNotifyListeners(*range,
-                                                           IgnoreErrors());
-  }
+  domSel->RemoveAllRanges(IgnoreErrors());
   SetSelectionBoundsAt(0, aStartPos, aEndPos);
 
   // Make sure it is visible
@@ -669,11 +652,10 @@ int32_t HyperTextAccessible::CaretLineNumber() {
   nsIContent* caretContent = caretNode->AsContent();
   if (!nsCoreUtils::IsAncestorOf(GetNode(), caretContent)) return -1;
 
-  int32_t returnOffsetUnused;
   uint32_t caretOffset = domSel->FocusOffset();
   CaretAssociationHint hint = frameSelection->GetHint();
-  nsIFrame* caretFrame = frameSelection->GetFrameForNodeOffset(
-      caretContent, caretOffset, hint, &returnOffsetUnused);
+  nsIFrame* caretFrame = SelectionMovementUtils::GetFrameForNodeOffset(
+      caretContent, caretOffset, hint);
   NS_ENSURE_TRUE(caretFrame, -1);
 
   AutoAssertNoDomMutations guard;  // The nsILineIterators below will break if
@@ -772,6 +754,35 @@ LayoutDeviceIntRect HyperTextAccessible::GetCaretRect(nsIWidget** aWidget) {
 
   *aWidget = frame->GetNearestWidget();
   return caretRect;
+}
+
+bool HyperTextAccessible::IsCaretAtEndOfLine() const {
+  RefPtr<nsFrameSelection> frameSelection = FrameSelection();
+  if (!frameSelection ||
+      frameSelection->GetHint() != CaretAssociationHint::Before) {
+    return false;
+  }
+  // CaretAssociationHint::Before can mean that the caret is at the end of
+  // a line. However, it can also mean that the caret is before the start
+  // of a node in the middle of a line. This happens when moving the cursor
+  // forward to a new node.
+  int32_t caret = CaretOffset();
+  if (caret == -1) {
+    return false;
+  }
+  TextLeafPoint point =
+      const_cast<HyperTextAccessible*>(this)->ToTextLeafPoint(caret);
+  if (!point) {
+    return false;
+  }
+  if (point.mOffset != 0) {
+    // This isn't the start of a node, so we must be at the end of a line.
+    return true;
+  }
+  // The caret is before the start of a node. The caret is at the end of a
+  // line if the node is at the start of a line but not at the start of a
+  // paragraph.
+  return point.FindPrevLineStartSameLocalAcc(true) && !point.IsParagraphStart();
 }
 
 void HyperTextAccessible::GetSelectionDOMRanges(SelectionType aSelectionType,
@@ -913,8 +924,7 @@ void HyperTextAccessible::ScrollSubstringToPoint(int32_t aStartOffset,
   bool initialScrolled = false;
   nsIFrame* parentFrame = frame;
   while ((parentFrame = parentFrame->GetParent())) {
-    nsIScrollableFrame* scrollableFrame = do_QueryFrame(parentFrame);
-    if (scrollableFrame) {
+    if (parentFrame->IsScrollContainerOrSubclass()) {
       if (!initialScrolled) {
         // Scroll substring to the given point. Turn the point into percents
         // relative scrollable area to use nsCoreUtils::ScrollSubstringTo.
@@ -950,15 +960,6 @@ void HyperTextAccessible::ScrollSubstringToPoint(int32_t aStartOffset,
   }
 }
 
-void HyperTextAccessible::EnclosingRange(a11y::TextRange& aRange) const {
-  if (IsTextField()) {
-    aRange.Set(mDoc, const_cast<HyperTextAccessible*>(this), 0,
-               const_cast<HyperTextAccessible*>(this), CharacterCount());
-  } else {
-    aRange.Set(mDoc, mDoc, 0, mDoc, mDoc->CharacterCount());
-  }
-}
-
 void HyperTextAccessible::SelectionRanges(
     nsTArray<a11y::TextRange>* aRanges) const {
   dom::Selection* sel = DOMSelection();
@@ -967,53 +968,6 @@ void HyperTextAccessible::SelectionRanges(
   }
 
   TextRange::TextRangesFromSelection(sel, aRanges);
-}
-
-void HyperTextAccessible::VisibleRanges(
-    nsTArray<a11y::TextRange>* aRanges) const {}
-
-void HyperTextAccessible::RangeByChild(LocalAccessible* aChild,
-                                       a11y::TextRange& aRange) const {
-  HyperTextAccessible* ht = aChild->AsHyperText();
-  if (ht) {
-    aRange.Set(mDoc, ht, 0, ht, ht->CharacterCount());
-    return;
-  }
-
-  LocalAccessible* child = aChild;
-  LocalAccessible* parent = nullptr;
-  while ((parent = child->LocalParent()) && !(ht = parent->AsHyperText())) {
-    child = parent;
-  }
-
-  // If no text then return collapsed text range, otherwise return a range
-  // containing the text enclosed by the given child.
-  if (ht) {
-    int32_t childIdx = child->IndexInParent();
-    int32_t startOffset = ht->GetChildOffset(childIdx);
-    int32_t endOffset =
-        child->IsTextLeaf() ? ht->GetChildOffset(childIdx + 1) : startOffset;
-    aRange.Set(mDoc, ht, startOffset, ht, endOffset);
-  }
-}
-
-void HyperTextAccessible::RangeAtPoint(int32_t aX, int32_t aY,
-                                       a11y::TextRange& aRange) const {
-  LocalAccessible* child =
-      mDoc->LocalChildAtPoint(aX, aY, EWhichChildAtPoint::DeepestChild);
-  if (!child) return;
-
-  LocalAccessible* parent = nullptr;
-  while ((parent = child->LocalParent()) && !parent->IsHyperText()) {
-    child = parent;
-  }
-
-  // Return collapsed text range for the point.
-  if (parent) {
-    HyperTextAccessible* ht = parent->AsHyperText();
-    int32_t offset = ht->GetChildOffset(child);
-    aRange.Set(mDoc, ht, offset, ht, offset);
-  }
 }
 
 void HyperTextAccessible::ReplaceText(const nsAString& aText) {
@@ -1086,7 +1040,7 @@ void HyperTextAccessible::PasteText(int32_t aPosition) {
 ENameValueFlag HyperTextAccessible::NativeName(nsString& aName) const {
   // Check @alt attribute for invalid img elements.
   if (mContent->IsHTMLElement(nsGkAtoms::img)) {
-    mContent->AsElement()->GetAttr(kNameSpaceID_None, nsGkAtoms::alt, aName);
+    mContent->AsElement()->GetAttr(nsGkAtoms::alt, aName);
     if (!aName.IsEmpty()) return eNameOK;
   }
 

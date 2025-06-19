@@ -12,8 +12,22 @@ about-processes-column-action =
 
 about-processes-shutdown-process =
     .title = Zavrzi vsebino zavihkov in končaj proces
+about-processes-kill-process =
+    .title = Končaj proces
 about-processes-shutdown-tab =
     .title = Zapri zavihek
+# Profiler icons
+# Variables:
+#    $duration (Number) The time in seconds during which the profiler will be running.
+#                       The value will be an integer, typically less than 10.
+about-processes-profile-process =
+    .title =
+        { $duration ->
+            [one] { $duration } sekundo analiziraj vse niti tega procesa s profilerjem
+            [two] { $duration } sekundi analiziraj vse niti tega procesa s profilerjem
+            [few] { $duration } sekunde analiziraj vse niti tega procesa s profilerjem
+           *[other] { $duration } sekund analiziraj vse niti tega procesa s profilerjem
+        }
 
 ## Column headers
 
@@ -35,7 +49,7 @@ about-processes-privilegedmozilla-process = Spletna mesta { -vendor-short-name(s
 about-processes-gmp-plugin-process = Geckovi predstavnostni vtičniki ({ $pid })
 about-processes-gpu-process = GPE ({ $pid })
 about-processes-vr-process = VR ({ $pid })
-about-processes-rdd-process = Dekoder podatkov ({ $pid })
+about-processes-rdd-process = Dekodirnik podatkov ({ $pid })
 about-processes-socket-process = Omrežje ({ $pid })
 about-processes-preallocated-process = Vnaprej dodeljeno ({ $pid })
 # Unknown process names

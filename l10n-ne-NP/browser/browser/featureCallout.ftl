@@ -16,7 +16,11 @@ callout-firefox-view-tab-pickup-subtitle = आफ्नो फोनबाट �
 callout-firefox-view-recently-closed-title = एकैछिनमा आफ्नो बन्द ट्याबहरू फिर्ता लिनुहोस्
 callout-firefox-view-recently-closed-subtitle = तपाईंका सबै बन्द ट्याबहरू जादुई रूपमा यहाँ देखिनेछन्। गल्तिले फेरि साइट बन्द गर्ने बारे कहिल्यै चिन्ता नगर्नुहोस्।
 callout-firefox-view-colorways-title = रङको स्प्ल्याश थप्नुहोस्
+# "Shade" refer to different color options in each colorway.
+callout-firefox-view-colorways-subtitle = रङवेसँग तपाइँसँग बोल्ने छाया छान्नुहोस्। केवल { -brand-product-name } मा।
 callout-firefox-view-colorways-reminder-title = हाम्रो नवीनतम कलरवेहरू अन्वेषण गर्नुहोस्
+# “Shades” refers to the different color options in each colorways
+callout-firefox-view-colorways-reminder-subtitle = आफ्नो ब्राउजरलाई यी प्रतिष्ठित शेडहरूसँग रङ गर्नुहोस्, स्वतन्त्र आवाजहरूद्वारा प्रेरित। केवल { -brand-product-name } मा।
 
 ## Continuous Onboarding - Firefox View: Tab pick up
 
@@ -33,8 +37,21 @@ callout-pdfjs-edit-title = हाम्रो नयाँ पाठ उपक�
 callout-pdfjs-edit-body-a = फारमहरू भर्नुहोस्, टिप्पणीहरू थप्नुहोस्, वा सीधै { -brand-short-name } मा नोटहरू लिनुहोस्।
 callout-pdfjs-edit-body-b = नि: शुल्क अनलाइन सम्पादकहरूको खोजी छोड्नुहोस्। फारमहरू भर्नुहोस्, टिप्पणीहरू थप्नुहोस्, वा सीधै { -brand-short-name } मा नोटहरू लिनुहोस्।
 callout-pdfjs-edit-button = अर्को
+callout-pdfjs-draw-title = हाम्रो नयाँ ड्र उपकरणको साथ कागजातहरूमा हस्ताक्षर गर्नुहोस्
 # “Mark up” refers to the process of “annotating” or adding free hand text or diagramming to the document.
 callout-pdfjs-draw-body-a = PDF मा चिन्ह लगाउनुहोस्, त्यसपछि आफ्नो परिवर्तनहरू बचत गर्नुहोस्।
 # “Mark up” refers to the process of “annotating” or adding free hand text or diagramming to the document.
 callout-pdfjs-draw-body-b = थप मुद्रण र स्क्यानिङ छैन। PDF मा चिन्ह लगाउनुहोस्, त्यसपछि आफ्नो परिवर्तनहरू बचत गर्नुहोस्।
 callout-pdfjs-draw-button = बुझे!
+
+## Firefox View Discoverability Strings
+
+
+## Split Dismiss Button Labels
+
+
+## Sidebar Strings
+
+
+## Sidebar Callout Survey Strings
+

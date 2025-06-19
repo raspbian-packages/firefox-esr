@@ -4,18 +4,26 @@
 
 tabbrowser-empty-tab-title = K'ak'a' Ruwi'
 tabbrowser-empty-private-tab-title = K'ak'a' ichinan ruwi'
-
 tabbrowser-menuitem-close-tab =
     .label = Titz'apïx ruwi'
 tabbrowser-menuitem-close =
     .label = Titz'apïx
-
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Titz'apïx ruwi'
+           *[other] Ketz'apïx { $tabCount } ruwi'
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -64,6 +72,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Ketzij { $tabCount } ruwi'
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -104,6 +115,10 @@ tabbrowser-confirm-close-tabs-with-key-button = Titz'apïx { -brand-short-name }
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Nab'ey tijikib'äx richin nel rik'in { $quitKey }
 
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+
 ## Confirmation dialog when opening multiple tabs simultaneously
 
 tabbrowser-confirm-open-multiple-tabs-title = Tijikib'äx jaqoj
@@ -122,13 +137,15 @@ tabbrowser-confirm-caretbrowsing-title = Okem pa K'amaya'l Rik'in Retal Ch'oy
 tabbrowser-confirm-caretbrowsing-message = Toq nipitz' ri pitz'b'äl F7 nitzij/nichup ri okem pa Caret. Re rub'anikil re' nuya' pe jun retal silonel ch'oy pa ri ruxaq k'amaya'l, ri nuya' q'ij richin nicha' rucholajem tzij rik'in ri pitz'b'äl. ¿La nawajo' natz'ïj re rub'anikil re'?
 tabbrowser-confirm-caretbrowsing-checkbox = Man tik'ut chik pe re rutzuwach tzijonem jub'ey chik.
 
+## Confirmation dialog for closing all duplicate tabs
+
+
 ##
 
 # Variables:
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Tiya' q'ij chi ri rutzijol { $domain } achi'el re', tikik'waj ri ruwi' ri'
-
 tabbrowser-customizemode-tab-title = Tichinäx { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -156,4 +173,14 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Kecholajïx konojel ri { $tabCount } taq ruwi'
 
 ## Tab manager menu buttons
+
+
+## Tab Groups
+
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+
+## Open/saved tab group context menu
 

@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Lat att fane
+           *[other] Lat at { $tabCount } faner
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,16 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Spel av { $tabCount } faner
         }
 
+## Tooltips for tab audio control
+
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Lyd på i fane
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Lyd av i fane
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Spel fane
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -93,6 +114,16 @@ tabbrowser-confirm-close-tabs-with-key-button = Avslutt { -brand-short-name }
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Stadfest før du avsluttar med { $quitKey }
 
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Avslutt { -brand-short-name }
+       *[other] Avslutt { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Lat att denne fana
+
 ## Confirmation dialog when opening multiple tabs simultaneously
 
 tabbrowser-confirm-open-multiple-tabs-title = Stadfest opning
@@ -115,6 +146,10 @@ tabbrowser-confirm-caretbrowsing-checkbox = Ikkje vis denne dialogen igjen.
 
 tabbrowser-confirm-close-duplicate-tabs-title = Varsel
 tabbrowser-confirm-close-duplicate-tabs-text = Vi held den siste aktive fana open
+tabbrowser-confirm-close-all-duplicate-tabs-title = Late att dupliserte faner?
+tabbrowser-confirm-close-all-duplicate-tabs-text =
+    Vi vil late att dupliserte faner i dette vindauget. Siste aktive
+    fane held fram med å vere open.
 tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Lat att faner
 
 ##
@@ -159,3 +194,41 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Lyd på i fane
 tabbrowser-manager-close-tab =
     .tooltiptext = Lat att fane
+
+## Tab Groups
+
+tab-group-editor-title-create = Opprett fanegruppe
+tab-group-editor-title-edit = Handsam fanegruppe
+tab-group-editor-name-label = Namn
+tab-group-editor-name-field =
+    .placeholder = Døme: Shopping
+tab-group-editor-cancel =
+    .label = Avbryt
+    .accesskey = A
+tab-group-editor-color-selector-blue = Blå
+tab-group-editor-color-selector-purple = Lilla
+tab-group-editor-color-selector-pink = Rosa
+tab-group-editor-color-selector-green = Grøn
+tab-group-editor-color-selector-gray = Grå
+tab-group-editor-color-selector-red = Raud
+tab-group-menu-header = Fanegrupper
+tab-context-unnamed-group =
+    .label = Namnlaus gruppe
+tab-group-name-default = Namnlaus gruppe
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-group-editor-action-delete =
+    .label = Slett gruppe
+tab-group-editor-done =
+    .label = Ferdig
+    .accessKey = F
+
+## Open/saved tab group context menu
+
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Slett gruppe

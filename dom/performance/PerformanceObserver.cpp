@@ -17,6 +17,7 @@
 #include "nsQueryObject.h"
 #include "nsString.h"
 #include "PerformanceEntry.h"
+#include "LargestContentfulPaint.h"
 #include "PerformanceObserverEntryList.h"
 
 using namespace mozilla;
@@ -169,9 +170,14 @@ void PerformanceObserver::Observe(const PerformanceObserverInit& aOptions,
     return;
   }
 
-  if (maybeEntryTypes.WasPassed() &&
-      (maybeType.WasPassed() || maybeBuffered.WasPassed())) {
+  if (maybeEntryTypes.WasPassed() && maybeType.WasPassed()) {
     /* Per spec (3.3.1.3), this, too, should be a syntax error. */
+    /*
+     * As per the spec we also need to throw a type error if there are both
+     * `entryTypes` and `buffered` options, but either Blink or WebKit doesn't
+     * throw the error so we don't throw to align the behavior with them.
+     * https://github.com/w3c/performance-timeline/issues/215
+     */
     aRv.ThrowTypeError("Can't call observe with both `type` and `entryTypes`");
     return;
   }
@@ -213,6 +219,12 @@ void PerformanceObserver::Observe(const PerformanceObserverInit& aOptions,
         if (entryTypes.Contains(name) && !validEntryTypes.Contains(name)) {
           validEntryTypes.AppendElement(name);
         }
+      }
+    }
+    if (StaticPrefs::dom_enable_largest_contentful_paint()) {
+      if (entryTypes.Contains(kLargestContentfulPaintName) &&
+          !validEntryTypes.Contains(kLargestContentfulPaintName)) {
+        validEntryTypes.AppendElement(kLargestContentfulPaintName);
       }
     }
     for (const nsLiteralString& name : kValidTypeNames) {
@@ -275,6 +287,12 @@ void PerformanceObserver::Observe(const PerformanceObserverInit& aOptions,
       }
     }
 
+    if (StaticPrefs::dom_enable_largest_contentful_paint()) {
+      if (type == kLargestContentfulPaintName) {
+        typeValid = true;
+      }
+    }
+
     if (!typeValid) {
       ReportUnsupportedTypesErrorToConsole(
           NS_IsMainThread(), UnsupportedEntryTypesIgnoredMsgId, type);
@@ -327,6 +345,10 @@ void PerformanceObserver::GetSupportedEntryTypes(
     for (const nsLiteralString& name : kValidEventTimingNames) {
       validTypes.AppendElement(name);
     }
+  }
+
+  if (StaticPrefs::dom_enable_largest_contentful_paint()) {
+    validTypes.AppendElement(u"largest-contentful-paint"_ns);
   }
   for (const nsLiteralString& name : kValidTypeNames) {
     validTypes.AppendElement(name);

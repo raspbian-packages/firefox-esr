@@ -38,12 +38,12 @@ const ABOUT_CONTRACT = "@mozilla.org/network/protocol/about;1?what=";
 
 const isXpcshell = Services.env.exists("XPCSHELL_TEST_PROFILE_DIR");
 
-XPCOMUtils.defineLazyGetter(lazy, "log", () => {
+ChromeUtils.defineLazyGetter(lazy, "log", () => {
   let { ConsoleAPI } = ChromeUtils.importESModule(
     "resource://gre/modules/Console.sys.mjs"
   );
   return new ConsoleAPI({
-    prefix: "Policies.jsm",
+    prefix: "Policies",
     // tip: set maxLogLevel to "debug" and use log.debug() to create detailed
     // messages during development. See LOG_LEVELS in Console.sys.mjs for details.
     maxLogLevel: "error",
@@ -81,23 +81,23 @@ export var Policies = {
   // Used for cleaning up policies.
   // Use the same timing that you used for setting up the policy.
   _cleanup: {
-    onBeforeAddons(manager) {
+    onBeforeAddons() {
       if (Cu.isInAutomation || isXpcshell) {
         console.log("_cleanup from onBeforeAddons");
         clearBlockedAboutPages();
       }
     },
-    onProfileAfterChange(manager) {
+    onProfileAfterChange() {
       if (Cu.isInAutomation || isXpcshell) {
         console.log("_cleanup from onProfileAfterChange");
       }
     },
-    onBeforeUIStartup(manager) {
+    onBeforeUIStartup() {
       if (Cu.isInAutomation || isXpcshell) {
         console.log("_cleanup from onBeforeUIStartup");
       }
     },
-    onAllWindowsRestored(manager) {
+    onAllWindowsRestored() {
       if (Cu.isInAutomation || isXpcshell) {
         console.log("_cleanup from onAllWindowsRestored");
       }
@@ -112,12 +112,22 @@ export var Policies = {
 
   AllowedDomainsForApps: {
     onBeforeAddons(manager, param) {
-      Services.obs.addObserver(function (subject, topic, data) {
+      Services.obs.addObserver(function (subject) {
         let channel = subject.QueryInterface(Ci.nsIHttpChannel);
         if (channel.URI.host.endsWith(".google.com")) {
           channel.setRequestHeader("X-GoogApps-Allowed-Domains", param, true);
         }
       }, "http-on-modify-request");
+    },
+  },
+
+  AllowFileSelectionDialogs: {
+    onBeforeUIStartup(manager, param) {
+      if (!param) {
+        setAndLockPref("widget.disable_file_pickers", true);
+        setAndLockPref("browser.download.useDownloadDir", true);
+        manager.disallowFeature("filepickers");
+      }
     },
   },
 
@@ -223,12 +233,12 @@ export var Policies = {
 
       return true;
     },
-    // No additional implementation needed here. UpdateService.jsm will check
+    // No additional implementation needed here. UpdateService.sys.mjs will check
     // for this policy directly when determining the update URL.
   },
 
   AppUpdateURL: {
-    // No implementation needed here. UpdateService.jsm will check for this
+    // No implementation needed here. UpdateService.sys.mjs will check for this
     // policy directly when determining the update URL.
   },
 
@@ -498,6 +508,10 @@ export var Policies = {
     // Queried directly by ContextualIdentityService.sys.mjs
   },
 
+  ContentAnalysis: {
+    // disabling for ESR
+  },
+
   Cookies: {
     onBeforeUIStartup(manager, param) {
       addAllowDenyPermissions("cookie", param.Allow, param.Block);
@@ -614,6 +628,15 @@ export var Policies = {
     },
   },
 
+  DisableAccounts: {
+    onBeforeAddons(manager, param) {
+      if (param) {
+        setAndLockPref("identity.fxaccounts.enabled", false);
+        setAndLockPref("browser.aboutwelcome.enabled", false);
+      }
+    },
+  },
+
   DisableAppUpdate: {
     onBeforeAddons(manager, param) {
       if (param) {
@@ -661,6 +684,9 @@ export var Policies = {
         TLS_RSA_WITH_AES_256_CBC_SHA: "security.ssl3.rsa_aes_256_sha",
         TLS_RSA_WITH_3DES_EDE_CBC_SHA:
           "security.ssl3.deprecated.rsa_des_ede3_sha",
+        TLS_CHACHA20_POLY1305_SHA256: "security.tls13.chacha20_poly1305_sha256",
+        TLS_AES_128_GCM_SHA256: "security.tls13.aes_128_gcm_sha256",
+        TLS_AES_256_GCM_SHA384: "security.tls13.aes_256_gcm_sha384",
       };
 
       for (let cipher in param) {
@@ -689,6 +715,15 @@ export var Policies = {
     },
   },
 
+  DisableEncryptedClientHello: {
+    onBeforeAddons(manager, param) {
+      if (param) {
+        setAndLockPref("network.dns.echconfig.enabled", false);
+        setAndLockPref("network.dns.http3_echconfig.enabled", false);
+      }
+    },
+  },
+
   DisableFeedbackCommands: {
     onBeforeUIStartup(manager, param) {
       if (param) {
@@ -699,6 +734,11 @@ export var Policies = {
 
   DisableFirefoxAccounts: {
     onBeforeAddons(manager, param) {
+      // If DisableAccounts is set, let it take precedence.
+      if ("DisableAccounts" in manager.getActivePolicies()) {
+        return;
+      }
+
       if (param) {
         setAndLockPref("identity.fxaccounts.enabled", false);
         setAndLockPref("browser.aboutwelcome.enabled", false);
@@ -936,6 +976,10 @@ export var Policies = {
     onBeforeAddons(manager, param) {
       if ("Enabled" in param) {
         let mode = param.Enabled ? 2 : 5;
+        // Fallback only matters if DOH is enabled.
+        if (param.Fallback === false) {
+          mode = 3;
+        }
         PoliciesUtils.setDefaultPref("network.trr.mode", mode, param.Locked);
       }
       if ("ProviderURL" in param) {
@@ -1034,7 +1078,7 @@ export var Policies = {
   },
 
   ExemptDomainFileTypePairsFromFileTypeDownloadWarnings: {
-    // This policy is handled directly in EnterprisePoliciesParent.jsm
+    // This policy is handled directly in EnterprisePoliciesParent.sys.mjs
     // and requires no validation (It's done by the schema).
   },
 
@@ -1276,13 +1320,6 @@ export var Policies = {
           param.Locked
         );
       }
-      if ("Snippets" in param) {
-        PoliciesUtils.setDefaultPref(
-          "browser.newtabpage.activity-stream.feeds.snippets",
-          param.Snippets,
-          param.Locked
-        );
-      }
     },
   },
 
@@ -1429,6 +1466,31 @@ export var Policies = {
     },
   },
 
+  HttpAllowlist: {
+    onBeforeAddons(manager, param) {
+      addAllowDenyPermissions("https-only-load-insecure", param);
+    },
+  },
+
+  HttpsOnlyMode: {
+    onBeforeAddons(manager, param) {
+      switch (param) {
+        case "disallowed":
+          setAndLockPref("dom.security.https_only_mode", false);
+          break;
+        case "enabled":
+          PoliciesUtils.setDefaultPref("dom.security.https_only_mode", true);
+          break;
+        case "force_enabled":
+          setAndLockPref("dom.security.https_only_mode", true);
+          break;
+        case "allowed":
+          // The default case.
+          break;
+      }
+    },
+  },
+
   InstallAddonsPermission: {
     onBeforeUIStartup(manager, param) {
       if ("Allow" in param) {
@@ -1500,6 +1562,12 @@ export var Policies = {
       if (param) {
         manager.disallowFeature("autoAppUpdateChecking");
       }
+    },
+  },
+
+  MicrosoftEntraSSO: {
+    onBeforeAddons(manager, param) {
+      setAndLockPref("network.http.microsoft-entra-sso.enabled", param);
     },
   },
 
@@ -1701,6 +1769,13 @@ export var Policies = {
     },
   },
 
+  PostQuantumKeyAgreementEnabled: {
+    onBeforeAddons(manager, param) {
+      setAndLockPref("network.http.http3.enable_kyber", param);
+      setAndLockPref("security.tls.enable_kyber", param);
+    },
+  },
+
   Preferences: {
     onBeforeAddons(manager, param) {
       let allowedPrefixes = [
@@ -1715,6 +1790,7 @@ export var Policies = {
         "general.smoothScroll",
         "geo.",
         "gfx.",
+        "identity.fxaccounts.toolbar.",
         "intl.",
         "keyword.enabled",
         "layers.",
@@ -1725,6 +1801,7 @@ export var Policies = {
         "places.",
         "pref.",
         "print.",
+        "privacy.globalprivacycontrol.enabled",
         "privacy.userContext.enabled",
         "privacy.userContext.ui.enabled",
         "signon.",
@@ -1745,6 +1822,8 @@ export var Policies = {
         "security.insecure_connection_text.enabled",
         "security.insecure_connection_text.pbmode.enabled",
         "security.mixed_content.block_active_content",
+        "security.mixed_content.block_display_content",
+        "security.mixed_content.upgrade_display_content",
         "security.osclientcerts.assume_rsa_pss_support",
         "security.osclientcerts.autoload",
         "security.OCSP.enabled",
@@ -1896,6 +1975,26 @@ export var Policies = {
     },
   },
 
+  PrivateBrowsingModeAvailability: {
+    onBeforeAddons(manager, param) {
+      switch (param) {
+        // Private Browsing mode disabled
+        case 1:
+          manager.disallowFeature("privatebrowsing");
+          blockAboutPage(manager, "about:privatebrowsing", true);
+          setAndLockPref("browser.privatebrowsing.autostart", false);
+          break;
+        // Private Browsing mode forced
+        case 2:
+          setAndLockPref("browser.privatebrowsing.autostart", true);
+          break;
+        // Private Browsing mode available
+        case 0:
+          break;
+      }
+    },
+  },
+
   PromptForDownloadLocation: {
     onBeforeAddons(manager, param) {
       setAndLockPref("browser.download.useDownloadDir", !param);
@@ -1946,6 +2045,13 @@ export var Policies = {
         setAndLockPref("privacy.clearOnShutdown.sessions", param);
         setAndLockPref("privacy.clearOnShutdown.siteSettings", param);
         setAndLockPref("privacy.clearOnShutdown.offlineApps", param);
+        setAndLockPref(
+          "privacy.clearOnShutdown_v2.historyFormDataAndDownloads",
+          param
+        );
+        setAndLockPref("privacy.clearOnShutdown_v2.cookiesAndStorage", param);
+        setAndLockPref("privacy.clearOnShutdown_v2.cache", param);
+        setAndLockPref("privacy.clearOnShutdown_v2.siteSettings", param);
       } else {
         let locked = true;
         // Needed to preserve original behavior in perpetuity.
@@ -1965,9 +2071,19 @@ export var Policies = {
             param.Cache,
             locked
           );
+          PoliciesUtils.setDefaultPref(
+            "privacy.clearOnShutdown_v2.cache",
+            param.Cache,
+            locked
+          );
         } else {
           PoliciesUtils.setDefaultPref(
             "privacy.clearOnShutdown.cache",
+            false,
+            lockDefaultPrefs
+          );
+          PoliciesUtils.setDefaultPref(
+            "privacy.clearOnShutdown_v2.cache",
             false,
             lockDefaultPrefs
           );
@@ -1978,9 +2094,23 @@ export var Policies = {
             param.Cookies,
             locked
           );
+
+          // We set cookiesAndStorage to follow lock and pref
+          // settings for cookies, and deprecate offlineApps
+          // and sessions in the new clear on shutdown dialog - Bug 1853996
+          PoliciesUtils.setDefaultPref(
+            "privacy.clearOnShutdown_v2.cookiesAndStorage",
+            param.Cookies,
+            locked
+          );
         } else {
           PoliciesUtils.setDefaultPref(
             "privacy.clearOnShutdown.cookies",
+            false,
+            lockDefaultPrefs
+          );
+          PoliciesUtils.setDefaultPref(
+            "privacy.clearOnShutdown_v2.cookiesAndStorage",
             false,
             lockDefaultPrefs
           );
@@ -2017,9 +2147,23 @@ export var Policies = {
             param.History,
             locked
           );
+
+          // We set historyFormDataAndDownloads to follow lock and pref
+          // settings for history, and deprecate formdata and downloads
+          // in the new clear on shutdown dialog - Bug 1853996
+          PoliciesUtils.setDefaultPref(
+            "privacy.clearOnShutdown_v2.historyFormDataAndDownloads",
+            param.History,
+            locked
+          );
         } else {
           PoliciesUtils.setDefaultPref(
             "privacy.clearOnShutdown.history",
+            false,
+            lockDefaultPrefs
+          );
+          PoliciesUtils.setDefaultPref(
+            "privacy.clearOnShutdown_v2.historyFormDataAndDownloads",
             false,
             lockDefaultPrefs
           );
@@ -2040,6 +2184,11 @@ export var Policies = {
         if ("SiteSettings" in param) {
           PoliciesUtils.setDefaultPref(
             "privacy.clearOnShutdown.siteSettings",
+            param.SiteSettings,
+            locked
+          );
+          PoliciesUtils.setDefaultPref(
+            "privacy.clearOnShutdown_v2.siteSettings",
             param.SiteSettings,
             locked
           );
@@ -2313,15 +2462,14 @@ export var Policies = {
     },
   },
 
+  TranslateEnabled: {
+    onBeforeAddons(manager, param) {
+      setAndLockPref("browser.translations.enable", param);
+    },
+  },
+
   UserMessaging: {
     onBeforeAddons(manager, param) {
-      if ("WhatsNew" in param) {
-        PoliciesUtils.setDefaultPref(
-          "browser.messaging-system.whatsNewPanel.enabled",
-          param.WhatsNew,
-          param.Locked
-        );
-      }
       if ("ExtensionRecommendations" in param) {
         PoliciesUtils.setDefaultPref(
           "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons",
@@ -2333,6 +2481,11 @@ export var Policies = {
         PoliciesUtils.setDefaultPref(
           "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features",
           param.FeatureRecommendations,
+          param.Locked
+        );
+        PoliciesUtils.setDefaultPref(
+          "browser.translations.panelShown",
+          !param.FeatureRecommendations,
           param.Locked
         );
       }
@@ -2393,7 +2546,7 @@ export var Policies = {
  *
  * @param {string} prefName
  *        The pref to be changed
- * @param {boolean,number,string} prefValue
+ * @param {boolean|number|string} prefValue
  *        The value to set and lock
  */
 export function setAndLockPref(prefName, prefValue) {
@@ -2408,7 +2561,7 @@ export function setAndLockPref(prefName, prefValue) {
  *
  * @param {string} prefName
  *        The pref to be changed
- * @param {boolean,number,string} prefValue
+ * @param {boolean|number|string} prefValue
  *        The value to set
  * @param {boolean} locked
  *        Optionally lock the pref
@@ -2492,9 +2645,9 @@ function setDefaultPermission(policyName, policyParam) {
  *
  * @param {string} permissionName
  *        The name of the permission to change
- * @param {array} allowList
+ * @param {Array} allowList
  *        The list of URLs to be set as ALLOW_ACTION for the chosen permission.
- * @param {array} blockList
+ * @param {Array} blockList
  *        The list of URLs to be set as DENY_ACTION for the chosen permission.
  */
 function addAllowDenyPermissions(permissionName, allowList, blockList) {
@@ -2572,7 +2725,7 @@ export function runOnce(actionName, callback) {
  *        string.
  * @param {Function} callback
  *        The callback to be run when the pref value changes
- * @returns Promise
+ * @returns {Promise}
  *        A promise that will resolve once the callback finishes running.
  *
  */
@@ -2708,7 +2861,7 @@ function clearBlockedAboutPages() {
   gBlockedAboutPages = [];
 }
 
-function blockAboutPage(manager, feature, neededOnContentProcess = false) {
+function blockAboutPage(manager, feature) {
   addChromeURLBlocker();
   gBlockedAboutPages.push(feature);
 
@@ -2724,7 +2877,7 @@ function blockAboutPage(manager, feature, neededOnContentProcess = false) {
 }
 
 let ChromeURLBlockPolicy = {
-  shouldLoad(contentLocation, loadInfo, mimeTypeGuess) {
+  shouldLoad(contentLocation, loadInfo) {
     let contentType = loadInfo.externalContentPolicyType;
     if (
       (contentLocation.scheme != "chrome" &&
@@ -2744,7 +2897,7 @@ let ChromeURLBlockPolicy = {
     }
     return Ci.nsIContentPolicy.ACCEPT;
   },
-  shouldProcess(contentLocation, loadInfo, mimeTypeGuess) {
+  shouldProcess() {
     return Ci.nsIContentPolicy.ACCEPT;
   },
   classDescription: "Policy Engine Content Policy",

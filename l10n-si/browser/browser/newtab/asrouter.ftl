@@ -55,8 +55,8 @@ cfr-doorhanger-extension-rating =
 #   $total (Number) - The total number of users using the add-on
 cfr-doorhanger-extension-total-users =
     { $total ->
-        [one] { $total }පරිශීලකයා
-       *[other] { $total }පරිශීලකයින්
+        [one] පරිශ්‍රීලකයින් { $total }
+       *[other] පරිශ්‍රීලකයින් { $total }
     }
 
 ## Firefox Accounts Message
@@ -199,6 +199,7 @@ cfr-cbh-confirm-button = දත්තකඩ පතාක ඉවතලීම
     .accesskey = R
 cfr-cbh-dismiss-button = දැන් නොවේ
     .accesskey = N
+cookie-banner-blocker-onboarding-learn-more = තව දැනගන්න
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -256,4 +257,25 @@ launch-on-login-infobar-final-reject-button = එපා, ස්තුතිය�
     .accesskey = N
 
 ## Tail Fox Set Default Spotlight
+
+tail-fox-spotlight-primary-button = { -brand-short-name } සමඟ මාගේ සබැඳි අරින්න
+tail-fox-spotlight-secondary-button = දැන් නොවේ
+
+## Root Certificate Succession Infobar
+
+root-certificate-succession-infobar-primary-button =
+    .label = යාවත්කාල කරන්න
+    .accesskey = U
+
+## Root Certificate Succession Windows Background Notification
+
+
+## FxA Menu Message variants
+
+fxa-menu-message-close-button =
+    .title = වසන්න
+    .aria-label = වසන්න
+fxa-menu-message-mobile-primary-text = ඔබගේ දුරකථනයට පටිති යවන්න
+
+## Multi-CTA Fox Doodle Spotlight
 

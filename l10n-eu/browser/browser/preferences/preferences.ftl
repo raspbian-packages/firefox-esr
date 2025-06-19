@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Bidali webguneei "Do Not Track" seinalea zure jarraipena ez egitea adierazteko
+do-not-track-removal = Jada ez dugu onartzen "Do Not Track" seinalea
 do-not-track-description2 =
     .label = Bidali webguneei "Do Not Track" eskaera
     .accesskey = D
@@ -152,6 +153,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Ireki loturak fitxetan eta ez leiho berrietan
     .accesskey = x
+ask-on-close-multiple-tabs =
+    .label = Galdetu hainbat fitxa itxi aurretik
+    .accesskey = h
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Galdetu { $quitKey } lasterbidearekin irten aurretik
+    .accesskey = s
 confirm-on-close-multiple-tabs =
     .label = Berretsi hainbat fitxa itxi aurretik
     .accesskey = B
@@ -565,8 +577,7 @@ home-prefs-shortcuts-description = Gordetzen edo bisitatzen dituzun guneak
 home-prefs-shortcuts-by-option-sponsored =
     .label = Babesleen lasterbideak
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = { $provider } hornitzaileak gomendatuta
@@ -597,6 +608,9 @@ home-prefs-recent-activity-description = Azken gune eta edukien hautapena
 home-prefs-snippets-header =
     .label = Mezu-zatiak
 home-prefs-snippets-description-new = { -vendor-short-name } eta { -brand-product-name }(r)en aholku eta albisteak
+home-prefs-weather-header =
+    .label = Eguraldia
+home-prefs-weather-learn-more-link = Argibide gehiago
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -711,6 +725,8 @@ sync-profile-picture =
 sync-profile-picture-with-alt =
     .tooltiptext = Aldatu profileko argazkia
     .alt = Aldatu profileko argazkia
+fxa-login-rejected-warning =
+    .alt = Abisua
 sync-sign-out =
     .label = Amaitu saioa…
     .accesskey = A
@@ -769,6 +785,9 @@ sync-currently-syncing-creditcards = Kreditu-txartelak
 sync-currently-syncing-payment-methods = Ordainketa metodoak
 sync-currently-syncing-addons = Gehigarriak
 sync-currently-syncing-settings = Ezarpenak
+sync-manage-options =
+    .label = Kudeatu sinkronizazioa…
+    .accesskey = K
 sync-change-options =
     .label = Aldatu…
     .accesskey = A
@@ -937,6 +956,7 @@ primary-password-os-auth-dialog-message-win = Pasahitz nagusi bat sortzeko, sart
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = Sortu pasahitz nagusia
 master-password-os-auth-dialog-caption = { -brand-full-name }
+autofill-creditcard-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy section - Autofill
 
@@ -1326,6 +1346,7 @@ preferences-doh-status-disabled = Desaktibatuta
 #   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
 preferences-doh-status-not-active = Inaktibo ({ $reason })
 preferences-doh-group-message = Gaitu DNS segurua ondorengoa erabiliz:
+preferences-doh-group-message2 = Gaitu HTTPS gaineko DNSa ondorengoa erabiliz:
 preferences-doh-expand-section =
     .tooltiptext = Informazio gehiago
 preferences-doh-setting-default =

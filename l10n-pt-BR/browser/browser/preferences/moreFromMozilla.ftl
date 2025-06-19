@@ -8,12 +8,12 @@
 more-from-moz-title = Mais da { -vendor-short-name }
 more-from-moz-category =
     .tooltiptext = Mais da { -vendor-short-name }
-more-from-moz-subtitle = Confira outros produtos { -vendor-short-name } que funcionam para oferecer suporte a uma internet saudável.
+more-from-moz-subtitle = Confira outros produtos { -vendor-short-name } que atuam em prol de uma internet saudável.
 more-from-moz-firefox-mobile-title = { -brand-product-name } para dispositivos móveis
 more-from-moz-firefox-mobile-description = O navegador para dispositivos móveis que coloca sua privacidade em primeiro lugar.
 more-from-moz-mozilla-vpn-title = { -mozilla-vpn-brand-name }
 more-from-moz-mozilla-vpn-description = Descubra uma camada adicional de proteção e navegação anônima.
-more-from-moz-qr-code-box-firefox-mobile-title = Baixe usando seu dispositivo móvel. Aponte a câmera para o código QR e toque no link que irá aparecer.
+more-from-moz-qr-code-box-firefox-mobile-title = Instale usando seu dispositivo. Aponte a câmera para o código QR e toque no link que aparece.
 more-from-moz-qr-code-box-firefox-mobile-button = Em vez disso, enviar um email para o celular
 more-from-moz-qr-code-firefox-mobile-img =
     .alt = Código QR para baixar o { -brand-product-name } de dispositivos móveis

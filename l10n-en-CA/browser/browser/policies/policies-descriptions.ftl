@@ -119,6 +119,7 @@ policy-Permissions2 = Configure permissions for camera, microphone, location, no
 policy-PictureInPicture = Enable or disable Picture-in-Picture.
 policy-PopupBlocking = Allow certain websites to display popups by default.
 policy-Preferences = Set and lock the value for a subset of preferences.
+policy-PrivateBrowsingModeAvailability = Set availability of private browsing mode.
 policy-PromptForDownloadLocation = Ask where to save files when downloading.
 policy-Proxy = Configure proxy settings.
 policy-RequestedLocales = Set the list of requested locales for the application in order of preference.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Print using the system print dialog.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Block websites from being visited. See documentation for more details on the format.
 policy-Windows10SSO = Allow Windows single sign-on for Microsoft, work, and school accounts.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Allow single sign-on for Microsoft Entra accounts.

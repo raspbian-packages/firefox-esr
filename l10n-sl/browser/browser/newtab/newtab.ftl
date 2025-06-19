@@ -8,11 +8,18 @@
 newtab-page-title = Nov zavihek
 newtab-settings-button =
     .title = Prilagodite stran novega zavihka
+newtab-personalize-settings-icon-label =
+    .title = Prilagodite stran novega zavihka
+    .aria-label = Nastavitve
+newtab-settings-dialog-label =
+    .aria-label = Nastavitve
 newtab-personalize-icon-label =
     .title = Prilagodite nov zavihek
     .aria-label = Prilagodite nov zacihek
 newtab-personalize-dialog-label =
     .aria-label = Prilagodi
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Shrani v { -pocket-brand-name }
 newtab-menu-delete-pocket = Izbriši iz { -pocket-brand-name }a
 newtab-menu-archive-pocket = Arhiviraj v { -pocket-brand-name }
 newtab-menu-show-privacy-info = Naši pokrovitelji in vaša zasebnost
+newtab-menu-about-fakespot = O { -fakespot-brand-name(sklon: "mestnik") }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Prepovej
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Nehaj slediti temi
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -199,6 +213,8 @@ newtab-section-header-recent-activity = Nedavna dejavnost
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Priporoča { $provider }
 newtab-section-header-stories = Zgodbe, ki spodbujajo k razmisleku
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Današnji izbor za vas
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -230,6 +246,8 @@ newtab-pocket-cta-button = Prenesi { -pocket-brand-name }
 newtab-pocket-cta-text = Shranite zgodbe, ki jih imate radi, v { -pocket-brand-name }, in napolnite svoje misli z navdušujočim branjem.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } je del družine { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Shrani
 newtab-pocket-saved = Shranjeno
 
@@ -241,6 +259,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Ni zame
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Hvala. Povratne informacije nam bodo pomagale izboljšati vaš vir.
 newtab-toast-thumbs-up-or-down = Hvala. Povratne informacije nam bodo pomagale izboljšati vaš vir.
 newtab-toast-dismiss-button =
     .title = Skrij
@@ -305,6 +326,11 @@ newtab-wallpaper-light-beach = Plaža s palmo
 newtab-wallpaper-dark-aurora = Severni sij
 newtab-wallpaper-dark-color = Rdeči in modri liki
 newtab-wallpaper-dark-panda = Mačji panda, skrit v gozdu
+newtab-wallpaper-dark-sky = Mestna pokrajina z nočnim nebom
+newtab-wallpaper-dark-mountain = Gorska pokrajina
+newtab-wallpaper-dark-city = Vijolična mestna pokrajina
+newtab-wallpaper-dark-fox-anniversary = Lisica na pločniku blizu gozda
+newtab-wallpaper-light-fox-anniversary = Lisica na travnatem polju v megleni gorski pokrajini
 
 ## Solid Colors
 
@@ -361,6 +387,19 @@ feature-highlight-wallpaper =
 
 ## New Tab Weather
 
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-see-forecast =
+    .title = Prikaži napoved v storitvi { $provider }
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ Sponzorirano
+newtab-weather-menu-change-location = Spremeni lokacijo
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Išči lokacijo
+    .aria-label = Išči lokacijo
+newtab-weather-change-location-search-input = Išči lokacijo
+newtab-weather-menu-weather-display = Prikazovalnik vremena
 # Display options are:
 # - Simple: Displays a current weather condition icon and the current temperature
 # - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
@@ -369,7 +408,84 @@ newtab-weather-menu-change-weather-display-simple = Preklopi na preprost pogled
 newtab-weather-menu-weather-display-option-detailed = Podrobno
 newtab-weather-menu-change-weather-display-detailed = Preklopi na podroben pogled
 newtab-weather-menu-temperature-units = Enote za temperaturo
+newtab-weather-menu-temperature-option-fahrenheit = Fahrenheit
+newtab-weather-menu-temperature-option-celsius = Celzij
+newtab-weather-menu-change-temperature-units-fahrenheit = Preklopi na stopinje Fahrenheita
+newtab-weather-menu-change-temperature-units-celsius = Preklopi na stopinje Celzija
 newtab-weather-menu-hide-weather = Skrij vreme na novem zavihku
 newtab-weather-menu-learn-more = Več o tem
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Podatki o vremenu trenutno niso na voljo.
+
+## Topic Labels
+
+newtab-topic-label-business = Posel
+newtab-topic-label-career = Kariera
+newtab-topic-label-education = Izobraževanje
+newtab-topic-label-arts = Zabava
+newtab-topic-label-food = Hrana
+newtab-topic-label-health = Zdravje
+newtab-topic-label-hobbies = Igre
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Denar
+newtab-topic-label-society-parenting = Starševstvo
+newtab-topic-label-government = Politika
+newtab-topic-label-education-science = Znanost
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Življenjske zvijače
+newtab-topic-label-sports = Šport
+newtab-topic-label-tech = Tehnologija
+newtab-topic-label-travel = Potovanje
+newtab-topic-label-home = Dom in vrt
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Izberite teme za fino nastavitev vira
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Izberite dve ali več tem. Naši strokovnjaki dajejo prednost zgodbam, prilagojenim vašim zanimanjem. Nastavitve lahko spremenite kadarkoli.
+newtab-topic-selection-save-button = Shrani
+newtab-topic-selection-cancel-button = Prekliči
+newtab-topic-selection-button-maybe-later = Morda pozneje
+newtab-topic-selection-privacy-link = Kako ščitimo in upravljamo podatke
+newtab-topic-selection-button-update-interests = Posodobite svoja zanimanja
+newtab-topic-selection-button-pick-interests = Izberite svoja zanimanja
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Sledi
+newtab-section-following-button = Sledite
+newtab-section-unfollow-button = Nehaj slediti
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Prepovej
+newtab-section-blocked-button = Prepovedano
+newtab-section-unblock-button = Dovoli
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Ali ste prepričani, da želite blokirati ta razdelek?
+newtab-section-confirm-block-section-p2 = Blokirani razdelek se ne bo več prikazoval v vašem viru.
+newtab-section-block-section-button = Blokiraj ta razdelek
+newtab-section-cancel-button = Ne zdaj
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Teme
+newtab-section-mangage-topics-button =
+    .label = Spremljane in prepovedane teme
+newtab-section-mangage-topics-followed-topics-subtitle = Spremljane teme
+newtab-section-mangage-topics-followed-topics-empty-state = Ne spremljate še nobene teme.
+newtab-section-mangage-topics-blocked-topics-subtitle = Prepovedane teme
+newtab-section-mangage-topics-blocked-topics-empty-state = Prepovedali niste še nobene teme.

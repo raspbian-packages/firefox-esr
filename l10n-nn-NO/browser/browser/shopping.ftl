@@ -89,6 +89,9 @@ shopping-show-less-button = Vis mindre
 
 shopping-settings-label =
     .label = Innstillingar
+shopping-settings-recommendations-toggle2 =
+    .label = Vis tilrådingar og sponsa innhald
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } deler ikkje dine personlege data, så desse tilrådingane følgjer deg ikkje rundt på internett.<a data-l10n-name="review-quality-url">Finn ut meir</a>
 shopping-settings-recommendations-toggle =
     .label = Vis annonsar i vurderingskontrolløren
 shopping-settings-recommendations-learn-more2 = Du ser sporadiske annonsar for relevante produkt. Vi annonserer berre produkt med pålitelege vurderingar. <a data-l10n-name="review-quality-url">Les meir</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Kontroller kvaliteten på vurdering
 
 more-to-consider-ad-label =
     .label = Meir å vurdere
+shopping-sponsored-label = Sponsa
 ad-by-fakespot = Reklame frå { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,11 @@ shopping-survey-submit-button-label = Send inn
 shopping-survey-terms-link = Brukarvilkår
 shopping-survey-thanks =
     .heading = Takk for tilbakemeldinga di!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-other = Anna
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

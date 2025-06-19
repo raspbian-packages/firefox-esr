@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Inviar al sitos web un signal “Non traciar” indicante que tu non vole esser traciate
+do-not-track-removal = Le signal “Non me traciar” non es plus supportate
 do-not-track-description2 =
     .label = Inviar requesta de “Non tracia" a sitos web
     .accesskey = N
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Aperir { -brand-short-name } automaticamente quando on accende tu computator
     .accesskey = A
 windows-launch-on-login-disabled = Iste preferentia ha essite disactivate in Windows. In Parametros, aperi <a data-l10n-name="startup-link">Apps initial</a> pro modificar lo.
+windows-launch-on-login-profile-disabled = Activa iste preferentia verificante “{ profile-manager-use-selected.label }” in le fenestra “Seliger profilo de usator”.
 startup-restore-warn-on-quit =
     .label = Advertir te quando tu quita le navigator
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Aperir ligamines in schedas in vice de nove fenestras
     .accesskey = s
+ask-on-close-multiple-tabs =
+    .label = Demandar ante clauder plure schedas
+    .accesskey = p
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Demandar ante quitar con { $quitKey }
+    .accesskey = a
 confirm-on-close-multiple-tabs =
     .label = Confirmar ante clauder plure schedas
     .accesskey = m
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Sitos que tu salva o visita
 home-prefs-shortcuts-by-option-sponsored =
     .label = Accessos directe sponsorisate
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Recommendate per { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Monstrar le suggestiones de recerca in le resultatos del barra de adresse
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Monstrar le terminos de recerca in le barra de adresse sur le paginas del resultatos
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Cartas de credito
 sync-currently-syncing-payment-methods = Methodos de pagamento
 sync-currently-syncing-addons = Additivos
 sync-currently-syncing-settings = Parametros
+sync-manage-options =
+    .label = Gere le synchronisation…
+    .accesskey = G
 sync-change-options =
     .label = Cambiar…
     .accesskey = C
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Parametros
     .tooltiptext = Parametros general, de confidentialitate e securitate que tu ha cambiate
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = Gere que synchronisar sur tote tu apparatos connexe
+    .style = min-width: 36em;
+    .buttonlabelaccept = Salvar
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Disconnexion…
+    .buttonaccesskeyextra2 = D
 
 ## The device name controls.
 
@@ -1285,13 +1311,34 @@ collection-description = Nos nos effortia pro lassar te in le commando e collige
 collection-privacy-notice = Aviso de confidentialitate
 collection-health-report-telemetry-disabled = Tu non plus permitte que { -vendor-short-name } captura datos technic e de interaction. Tote le datos jam capturate essera delite intra 30 dies.
 collection-health-report-telemetry-disabled-link = Saper plus
+collection-usage-ping =
+    .label = Inviar ping de uso quotidian a { -vendor-short-name }
+    .accesskey = u
+collection-usage-ping-description = Isto adjuta { -vendor-short-name } a estimar le usatores active.
+collection-health-report2 =
+    .label = Inviar datos technic e de interaction a { -vendor-short-name }
+    .accesskey = r
 collection-health-report =
     .label = Permitter que { -brand-short-name } invia datos technic e de interaction a { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Saper plus
+collection-health-report-description = Isto adjuta nos a meliorar functiones, prestation, e stabilitate de { -brand-product-name }.
+collection-studies2 =
+    .label = Installar e exequer studios
+collection-studies-description = Prova functiones e ideas ante que illos es publicate pro totes.
 collection-studies =
     .label = Autorisar { -brand-short-name } a installar e a lancear studios
 collection-studies-link = Consultar le studios de { -brand-short-name }
+addon-recommendations2 =
+    .label = Permitter recommendationes personalisate sur le extensiones
+addon-recommendations-description = Reciper recommendationes sur le extensiones pro meliorar tu experientia de navigation.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Le reporto de datos es inactive pro iste configuration de compilation.
+collection-backlogged-crash-reports2 =
+    .label = Automaticamente inviar reportos de crash
+    .accesskey = c
+collection-backlogged-crash-reports-description = Isto adjuta { -vendor-short-name } a diagnosticar e reparar problemas con le navigator.
 addon-recommendations =
     .label = Permitte { -brand-short-name } de facer recommendationes personalisate pro le extensiones
 addon-recommendations-link = Saper plus
@@ -1360,13 +1407,20 @@ space-alert-under-5gb-message2 = <strong>Le spatio de disco disponibile a { -bra
 
 httpsonly-header = Modo solo HTTPS
 httpsonly-description = HTTPS offere un connexion secur e cryptate inter { -brand-short-name } e le sitos web que tu visita. Le major parte del sitos web supporta le HTTPS, e si es activate Modo HTTPS-solo, alora { -brand-short-name } promovera tote le connexiones a HTTPS.
+httpsonly-description2 = { -brand-short-name } crea connexiones secur e cryptate al sitos que tu visita. Quando le modalitate sol HTTPS ex active, { -brand-short-name } ti avisara si un connexion non es secur.
 httpsonly-learn-more = Saper plus
 httpsonly-radio-enabled =
     .label = Activar le Modo solo HTTPS in tote le fenestras
+httpsonly-radio-enabled2 =
+    .label = Usar solo HTTPS in tote le fenestras
 httpsonly-radio-enabled-pbm =
     .label = Activar le Modo solo HTTPS in le fenestras private solmente
+httpsonly-radio-enabled-pbm2 =
+    .label = Usar solo HTTPS in fenestras private
 httpsonly-radio-disabled =
     .label = Non activar le Modo solo HTTPS
+httpsonly-radio-disabled2 =
+    .label = Prova primo HTTPS, ma consenti connexiones non secur
 
 ## DoH Section
 

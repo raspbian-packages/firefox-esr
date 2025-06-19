@@ -550,6 +550,8 @@ urlbar-go-button =
     .tooltiptext = Kundaharape renda URL-pe jeho
 urlbar-page-action-button =
     .tooltiptext = Kuatiarogue rembiapo
+urlbar-revert-button =
+    .tooltiptext = Ehechauka kundaharape kundaha rupápe
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -610,6 +612,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = Eheka { $engine } ndive
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Eheka { $localSearchMode }-pe
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Eheka { $engine }-pe
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Eiporavo jehekaha
+urlbar-searchmode-bookmarks =
+    .label = Techaukaha
+urlbar-searchmode-tabs =
+    .label = Tendaykekuéra
+urlbar-searchmode-history =
+    .label = Tembiasakue
+urlbar-searchmode-actions =
+    .label = Ñemongu’e
+urlbar-searchmode-exit-button =
+    .tooltiptext = Mboty
+urlbar-searchmode-popup-description = Ko’ág̃a eheka hendive:
+urlbar-searchmode-popup-search-settings = Jehekaha ñemboheko
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, eiporavo jehekaha
+    .tooltiptext = { $engine }, eiporavo jehekaha
+urlbar-searchmode-button-no-engine =
+    .label = Ndereiporavói mbopya’eha, eiporu peteĩ mbopya’eha
+    .tooltiptext = Ndereiporavói mbopya’eha, eiporu peteĩ mbopya’eha
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -619,6 +653,9 @@ urlbar-result-action-search-bookmarks = Eheka techaukahápe
 urlbar-result-action-search-history = Eheka tembiasakuépe
 urlbar-result-action-search-tabs = Eheka tendayke
 urlbar-result-action-search-actions = Eheka tembiaporã
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Emoambue { $group }-pe
 
 ## Labels shown above groups of urlbar results
 
@@ -640,6 +677,21 @@ urlbar-group-quickactions =
 #  $engine (String): the name of the search engine used to search.
 urlbar-group-recent-searches =
     .label = Ojeheka ramóva
+# The header shown above trending results.
+# Variables:
+#  $engine (String): the name of the search engine providing the trending suggestions
+urlbar-group-trending =
+    .label = Ojehayhuvéva { $engine } pegua
+# The result menu labels shown next to trending results.
+urlbar-result-menu-trending-dont-show =
+    .label = Anive ehechauka jeheka ojehayhuvéva
+    .accesskey = D
+urlbar-result-menu-trending-why =
+    .label = ¿Mba’ére ahecha kóva?
+    .accesskey = W
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-trending-dismissal-acknowledgment = Aguyje ne remiandu rehe. Nderehechamoʼãvéima umi ojehekavéva.
 
 ## Reader View toolbar buttons
 
@@ -917,6 +969,9 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Kundaha ñemigua
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Ñeikundaha ñemi
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -925,7 +980,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Mba’ekuaarã ñemo’ã
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = Nde atyguasu oiporu { $agentName } oñemo’ã hag̃ua mba’ekuaarã ñehundígui. <a data-l10n-name="info">Eikuaave</a>
+content-analysis-panel-text-styled = Nde atyguasu oiporu <b>{ $agentName }</b> oñemo’ã hag̃ua mba’ekuaarã ñehundígui. <a data-l10n-name="info">Eikuaave</a>
 
 ## Unified extensions (toolbar) button
 
@@ -948,6 +1003,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Jepysokue
         Oĩ Jepysokue oñemoneĩ’ỹva
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Jepysokue
+    .tooltiptext =
+        Jepysokue
+        Heta jepysokue oñemboty
 
 ## Private browsing reset button
 
@@ -988,6 +1052,7 @@ firefox-relay-offer-legal-notice = Eikutúvo “Eiporu ñanduti veve rovamo’ã
 popup-notification-addon-install-unsigned =
     .value = (Ndojehechajeýiva)
 popup-notification-xpinstall-prompt-learn-more = Eñemomaranduve mba’éichapa emohendáta moĩmbaha tekorosãkuápe
+popup-notification-xpinstall-prompt-block-url = Mba’emimi jehechauka
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = Emongu’e Windows ñemiguápe
@@ -1021,3 +1086,24 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = “{ $popupURI }” jehechauka
+
+## File-picker crash notification ("FilePickerCrashed.sys.mjs")
+
+file-picker-failed-open = Noñembojurujakuaái marandurenda Windows pegua. Ndojeporavokuaái marandurenda térã ñongatuha.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-failed-save-somewhere = Noñembojurujakuaái marandurenda Windows pegua. Ndojeporavokuaái marandurenda térã ñongatuha. Marandurenda ohóta { $path }-pe.
+file-picker-failed-save-nowhere = Noñembojurujakuaái marandurenda Windows pegua. Ndojejuhúi marandurenda ypyguáva; marandurenda noñeñongatumo’ãi.
+file-picker-crashed-open = Marandurenda ñemongetaha Windows pegua ndoikói. Ndojeporavokuaái marandurenda térã ñongatuha.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-crashed-save-somewhere = Marandurenda ñemongetaha Windows pegua ndoikói. Marandurenda ohóta { $path }-pe.
+file-picker-crashed-save-nowhere = Marandurenda ñemongetaha Windows ndoikói. Ndojejuhúi marandurenda ypyguáva; marandurenda noñeñongatumo’ãi.
+
+# Button used with file-picker-crashed-save-default. Opens the folder in Windows
+# Explorer, with the saved file selected and in focus.
+#
+# The wording here should be consistent with the Windows variant of
+# `downloads-cmd-show-menuitem-2` and similar messages.
+
+file-picker-crashed-show-in-folder =
+    .label = Ehechauka ñongatuhápe
+    .accessKey = F

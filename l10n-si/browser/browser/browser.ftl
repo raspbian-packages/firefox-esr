@@ -273,6 +273,8 @@ quickactions-cmd-plugins = පේනු
 # Opens the print dialog
 quickactions-print2 = මුද්‍රණ පිටුව
 quickactions-cmd-print = මුද්‍රණය
+# Opens the print dialog at the save to PDF option
+quickactions-savepdf = PDF ලෙස පිටුව සුරකින්න
 quickactions-cmd-savepdf = pdf
 # Opens a new private browsing window
 quickactions-private2 = නව පෞද්. කවුළුව
@@ -304,7 +306,7 @@ quickactions-learn-more =
 
 ## Bookmark Panel
 
-bookmarks-add-bookmark = පොත්යොමුව එක් කරන්න
+bookmarks-add-bookmark = පොත්යොමුවක් තබන්න
 bookmarks-edit-bookmark = පොත්යොමුව සංස්කරණය
 bookmark-panel-cancel =
     .label = අවලංගු කරන්න
@@ -338,49 +340,51 @@ identity-site-information = { $host } සඳහා අඩවියේ තොර�
 #  $host (String): the hostname of the site that is being displayed.
 identity-header-security-with-host =
     .title = { $host } සඳහා සම්බන්ධතාවේ ආරක්‍ෂාව
-identity-connection-not-secure = සම්බන්ධතාවය අනාරක්‍ෂිතයි
-identity-connection-secure = සම්බන්ධතාවය ආරක්‍ෂිතයි
+identity-connection-not-secure = සම්බන්‍ධතාව අනාරක්‍ෂිතයි
+identity-connection-secure = සම්බන්‍ධතාව ආරක්‍ෂිතයි
 identity-connection-failure = සබඳතාවය බිඳවැටුණි
 identity-connection-internal = මෙය ආරක්‍ෂිත { -brand-short-name } පිටුවකි.
 identity-connection-file = මෙම පිටුව පරිගණකයේ ගබඩා කර ඇත.
+identity-connection-associated = මෙම පිටුව වෙනත් පිටුවකින් පූරණය වී ඇත.
 identity-extension-page = මෙම පිටුව දිගුවක් මගින් පූරණය වේ.
 identity-active-blocked = { -brand-short-name } මෙම පිටුවේ ආරක්‍ෂිත නොවන කොටස් අවහිර කර ඇත.
-identity-custom-root = සම්බන්ධතාවය සත්‍යාපනය කළ සහතික නිකුත් කරන්නා මොසිල්ලා විසින් හඳුනා ගෙන නැත.
+identity-custom-root = සම්බන්ධතාව සත්‍යාපනය කළ සහතික නිකුත් කරන්නා මොසිල්ලා විසින් හඳුනා ගෙන නැත.
 identity-passive-loaded = මෙම පිටුවේ කොටස් ආරක්‍ෂිත නොවේ (රූප වැනි).
 identity-active-loaded = ඔබ මෙම පිටුව සඳහා රැකවරණය අබල කර ඇත.
 identity-weak-encryption = මෙම පිටුව දුර්වල සංකේතනයක් භාවිතා කරයි.
 identity-insecure-login-forms = මෙම පිටුවට යොදන පිවිසුම් තොරතුරු බිඳ හෙළීමකට ලක් විය හැකිය.
 identity-https-only-connection-upgraded = (HTTPS වෙත උත්ශ්‍රේණියි)
 identity-https-only-label = HTTPS-පමණි ප්‍රකාරය
+identity-https-only-label2 = මෙම අඩවිය ආරක්‍ෂිත සම්බන්‍ධතාවකට ස්වයංක්‍රියව උත්ශ්‍රේණි කරන්න
 identity-https-only-dropdown-on =
     .label = සක්‍රිය
 identity-https-only-dropdown-off =
     .label = අක්‍රිය
 identity-https-only-dropdown-off-temporarily =
     .label = තාවකාලිකව අක්‍රියයි
-identity-https-only-info-no-upgrade = HTTP වෙතින් සම්බන්ධතාව උත්ශ්‍රේණි කළ නොහැකිය.
+identity-https-only-info-no-upgrade = HTTP වෙතින් සම්බන්‍ධතාව උත්ශ්‍රේණි කළ නොහැකිය.
 identity-permissions-storage-access-header = හරස් අඩවි දත්තකඩ
 identity-permissions-storage-access-hint = ඔබ මෙම අඩවියේ සිටින විට මෙම පාර්ශ්ව සඳහා හරස්-අඩවි දත්තකඩ සහ අඩවි දත්ත භාවිතා කළ හැකිය.
 identity-permissions-storage-access-learn-more = තව දැනගන්න
 identity-permissions-reload-hint = වෙනස්කම් යෙදීමට පිටුව නැවත පූරණය කිරීමට සිදු වනු ඇත.
 identity-clear-site-data =
     .label = දත්තකඩ හා අඩවි දත්ත මකන්න…
-identity-connection-not-secure-security-view = ඔබ මෙම අඩවියට ආරක්‍ෂිතව සම්බන්ධ වී නැත.
-identity-connection-verified = ඔබ මෙම අඩවියට ආරක්‍ෂිතව සම්බන්ධ වී ඇත.
+identity-connection-not-secure-security-view = ඔබ මෙම අඩවියට ආරක්‍ෂිතව සම්බන්‍ධ වී නැත.
+identity-connection-verified = ඔබ මෙම අඩවියට ආරක්‍ෂිතව සම්බන්‍ධ වී ඇත.
 identity-ev-owner-label = සහතිකය නිකුත් වූයේ:
 identity-description-custom-root2 = මොසිල්ලා මෙම සහතික නිකුත් කරන්නා හඳුනා නොගනී. එය ඔබගේ මෙහෙයුම් පද්ධතියෙන් හෝ පරිපාලකයෙකු විසින් එක් කර ඇත.
 identity-remove-cert-exception =
     .label = හැරදැමීම ඉවත් කරන්න
     .accesskey = R
-identity-description-insecure = මෙම අඩවිය වෙත ඔබගේ සම්බන්ධතාවය පෞද්ගලික නොවේ. යොමු කරන තොරතුරු අන් අය බලනු ඇත (මුරපද, පණිවිඩ, ණයපත්, ආදිය).
+identity-description-insecure = මෙම අඩවිය වෙත ඔබගේ සම්බන්ධතාව පෞද්ගලික නොවේ. යොමු කරන තොරතුරු අන් අය බලනු ඇත (මුරපද, පණිවිඩ, ණයපත්, ආදිය).
 identity-description-insecure-login-forms = මෙම පිටුවට යොදන පිවිසුම් තොරතුරු ආරක්‍ෂිත නොවන නිසා බිඳ හෙළීමකට ලක් විය හැකිය.
-identity-description-weak-cipher-intro = ඔබගේ සම්බන්ධතාවය මෙම අඩවිය වෙත දුර්වල සංකේතනයක් භාවිතා කරයි, එය පෞද්ගලික නොවේ.
+identity-description-weak-cipher-intro = ඔබගේ සම්බන්ධතාව මෙම අඩවිය වෙත දුර්වල සංකේතනයක් භාවිතා කරයි, එය පෞද්ගලික නොවේ.
 identity-description-weak-cipher-risk = අන් අයට ඔබගේ තොරතුරු බැලීමට හෝ අඩවියේ හැසිරීම මෙහෙයවීමට හැකිය.
 identity-description-active-blocked2 = { -brand-short-name } මෙම පිටුවේ ආරක්‍ෂිත නොවන කොටස් අවහිර කර ඇත.
-identity-description-passive-loaded = ඔබගේ සම්බන්ධතාවය පෞද්ගලික නොවන නිසා ඔබ අඩවියට යොමු කරන තොරතුරු අන් අය බලනු ඇත.
+identity-description-passive-loaded = ඔබගේ සම්බන්ධතාව පෞද්ගලික නොවන නිසා ඔබ අඩවියට යොමු කරන තොරතුරු අන් අය බලනු ඇත.
 identity-description-passive-loaded-insecure2 = මෙම අඩවියේ ආරක්‍ෂිත නොවන අන්තර්ගත අඩංගු වේ (රූප වැනි).
 identity-description-passive-loaded-mixed2 = { -brand-short-name } යම් කොටස් අවහිර කළ ද තවමත් ආරක්‍ෂිත නොවන කොටස් අඩංගු විය හැකිය (රූප වැනි) .
-identity-description-active-loaded = මෙම අඩවියේ ආරක්‍ෂිත නොවන (අත්පත් වැනි) අන්තර්ගතය අඩංගු වේ. ඔබගේ සම්බන්ධතාවය පෞද්ගලික නොවේ.
+identity-description-active-loaded = මෙම අඩවියේ ආරක්‍ෂිත නොවන (අත්පත් වැනි) අන්තර්ගතය අඩංගු වේ. ඔබගේ සම්බන්‍ධතාව පෞද්ගලික නොවේ.
 identity-description-active-loaded-insecure = මෙම අඩවියට ඔබ යොමු කරන තොරතුරු අන් අය බලනු ඇත (මුරපද, පණිවිඩ, ණයපත් ආදිය).
 identity-disable-mixed-content-blocking =
     .label = දැනට රැකවරණය අබල කරන්න
@@ -582,6 +586,9 @@ urlbar-result-action-calculator-result = = { $result }
 
 ## Strings used for buttons in the urlbar
 
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = { $engine } සමඟ සොයන්න
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -781,7 +788,7 @@ eme-notifications-drm-content-playing-dismiss-accesskey = D
 
 ## Password save/update panel
 
-panel-save-update-username = පරිශීලක නාමය
+panel-save-update-username = පරිශ්‍රීලක නාමය
 panel-save-update-password = මුරපදය
 
 ##
@@ -895,6 +902,10 @@ unified-extensions-button-quarantined =
         දිගු
         ඇතැම් දිගු සඳහා ඉඩ නොදේ
 
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+
 ## Private browsing reset button
 
 reset-pbm-panel-description = පෞද්ගලික පටිති සියල්ල වසා ඉතිහාසය, දත්තකඩ සහ අනෙකුත් සියලුම අඩවි දත්ත මකන්න.
@@ -920,12 +931,21 @@ refresh-blocked-allow =
 ## Firefox Relay integration
 
 firefox-relay-offer-why-to-use-relay = අපගේ ආරක්‍ෂිත සහ භාවිතයට පහසු වැස්ම ඔබගේ අනන්‍යතාවය රැක දෙන අතර වි-තැපැල් ලිපිනය සැඟවීමෙන් අයාචිත තැපැල් පණිවිඩ වළක්වයි.
+# Variables:
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-provides = ඔබගේ  වි-තැපැල් වැස්ම වෙත එවන සියලුම වි-තැපැල් <strong>{ $useremail }</strong> වෙත යොමු කෙරේ (ඔබ ඒවා අවහිර කිරීමට තීරණය නොකරනවා නම් මිස).
+firefox-relay-offer-legal-notice = “වි-තැපැල් වැස්ම භාවිතා කරන්න” එබීමෙන් ඔබ <label data-l10n-name="tos-url">සේවා නියම</label> සහ <label data-l10n-name="privacy-url">රහස්‍යතා දැන්වීම</label> එකඟ වේ.
 
 ## Add-on Pop-up Notifications
 
 popup-notification-addon-install-unsigned =
     .value = (සත්‍යාපනය නොකළ)
 popup-notification-xpinstall-prompt-learn-more = එක්කහු ආරක්‍ෂිතව ස්ථාපනය ගැන තව දැනගන්න
+popup-notification-xpinstall-prompt-block-url = විස්තර බලන්න
+# Note: Access key is set to P to match "Private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox =
+    .label = පෞද්. කවුළු වල ධාවනය
+    .accesskey = P
 
 ## Pop-up warning
 

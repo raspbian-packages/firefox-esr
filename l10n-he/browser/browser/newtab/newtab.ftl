@@ -8,11 +8,18 @@
 newtab-page-title = לשונית חדשה
 newtab-settings-button =
     .title = התאמה אישית של דף הלשונית החדשה שלך
+newtab-personalize-settings-icon-label =
+    .title = התאמה אישית של דף הלשונית החדשה
+    .aria-label = הגדרות
+newtab-settings-dialog-label =
+    .aria-label = הגדרות
 newtab-personalize-icon-label =
     .title = התאמה אישית של דף הלשונית החדשה
     .aria-label = התאמה אישית של דף הלשונית החדשה
 newtab-personalize-dialog-label =
     .aria-label = התאמה אישית
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -108,6 +115,13 @@ newtab-menu-delete-history = מחיקה מההיסטוריה
 newtab-menu-save-to-pocket = שמירה אל { -pocket-brand-name }
 newtab-menu-delete-pocket = מחיקה מ־{ -pocket-brand-name }
 newtab-menu-archive-pocket = העברה לארכיון ב־{ -pocket-brand-name }
+newtab-menu-about-fakespot = על אודות { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = חסימה
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = ביטול המעקב אחרי הנושא
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -198,6 +212,8 @@ newtab-section-header-recent-activity = פעילות אחרונה
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = מומלץ על־ידי { $provider }
 newtab-section-header-stories = סיפורים מעוררי מחשבה
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = המאמרים של היום בשבילך
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -225,6 +241,8 @@ newtab-pocket-cta-button = קבלת { -pocket-brand-name }
 newtab-pocket-cta-text = שמירת הסיפורים שאהבת ב־{ -pocket-brand-name } על מנת למלא את מחשבתך בקריאה מרתקת.
 newtab-pocket-pocket-firefox-family = ‏{ -pocket-brand-name } הוא חלק ממשפחת { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = שמירה
 newtab-pocket-saved = נשמר
 
@@ -236,6 +254,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = לא בשבילי
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = תודה. המשוב שלך יעזור לנו לשפר את הפיד שלך.
 newtab-toast-thumbs-up-or-down = תודה. המשוב שלך יעזור לנו לשפר את הפיד שלך.
 newtab-toast-dismiss-button =
     .title = סגירה
@@ -301,6 +322,8 @@ newtab-wallpaper-dark-panda = פנדה אדומה חבויה ביער
 newtab-wallpaper-dark-sky = נוף עיר עם שמי לילה
 newtab-wallpaper-dark-mountain = נוף הררי
 newtab-wallpaper-dark-city = נוף עירוני סגול
+newtab-wallpaper-dark-fox-anniversary = שועל על המדרכה ליד יער
+newtab-wallpaper-light-fox-anniversary = שועל בשדה עשב עם נוף הררי ערפילי
 
 ## Solid Colors
 
@@ -365,6 +388,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = ‏{ $provider } ∙ ממומן
 newtab-weather-menu-change-location = שינוי מקום
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = חיפוש מקום
+    .aria-label = חיפוש מקום
 newtab-weather-change-location-search-input = חיפוש מקום
 newtab-weather-menu-weather-display = תצוגת מזג אוויר
 # Display options are:
@@ -383,3 +409,76 @@ newtab-weather-menu-hide-weather = הסתרת מזג האוויר בלשונית
 newtab-weather-menu-learn-more = מידע נוסף
 # This message is shown if user is working offline
 newtab-weather-error-not-available = נתוני מזג האוויר אינם זמינים כעת.
+
+## Topic Labels
+
+newtab-topic-label-business = עסקים
+newtab-topic-label-career = קריירה
+newtab-topic-label-education = חינוך
+newtab-topic-label-arts = בידור
+newtab-topic-label-food = אוכל
+newtab-topic-label-health = בְּרִיאוּת
+newtab-topic-label-hobbies = משחקים
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = כסף
+newtab-topic-label-society-parenting = הורות
+newtab-topic-label-government = פוליטיקה
+newtab-topic-label-education-science = מדע
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = טיפים לחיים
+newtab-topic-label-sports = ספורט
+newtab-topic-label-tech = טכנולוגיה
+newtab-topic-label-travel = טיולים
+newtab-topic-label-home = בית וגן
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = נא לבחור בנושאים כדי לכוונן את הפיד שלך
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = נא לבחור בשני נושאים או יותר. המומחים שלנו נותנים עדיפות לסיפורים המותאמים לתחומי העניין שלך. ניתן לעדכן אותם בכל עת.
+newtab-topic-selection-save-button = שמירה
+newtab-topic-selection-cancel-button = ביטול
+newtab-topic-selection-button-maybe-later = אולי אחר כך
+newtab-topic-selection-privacy-link = כיצד אנו מגנים על נתונים ומנהלים אותם
+newtab-topic-selection-button-update-interests = עדכון תחומי העניין שלך
+newtab-topic-selection-button-pick-interests = בחירת תחומי העניין שלך
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = לעקוב
+newtab-section-following-button = במעקב
+newtab-section-unfollow-button = ביטול המעקב
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = חסימה
+newtab-section-blocked-button = חסום
+newtab-section-unblock-button = הסרת חסימה
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = האם ברצונך לחסום מקטע זה?
+newtab-section-confirm-block-section-p2 = המקטע החסום לא יופיע יותר בפיד שלך.
+newtab-section-block-section-button = חסימת מקטע זה
+newtab-section-cancel-button = לא כעת
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = נושאים
+newtab-section-mangage-topics-button =
+    .label = נושאים במעקב וחסומים
+newtab-section-mangage-topics-followed-topics-subtitle = נושאים במעקב
+newtab-section-mangage-topics-followed-topics-empty-state = עדיין לא עקבת אחר אף נושא.
+newtab-section-mangage-topics-blocked-topics-subtitle = נושאים חסומים
+newtab-section-mangage-topics-blocked-topics-empty-state = עדיין לא חסמת אף נושא.

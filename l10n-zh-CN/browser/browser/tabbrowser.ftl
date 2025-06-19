@@ -13,6 +13,13 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } — { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext = 关闭 { $tabCount } 个标签页
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -37,6 +44,16 @@ tabbrowser-unmute-tab-audio-background-tooltip =
 tabbrowser-unblock-tab-audio-tooltip =
     .label = 播放 { $tabCount } 个标签页
 
+## Tooltips for tab audio control
+
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = 取消静音标签页
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = 静音标签页
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = 播放标签页
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -45,6 +62,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = 要关闭 { $tabCount } 个标签页吗？
 tabbrowser-confirm-close-tabs-button = 关闭标签页
+tabbrowser-ask-close-tabs-checkbox = 关闭多个标签页前先询问
 tabbrowser-confirm-close-tabs-checkbox = 关闭多个标签页时向您确认
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -67,7 +85,21 @@ tabbrowser-confirm-close-tabs-with-key-title = 要关闭窗口并退出 { -brand
 tabbrowser-confirm-close-tabs-with-key-button = 退出 { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = 按 { $quitKey } 退出前先询问
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = 按 { $quitKey } 退出时向您确认
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = 要退出 { -brand-short-name } 还是关闭当前标签页？
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] 退出 { -brand-short-name }
+       *[other] 退出 { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = 关闭当前标签页
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -137,3 +169,96 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = 取消静音标签页
 tabbrowser-manager-close-tab =
     .tooltiptext = 关闭标签页
+
+## Tab Groups
+
+tab-group-editor-title-create = 创建标签页群组
+tab-group-editor-title-edit = 管理标签页群组
+tab-group-editor-name-label = 名称
+tab-group-editor-name-field =
+    .placeholder = 例如：购物
+tab-group-editor-cancel =
+    .label = 取消
+    .accesskey = C
+tab-group-editor-color-selector =
+    .aria-label = 标签页群组颜色
+tab-group-editor-color-selector-blue = 蓝色
+tab-group-editor-color-selector-purple = 紫色
+tab-group-editor-color-selector-cyan = 青色
+tab-group-editor-color-selector-orange = 橘色
+tab-group-editor-color-selector-yellow = 黄色
+tab-group-editor-color-selector-pink = 粉色
+tab-group-editor-color-selector-green = 绿色
+tab-group-editor-color-selector-gray = 灰色
+tab-group-editor-color-selector-red = 红色
+tab-group-menu-header = 标签页群组
+tab-context-unnamed-group =
+    .label = 未命名群组
+tab-group-name-default = 未命名群组
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] 将标签页添加到新群组
+           *[other] 将标签页添加到新群组
+        }
+    .accesskey = G
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] 将标签页添加到群组
+           *[other] 将标签页添加到群组
+        }
+    .accesskey = G
+tab-group-editor-action-new-tab =
+    .label = 在群组中新建标签页
+tab-group-editor-action-new-window =
+    .label = 移动群组到新窗口
+tab-group-editor-action-save =
+    .label = 保存群组并关闭
+tab-group-editor-action-ungroup =
+    .label = 取消分组
+tab-group-editor-action-delete =
+    .label = 删除群组
+tab-group-editor-done =
+    .label = 完成
+    .accessKey = D
+tab-context-reopen-tab-group =
+    .label = 重新打开标签页群组
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] 从群组移除
+           *[other] 从群组移除
+        }
+    .accesskey = R
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = 移动群组到新窗口
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = 移动群组到此窗口
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = 删除群组
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = 在此窗口打开群组
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = 新建窗口打开群组

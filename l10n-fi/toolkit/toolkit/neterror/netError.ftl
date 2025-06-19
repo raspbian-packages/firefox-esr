@@ -64,6 +64,7 @@ neterror-dns-not-found-trr-offline = Et ole yhteydessä Internetiin.
 neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } ei löytänyt tätä verkkosivustoa.
 neterror-dns-not-found-trr-server-problem = Verkkotunnuksen { $trrDomain } kanssa ilmeni ongelma.
 neterror-dns-not-found-bad-trr-url = Virheellinen osoite.
+neterror-dns-not-found-system-sleep = Järjestelmä on lepotilassa.
 neterror-dns-not-found-trr-unknown-problem = Odottamaton ongelma.
 
 ## Native fallback specific messages
@@ -147,3 +148,8 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Jos et tunne <b>{ $mitm }</
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = Sivusto <b>{ $hostname }</b> noudattaa tietoturvakäytäntöä nimeltään HTTP Strict Transport Security (HSTS), mikä tarkoittaa, että { -brand-short-name } voi muodostaa siihen vain suojatun yhteyden. Tälle sivustolle siirtymistä varten ei voi lisätä poikkeusta.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Luultavasti ei mitään, koska todennäköisesti ongelma on itse sivustossa.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Virhekoodi: { $responsestatus } { $responsestatustext }

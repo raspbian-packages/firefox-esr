@@ -112,6 +112,8 @@ about-debugging-setup-usb-step-enable-dev-menu2 = Android cihazınızda Gelişti
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = Android geliştirici menüsünden USB hata ayıklamayı etkinleştirin.
 # USB section step by step guide
+about-debugging-setup-usb-step-enable-file-transfer = Dosya aktarımını etkinleştirin ve cihazınızın yalnızca şarj modunda olmadığından emin olun.
+# USB section step by step guide
 about-debugging-setup-usb-step-enable-debug-firefox2 = Android cihazınızdaki Firefox’ta USB hata ayıklamayı etkinleştirin.
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Android cihazını bilgisayarınıza bağlayın.
@@ -311,6 +313,9 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Push hizmeti
+# Displayed for service workers in runtime pages, to label the origin of a worker.
+about-debugging-worker-origin =
+    .label = Köken
 # Displayed as title of the inspect button when service worker debugging is disabled.
 about-debugging-worker-inspect-action-disabled =
     .title = Çok işlemli { -brand-shorter-name } için Service Worker denetleme özelliği şimdilik devre dışıdır

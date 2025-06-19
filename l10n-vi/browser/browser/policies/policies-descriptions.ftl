@@ -28,6 +28,7 @@ policy-BlockAboutSupport = Chặn truy cập vào trang about:support.
 policy-Bookmarks = Tạo dấu trang trong thanh công cụ dấu trang, menu dấu trang hoặc một thư mục xác định bên trong chúng.
 policy-CaptivePortal = Kích hoạt hoặc vô hiệu hóa hỗ trợ kiểm soát truy cập.
 policy-CertificatesDescription = Thêm chứng chỉ hoặc sử dụng chứng chỉ có sẵn.
+policy-ContentAnalysis = Bật hoặc tắt kết nối với tác nhân chống mất dữ liệu.
 policy-Cookies = Cho phép hoặc từ chối các trang web lưu cookie.
 # Containers in this context is referring to container tabs in Firefox.
 policy-Containers = Đặt các chính sách liên quan đến ngăn chứa.
@@ -109,12 +110,16 @@ policy-OverrideFirstRunPage = Ghi đè trang chạy đầu tiên. Bỏ trống c
 policy-OverridePostUpdatePage = Ghi đè lên trang cập nhật "Có gì mới". Bỏ trống chính sách này nếu bạn muốn tắt trang cập nhật sau.
 policy-PasswordManagerEnabled = Cho phép lưu mật khẩu vào trình quản lý mật khẩu.
 policy-PasswordManagerExceptions = Ngăn { -brand-short-name } lưu mật khẩu cho các trang web cụ thể.
+# Post-quantum refers to cryptography that is safe from attacks by quantum
+# computers. See https://en.wikipedia.org/wiki/Post-quantum_cryptography
+policy-PostQuantumKeyAgreementEnabled = Kích hoạt post-quantum key agreement cho TLS.
 # PDF.js and PDF should not be translated
 policy-PDFjs = Vô hiệu hóa hoặc cấu hình PDF.js, trình xem PDF tích hợp trong { -brand-short-name }.
 policy-Permissions2 = Cấu hình quyền truy cập cho máy ảnh, micrô, vị trí, thông báo và tự động phát.
 policy-PictureInPicture = Kích hoạt hoặc vô hiệu hóa hình trong hình.
 policy-PopupBlocking = Cho phép các trang web nhất định hiển thị cửa sổ bật lên theo mặc định.
 policy-Preferences = Đặt và khóa giá trị cho một tập hợp con ưu tiên.
+policy-PrivateBrowsingModeAvailability = Đặt tính khả dụng của chế độ duyệt web riêng tư.
 policy-PromptForDownloadLocation = Hỏi nơi lưu tập tin khi tải xuống.
 policy-Proxy = Cài đặt cấu hình proxy.
 policy-RequestedLocales = Đặt danh sách các ngôn ngữ được yêu cầu cho ứng dụng theo thứ tự ưu tiên.
@@ -134,4 +139,6 @@ policy-UserMessaging = Không hiển thị một số thông điệp nhất đ�
 policy-UseSystemPrintDialog = In bằng hộp thoại in hệ thống.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Chặn các trang web không được truy cập. Xem tài liệu để biết thêm chi tiết về định dạng.
-policy-Windows10SSO = Cho phép Windows đăng nhập một lần cho tài khoản Microsoft, cơ quan và trường học.
+policy-Windows10SSO = Cho phép Windows đăng nhập một lần (SSO) cho tài khoản Microsoft, cơ quan và trường học.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Cho phép đăng nhập một lần (SSO) cho tài khoản Microsoft Entra.

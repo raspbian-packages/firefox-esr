@@ -119,6 +119,7 @@ policy-Permissions2 = Konfiguracja uprawnień kamery, mikrofonu, położenia, po
 policy-PictureInPicture = Włączenie lub wyłączenie funkcji „Obraz w obrazie”.
 policy-PopupBlocking = Domyślne zezwalanie pewnym witrynom na otwieranie wyskakujących okien.
 policy-Preferences = Ustawienie i zablokowanie wartości dla podzbioru preferencji.
+policy-PrivateBrowsingModeAvailability = Ustawienie dostępności trybu prywatnego.
 policy-PromptForDownloadLocation = Pytanie, gdzie zapisywać pliki podczas pobierania.
 policy-Proxy = Konfiguracja ustawień proxy.
 policy-RequestedLocales = Ustawienie listy żądanych języków dla programu w preferowanej kolejności.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Drukowanie za pomocą systemowego okna drukowania.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Blokowanie odwiedzania witryn. Dokumentacja zawiera więcej informacji o formacie.
 policy-Windows10SSO = Zezwalanie na pojedyncze logowanie Windows do kont Microsoft, służbowych i szkolnych.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Zezwalanie na pojedyncze logowanie do kont Microsoft Entra.

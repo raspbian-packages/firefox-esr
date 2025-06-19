@@ -64,6 +64,7 @@ neterror-dns-not-found-trr-offline = Nissune conession a internet.
 neterror-dns-not-found-trr-unknown-host2 = Chest sît web nol è stât cjatât di { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Al è vignût fûr un probleme cun { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = URL no valit.
+neterror-dns-not-found-system-sleep = Il sisteme al è in modalitât polse.
 neterror-dns-not-found-trr-unknown-problem = Probleme inspietât.
 
 ## Native fallback specific messages
@@ -147,3 +148,4 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Se no tu cognossis <b>{ $mi
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> al à une politiche di sigurece clamade HTTP Strict Transport Security (HSTS), par furlan sigurece rigorose di traspuart HTTP, che al significhe che { -brand-short-name } i pues conetisi dome in maniere sigure. No tu puedis zontâ une ecezion par visitâ chest sît.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Forsit nuie, viodût che al è probabil che al sedi un probleme cul sît stes.

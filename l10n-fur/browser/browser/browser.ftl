@@ -548,6 +548,8 @@ urlbar-go-button =
     .tooltiptext = Va ae direzion specificade te sbare de direzion
 urlbar-page-action-button =
     .tooltiptext = Azions par cheste pagjine
+urlbar-revert-button =
+    .tooltiptext = Mostre la direzion te sbare de direzion
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -608,6 +610,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = Cîr cun { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Cîr { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Cîr cun { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Sielç un motôr di ricercje
+urlbar-searchmode-bookmarks =
+    .label = Segnelibris
+urlbar-searchmode-tabs =
+    .label = Schedis
+urlbar-searchmode-history =
+    .label = Cronologjie
+urlbar-searchmode-actions =
+    .label = Azions
+urlbar-searchmode-exit-button =
+    .tooltiptext = Siere
+urlbar-searchmode-popup-description = Cheste volte cîr cun:
+urlbar-searchmode-popup-search-settings = Impostazions ricercje
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, sielç un motôr di ricercje
+    .tooltiptext = { $engine }, sielç un motôr di ricercje
+urlbar-searchmode-button-no-engine =
+    .label = Nissune scurte selezionade, sielç une scurte
+    .tooltiptext = Nissune scurte selezionade, sielç une scurte
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -930,6 +964,9 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Esplorazion privade
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Navigazion privade
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -938,7 +975,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Protezion dâts
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = La tô organizazion e dopre { $agentName } par parâsi des pierditis di dâts. <a data-l10n-name="info">Scuvierç di plui</a>
+content-analysis-panel-text-styled = La tô organizazion e dopre <b>{ $agentName }</b> par parâsi des pierditis di dâts. <a data-l10n-name="info">Scuvierç di plui</a>
 
 ## Unified extensions (toolbar) button
 
@@ -963,6 +1000,10 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Estensions
         Cualchi estension no je consintude
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
 
 ## Private browsing reset button
 
@@ -1003,6 +1044,7 @@ firefox-relay-offer-legal-notice = Fasint clic su “Dopre mascare di pueste ele
 popup-notification-addon-install-unsigned =
     .value = (No verificât)
 popup-notification-xpinstall-prompt-learn-more = Scuvierç di plui su la instalazion di components adizionâi in sigurece
+popup-notification-xpinstall-prompt-block-url = Viôt i detais
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = Eseguìs in barcons privâts

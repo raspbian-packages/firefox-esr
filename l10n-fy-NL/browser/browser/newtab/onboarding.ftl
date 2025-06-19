@@ -189,6 +189,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] { -brand-short-name } yn Dock hâlde
        *[other] { -brand-short-name } oan taakbalke fêstmeitsje
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = { -brand-short-name } oan taakbalke en it startmenu fêstmeitsje
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -224,7 +226,9 @@ mr2022-onboarding-set-default-subtitle = Brûk in browser stipe troch in non-pro
 mr2022-onboarding-get-started-primary-subtitle = Us lêste ferzje is om jo hinne boud, wêrtroch it makliker is dan ea om op it web te sneupen. It is fol mei funksjes wêrfan wy tinke dat jo se wurdearje sille.
 mr2022-onboarding-get-started-primary-button-label = Ynstelle yn in pear tellen
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Bliksemfluch ynstelle
 mr2022-onboarding-import-subtitle = Stel { -brand-short-name } yn sa as jo dat graach wolle. Foegje jo blêdwizers, wachtwurden en mear ta fan jo âlde browser.
@@ -336,6 +340,14 @@ onboarding-device-migration-subtitle = Meld jo oan by jo { -fxaccount-brand-name
 onboarding-device-migration-subtitle2 = Meld jo oan by jo account om jo blêdwizers, wachtwurden en skiednis mei jo mei te nimmen op jo nije apparaat.
 onboarding-device-migration-primary-button-label = Oanmelde
 
+## Add-ons Picker screen
+
+amo-picker-title = Jo { -brand-short-name } oanpasse
+amo-picker-subtitle = Utwreidingen binne as apps foar jo browser, en jo kinne der wachtwurden mei beskermje, fideo’s downloade, oanbiedingen fine, ferfelende advertinsjes blokkearje, it uterlik fan jo browser wizigje, en noch folle mear.
+amo-picker-install-button-label = Tafoegje oan { -brand-short-name }
+amo-picker-install-complete-label = Ynstallearre
+amo-picker-collection-link = Mear add-ons ferkenne
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -347,6 +359,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = Wannear’t jo syngro
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } is der foar jo
 onboarding-gratitude-security-and-privacy-subtitle = Tank foar it brûken fan { -brand-short-name }, stipe troch de Mozilla Foundation. Mei jo stipe wurkje wy om it ynternet  foar elkenien feiliger en mear tagonklik te meitsjen.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Jo gegevens tusken apparaten syngronisearje
+onboarding-sign-up-description = Skriuw jo yn foar in account en al jo wichtige gegevens – wachtwurden, blêdwizers en mear – wurde feilich bewarre en binne beskikber wannear’t jo jo oanmelde op in apparaat.
+onboarding-sign-up-button = Registrearje of meld jo oan
+onboarding-sign-up-secondary-button = Start mei browsen
 
 ## New user time and familiarity survey strings
 
@@ -366,3 +383,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Ik bin hielendal nij
 onboarding-new-user-survey-familiarity-based-option-2 = Ik haw it wat brûkt
 onboarding-new-user-survey-familiarity-based-option-3 = Ik bin der tige bekend mei
 onboarding-new-user-survey-familiarity-based-option-4 = Ik haw it yn it ferline brûkt, mar it is in tydsje lyn
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Fertel ús wêr’t jo jo ljepblêden hawwe wolle
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Wizigje it wannear’t jo mar wolle yn de sybalkeynstellingen.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Jo ljepblêden, op jo manier
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = In protte ljepblêden iepen? Probearje jo ljepblêden oan de sydkant foar in streamline werjefte. Of hâld it klassyk mei ljepblêden oan de boppekant. Skeakelje op elk momint.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Kies jo ljepblêdyndieling
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Probearje jo ljepblêden oan de sydkant foar in streamline werjefte dy’t jo helpe kin fokus te hâlden. Of hâld it klassyk mei ljepblêden oan de boppekant. Skeakelje op elk momint.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Ljepblêden oan de sydkant
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Ljepblêden boppe oan
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Der binne no fertikale ljepblêden
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Nij: fertikale ljepblêden
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Probearje jo ljepblêden oan de sydkant. Wizigje it wannear’t jo mar wolle yn de sidebalkeynstellingen.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Fertikale ljepblêden probearje
+onboarding-flair-text = Nij!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Horizontale ljepblêden behâlde
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = In browserfinster dat ljepblêden lâns de sydkant fan it skerm toant as ûnderdiel fan de { -brand-shorter-name }-sidebalke.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = In browserfinster dat ljepblêden lâns de sydkant fan it skerm toant as ûnderdiel fan de { -brand-shorter-name }-sidebalke.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = In browserfinster mei ljepblêden oan de boppekant.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = In browserfinster mei ljepblêden oan de boppekant.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Probearje in AI-chatbot yn de sidebalke
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Gearfetsje webynhâld, brainstorm ideeën, konseptberjochten – alles as jo sneupe. Kies út meardere providers. Wikselje elk momint. <a data-l10n-name="learn-more">Mear ynfo</a>
+onboarding-genai-sidebar-primary-button = Kies in chatbot
+onboarding-genai-sidebar-secondary-button = Begjinne mei sneupen
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Ynstellen fan { -brand-short-name } foltôgje
+onboarding-checklist-subtitle = Foltôgje dizze stappen om it measte út jo sneupûnderfining te heljen.
+onboarding-checklist-set-default = { -brand-short-name } ynstelle as standertbrowser
+onboarding-checklist-pin = { -brand-short-name } oan de taakbalke fêstmeitsje
+onboarding-checklist-import = Ymportearje út foarige browser
+onboarding-checklist-extension = In útwreiding tafoegje
+onboarding-checklist-sign-up = Registrearje of oanmelde by jo account
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Probearje ljepblêdgroepen foar minder rommel, mear fokus
+tab-groups-onboarding-feature-callout-subtitle = Wês organisearre troch it iene ljepblêd op it oar te slepen om jo earste groep te meitsjen.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Hertlik wolkom by { -brand-product-name }-profilen
+multi-profile-spotlight-body = Skeakelje maklik tusken sneupen foar wurk en wille. Profilen hâlde jo sneupynformaasje, ynklusyf sykskiednis en wachtwurden, folslein apart, sadat jo organisearre bliuwe kinne.
+multi-profile-spotlight-cta = In profyl oanmeitsje
+multi-profile-callout-title = Meitsje ferskate profilen foar wurk en wille
+multi-profile-callout-subtitle = Profilen litte jo jo sneupynformaasje, lykas sykskiednis en wachtwurden, folslein apart te hâlden.
+multi-profile-callout-cta = In profyl oanmeitsje

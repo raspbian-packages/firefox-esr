@@ -119,6 +119,7 @@ policy-Permissions2 = Kamera, mikrofon, konum, bildirim ve otomatik oynatma izin
 policy-PictureInPicture = Görüntü içinde görüntü özelliğini aç veya kapat.
 policy-PopupBlocking = Belirli web sitelerin varsayılan olarak açılır pencere açmasına izin ver.
 policy-Preferences = Bir tercihler alt kümesinin değerini ayarlayıp kilitle.
+policy-PrivateBrowsingModeAvailability = Gizli gezinti modunun kullanılabilirliğini ayarla.
 policy-PromptForDownloadLocation = Dosya indirirken nereye kaydedileceklerini sor.
 policy-Proxy = Vekil sunucu ayarlarını yapılandır.
 policy-RequestedLocales = Uygulamada kullanılması istenen dilleri tercih sırasına göre ayarla.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Sistem yazdırma iletişim kutusunu kullanarak yaz
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Web sitelerinin ziyaret edilmesini engelle. Biçimle ilgili daha fazla bilgi için belgelendirmeye bakın.
 policy-Windows10SSO = Microsoft, iş ve okul hesapları için Windows çoklu oturum açmaya izin ver.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Microsoft Entra hesapları için çoklu oturum açmaya (SSO) izin ver.

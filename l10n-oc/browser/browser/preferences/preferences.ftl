@@ -32,6 +32,8 @@ search-input-box2 =
     .style = width: 19em
     .placeholder = Cercar pels paramètres
 managed-notice = Vòstra organizacion gerís vòstre navegador.
+managed-notice-info-icon =
+    .alt = Informacions
 category-list =
     .aria-label = Categorias
 pane-general-title = General
@@ -149,6 +151,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Dobrir los ligams dins d’onglets allòc de fenèstras
     .accesskey = f
+ask-on-close-multiple-tabs =
+    .label = Demandar abans de tampar mantun onglet
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Demandar abans de quitar { $quitKey }
+    .accesskey = a
 confirm-on-close-multiple-tabs =
     .label = Confirmar abans la tampadura de mantun onglet
     .accesskey = a
@@ -477,7 +490,7 @@ browsing-gtk-use-non-overlay-scrollbars =
     .accesskey = o
 browsing-always-underline-links =
     .label = Totjorn soslinhar los ligams
-    .accesskey = u
+    .accesskey = T
 browsing-use-onscreen-keyboard =
     .label = Mostrar un clavièr tactil quand es necessari
     .accesskey = t
@@ -559,8 +572,7 @@ home-prefs-shortcuts-description = Los sites qu’enregistratz o consultatz
 home-prefs-shortcuts-by-option-sponsored =
     .label = Acorchis pairinejats
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Recomandat per { $provider }
@@ -593,6 +605,7 @@ home-prefs-snippets-header =
 home-prefs-snippets-description-new = Astúcias e novetats de { -vendor-short-name } e { -brand-product-name }
 home-prefs-weather-header =
     .label = Metèo
+home-prefs-weather-learn-more-link = Ne saber mai
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -707,6 +720,10 @@ sync-profile-picture =
 sync-profile-picture-with-alt =
     .tooltiptext = Cambiar la fòto de perfil de l'utilizaire
     .alt = Cambiar la fòto de perfil de l'utilizaire
+sync-profile-picture-account-problem =
+    .alt = Imatge de perfil del compte
+fxa-login-rejected-warning =
+    .alt = Avertiment
 sync-sign-out =
     .label = Se desconnectar
     .accesskey = d
@@ -765,6 +782,9 @@ sync-currently-syncing-creditcards = Cartas de crèdit
 sync-currently-syncing-payment-methods = Metòdes de pagament
 sync-currently-syncing-addons = Moduls complementaris
 sync-currently-syncing-settings = Paramètres
+sync-manage-options =
+    .label = Gerir la sincronizacion…
+    .accesskey = G
 sync-change-options =
     .label = Modificar…
     .accesskey = M
@@ -881,6 +901,9 @@ forms-breach-alerts =
 forms-breach-alerts-learn-more-link = Ne saber mai
 preferences-relay-integration-checkbox =
     .label = Suggerir los àlias de messatjariá { -relay-brand-name } per protegir vòstra adreça electronica.
+preferences-relay-integration-checkbox2 =
+    .label = Suggerir los àlias de messatjariá { -relay-brand-name } per protegir vòstra adreça electronica.
+    .accesskey = g
 relay-integration-learn-more-link = Ne saber mai
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
 forms-fill-logins-and-passwords =
@@ -889,12 +912,19 @@ forms-fill-logins-and-passwords =
 forms-saved-logins =
     .label = Identificants salvats…
     .accesskey = S
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-usernames-and-passwords =
+    .label = Emplenar automaticament los noms d’utilizaire e senhals
+    .accesskey = E
 forms-saved-passwords =
     .label = Senhals salvats
     .accesskey = n
 forms-primary-pw-use =
     .label = Utilizar un senhal principal
     .accesskey = U
+# This operation requires the user to authenticate with the operating system (device sign-in)
+forms-os-reauth =
+    .label = Exigir la connexion a l’aparelh per entresenhar e gerir los senhals
 forms-primary-pw-learn-more-link = Ne saber mai
 # This string uses the former name of the Primary Password feature
 # ("Master Password" in English) so that the preferences can be found
@@ -915,6 +945,7 @@ forms-windows-sso =
     .label = Autorizar l’autentificacion unica de Windows per Microsoft, pel trabalh e los comptes escolars
 forms-windows-sso-learn-more-link = Ne saber mai
 forms-windows-sso-desc = Gerissètz los compte als paramètres de vòstre periferic
+windows-passkey-settings-label = Gerir las claus d’accès als paramètres sistèma
 
 ## OS Authentication dialog
 
@@ -941,6 +972,9 @@ autofill-payment-methods-checkbox-submessage = Inclutz las cartas de crèdit e d
     .accesskey = I
 autofill-saved-payment-methods-button = Metòdes de pagament enregistrats
     .accesskey = e
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox = Exigir la connexion a l’aparelh per entresenhar e gerir los metòdes de pagament
+    .accesskey = o
 
 ## Privacy Section - History
 
@@ -1036,6 +1070,7 @@ cookie-banner-handling-description = Permetre a { -brand-short-name } de regetar
 ## Privacy Section - Cookie Banner Blocking
 
 cookie-banner-blocker-header = Blocador de bandièras de cookies
+cookie-banner-blocker-description = Quand un site demanda se pòt utilizar de cookies en navegacion privada, { -brand-short-name } refusa automaticament. S’aplica sonque als sites compatibles.
 cookie-banner-learn-more = Ne saber mai
 forms-handle-cookie-banners =
     .label = Reduire las bandièras de cookies
@@ -1075,6 +1110,9 @@ addressbar-suggestions-settings = Cambiar las preferéncias per las suggestions 
 addressbar-locbar-showrecentsearches-option =
     .label = Afichar las recèrcas recentas
     .accesskey = r
+addressbar-locbar-showtrendingsuggestions-option =
+    .label = Afichar las suggestions de recèrca popularas
+    .accesskey = f
 addressbar-quickactions-learn-more = Ne saber mai
 
 ## Privacy Section - Content Blocking
@@ -1264,6 +1302,11 @@ privacy-segmentation-radio-on =
 
 ## Privacy Section - Website Advertising Preferences
 
+website-advertising-header = Preferéncias de publicitat dels sites web
+website-advertising-private-attribution =
+    .label = Permetre als sites Web de realizar de mesuras publicitàrias en respectant la vida privada
+    .accesskey = P
+website-advertising-private-attribution-description = Aquò ajuda los sites a comprendre las performanças de lors publicitats sens reculhir de donadas vos tocant.
 
 ## Privacy Section - Security
 ##
@@ -1310,8 +1353,12 @@ httpsonly-radio-enabled =
     .label = Activar lo mòde HTTPS solament dins totas las fenèstras
 httpsonly-radio-enabled-pbm =
     .label = Activar lo mòde HTTPS solament dins totas las fenèstras privadas
+httpsonly-radio-enabled-pbm2 =
+    .label = Utilizar solament lo HTTPS dins las fenèstras de navegacion privada
 httpsonly-radio-disabled =
     .label = Activar pas lo mòde HTTPS solament
+httpsonly-radio-disabled2 =
+    .label = Ensajar en HTTPS d’en primièr, mas permetre las connexion non seguras
 
 ## DoH Section
 

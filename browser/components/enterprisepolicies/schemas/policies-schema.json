@@ -20,6 +20,10 @@
       "type": "string"
     },
 
+    "AllowFileSelectionDialogs": {
+      "type": "boolean"
+    },
+
     "AppAutoUpdate": {
       "type": "boolean"
     },
@@ -231,6 +235,45 @@
       }
     },
 
+    "ContentAnalysis": {
+      "type": "object",
+      "properties": {
+        "Enabled": {
+          "type": "boolean"
+        },
+        "PipePathName": {
+          "type": "string"
+        },
+        "AgentTimeout": {
+          "type": "number"
+        },
+        "AllowUrlRegexList": {
+          "type": "string"
+        },
+        "DenyUrlRegexList": {
+          "type": "string"
+        },
+        "AgentName": {
+          "type": "string"
+        },
+        "ClientSignature": {
+          "type": "string"
+        },
+        "IsPerUser": {
+          "type": "boolean"
+        },
+        "ShowBlockedResult": {
+          "type": "boolean"
+        },
+        "DefaultResult": {
+          "type": "number"
+        },
+        "BypassForSameTabOperations": {
+          "type": "boolean"
+        }
+      }
+    },
+
     "Cookies": {
       "type": "object",
       "properties": {
@@ -309,6 +352,10 @@
       "type": "string"
     },
 
+    "DisableAccounts": {
+      "type": "boolean"
+    },
+
     "DisableAppUpdate": {
       "type": "boolean"
     },
@@ -370,6 +417,15 @@
         },
         "TLS_RSA_WITH_3DES_EDE_CBC_SHA": {
           "type": "boolean"
+        },
+        "TLS_CHACHA20_POLY1305_SHA256": {
+          "type": "boolean"
+        },
+        "TLS_AES_128_GCM_SHA256": {
+          "type": "boolean"
+        },
+        "TLS_AES_256_GCM_SHA384": {
+          "type": "boolean"
         }
       }
     },
@@ -379,6 +435,10 @@
     },
 
     "DisableDeveloperTools": {
+      "type": "boolean"
+    },
+
+    "DisableEncryptedClientHello": {
       "type": "boolean"
     },
 
@@ -487,6 +547,9 @@
           "items": {
             "type": "string"
           }
+        },
+        "Fallback": {
+          "type": "boolean"
         },
         "Locked": {
           "type": "boolean"
@@ -621,6 +684,9 @@
               "items": {
                 "type": "string"
               }
+            },
+            "temporarily_allow_weak_signatures": {
+              "type": "boolean"
             }
           }
         }
@@ -650,6 +716,12 @@
             "default_area": {
               "type": "string",
               "enum": ["navbar", "menupanel"]
+            },
+            "temporarily_allow_weak_signatures": {
+              "type": "boolean"
+            },
+            "private_browsing": {
+              "type": "boolean"
             }
           }
         }
@@ -779,6 +851,19 @@
       }
     },
 
+    "HttpAllowlist": {
+      "type": "array",
+      "strict": false,
+      "items": {
+        "type": "origin"
+      }
+    },
+
+    "HttpsOnlyMode": {
+      "type": "string",
+      "enum": ["allowed", "disallowed", "enabled", "force_enabled"]
+    },
+
     "InstallAddonsPermission": {
       "type": "object",
       "properties": {
@@ -859,6 +944,10 @@
     },
 
     "ManualAppUpdateOnly": {
+      "type": "boolean"
+    },
+
+    "MicrosoftEntraSSO": {
       "type": "boolean"
     },
 
@@ -1127,6 +1216,10 @@
       }
     },
 
+    "PostQuantumKeyAgreementEnabled": {
+      "type": "boolean"
+    },
+
     "Preferences": {
       "type": ["object", "JSON"],
       "patternProperties": {
@@ -1155,6 +1248,11 @@
 
     "PrintingEnabled": {
       "type": "boolean"
+    },
+
+    "PrivateBrowsingModeAvailability": {
+      "type": "number",
+      "enum": [0, 1, 2]
     },
 
     "PromptForDownloadLocation": {
@@ -1379,6 +1477,10 @@
         }
       },
       "required": ["Title", "URL"]
+    },
+
+    "TranslateEnabled": {
+      "type": "boolean"
     },
 
     "UserMessaging": {

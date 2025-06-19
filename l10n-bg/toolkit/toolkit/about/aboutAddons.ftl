@@ -62,7 +62,7 @@ detail-private-browsing-label = Работa в поверителни прозо
 # Some add-ons may elect to not run in private windows by setting incognito: not_allowed in the manifest.  This
 # cannot be overridden by the user.
 detail-private-disallowed-label = Не позволено в поверителни прозорци
-detail-private-disallowed-description2 = Разширението не работи докато разглеждате поверително. <a data-l10n-name="learn-more">Научете повече</a>
+detail-private-disallowed-description2 = Разширението не работи, докато разглеждате поверително. <a data-l10n-name="learn-more">Научете повече</a>
 # Some special add-ons are privileged, run in private windows automatically, and this permission can't be revoked
 detail-private-required-label = Изисква достъп до поверителни прозорци
 detail-private-required-description2 = Разширението има достъп до дейностите ви докато разглеждате поверително. <a data-l10n-name="learn-more">Научете повече</a>
@@ -160,6 +160,7 @@ extensions-warning-update-security2 =
     .message = Проверката за безопасност на обновяването на добавки е изключена. Възможно е системата да се компрометира от добавки.
 extensions-warning-update-security-button = Включване
     .title = Включване на проверка за безопасност на обновяването на добавки
+extensions-warning-imported-addons-button = Инсталиране на разширения
 
 ## Strings connected to add-on updates
 
@@ -180,8 +181,8 @@ addon-updates-update-addons-automatically = Автоматично обновя�
 ## (which itself is either "Automatically" or "Manually", controlled by the
 ## extensions-updates-update-addons-automatically.label menu item).
 
-addon-updates-reset-updates-to-automatic = Нулиране на всички добавки, за да бъдат автоматично обновявани
-    .accesskey = Н
+addon-updates-reset-updates-to-automatic = Автоматично обновяване на всички добави
+    .accesskey = А
 addon-updates-reset-updates-to-manual = Нулиране на всички добавки, за да бъдат ръчно обновявани
     .accesskey = у
 
@@ -249,12 +250,12 @@ header-back-button =
 # Explanatory introduction to the list of recommended add-ons. The action word
 # ("recommends") in the final sentence is a link to external documentation.
 discopane-intro =
-    Разширенията и темите са като приложения за вашия четец и ви дават
+    Разширенията и темите са като приложения за вашия браузър и ви дават
     възможност за защита на пароли, изтегляне на видеоклипове,
-    намиране на изгодни оферти, блокиране на досадни реклами, промяна
-    на изгледа на четеца и много други. Тези малки софтуерни приложения
+    намиране на изгодни оферти, блокиране на досадните реклами, промяна
+    изгледа на браузъра и много други. Тези малки софтуерни приложения
     често се разработват от трети страни. Ето избраните, които { -brand-product-name }
-    <a data-l10n-name="learn-more-trigger">препоръчва</a> за изключителна
+    <a data-l10n-name="learn-more-trigger">препоръчва</a> за превъзходна
     сигурност, производителност и възможности.
 # Notice to make user aware that the recommendations are personalized.
 discopane-notice-recommendations =
@@ -309,9 +310,9 @@ release-notes-addon-button = Бележки към изданието
 permissions-addon-button = Права
 extension-enabled-heading = Включени
 extension-disabled-heading = Изключени
-theme-enabled-heading = Включени
+theme-enabled-heading = Включена
 theme-disabled-heading2 = Запазени теми
-plugin-enabled-heading = Включени
+plugin-enabled-heading = Активни
 plugin-disabled-heading = Изключени
 dictionary-enabled-heading = Включени
 dictionary-disabled-heading = Изключени
@@ -354,11 +355,11 @@ addon-detail-reviews-link =
 
 # Variables:
 #   $addon (string) - Name of the add-on
-pending-uninstall-description = <span data-l10n-name="addon-name">{ $addon }</span> е премахнато.
+pending-uninstall-description = Разширението <span data-l10n-name="addon-name">{ $addon }</span> е премахнато.
 # Variables:
 #   $addon (string) - Name of the add-on
 pending-uninstall-description2 =
-    .message = { $addon } е премахнато.
+    .message = Разширението { $addon } е премахнато.
 pending-uninstall-undo-button = Отменяне
 addon-detail-updates-label = Автоматично обновяване
 addon-detail-updates-radio-default = Стандартно
@@ -366,6 +367,10 @@ addon-detail-updates-radio-on = Включено
 addon-detail-updates-radio-off = Изключено
 addon-detail-update-check-label = Проверка за обновяване
 install-update-button = Обновяване
+# aria-label associated to the updates row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-updates =
+    .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
@@ -374,6 +379,10 @@ addon-badge-private-browsing-allowed2 =
 addon-detail-private-browsing-help = Когато е разрешено, разширението ще има достъп до дейностите ви, докато разглеждате поверително. <a data-l10n-name="learn-more">Научете повече</a>
 addon-detail-private-browsing-allow = Разрешаване
 addon-detail-private-browsing-disallow = Забраняване
+# aria-label associated to the private browsing row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-private-browsing =
+    .aria-label = { detail-private-browsing-label }
 
 ## "sites with restrictions" (internally called "quarantined") are special domains
 ## where add-ons are normally blocked for security reasons.
@@ -415,7 +424,7 @@ recommended-theme-1 = Чувствате се креативни? <a data-l10n-n
 
 ## Page headings
 
-extension-heading = Управление на добавки
+extension-heading = Управление на разширения
 theme-heading = Управление на теми
 plugin-heading = Управление на приставки
 dictionary-heading = Управление на речници
@@ -468,4 +477,5 @@ plugins-gmp-license-info = Лицензна информация
 plugins-gmp-privacy-info = Информация за личните данни
 plugins-openh264-name = Видео кодек OpenH264, доставен от Cisco Systems, Inc.
 plugins-openh264-description = Тази приставка се инсталира автоматично от Mozilla за съвместимост със спецификацията на WebRTC, и за да направи възможни обаждания към устройства изискващи видео кодек H.264. Посетете http://www.openh264.org/, за да разгледате изходния код и да научите повече за реализацията.
-plugins-widevine-name = Дешифриращият модул на съдържание Widevine е предоставен от Google Inc.
+plugins-widevine-name = Модул за декриптиране на съдържание Widevine, предоставен от Google Inc.
+plugins-widevine-description = Тази приставка позволява възпроизвеждане на шифрована медия в съответствие със съответната спецификация. Шифровани (кодирани) медии обикновено се използват от сайтовете за защита срещу копиране на платено медийно съдържание. Посетете https://www.w3.org/TR/encrypted-media/ за повече информация относно разширенията за шифровани медии.

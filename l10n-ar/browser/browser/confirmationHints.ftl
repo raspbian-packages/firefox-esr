@@ -7,8 +7,15 @@
 
 confirmation-hint-breakage-report-sent = أُرسل الإبلاغ. شكرًا لك.
 confirmation-hint-login-removed = أُزيلت جلسة الولوج!
+confirmation-hint-password-removed = أُزيلت كلمة السر!
 confirmation-hint-page-bookmarked = حُفظ في العلامات
 confirmation-hint-password-saved = حُفظت كلمة السر.
+confirmation-hint-password-created = حُفظت كلمة السر
+confirmation-hint-password-updated = تحدّثت كلمة السر
+confirmation-hint-address-created = حُفظ العنوان
+confirmation-hint-address-updated = حُدِّث العنوان
+confirmation-hint-credit-card-created = حُفظت البطاقة
+confirmation-hint-credit-card-updated = حُدِّثت البطاقة
 confirmation-hint-pin-tab = ثبّتناه!
 confirmation-hint-pin-tab-description = انقر باليمين على اللسان لإفلاته.
 confirmation-hint-send-to-device = نجح الإرسال.

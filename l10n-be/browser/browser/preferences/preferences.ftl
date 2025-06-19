@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Адсылаць вэб-сайтам сігнал “Не сачыць”
+do-not-track-removal = Мы больш не падтрымліваем сігнал «Не асочваць»
 do-not-track-description2 =
     .label = Адпраўляць вэб-сайтам запыт «Не сачыць»
     .accesskey = в
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Адкрываць { -brand-short-name } аўтаматычна пры запуску камп'ютара
     .accesskey = ў
 windows-launch-on-login-disabled = Гэты параметр быў адключаны ў Windows. Каб змяніць яго, адкрыйце <a data-l10n-name="startup-link">Аўтазагрузка праграм</a> у наладах сістэмы.
+windows-launch-on-login-profile-disabled = Уключыце гэты параметр, адзначыўшы «{ profile-manager-use-selected.label }» у акне «Выбар профілю карыстальніка».
 startup-restore-warn-on-quit =
     .label = Папярэджваць пры выхадзе з браўзера
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Адкрываць спасылкі ў картках замест новых акон
     .accesskey = ы
+ask-on-close-multiple-tabs =
+    .label = Пытаць перад закрыццём некалькіх картак
+    .accesskey = ь
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Пытаць пацвярджэнне пры выхадзе з дапамогай { $quitKey }
+    .accesskey = т
 confirm-on-close-multiple-tabs =
     .label = Пытаць пацвярджэнне пры закрыцці некалькіх картак
     .accesskey = ь
@@ -571,8 +584,7 @@ home-prefs-shortcuts-description = Сайты, якія вы захоўваец�
 home-prefs-shortcuts-by-option-sponsored =
     .label = Спонсарскія цэтлікі
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Рэкамендавана { $provider }
@@ -644,6 +656,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Паказваць пошукавыя прапановы пры выкарыстанні адраснага радка
     .accesskey = п
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Паказваць пошукавыя тэрміны ў адрасным радку на старонках вынікаў
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -787,6 +803,9 @@ sync-currently-syncing-creditcards = Крэдытныя карты
 sync-currently-syncing-payment-methods = Спосабы аплаты
 sync-currently-syncing-addons = Дадаткі
 sync-currently-syncing-settings = Налады
+sync-manage-options =
+    .label = Кіраваць сінхранізацыяй…
+    .accesskey = ь
 sync-change-options =
     .label = Змяніць…
     .accesskey = м
@@ -839,6 +858,13 @@ sync-engine-settings =
     .label = Налады
     .tooltiptext = Налады прыватнасці, бяспекі і агульныя налады, якія вы змянілі
     .accesskey = ы
+sync-choose-what-to-sync-dialog4 =
+    .title = Кіруйце тым, што сінхранізуецца на ўсіх падлучаных прыладах
+    .style = min-width: 36em;
+    .buttonlabelaccept = Захаваць
+    .buttonaccesskeyaccept = З
+    .buttonlabelextra2 = Адлучыць…
+    .buttonaccesskeyextra2 = А
 
 ## The device name controls.
 
@@ -1289,13 +1315,34 @@ collection-description = Мы імкнёмся даць вам выбар і з�
 collection-privacy-notice = Паведамленне аб прыватнасці
 collection-health-report-telemetry-disabled = Вы больш не дазваляеце { -vendor-short-name } захоўваць тэхнічныя дадзеныя і звесткі аб узаемадзеянні. Усе мінулыя дадзеныя будуць выдалены на працягу 30 дзён.
 collection-health-report-telemetry-disabled-link = Падрабязней
+collection-usage-ping =
+    .label = Адпраўляць пінг штодзённага выкарыстання ў { -vendor-short-name }
+    .accesskey = г
+collection-usage-ping-description = Гэта дапамагае { -vendor-short-name } ацаніць актыўнасць карыстальнікаў.
+collection-health-report2 =
+    .label = Адпраўляць тэхнічныя звесткі і дадзеныя ўзаемадзеяння ў { -vendor-short-name }
+    .accesskey = к
 collection-health-report =
     .label = Дазволіць { -brand-short-name } адпраўляць тэхнічныя звесткі і звесткі ўзаемадзеяння ў { -vendor-short-name }
     .accesskey = к
 collection-health-report-link = Даведацца больш
+collection-health-report-description = Гэта дапамагае нам палепшыць магчымасці, прадукцыйнасць і стабільнасць { -brand-product-name }.
+collection-studies2 =
+    .label = Усталёўваць і выконваць даследаванні
+collection-studies-description = Паспрабуйце функцыі і ідэі яшчэ да таго, як яны будуць даступныя ўсім.
 collection-studies =
     .label = Дазволіць { -brand-short-name } усталёўваць і выконваць даследаванні
 collection-studies-link = Прагляд даследаванняў { -brand-short-name }
+addon-recommendations2 =
+    .label = Дазволіць персаналізаваныя рэкамендацыі пашырэнняў
+addon-recommendations-description = Атрымлівайце рэкамендацыі пашырэнняў для палепшанага аглядання.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Адпраўка дадзеных адключана для гэтай канфігурацыі зборкі.
+collection-backlogged-crash-reports2 =
+    .label = Аўтаматычна адпраўляць справаздачы аб збоях
+    .accesskey = с
+collection-backlogged-crash-reports-description = Гэта дапамагае { -vendor-short-name } дыягнаставаць і выпраўляць праблемы з браўзерам. Справаздачы могуць уключаць асабістыя або канфідэнцыяльныя звесткі.
 addon-recommendations =
     .label = Дазволіць { -brand-short-name } рабіць персаналізаваныя рэкамендацыі пашырэнняў
 addon-recommendations-link = Падрабязней
@@ -1364,13 +1411,20 @@ space-alert-under-5gb-message2 = <strong>У { -brand-short-name } сканчае
 
 httpsonly-header = Рэжым толькі HTTPS
 httpsonly-description = HTTPS забяспечвае бяспечнае зашыфраванае злучэнне паміж { -brand-short-name } і вэб-сайтамі, якія вы наведваеце. Большасць сайтаў падтрымліваюць HTTPS, і калі ўключаны рэжым толькі HTTPS, { -brand-short-name } пераключа ўсе злучэнні на HTTPS.
+httpsonly-description2 = { -brand-short-name } стварае бяспечныя і зашыфраваныя злучэнні з сайтамі, якія вы наведваеце. { -brand-short-name } будзе папярэджваць, калі злучэнне не з'яўляецца бяспечным пры ўключаным «Толькі HTTPS».
 httpsonly-learn-more = Даведацца больш
 httpsonly-radio-enabled =
     .label = Уключыць рэжым толькі HTTPS ва ўсіх вокнах
+httpsonly-radio-enabled2 =
+    .label = Ва ўсіх вокнах выкарыстоўваць толькі HTTPS
 httpsonly-radio-enabled-pbm =
     .label = Уключыць рэжым толькі HTTPS толькі ў прыватных вокнах
+httpsonly-radio-enabled-pbm2 =
+    .label = У прыватных вокнах выкарыстоўваць толькі HTTPS
 httpsonly-radio-disabled =
     .label = Не ўключаць рэжым толькі HTTPS
+httpsonly-radio-disabled2 =
+    .label = Спрабаваць спачатку HTTPS, але дазваляць злучэнні, якія не з'яўляюцца бяспечнымі
 
 ## DoH Section
 

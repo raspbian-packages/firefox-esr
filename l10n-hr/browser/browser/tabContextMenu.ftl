@@ -26,13 +26,19 @@ duplicate-tabs =
 # The following string is displayed on a menuitem that will close the tabs from the start of the tabstrip to the currently targeted tab (excluding the currently targeted and any other selected tabs).
 # In left-to-right languages this should use "Left" and in right-to-left languages this should use "Right".
 close-tabs-to-the-start =
-    .label = Zatvori kartice na lijevo
+    .label = Zatvori lijeve kartice
     .accesskey = l
+close-tabs-to-the-start-vertical =
+    .label = Zatvori kartice iznad
+    .accesskey = z
 # The following string is displayed on a menuitem that will close the tabs from the end of the tabstrip to the currently targeted tab (excluding the currently targeted and any other selected tabs).
 # In left-to-right languages this should use "Right" and in right-to-left languages this should use "Left".
 close-tabs-to-the-end =
-    .label = Zatvori kartice na desno
+    .label = Zatvori desne kartice
     .accesskey = i
+close-tabs-to-the-end-vertical =
+    .label = Zatvori kartice ispod
+    .accesskey = s
 close-other-tabs =
     .label = Zatvori ostale kartice
     .accesskey = o
@@ -72,9 +78,22 @@ move-to-new-window =
 tab-context-close-multiple-tabs =
     .label = Zatvori višestruke kartice
     .accesskey = t
+tab-context-close-duplicate-tabs =
+    .label = Zatvori duple kartice
+    .accesskey = u
 tab-context-share-url =
     .label = Podijeli
     .accesskey = h
+# In left-to-right languages this should use "Right" and in right-to-left languages this should use "Left" to indicate the direction a new tab will open.
+tab-context-new-tab-open =
+    .label = Nova kartica desno
+    .accesskey = d
+tab-context-new-tab-open-vertical =
+    .label = Nova kartica ispod
+    .accesskey = i
+tab-context-new-group =
+    .label = Nova grupa
+    .accesskey = N
 
 ## Variables:
 ##  $tabCount (Number): the number of tabs that are affected by the action.

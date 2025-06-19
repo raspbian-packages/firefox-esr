@@ -16,9 +16,7 @@ const test = new SearchConfigTest({
     excluded: [
       {
         regions: ["cn"],
-        locales: {
-          matches: ["zh-CN"],
-        },
+        locales: ["zh-CN"],
       },
     ],
   },
@@ -59,7 +57,7 @@ const test = new SearchConfigTest({
   ],
 });
 
-add_task(async function setup() {
+add_setup(async function () {
   sinon.spy(NimbusFeatures.search, "onUpdate");
   sinon.stub(NimbusFeatures.search, "ready").resolves();
   await test.setup();
@@ -76,13 +74,17 @@ add_task(async function test_searchConfig_google_with_mozparam() {
       locale: "en-US",
       region: "US",
       pref: "google_channel_us",
-      expected: "us_param",
+      // On ESR, the channel parameter is always `entpr`
+      expected:
+        SearchUtils.MODIFIED_APP_CHANNEL == "esr" ? "entpr" : "us_param",
     },
     {
       locale: "en-US",
       region: "GB",
       pref: "google_channel_row",
-      expected: "row_param",
+      // On ESR, the channel parameter is always `entpr`
+      expected:
+        SearchUtils.MODIFIED_APP_CHANNEL == "esr" ? "entpr" : "row_param",
     },
   ];
 
@@ -123,12 +125,18 @@ add_task(async function test_searchConfig_google_with_nimbus() {
     {
       locale: "en-US",
       region: "US",
-      expected: "nimbus_us_param",
+      // On ESR, the channel parameter is always `entpr`
+      expected:
+        SearchUtils.MODIFIED_APP_CHANNEL == "esr" ? "entpr" : "nimbus_us_param",
     },
     {
       locale: "en-US",
       region: "GB",
-      expected: "nimbus_row_param",
+      // On ESR, the channel parameter is always `entpr`
+      expected:
+        SearchUtils.MODIFIED_APP_CHANNEL == "esr"
+          ? "entpr"
+          : "nimbus_row_param",
     },
   ];
 

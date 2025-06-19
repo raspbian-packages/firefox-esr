@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Websedłam signal “Njeslědowaś” pósłaś, až njocośo, až wóne was slěduju
+do-not-track-removal = Njepódpěramy wěcej signal „Njeslědowaś“
 do-not-track-description2 =
     .label = Websedłam napšašowanje „Njeslědowaś“ pósłaś
     .accesskey = s
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = { -brand-short-name } awtomatiski wócyniś, gaž se wašo licadło startujo
     .accesskey = c
 windows-launch-on-login-disabled = Toś to nastajenje jo se znjemóžniło we Windows. Aby nastajenje změnił, woglědajśo se k <a data-l10n-name="startup-link">Autostart</a> w systemowych nastajenjach.
+windows-launch-on-login-profile-disabled = Markěrujśo “{ profile-manager-use-selected.label }” we woknje „Wužywaŕski profil wubraś“, aby toś to nastajenje zmóžnił.
 startup-restore-warn-on-quit =
     .label = Warnowaś, gaž se wobglědowak kóńcy
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Wótkaze w rejtarikach město nowych woknow wócyniś
     .accesskey = r
+ask-on-close-multiple-tabs =
+    .label = Pšašaś se, nježli až se někotare rejtariki zacynjaju
+    .accesskey = P
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Pšašaś se, nježli až se z { $quitKey } skóńcyjo
+    .accesskey = s
 confirm-on-close-multiple-tabs =
     .label = Wobkšuśiś, nježli až se něktare rejtariki zacynjaju
     .accesskey = W
@@ -168,7 +181,7 @@ warn-on-open-many-tabs =
     .label = Warnowaś, gaby wócynjanje někotarych rejtarikow mógło { -brand-short-name } spomałšyś
     .accesskey = k
 switch-to-new-tabs =
-    .label = Ned na wótkaz, wobraz abo medij pśešaltowaś, kótaryž jo se w nowem rejtarku wócynił
+    .label = Ned na wótkaz, wobraz abo medium pśešaltowaś, kótaryž jo se w nowem rejtariku wócynił
     .accesskey = N
 show-tabs-in-taskbar =
     .label = Rejtarikowe pśeglědy we Windowsowej nadawkowej rědce pokazaś
@@ -445,7 +458,7 @@ update-setting-write-failure-title2 = Zmólka pśi składowanju aktualizěrowań
 # The newlines between the main text and the line containing the path is
 # intentional so the path is easier to identify.
 update-setting-write-failure-message2 =
-    { -brand-short-name } jo starcył na zmólku a njejo toś tu změnu składł. Źiwajśo na to, až se změnjanje toś togo aktualizěrowańskego nastajenja pisańske pšawo za slědujucu dataju pomina. Wy abo systemowy administrator móžotej zmólku pórěźiś, gaž wužywarskej kupce połnu kontrolu nad toś teju dataju dajotej.
+    { -brand-short-name } jo starcył na zmólku a njejo toś tu změnu składł. Źiwajśo na to, až se změnjanje toś togo aktualizěrowańskego nastajenja pisańske pšawo za slědujucu dataju pomina. Wy abo systemowy administrator móžotej zmólku pórěźiś, gaž wužywaŕskej kupce połnu kontrolu nad toś teju dataju dajotej.
     
     Njedajo se do dataje pisaś: { $path }
 update-in-progress-title = Aktualizacija běžy
@@ -491,7 +504,7 @@ browsing-always-underline-links =
     .label = Wótkaze pśecej pódšmarnuś
     .accesskey = c
 browsing-use-onscreen-keyboard =
-    .label = Dotykańsku tastaturu pokazaś, jolic trěbne
+    .label = Dotykańsku tastaturu pokazaś, jolic trjebne
     .accesskey = k
 browsing-use-cursor-navigation =
     .label = Pśecej kursorowe tasty za pógibowanje na bokach wužywaś
@@ -574,8 +587,7 @@ home-prefs-shortcuts-description = Sedła, kótarež składujośo abo ku kótary
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponserowane zwězanja
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Wót { $provider } dopórucony
@@ -649,6 +661,10 @@ search-show-suggestions-url-bar-option =
     .label = Pytańske naraźenja we wuslědkach adresowego póla pokazaś
     .accesskey = l
 # With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Pytańske wuraze w adresowem pólu na wuslědkowych bokach pokazaś
+# With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
 search-show-search-term-option =
@@ -708,7 +724,7 @@ containers-remove-button =
 ## more discrete ("signed in" no longer means "and sync is connected").
 
 sync-signedout-caption = Wzejśo swój web sobu
-sync-signedout-description2 = Synchronizěrujśo swóje cytańske znamjenja, historiju, rejtarki, gronidła, dodanki a nastajenja mjazy wšymi wašymi rědami.
+sync-signedout-description2 = Synchronizěrujśo swóje cytańske znamjenja, historiju, rejtariki, gronidła, dodanki a nastajenja mjazy wšymi wašymi rědami.
 sync-signedout-account-signin3 =
     .label = Pla Sync pśizjawiś…
     .accesskey = i
@@ -767,7 +783,7 @@ prefs-syncing-off = Synchronizacija: WUŠALTOWANA
 prefs-sync-turn-on-syncing =
     .label = Synchronizaciju zmóžniś…
     .accesskey = S
-prefs-sync-offer-setup-label2 = Synchronizěrujśo swóje cytańske znamjenja, historiju, rejtarki, gronidła, dodanki a nastajenja mjazy wšymi wašymi rědami.
+prefs-sync-offer-setup-label2 = Synchronizěrujśo swóje cytańske znamjenja, historiju, rejtariki, gronidła, dodanki a nastajenja mjazy wšymi wašymi rědami.
 prefs-sync-now =
     .labelnotsyncing = Něnto synchronizěrowaś
     .accesskeynotsyncing = N
@@ -791,6 +807,9 @@ sync-currently-syncing-creditcards = Kreditowe kórty
 sync-currently-syncing-payment-methods = Płaśeńske metody
 sync-currently-syncing-addons = Dodanki
 sync-currently-syncing-settings = Nastajenja
+sync-manage-options =
+    .label = Synchronizaciju zastojaś…
+    .accesskey = S
 sync-change-options =
     .label = Změniś…
     .accesskey = Z
@@ -843,6 +862,13 @@ sync-engine-settings =
     .label = Nastajenja
     .tooltiptext = Powšykne nastajenja a nastajenja priwatnosći a wěstoty su se změnili
     .accesskey = N
+sync-choose-what-to-sync-dialog4 =
+    .title = Zastojśo daty synchronizacijow na wšych wašych zwězanych rědach
+    .style = min-width: 36em;
+    .buttonlabelaccept = Składowaś
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Zwisk źěliś…
+    .buttonaccesskeyextra2 = Z
 
 ## The device name controls.
 
@@ -1293,13 +1319,34 @@ collection-description = Comy was z wuběrkami wobstaraś a janož to zběraś, 
 collection-privacy-notice = Powěźeńka priwatnosći
 collection-health-report-telemetry-disabled = Sćo zajmjeł { -vendor-short-name } dowólnosć, techniske a interakciske daty gromaźiś. Wšykne dotychměst zgromaźone daty se w běgu 30 dnjow wulašuju.
 collection-health-report-telemetry-disabled-link = Dalšne informacije
+collection-usage-ping =
+    .label = Ping za wšedne wužywanje na { -vendor-short-name } pósłaś
+    .accesskey = P
+collection-usage-ping-description = To { -vendor-short-name } pomaga, se aktiwne wužywarje wažyś.
+collection-health-report2 =
+    .label = Techniske daty a daty interakcije na { -vendor-short-name } pósłaś
+    .accesskey = T
 collection-health-report =
     .label = { -brand-short-name } zmóžniś, techniske a interakciske daty na { -vendor-short-name } pósłaś
     .accesskey = t
 collection-health-report-link = Dalšne informacije
+collection-health-report-description = To nam pomaga, funkcije, wugbaśe a stabilnosć { -brand-product-name } pólěpyś.
+collection-studies2 =
+    .label = Studije instalěrowaś a pśewjasć
+collection-studies-description = Testujśo funkcije a ideje, nježli až se za wše wózjawjaju.
 collection-studies =
     .label = { -brand-short-name } dowóliś, studije instalěrowaś a pśewjasć
 collection-studies-link = Studije { -brand-short-name } pokazaś
+addon-recommendations2 =
+    .label = Personalizěrowane dopórucenja za rozšyrjenja dowóliś
+addon-recommendations-description = Wobstarajśo se dopórucenja za rozšyrjenja, aby swóje pśeglědowańske dožywjenje pólěpšył.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Datowe rozpšawjenje jo znjemóžnjone za toś tu programowu konfiguraciju.
+collection-backlogged-crash-reports2 =
+    .label = Rozpšawy wowalenjow awtomatiski pósłaś
+    .accesskey = z
+collection-backlogged-crash-reports-description = To { -vendor-short-name } pomaga problemy z wobglědowakom diagnosticěrowaś a rozwězaś. Rozpšawy mógu wósobinske abo sensibelne daty wopśimowaś.
 addon-recommendations =
     .label = { -brand-short-name } dowóliś, personalizěrowane pśiraźenja za rozšyrjenja daś
 addon-recommendations-link = Dalšne informacije
@@ -1368,13 +1415,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } njama wěcej dos�
 
 httpsonly-header = Modus Jano-HTTPS
 httpsonly-description = HTTPS wěsty, skoděrowany zwisk mjazy { -brand-short-name } a websedłami bitujo, ku kótarymž se woglědujośo. Nejwěcej websedłow HTTPS pódpěra, a jolic modus Jano-HTTPS jo zmóžnjony, { -brand-short-name } buźo wše zwiski na HTTPS aktualizěrowaś.
+httpsonly-description2 = { -brand-short-name } wěste a skoděrowane zwiski ze sedłami, ku kótarymž se woglědujośo, napórajo. { -brand-short-name } buźo was warnowaś, jolic zwisk njejo wěsty, gaž Jano-HTTPS jo aktiwny.
 httpsonly-learn-more = Dalšne informacije
 httpsonly-radio-enabled =
     .label = Modus Jano-HTTPS we wšych woknach zmóžniś
+httpsonly-radio-enabled2 =
+    .label = HTTPS jano we wšych woknach wužywaś
 httpsonly-radio-enabled-pbm =
     .label = Modus Jano-HTTPS jano w priwatnych woknach zmóžniś
+httpsonly-radio-enabled-pbm2 =
+    .label = HTTPS jano w priwatnych woknach wužywaś
 httpsonly-radio-disabled =
     .label = Modus Jano-HTTPS njezmóžniś
+httpsonly-radio-disabled2 =
+    .label = HTTPS nejpjerwjej wopytaś, ale zwiski dowóliś, kótarež njejsu wěste
 
 ## DoH Section
 

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Enviar a los sitios web una señal “No rastrear” indicando que no quiere ser rastreado
+do-not-track-removal = Ya no admitimos la señal “No rastrear”
 do-not-track-description2 =
     .label = Enviar a los sitios web una solicitud de “No rastrear”
     .accesskey = d
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Abrir { -brand-short-name } automáticamente al iniciar el ordenador
     .accesskey = A
 windows-launch-on-login-disabled = Esta opción se ha desactivado en Windows. Para cambiarla, visite <a data-l10n-name="startup-link">Aplicaciones de inicio</a> en la configuración del sistema.
+windows-launch-on-login-profile-disabled = Active esta preferencia marcando “{ profile-manager-use-selected.label }” en la ventana “Seleccionar perfil de usuario”.
 startup-restore-warn-on-quit =
     .label = Advertirle al salir del navegador
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Abrir enlaces en pestañas en lugar de en ventanas nuevas
     .accesskey = v
+ask-on-close-multiple-tabs =
+    .label = Preguntar antes de cerrar múltiples pestañas
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Preguntar antes de salir con { $quitKey }
+    .accesskey = a
 confirm-on-close-multiple-tabs =
     .label = Confirmar antes de cerrar múltiples pestañas
     .accesskey = m
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Sitios que guarda o visita
 home-prefs-shortcuts-by-option-sponsored =
     .label = Accesos directos patrocinados
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Recomendado por { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Mostrar sugerencias de búsqueda en los resultados de la barra de direcciones
     .accesskey = M
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Mostrar términos de búsqueda en la barra de direcciones en las páginas de resultados
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Tarjetas de crédito
 sync-currently-syncing-payment-methods = Métodos de pago
 sync-currently-syncing-addons = Complementos
 sync-currently-syncing-settings = Ajustes
+sync-manage-options =
+    .label = Administrar sincronización…
+    .accesskey = m
 sync-change-options =
     .label = Cambiar…
     .accesskey = C
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Ajustes
     .tooltiptext = Cambios en los ajustes de General, Privacidad y Seguridad
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = Administrar lo que se sincroniza entre sus dispositivos conectados
+    .style = min-width: 36em;
+    .buttonlabelaccept = Guardar
+    .buttonaccesskeyaccept = G
+    .buttonlabelextra2 = Desconectar…
+    .buttonaccesskeyextra2 = D
 
 ## The device name controls.
 
@@ -1360,13 +1386,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } se está quedando
 
 httpsonly-header = Modo solo-HTTPS
 httpsonly-description = HTTPS proporciona una conexión segura y cifrada entre { -brand-short-name } y los sitios web que visita. La mayoría de los sitios web admiten HTTPS, y si el modo solo-HTTPS está habilitado, entonces { -brand-short-name } actualizará todas las conexiones a HTTPS.
+httpsonly-description2 = { -brand-short-name } crea conexiones seguras y cifradas a los sitios visitados. { -brand-short-name } avisará si una conexión no es segura cuando solo HTTPS está activado.
 httpsonly-learn-more = Más información
 httpsonly-radio-enabled =
     .label = Activar el modo solo-HTTPS en todas las ventanas
+httpsonly-radio-enabled2 =
+    .label = Utilizar solo HTTPS en todas las ventanas
 httpsonly-radio-enabled-pbm =
     .label = Activar el modo solo-HTTPS solamente en ventanas privadas
+httpsonly-radio-enabled-pbm2 =
+    .label = Utilizar solo HTTPS en ventanas privadas
 httpsonly-radio-disabled =
     .label = No activar el modo solo-HTTPS
+httpsonly-radio-disabled2 =
+    .label = Probar HTTPS primero, pero permitir conexiones que no son seguras
 
 ## DoH Section
 

@@ -80,6 +80,9 @@ toolbar-button-fxaccount =
 
 ## Account toolbar Button
 
+toolbar-button-account =
+    .label = ගිණුම
+    .tooltiptext = ගිණුම
 
 ## Save Page
 
@@ -162,8 +165,8 @@ main-context-menu-copy-link-simple =
 # This command copies the link, removing additional
 # query parameters used to track users across sites.
 main-context-menu-strip-on-share-link =
-    .label = අඩවියේ ලුහුබැඳීම් හැරදමා සබැඳිය පිටපත් කරන්න
-    .accesskey = y
+    .label = අඩවියේ ලුහුබැඳීම් රහිතව සබැඳියේ පිටපතක්
+    .accesskey = u
 
 ## Media (video/audio) controls
 ##
@@ -287,9 +290,7 @@ main-context-menu-send-to-device =
     .label = පිටුව උපාංගයට යවන්න
     .accesskey = D
 
-## The access keys for "Use Saved Login" and "Use Saved Password"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-use-saved-login =
     .label = සුරැකි පිවිසුම භාවිතය

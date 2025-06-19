@@ -89,6 +89,9 @@ shopping-show-less-button = Mjenjej pokazaś
 
 shopping-settings-label =
     .label = Nastajenja
+shopping-settings-recommendations-toggle2 =
+    .label = Pórucenja a sponserowane wopśimjeśe pokazaś
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } waše wósobinske daty njeźěle, togodla toś te pórucenja njebudu wam pśez internet slědowaś. <a data-l10n-name="review-quality-url">Dalšne informacije</a>
 shopping-settings-recommendations-toggle =
     .label = Wabjenje w kontroli pógódnośenjow pokazaś
 shopping-settings-recommendations-learn-more2 = Buźośo wótergi wabjenje za relewantne produkty wiźeś. Wabimy jano za produkty ze spušćobnymi pógódnośenjami. <a data-l10n-name="review-quality-url">Dalšne informacije</a>
@@ -164,6 +167,7 @@ shopping-unanalyzed-product-analyze-button = Kwalitu pógódnośenjow kontrolěr
 
 more-to-consider-ad-label =
     .label = Dalšne móžnosći
+shopping-sponsored-label = Sponserowany
 ad-by-fakespot = Wabjenje wót { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -184,6 +188,18 @@ shopping-survey-submit-button-label = Wótpósłaś
 shopping-survey-terms-link = Wužywańske wuměnjenja
 shopping-survey-thanks =
     .heading = Źěkujomy se za waš komentar!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Pšosym dajśo nam k wěsći, cogodla sćo znjemóžnił kontrolu pógódnośenjow. Móžośo někotare móžnosći wubraś, jolic trjeba.
+shopping-survey-thanks-title = Źěkujomy se za waš komentar!
+shopping-survey-opted-out-hard-to-understand = Jo śěžko rozměś
+shopping-survey-opted-out-too-slow = Jo pśepómały
+shopping-survey-opted-out-not-accurate = Njejo dokradny
+shopping-survey-opted-out-not-helpful = Njejo wužytny za mnjo
+shopping-survey-opted-out-check-myself = Pśeglědujom lubjej pógódnośenja sam
+shopping-survey-opted-out-other = Druge
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

@@ -41,6 +41,8 @@ neterror-generic-error = { -brand-short-name } kan ikke indlæse denne side af e
 neterror-load-error-try-again = Siden kan være midlertidigt utilgængelig eller travlt optaget. Prøv igen om et øjeblik.
 neterror-load-error-connection = Hvis du er ude af stand til at indlæse nogen sider overhovedet, undersøg da din computers netværksforbindelse.
 neterror-load-error-firewall = Hvis din computer eller dit netværk er beskyttet af en firewall eller proxy, sørg da for at { -brand-short-name } har tilladelse til at tilgå nettet.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Hvis du forsøger at oprette forbindelse til en lokal netværks-side, så skal du kontrollere, at { -brand-short-name } er blevet givet tilladelser for lokalt netværk under indstillingerne for anonymitet og sikkerhed.
 neterror-captive-portal = Dette netværk kræver, at du skal logge ind for at bruge internettet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +66,7 @@ neterror-dns-not-found-trr-offline = Du er ikke forbundet til internettet.
 neterror-dns-not-found-trr-unknown-host2 = Webstedet blev ikke fundet af { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Der opstod et problem med { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = Ugyldig URL.
+neterror-dns-not-found-system-sleep = Systemet er i dvaletilstand.
 neterror-dns-not-found-trr-unknown-problem = Uventet problem.
 
 ## Native fallback specific messages
@@ -147,3 +150,8 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Hvis du ikke kender<b>{ $mi
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> bruger en sikkerhedspolitik kaldet HTTP Strict Transport Security (HSTS), hvilket betyder at { -brand-short-name } kun kan oprette en sikker forbindelse til webstedet. Du kan ikke tilføje en undtagelse for at besøge webstedet.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Sandsynligvis ingenting, da der formentlig er et problem med selve webstedet.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Fejlkode: { $responsestatus } { $responsestatustext }

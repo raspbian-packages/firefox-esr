@@ -18,6 +18,7 @@
 #include "mozilla/dom/SerializedStackHolder.h"
 #include "mozilla/dom/SRIMetadata.h"
 #include "mozilla/RefPtr.h"
+#include "mozilla/Mutex.h"
 #include "mozilla/UniquePtr.h"
 
 #include "mozilla/DebugOnly.h"
@@ -94,8 +95,7 @@ class FetchDriverObserver {
 
 class AlternativeDataStreamListener;
 
-class FetchDriver final : public nsIStreamListener,
-                          public nsIChannelEventSink,
+class FetchDriver final : public nsIChannelEventSink,
                           public nsIInterfaceRequestor,
                           public nsINetworkInterceptController,
                           public nsIThreadRetargetableStreamListener,
@@ -146,15 +146,23 @@ class FetchDriver final : public nsIStreamListener,
     mAssociatedBrowsingContextID = aID;
   }
 
+  void SetIsThirdPartyWorker(const Maybe<bool> aIsThirdPartyWorker) {
+    mIsThirdPartyWorker = aIsThirdPartyWorker;
+  }
+
  private:
   nsCOMPtr<nsIPrincipal> mPrincipal;
   nsCOMPtr<nsILoadGroup> mLoadGroup;
   SafeRefPtr<InternalRequest> mRequest;
   SafeRefPtr<InternalResponse> mResponse;
   nsCOMPtr<nsIOutputStream> mPipeOutputStream;
-  // Access to mObserver can be racy from OnDataAvailable and
-  // FetchAbortActions. This must not be modified
-  // in either of these functions.
+
+  // mutex to prevent race between OnDataAvailable (OMT) and main thread
+  // functions
+  Mutex mODAMutex;
+  // access to mObserver can race between FetchDriverAbortActions (main thread)
+  // and OnDataAvailable (OMT)
+  // See Bug 1810805
   RefPtr<FetchDriverObserver> mObserver;
   RefPtr<Document> mDocument;
   nsCOMPtr<nsICSPEventListener> mCSPEventListener;
@@ -179,6 +187,10 @@ class FetchDriver final : public nsIStreamListener,
   bool mNeedToObserveOnDataAvailable;
 
   bool mIsTrackingFetch;
+
+  // Indicates whether the fetch request is from a third-party worker. Nothing
+  // if the fetch request is not from a worker.
+  Maybe<bool> mIsThirdPartyWorker;
 
   RefPtr<AlternativeDataStreamListener> mAltDataListener;
   bool mOnStopRequestCalled;

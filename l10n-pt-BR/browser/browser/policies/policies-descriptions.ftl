@@ -119,6 +119,7 @@ policy-Permissions2 = Configurar permissões de câmera, microfone, localizaçã
 policy-PictureInPicture = Ativar ou desativar picture-in-picture.
 policy-PopupBlocking = Permitir por padrão que determinados sites abram janelas ou abas.
 policy-Preferences = Definir e bloquear o valor de um subconjunto de preferências.
+policy-PrivateBrowsingModeAvailability = Definir disponibilidade do modo de navegação privativa.
 policy-PromptForDownloadLocation = Perguntar onde salvar arquivos ao baixar.
 policy-Proxy = Definir as configurações de proxy.
 policy-RequestedLocales = Definir a lista de idiomas solicitados para a aplicação por ordem de preferência.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Imprimir usando o diálogo de impressão do sistem
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Bloquear o acesso a determinados sites. Confira a documentação para mais detalhes sobre o formato.
 policy-Windows10SSO = Permitir autenticação única (single sign-on) do Windows em contas da Microsoft no trabalho e na escola.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Permitir autenticação única em contas Microsoft Entra.

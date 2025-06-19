@@ -7,6 +7,9 @@ sanitize-prefs2 =
     .style = min-width: 34em
 sanitize-prefs-style =
     .style = width: 17em
+sanitize-dialog-title2 =
+    .title = Sfeḍ isefka n tunigin d yinagan n tuqqna
+    .style = min-width: 34em
 sanitize-dialog-title =
     .title = Sfeḍ azray n melmi kan
     .style = min-width: 34em
@@ -16,6 +19,7 @@ sanitize-dialog-title-everything =
     .title = Sfeḍ akk azray
     .style = min-width: 34em
 clear-data-settings-label = Ticki yemdel, { -brand-short-name } ad yekkes s wudem awurman iferdisen-agi meṛṛa
+sanitize-on-shutdown-description = Sfeḍ s wudem awurman meṛṛa iferdisen i yettwasneqden mi ara yemdel { -brand-short-name }.
 
 ## clear-time-duration-prefix is followed by a dropdown list, with
 ## values localized using clear-time-duration-value-* messages.
@@ -37,6 +41,10 @@ clear-time-duration-value-last-2-hours =
     .label = Sin isragen ineggura
 clear-time-duration-value-last-4-hours =
     .label = Kuz isragen ineggura
+# Variables:
+#   $midnightTime (String) - Time of midnight (00:00 hours) - to inform the user that history will be cleared after midnight
+clear-time-duration-value-since-midnight =
+    .label = Seg { $midnightTime }
 clear-time-duration-value-today =
     .label = Assa
 clear-time-duration-value-everything =
@@ -54,24 +62,43 @@ item-history-and-downloads =
 item-history-form-data-downloads =
     .label = Azray
     .accesskey = A
+item-history-form-data-downloads-description = Yesfaḍay uzray n unadi akked yisadaren, talɣut i yettwaskelsen deg tferkiyin akked yinadiyen
 item-cookies =
     .label = Inagan n tuqqna
     .accesskey = I
+# Variables:
+#   $amount (Number) - Amount of site data currently stored on disk
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cookies-site-data-with-size =
+    .label = Inagan n tuqna akked isefka n usmel ({ $amount } { $unit })
+    .accesskey = e
 item-cookies-site-data =
     .label = Inagan n tuqqna d yisefka n usmel
     .accesskey = e
+item-cookies-site-data-description = Yezmer ad k-isuffeɣ seg yismal neɣ ad isilem tiqecwalin n tiɣin
 item-active-logins =
     .label = Tuqqniwin turmidin
     .accesskey = q
 item-cache =
     .label = Tuffirt
     .accesskey = u
+# Variables:
+#   $amount (Number) - Amount of cached data
+#   $unit (String) - Abbreviation of the unit that $amount is in, e.g. "MB"
+item-cached-content-with-size =
+    .label = Ifuyla d yisebtar yettwaffren i kra n wakud ({ $amount } { $unit })
+    .accesskey = f
+item-cached-content =
+    .label = Ismal d yisebtar yettwaffren i kra n wakud
+    .accesskey = f
+item-cached-content-description = Yesfaḍay iferdisen i yettallen asali uzrib n yismal
 item-form-search-history =
     .label = Azray n tferkit d unadi
     .accesskey = m
 item-site-prefs =
     .label = Iɣewwaṛen n usmel
     .accesskey = i
+item-site-prefs-description = Yettwenniz tisirag-ik akked yismenyafen n usmel ɣer yiɣewwaren-nsen imezwer
 data-section-label = Isefka
 item-site-settings =
     .label = Iɣewwaṛen n usmel

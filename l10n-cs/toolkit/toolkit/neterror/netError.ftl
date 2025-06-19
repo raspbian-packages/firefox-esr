@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = Zablokovaná stránka
 neterror-captive-portal-page-title = Přihlásit se do sítě
 neterror-dns-not-found-title = Server nenalezen
 neterror-malformed-uri-page-title = Neplatná URL adresa
+general-body-title = Buďte opatrní. Něco není v pořádku.
 
 ## Error page actions
 
@@ -45,6 +46,12 @@ neterror-generic-error = { -brand-short-name } nemůže tuto stránku načíst.
 neterror-load-error-try-again = Server je dočasně nedostupný. Zkuste to prosím znovu za chvíli.
 neterror-load-error-connection = Pokud se vám nezobrazují ani ostatní stránky, zkontrolujte síťové připojení svého počítače.
 neterror-load-error-firewall = Pokud je váš počítač chráněn firewallem nebo proxy serverem, zkontrolujte, že má { -brand-short-name } přístup na internet.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission =
+    { -brand-short-name.case-status ->
+        [with-cases] Pokud se pokoušíte načíst stránku místní sítě, zkontrolujte, zda máte v nastavení Soukromí a zabezpečení systému macOS přidělena oprávnění { -brand-short-name(case: "dat") } pro místní síť.
+       *[no-cases] Pokud se pokoušíte načíst stránku místní sítě, zkontrolujte, zda máte v nastavení Soukromí a zabezpečení systému macOS přidělena oprávnění aplikace { -brand-short-name } pro místní síť.
+    }
 neterror-captive-portal = Pro přístup k internetu se musíte nejdříve přihlásit k této síti.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -72,6 +79,7 @@ neterror-dns-not-found-trr-offline = Nejste připojeni k internetu.
 neterror-dns-not-found-trr-unknown-host2 = Tento server nebyl překladačem { $trrDomain } nalezen.
 neterror-dns-not-found-trr-server-problem = Vyskytl se problém s DNS překladačem { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = Neplatná URL adresa.
+neterror-dns-not-found-system-sleep = Systém je v režimu spánku.
 neterror-dns-not-found-trr-unknown-problem = Neočekávaný problém.
 
 ## Native fallback specific messages
@@ -193,3 +201,11 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Pokud <b>{ $mitm }</b> nezn
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = Server <b>{ $hostname }</b> má nastaveno bezpečnostní pravidlo HTTP Strict Transport Security (HSTS), které vynucuje používání pouze zabezpečeného spojení. Pro připojení k této stránce nelze udělit výjimku.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Pravděpodobně nic, protože je pravděpodobné, že problém je se samotným webem.
+certerror-blocked-by-corp-headers-description = Někdy webové stránky nastaví ochranu pro sebe a pro lidi, jako jste vy, před nežádoucími interakcemi s jinými stránkami.
+certerror-coop-learn-more = Zjistit více o Cross Origin Opener Policy (COOP)
+certerror-coep-learn-more = Zjistit více o Cross Origin Embedder Policies (COEP)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Kód chyby: { $responsestatus } { $responsestatustext }

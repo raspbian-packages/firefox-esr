@@ -33,3 +33,10 @@ fxa-menu-send-tab-to-device-syncnotready =
 fxa-menu-send-tab-to-device-description = Azen iccer imir imir i yal ibenk i ɣur teqqneḍ.
 fxa-menu-sign-out =
     .label = Ffeɣ…
+fxa-menu-sync-title = Mtawi
+fxa-menu-sync-description = Kcem ɣer web anda ma telliḍ
+sync-setup-verify-continue = Kemmel
+sync-setup-verify-title = Alɣu n usmezdi
+
+## Sync warning strings that support the browser profiles feature, these will be shown when the user might be merging data
+

@@ -119,6 +119,7 @@ policy-Permissions2 = Configure i permès par fotocjamare, microfon, posizion, n
 policy-PictureInPicture = Ative o disative il Picture-in-Picture.
 policy-PopupBlocking = Permet a cierts sîts web di visualizâ i barcons a comparse in maniere predefinide.
 policy-Preferences = Stabilìs e bloche il valôr par un grup di preferencis.
+policy-PrivateBrowsingModeAvailability = Met la disponibilitât de modalitât di navigazion privade.
 policy-PromptForDownloadLocation = Domande dulà salvâ i files cuant che si ju discjarie.
 policy-Proxy = Configure lis impostazions dal proxy.
 policy-RequestedLocales = Stabilìs la liste des localizazions (lenghis) desideradis pe aplicazion par ordin di preference.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Stampe doprant il dialic di stampe dal sisteme.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Bloche l'acès a cierts sîts web. Consulte la documentazion par vê plui detais sul formât.
 policy-Windows10SSO = Permet di doprâ l'acès unic di Windows pai accounts Microsoft, di vore e di scuele.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Permet la utilizazion di Windows single sign-on pai accounts Microsoft Entra.

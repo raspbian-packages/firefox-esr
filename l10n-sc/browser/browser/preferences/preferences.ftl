@@ -77,7 +77,7 @@ feature-disable-requires-restart = { -brand-short-name } si depet torrare a avia
 should-restart-title = Torra a aviare { -brand-short-name }
 should-restart-ok = Torra a aviare { -brand-short-name } immoe
 cancel-no-restart-button = Annulla
-restart-later = Torra a aviare luego
+restart-later = Torra a aviare prus tardu
 
 ## Extension Control Notifications
 ##
@@ -136,6 +136,7 @@ windows-launch-on-login =
     .label = Aberi { -brand-short-name } in automàticu a s’aviu de s’elaboradore
     .accesskey = A
 windows-launch-on-login-disabled = Custa preferèntzia est disativada in Windows. Pro dda modificare, bae a <a data-l10n-name="startup-link">Aplicatziones de aviu</a> in cunfiguratziones de su sistema.
+windows-launch-on-login-profile-disabled = Ativa custa preferèntzia ativende “{ profile-manager-use-selected.label }” in sa ventana “Sèbera unu profilu de utente”.
 startup-restore-warn-on-quit =
     .label = Faghe ischire cando essis dae su navigadore
 disable-extension =
@@ -568,8 +569,7 @@ home-prefs-shortcuts-description = Sitos chi as sarvadu o bisitadu
 home-prefs-shortcuts-by-option-sponsored =
     .label = Curtzadòrgios patrotzinados
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Cussigiados dae { $provider }
@@ -605,6 +605,7 @@ home-prefs-snippets-header =
 home-prefs-snippets-description-new = Cussìgios e noas dae { -vendor-short-name } e { -brand-product-name }
 home-prefs-weather-header =
     .label = Tempus
+home-prefs-weather-description = Sa previsione de oe
 home-prefs-weather-learn-more-link = Àteras informatziones
 # Variables:
 #   $num (number) - Number of rows displayed
@@ -639,6 +640,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Ammustra cussìgios de chirca in is resurtados de sa barra de indiritzos
     .accesskey = i
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Ammustra is tèrmines de chirca in sa barra de indiritzos de is pàginas de resurtados
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -857,7 +862,7 @@ sync-verification-sent-title = Verìfica imbiada
 #   $email (String): Email address of user's Firefox account.
 sync-verification-sent-body = Ligòngiu de verìfica imbiadu a { $email }.
 sync-verification-not-sent-title = Impossìbile imbiare sa verìfica
-sync-verification-not-sent-body = Impossìbile imbiare sa verìfica in custu momentu; torra·bi a proare a pustis.
+sync-verification-not-sent-body = Impossìbile imbiare su messàgiu de verìfica in custu momentu; torra·nche a proare a pustis.
 
 ## Privacy Section
 
@@ -919,6 +924,9 @@ forms-saved-passwords =
 forms-primary-pw-use =
     .label = Imprea una crae printzipale
     .accesskey = u
+# This operation requires the user to authenticate with the operating system (device sign-in)
+forms-os-reauth =
+    .label = Rechede s’identificatzione in su dispositivu pro compilare in automàticu e gestire is craes
 forms-primary-pw-learn-more-link = Àteras informatziones
 # This string uses the former name of the Primary Password feature
 # ("Master Password" in English) so that the preferences can be found
@@ -951,6 +959,12 @@ primary-password-os-auth-dialog-message-win = Pro creare una crae printzipale, i
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = crea una crae printzipale
 master-password-os-auth-dialog-caption = { -brand-full-name }
+# The macOS string is preceded by the operating system with "Firefox is trying to ".
+autofill-creditcard-os-dialog-message =
+    { PLATFORM() ->
+        [macos] modifica sa cunfiguratzione de is mètodos de pagamentu
+       *[other] { -brand-short-name } est proende a modificare is cunfiguratziones de is mètodos de pagamentu. Imprea s’identificatzione de su dispositivu tuo pro ddu permìtere.
+    }
 autofill-creditcard-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy section - Autofill
@@ -966,6 +980,9 @@ autofill-payment-methods-checkbox-submessage = Includet cartas de crèditu e de 
     .accesskey = I
 autofill-saved-payment-methods-button = Mètodos de pagamentu sarvados
     .accesskey = t
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox = Rechede s’identificatzione in su dispositivu pro compilare in automàticu e gestire is mètodos de pagamentu
+    .accesskey = R
 
 ## Privacy Section - History
 
@@ -1102,6 +1119,9 @@ addressbar-suggestions-settings = Muda sa cunfiguratzione de cussìgios de motor
 addressbar-locbar-showrecentsearches-option =
     .label = Ammustra chircas reghentes
     .accesskey = r
+addressbar-locbar-showtrendingsuggestions-option =
+    .label = Ammustra cussìgios de chirca in tendèntzia
+    .accesskey = A
 addressbar-quickactions-learn-more = Àteras informatziones
 
 ## Privacy Section - Content Blocking
@@ -1343,10 +1363,16 @@ httpsonly-description = HTTPS garantit una connessione segura e tzifrada intre {
 httpsonly-learn-more = Àteras informatziones
 httpsonly-radio-enabled =
     .label = Ativa sa modalidade HTTPS ebbia in totu is ventanas
+httpsonly-radio-enabled2 =
+    .label = Imprea isceti HTTPS in totu is ventanas
 httpsonly-radio-enabled-pbm =
     .label = Ativa sa modalidade HTTPS ebbia isceti in is ventanas privadas
+httpsonly-radio-enabled-pbm2 =
+    .label = Imprea isceti HTTPS in is ventanas privadas
 httpsonly-radio-disabled =
     .label = No atives sa modalidade HTTPS ebbia
+httpsonly-radio-disabled2 =
+    .label = Proa HTTPS prima, però permite connessiones chi non siant seguras
 
 ## DoH Section
 

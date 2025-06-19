@@ -8,11 +8,18 @@
 newtab-page-title = Nuova scheda
 newtab-settings-button =
     .title = Personalizza la pagina Nuova scheda
+newtab-personalize-settings-icon-label =
+    .title = Personalizza Nuova scheda
+    .aria-label = Impostazioni
+newtab-settings-dialog-label =
+    .aria-label = Impostazioni
 newtab-personalize-icon-label =
     .title = Personalizza Nuova scheda
     .aria-label = Personalizza Nuova scheda
 newtab-personalize-dialog-label =
     .aria-label = Personalizza
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -20,12 +27,12 @@ newtab-personalize-dialog-label =
 newtab-search-box-search-button =
     .title = Cerca
     .aria-label = Cerca
-# Variables
-#  $engine (String): the name of the user's default search engine
+# Variables:
+#   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-text = Cerca con { $engine } o inserisci un indirizzo
 newtab-search-box-handoff-text-no-engine = Cerca o inserisci un indirizzo
-# Variables
-#  $engine (String): the name of the user's default search engine
+# Variables:
+#   $engine (string) - The name of the user's default search engine
 newtab-search-box-handoff-input =
     .placeholder = Cerca con { $engine } o inserisci un indirizzo
     .title = Cerca con { $engine } o inserisci un indirizzo
@@ -87,7 +94,7 @@ newtab-dismiss-button-tooltip =
     .aria-label = Rimuovi
 # This tooltip is for the context menu of Pocket cards or Topsites
 # Variables:
-#  $title (String): The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
 newtab-menu-content-tooltip =
     .title = Apri menu
     .aria-label = Apri menu contestuale per { $title }
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Salva in { -pocket-brand-name }
 newtab-menu-delete-pocket = Elimina da { -pocket-brand-name }
 newtab-menu-archive-pocket = Archivia in { -pocket-brand-name }
 newtab-menu-show-privacy-info = I nostri sponsor e la tua privacy
+newtab-menu-about-fakespot = Informazioni su { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Blocca
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Smetti di seguire l’argomento
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -159,15 +173,18 @@ newtab-label-removed-bookmark = Segnalibro eliminato
 newtab-label-recommended = Di tendenza
 newtab-label-saved = Salvato in { -pocket-brand-name }
 newtab-label-download = Scaricata
+# This string is used in the story cards to indicate sponsored content
+# Variables:
+#   $sponsorOrSource (string) - The name of a company or their domain
 newtab-label-sponsored = { $sponsorOrSource } · Sponsorizzata
 # This string is used at the bottom of story cards to indicate sponsored content
 # Variables:
-#  $sponsor (String): This is the name of a sponsor
+#   $sponsor (string) - The name of a sponsor
 newtab-label-sponsored-by = Sponsorizzata da { $sponsor }
 # This string is used under the image of story cards to indicate source and time to read
 # Variables:
-#  $source (String): This is the name of a company or their domain
-#  $timeToRead (Number): This is the estimated number of minutes to read this story
+#   $source (string) - The name of a company or their domain
+#   $timeToRead (number) - The estimated number of minutes to read this story
 newtab-label-source-read-time = { $source } · { $timeToRead } min
 
 ## Section Menu: These strings are displayed in the section context menu and are
@@ -196,17 +213,20 @@ newtab-section-expand-section-label =
 newtab-section-header-topsites = Siti principali
 newtab-section-header-recent-activity = Attività recente
 # Variables:
-#  $provider (String): Name of the corresponding content provider.
+#   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Consigliati da { $provider }
 newtab-section-header-stories = Storie che fanno riflettere
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = I consigli di oggi per te
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
 newtab-empty-section-highlights = Inizia a navigare e, in questa sezione, verranno visualizzati articoli, video e altre pagine visitate di recente o aggiunte ai segnalibri.
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
-#  $provider (String): Name of the content provider for this section, e.g "Pocket".
+#   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = Non c’è altro. Controlla più tardi per altre storie da { $provider }. Non vuoi aspettare? Seleziona un argomento tra quelli più popolari per scoprire altre notizie interessanti dal Web.
+# Ex. When there are no more story recommendations, in the space where there would have been stories, this is shown instead.
 newtab-empty-section-topstories-generic = Non c’è altro. Controlla più tardi per altre storie. Non vuoi aspettare? Seleziona un argomento tra quelli più popolari per scoprire altre notizie interessanti dal Web.
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
@@ -228,6 +248,9 @@ newtab-pocket-learn-more = Ulteriori informazioni
 newtab-pocket-cta-button = Ottieni { -pocket-brand-name }
 newtab-pocket-cta-text = Salva le storie che ami in { -pocket-brand-name } e nutri la tua mente con letture appassionanti.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } è parte della famiglia { -brand-product-name }
+# A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Salva
 newtab-pocket-saved = Salvato
 
@@ -239,6 +262,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Non mi interessa
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Grazie. Conoscere la tua opinione ci aiuta a migliorare il tuo feed.
 newtab-toast-thumbs-up-or-down = Grazie. Conoscere la tua opinione ci aiuta a migliorare il tuo feed.
 newtab-toast-dismiss-button =
     .title = Chiudi
@@ -262,6 +288,8 @@ newtab-custom-shortcuts-subtitle = Siti che hai salvato oppure visitato
 newtab-custom-shortcuts-toggle =
     .label = Scorciatoie
     .description = Siti che hai salvato oppure visitato
+# Variables
+#   $num (number) - Number of rows to display
 newtab-custom-row-selector =
     { $num ->
         [one] { $num } riga
@@ -271,8 +299,8 @@ newtab-custom-sponsored-sites = Scorciatoie sponsorizzate
 newtab-custom-pocket-title = Consigliati da { -pocket-brand-name }
 newtab-custom-pocket-subtitle = Contenuti eccezionali a cura di { -pocket-brand-name }, un membro della famiglia { -brand-product-name }
 newtab-custom-stories-toggle =
-  .label = Storie consigliate
-  .description = Contenuti eccezionali curati dalla famiglia di prodotti { -brand-product-name }
+    .label = Storie consigliate
+    .description = Contenuti eccezionali curati dalla famiglia di prodotti { -brand-product-name }
 newtab-custom-pocket-sponsored = Storie sponsorizzate
 newtab-custom-pocket-show-recent-saves = Mostra elementi salvati di recente
 newtab-custom-recent-title = Attività recente
@@ -302,6 +330,8 @@ newtab-wallpaper-dark-panda = Panda rosso nascosto in una foresta
 newtab-wallpaper-dark-sky = Paesaggio cittadino con cielo notturno
 newtab-wallpaper-dark-mountain = Paesaggio con montagne
 newtab-wallpaper-dark-city = Paesaggio cittadino con tonalità viola
+newtab-wallpaper-dark-fox-anniversary = Una volpe sul marciapiede vicino a una foresta
+newtab-wallpaper-light-fox-anniversary = Una volpe in un campo erboso con un paesaggio di montagna avvolto nella nebbia
 
 ## Solid Colors
 
@@ -341,12 +371,10 @@ newtab-wallpaper-storm-sky = Cielo tempestoso
 newtab-wallpaper-sky-with-pink-clouds = Cielo con nuvole rosa
 newtab-wallpaper-red-panda-yawns-in-a-tree = Panda rosso che sbadiglia su un albero
 newtab-wallpaper-white-mountains = Montagne bianche
-
 # Variables
 #   $author_string (String) - The name of the creator of the photo.
 #   $webpage_string (String) - The name of the webpage where the photo is located.
 newtab-wallpaper-attribution = Foto di <a data-l10n-name="name-link">{ $author_string }</a> da <a data-l10n-name="webpage-link">{ $webpage_string }</a>
-
 newtab-wallpaper-feature-highlight-header = Prova un tocco di colore
 newtab-wallpaper-feature-highlight-content = Dai un look diverso alle nuove schede con gli sfondi.
 newtab-wallpaper-feature-highlight-button = OK
@@ -354,7 +382,6 @@ newtab-wallpaper-feature-highlight-button = OK
 feature-highlight-dismiss-button =
     .title = Chiudi
     .aria-label = Chiudi pop-up
-# Tooltip for dismiss button
 feature-highlight-wallpaper =
     .title = { -newtab-wallpaper-feature-highlight-header }
     .aria-label = { -newtab-wallpaper-feature-highlight-content }
@@ -369,6 +396,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Sponsorizzato
 newtab-weather-menu-change-location = Modifica località
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Cerca località
+    .aria-label = Cerca località
 newtab-weather-change-location-search-input = Cerca località
 newtab-weather-menu-weather-display = Visualizzazione meteo
 # Display options are:
@@ -387,4 +417,77 @@ newtab-weather-menu-hide-weather = Nascondi meteo in Nuova scheda
 newtab-weather-menu-learn-more = Ulteriori informazioni
 # This message is shown if user is working offline
 newtab-weather-error-not-available = I dati sul meteo non sono al momento disponibili.
+
+## Topic Labels
+
+newtab-topic-label-business = Economia
+newtab-topic-label-career = Carriera
+newtab-topic-label-education = Educazione
+newtab-topic-label-arts = Intrattenimento
+newtab-topic-label-food = Alimentazione
+newtab-topic-label-health = Salute
+newtab-topic-label-hobbies = Videogiochi
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Finanze personali
+newtab-topic-label-society-parenting = Educazione dei figli
+newtab-topic-label-government = Politica
+newtab-topic-label-education-science = Scienza
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Life hacks
+newtab-topic-label-sports = Sport
+newtab-topic-label-tech = Tecnologia
+newtab-topic-label-travel = Viaggi
+newtab-topic-label-home = Casa e giardino
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Seleziona degli argomenti per personalizzare il tuo feed
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Scegli due o più argomenti. I nostri esperti curatori daranno priorità alle storie più adatte ai tuoi interessi. Puoi aggiornare le tue preferenze in qualsiasi momento.
+newtab-topic-selection-save-button = Salva
+newtab-topic-selection-cancel-button = Annulla
+newtab-topic-selection-button-maybe-later = Magari più tardi
+newtab-topic-selection-privacy-link = Scopri come proteggiamo i tuoi dati e la tua privacy
+newtab-topic-selection-button-update-interests = Aggiorna i tuoi interessi
+newtab-topic-selection-button-pick-interests = Scegli i tuoi interessi
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Segui
+newtab-section-following-button = Stai seguendo
+newtab-section-unfollow-button = Smetti di seguire
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Blocca
+newtab-section-blocked-button = Bloccato
+newtab-section-unblock-button = Sblocca
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Bloccare questa sezione?
+newtab-section-confirm-block-section-p2 = Una volta bloccata, la sezione non verrà più visualizzata nel feed.
+newtab-section-block-section-button = Blocca questa sezione
+newtab-section-cancel-button = Non adesso
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Argomenti
+newtab-section-mangage-topics-button =
+    .label = Argomenti seguiti e bloccati
+newtab-section-mangage-topics-followed-topics-subtitle = Argomenti seguiti
+newtab-section-mangage-topics-followed-topics-empty-state = Non hai ancora seguito alcun argomento.
+newtab-section-mangage-topics-blocked-topics-subtitle = Argomenti bloccati
+newtab-section-mangage-topics-blocked-topics-empty-state = Non hai ancora bloccato alcun argomento.
 

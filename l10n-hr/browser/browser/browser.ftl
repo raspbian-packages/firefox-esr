@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } privatno pregledavanje
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } privatno pregledavanje
+    .data-title-default-with-profile = { $profile-name } – { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } – { -brand-full-name } privatno pregledavanje
+    .data-content-title-default = { $content-title } – { -brand-full-name }
+    .data-content-title-private = { $content-title } – { -brand-full-name } privatno pregledavanje
+    .data-content-title-default-with-profile = { $content-title } – { $profile-name } – { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } – { $profile-name } – { -brand-full-name } privatno pregledavanje
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } – privatno pregledavanje
+    .data-title-default-with-profile = { $profile-name } – { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } – { -brand-full-name } privatno pregledavanje
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } – privatno pregledavanje
+    .data-content-title-default-with-profile = { $content-title } – { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } – { $profile-name } – privatno pregledavanje
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -64,11 +122,11 @@ urlbar-services-notification-anchor =
 urlbar-web-notification-anchor =
     .tooltiptext = Promijeni postavke primanja obavijesti od ove stranice
 urlbar-midi-notification-anchor =
-    .tooltiptext = Otvori MIDI okno
+    .tooltiptext = Otvori MIDI ploču
 urlbar-eme-notification-anchor =
     .tooltiptext = Upravljaj korištenjem DRM softvera
 urlbar-web-authn-anchor =
-    .tooltiptext = Otvori okno Web autentifikacije
+    .tooltiptext = Otvori ploču web autentifikacije
 urlbar-canvas-notification-anchor =
     .tooltiptext = Upravljanje dozvolama za izdvajanje platna
 urlbar-web-rtc-share-microphone-notification-anchor =
@@ -76,9 +134,9 @@ urlbar-web-rtc-share-microphone-notification-anchor =
 urlbar-default-notification-anchor =
     .tooltiptext = Otvori ploču s porukama
 urlbar-geolocation-notification-anchor =
-    .tooltiptext = Otvori ploču sa zahtjevima lokacije
+    .tooltiptext = Otvori ploču za traženje mjesta
 urlbar-xr-notification-anchor =
-    .tooltiptext = Otvori ploču dopuštenja za virtualnu stvarnost
+    .tooltiptext = Otvori ploču dozvola za virtualnu stvarnost
 urlbar-storage-access-anchor =
     .tooltiptext = Otvori ploču s dozvolama za pregledavanje
 urlbar-web-rtc-share-screen-notification-anchor =
@@ -91,14 +149,18 @@ urlbar-plugins-notification-anchor =
     .tooltiptext = Upravljanje korištenjem priključaka
 urlbar-web-rtc-share-devices-notification-anchor =
     .tooltiptext = Upravljaj dijeljenjem tvoje kamere i/ili mikrofona sa stranicom
+# "Speakers" is used in a general sense that might include headphones or
+# another audio output connection.
+urlbar-web-rtc-share-speaker-notification-anchor =
+    .tooltiptext = Upravljaj dijeljenjem drugih zvučnika s web stranicom
 urlbar-autoplay-notification-anchor =
     .tooltiptext = Otvori ploču za automatsku reprodukciju
 urlbar-persistent-storage-notification-anchor =
-    .tooltiptext = Spremaj podatke u trajno spremište
+    .tooltiptext = Spremi podatke u trajno spremište
 urlbar-addons-notification-anchor =
     .tooltiptext = Otvori ploču s informacijama o instaliranim dodacima
 urlbar-tip-help-icon =
-    .title = Potraži pomoć
+    .title = Dobij pomoć
 urlbar-search-tips-confirm = U redu, razumijem
 urlbar-search-tips-confirm-short = Razumijem
 # Read out before Urlbar Tip text content so screenreader users know the
@@ -117,8 +179,8 @@ urlbar-result-menu-remove-from-history =
     .label = Ukloni iz povijesti
     .accesskey = U
 urlbar-result-menu-tip-get-help =
-    .label = Zatraži pomoć
-    .accesskey = Z
+    .label = Dobij pomoć
+    .accesskey = D
 
 ## Prompts users to use the Urlbar when they open a new tab or visit the
 ## homepage of their default search engine.
@@ -126,7 +188,7 @@ urlbar-result-menu-tip-get-help =
 ##  $engineName (String): The name of the user's default search engine. e.g. "Google" or "DuckDuckGo".
 
 urlbar-search-tips-onboard = Tipkaj manje, pronađi više: Traži { $engineName } direktno u adresnoj traci.
-urlbar-search-tips-redirect-2 = Započni pretragu u adresnoj traci za prikaz prijedloga od { $engineName } i tvoju povijest pregledavanja.
+urlbar-search-tips-redirect-2 = Započni pretragu u adresnoj traci za prikaz prijedloga { $engineName } tražilice i tvoje povijesti pregledavanja.
 # Make sure to match the name of the Search panel in settings.
 urlbar-search-tips-persist = Pretraživanje je upravo postalo jednostavnije. Pokušaj preciznije odrediti pretraživanje u adresnoj traci. Za prikaz URL-a, prijeđi na opciju „Traži” u postavkama.
 # Prompts users to use the Urlbar when they are typing in the domain of a
@@ -143,7 +205,7 @@ urlbar-search-mode-actions = Radnje
 ##
 
 urlbar-geolocation-blocked =
-    .tooltiptext = Ovoj stranici zabranjen je pristup informacijama o lokaciji.
+    .tooltiptext = Ovoj je stranici zabranjen pristup podacima mjesta.
 urlbar-xr-blocked =
     .tooltiptext = Ovoj ste stranici blokirali pristup uređajima za virtualnu stvarnost.
 urlbar-web-notifications-blocked =
@@ -153,7 +215,7 @@ urlbar-camera-blocked =
 urlbar-microphone-blocked =
     .tooltiptext = Ovoj ste stranici zabranili korištenje mikrofona.
 urlbar-screen-blocked =
-    .tooltiptext = Ovoj stranici zabranjeno je dijeljenje tvog zaslona.
+    .tooltiptext = Blokirao/la si dijeljenje tvog ekrana ovoj web stranici.
 urlbar-persistent-storage-blocked =
     .tooltiptext = Ovoj stranici zabranjeno je trajno spremanje podataka.
 urlbar-popup-blocked =
@@ -204,10 +266,10 @@ search-one-offs-context-open-new-tab =
     .label = Traži u novoj kartici
     .accesskey = t
 search-one-offs-context-set-as-default =
-    .label = Postavi kao zadanu tražilicu
+    .label = Postavi kao standardnu tražilicu
     .accesskey = d
 search-one-offs-context-set-as-default-private =
-    .label = Postavi kao zadanu tražilicu za privatne prozore
+    .label = Postavi kao standardnu tražilicu za privatne prozore
     .accesskey = P
 # Search engine one-off buttons with an @alias shortcut/keyword.
 # Variables:
@@ -275,6 +337,9 @@ quickactions-cmd-plugins = priključci
 # Opens the print dialog
 quickactions-print2 = Ispiši stranicu
 quickactions-cmd-print = ispis
+# Opens the print dialog at the save to PDF option
+quickactions-savepdf = Spremi stranicu kao PDF
+quickactions-cmd-savepdf = pdf
 # Opens a new private browsing window
 quickactions-private2 = Otvori privatni prozor
 quickactions-cmd-private = privatno pregledavanje
@@ -289,7 +354,7 @@ quickactions-screenshot3 = Snimi ekran
 quickactions-cmd-screenshot = snimka ekrana
 # Opens about:preferences
 quickactions-settings2 = Upravljaj postavkama
-quickactions-cmd-settings = postavke, osobne postavke, opcije
+quickactions-cmd-settings = postavke, osobne postavke, mogućnosti
 # Opens about:addons page in the themes section
 quickactions-themes = Upravljaj temama
 quickactions-cmd-themes = teme
@@ -302,6 +367,10 @@ quickactions-cmd-viewsource = pogledaj izvorni kod, izvorni kod
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Saznaj više o brzim radnjama
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Pritisni tipku tabulatora za biranje:
 
 ## Bookmark Panel
 
@@ -345,7 +414,8 @@ identity-connection-secure = Veza sigurna
 identity-connection-failure = Greška kod spajanja
 identity-connection-internal = Ovo je sigurna { -brand-short-name } stranica.
 identity-connection-file = Ova je stranica spremljena na tvom računalu.
-identity-extension-page = Ova stranica je učitana iz dodatka.
+identity-connection-associated = Ova je stranica učitana iz jedne druge stranice.
+identity-extension-page = Ova je stranica učitana iz jednog proširenja.
 identity-active-blocked = { -brand-short-name } je blokirao dijelove ove stranice koji nisu sigurni.
 identity-custom-root = Vezu je potvrdio izdavatelj certifikata kojeg Mozilla ne prepoznaje.
 identity-passive-loaded = Dijelovi ove stranice nisu sigurni (poput slika).
@@ -353,15 +423,18 @@ identity-active-loaded = Zaštita je deaktivirana na ovoj stranici.
 identity-weak-encryption = Ova stranica koristi slabo šifriranje.
 identity-insecure-login-forms = Prijave na ovoj stranici mogu biti kompromitirane.
 identity-https-only-connection-upgraded = (nadograđeno na HTTPS)
-identity-https-only-label = Način rada "Samo HTTPS"
+identity-https-only-label = „Samo HTTPS” modus
+identity-https-only-label2 = Automatski nadogradi ovu stranicu na sigurnu vezu
 identity-https-only-dropdown-on =
     .label = Uključeno
 identity-https-only-dropdown-off =
     .label = Isključeno
 identity-https-only-dropdown-off-temporarily =
     .label = Privremeno isključeno
-identity-https-only-info-turn-on2 = Uključi način rada „samo HTTPS” za ovu stranicu, ako želiš da { -brand-short-name } nadogradi vezu kad je to moguće.
-identity-https-only-info-turn-off2 = Ako se stranica čini slomljenom, možda ćeš htjeti isključiti način rada "samo HTTPS" za ovu stranicu i ponovno ju učitati pomoću nesigurnog HTTP-a.
+identity-https-only-info-turn-on2 = Uključi „Samo HTTPS” modus za ovu stranicu ako želiš da { -brand-short-name } nadogradi vezu kad je to moguće.
+identity-https-only-info-turn-off2 = Ako se čini da stranica ne radi, isključi „Samo HTTPS” modus za ovu stranicu i ponovo ju učitaj pomoću nesigurnog HTTP-a.
+identity-https-only-info-turn-on3 = Uključite HTTPS nadogradnje za ovu stranicu ako želite da { -brand-short-name } nadogradi vezu kada je to moguće.
+identity-https-only-info-turn-off3 = Ukoliko se stranica ne učitava ispravno, možda biste trebali isključiti HTTPS nadogradnje za ovu stranicu i koristiti nesigurni HTTP.
 identity-https-only-info-no-upgrade = Nije moguće nadograditi vezu s HTTP-a.
 identity-permissions-storage-access-header = Međustranični kolačići
 identity-permissions-storage-access-hint = Ove stranke mogu koristiti kolačiće i podatke dijeljene među više stranica dok ste na toj stranici.
@@ -402,7 +475,7 @@ browser-window-minimize-button =
 browser-window-maximize-button =
     .tooltiptext = Proširi
 browser-window-restore-down-button =
-    .tooltiptext = Vrati dolje
+    .tooltiptext = Obnovi dolje
 browser-window-close-button =
     .tooltiptext = Zatvori
 
@@ -415,7 +488,7 @@ browser-tab-audio-muted2 = UTIŠANO
 # This label should be written in all capital letters if your locale supports them.
 browser-tab-audio-blocked = AUTOMATSKA REPRODUKCIJA BLOKIRANA
 # This label should be written in all capital letters if your locale supports them.
-browser-tab-audio-pip = SLIKA U SLICI
+browser-tab-audio-pip = SLIKA-U-SLICI
 
 ## These labels should be written in all capital letters if your locale supports them.
 ## Variables:
@@ -465,14 +538,14 @@ popup-select-microphone-icon =
 popup-select-speaker-icon =
     .tooltiptext = Zvučnici
 popup-select-window-or-screen =
-    .label = Prozor ili zaslon:
-    .accesskey = z
+    .label = Prozor ili ekran:
+    .accesskey = P
 popup-all-windows-shared = Svi vidljivi prozori na tvom ekranu će se dijeliti.
 
 ## WebRTC window or screen share tab switch warning
 
-sharing-warning-window = Dijeliš { -brand-short-name }. Drugi ljudi mogu vidjeti kad se prebaciš na novu karticu.
-sharing-warning-screen = Dijeliš svoj cijeli ekran. Drugi ljudi mogu vidjeti kad se prebaciš na novu karticu.
+sharing-warning-window = Dijeliš { -brand-short-name }. Drugi ljudi mogu vidjeti kad prijeđeš na novu karticu.
+sharing-warning-screen = Dijeliš svoj cijeli ekran. Drugi ljudi mogu vidjeti kad prijeđeš na novu karticu.
 sharing-warning-proceed-to-tab =
     .label = Prijeđi na karticu
 sharing-warning-disable-for-session =
@@ -535,14 +608,16 @@ urlbar-remote-control-notification-anchor2 =
 urlbar-permissions-granted =
     .tooltiptext = Ovoj stranici odobrene su dodatne dozvole.
 urlbar-switch-to-tab =
-    .value = Prebaci na karticu:
+    .value = Prijeđi na karticu:
 # Used to indicate that a selected autocomplete entry is provided by an extension.
 urlbar-extension =
     .value = Dodatak:
 urlbar-go-button =
-    .tooltiptext = Idi na adresu iz lokacijske trake
+    .tooltiptext = Otvori adresu u adresnoj traci
 urlbar-page-action-button =
     .tooltiptext = Radnje na stranici
+urlbar-revert-button =
+    .tooltiptext = Prikaži adresu u lokacijskoj traci
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -561,8 +636,13 @@ urlbar-result-action-search-in-private = Pretraži u privatnom prozoru
 #  $engine (String): the name of a search engine
 urlbar-result-action-search-w-engine = Traži pomoću { $engine }
 urlbar-result-action-sponsored = Sponzorirano
-urlbar-result-action-switch-tab = Prebaci na karticu
+urlbar-result-action-switch-tab = Prijeđi na karticu
 urlbar-result-action-visit = Posjeti
+# "Switch to tab with container" is used when the target tab is located in a
+# different container.
+# Variables
+# $container (String): the name of the target container
+urlbar-result-action-switch-tab-with-container = Prijeđi na karticu · <span>{ $container }</span>
 # Allows the user to visit a URL that was previously copied to the clipboard.
 urlbar-result-action-visit-from-clipboard = Posjeti web stranicu iz međuspremnika
 # Directs a user to press the Tab key to perform a search with the specified
@@ -595,6 +675,41 @@ urlbar-result-action-calculator-result = = { $result }
 
 ## Strings used for buttons in the urlbar
 
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Traži pomoću { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } – Pretraži { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } – Pretraži pomoću { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Odaberi tražilicu
+urlbar-searchmode-bookmarks =
+    .label = Zabilješke
+urlbar-searchmode-tabs =
+    .label = Kartice
+urlbar-searchmode-history =
+    .label = Povijest
+urlbar-searchmode-actions =
+    .label = Radnje
+urlbar-searchmode-exit-button =
+    .tooltiptext = Zatvori
+urlbar-searchmode-popup-description = Ovaj put traži pomoću:
+urlbar-searchmode-popup-search-settings = Postavke pretrage
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, odaberi tražilicu
+    .tooltiptext = { $engine }, odaberi tražilicu
+urlbar-searchmode-button-no-engine =
+    .label = Nije odabran nijedan prečac, odaberi prečac
+    .tooltiptext = Nije odabran nijedan prečac, odaberi prečac
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -604,6 +719,12 @@ urlbar-result-action-search-bookmarks = Pretraži zabilješke
 urlbar-result-action-search-history = Pretraži povijest
 urlbar-result-action-search-tabs = Pretraži kartice
 urlbar-result-action-search-actions = Traži radnje
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Prijeđi na { $group }
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = Otvori { $group }
 
 ## Labels shown above groups of urlbar results
 
@@ -625,6 +746,21 @@ urlbar-group-quickactions =
 #  $engine (String): the name of the search engine used to search.
 urlbar-group-recent-searches =
     .label = Nedavne pretrage
+# The header shown above trending results.
+# Variables:
+#  $engine (String): the name of the search engine providing the trending suggestions
+urlbar-group-trending =
+    .label = U trendu na { $engine }
+# The result menu labels shown next to trending results.
+urlbar-result-menu-trending-dont-show =
+    .label = Ne prikazuj popularna pretraživanja
+    .accesskey = N
+urlbar-result-menu-trending-why =
+    .label = Zašto ovo vidim?
+    .accesskey = Z
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-trending-dismissal-acknowledgment = Hvala na odgovoru. Više nećeš vidjeti pretraživanja u trendu.
 
 ## Reader View toolbar buttons
 
@@ -640,11 +776,12 @@ reader-view-close-button =
 ##   $shortcut (String) - Keyboard shortcut to execute the command.
 
 picture-in-picture-urlbar-button-open =
-    .tooltiptext = Otvori sliku u slici ({ $shortcut })
+    .tooltiptext = Otvori „Slika-u-slici” ({ $shortcut })
 picture-in-picture-urlbar-button-close =
-    .tooltiptext = Zatvori sliku u slici ({ $shortcut })
-picture-in-picture-panel-header = Slika u slici
-picture-in-picture-panel-headline = Ova web stranica ne preporučuje koristiti funkciju slika u slici
+    .tooltiptext = Zatvori „Slika-u-slici” ({ $shortcut })
+picture-in-picture-panel-header = Slika-u-slici
+picture-in-picture-panel-headline = Ova web stranica ne preporučuje koristiti funkciju „Slika-u-slici”
+picture-in-picture-panel-body = Videa se možda neće prikazivati onako kako je programer zamislio dok je aktivirana funkcija „Slika-u-slici”.
 picture-in-picture-enable-toggle =
     .label = Svejedno aktiviraj
 
@@ -796,9 +933,9 @@ toolbar-button-new-private-window =
 
 eme-notifications-drm-content-playing = Neki audio ili video materijali na ovoj stranici koriste DRM softver koji može ograničiti što { -brand-short-name } može učiniti s njima.
 eme-notifications-drm-content-playing-manage = Upravljaj postavkama
-eme-notifications-drm-content-playing-manage-accesskey = m
+eme-notifications-drm-content-playing-manage-accesskey = U
 eme-notifications-drm-content-playing-dismiss = Odbaci
-eme-notifications-drm-content-playing-dismiss-accesskey = d
+eme-notifications-drm-content-playing-dismiss-accesskey = O
 
 ## Password save/update panel
 
@@ -832,17 +969,17 @@ edit-popup-settings =
     .label = Upravljaj postavkama skočnih prozora …
     .accesskey = U
 picture-in-picture-hide-toggle =
-    .label = Sakrij prekidač za slika-u-sliku
+    .label = Sakrij prekidač za „Slika-u-slici”
     .accesskey = S
 
 ## Since the default position for PiP controls does not change for RTL layout,
 ## right-to-left languages should use "Left" and "Right" as in the English strings,
 
 picture-in-picture-move-toggle-right =
-    .label = Premjesti preklopnik za slika-u-slici na desnu stranu
+    .label = Premjesti prekidač za „Slika-u-slici” na desnu stranu
     .accesskey = d
 picture-in-picture-move-toggle-left =
-    .label = Premjesti preklopnik za slika-u-slici na lijevu stranu
+    .label = Premjesti prekidač za „Slika-u-slici” na lijevu stranu
     .accesskey = l
 
 ##
@@ -880,15 +1017,18 @@ tabs-toolbar =
 tabs-toolbar-new-tab =
     .label = Nova kartica
 tabs-toolbar-list-all-tabs =
-    .label = Popis svih tabova
-    .tooltiptext = Popis svih tabova
+    .label = Popis svih kartica
+    .tooltiptext = Popis svih kartica
 
 ## Infobar shown at startup to suggest session-restore
 
+# <img data-l10n-name="icon"/> will be replaced by the application menu icon
+restore-session-startup-suggestion-message = <strong>Želiš otvoriti prethodne kartice?</strong> Prethodnu sesiju možeš obnoviti u izborniku aplikacije { -brand-short-name } <img data-l10n-name="icon"/>, pod Povijest.
 restore-session-startup-suggestion-button = Pokaži mi kako
 
 ## Infobar shown when the user tries to open a file picker and file pickers are blocked by enterprise policy
 
+filepicker-blocked-infobar = Tvoja je organizacija blokirala pristup lokalnim datotekama na ovom računalu
 
 ## Mozilla data reporting notification (Telemetry, Firefox Health Report, etc)
 
@@ -898,6 +1038,18 @@ data-reporting-notification-button =
     .accesskey = O
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Privatno pregledavanje
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Privatno pregledavanje
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Sprečavanje gubitka podataka (DLP) od { $agentName }. Klikni za više informacija.
+content-analysis-panel-title = Zaštita podataka
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text-styled = Tvoja organizacija koristi <b>{ $agentName }</b> za zaštitu od gubljenja podataka. <a data-l10n-name="info">Saznaj više</a>
 
 ## Unified extensions (toolbar) button
 
@@ -917,9 +1069,38 @@ unified-extensions-button-permissions-needed =
 ## Unified extensions button when some extensions are quarantined.
 ## Note that the new line is intentionally part of the tooltip.
 
+unified-extensions-button-quarantined =
+    .label = Proširenja
+    .tooltiptext =
+        Proširenja
+        Neka proširenja nisu dozvoljena
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Proširenja
+    .tooltiptext =
+        Proširenja
+        Neka proširenja su deaktivirana
 
 ## Private browsing reset button
 
+reset-pbm-toolbar-button =
+    .label = Završi privatnu sesiju
+    .tooltiptext = Završi privatnu sesiju
+reset-pbm-panel-heading = Završi privatnu sesiju?
+reset-pbm-panel-description = Zatvori sve privatne kartice i izbriši povijest, kolačiće i sve ostale podatke web stranica.
+reset-pbm-panel-always-ask-checkbox =
+    .label = Uvijek me pitaj
+    .accesskey = U
+reset-pbm-panel-cancel-button =
+    .label = Odustani
+    .accesskey = O
+reset-pbm-panel-confirm-button =
+    .label = Izbriši podatke sesije
+    .accesskey = I
+reset-pbm-panel-complete = Podaci privatne sesije izbrisani
 
 ## Autorefresh blocker
 
@@ -931,12 +1112,22 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
+firefox-relay-offer-why-to-use-relay = Naše sigurne i jednostavne maske štite tvoj identitet i sprečavaju neželjenu poštu skrivanjem tvoje e-mail adrese.
+# Variables:
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-provides = Sve poruke e-pošte poslane na maskiranu e-poštu će biti proslijeđene na <strong>{ $useremail }</strong> (ukoliko odlučite da ih nećete blokirati).
+firefox-relay-offer-legal-notice = Klikom na „Koristi e-mail masku” prihvaćaš <label data-l10n-name="tos-url">uvjete usluge</label> i <label data-l10n-name="privacy-url">politiku privatnosti</label>.
 
 ## Add-on Pop-up Notifications
 
 popup-notification-addon-install-unsigned =
     .value = (Nepotvrđeno)
 popup-notification-xpinstall-prompt-learn-more = Naučite više o sigurnom instaliranju dodataka
+popup-notification-xpinstall-prompt-block-url = Pogledaj detalje
+# Note: Access key is set to P to match "Private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox =
+    .label = Pokreni u privatnim prozorima
+    .accesskey = P
 
 ## Pop-up warning
 
@@ -971,10 +1162,18 @@ popup-warning-button =
 # Variables:
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
-    .label = Prikaži '{ $popupURI }'
+    .label = Prikaži „{ $popupURI }”
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
+file-picker-failed-open = Nije moguće otvoriti Windows dijaloški okvir za odabir datoteke. Nije moguće odabrati datoteku ili mapu.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-failed-save-somewhere = Nije moguće otvoriti Windows dijaloški okvir za odabir datoteke. Datoteka će biti spremljena u { $path }.
+file-picker-failed-save-nowhere = Nije moguće otvoriti Windows dijaloški okvir za odabir datoteke. Standardna mapa za spremanje nije pronađena. Datoteka neće biti spremljena.
+file-picker-crashed-open = Windows dijaloški okvir za odabir datoteke se srušio. Nije moguće odabrati datoteku ili mapu.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-crashed-save-somewhere = Windows dijaloški okvir za odabir datoteke se srušio. Datoteka će biti spremljena u { $path }.
+file-picker-crashed-save-nowhere = Windows dijaloški okvir za odabir datoteke se srušio. Standardna mapa za spremanje nije pronađena. Datoteka neće biti spremljena.
 
 # Button used with file-picker-crashed-save-default. Opens the folder in Windows
 # Explorer, with the saved file selected and in focus.
@@ -982,3 +1181,6 @@ popup-show-popup-menuitem =
 # The wording here should be consistent with the Windows variant of
 # `downloads-cmd-show-menuitem-2` and similar messages.
 
+file-picker-crashed-show-in-folder =
+    .label = Prikaži u mapi
+    .accessKey = m

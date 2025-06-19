@@ -11,9 +11,9 @@
 ##   $extension (String): replaced with the localized name of the extension.
 
 webext-perms-header = { $extension } 확장 기능을 추가하시겠습니까?
-webext-perms-header-with-perms = { $extension } 확장 기능을 추가하시겠습니까? 이 확장 기능은 다음의 권한을 갖습니다:
+webext-perms-header-with-perms = { $extension } 확장 기능을 추가하시겠습니까? 이 확장 기능은 다음 권한을 갖습니다:
 webext-perms-header-unsigned = { $extension } 확장 기능을 추가하시겠습니까? 이 확장 기능은 확인되지 않았습니다. 악성 확장 기능은 개인 정보를 훔치거나 컴퓨터를 손상시킬 수 있습니다. 출처를 신뢰하는 경우에만 추가하세요.
-webext-perms-header-unsigned-with-perms = { $extension } 확장 기능을 추가하시겠습니까? 이 확장 기능은 확인되지 않았습니다. 악성 확장 기능은 개인 정보를 훔치거나 컴퓨터를 손상시킬 수 있습니다. 출처를 신뢰하는 경우에만 추가하세요. 이 확장 기능은 다음의 권한을 갖습니다:
+webext-perms-header-unsigned-with-perms = { $extension } 확장 기능을 추가하시겠습니까? 이 확장 기능은 확인되지 않았습니다. 악성 확장 기능은 개인 정보를 훔치거나 컴퓨터를 손상시킬 수 있습니다. 출처를 신뢰하는 경우에만 추가하세요. 이 확장 기능은 다음 권한을 갖습니다:
 webext-perms-sideload-header = { $extension } 부가 기능이 추가됨
 webext-perms-optional-perms-header = { $extension } 확장 기능이 추가 권한을 요청합니다.
 
@@ -35,7 +35,7 @@ webext-perms-sideload-cancel =
     .accesskey = C
 # Variables:
 #   $extension (String): replaced with the localized name of the extension.
-webext-perms-update-text = { $extension } 확장 기능이 업데이트되었습니다. 업데이트된 버전이 설치되기 전에 새 권한을 승인해야 합니다. “취소”를 누르면 현재 버전을 유지합니다. 이 확장 기능은 다음의 권한을 갖습니다:
+webext-perms-update-text = { $extension } 확장 기능이 업데이트되었습니다. 업데이트된 버전이 설치되기 전에 새 권한을 승인해야 합니다. “취소”를 누르면 현재 버전을 유지합니다. 이 확장 기능은 다음 권한을 갖습니다:
 webext-perms-update-accept =
     .label = 업데이트
     .accesskey = U
@@ -61,6 +61,17 @@ webext-perms-host-description-one-site = { $domain }에 대한 사용자 데이�
 #   $domainCount (Number): Integer indicating the number of additional
 #     hosts for which this webextension is requesting permission.
 webext-perms-host-description-too-many-sites = 다른 사이트 { $domainCount }개에 대한 사용자 데이터에 접근
+# Variables:
+#   $domain (String): will be replaced by the DNS host name for which a webextension is requesting access (e.g., mozilla.org),
+#     $domain should be treated as plural (because it may also include all subdomains, e.g www.mozilla.org, ftp.mozilla.org).
+webext-perms-host-description-one-domain = { $domain } 도메인 사이트에 대한 사용자 데이터에 접근
+# Permission string used for webextensions requesting access to 2 or more domains (and so $domainCount is expected to always
+# be >= 2, for webextensions requesting access to only one domain the `webext-perms-host-description-one-domain` string is
+# used instead).
+# Variables:
+#   $domainCount (Number): Integer indicating the number of websites domains for which this webextension is requesting permission
+#     (the list of domains will follow this string).
+webext-perms-host-description-multiple-domains = { $domainCount }개 도메인 사이트에 대한 사용자 데이터에 접근
 
 ## Headers used in the webextension permissions dialog for synthetic add-ons.
 ## The part of the string describing what privileges the extension gives should be consistent

@@ -51,6 +51,11 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } التصفح الخفي
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -201,7 +206,7 @@ full-screen-exit =
 
 # This string prompts the user to use the list of search shortcuts in
 # the Urlbar and searchbar.
-search-one-offs-with-title = الآن فقط ابحث باستعمال:
+search-one-offs-with-title = ابحث هذه المرة ب:
 search-one-offs-change-settings-compact-button =
     .tooltiptext = غيّر إعدادات البحث
 search-one-offs-context-open-new-tab =
@@ -549,7 +554,7 @@ urlbar-placeholder-search-mode-other-actions =
 # Variables
 #  $name (String): the name of the user's default search engine
 urlbar-placeholder-with-name =
-    .placeholder = ‫ابحث مستعملًا { $name } أو أدخِل عنوانا
+    .placeholder = ‫ابحث ب { $name } أو أدخِل عنوانا
 # Variables
 #  $component (String): the name of the component which forces remote control.
 #    Example: "DevTools", "Marionette", "RemoteAgent".
@@ -566,6 +571,8 @@ urlbar-go-button =
     .tooltiptext = انتقل للعنوان في شريط الموقع
 urlbar-page-action-button =
     .tooltiptext = إجراءات الصفحة
+urlbar-revert-button =
+    .tooltiptext = أظهِر العنوان في شريط الموقع
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -575,14 +582,14 @@ urlbar-page-action-button =
 # "Search", and we would like to avoid strings like "Search MSN Search".
 # Variables
 #  $engine (String): the name of a search engine
-urlbar-result-action-search-in-private-w-engine = ابحث مستعملًا { $engine } في نافذة خاصة
+urlbar-result-action-search-in-private-w-engine = ابحث ب { $engine } في نافذة خاصة
 # Used when the private browsing engine is the same as the default engine.
 urlbar-result-action-search-in-private = ابحث في نافذةٍ خاصة
 # The "with" format was chosen because the search engine name can end with
 # "Search", and we would like to avoid strings like "Search MSN Search".
 # Variables
 #  $engine (String): the name of a search engine
-urlbar-result-action-search-w-engine = ابحث مستخدمًا { $engine }
+urlbar-result-action-search-w-engine = ابحث ب { $engine }
 urlbar-result-action-sponsored = نتيجة مموّلة
 urlbar-result-action-switch-tab = انتقل إلى اللسان
 urlbar-result-action-visit = زُر
@@ -598,7 +605,7 @@ urlbar-result-action-visit-from-clipboard = زر من الحافظة
 # Variables
 #  $engine (String): the name of a search engine that searches the entire Web
 #  (e.g. Google).
-urlbar-result-action-before-tabtosearch-web = اضغط Tab للبحث باستعمال { $engine }
+urlbar-result-action-before-tabtosearch-web = اضغط Tab للبحث ب { $engine }
 # Directs a user to press the Tab key to perform a search with the specified
 # engine.
 # Variables
@@ -608,7 +615,7 @@ urlbar-result-action-before-tabtosearch-other = اضغط Tab للبحث عبر {
 # Variables
 #  $engine (String): the name of a search engine that searches the entire Web
 #  (e.g. Google).
-urlbar-result-action-tabtosearch-web = ابحث مستعملًا { $engine } مباشرة من شريط العنوان
+urlbar-result-action-tabtosearch-web = ابحث ب { $engine } مباشرة من شريط العنوان
 # Variables
 #  $engine (String): the name of a search engine that searches a specific site
 #  (e.g. Amazon).
@@ -621,6 +628,44 @@ urlbar-result-action-copy-to-clipboard = انسخ
 #  $result (String): the string representation for a formula result
 urlbar-result-action-calculator-result = = { $result }
 
+## Strings used for buttons in the urlbar
+
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = ابحث ب { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - بحث { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - ابحث ب { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = اختر محرك بحث
+urlbar-searchmode-bookmarks =
+    .label = العلامات
+urlbar-searchmode-tabs =
+    .label = الألسنة
+urlbar-searchmode-history =
+    .label = التأريخ
+urlbar-searchmode-actions =
+    .label = الإجراءات
+urlbar-searchmode-exit-button =
+    .tooltiptext = أغلق
+urlbar-searchmode-popup-description = ابحث هذه المرة ب:
+urlbar-searchmode-popup-search-settings = إعدادات البحث
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }، اختر محرك بحث
+    .tooltiptext = { $engine }، اختر محرك بحث
+urlbar-searchmode-button-no-engine =
+    .label = لم تحدد اختصار، اختر اختصارًا
+    .tooltiptext = لم تحدد اختصار، اختر اختصارًا
+
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
 ## In these actions "Search" is a verb, followed by where the search is performed.
@@ -629,6 +674,12 @@ urlbar-result-action-search-bookmarks = ابحث في العلامات
 urlbar-result-action-search-history = ابحث في التأريخ
 urlbar-result-action-search-tabs = ابحث في الألسنة
 urlbar-result-action-search-actions = إجراءات البحث
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = تبديل إلى { $group }
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = افتح { $group }
 
 ## Labels shown above groups of urlbar results
 
@@ -650,6 +701,13 @@ urlbar-group-quickactions =
 #  $engine (String): the name of the search engine used to search.
 urlbar-group-recent-searches =
     .label = عمليات البحث الأخيرة
+# The result menu labels shown next to trending results.
+urlbar-result-menu-trending-dont-show =
+    .label = لا تعرض عمليات البحث الشائعة
+    .accesskey = م
+urlbar-result-menu-trending-why =
+    .label = لماذا أرى هذا؟
+    .accesskey = ل
 
 ## Reader View toolbar buttons
 
@@ -927,6 +985,10 @@ data-reporting-notification-button =
     .accesskey = خ
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = التصفح الخاص
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = التصفح الخاص
+content-analysis-panel-title = حماية البيانات
 
 ## Unified extensions (toolbar) button
 
@@ -951,6 +1013,10 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         الامتدادات
         بعض الامتدادات غير مسموح بها
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
 
 ## Private browsing reset button
 
@@ -991,6 +1057,11 @@ firefox-relay-offer-legal-notice = بالنقر على"أستخدم قناع ا�
 popup-notification-addon-install-unsigned =
     .value = (لم يُتحقق منها)
 popup-notification-xpinstall-prompt-learn-more = اطّلع على المزيد حول طريقة تثبيت الإضافات بأمان تام
+popup-notification-xpinstall-prompt-block-url = اعرض التفاصيل
+# Note: Access key is set to P to match "Private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox =
+    .label = تشغيله في النوافذ الخاصة
+    .accesskey = ف
 
 ## Pop-up warning
 
@@ -1029,3 +1100,16 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = أظهر ”{ $popupURI }“
+
+## File-picker crash notification ("FilePickerCrashed.sys.mjs")
+
+
+# Button used with file-picker-crashed-save-default. Opens the folder in Windows
+# Explorer, with the saved file selected and in focus.
+#
+# The wording here should be consistent with the Windows variant of
+# `downloads-cmd-show-menuitem-2` and similar messages.
+
+file-picker-crashed-show-in-folder =
+    .label = اعرض في المجلد
+    .accessKey = م

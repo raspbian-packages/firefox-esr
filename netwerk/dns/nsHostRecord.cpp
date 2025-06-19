@@ -39,6 +39,15 @@ nsHostKey::nsHostKey(const nsACString& aHost, const nsACString& aTrrServer,
       pb(aPb),
       originSuffix(aOriginsuffix) {}
 
+nsHostKey::nsHostKey(const nsHostKey& other)
+    : host(other.host),
+      mTrrServer(other.mTrrServer),
+      type(other.type),
+      flags(other.flags),
+      af(other.af),
+      pb(other.pb),
+      originSuffix(other.originSuffix) {}
+
 bool nsHostKey::operator==(const nsHostKey& other) const {
   return host == other.host && mTrrServer == other.mTrrServer &&
          type == other.type &&
@@ -580,4 +589,19 @@ TypeHostRecord::GetTtl(uint32_t* aResult) {
   NS_ENSURE_ARG(aResult);
   *aResult = mTtl;
   return NS_OK;
+}
+
+void TypeHostRecord::ResolveComplete() {
+  if (IsRelevantTRRSkipReason(mTRRSkippedReason)) {
+    Telemetry::Accumulate(
+        Telemetry::TRR_RELEVANT_SKIP_REASON_TRR_FIRST_TYPE_REC,
+        TRRService::ProviderKey(), static_cast<uint32_t>(mTRRSkippedReason));
+  }
+
+  uint32_t millis = static_cast<uint32_t>(mTrrDuration.ToMilliseconds());
+  if (mTRRSuccess) {
+    Telemetry::Accumulate(Telemetry::DNS_BY_TYPE_SUCCEEDED_LOOKUP_TIME, millis);
+  } else {
+    Telemetry::Accumulate(Telemetry::DNS_BY_TYPE_FAILED_LOOKUP_TIME, millis);
+  }
 }

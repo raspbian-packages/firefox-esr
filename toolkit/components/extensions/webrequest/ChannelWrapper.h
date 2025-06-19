@@ -21,6 +21,7 @@
 #include "mozilla/WeakPtr.h"
 
 #include "mozilla/DOMEventTargetHelper.h"
+#include "nsAtomHashKeys.h"
 #include "nsCOMPtr.h"
 #include "nsCycleCollectionParticipant.h"
 #include "nsIChannel.h"
@@ -29,7 +30,6 @@
 #include "nsIStreamListener.h"
 #include "nsIRemoteTab.h"
 #include "nsIThreadRetargetableStreamListener.h"
-#include "nsPointerHashKeys.h"
 #include "nsInterfaceHashtable.h"
 #include "nsIWeakReferenceUtils.h"
 #include "nsWrapperCache.h"
@@ -62,6 +62,11 @@ namespace detail {
 // QueryInterface the channel every time we touch it, we store separate
 // nsIChannel and nsIHttpChannel weak references, and check that the WeakPtr
 // is alive before returning it.
+//
+// Although the class is designed for use with generic nsIChannel instances,
+// the dependency on weak refs implies that we can only wrap channels that
+// implement nsISupportsWeakReference. In practice, only nsHttpChannel meets
+// that requirement.
 //
 // This holder class prevents us from accidentally touching the weak pointer
 // members directly from our ChannelWrapper class.
@@ -173,7 +178,7 @@ class ChannelWrapper final : public DOMEventTargetHelper,
   IMPL_EVENT_HANDLER(start);
   IMPL_EVENT_HANDLER(stop);
 
-  already_AddRefed<nsIURI> FinalURI() const;
+  already_AddRefed<nsIURI> GetFinalURI() const;
 
   void GetFinalURL(nsString& aRetVal) const;
 
@@ -321,14 +326,13 @@ class ChannelWrapper final : public DOMEventTargetHelper,
   bool mSuspended = false;
   bool mResponseStarted = false;
 
-  nsInterfaceHashtable<nsPtrHashKey<const nsAtom>, nsIRemoteTab> mAddonEntries;
+  nsInterfaceHashtable<nsAtomHashKey, nsIRemoteTab> mAddonEntries;
 
   // The text for the "Extension Suspend" marker, set from the Suspend method
   // when called for the first time and then cleared on the Resume method.
   nsCString mSuspendedMarkerText = VoidCString();
 
-  class RequestListener final : public nsIStreamListener,
-                                public nsIMultiPartChannelListener,
+  class RequestListener final : public nsIMultiPartChannelListener,
                                 public nsIThreadRetargetableStreamListener {
    public:
     NS_DECL_THREADSAFE_ISUPPORTS

@@ -12,6 +12,8 @@ menu-tools-firefox-view =
     .label = { -firefoxview-brand-name }
     .accesskey = F
 firefoxview-page-title = { -firefoxview-brand-name }
+firefoxview-page-heading =
+    .heading = { -firefoxview-brand-name }
 firefoxview-page-label =
     .label = { -firefoxview-brand-name }
 firefoxview-close-button =
@@ -27,13 +29,32 @@ firefoxview-tabpickup-description = افتح الصفحات من الأجهزة 
 # Variables:
 #  $percentValue (Number): the percentage value for setup completion
 firefoxview-tabpickup-progress-label = اكتمل { $percentValue }٪
+firefoxview-tabpickup-step-signin-header = بدِّل بسلاسة بين الأجهزة
+firefoxview-tabpickup-step-signin-description = للحصول على علامات تبويب هاتفك هنا، قم أولاً بتسجيل الدخول أو إنشاء حساب.
 firefoxview-tabpickup-step-signin-primarybutton = واصِل
 firefoxview-syncedtabs-signin-header = اسحب الألسنة من أي مكان
 firefoxview-syncedtabs-signin-primarybutton = لج أو سجل حسابًا
+firefoxview-tabpickup-adddevice-header = زامن { -brand-product-name } على هاتفك أو جهازك اللوحي
+firefoxview-tabpickup-adddevice-description = قم بتنزيل { -brand-product-name } للجوال وقم بتسجيل الدخول من هناك.
 firefoxview-tabpickup-adddevice-learn-how = اطّلع على الطريقة
+firefoxview-tabpickup-adddevice-primarybutton = احصل على { -brand-product-name } للجوال
+firefoxview-tabpickup-synctabs-header = فعّل مزامنة علامات التبويب
+firefoxview-tabpickup-synctabs-description = السماح لـ{ -brand-short-name } بمشاركة علامات التبويب بين الأجهزة.
+firefoxview-tabpickup-synctabs-learn-how = اطّلع على الطريقة
+firefoxview-tabpickup-synctabs-primarybutton = زامن الألسنة المفتوحة
+firefoxview-syncedtabs-synctabs-header = تحديث إعداداتك للمزامنة
+firefoxview-syncedtabs-synctabs-description = لرؤية علامات التبويب من أجهزة أخرى، يتعين عليك مزامنة ألسنتك المفتوحة.
+firefoxview-syncedtabs-synctabs-checkbox = السماح بمزامنة الألسنة المفتوحة
+firefoxview-syncedtabs-loading-header = جارً المزامنة
+firefoxview-syncedtabs-loading-description = عند الانتهاء، سترى أي ألسنة مفتوحة على أجهزة أخرى. تحقق مرة أخرى قريبًا.
+firefoxview-tabpickup-fxa-admin-disabled-header = لقد قامت مؤسستك بتعطيل المزامنة
+firefoxview-tabpickup-fxa-admin-disabled-description = { -brand-short-name } غير قادر على مزامنة علامات التبويب بين الأجهزة لأن مسؤولك عطّل المزامنة.
+firefoxview-tabpickup-fxa-disabled-by-policy-description = { -brand-short-name } غير قادر على مزامنة ألسنتك بين الأجهزة لأن مؤسستك عطّلت المزامنة.
 firefoxview-tabpickup-network-offline-header = تحقَّق من اتصالك بالإنترنت
 firefoxview-tabpickup-network-offline-description = إذا كنت تستخدم جدار حماية أو وكيلًا، فتأكد من أن { -brand-short-name } لديه إذن للوصول إلى الوب.
 firefoxview-tabpickup-network-offline-primarybutton = حاول مجددًا
+firefoxview-tabpickup-sync-error-header = نواجه مشكلة في المزامنة
+firefoxview-tabpickup-sync-error-primarybutton = حاول مجددًا
 firefoxview-tabpickup-sync-disconnected-header = فعل المزامنة للمتابعة
 firefoxview-closed-tabs-title = المُغلقة حديثًا
 firefoxview-closed-tabs-description2 = أعِد فتح الصفحات التي أغلقتها في هذه النافذة.
@@ -62,6 +83,11 @@ firefoxview-recently-closed-header = الألسنة المُغلقة مؤخرً�
 
 ##
 
+firefoxview-search-text-box-clear-button =
+    .title = امسح
+# Placeholder for the input field to search in recent browsing ("search" is a verb).
+firefoxview-search-text-box-recentbrowsing =
+    .placeholder = بحث
 # Placeholder for the input field to search in recently closed tabs ("search" is a verb).
 firefoxview-search-text-box-recentlyclosed =
     .placeholder = ابحث في الألسنة المُغلقة مؤخرًا
@@ -85,6 +111,7 @@ firefoxview-choose-browser-button = أختر متصفح
 
 ## Message displayed in Firefox View when the user has chosen to never remember History
 
+firefoxview-dont-remember-history-empty-description-two = بناءً على إعداداتك الحالية، لا يتذكر { -brand-short-name } نشاطك أثناء التصفح. لتغيير ذلك، <a data-l10n-name="history-settings-url-two">غيّر إعدادات التأريخ الخاص بك لتذكر تأريخك</a>.
 
 ##
 
@@ -105,4 +132,14 @@ firefoxview-recentlyclosed-empty-description = ستجد هنا الألسنة ا
 firefoxview-recentlyclosed-empty-description-two = للعثور على ألسنة تعود إلى فترة زمنية أطول، اعرض <a data-l10n-name="history-url">سجل التصفح</a>.
 
 ## This message is displayed below the name of another connected device when it doesn't have any open tabs.
+
+
+## These tooltips will be displayed when hovering over a pinned tab on the Open Tabs page
+## Variables:
+##  $tabTitle (string) - Title of pinned tab that will be opened when selected
+
+
+## These tooltips will be displayed when hovering over an unpinned Open Tab
+## Variables:
+##   $url (string) - URL of tab that will be opened when selected
 

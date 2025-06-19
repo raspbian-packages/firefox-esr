@@ -89,6 +89,9 @@ shopping-show-less-button = Mostre di mancul
 
 shopping-settings-label =
     .label = Impostazions
+shopping-settings-recommendations-toggle2 =
+    .label = Mostre conseis e contignûts sponsorizâts
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } nol condivît i tiei dâts personâi, duncje chescj conseis no ti staran daûr su internet. <a data-l10n-name="review-quality-url">Plui informazions</a>
 shopping-settings-recommendations-toggle =
     .label = Mostre anunzis te verifiche recensions
 shopping-settings-recommendations-learn-more2 = Tu viodarâs anuncis ocasionâi par prodots pertinents. O promovìn dome prodots cun recensions afidabilis. <a data-l10n-name="review-quality-url">Plui informazions</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Controle cualitât des recensions
 
 more-to-consider-ad-label =
     .label = Altris prodots di valutâ
+shopping-sponsored-label = Sponsorizât
 ad-by-fakespot = Anunzi di { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,10 @@ shopping-survey-submit-button-label = Invie
 shopping-survey-terms-link = Cundizions di utilizazion dal servizi
 shopping-survey-thanks =
     .heading = Graciis di vê condividude la tô opinion.
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

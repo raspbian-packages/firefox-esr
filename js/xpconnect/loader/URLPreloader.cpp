@@ -15,6 +15,7 @@
 #include "mozilla/Logging.h"
 #include "mozilla/ScopeExit.h"
 #include "mozilla/Services.h"
+#include "mozilla/Try.h"
 #include "mozilla/Unused.h"
 #include "mozilla/Vector.h"
 #include "mozilla/scache/StartupCache.h"
@@ -221,9 +222,10 @@ Result<Ok, nsresult> URLPreloader::WriteCache() {
   }
 
   {
-    AutoFDClose fd;
+    AutoFDClose raiiFd;
     MOZ_TRY(cacheFile->OpenNSPRFileDesc(PR_WRONLY | PR_CREATE_FILE, 0644,
-                                        &fd.rwget()));
+                                        getter_Transfers(raiiFd)));
+    const auto fd = raiiFd.get();
 
     nsTArray<URLEntry*> entries;
     for (const auto& entry : mCachedURLs.Values()) {
@@ -400,7 +402,7 @@ void URLPreloader::BackgroundReadFiles() {
             entry->TypeString(), entry->mPath.get());
       }
 
-      auto item = zip->GetItem(entry->mPath.get());
+      auto item = zip->GetItem(entry->mPath);
       if (!item) {
         entry->mResultCode = NS_ERROR_FILE_NOT_FOUND;
         continue;
@@ -565,7 +567,7 @@ Result<nsCString, nsresult> URLPreloader::ReadURIInternal(nsIURI* uri,
   }
 
   // Not an Omnijar archive, so just read it directly.
-  FileLocation location(zip, PromiseFlatCString(path).BeginReading());
+  FileLocation location(zip, path);
   return URLEntry::ReadLocation(location);
 }
 
@@ -634,7 +636,7 @@ Result<FileLocation, nsresult> URLPreloader::CacheKey::ToFileLocation() {
   }
 
   RefPtr<nsZipArchive> zip = Archive();
-  return FileLocation(zip, mPath.get());
+  return FileLocation(zip, mPath);
 }
 
 Result<nsCString, nsresult> URLPreloader::URLEntry::Read() {

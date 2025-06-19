@@ -89,6 +89,9 @@ shopping-show-less-button = Vis færre
 
 shopping-settings-label =
     .label = Indstillinger
+shopping-settings-recommendations-toggle2 =
+    .label = Vis anbefalinger og sponsoreret indhold
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } deler ikke dine personlige data, så disse anbefalinger kommer ikke til at følge dig rundt på nettet. <a data-l10n-name="review-quality-url">Læs mere</a>
 shopping-settings-recommendations-toggle =
     .label = Vis reklamer i verificering af anmeldelser
 shopping-settings-recommendations-learn-more2 = Du vil til tider få vist reklamer for relevante produkter. Vi reklamerer kun for produkter med pålidelige anmeldelser. <a data-l10n-name="review-quality-url">Læs mere</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Kontroller kvalitet af anmeldelser
 
 more-to-consider-ad-label =
     .label = Mere at overveje
+shopping-sponsored-label = Sponsoreret
 ad-by-fakespot = Reklame fra { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Indsend
 shopping-survey-terms-link = Betingelser for brug
 shopping-survey-thanks =
     .heading = Tak for tilbagemeldingen!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Fortæl os gerne, hvorfor du slog Verificering af anmeldelser fra. Vælg gerne flere udsagn, hvis du har behov for det.
+shopping-survey-thanks-title = Tak for tilbagemeldingen!
+shopping-survey-opted-out-hard-to-understand = Funktionen er svær at forstå
+shopping-survey-opted-out-too-slow = Funktionen er for langsom
+shopping-survey-opted-out-not-accurate = Funktionen er ikke nøjagtig
+shopping-survey-opted-out-not-helpful = Funktionen hjælper mig ikke
+shopping-survey-opted-out-check-myself = Jeg vil hellere kontrollere anmeldelser selv
+shopping-survey-opted-out-other = Andet
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

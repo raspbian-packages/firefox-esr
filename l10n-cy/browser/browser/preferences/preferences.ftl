@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Anfon neges “Dim Tracio” at wefannau nad ydych am gael eich tracio
+do-not-track-removal = Nid ydym bellach yn cefnogi'r signal “Peidiwch â Thracio”.
 do-not-track-description2 =
     .label = Anfon  cais “Peidio Tracio” i wefannau
     .accesskey = P
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Agor { -brand-short-name } yn awtomatig pan fydd eich cyfrifiadur yn cychwyn
     .accesskey = A
 windows-launch-on-login-disabled = Mae'r dewis hwn wedi'i analluogi yn Windows. I'w newid, ewch i <a data-l10n-name="startup-link">Startup Apps</a> yng ngosodiadau System.
+windows-launch-on-login-profile-disabled = Galluogwch y dewis hwn trwy dicio “{ profile-manager-use-selected.label }” yn y ffenestr “Dewis Proffil Defnyddiwr”.
 startup-restore-warn-on-quit =
     .label = Rhybuddio wrth adael y porwr
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Agor dolenni mewn tabiau ac nid mewn ffenestri newydd
     .accesskey = f
+ask-on-close-multiple-tabs =
+    .label = Gofyn cyn cau tabiau niferus
+    .accesskey = G
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Gofyn cyn gadael gyda { $quitKey }
+    .accesskey = n
 confirm-on-close-multiple-tabs =
     .label = Cadarnhau cyn cau tabiau lluosog
     .accesskey = l
@@ -580,8 +593,7 @@ home-prefs-shortcuts-description = Gwefannau rydych yn eu cadw neu'n ymweld â n
 home-prefs-shortcuts-by-option-sponsored =
     .label = Llwybrau byr wedi'u noddi
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Argymhellwyd gan { $provider }
@@ -617,8 +629,8 @@ home-prefs-snippets-header =
 home-prefs-snippets-description-new = Awgrymiadau a newyddion gan { -vendor-short-name } a { -brand-product-name }
 home-prefs-weather-header =
     .label = Y Tywydd
-home-prefs-weather-description = Cipolwg ar ragolygon heddiw
-home-prefs-weather-learn-more-link = Dysgu rhagor
+home-prefs-weather-description = Cipolwg ar ragolygon tywydd heddiw
+home-prefs-weather-learn-more-link = Rhagor
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -656,6 +668,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Dangos awgrymiadau chwilio yng nghanlyniadau'r bar lleoliad
     .accesskey = D
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Dangos termau chwilio yn y bar cyfeiriad ar dudalennau canlyniadau
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -799,6 +815,9 @@ sync-currently-syncing-creditcards = Cardiau Credyd
 sync-currently-syncing-payment-methods = Dulliau talu
 sync-currently-syncing-addons = Ychwanegion
 sync-currently-syncing-settings = Gosodiadau
+sync-manage-options =
+    .label = Rheoli cydweddu…
+    .accesskey = R
 sync-change-options =
     .label = Newid…
     .accesskey = N
@@ -851,6 +870,13 @@ sync-engine-settings =
     .label = Gosodiadau
     .tooltiptext = Gosodiadau Cyffredinol, Preifatrwydd a Diogelwch rydych wedi'u newid
     .accesskey = G
+sync-choose-what-to-sync-dialog4 =
+    .title = Rheoli'r hyn sy'n cydweddu ar eich holl ddyfeisiau cysylltiedig
+    .style = min-width: 36em;
+    .buttonlabelaccept = Cadw
+    .buttonaccesskeyaccept = C
+    .buttonlabelextra2 = Datgysylltu…
+    .buttonaccesskeyextra2 = D
 
 ## The device name controls.
 
@@ -1131,6 +1157,9 @@ addressbar-suggestions-settings = Newid dewisiadau am awgrymiadau peiriannau chw
 addressbar-locbar-showrecentsearches-option =
     .label = Dangos y chwilio diweddar
     .accesskey = D
+addressbar-locbar-showtrendingsuggestions-option =
+    .label = Dangos awgrymiadau chwilio tuedd
+    .accesskey = t
 addressbar-quickactions-learn-more = Darllen rhagor
 
 ## Privacy Section - Content Blocking
@@ -1373,13 +1402,20 @@ space-alert-under-5gb-message2 = <strong>Mae { -brand-short-name } yn brin o le 
 
 httpsonly-header = Modd HTTPS-yn-Unig
 httpsonly-description = Mae HTTPS yn darparu cysylltiad diogel, wedi'i amgryptio rhwng  { -brand-short-name } a'r gwefannau rydych chi'n ymweld â nhw. Mae'r mwyafrif o wefannau yn cefnogi HTTPS, ac os yw Modd HTTPS-yn-Unig wedi'i alluogi, yna bydd { -brand-short-name } yn uwchraddio'r holl gysylltiadau â HTTPS.
+httpsonly-description2 = Mae { -brand-short-name } yn creu cysylltiadau diogel ac wedi'u hamgryptio i wefannau rydych yn ymweld â nhw. Bydd { -brand-short-name } yn eich rhybuddio os nad yw cysylltiad yn ddiogel pan fydd Dim-ond-HTTPS ymlaen.
 httpsonly-learn-more = Darllen rhagor
 httpsonly-radio-enabled =
     .label = Galluogi Modd HTTPS-yn-Unig ym mhob ffenestr
+httpsonly-radio-enabled2 =
+    .label = Defnyddio dim ond HTTPS ym mhob ffenestr
 httpsonly-radio-enabled-pbm =
     .label = Galluogi Modd HTTPS-yn-Unig mewn ffenestri preifat yn unig
+httpsonly-radio-enabled-pbm2 =
+    .label = Defnyddio dim ond HTTPS ym mhob ffenestr breifat
 httpsonly-radio-disabled =
     .label = Peidio â galluogi Modd HTTPS-yn-Unig
+httpsonly-radio-disabled2 =
+    .label = Rhowch gynnig ar HTTPS yn gyntaf, ond caniatewch gysylltiadau heb fod yn ddiogel
 
 ## DoH Section
 

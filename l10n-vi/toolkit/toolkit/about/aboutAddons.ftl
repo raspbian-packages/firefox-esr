@@ -297,6 +297,14 @@ find-more-themes = Tìm thêm chủ đề
 # used for screen readers.
 addon-options-button =
     .aria-label = Tùy chọn khác
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro2 =
+    Tiện ích mở rộng và chủ đề cho phép bạn tùy chỉnh { -brand-product-name }. Nó có thể tăng cường
+    quyền riêng tư, nâng cao năng suất, cải thiện phương tiện, thay đổi giao diện { -brand-product-name }, và
+    hơn thế nữa. Những chương trình phần mềm nhỏ này thường được phát triển bởi bên thứ ba. Đây là
+    lựa chọn <a data-l10n-name="learn-more-trigger">được đề xuất</a> của { -brand-product-name }
+    để có được tính bảo mật, hiệu suất và chức năng đặc biệt.
 
 ## Add-on actions
 
@@ -428,6 +436,7 @@ available-updates-heading = Cập nhật có sẵn
 recent-updates-heading = Cập nhật gần đây
 release-notes-loading = Đang tải…
 release-notes-error = Xin lỗi, nhưng có lỗi xảy ra khi mở ghi chú phát hành.
+addon-permissions-empty2 = Tiện ích mở rộng này không yêu cầu bất kỳ quyền nào.
 addon-permissions-empty = Tiện ích mở rộng này không yêu cầu bất kỳ quyền nào
 addon-permissions-required = Các quyền cần thiết cho chức năng cốt lõi:
 addon-permissions-optional = Các quyền tùy chọn cho chức năng được bổ sung:
@@ -477,10 +486,24 @@ details-notification-unsigned-and-disabled-link = Thông tin chi tiết
 details-notification-unsigned = Không thể kiểm tra tính tương thích của { $name } với { -brand-short-name }. Bạn nên cẩn thận.
 details-notification-unsigned2 =
     .message = Không thể kiểm tra tính tương thích của { $name } với { -brand-short-name }. Bạn nên cẩn thận.
+details-notification-hard-blocked-extension =
+    .message = Tiện ích mở rộng này bị chặn do vi phạm chính sách của Mozilla và đã bị vô hiệu hóa.
+details-notification-hard-blocked-other =
+    .message = Tiện ích này bị chặn do vi phạm chính sách của Mozilla và đã bị vô hiệu hóa.
 details-notification-unsigned-link = Thông tin chi tiết
 details-notification-blocked = { $name } đã bị vô hiệu hóa vì vấn đề bảo mật hoặc tính ổn định.
 details-notification-blocked2 =
     .message = { $name } đã bị vô hiệu hóa vì vấn đề bảo mật hoặc tính ổn định.
+details-notification-blocked-link2 = Xem chi tiết
+details-notification-soft-blocked-extension-disabled =
+    .message = Tiện ích mở rộng này bị hạn chế do vi phạm chính sách của Mozilla và đã bị vô hiệu hóa. Bạn có thể kích hoạt nó, nhưng điều này có thể có rủi ro.
+details-notification-soft-blocked-extension-enabled =
+    .message = Tiện ích mở rộng này vi phạm chính sách của Mozilla. Sử dụng nó có thể có rủi ro.
+details-notification-soft-blocked-other-disabled =
+    .message = Tiện ích bổ sung này bị hạn chế do vi phạm chính sách của Mozilla và đã bị vô hiệu hóa. Bạn có thể kích hoạt nó, nhưng điều này có thể có rủi ro.
+details-notification-soft-blocked-other-enabled =
+    .message = Tiện ích này vi phạm chính sách của Mozilla. Sử dụng nó có thể có rủi ro.
+details-notification-softblocked-link2 = Xem chi tiết
 details-notification-blocked-link = Thông tin Chi tiết
 details-notification-softblocked = { $name } được cho là gây ra các vấn đề về bảo mật hoặc tính ổn định.
 details-notification-softblocked2 =

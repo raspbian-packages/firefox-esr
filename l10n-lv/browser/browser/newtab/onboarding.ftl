@@ -173,6 +173,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Paturēt { -brand-short-name } dokā
        *[other] Piespraust { -brand-short-name } uzdevumjoslai
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Piespraust { -brand-short-name } uzdevumjoslai un sākuma izvēlnei
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -208,7 +210,9 @@ mr2022-onboarding-set-default-subtitle = Lietojiet pārlūku, ko atbalsta bezpe�
 mr2022-onboarding-get-started-primary-subtitle = Mūsu jaunākā versija ir veidota jums, padarot to vienkāršāku nekā jebkad agrāk. Tas ir aprīkots ar funkcijām, kuras, mūsuprāt, jums patiks.
 mr2022-onboarding-get-started-primary-button-label = Iestatiet dažās sekundēs
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Zibens ātra iestatīšana
 mr2022-onboarding-import-subtitle = Iestatiet { -brand-short-name }, kā jums patīk. Pievienojiet savas grāmatzīmes, paroles un citu saturu no vecā pārlūka.
@@ -320,6 +324,14 @@ onboarding-device-migration-subtitle = Ierakstieties savā kontā { -fxaccount-b
 onboarding-device-migration-subtitle2 = Ierakstieties savā kontā, lai jaunajā ierīcē ņemtu līdzi grāmatzīmes, paroles un vēsturi.
 onboarding-device-migration-primary-button-label = Ierakstīties
 
+## Add-ons Picker screen
+
+amo-picker-title = Pielāgojiet savu { -brand-short-name }
+amo-picker-subtitle = Paplašinājumi ir kā jūsu pārlūkprogrammas lietotnes, un tie ļauj aizsargāt paroles, lejupielādēt videoklipus, atrast piedāvājumus, bloķēt kaitinošas reklāmas, mainīt pārlūkprogrammas izskatu un daudz ko citu.
+amo-picker-install-button-label = Pievienot { -brand-short-name }
+amo-picker-install-complete-label = Instalētie
+amo-picker-collection-link = Apskatīt citus papildinājumus
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -350,3 +362,15 @@ onboarding-new-user-survey-familiarity-based-option-1 = Esmu jauniņais
 onboarding-new-user-survey-familiarity-based-option-2 = Esmu to izmantojis
 onboarding-new-user-survey-familiarity-based-option-3 = Esmu ar to ļoti pazīstams
 onboarding-new-user-survey-familiarity-based-option-4 = Esmu to izmantojis, bet tas bija sen
+
+## UI strings for the sidebar and vertical tabs
+
+
+## New user onboarding checklist
+
+
+## Tab Groups feature onboarding strings
+
+
+## Multi Profiles feature onboarding messages
+

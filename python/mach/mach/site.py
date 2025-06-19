@@ -17,6 +17,7 @@ import subprocess
 import sys
 import sysconfig
 import tempfile
+import warnings
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Callable, Optional
@@ -562,7 +563,6 @@ class CommandSiteManager:
         """
         result = self._up_to_date()
         if not result.is_up_to_date:
-            print(f"Site not up-to-date reason: {result.reason}")
             active_site = MozSiteMetadata.from_runtime()
             if active_site.site_name == self._site_name:
                 print(result.reason, file=sys.stderr)
@@ -818,33 +818,75 @@ class PythonVirtualenv:
     """Calculates paths of interest for general python virtual environments"""
 
     def __init__(self, prefix):
-        if _is_windows:
-            self.bin_path = os.path.join(prefix, "Scripts")
-            self.python_path = os.path.join(self.bin_path, "python.exe")
-        else:
-            self.bin_path = os.path.join(prefix, "bin")
-            self.python_path = os.path.join(self.bin_path, "python")
         self.prefix = os.path.realpath(prefix)
+        self.paths = self._get_sysconfig_paths(self.prefix)
 
-    @functools.lru_cache(maxsize=None)
-    def resolve_sysconfig_packages_path(self, sysconfig_path):
-        # macOS uses a different default sysconfig scheme based on whether it's using the
-        # system Python or running in a virtualenv.
-        # Manually define the scheme (following the implementation in
-        # "sysconfig._get_default_scheme()") so that we're always following the
-        # code path for a virtualenv directory structure.
-        if os.name == "posix":
-            scheme = "posix_prefix"
+        # Name of the Python executable to use in virtual environments.
+        # An executable with the same name as sys.executable might not exist in
+        # virtual environments. An executable with 'python' as the steam —
+        # without version numbers or ABI flags — will always be present in
+        # virtual environments, so we use that.
+        python_exe_name = "python" + sysconfig.get_config_var("EXE")
+
+        self.bin_path = self.paths["scripts"]
+        self.python_path = os.path.join(self.bin_path, python_exe_name)
+
+    @staticmethod
+    def _get_sysconfig_paths(prefix):
+        """Calculate the sysconfig paths of a virtual environment in the given prefix.
+
+        The virtual environment MUST be using the same Python distribution as us.
+        """
+        # Determine the sysconfig scheme used in virtual environments
+        if "venv" in sysconfig.get_scheme_names():
+            # A 'venv' scheme was added in Python 3.11 to allow users to
+            # calculate the paths for a virtual environment, since the default
+            # scheme may not always be the same as used on virtual environments.
+            # Some common examples are the system Python distributed by macOS,
+            # Debian, and Fedora.
+            # For more information, see https://github.com/python/cpython/issues/89576
+            venv_scheme = "venv"
+        elif os.name == "nt":
+            # We know that before the 'venv' scheme was added, on Windows,
+            # the 'nt' scheme was used in virtual environments.
+            venv_scheme = "nt"
+        elif os.name == "posix":
+            # We know that before the 'venv' scheme was added, on POSIX,
+            # the 'posix_prefix' scheme was used in virtual environments.
+            venv_scheme = "posix_prefix"
         else:
-            scheme = os.name
+            # This should never happen with upstream Python, as the 'venv'
+            # scheme should always be available on >=3.11, and no other
+            # platforms are supported by the upstream on older Python versions.
+            #
+            # Since the 'venv' scheme isn't available, and we have no knowledge
+            # of this platform/distribution, fallback to the default scheme.
+            #
+            # Hitting this will likely be the result of running a custom Python
+            # distribution targetting a platform that is not supported by the
+            # upstream.
+            # In this case, unless the Python vendor patched the Python
+            # distribution in such a way as the default scheme may not always be
+            # the same scheme, using the default scheme should be correct.
+            # If the vendor did patch Python as such, to work around this issue,
+            # I would recommend them to define a 'venv' scheme that matches
+            # the layout used on virtual environments in their Python distribution.
+            # (rec. signed Filipe Laíns — upstream sysconfig maintainer)
+            venv_scheme = sysconfig.get_default_scheme()
+            warnings.warn(
+                f"Unknown platform '{os.name}', using the default install scheme '{venv_scheme}'. "
+                "If this is incorrect, please ask your Python vendor to add a 'venv' sysconfig scheme "
+                "(see https://github.com/python/cpython/issues/89576, or check the code comment).",
+                stacklevel=2,
+            )
+        # Build the sysconfig config_vars dictionary for the virtual environment.
+        venv_vars = sysconfig.get_config_vars().copy()
+        venv_vars["base"] = venv_vars["platbase"] = prefix
+        # Get sysconfig paths for the virtual environment.
+        return sysconfig.get_paths(venv_scheme, vars=venv_vars)
 
-        sysconfig_paths = sysconfig.get_paths(scheme)
-        data_path = Path(sysconfig_paths["data"])
-        path = Path(sysconfig_paths[sysconfig_path])
-        relative_path = path.relative_to(data_path)
-
-        # Path to virtualenv's "site-packages" directory for provided sysconfig path
-        return os.path.normpath(os.path.normcase(Path(self.prefix) / relative_path))
+    def resolve_sysconfig_packages_path(self, sysconfig_path):
+        return self.paths[sysconfig_path]
 
     def site_packages_dirs(self):
         dirs = []
@@ -1058,18 +1100,24 @@ class ExternalPythonSite:
 
 @functools.lru_cache(maxsize=None)
 def resolve_requirements(topsrcdir, site_name):
-    manifest_path = os.path.join(topsrcdir, "python", "sites", f"{site_name}.txt")
-    if not os.path.exists(manifest_path):
+    thunderbird_dir = os.path.join(topsrcdir, "comm")
+    is_thunderbird = os.path.exists(thunderbird_dir) and bool(
+        os.listdir(thunderbird_dir)
+    )
+    prefixes = [topsrcdir]
+    if is_thunderbird:
+        prefixes[0:0] = [thunderbird_dir]
+    manifest_suffix = os.path.join("python", "sites", f"{site_name}.txt")
+    manifest_paths = (os.path.join(prefix, manifest_suffix) for prefix in prefixes)
+    manifest_path = next((f for f in manifest_paths if os.path.exists(f)), None)
+
+    if manifest_path is None:
         raise Exception(
             f'The current command is using the "{site_name}" '
             "site. However, that site is missing its associated "
             f'requirements definition file at "{manifest_path}".'
         )
 
-    thunderbird_dir = os.path.join(topsrcdir, "comm")
-    is_thunderbird = os.path.exists(thunderbird_dir) and bool(
-        os.listdir(thunderbird_dir)
-    )
     try:
         return MachEnvRequirements.from_requirements_definition(
             topsrcdir,
@@ -1131,22 +1179,6 @@ def _ensure_python_exe(python_exe_root: Path):
         )
 
 
-def _ensure_pyvenv_cfg(venv_root: Path):
-    # We can work around a bug on some versions of Python 3.6 on
-    # Windows by copying the 'pyvenv.cfg' of the current venv
-    # to the new venv. This will make the new venv reference
-    # the original Python install instead of the current venv,
-    # which resolves the issue. There shouldn't be any harm in
-    # always doing this, but we'll play it safe and restrict it
-    # to Windows Python 3.6 anyway.
-    if _is_windows and sys.version_info[:2] == (3, 6):
-        this_venv = Path(sys.executable).parent.parent
-        this_venv_config = this_venv / "pyvenv.cfg"
-        if this_venv_config.exists():
-            new_venv_config = Path(venv_root) / "pyvenv.cfg"
-            shutil.copyfile(str(this_venv_config), str(new_venv_config))
-
-
 def _assert_pip_check(pthfile_lines, virtualenv_name, requirements):
     """Check if the provided pthfile lines have a package incompatibility
 
@@ -1183,8 +1215,6 @@ def _assert_pip_check(pthfile_lines, virtualenv_name, requirements):
             stderr=subprocess.PIPE,
             encoding="UTF-8",
         )
-
-        _ensure_pyvenv_cfg(Path(check_env_path))
 
         if process.returncode != 0:
             if "No module named venv" in process.stderr:
@@ -1295,8 +1325,6 @@ def _create_venv_with_pthfile(
         stderr=subprocess.PIPE,
         encoding="UTF-8",
     )
-
-    _ensure_pyvenv_cfg(Path(virtualenv_root))
 
     if process.returncode != 0:
         if "No module named venv" in process.stderr:

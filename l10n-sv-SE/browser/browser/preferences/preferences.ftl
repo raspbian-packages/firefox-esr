@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Skicka webbplatser en “Spåra inte”-signal att du inte vill bli spårad
+do-not-track-removal = Vi stöder inte längre signalen "Spåra inte".
 do-not-track-description2 =
     .label = Skicka en "Spåra inte"-begäran till webbplatser
     .accesskey = S
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Öppna { -brand-short-name } automatiskt när din dator startar
     .accesskey = p
 windows-launch-on-login-disabled = Den här inställningen har inaktiverats i Windows. För att ändra, besök <a data-l10n-name="startup-link">Autostart-appar</a> i Systeminställningar.
+windows-launch-on-login-profile-disabled = Aktivera den här inställningen genom att markera "{ profile-manager-use-selected.label }" i fönstret "Välj användarprofil".
 startup-restore-warn-on-quit =
     .label = Varna när du avslutar webbläsaren
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Öppna länkar i flikar istället för nya fönster
     .accesskey = f
+ask-on-close-multiple-tabs =
+    .label = Fråga innan du stänger flera flikar
+    .accesskey = F
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Fråga innan du avslutar med { $quitKey }
+    .accesskey = r
 confirm-on-close-multiple-tabs =
     .label = Bekräfta innan du stänger flera flikar
     .accesskey = k
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Webbplatser du sparar eller besöker
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponsrade genvägar
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Rekommenderas av { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Visa sökförslag i adressfältets resultat
     .accesskey = f
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Visa söktermer i adressfältet på resultatsidor
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Kreditkort
 sync-currently-syncing-payment-methods = Betalningsmetoder
 sync-currently-syncing-addons = Tillägg
 sync-currently-syncing-settings = Inställningar
+sync-manage-options =
+    .label = Hantera synkronisering…
+    .accesskey = H
 sync-change-options =
     .label = Ändra…
     .accesskey = n
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Inställningar
     .tooltiptext = Allmänna, sekretess- och säkerhetsinställningar som du har ändrat
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = Hantera vad som synkroniseras på alla dina anslutna enheter
+    .style = min-width: 36em;
+    .buttonlabelaccept = Spara
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Koppla från…
+    .buttonaccesskeyextra2 = f
 
 ## The device name controls.
 
@@ -1117,7 +1143,7 @@ addressbar-locbar-showrecentsearches-option =
     .accesskey = s
 addressbar-locbar-showtrendingsuggestions-option =
     .label = Visa populära sökförslag
-    .accesskey = V
+    .accesskey = p
 addressbar-quickactions-learn-more = Läs mer
 
 ## Privacy Section - Content Blocking
@@ -1285,15 +1311,36 @@ collection-description = Vi strävar alltid efter att ge dig val och samlar enda
 collection-privacy-notice = Sekretessmeddelande
 collection-health-report-telemetry-disabled = Du tillåter inte längre { -vendor-short-name } att fånga in teknisk data och interaktionsdata. All tidigare data kommer att raderas inom 30 dagar.
 collection-health-report-telemetry-disabled-link = Läs mer
+collection-usage-ping =
+    .label = Skicka ping för daglig användning till { -vendor-short-name }
+    .accesskey = d
+collection-usage-ping-description = Detta hjälper { -vendor-short-name } att uppskatta antalet aktiva användare.
+collection-health-report2 =
+    .label = Skicka teknisk data och interaktionsdata till { -vendor-short-name }
+    .accesskey = r
 collection-health-report =
     .label = Tillåt { -brand-short-name } att automatiskt skicka teknisk och interaktionsdata till { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Läs mer
+collection-health-report-description = Detta hjälper oss att förbättra funktioner, prestanda och stabilitet i { -brand-product-name }.
+collection-studies2 =
+    .label = Installera och kör studier
+collection-studies-description = Testa funktioner och idéer innan de släpps för alla.
 collection-studies =
     .label = Tillåt { -brand-short-name } att installera och köra studier
 collection-studies-link = Visa { -brand-short-name }-studier
+addon-recommendations2 =
+    .label = Tillåt anpassade tilläggsrekommendationer
+addon-recommendations-description = Få tilläggsrekommendationer för att förbättra din webbupplevelse.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Datarapportering är inaktiverad för den här byggkonfigurationen.
+collection-backlogged-crash-reports2 =
+    .label = Skicka automatiskt kraschrapporter
+    .accesskey = k
+collection-backlogged-crash-reports-description = Det här hjälper { -vendor-short-name } att diagnostisera och lösa problem med webbläsaren. Rapporter kan innehålla personliga eller känsliga uppgifter.
 addon-recommendations =
-    .label = Tillåt { -brand-short-name } att göra personliga utökningsrekommendationer
+    .label = Tillåt { -brand-short-name } att göra personliga tilläggsrekommendationer
 addon-recommendations-link = Läs mer
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
@@ -1360,13 +1407,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } håller på att f
 
 httpsonly-header = Endast HTTPS-läge
 httpsonly-description = HTTPS ger en säker, krypterad anslutning mellan { -brand-short-name } och de webbplatser du besöker. De flesta webbplatser stöder HTTPS och om endast HTTPS-läget är aktiverat kommer { -brand-short-name } att uppgradera alla anslutningar till HTTPS.
+httpsonly-description2 = { -brand-short-name } skapar säkra och krypterade förbindelser till webbplatser du besöker. { -brand-short-name } varnar om en anslutning inte är säker när läget endast HTTPS är på.
 httpsonly-learn-more = Läs mer
 httpsonly-radio-enabled =
     .label = Aktivera endast HTTPS-läge i alla fönster
+httpsonly-radio-enabled2 =
+    .label = Använd endast HTTPS i alla fönster
 httpsonly-radio-enabled-pbm =
     .label = Aktivera endast HTTPS-läge i privata fönster
+httpsonly-radio-enabled-pbm2 =
+    .label = Använd endast HTTPS i privata fönster
 httpsonly-radio-disabled =
     .label = Aktivera inte endast HTTPS-läge
+httpsonly-radio-disabled2 =
+    .label = Prova HTTPS först, men tillåt anslutningar som inte är säkra
 
 ## DoH Section
 

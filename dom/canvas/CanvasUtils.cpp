@@ -48,10 +48,43 @@
 
 using namespace mozilla::gfx;
 
+static bool IsUnrestrictedPrincipal(nsIPrincipal& aPrincipal) {
+  // The system principal can always extract canvas data.
+  if (aPrincipal.IsSystemPrincipal()) {
+    return true;
+  }
+
+  // Allow chrome: and resource: (this especially includes PDF.js)
+  if (aPrincipal.SchemeIs("chrome") || aPrincipal.SchemeIs("resource")) {
+    return true;
+  }
+
+  // Allow extension principals.
+  return aPrincipal.GetIsAddonOrExpandedAddonPrincipal();
+}
+
 namespace mozilla::CanvasUtils {
 
+uint32_t GetCanvasExtractDataPermission(nsIPrincipal& aPrincipal) {
+  if (IsUnrestrictedPrincipal(aPrincipal)) {
+    return true;
+  }
+
+  nsresult rv;
+  nsCOMPtr<nsIPermissionManager> permissionManager =
+      do_GetService(NS_PERMISSIONMANAGER_CONTRACTID, &rv);
+  NS_ENSURE_SUCCESS(rv, false);
+
+  uint32_t permission;
+  rv = permissionManager->TestPermissionFromPrincipal(
+      &aPrincipal, PERMISSION_CANVAS_EXTRACT_DATA, &permission);
+  NS_ENSURE_SUCCESS(rv, false);
+
+  return permission;
+}
+
 bool IsImageExtractionAllowed(dom::Document* aDocument, JSContext* aCx,
-                              Maybe<nsIPrincipal*> aPrincipal) {
+                              nsIPrincipal& aPrincipal) {
   if (NS_WARN_IF(!aDocument)) {
     return false;
   }
@@ -99,25 +132,12 @@ bool IsImageExtractionAllowed(dom::Document* aDocument, JSContext* aCx,
   // General Exemptions
 
   // Don't proceed if we don't have a document or JavaScript context.
-  if (!aCx || !aPrincipal) {
+  if (!aCx) {
     return false;
   }
 
-  nsIPrincipal& subjectPrincipal = *aPrincipal.ref();
-
-  // The system principal can always extract canvas data.
-  if (subjectPrincipal.IsSystemPrincipal()) {
-    return true;
-  }
-
-  // Allow chrome: and resource: (this especially includes PDF.js)
-  if (subjectPrincipal.SchemeIs("chrome") || subjectPrincipal.SchemeIs("resource")) {
-    return true;
-  }
-
-  // Allow extension principals.
-  auto* principal = BasePrincipal::Cast(&subjectPrincipal);
-  if (principal->AddonPolicy() || principal->ContentScriptAddonPolicy()) {
+  // The system and extension principals can always extract canvas data.
+  if (IsUnrestrictedPrincipal(aPrincipal)) {
     return true;
   }
 
@@ -167,17 +187,7 @@ bool IsImageExtractionAllowed(dom::Document* aDocument, JSContext* aCx,
 
   // If the user has previously granted or not granted permission, we can return
   // immediately. Load Permission Manager service.
-  nsresult rv;
-  nsCOMPtr<nsIPermissionManager> permissionManager =
-      do_GetService(NS_PERMISSIONMANAGER_CONTRACTID, &rv);
-  NS_ENSURE_SUCCESS(rv, false);
-
-  // Check if the site has permission to extract canvas data.
-  // Either permit or block extraction if a stored permission setting exists.
-  uint32_t permission;
-  rv = permissionManager->TestPermissionFromPrincipal(
-      principal, PERMISSION_CANVAS_EXTRACT_DATA, &permission);
-  NS_ENSURE_SUCCESS(rv, false);
+  uint64_t permission = GetCanvasExtractDataPermission(aPrincipal);
   switch (permission) {
     case nsIPermissionManager::ALLOW_ACTION:
       return true;
@@ -238,7 +248,7 @@ bool IsImageExtractionAllowed(dom::Document* aDocument, JSContext* aCx,
   // maybe not
   nsPIDOMWindowOuter* win = aDocument->GetWindow();
   nsAutoCString origin;
-  rv = principal->GetOrigin(origin);
+  nsresult rv = aPrincipal.GetOrigin(origin);
   NS_ENSURE_SUCCESS(rv, false);
 
   if (XRE_IsContentProcess()) {
@@ -260,6 +270,49 @@ bool IsImageExtractionAllowed(dom::Document* aDocument, JSContext* aCx,
 
   // We don't extract the image for now -- user may override at prompt.
   return false;
+}
+
+ImageExtraction ImageExtractionResult(dom::HTMLCanvasElement* aCanvasElement,
+                                      JSContext* aCx,
+                                      nsIPrincipal& aPrincipal) {
+  if (IsUnrestrictedPrincipal(aPrincipal)) {
+    return ImageExtraction::Unrestricted;
+  }
+
+  nsCOMPtr<dom::Document> ownerDoc = aCanvasElement->OwnerDoc();
+  if (!IsImageExtractionAllowed(ownerDoc, aCx, aPrincipal)) {
+    return ImageExtraction::Placeholder;
+  }
+
+  if (ownerDoc->ShouldResistFingerprinting(RFPTarget::CanvasRandomization)) {
+    if (GetCanvasExtractDataPermission(aPrincipal) ==
+        nsIPermissionManager::ALLOW_ACTION) {
+      return ImageExtraction::Unrestricted;
+    }
+    return ImageExtraction::Randomize;
+  }
+
+  return ImageExtraction::Unrestricted;
+}
+
+ImageExtraction ImageExtractionResult(dom::OffscreenCanvas* aOffscreenCanvas,
+                                      JSContext* aCx,
+                                      nsIPrincipal& aPrincipal) {
+  if (IsUnrestrictedPrincipal(aPrincipal)) {
+    return ImageExtraction::Unrestricted;
+  }
+
+  if (aOffscreenCanvas->ShouldResistFingerprinting(
+          RFPTarget::CanvasImageExtractionPrompt)) {
+    return ImageExtraction::Placeholder;
+  }
+
+  if (aOffscreenCanvas->ShouldResistFingerprinting(
+          RFPTarget::CanvasRandomization)) {
+    return ImageExtraction::Randomize;
+  }
+
+  return ImageExtraction::Unrestricted;
 }
 
 bool GetCanvasContextType(const nsAString& str,

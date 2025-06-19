@@ -11,7 +11,8 @@ certerror-sts-page-title = ვერ დაუკავშირდა: უს�
 neterror-blocked-by-policy-page-title = გვერდი შეზღუდულია
 neterror-captive-portal-page-title = ქსელში შესვლა
 neterror-dns-not-found-title = გვერდი ვერ მოიძებნა
-neterror-malformed-uri-page-title = არასწორი URL
+neterror-malformed-uri-page-title = უმართებულო URL-ბმული
+general-body-title = სიფრთხილე გამოიჩინეთ. რაღაც რიგზე ვერაა.
 
 ## Error page actions
 
@@ -41,7 +42,9 @@ neterror-generic-error = { -brand-short-name } ვერ ახერხებ�
 neterror-load-error-try-again = საიტი დროებით მიუწვდომელი ან გადატვირთულია. სცადეთ ხელახლა რამდენიმე წამში.
 neterror-load-error-connection = თუ სხვა გვერდების ჩატვირთვასაც ვერ ახერხებთ, შეამოწმეთ კომპიუტერის ქსელთან კავშირი.
 neterror-load-error-firewall = თუ თქვენი ქსელი ან კომპიუტერი ფარით ან პროქსითაა დაცული, გადაამოწმეთ არის თუ არა { -brand-short-name } ინტერნეტთან წვდომის უფლების მქონე.
-neterror-captive-portal = ინტერნეტთან დასაკავშირებლად, საჭიროა ამ ქსელში შესვლა.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = თუ ცდილობთ ადგილობრივ ქსელში გვერდის გახსნას, გთხოვთ გადაამოწმოთ, რომ { -brand-short-name } ადგილობრივი ქსელის ნებართვების მქონეა macOS-ის პირადულობისა და უსაფრთხოების პარამეტრებიდან.
+neterror-captive-portal = ინტერნეტთან დასაკავშირებლად საჭიროა ამ ქსელში შესვლა.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
 neterror-dns-not-found-with-suggestion = ხომ არ იგულისხმეთ <a data-l10n-name="website">{ $hostAndPath }</a>?
@@ -56,6 +59,7 @@ neterror-dns-not-found-hint-firewall = გადაამოწმოთ, არ
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-trr-only-reason = { -brand-short-name } ვერ ახერხებს თქვენი მოთხოვნის დაცვას ამ საიტის მისამართისთვის ჩვენი სანდო DNS-გადამყვანით. აი, რატომ:
+neterror-dns-not-found-trr-only-reason2 = { -brand-short-name } ვერ ახერხებს თქვენი მოთხოვნის დაცვას ამ საიტის მისამართისთვის ჩვენი სანდო DNS-გადამყვანით. აი, რის გამო:
 neterror-dns-not-found-trr-third-party-warning2 = შეგიძლიათ, განაგრძოთ ნაგულისხმევი DNS-გადამყვანით. თუმცაღა ამით გარეშე პირებს ექნებათ საშუალება, იხილონ, რომელ გვერდებს ეწვევით.
 neterror-dns-not-found-trr-only-could-not-connect = { -brand-short-name } და { $trrDomain } კავშირის დამყარებას ვერ ახერხებს.
 neterror-dns-not-found-trr-only-timeout = { $trrDomain } მოსალოდნელზე დიდხანს იყო დაკავშირებული.
@@ -63,6 +67,7 @@ neterror-dns-not-found-trr-offline = არ გაქვთ ინტერნ�
 neterror-dns-not-found-trr-unknown-host2 = საიტს ვერ პოულობს { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = ხარვეზებით მუშაობს { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = არამართებული ბმული.
+neterror-dns-not-found-system-sleep = სისტემა ძილის რეჟიმშია.
 neterror-dns-not-found-trr-unknown-problem = მოულოდნელი შეცდომა.
 
 ## Native fallback specific messages
@@ -70,6 +75,7 @@ neterror-dns-not-found-trr-unknown-problem = მოულოდნელი შ�
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } ვერ ახერხებს თქვენი მოთხოვნის დაცვას ამ საიტის მისამართისთვის ჩვენი სანდო DNS-გადამყვანით. აი, რატომ:
+neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } ვერ ახერხებს თქვენი მოთხოვნის დაცვას ამ საიტის მისამართისთვის ჩვენი სანდო DNS-გადამყვანით. აი, რის გამო:
 neterror-dns-not-found-native-fallback-heuristic = DNS-თან HTTPS-კავშირი გათიშულია თქვენს ქსელში.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } და { $trrDomain } კავშირის დამყარებას ვერ ახერხებს.
 
@@ -125,7 +131,7 @@ neterror-network-protocol-error-intro = გვერდი რომლის �
 neterror-network-protocol-error-contact-website = გთხოვთ, მიმართოთ ვებსაიტის მფლობელებს და აცნობოთ ამ ხარვეზის შესახებ.
 certerror-expired-cert-second-para = როგორც ჩანს, საიტის სერტიფიკატი ვადაგასულია, რის გამოც { -brand-short-name } ვერ ახერხებს უსაფრთხო კავშირის დამყარებას. თუ ამ საიტს ეწვევით, შემტევებმა შეიძლება ხელყონ თქვენი მონაცემები, მათ შორის პაროლები, ელფოსტის მისამართები და საკრედიტო ბარათის ნომრები.
 certerror-expired-cert-sts-second-para = როგორც ჩანს, საიტის სერტიფიკატი ვადაგასულია, რის გამოც { -brand-short-name } ვერ ახერხებს უსაფრთხო კავშირის დამყარებას.
-certerror-what-can-you-do-about-it-title = რისი გაკეთება შეგიძლიათ?
+certerror-what-can-you-do-about-it-title = რით შეიძლება გამოსწორება?
 certerror-unknown-issuer-what-can-you-do-about-it-website = ხარვეზი უმეტესად დაკავშირებულია თავად ვებსაიტთან და თქვენ ვერ მოახერხებთ მის გამოსწორებას.
 certerror-unknown-issuer-what-can-you-do-about-it-contact-admin = თუ იყენებთ დაწესებულების ქსელს ან ანტივირუსულ პროგრამას, დასახმარებლად შეგიძლიათ მიმართოთ იქვე არსებულ მხარდაჭერის გუნდს. ასევე, შეგიძლიათ შეატყობინოთ ვებსაიტის მფლობელებს ამ ხარვეზის შესახებ.
 # Variables:
@@ -145,3 +151,11 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = თუ არ გეცნ�
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> იყენებს უსაფრთხოების დებულებას სახელწოდებით HTTP Strict Transport Security (HSTS), ეს კი ნიშნავს, რომ { -brand-short-name } მას მხოლოდ უსაფრთხო შეერთებით შეიძლება დაუკავშირდეს. გამონაკლისს ვერ დაამატებთ ამ საიტის მოსანახულებლად.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = შესაძლოა, არც არაფრის და თავად საიტს ჰქონდეს ხარვეზი.
+certerror-blocked-by-corp-headers-description = ზოგჯერ საიტები მიმართავენ უსაფრთხოების ზომებს საკუთარი თავის ან თქვენნაირი რიგითი მომხმარებლების მიერ სხვა საიტებთან არასასურველი ურთიერთქმედების ასარიდებლად.
+certerror-coop-learn-more = იხილეთ ვრცლად განსხვავებული წარმომავლობის მასალის გახსნის დებულებები (COOP)
+certerror-coep-learn-more = იხილეთ ვრცლად განსხვავებული წარმომავლობის მასალის ჩაშენების დებულებები (COOP)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = შეცდომის კოდი: { $responsestatus } { $responsestatustext }

@@ -89,6 +89,9 @@ shopping-show-less-button = Daha az göster
 
 shopping-settings-label =
     .label = Ayarlar
+shopping-settings-recommendations-toggle2 =
+    .label = Önerileri ve sponsorlu içerikleri göster
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } kişisel verilerinizi paylaşmaz, yani internette gezinirken bu öneriler bir daha karşınıza çıkmaz. <a data-l10n-name="review-quality-url">Daha fazla bilgi alın</a>
 shopping-settings-recommendations-toggle =
     .label = Değerlendirme kontrolcüsünde reklamları göster
 shopping-settings-recommendations-learn-more2 = Ara sıra ilginizi çekebilecek ürünlerin reklamlarını göreceksiniz. Yalnızca güvenilir değerlendirmelere sahip ürünlerin reklamını yapıyoruz. <a data-l10n-name="review-quality-url">Bilgi alın</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Değerlendirme kalitesini kontrol e
 
 more-to-consider-ad-label =
     .label = İlginizi çekebilir
+shopping-sponsored-label = Sponsorlu
 ad-by-fakespot = { -fakespot-brand-name } reklamı
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Gönder
 shopping-survey-terms-link = Kullanım koşulları
 shopping-survey-thanks =
     .heading = Geri bildiriminiz için teşekkürler!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Değerlendirme Kontrolcüsü’nü neden kapattığınızı bize söyler misiniz? İsterseniz birden çok seçim yapabilirsiniz.
+shopping-survey-thanks-title = Geri bildiriminiz için teşekkürler!
+shopping-survey-opted-out-hard-to-understand = Anlaması zor
+shopping-survey-opted-out-too-slow = Çok yavaş
+shopping-survey-opted-out-not-accurate = Bilgiler doğru değil
+shopping-survey-opted-out-not-helpful = Bana faydası yok
+shopping-survey-opted-out-check-myself = İncelemelere kendim bakmayı tercih ederim
+shopping-survey-opted-out-other = Diğer
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

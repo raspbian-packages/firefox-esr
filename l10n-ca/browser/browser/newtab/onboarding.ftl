@@ -223,7 +223,9 @@ mr2022-onboarding-set-default-subtitle = Utilitzeu un navegador creat per una or
 mr2022-onboarding-get-started-primary-subtitle = Hem creat l'última versió tenint en compte el vostre punt de vista, i és més fàcil que mai navegar pel web. Ve farcida de funcions que us fascinaran.
 mr2022-onboarding-get-started-primary-button-label = Configura-la en un tres i no res
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Configuració ultraràpida
 mr2022-onboarding-import-subtitle = Configureu el { -brand-short-name } com més us agradi. Afegiu-hi les adreces d'interès, contrasenyes i molt més del vostre navegador antic.
@@ -335,6 +337,10 @@ onboarding-device-migration-subtitle = Inicieu la sessió al vostre { -fxaccount
 onboarding-device-migration-subtitle2 = Inicieu la sessió al vostre compte per accedir a les vostres adreces d'interès, les contrasenyes i l'historial en el dispositiu nou.
 onboarding-device-migration-primary-button-label = Inicia la sessió
 
+## Add-ons Picker screen
+
+amo-picker-title = Personalitzeu el { -brand-short-name }
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -343,9 +349,36 @@ onboarding-easy-setup-security-and-privacy-subtitle = El nostre navegador sense 
 # Mobile download screen
 onboarding-mobile-download-security-and-privacy-title = Manteniu-vos protegit amb el xifratge quan passeu d'un dispositiu a un altre
 onboarding-gratitude-security-and-privacy-subtitle = Gràcies per utilitzar el { -brand-short-name }, amb el suport de la Fundació Mozilla. Amb el vostre suport, estem treballant per fer que Internet sigui més segura i accessible per a tothom.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Sincronitzeu les vostres dades entre dispositius
+onboarding-sign-up-secondary-button = Comença a navegar
 
 ## New user time and familiarity survey strings
 
 onboarding-new-user-time-based-survey-title = Quant temps fa que feu servir el { -brand-short-name }?
 # When translating "next" it means the next screen in onboarding.
 onboarding-new-user-survey-next-button-label = Següent
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Les pestanyes verticals ja són aquí
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Us presentem les pestanyes verticals
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Proveu les pestanyes verticals
+onboarding-flair-text = Novetat
+onboarding-genai-sidebar-secondary-button = Comença a navegar
+
+## New user onboarding checklist
+
+onboarding-checklist-set-default = Defineix el { -brand-short-name } com a navegador per defecte
+onboarding-checklist-pin = Fixa el { -brand-short-name } a la barra de tasques
+onboarding-checklist-import = Importa del navegador anterior
+onboarding-checklist-extension = Afegeix una extensió
+
+## Tab Groups feature onboarding strings
+
+
+## Multi Profiles feature onboarding messages
+

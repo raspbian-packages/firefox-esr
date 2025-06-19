@@ -8,11 +8,18 @@
 newtab-page-title = Жаңа бет
 newtab-settings-button =
     .title = Жаңа бетті баптаңыз
+newtab-personalize-settings-icon-label =
+    .title = Жаңа бетті жекелендіру
+    .aria-label = Баптаулар
+newtab-settings-dialog-label =
+    .aria-label = Баптаулар
 newtab-personalize-icon-label =
     .title = Жаңа бетті жекелендіру
     .aria-label = Жаңа бетті жекелендіру
 newtab-personalize-dialog-label =
     .aria-label = Жекелендіру
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = { -pocket-brand-name } ішіне сақтау
 newtab-menu-delete-pocket = { -pocket-brand-name }-тен өшіру
 newtab-menu-archive-pocket = { -pocket-brand-name }-те архивтеу
 newtab-menu-show-privacy-info = Біздің демеушілеріміз және сіздің жекелігіңіз
+newtab-menu-about-fakespot = { -fakespot-brand-name } туралы
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Блоктау
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Тақырыпқа жазылудан бас тарту
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Соңғы белсенділігі
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Ұсынушы { $provider }
 newtab-section-header-stories = Ойландыратын оқиғалар
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Бүгінгі таңдаулар сіз үшін
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = { -pocket-brand-name }-ті алу
 newtab-pocket-cta-text = Өзіңіз ұнатқан хикаяларды { -pocket-brand-name } ішіне сақтап, миіңізді тамаша оқумен толықтырыңыз.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } өнімі { -brand-product-name } отбасының мүшесі болып табылады
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Сақтау
 newtab-pocket-saved = Сақталған
 
@@ -242,6 +260,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Мен үшін емес
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Рахмет. Сіздің пікіріңіз бізге арнаңызды жақсартуға көмектеседі.
 newtab-toast-thumbs-up-or-down = Рахмет. Сіздің пікіріңіз бізге арнаңызды жақсартуға көмектеседі.
 newtab-toast-dismiss-button =
     .title = Елемеу
@@ -306,6 +327,8 @@ newtab-wallpaper-dark-panda = Орманда жасырылған қызыл п�
 newtab-wallpaper-dark-sky = Түнгі аспаны бар қала пейзажы
 newtab-wallpaper-dark-mountain = Таулы пейзаж
 newtab-wallpaper-dark-city = Күлгін қала пейзажы
+newtab-wallpaper-dark-fox-anniversary = Орман жанындағы тротуардағы түлкі
+newtab-wallpaper-light-fox-anniversary = Тұманды тау пейзажы бар шөпті алқаптағы түлкі
 
 ## Solid Colors
 
@@ -370,6 +393,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Демеушілік
 newtab-weather-menu-change-location = Орналасуды ауыстыру
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Орналасуды іздеу
+    .aria-label = Орналасуды іздеу
 newtab-weather-change-location-search-input = Орналасуды іздеу
 newtab-weather-menu-weather-display = Ауа райын көрсету
 # Display options are:
@@ -388,3 +414,70 @@ newtab-weather-menu-hide-weather = Жаңа бетте ауа райын жас�
 newtab-weather-menu-learn-more = Көбірек білу
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Ауа-райы деректері қазір қолжетімді емес.
+
+## Topic Labels
+
+newtab-topic-label-business = Бизнес
+newtab-topic-label-career = Мансап
+newtab-topic-label-education = Білім алу
+newtab-topic-label-arts = Ойын-сауық
+newtab-topic-label-food = Тамақ
+newtab-topic-label-health = Денсаулық
+newtab-topic-label-hobbies = Ойын
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Ақша
+newtab-topic-label-society-parenting = Тәрбие беру
+newtab-topic-label-government = Саясат
+newtab-topic-label-education-science = Ғылым
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Лайфхактар
+newtab-topic-label-sports = Спорт
+newtab-topic-label-tech = Техника
+newtab-topic-label-travel = Саяхат
+newtab-topic-label-home = Үй және бақша
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Таспаңызды дәл баптау үшін тақырыптарды таңдаңыз
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Екі немесе одан да көп тақырыпты таңдаңыз. Біздің сарапшы кураторлар сіздің қызығушылықтарыңызға бейімделген мақалаларға басымдық береді. Кез келген уақытта жаңартуға болады.
+newtab-topic-selection-save-button = Сақтау
+newtab-topic-selection-cancel-button = Бас тарту
+newtab-topic-selection-button-maybe-later = Мүмкін, кейінірек
+newtab-topic-selection-privacy-link = Деректерді қалай қорғайтынымызды және басқаратынымызды біліңіз
+newtab-topic-selection-button-update-interests = Қызығушылықтарыңызды жаңартыңыз
+newtab-topic-selection-button-pick-interests = Қызығушылықтарыңызды таңдаңыз
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Жазылу
+newtab-section-following-button = Жазылғандар
+newtab-section-unfollow-button = Жазылудан бас тарту
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Бұғаттау
+newtab-section-blocked-button = Бұғатталған
+newtab-section-unblock-button = Бұғаттаудан шығару
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Бұл секцияны шынымен блоктағыңыз келе ме?
+newtab-section-confirm-block-section-p2 = Блокталған секция сіздің таспаңызда енді көрсетілмейді.
+newtab-section-block-section-button = Бұл бөлімді блоктау
+newtab-section-cancel-button = Қазір емес
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Тақырыптар

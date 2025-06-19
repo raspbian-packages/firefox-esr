@@ -154,6 +154,10 @@ shopping-survey-terms-link = Temos de uso
 shopping-survey-thanks =
     .heading = Grazas pola súa opinión
 
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to
 ## access the feature.
@@ -161,6 +165,7 @@ shopping-survey-thanks =
 shopping-callout-closed-opted-in-subtitle = Volver ao <strong>verificador de recensión</strong> sempre que vexa a etiqueta de prezo.
 shopping-callout-pdp-opted-in-title = Son fiables estas recensións? Descúbrao rápido.
 shopping-callout-closed-not-opted-in-title = Un clic para comentarios fiables
+shopping-callout-closed-not-opted-in-revised-title = Un clic para obter recensións fiables
 shopping-callout-closed-not-opted-in-revised-button = Entendido
 shopping-callout-not-opted-in-reminder-title = Comprar con confianza
 shopping-callout-not-opted-in-reminder-open-button = Abrir o verificador de recensións

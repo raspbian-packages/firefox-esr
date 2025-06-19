@@ -8,11 +8,18 @@
 newtab-page-title = Nowy rejtarik
 newtab-settings-button =
     .title = Bok wašogo nowego rejtarika pśiměriś
+newtab-personalize-settings-icon-label =
+    .title = Nowy rejtarik personalizěrowaś
+    .aria-label = Nastajenja
+newtab-settings-dialog-label =
+    .aria-label = Nastajenja
 newtab-personalize-icon-label =
     .title = Nowy rejtarik personalizěrowaś
     .aria-label = Nowy rejtarik personalizěrowaś
 newtab-personalize-dialog-label =
     .aria-label = Personalizěrowaś
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -52,7 +59,7 @@ newtab-topsites-title-input =
 newtab-topsites-url-label = URL
 newtab-topsites-url-input =
     .placeholder = URL zapódaś abo zasajźiś
-newtab-topsites-url-validation = Płaśiwy URL trěbny
+newtab-topsites-url-validation = Płaśiwy URL trjebny
 newtab-topsites-image-url-label = URL swójskego wobraza
 newtab-topsites-use-image-link = Swójski wobraz wužywaś…
 newtab-topsites-image-validation = Wobraz njedajo se zacytaś. Wopytajśo drugi URL.
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Pla { -pocket-brand-name } składowaś
 newtab-menu-delete-pocket = Z { -pocket-brand-name } wulašowaś
 newtab-menu-archive-pocket = W { -pocket-brand-name } archiwěrowaś
 newtab-menu-show-privacy-info = Naše sponsory a waša priwatnosć
+newtab-menu-about-fakespot = Wó { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Blokěrowaś
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Temje wěcej njeslědowaś
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Nejnowša aktiwita
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Wót { $provider } dopórucony
 newtab-section-header-stories = Tšojeńka, kótarež k rozmyslowanju pógnuwaju
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Źinsajšne pśirucenja za was
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = { -pocket-brand-name } wobstaraś
 newtab-pocket-cta-text = Składujśo tšojeńka, kótarež se wam spódobuju, w { -pocket-brand-name } a žywśo swój duch z fasciněrujucymi cytańkami.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } jo źěl swójźby { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Składowaś
 newtab-pocket-saved = Skłaźony
 
@@ -242,6 +260,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Nic za mnjo
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Źěkujomy se. Wašo měnjenje buźo nam pomagaś, waš kanal pólěpšyś.
 newtab-toast-thumbs-up-or-down = Źěkujomy se. Wašo měnjenje buźo nam pomagaś, waš kanal pólěpšyś.
 newtab-toast-dismiss-button =
     .title = Zachyśiś
@@ -309,6 +330,8 @@ newtab-wallpaper-dark-panda = Cerwjeny panda w lěsu schowany
 newtab-wallpaper-dark-sky = Měsćańska krajina z nocnym njebjom
 newtab-wallpaper-dark-mountain = Górinowa krajina
 newtab-wallpaper-dark-city = Wioletna měsćańska krajina
+newtab-wallpaper-dark-fox-anniversary = Liška na flastarju blisko lěsa
+newtab-wallpaper-light-fox-anniversary = Liška w tšawowem pólu z kurjawkateju górinoweju krajinu
 
 ## Solid Colors
 
@@ -373,6 +396,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ sponserowany
 newtab-weather-menu-change-location = Městno změniś
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Městno pytaś
+    .aria-label = Městno pytaś
 newtab-weather-change-location-search-input = Městno pytaś
 newtab-weather-menu-weather-display = Wjedrowe pokazanje
 # Display options are:
@@ -391,3 +417,76 @@ newtab-weather-menu-hide-weather = Wjedro na nowem rejtariku schowaś
 newtab-weather-menu-learn-more = Dalšne informacije
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Wjedrowe daty njejsu tuchylu k dispoziciji
+
+## Topic Labels
+
+newtab-topic-label-business = Pśekupniske
+newtab-topic-label-career = Kariera
+newtab-topic-label-education = Kubłanje
+newtab-topic-label-arts = Rozdrosćenje
+newtab-topic-label-food = Caroba
+newtab-topic-label-health = Strowje
+newtab-topic-label-hobbies = Graśe
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Pjenjeze
+newtab-topic-label-society-parenting = Wótkubłanje
+newtab-topic-label-government = Politika
+newtab-topic-label-education-science = Wědomnosć
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Swójske pólěpšenja
+newtab-topic-label-sports = Sport
+newtab-topic-label-tech = Technologija
+newtab-topic-label-travel = Drogowanje
+newtab-topic-label-home = Dom a zagroda
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Wubjeŕśo temy, aby swój kanal optiměrował
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Wubjeŕśo dwě temje abo wěcej z nich. Naše nazgónjone kuratory prioritu na tšojeńka kładu, kótarež su na waše zajmy wusměrjone. Pśiměŕśo to kuždy cas.
+newtab-topic-selection-save-button = Składowaś
+newtab-topic-selection-cancel-button = Pśetergnuś
+newtab-topic-selection-button-maybe-later = Snaź pózdźej
+newtab-topic-selection-privacy-link = Zgóńśo, kak daty šćitamy a zastojmy
+newtab-topic-selection-button-update-interests = Zaktualizěrujśo swóje zajmy
+newtab-topic-selection-button-pick-interests = Wubjeŕśo swóje zajmy
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Slědowaś
+newtab-section-following-button = Slědujucy
+newtab-section-unfollow-button = Wěcej njeslědowaś
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Blokěrowaś
+newtab-section-blocked-button = Blokěrowany
+newtab-section-unblock-button = Wěcej njeblokěrowaś
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Cośo napšawdu toś ten wótrězk blokěrowaś?
+newtab-section-confirm-block-section-p2 = Blokěrowany wótrězk se wěcej we wašom kanalu njezjawijo.
+newtab-section-block-section-button = Toś ten wótrězk blokěrowaś
+newtab-section-cancel-button = Nic něnto
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Temy
+newtab-section-mangage-topics-button =
+    .label = Slědowane a blokěrowane temy
+newtab-section-mangage-topics-followed-topics-subtitle = Slědowane temy
+newtab-section-mangage-topics-followed-topics-empty-state = Hyšći žednym temam njeslědujośo.
+newtab-section-mangage-topics-blocked-topics-subtitle = Blokěrowane temy
+newtab-section-mangage-topics-blocked-topics-empty-state = Hyšći njejsćo blokěrował temy.

@@ -14,3 +14,7 @@ all-tabs-menu-manage-user-context =
     .accesskey = Z
 all-tabs-menu-close-duplicate-tabs =
     .label = Zamknij podwójne karty
+all-tabs-menu-close-all-duplicate-tabs =
+    .label = Zamknij wszystkie podwójne karty
+all-tabs-menu-synced-tabs =
+    .label = Karty z innych urządzeń

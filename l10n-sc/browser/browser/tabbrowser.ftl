@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Serra s'ischeda
+           *[other] Serra { $tabCount } ischedas
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Reprodue { $tabCount } ischedas
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -92,6 +106,10 @@ tabbrowser-confirm-close-tabs-with-key-button = Essi de { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Cunfirma prima de essire cun { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -163,3 +181,21 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Ativa s'àudio de s'ischeda
 tabbrowser-manager-close-tab =
     .tooltiptext = Serra s'ischeda
+
+## Tab Groups
+
+tab-group-editor-title-create = Crea unu grupu de ischedas
+tab-group-editor-title-edit = Gesti su grupu de ischedas
+tab-group-editor-name-label = Nòmine
+tab-group-editor-name-field =
+    .placeholder = Esempru: còmporas
+tab-group-editor-cancel =
+    .label = Annulla
+    .accesskey = A
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+
+## Open/saved tab group context menu
+

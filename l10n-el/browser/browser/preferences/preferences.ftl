@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Αποστολή σήματος «Αποτροπή καταγραφής», ώστε να μην καταγράφεστε από ιστοτόπους
+do-not-track-removal = Δεν υποστηρίζουμε πλέον το σήμα αποτροπής καταγραφής.
 do-not-track-description2 =
     .label = Αποστολή αιτήματος «Αποτροπή καταγραφής» στους ιστοτόπους
     .accesskey = τ
@@ -12,7 +13,7 @@ do-not-track-option-default-content-blocking-known =
 do-not-track-option-always =
     .label = Πάντα
 global-privacy-control-description =
-    .label = Αποστολή αιτήματος μη πώλησης ή κοινοποίησης των δεδομένων μου στους ιστοτόπους
+    .label = Αποστολή αιτήματος μη πώλησης ή κοινοποίησης δεδομένων στους ιστοτόπους
     .accesskey = σ
 non-technical-privacy-header = Προτιμήσεις απορρήτου ιστοτόπων
 # Do not translate.
@@ -137,8 +138,9 @@ windows-launch-on-login =
     .label = Άνοιγμα του { -brand-short-name } αυτόματα κατά την εκκίνηση του υπολογιστή
     .accesskey = ν
 windows-launch-on-login-disabled = Αυτή η προτίμηση έχει απενεργοποιηθεί στα Windows. Για να την αλλάξετε, επισκεφτείτε τις <a data-l10n-name="startup-link">Εφαρμογές εκκίνησης</a> στις ρυθμίσεις συστήματος.
+windows-launch-on-login-profile-disabled = Ενεργοποιήστε αυτήν την προτίμηση επιλέγοντας «{ profile-manager-use-selected.label }» στο παράθυρο «Επιλογή προφίλ χρήστη».
 startup-restore-warn-on-quit =
-    .label = Προειδοποίηση κατά την έξοδο από το πρόγραμμα περιήγησης
+    .label = Προειδοποίηση κατά τον τερματισμό του προγράμματος περιήγησης
 disable-extension =
     .label = Απενεργοποίηση επέκτασης
 preferences-data-migration-header = Εισαγωγή δεδομένων προγράμματος περιήγησης
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Άνοιγμα συνδέσμων σε καρτέλες αντί για νέα παράθυρα
     .accesskey = π
+ask-on-close-multiple-tabs =
+    .label = Ερώτηση πριν από το κλείσιμο πολλαπλών καρτελών
+    .accesskey = π
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Ερώτηση πριν από τον τερματισμό με { $quitKey }
+    .accesskey = τ
 confirm-on-close-multiple-tabs =
     .label = Επιβεβαίωση πριν από το κλείσιμο πολλαπλών καρτελών
     .accesskey = β
@@ -162,7 +175,7 @@ confirm-on-close-multiple-tabs =
 #                       in the same manner as it would appear,
 #                       for example, in the File menu.
 confirm-on-quit-with-key =
-    .label = Επιβεβαίωση πριν από την έξοδο με { $quitKey }
+    .label = Επιβεβαίωση πριν από τον τερματισμό με { $quitKey }
     .accesskey = ω
 warn-on-open-many-tabs =
     .label = Προειδοποίηση όταν το άνοιγμα πολλαπλών καρτελών ενδέχεται να επιβραδύνει το { -brand-short-name }
@@ -210,7 +223,7 @@ containers-remove-alert-msg =
 containers-remove-ok-button = Αφαίρεση θεματικής ενότητας
 containers-remove-cancel-button = Διατήρηση θεματικής ενότητας
 settings-tabs-show-image-in-preview =
-    .label = Εμφάνιση προεπισκόπησης εικόνας όταν τοποθετείτε τον δείκτη του ποντικιού σε μια καρτέλα
+    .label = Εμφάνιση εικόνας προεπισκόπησης όταν τοποθετείτε τον δείκτη του ποντικιού σε μια καρτέλα
     .accessKey = μ
 
 ## General Section - Language & Appearance
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Ιστότοποι από σελιδοδεί�
 home-prefs-shortcuts-by-option-sponsored =
     .label = Χορηγούμενες συντομεύσεις
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Προτάσεις του { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Εμφάνιση προτάσεων αναζήτησης στα αποτελέσματα της γραμμής διευθύνσεων
     .accesskey = τ
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Εμφάνιση όρων αναζήτησης στη γραμμή διευθύνσεων όταν βρίσκεστε σε σελίδες αποτελεσμάτων
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Πιστωτικές κάρτες
 sync-currently-syncing-payment-methods = Μέθοδοι πληρωμής
 sync-currently-syncing-addons = Πρόσθετα
 sync-currently-syncing-settings = Ρυθμίσεις
+sync-manage-options =
+    .label = Διαχείριση συγχρονισμού…
+    .accesskey = Δ
 sync-change-options =
     .label = Αλλαγή…
     .accesskey = Α
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Ρυθμίσεις
     .tooltiptext = Ρυθμίσεις που έχετε αλλάξει στις ενότητες "Γενικά" και "Απόρρητο & ασφάλεια"
     .accesskey = θ
+sync-choose-what-to-sync-dialog4 =
+    .title = Διαχειριστείτε τι συγχρονίζεται σε όλες τις συνδεδεμένες συσκευές σας
+    .style = min-width: 36em;
+    .buttonlabelaccept = Αποθήκευση
+    .buttonaccesskeyaccept = Α
+    .buttonlabelextra2 = Αποσύνδεση…
+    .buttonaccesskeyextra2 = π
 
 ## The device name controls.
 
@@ -1166,7 +1192,7 @@ content-blocking-fingerprinters = Fingerprinter
 # The known fingerprinters are those that are known for collecting browser fingerprints from user devices. And
 # the suspected fingerprinters are those that we are uncertain about browser fingerprinting activities. But they could
 # possibly acquire browser fingerprints because of the behavior on accessing APIs that expose browser fingerprints.
-content-blocking-known-and-suspected-fingerprinters = Γνωστά και ύποπτα fingerprinter
+content-blocking-known-and-suspected-fingerprinters = Γνωστά και πιθανά fingerprinter
 
 # The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
@@ -1285,13 +1311,25 @@ collection-description = Αγωνιζόμαστε για να σας παρέχ�
 collection-privacy-notice = Σημείωση απορρήτου
 collection-health-report-telemetry-disabled = Δεν επιτρέπεται πλέον στη { -vendor-short-name } η συλλογή τεχνικών δεδομένων και δεδομένων αλληλεπίδρασης. Όλα τα προηγούμενα δεδομένα θα διαγραφούν μέσα σε 30 ημέρες.
 collection-health-report-telemetry-disabled-link = Μάθετε περισσότερα
+collection-usage-ping-description = Αυτό βοηθά τη { -vendor-short-name } να εκτιμήσει τους ενεργούς χρήστες.
+collection-health-report2 =
+    .label = Αποστολή τεχνικών δεδομένων και δεδομένων αλληλεπίδρασης στη { -vendor-short-name }
+    .accesskey = λ
 collection-health-report =
     .label = Να επιτρέπεται στο { -brand-short-name } η αποστολή τεχνικών και διαδραστικών δεδομένων στη { -vendor-short-name }
     .accesskey = δ
 collection-health-report-link = Μάθετε περισσότερα
+collection-studies2 =
+    .label = Εγκατάσταση και εκτέλεση μελετών
+collection-studies-description = Δοκιμάστε λειτουργίες και ιδέες πριν δημοσιευτούν σε όλους.
 collection-studies =
     .label = Να επιτρέπεται στο { -brand-short-name } να εγκαθιστά και να εκτελεί μελέτες
 collection-studies-link = Προβολή μελετών του { -brand-short-name }
+addon-recommendations-description = Λάβετε προτάσεις επεκτάσεων για να βελτιώσετε την εμπειρία περιήγησής σας.
+collection-backlogged-crash-reports2 =
+    .label = Αυτόματη αποστολή αναφορών κατάρρευσης
+    .accesskey = τ
+collection-backlogged-crash-reports-description = Αυτό βοηθά τη { -vendor-short-name } να διαγνώσει και να επιλύσει προβλήματα με το πρόγραμμα περιήγησης. Οι αναφορές ενδέχεται να περιέχουν προσωπικά ή ευαίσθητα δεδομένα.
 addon-recommendations =
     .label = Αποδοχή εξατομικευμένων προτάσεων για επεκτάσεις από το { -brand-short-name }
 addon-recommendations-link = Μάθετε περισσότερα
@@ -1360,13 +1398,20 @@ space-alert-under-5gb-message2 = <strong>Το { -brand-short-name } δεν δι�
 
 httpsonly-header = Λειτουργία «Μόνο HTTPS»
 httpsonly-description = Το HTTPS παρέχει μια ασφαλή, κρυπτογραφημένη σύνδεση μεταξύ του { -brand-short-name } και των ιστοτόπων που επισκέπτεστε. Οι περισσότεροι ιστότοποι υποστηρίζουν το HTTPS και αν είναι ενεργή η λειτουργία «Μόνο HTTPS», τότε το { -brand-short-name } θα αναβαθμίζει όλες τις συνδέσεις σε HTTPS.
+httpsonly-description2 = Το { -brand-short-name } δημιουργεί ασφαλείς και κρυπτογραφημένες συνδέσεις με τους ιστοτόπους που επισκέπτεστε. Το { -brand-short-name } θα σας προειδοποιήσει εάν μια σύνδεση δεν είναι ασφαλής όταν είναι ενεργή η λειτουργία «Μόνο HTTPS».
 httpsonly-learn-more = Μάθετε περισσότερα
 httpsonly-radio-enabled =
     .label = Ενεργοποίηση λειτουργίας «Μόνο HTTPS» σε όλα τα παράθυρα
+httpsonly-radio-enabled2 =
+    .label = Χρήση μόνο HTTPS σε όλα τα παράθυρα
 httpsonly-radio-enabled-pbm =
     .label = Ενεργοποίηση λειτουργίας «Μόνο HTTPS» μόνο σε ιδιωτικά παράθυρα
+httpsonly-radio-enabled-pbm2 =
+    .label = Χρήση μόνο HTTPS στα ιδιωτικά παράθυρα
 httpsonly-radio-disabled =
     .label = Να μην ενεργοποιηθεί η λειτουργία «Μόνο HTTPS»
+httpsonly-radio-disabled2 =
+    .label = Να γίνεται πρώτα δοκιμή του HTTPS, αλλά να επιτρέπονται μη ασφαλείς συνδέσεις
 
 ## DoH Section
 
@@ -1430,5 +1475,5 @@ preferences-doh-manage-exceptions =
 ## The following strings are used in the Download section of settings
 
 desktop-folder-name = Επιφάνεια εργασίας
-downloads-folder-name = Στοιχεία λήψεων
+downloads-folder-name = Λήψεις
 choose-download-folder-title = Επιλογή φακέλου λήψεων:

@@ -116,11 +116,13 @@ about-logins-login-intro-heading-logged-in = Ni najdenih sinhroniziranih prijav.
 login-intro-description = Če ste svoje prijave shranili v { -brand-product-name } v drugi napravi, jih lahko prenesete sem, tako da:
 login-intro-instructions-fxa = Ustvarite { -fxaccount-brand-name(capitalization: "sentence") } ali se prijavite na napravi, na kateri so shranjene vaše prijave.
 about-logins-login-intro-heading-message = Shranite si gesla na varno mesto
+login-intro-description2 = Vsa gesla, ki jih shranite v { -brand-product-name }, so šifrirana. Poleg tega smo pozorni na kraje podatkov in vas opozorimo, če ste med prizadetimi. <a data-l10n-name="breach-alert-link">Več o tem</a>
 login-intro-instructions-fxa2 = Ustvarite račun ali se prijavite na napravi, kjer so shranjene vaše prijave.
 login-intro-instructions-fxa-settings = Pojdite v Nastavitve > Sinhronizacija > Vklopi sinhronizacijo … in označite Prijave in gesla.
 login-intro-instructions-fxa-passwords-help = Za dodatno pomoč obiščite <a data-l10n-name="passwords-help-link">podporo za gesla</a>.
 about-logins-intro-browser-only-import = Če so vaše prijave shranjene v drugem brskalniku, jih lahko <a data-l10n-name="import-link">uvozite v { -brand-product-name }</a>
 about-logins-intro-import2 = Če so vaše prijave shranjene izven { -brand-product-name }a, jih lahko <a data-l10n-name="import-browser-link">uvozite iz drugega brskalnika</a> ali <a data-l10n-name="import-file-link">datoteke</a>
+about-logins-intro-import3 = Za dodajanje gesla kliknite zgornji gumb z znakom plus. Gesla lahko tudi uvozite <a data-l10n-name="import-browser-link">iz drugega brskalnika</a> ali <a data-l10n-name="import-file-link">iz datoteke</a>.
 
 ## Login
 
@@ -131,6 +133,7 @@ login-item-edit-button = Uredi
 about-logins-login-item-remove-button = Odstrani
 login-item-origin-label = Naslov spletnega mesta
 login-item-tooltip-message = Prepričajte se, da se to ujema s točnim naslovom spletne strani, na katero se prijavljate.
+about-logins-origin-tooltip2 = Vnesite polni naslov in se prepričajte, da se natančno ujema s stranjo, na kateri se prijavljate.
 # Variables
 #   $webTitle (String) - Website title of the password being changed.
 about-logins-edit-password-tooltip = Prepričajte se, da shranjujete svoje trenutno geslo. Če tukaj spremenite geslo, se s tem ne bo spremenilo tudi na { $webTitle }.
@@ -145,6 +148,8 @@ login-item-copied-username-button-text = Kopirano!
 login-item-password-label = Geslo
 login-item-password-reveal-checkbox =
     .aria-label = Prikaži geslo
+login-item-password-conceal-checkbox =
+    .aria-label = Skrij geslo
 login-item-copy-password-button-text = Kopiraj
 login-item-copied-password-button-text = Kopirano!
 login-item-save-changes-button = Shrani spremembe
@@ -176,6 +181,13 @@ about-logins-edit-login-os-auth-dialog-message-win = Če želite urediti svojo p
 # This message can be seen when attempting to edit a login in about:logins
 # On MacOS, only provide the reason that account verification is needed. Do not put a complete sentence here.
 about-logins-edit-login-os-auth-dialog-message-macosx = edit the saved login
+# The macOS strings are preceded by the operating system with "Firefox is trying to ".
+# This message can be seen when attempting to disable osauth in about:preferences.
+about-logins-os-auth-dialog-message =
+    { PLATFORM() ->
+        [macos] spremeniti nastavitve gesel
+       *[other] { -brand-short-name } poskuša spremeniti nastavitve gesel. Da to dovolite, vnesite prijavne podatke svoje naprave.
+    }
 # This message can be seen when attempting to edit a login in about:logins on Windows.
 about-logins-edit-login-os-auth-dialog-message2-win = Če želite urediti geslo, vnesite svoje podatke za prijavo v sistem Windows. To pomaga zaščititi varnost vaših računov.
 # This message can be seen when attempting to edit a login in about:logins
@@ -416,6 +428,27 @@ about-logins-import-dialog-items-no-change =
     { $count ->
        *[other] <span>Najdene podvojene prijave:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(niso uvožene)</span>
     }
+about-logins-import-dialog-items-added2 =
+    { $count ->
+        [one] <span>Dodana nova gesla:</span> <span data-l10n-name="count">{ $count }</span>
+        [two] <span>Dodana nova gesla:</span> <span data-l10n-name="count">{ $count }</span>
+        [few] <span>Dodana nova gesla:</span> <span data-l10n-name="count">{ $count }</span>
+       *[other] <span>Dodana nova gesla:</span> <span data-l10n-name="count">{ $count }</span>
+    }
+about-logins-import-dialog-items-modified2 =
+    { $count ->
+        [one] <span>Posodobljeni obstoječi vnosi:</span> <span data-l10n-name="count">{ $count }</span>
+        [two] <span>Posodobljeni obstoječi vnosi:</span> <span data-l10n-name="count">{ $count }</span>
+        [few] <span>Posodobljeni obstoječi vnosi:</span> <span data-l10n-name="count">{ $count }</span>
+       *[other] <span>Posodobljeni obstoječi vnosi:</span> <span data-l10n-name="count">{ $count }</span>
+    }
+about-logins-import-dialog-items-no-change2 =
+    { $count ->
+        [one] <span>Najdeni podvojeni vnosi:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(niso uvoženi)</span>
+        [two] <span>Najdeni podvojeni vnosi:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(niso uvoženi)</span>
+        [few] <span>Najdeni podvojeni vnosi:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(niso uvoženi)</span>
+       *[other] <span>Najdeni podvojeni vnosi:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(niso uvoženi)</span>
+    }
 about-logins-import-dialog-items-error =
     { $count ->
        *[other] <span>Napake:</span> <span data-l10n-name="count">{ $count }</span> <span data-l10n-name="meta">(niso uvožene)</span>
@@ -480,6 +513,27 @@ about-logins-import-report-no-change =
         [two] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">podvojeni prijavi</div> <div data-l10n-name="not-imported">(ni uvoženo)</div>
         [few] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">podvojene prijave</div> <div data-l10n-name="not-imported">(ni uvoženo)</div>
        *[other] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">podvojenih prijav</div> <div data-l10n-name="not-imported">(ni uvoženo)</div>
+    }
+about-logins-import-report-added2 =
+    { $count ->
+        [one] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">novo geslo dodano</div>
+        [two] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">novi gesli dodani</div>
+        [few] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">nova gesla dodana</div>
+       *[other] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">novih gesel dodanih</div>
+    }
+about-logins-import-report-modified2 =
+    { $count ->
+        [one] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">obstoječ vnos posodobljen</div>
+        [two] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">obstoječa vnosa posodobljena</div>
+        [few] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">obstoječi vnosi posodobljeni</div>
+       *[other] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">obstoječih vnosov posodobljenih</div>
+    }
+about-logins-import-report-no-change2 =
+    { $count ->
+        [one] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">podvojen vnos</div> <div data-l10n-name="not-imported">(ni uvožen)</div>
+        [two] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">podvojena vnosa</div> <div data-l10n-name="not-imported">(nista uvožena)</div>
+        [few] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">podvojeni vnosi</div> <div data-l10n-name="not-imported">(niso uvoženi)</div>
+       *[other] <div data-l10n-name="count">{ $count }</div> <div data-l10n-name="details">podvojenih vnosov</div> <div data-l10n-name="not-imported">(niso uvoženi)</div>
     }
 about-logins-import-report-error =
     { $count ->

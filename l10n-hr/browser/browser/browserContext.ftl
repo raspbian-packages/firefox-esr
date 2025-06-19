@@ -80,6 +80,9 @@ toolbar-button-fxaccount =
 
 ## Account toolbar Button
 
+toolbar-button-account =
+    .label = Račun
+    .tooltiptext = Račun
 
 ## Save Page
 
@@ -159,6 +162,12 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Kopiraj poveznicu (L)
     .accesskey = L
+# "Copy Clean Link" means that Firefox will remove things from the link you
+# copied, like items that identify you for advertising purposes, and other items
+# sites add into URLs to help them deliver a certain browsing experience.
+main-context-menu-copy-clean-link =
+    .label = Kopiraj čistu poveznicu
+    .accesskey = K
 # This command copies the link, removing additional
 # query parameters used to track users across sites.
 main-context-menu-strip-on-share-link =
@@ -224,7 +233,7 @@ main-context-menu-media-video-leave-fullscreen =
 # This is used when right-clicking on a video in the
 # content area when the Picture-in-Picture feature is enabled.
 main-context-menu-media-watch-pip =
-    .label = Gledaj u prikazu slike-u-slici
+    .label = Gledaj u prikazu „Slika-u-slici”
     .accesskey = u
 main-context-menu-image-reload =
     .label = Ponovo učitaj sliku
@@ -287,9 +296,7 @@ main-context-menu-send-to-device =
     .label = Pošalji stranicu na uređaj
     .accesskey = u
 
-## The access keys for "Use Saved Login" and "Use Saved Password"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-use-saved-login =
     .label = Koristi spremljenu prijavu
@@ -305,11 +312,14 @@ main-context-menu-use-relay-mask =
     .label = Koristi { -relay-brand-short-name } e-mail masku
     .accesskey = e
 main-context-menu-suggest-strong-password =
-    .label = Predloži jaku lozinku …
-    .accesskey = j
+    .label = Predloži snažnu lozinku …
+    .accesskey = P
 main-context-menu-manage-logins2 =
     .label = Upravljaj prijavama
     .accesskey = m
+main-context-menu-manage-passwords =
+    .label = Upravljaj lozinkama
+    .accesskey = U
 main-context-menu-keyword =
     .label = Dodaj ključnu riječ za ovu pretragu …
     .accesskey = k
@@ -356,8 +366,8 @@ main-context-menu-take-screenshot =
     .label = Snimi ekran
     .accesskey = e
 main-context-menu-take-frame-screenshot =
-    .label = Snimi zaslon
-    .accesskey = o
+    .label = Snimi ekran
+    .accesskey = e
 main-context-menu-view-page-source =
     .label = Prikaži izvorni kod stranice
     .accesskey = v

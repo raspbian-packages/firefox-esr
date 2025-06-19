@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } 사생활 보호 모드
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } 사생활 보호 모드
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } 사생활 보호 모드
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } 사생활 보호 모드
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name } — { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — { -brand-full-name } 사생활 보호 모드
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — 사생활 보호 모드
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } 사생활 보호 모드
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — { $profile-name } — 사생활 보호 모드
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — 사생활 보호 모드
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -309,6 +367,10 @@ quickactions-cmd-viewsource = 소스 보기, 소스, view source, source
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = 빠른 작업 더 알아보기
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = 탭 키를 눌러서 선택:
 
 ## Bookmark Panel
 
@@ -543,6 +605,8 @@ urlbar-go-button =
     .tooltiptext = 주소 표시줄의 주소로 이동
 urlbar-page-action-button =
     .tooltiptext = 페이지 작업
+urlbar-revert-button =
+    .tooltiptext = 주소 표시줄에 주소 표시
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -603,6 +667,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = { $engine } 검색
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - { $localSearchMode } 검색
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - { $engine } 검색
+urlbar-searchmode-dropmarker =
+    .tooltiptext = 검색 엔진 선택
+urlbar-searchmode-bookmarks =
+    .label = 북마크
+urlbar-searchmode-tabs =
+    .label = 탭
+urlbar-searchmode-history =
+    .label = 기록
+urlbar-searchmode-actions =
+    .label = 작업
+urlbar-searchmode-exit-button =
+    .tooltiptext = 닫기
+urlbar-searchmode-popup-description = 이번만 검색:
+urlbar-searchmode-popup-search-settings = 검색 설정
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, 검색 엔진 선택
+    .tooltiptext = { $engine }, 검색 엔진 선택
+urlbar-searchmode-button-no-engine =
+    .label = 선택된 바로 가기 없음, 바로 가기를 선택하세요
+    .tooltiptext = 선택된 바로 가기 없음, 바로 가기를 선택하세요
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -612,6 +708,12 @@ urlbar-result-action-search-bookmarks = 북마크 검색
 urlbar-result-action-search-history = 기록 검색
 urlbar-result-action-search-tabs = 탭 검색
 urlbar-result-action-search-actions = 작업 검색
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = { $group } 그룹으로 전환
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = { $group } 열기
 
 ## Labels shown above groups of urlbar results
 
@@ -925,6 +1027,9 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = 사생활 보호 모드
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = 사생활 보호 모드
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -933,7 +1038,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = 데이터 보호
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = 사용자의 조직은 { $agentName } 에이전트를 사용하여 데이터 손실을 방지합니다. <a data-l10n-name="info">더 알아보기</a>
+content-analysis-panel-text-styled = 사용자의 조직은 데이터 손실을 막기 위해 <b>{ $agentName }</b> 에이전트를 사용합니다. <a data-l10n-name="info">더 알아보기</a>
 
 ## Unified extensions (toolbar) button
 
@@ -958,6 +1063,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         확장 기능
         일부 확장 기능은 허용되지 않음
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = 확장 기능
+    .tooltiptext =
+        확장 기능
+        일부 확장 기능이 비활성화됨
 
 ## Private browsing reset button
 
@@ -991,13 +1105,14 @@ firefox-relay-offer-why-to-use-relay = 안전하고 사용하기 쉬운 가리�
 # Variables:
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = 이메일 가리기로 전송된 모든 이메일은 차단하지 않는 한 <strong>{ $useremail }</strong>(으)로 전달됩니다.
-firefox-relay-offer-legal-notice = "이메일 가리기 사용"을 클릭하면, <label data-l10n-name="tos-url">서비스 약관</label>및 <label data-l10n-name="privacy-url">개인정보처리방침</label>에 동의하는 것입니다.
+firefox-relay-offer-legal-notice = "이메일 가리기 사용"을 클릭하면, <label data-l10n-name="tos-url">이용 약관</label>및 <label data-l10n-name="privacy-url">개인정보처리방침</label>에 동의하는 것입니다.
 
 ## Add-on Pop-up Notifications
 
 popup-notification-addon-install-unsigned =
     .value = (확인되지 않음)
 popup-notification-xpinstall-prompt-learn-more = 부가 기능을 안전하게 설치하는 방법에 대해 더 알아보기
+popup-notification-xpinstall-prompt-block-url = 상세 보기
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = 사생활 보호 창에서 실행

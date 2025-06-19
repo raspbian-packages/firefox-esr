@@ -8,11 +8,18 @@
 newtab-page-title = Thẻ mới
 newtab-settings-button =
     .title = Tùy biến trang thẻ mới
+newtab-personalize-settings-icon-label =
+    .title = Cá nhân hóa thẻ mới
+    .aria-label = Cài đặt
+newtab-settings-dialog-label =
+    .aria-label = Cài đặt
 newtab-personalize-icon-label =
     .title = Cá nhân hóa thẻ mới
     .aria-label = Cá nhân hóa thẻ mới
 newtab-personalize-dialog-label =
     .aria-label = Cá nhân hóa
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Lưu vào { -pocket-brand-name }
 newtab-menu-delete-pocket = Xóa khỏi { -pocket-brand-name }
 newtab-menu-archive-pocket = Lưu trữ trong { -pocket-brand-name }
 newtab-menu-show-privacy-info = Nhà tài trợ của chúng tôi và sự riêng tư của bạn
+newtab-menu-about-fakespot = Về { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Chặn
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Bỏ theo dõi chủ đề
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Hoạt động gần đây
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Được đề xuất bởi { $provider }
 newtab-section-header-stories = Những câu chuyện kích động tư tưởng
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Lựa chọn hôm nay dành cho bạn
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = Sử dụng { -pocket-brand-name }
 newtab-pocket-cta-text = Lưu những câu chuyện bạn yêu thích trong { -pocket-brand-name } và vui vẻ khi đọc chúng.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } là một phần của gia đình { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Lưu
 newtab-pocket-saved = Đã lưu
 
@@ -242,6 +260,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Không hợp với tôi
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Cảm ơn. Những phản hồi của bạn sẽ giúp chúng tôi cải thiện bản tin của bạn.
 newtab-toast-thumbs-up-or-down = Cảm ơn. Những phản hồi của bạn sẽ giúp chúng tôi cải thiện bản tin của bạn.
 newtab-toast-dismiss-button =
     .title = Bỏ qua
@@ -306,6 +327,8 @@ newtab-wallpaper-dark-panda = Gấu trúc đỏ ẩn trong rừng
 newtab-wallpaper-dark-sky = Cảnh quan thành phố với bầu trời đêm
 newtab-wallpaper-dark-mountain = Phong cảnh núi
 newtab-wallpaper-dark-city = Phong cảnh thành phố màu tím
+newtab-wallpaper-dark-fox-anniversary = Một chú cáo đứng trên vỉa hè gần khu rừng
+newtab-wallpaper-light-fox-anniversary = Một chú cáo trong cánh đồng xanh cỏ với phong cảnh núi non mờ sương
 
 ## Solid Colors
 
@@ -370,6 +393,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Được tài trợ
 newtab-weather-menu-change-location = Thay đổi khu vực
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Tìm kiếm khu vực
+    .aria-label = Tìm kiếm khu vực
 newtab-weather-change-location-search-input = Tìm kiếm khu vực
 newtab-weather-menu-weather-display = Cách hiển thị thời tiết
 # Display options are:
@@ -388,3 +414,66 @@ newtab-weather-menu-hide-weather = Ẩn thời tiết trên thẻ mới
 newtab-weather-menu-learn-more = Tìm hiểu thêm
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Dữ liệu thời tiết hiện không có sẵn.
+
+## Topic Labels
+
+newtab-topic-label-business = Kinh doanh
+newtab-topic-label-career = Cơ hội nghề nghiệp
+newtab-topic-label-education = Giáo dục
+newtab-topic-label-arts = Giải trí
+newtab-topic-label-food = Thực phẩm
+newtab-topic-label-health = Sức khỏe
+newtab-topic-label-hobbies = Trò chơi
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Tài chính cá nhân
+newtab-topic-label-society-parenting = Nuôi dạy con cái
+newtab-topic-label-government = Chính trị
+newtab-topic-label-education-science = Khoa học
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Mẹo vặt cuộc sống
+newtab-topic-label-sports = Thể thao
+newtab-topic-label-tech = Công nghệ
+newtab-topic-label-travel = Du lịch
+newtab-topic-label-home = Nhà & vườn
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Chọn chủ đề để tinh chỉnh nguồn cấp dữ liệu của bạn
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Chọn hai hoặc nhiều chủ đề. Các người chuyên gia giám tuyển của chúng tôi sẽ ưu tiên những câu chuyện phù hợp với sở thích của bạn. Cập nhật bất cứ lúc nào.
+newtab-topic-selection-save-button = Lưu
+newtab-topic-selection-cancel-button = Hủy bỏ
+newtab-topic-selection-button-maybe-later = Có lẽ để sau
+newtab-topic-selection-privacy-link = Tìm hiểu cách chúng tôi bảo vệ và quản lý dữ liệu
+newtab-topic-selection-button-update-interests = Cập nhật sở thích của bạn
+newtab-topic-selection-button-pick-interests = Chọn sở thích của bạn
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Theo dõi
+newtab-section-following-button = Đang theo dõi
+newtab-section-unfollow-button = Huỷ theo dõi
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Bạn có chắc chắn muốn chặn phần này không?
+newtab-section-confirm-block-section-p2 = Phần bị chặn sẽ không còn xuất hiện trong nguồn cấp dữ liệu của bạn nữa.
+newtab-section-block-section-button = Chặn phần này
+newtab-section-cancel-button = Không phải bây giờ
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

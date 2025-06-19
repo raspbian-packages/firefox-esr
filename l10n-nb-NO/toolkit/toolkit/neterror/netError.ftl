@@ -64,6 +64,7 @@ neterror-dns-not-found-trr-offline = Du er ikke koblet til internett.
 neterror-dns-not-found-trr-unknown-host2 = Dette nettstedet ble ikke funnet av { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Det oppstod et problem med { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = Ugyldig nettadresse.
+neterror-dns-not-found-system-sleep = Systemet er i hvilemodus.
 neterror-dns-not-found-trr-unknown-problem = Uventet feil oppstod.
 
 ## Native fallback specific messages
@@ -147,3 +148,4 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Hvis du ikke kjenner til <b
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> har en sikkerhetspolicy kalt HTTP Strict Transport Security (HSTS), som betyr at { -brand-short-name } bare kan koble til den sikkert. Du kan ikke legge til et unntak for å besøke dette nettstedet.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Trolig ikke mye, det er sannsynlig at det er et problem med selve nettstedet.

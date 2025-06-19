@@ -19,7 +19,8 @@
 
 use firefox_on_glean::{ipc, metrics, pings};
 use nserror::{nsresult, NS_ERROR_FAILURE, NS_OK};
-use nsstring::{nsACString, nsCString};
+use nsstring::{nsACString, nsAString, nsCString};
+use std::fs;
 use thin_vec::ThinVec;
 
 #[macro_use]
@@ -28,6 +29,7 @@ extern crate cstr;
 extern crate xpcom;
 
 mod init;
+mod ohttp_pings;
 
 pub use init::fog_init;
 
@@ -46,6 +48,7 @@ static mut PENDING_BUF: Vec<u8> = Vec::new();
 // IPC serialization/deserialization methods
 // Crucially important that the first two not be called on multiple threads.
 
+/// # Safety
 /// Only safe if only called on a single thread (the same single thread you call
 /// fog_give_ipc_buf on).
 #[no_mangle]
@@ -59,6 +62,7 @@ pub unsafe extern "C" fn fog_serialize_ipc_buf() -> usize {
     }
 }
 
+/// # Safety
 /// Only safe if called on a single thread (the same single thread you call
 /// fog_serialize_ipc_buf on), and if buf points to an allocated buffer of at
 /// least buf_len bytes.
@@ -73,6 +77,7 @@ pub unsafe extern "C" fn fog_give_ipc_buf(buf: *mut u8, buf_len: usize) -> usize
     pending_len
 }
 
+/// # Safety
 /// Only safe if buf points to an allocated buffer of at least buf_len bytes.
 /// No ownership is transfered to Rust by this method: caller owns the memory at
 /// buf before and after this call.
@@ -92,9 +97,9 @@ pub unsafe extern "C" fn fog_use_ipc_buf(buf: *const u8, buf_len: usize) {
 pub extern "C" fn fog_set_debug_view_tag(value: &nsACString) -> nsresult {
     let result = glean::set_debug_view_tag(&value.to_string());
     if result {
-        return NS_OK;
+        NS_OK
     } else {
-        return NS_ERROR_FAILURE;
+        NS_ERROR_FAILURE
     }
 }
 
@@ -137,7 +142,7 @@ pub extern "C" fn fog_set_experiment_active(
         extra_values.len(),
         "Experiment extra keys and values differ in length."
     );
-    let extra = if extra_keys.len() == 0 {
+    let extra = if extra_keys.is_empty() {
         None
     } else {
         Some(
@@ -193,12 +198,12 @@ pub extern "C" fn fog_test_get_experiment_data(
 ///
 /// See [`glean_core::Glean::set_metrics_disabled_config`].
 #[no_mangle]
-pub extern "C" fn fog_set_metrics_feature_config(config_json: &nsACString) {
+pub extern "C" fn fog_apply_server_knobs_config(config_json: &nsACString) {
     // Normalize null and empty strings to a stringified empty map
     if config_json == "null" || config_json.is_empty() {
-        glean::glean_set_metrics_enabled_config("{}".to_owned());
+        glean::glean_apply_server_knobs_config("{}".to_owned());
     }
-    glean::glean_set_metrics_enabled_config(config_json.to_string());
+    glean::glean_apply_server_knobs_config(config_json.to_string());
 }
 
 /// Performs Glean tasks when client state changes to inactive
@@ -207,4 +212,24 @@ pub extern "C" fn fog_set_metrics_feature_config(config_json: &nsACString) {
 #[no_mangle]
 pub extern "C" fn fog_internal_glean_handle_client_inactive() {
     glean::handle_client_inactive();
+}
+
+/// Apply a serverknobs config from the given path.
+#[no_mangle]
+pub extern "C" fn fog_apply_serverknobs(serverknobs_path: &nsAString) -> bool {
+    let config_json = match fs::read_to_string(serverknobs_path.to_string()) {
+        Ok(c) => c,
+        _ => {
+            log::error!(
+                "Boo, couldn't open serverknobs file at {}",
+                serverknobs_path.to_string()
+            );
+            return false;
+        }
+    };
+
+    log::trace!("Loaded serverknobs config. Applying.");
+    glean::glean_apply_server_knobs_config(config_json);
+
+    true
 }

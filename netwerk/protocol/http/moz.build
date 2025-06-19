@@ -22,6 +22,7 @@ XPIDL_SOURCES += [
     "nsIHttpHeaderVisitor.idl",
     "nsIHttpProtocolHandler.idl",
     "nsIObliviousHttp.idl",
+    "nsIObliviousHttpChannel.idl",
     "nsIRaceCacheWithNetwork.idl",
     "nsITlsHandshakeListener.idl",
     "nsIWellKnownOpportunisticUtils.idl",
@@ -163,11 +164,20 @@ UNIFIED_SOURCES += [
     "TlsHandshaker.cpp",
     "TLSTransportLayer.cpp",
     "TRRServiceChannel.cpp",
+    "WebTransportCertificateVerifier.cpp",
 ]
 
 if CONFIG["MOZ_WIDGET_TOOLKIT"] == "windows":
     UNIFIED_SOURCES += [
         "HttpWinUtils.cpp",
+    ]
+
+if CONFIG["TARGET_OS"] == "OSX":
+    UNIFIED_SOURCES += [
+        "MicrosoftEntraSSOUtils.mm",
+    ]
+    OS_LIBS += [
+        "-framework AuthenticationServices",
     ]
 
 # These files cannot be built in unified mode because of OS X headers.
@@ -207,6 +217,7 @@ if CONFIG["MOZ_AUTH_EXTENSION"]:
     ]
 
 EXTRA_JS_MODULES += [
+    "HPKEConfigManager.sys.mjs",
     "WellKnownOpportunisticUtils.sys.mjs",
 ]
 

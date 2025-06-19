@@ -89,6 +89,9 @@ shopping-show-less-button = Minder toane
 
 shopping-settings-label =
     .label = Ynstellingen
+shopping-settings-recommendations-toggle2 =
+    .label = Oanrekommandaasjes en sponsore ynhâld toane
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } dielt jo persoanlike gegevens net, dus dizze oanrekommandaasjes folgje jo net op it ynternet. <a data-l10n-name="review-quality-url">Mear ynfo</a>
 shopping-settings-recommendations-toggle =
     .label = Advertinsjes toane yn beoardielingskontrôle
 shopping-settings-recommendations-learn-more2 = Jo sjogge sa no en dan advertinsjes foar relevante produkten. Wy advertearje allinnich foar produkten mei betroubere beoardielingen. <a data-l10n-name="review-quality-url">Mear ynfo</a>
@@ -164,6 +167,7 @@ shopping-unanalyzed-product-analyze-button = Beoardielingskwaliteit kontrolearje
 
 more-to-consider-ad-label =
     .label = Mear oerwagingen
+shopping-sponsored-label = Sponsore
 ad-by-fakespot = Advertinsje fan { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -184,6 +188,18 @@ shopping-survey-submit-button-label = Ferstjoere
 shopping-survey-terms-link = Brûkersbetingsten
 shopping-survey-thanks =
     .heading = Tank foar jo kommentaar!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Lit ús witte wêrom’t jo Beoardielingskontrôle útskeakele hawwe. Selektearje meardere as nedich.
+shopping-survey-thanks-title = Tank foar jo kommentaar!
+shopping-survey-opted-out-hard-to-understand = It is dreech te begripen
+shopping-survey-opted-out-too-slow = It is te stadich
+shopping-survey-opted-out-not-accurate = It is net sekuer
+shopping-survey-opted-out-not-helpful = It is net nuttich foar my
+shopping-survey-opted-out-check-myself = Ik kontrolearje beoardielingen leaver sels
+shopping-survey-opted-out-other = Oars
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

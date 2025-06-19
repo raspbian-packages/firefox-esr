@@ -89,6 +89,9 @@ shopping-show-less-button = Показати менше
 
 shopping-settings-label =
     .label = Налаштування
+shopping-settings-recommendations-toggle2 =
+    .label = Показувати рекомендації та спонсоровані матеріали
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } не поширює ваші особисті дані, тому ці рекомендації не переслідуватимуть вас в інтернеті. <a data-l10n-name="review-quality-url">Докладніше</a>
 shopping-settings-recommendations-toggle =
     .label = Показувати рекламу в засобі перевірки відгуків
 shopping-settings-recommendations-learn-more2 = Ви періодично бачитимете рекламу схожих товарів. Ми рекламуємо лише продукти, які мають надійні відгуки. <a data-l10n-name="review-quality-url">Докладніше</a>
@@ -115,6 +118,7 @@ shopping-settings-sidebar-enabled-state = Перевірку відгуків <s
 shopping-adjusted-rating-label =
     .label = Скоригований рейтинг
 shopping-adjusted-rating-unreliable-reviews = Сумнівні відгуки прибрано
+shopping-adjusted-rating-based-reliable-reviews = На основі надійних відгуків
 
 ## Strings for the review reliability component
 
@@ -133,6 +137,8 @@ shopping-analysis-explainer-learn-more2 = Дізнайтеся, <a data-l10n-nam
 # websites, which will be inserted without being translated.
 #  $retailer (String) - capitalized name of the shopping website, for example, "Amazon".
 shopping-analysis-explainer-highlights-description = <strong>Обрані</strong> беруться з відгуків { $retailer } за останні 80 днів, які ми вважаємо надійними.
+# Fallback for analysis highlights explainer if the retailer is ever unknown
+shopping-analysis-explainer-highlights-description-unknown-retailer = <strong>Обрані</strong> беруться з відгуків за останні 80 днів, які ми вважаємо надійними.
 shopping-analysis-explainer-review-grading-scale-reliable = Надійні – чесні, неупереджені відгуки, найімовірніше від справжніх замовників.
 shopping-analysis-explainer-review-grading-scale-mixed = Ми вважаємо, що тут поєднано надійні та сумнівні відгуки.
 shopping-analysis-explainer-review-grading-scale-unreliable = Сумнівні – нечесні відгуки, найімовірніше від упереджених оглядачів.
@@ -159,17 +165,18 @@ shopping-unanalyzed-product-analyze-button = Перевірити якість �
 
 more-to-consider-ad-label =
     .label = Більше товарів
+shopping-sponsored-label = Спонсоровано
 ad-by-fakespot = Реклама від { -fakespot-brand-name }
 
 ## Shopping survey strings.
 
 shopping-survey-headline = Допоможіть удосконалити { -brand-product-name }
 shopping-survey-question-one = Як ви оцінюєте роботу засобу перевірки відгуків у { -brand-product-name }?
-shopping-survey-q1-radio-1-label = Дуже добре
+shopping-survey-q1-radio-1-label = Відмінно
 shopping-survey-q1-radio-2-label = Добре
 shopping-survey-q1-radio-3-label = Нейтрально
 shopping-survey-q1-radio-4-label = Погано
-shopping-survey-q1-radio-5-label = Дуже погано
+shopping-survey-q1-radio-5-label = Гірше не може бути
 shopping-survey-question-two = Чи полегшує вам прийняття рішень про купівлю засіб перевірки відгуків?
 shopping-survey-q2-radio-1-label = Так
 shopping-survey-q2-radio-2-label = Ні
@@ -179,6 +186,18 @@ shopping-survey-submit-button-label = Надіслати
 shopping-survey-terms-link = Умови користування
 shopping-survey-thanks =
     .heading = Дякуємо за ваш відгук!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Будь ласка, повідомте нам, чому ви вимкнули засіб перевірки відгуків. Можна вибрати декілька варіантів.
+shopping-survey-thanks-title = Дякуємо за ваш відгук!
+shopping-survey-opted-out-hard-to-understand = Він незрозумілий
+shopping-survey-opted-out-too-slow = Занадто повільний
+shopping-survey-opted-out-not-accurate = Неточні результати
+shopping-survey-opted-out-not-helpful = Мені це не потрібно
+shopping-survey-opted-out-check-myself = Краще перевірятиму відгуки особисто
+shopping-survey-opted-out-other = Інше
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

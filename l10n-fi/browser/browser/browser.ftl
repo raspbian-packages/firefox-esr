@@ -51,6 +51,11 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } - Yksityinen selaus
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -485,6 +490,7 @@ sharing-warning-disable-for-session =
 
 ## DevTools F12 popup
 
+enable-devtools-popup-description2 = Käyttääksesi F12-pikanäppäintä, avaa ensin DevTools selaimen työkaluvalikosta.
 
 ## URL Bar
 
@@ -547,6 +553,8 @@ urlbar-go-button =
     .tooltiptext = Siirry osoitepalkissa olevaan osoitteeseen
 urlbar-page-action-button =
     .tooltiptext = Sivun toiminnot
+urlbar-revert-button =
+    .tooltiptext = Näytä osoite sijaintipalkissa
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -607,6 +615,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = { $engine }-haku
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Hae kohteesta { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Hae käyttämällä { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Valitse hakukone
+urlbar-searchmode-bookmarks =
+    .label = Kirjanmerkit
+urlbar-searchmode-tabs =
+    .label = Välilehdet
+urlbar-searchmode-history =
+    .label = Sivuhistoria
+urlbar-searchmode-actions =
+    .label = Toiminnot
+urlbar-searchmode-exit-button =
+    .tooltiptext = Sulje
+urlbar-searchmode-popup-description = Tällä kertaa käytä hakuun:
+urlbar-searchmode-popup-search-settings = Hakuasetukset
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, valitse hakukone
+    .tooltiptext = { $engine }, valitse hakukone
+urlbar-searchmode-button-no-engine =
+    .label = Oikotietä ei ole valittu, valitse oikotie
+    .tooltiptext = Oikotietä ei ole valittu, valitse oikotie
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -616,6 +656,12 @@ urlbar-result-action-search-bookmarks = Etsi kirjanmerkeistä
 urlbar-result-action-search-history = Etsi historiasta
 urlbar-result-action-search-tabs = Etsi välilehdistä
 urlbar-result-action-search-actions = Etsi toimintoja
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Vaihda ryhmään { $group }
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = Avaa { $group }
 
 ## Labels shown above groups of urlbar results
 
@@ -637,6 +683,21 @@ urlbar-group-quickactions =
 #  $engine (String): the name of the search engine used to search.
 urlbar-group-recent-searches =
     .label = Viimeisimmät haut
+# The header shown above trending results.
+# Variables:
+#  $engine (String): the name of the search engine providing the trending suggestions
+urlbar-group-trending =
+    .label = Suosittuja hakukoneessa { $engine }
+# The result menu labels shown next to trending results.
+urlbar-result-menu-trending-dont-show =
+    .label = Älä näytä suositujja hakuja
+    .accesskey = Ä
+urlbar-result-menu-trending-why =
+    .label = Miksi näen tämän?
+    .accesskey = M
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-trending-dismissal-acknowledgment = Kiitos palautteestasi. Et näe enää suosittuja hakuja.
 
 ## Reader View toolbar buttons
 
@@ -914,6 +975,9 @@ data-reporting-notification-button =
     .accesskey = V
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Yksityinen selaus
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Yksityinen selaus
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -922,7 +986,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Tietojen suojaus
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = Organisaatiosi käyttää ohjelmistoa { $agentName } suojautuakseen tietojen menetykseltä. <a data-l10n-name="info">Lisätietoja</a>
+content-analysis-panel-text-styled = Organisaatiosi käyttää <b>{ $agentName }</b> tietojen menetyksen estämiseksi. <a data-l10n-name="info">Lisätietoja</a>
 
 ## Unified extensions (toolbar) button
 
@@ -947,6 +1011,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Laajennukset
         Joitain laajennuksia ei sallita
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Laajennukset
+    .tooltiptext =
+        Laajennukset
+        Jotkin laajennukset on poistettu käytöstä
 
 ## Private browsing reset button
 
@@ -987,6 +1060,11 @@ firefox-relay-offer-legal-notice = Napsauttamalla “Käytä sähköpostimaskia�
 popup-notification-addon-install-unsigned =
     .value = (Varmentamaton)
 popup-notification-xpinstall-prompt-learn-more = Lue lisää lisäosien asentamisesta turvallisesti
+popup-notification-xpinstall-prompt-block-url = Näytä yksityiskohdat
+# Note: Access key is set to P to match "Private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox =
+    .label = Suorita yksityisissä ikkunoissa
+    .accesskey = S
 
 ## Pop-up warning
 
@@ -1019,6 +1097,14 @@ popup-show-popup-menuitem =
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
+file-picker-failed-open = Windowsin tiedostovalintaikkunaa ei voitu avata. Tiedostoa tai kansiota ei voitu valita.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-failed-save-somewhere = Windowsin tiedostovalintaikkunaa ei voitu avata. Tiedosto tallennetaan sijaintiin { $path }.
+file-picker-failed-save-nowhere = Windowsin tiedostovalintaikkunaa ei voitu avata. Oletuskansiota ei löytynyt; tiedostoa ei tallenneta.
+file-picker-crashed-open = Windowsin tiedostovalintaikkuna on kaatunut. Tiedostoa tai kansiota ei voitu valita.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-crashed-save-somewhere = Windowsin tiedostovalintaikkuna on kaatunut. Tiedosto tallennetaan sijaintiin { $path }.
+file-picker-crashed-save-nowhere = Windowsin tiedostovalintaikkuna on kaatunut. Oletuskansiota ei löytynyt; tiedostoa ei tallenneta.
 
 # Button used with file-picker-crashed-save-default. Opens the folder in Windows
 # Explorer, with the saved file selected and in focus.

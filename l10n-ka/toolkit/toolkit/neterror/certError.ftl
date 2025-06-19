@@ -18,6 +18,9 @@ cert-error-trust-signature-algorithm-disabled = ეს სერტიფიკ�
 cert-error-trust-expired-issuer = სერტიფიკატი სანდო არაა, რადგან სერტიფიკატის გამცემის მოქმედების ვადა გასულია.
 cert-error-trust-self-signed = სერტიფიკატი სანდო არაა, რადგან საკუთარი ხელმოწერითაა.
 cert-error-trust-symantec = სერტიფიკატები, რომლებიც გამოშვებულია GeoTrust, RapidSSL, Symantec, Thawte და VeriSign დაწესებულებების მიერ, აღარაა მიჩნეული სანდოდ, ვინაიდან ეს ორგანიზაციები არ ითვალისწინებდნენ უსაფრთხოების სათანადო წესებს.
+# Variables:
+#   $hostname (string) - Hostname of the website with cert error.
+cert-error-trust-certificate-transparency = { -brand-short-name } არ ენდობა { $hostname }-ს, რადგანაც ვერ ადასტურებს, რომ აკმაყოფილებს საჯარო სერტიფიკატის გამჭვირვალობის მოთხოვნებს.
 cert-error-untrusted-default = სერტიფიკატის წყარო სანდო არაა.
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
@@ -68,6 +71,45 @@ open-in-new-window-for-csp-or-xfo-error = საიტის გახსნა 
 # Variables:
 #   $hostname (string) - Hostname of the website blocked by csp or xfo error.
 csp-xfo-blocked-long-desc = თქვენი უსაფრთხოებისთვის { $hostname } არ იძლევა საშუალებას და { -brand-short-name } ვერ აჩვენებს გვერდს, რომელიც სხვა საიტშია ჩამაგრებული. ამ გვერდის სანახავად, მისი ცალკე ფანჯარაში გახსნა დაგჭირდებათ.
+fp-certerror-view-certificate-link = იხილეთ საიტის სერტიფიკატი
+fp-certerror-return-to-previous-page-recommended-button = უკან დაბრუნება (სასურველია)
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+#   $validHosts (String) - Valid hostnames.
+fp-certerror-bad-domain-why-dangerous-body = საიტი მომართულია მხოლოდ დაცული კავშირების დასამყარებლად, მაგრამ ხარვეზი აქვს სერტიფიკატს. არაა გამორიცხული, ვინმე ბოროტმოქმედი ცდილობდეს ამ საიტის სხვა საიტად გასაღებას. საიტები იყენებს უფლებამოსილი მხარის გაცემულ სერტიფიკატებს ნამდვილობის დასამოწმებლად. { -brand-short-name } არ ენდობა ამ საიტს, რადგან მისი სერტიფიკატი უქმია მისამართისთვის { $hostname }. სერტიფიკატი მოქმედია მისამართებისთვის: { $validHosts }.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-bad-domain-what-can-you-do-body = შესაძლოა, არც არაფრის და თავად საიტს მხრიდან იყოს ხარვეზი. საიტები იყენებს უფლებამოსილი მხარის გაცემულ სერტიფიკატებს ნამდვილობის დასამოწმებლად. თუ დაწესებულების ქსელში იმყოფებით, ქსელის ზედამხედველ გუნდს ექნება მეტი ინფორმაცია. თუ გიყენიათ ანტივირუსი, ეცადეთ მოიძიოთ თავსებადობის ან სხვა ცნობილი ხარვეზები.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+fp-certerror-unknown-issuer-why-dangerous-body = ხარვეზი აქვს საიტის სერტიფიკატს. არაა გამორიცხული, ვინმე ბოროტმოქმედი ცდილობდეს ამ საიტის სხვა საიტად გასაღებას. საიტები იყენებს უფლებამოსილი მხარის გაცემულ სერტიფიკატებს ნამდვილობის დასამოწმებლად. { -brand-short-name } არ ენდობა ამ საიტს, რადგან უცნობია მისი გამომცემელი, შეიძლება თვითდამოწმებულია ან საიტი არ აგზავნის სანდო შუალედურ სერტიფიკატს.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-unknown-issuer-what-can-you-do-body = შესაძლოა, არც არაფრის და თავად საიტს მხრიდან იყოს ხარვეზი. თუ დაწესებულების ქსელში იმყოფებით, ქსელის მხარდაჭერის გუნდს ეცოდინება უკეთ. თუ იყენებთ ანტივირუსს, შეიძლება საჭირო იყოს ისე გამართვა, რომ { -brand-short-name } შეუთავსებლად არ მუშაობდეს.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+fp-certerror-self-signed-why-dangerous-body = იმის, რომ ხარვეზითაა საიტის სერტიფიკატი. საიტები იყენებს უფლებამოსილი მხარის გამოცემულ სერტიფიკატებს ნამდვილობის დასამოწმებლად. ამ საიტის სერტიფიკატი კი თვითდამოწმებულია. არაა აღიარებული მხარის მიერ გამოცემული — ასე რომ თავისთავად სანდო ვერ იქნება.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-self-signed-what-can-you-do-body = ბევრი ვერაფრით. სავარაუდოდ თავად საიტის მხრიდანაა ხარვეზი.
+fp-certerror-self-signed-important-note = ᲛᲜᲘᲨᲕᲜᲔᲚᲝᲕᲐᲜᲘ ᲨᲔᲜᲘᲨᲕᲜᲐ: თუ ცდილობთ ამ საიტზე შესვლას დაწესებულების ქსელიდან, ქსელის ზედამხედველები შეიძლება იყენებდნენ თვითდამოწმებულ სერტიფიკატებს. მათ შეუძლიათ დაგეხმარონ ნამდვილობის დამოწმებაში.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $date (Date) - Certificate expiration date.
+fp-certerror-expired-why-dangerous-body = საიტები იყენებს უფლებამოსილი მხარის მიერ გამოცემულ სერტიფიკატებს ნამდვილობის დასამოწმებლად. { -brand-short-name } არ ენდობა ამ საიტს, რადგან სერტიფიკატი ვადის გასვლის თარიღია { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") }.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $date (Date) - Certificate start date.
+fp-certerror-not-yet-valid-why-dangerous-body = საიტები იყენებს უფლებამოსილი მხარის მიერ გამოცემულ სერტიფიკატებს ნამდვილობის დასამოწმებლად. { -brand-short-name } არ ენდობა ამ საიტს, რადგან სერტიფიკატი არაა მოქმედი თარიღამდე{ DATETIME($date, month: "numeric", day: "numeric", year: "numeric") }.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+# Variables:
+#   $date (Date) - Clock date.
+fp-certerror-expired-what-can-you-do-body = თქვენი მოწყობილობის დროით არის { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") }. თუ სწორია, უსაფრთხოების ხარვეზი თავად საიტის მხრიდანაა. თუ დრო არეულია, შეგიძლიათ გაასწოროთ მოწყობილობის პარამეტრებიდან.
+# Variables:
+#   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
+fp-cert-error-code = შეცდომის კოდი: { $error }
+# Variables:
+#   $datetime (Date) - Current datetime.
+fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+fp-learn-more-about-secure-connection-failures = ვრცლად უსაფრთხო კავშირის ხარვეზების შესახებ
+fp-learn-more-about-cert-issues = ვრცლად ამ სახის სერტიფიკატების საკითხების შესახებ
+fp-learn-more-about-time-related-errors = ვრცლად არეული საათით გამოწვეული ხარვეზების მოგვარების შესახებ
 
 ## Messages used for certificate error titles
 
@@ -92,6 +134,7 @@ contentEncodingError-title = შიგთავსის დაშიფვრ�
 unsafeContentType-title = სახიფათი სახის ფაილი
 netReset-title = კავშირი გაწყდა
 netTimeout-title = კავშირის დრო ამოიწურა
+serverError-title = როგორც ჩანს, ხარვეზი საიტის მხრიდანაა
 unknownProtocolFound-title = მისამართი გაუგებარია
 proxyConnectFailure-title = პროქსი სერვერმა კავშირი უარყო
 proxyResolveFailure-title = პროქსი სერვერის პოვნა ვერ ხერხდება
@@ -103,8 +146,25 @@ corruptedContentError-title = დაზიანებული შიგთა�
 sslv3Used-title = უსაფრთხო კავშირი ვერ ხერხდება
 inadequateSecurityError-title = კავშირი დაუცველია
 blockedByPolicy-title = გვერდი შეზღუდულია
-clockSkewError-title = საათი თქვენს კომპიუტერზე არეულია
+clockSkewError-title = საათი თქვენს კომპიუტერში არეულია
 networkProtocolError-title = ქსელის ოქმის შეცდომა
 nssBadCert-title = ფრთხილად: სახიფათოა
 nssBadCert-sts-title = ვერ დაუკავშირდა: უსაფრთხოების სავარაუდო ხარვეზის გამო
 certerror-mitm-title = პროგრამის მიერ შეზღუდვის გამო, { -brand-short-name } ვერ ახერხებს საიტთან უსაფრთხოდ დაკავშირებას
+
+## Felt Privacy V1 Strings
+
+fp-certerror-page-title = გაფრთხილება: ხიფათის შემცველია
+fp-certerror-body-title = სიფრთხილე გამოიჩინეთ. რაღაც რიგზე ვერაა.
+fp-certerror-why-site-dangerous = რის გამოა საიტი საფრთხის შემცველი?
+fp-certerror-what-can-you-do = რით შეიძლება გამოსწორება?
+fp-certerror-advanced-title = დამატებით
+fp-certerror-advanced-button = დამატებით
+fp-certerror-hide-advanced-button = შემოკლებულად
+
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-certerror-override-exception-button = მაინც გაიხსნას { $hostname } (სახიფათოა)
+fp-certerror-intro = { -brand-short-name } მიიჩნევს, რომ <strong>{ $hostname }</strong> საფრთხის შემცველია. სხვა საიტად გასაღების დროს შეიძლება მოიპარონ საკრედიტო ბარათის მონაცემები, პაროლები ან ელფოსტა.
+fp-certerror-expired-into = { -brand-short-name } მიიჩნევს, რომ <strong>{ $hostname }</strong> საფრთხის შემცველია. ან საიტია გაუმართავი, ან თქვენი საათია არეული.

@@ -216,8 +216,7 @@ cfr-cbh-confirm-button = أرفض لافتات الكعكات
     .accesskey = ض
 cfr-cbh-dismiss-button = ليس الآن
     .accesskey = آ
-cookie-banner-blocker-cfr-header = { -brand-short-name } حظر ملفات تعريف الارتباط نيابةً عنك
-cookie-banner-blocker-cfr-body = نرفض تلقائيًا العديد من النوافذ المنبثقة لملفات تعريف الارتباط لنجعل من الصعب على المواقع تتبعك.
+cookie-banner-blocker-onboarding-learn-more = اطّلع على المزيد
 
 ## These strings are used in the Fox doodle Pin/set default spotlights
 
@@ -247,10 +246,6 @@ fxa-sync-cfr-secondary = ذكّرني لاحقًا
 
 ## Device Migration FxA Spotlight
 
-device-migration-fxa-spotlight-header = هل تستخدم جهازًا قديمًا؟
-device-migration-fxa-spotlight-body = انسخ بياناتك إحتياطياً لتتأكد من عدم خسارة المعلومات المهمة مثل العلامات وكلمات السر — خصوصاً إذا انتقلت إلى جهاز جديد.
-device-migration-fxa-spotlight-primary-button = كيفية عمل نسخة احتياطية من بياناتي
-device-migration-fxa-spotlight-link = ذكّرني لاحقًا
 device-migration-fxa-spotlight-heavy-user-header = لا تنسَ عمل نُسخة احتياطية لبياناتك
 device-migration-fxa-spotlight-heavy-user-body = تأكد من أن المعلومات المهمة، مثل العلامات وكلمات السر، مُحدّثة و محمية عبر جميع أجهزتك.
 device-migration-fxa-spotlight-heavy-user-primary-button = ابدأ
@@ -259,6 +254,7 @@ device-migration-fxa-spotlight-older-device-primary-button = أنشئ حسابً
 device-migration-fxa-spotlight-getting-new-device-header-2 = جهاز جديد في مستقبلك؟
 device-migration-fxa-spotlight-getting-new-device-body-2 = اتبع بعض الخطوات البسيطة لجلب العلامات والتأريخ وكلمات السر معك عند البدء على جهاز جديد.
 device-migration-fxa-spotlight-getting-new-device-primary-button = كيفية عمل نسخة احتياطية من بياناتي
+device-migration-fxa-spotlight-sync-primary-button = ابدأ
 
 ## Set as Default PDF Reader Infobar
 
@@ -284,3 +280,39 @@ launch-on-login-infobar-reject-button = ليس الآن
 launch-on-login-infobar-final-message = <strong>افتح { -brand-short-name } في كل مرة تقوم فيها بإعادة تشغيل جهاز الكمبيوتر الخاص بك؟</strong> لإدارة تفضيلات بدء التشغيل، ابحث عن "البدء" في الإعدادات.
 launch-on-login-infobar-final-reject-button = لا، شكرًا
     .accesskey = ا
+
+## Tail Fox Set Default Spotlight
+
+tail-fox-spotlight-secondary-button = ليس الآن
+
+## Root Certificate Succession Infobar
+
+root-certificate-succession-infobar-link = لماذا أحتاج إلى التحديث؟
+root-certificate-succession-infobar-primary-button =
+    .label = حدّث الآن
+    .accesskey = د
+root-certificate-succession-infobar-secondary-button =
+    .label = لاحقًا
+    .accesskey = ا
+
+## Root Certificate Succession Windows Background Notification
+
+root-certificate-windows-background-notification-learn-more-button = اطّلع على المزيد
+root-certificate-windows-background-notification-update-button = حدِّث { -brand-short-name }
+
+## FxA Menu Message variants
+
+fxa-menu-message-close-button =
+    .title = أغلق
+    .aria-label = أغلق
+fxa-menu-message-sign-up-button = سجّل حسابًا
+fxa-menu-message-sync-devices-primary-text = زامِن كل أجهزتك
+fxa-menu-message-sync-devices-collapsed-text = زامِن كل أجهزتك
+fxa-menu-message-mobile-collapsed-text = زامِن مع هاتفك
+
+## Multi-CTA Fox Doodle Spotlight
+
+multi-cta-fox-doodle-title = مرحبا بعودتك
+multi-cta-fox-doodle-set-default-checkbox = اضبط { -brand-short-name } ليكون المبدئي
+multi-cta-fox-doodle-start-browsing-primary-button-label = ابدأ التصفح
+multi-cta-fox-doodle-main-browser-primary-button-label = اضبط { -brand-short-name } ليكون متصفّحي الرئيسي

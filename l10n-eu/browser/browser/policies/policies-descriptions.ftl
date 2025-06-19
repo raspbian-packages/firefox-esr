@@ -119,6 +119,7 @@ policy-Permissions2 = Konfiguratu kamera, mikrofonoa, kokapena, jakinarazpenak e
 policy-PictureInPicture = Gaitu edo desgaitu bideo beste leiho batean ikusteko eginbidea.
 policy-PopupBlocking = Baimendu zenbait webguneri lehenespenez popup leihoak bistaratzea.
 policy-Preferences = Ezarri eta blokeatu hobespen-azpimultzo baten balioak.
+policy-PrivateBrowsingModeAvailability = Ezarri nabigatze pribatuko moduaren erabilgarritasuna.
 policy-PromptForDownloadLocation = Galdetu non gorde deskargatutako fitxategiak.
 policy-Proxy = Konfiguratu proxy-ezarpenak.
 policy-RequestedLocales = Ezarri aplikazioari eskatuko zaizkion hizkuntza-kodeen zerrenda, hobetsitakoen arabera ordenatuta.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Inprimatu sistemaren inprimatzeko elkarrizketa-koa
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Blokeatu zenbait webgune bisitatzea. Irakurri dokumentazioa formatuaren gaineko xehetasun gehiagorako.
 policy-Windows10SSO = Baimendu Windows saio-hasiera bakarra (SSO) Microsoft-, laneko eta eskolako kontuentzat.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Baimendu saio-hasiera bakarra Microsoft Entra kontuetarako.

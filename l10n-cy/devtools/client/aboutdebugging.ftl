@@ -112,6 +112,8 @@ about-debugging-setup-usb-step-enable-dev-menu2 = Galluogi dewislen datblygwyr a
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = Galluogi Dadfygio USB yn Newislen Datblygwr Android.
 # USB section step by step guide
+about-debugging-setup-usb-step-enable-file-transfer = Galluogi trosglwyddo ffeil a sicrhau nad yw eich dyfais yn y modd gwefru'n unig.
+# USB section step by step guide
 about-debugging-setup-usb-step-enable-debug-firefox2 = Galluogi Dadfygio USB yn Firefox ar y ddyfais Android.
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Cysylltu'r ddyfais Android i'ch cyfrifiadur.
@@ -311,6 +313,9 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Gwasanaeth Gwthio
+# Displayed for service workers in runtime pages, to label the origin of a worker.
+about-debugging-worker-origin =
+    .label = Tarddiad
 # Displayed as title of the inspect button when service worker debugging is disabled.
 about-debugging-worker-inspect-action-disabled =
     .title = Mae Gweithiwr Gwasanaeth gwthio wedi ei analluogi ar hyn o bryd ar gyfer amlbroses { -brand-shorter-name }

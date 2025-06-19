@@ -189,6 +189,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Kiinnitä { -brand-short-name } Dockiin
        *[other] Kiinnitä { -brand-short-name } tehtäväpalkkiin
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Kiinnitä { -brand-short-name } tehtäväpalkkiin ja Käynnistä-valikkoon
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -224,7 +226,9 @@ mr2022-onboarding-set-default-subtitle = Käytä voittoa tavoittelemattoman sä�
 mr2022-onboarding-get-started-primary-subtitle = Uusin versiomme on rakennettu ympärillesi; verkossa liikkuminen on helpompaa kuin koskaan. Se on täynnä ominaisuuksia, joihin uskomme sinun ihastuvan.
 mr2022-onboarding-get-started-primary-button-label = Määritä sekunneissa
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Salamannopea määritys
 mr2022-onboarding-import-subtitle = Määritä { -brand-short-name } haluamallasi tavalla. Lisää kirjanmerkkisi, salasanasi ja paljon muuta aiemmin käyttämästäsi selaimesta.
@@ -336,6 +340,14 @@ onboarding-device-migration-subtitle = Kirjaudu sisään { -fxaccount-brand-name
 onboarding-device-migration-subtitle2 = Kirjaudu tilillesi tuodaksesi kirjanmerkkisi, salasanasi ja historiasi uudelle laitteellesi.
 onboarding-device-migration-primary-button-label = Kirjaudu sisään
 
+## Add-ons Picker screen
+
+amo-picker-title = Muokkaa { -brand-short-name }-selainta
+amo-picker-subtitle = Laajennukset ovat kuin selaimesi sovelluksia, ja niiden avulla voit suojata salasanoja, ladata videoita, löytää tarjouksia, estää ärsyttäviä mainoksia, muuttaa selaimen ulkoasua ja paljon muuta.
+amo-picker-install-button-label = Lisää { -brand-short-name }iin
+amo-picker-install-complete-label = Asennettu
+amo-picker-collection-link = Tutustu muihin lisäosiin
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -347,6 +359,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = Synkronoinnin myötä
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } huolehtii sinusta
 onboarding-gratitude-security-and-privacy-subtitle = Kiitos, että käytät Mozilla-säätiön tukemaa { -brand-short-name }ia. Tukesi avulla pyrimme tekemään Internetistä entistä turvallisemman ja helpommin saavutettavan kaikille.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Synkronoi tietosi laitteiden välillä
+onboarding-sign-up-description = Luo tili ja kaikki tärkeät tietosi – salasanat, kirjanmerkit ja paljon muuta – tallennetaan turvallisesti ja ovat käytettävissä, kun kirjaudut sisään mille tahansa laitteelle.
+onboarding-sign-up-button = Rekisteröidy tai kirjaudu sisään
+onboarding-sign-up-secondary-button = Aloita selaaminen
 
 ## New user time and familiarity survey strings
 
@@ -366,3 +383,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Olen aivan uusi
 onboarding-new-user-survey-familiarity-based-option-2 = Olen käyttänyt sitä jonkin verran
 onboarding-new-user-survey-familiarity-based-option-3 = Olen hyvin perehtynyt siihen
 onboarding-new-user-survey-familiarity-based-option-4 = Olen käyttänyt sitä aiemmin, mutta siitä on aikaa
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Missä haluat välilehtien sijaitsevan?
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Voit vaihtaa tätä asetusta milloin vain sivupalkin asetuksista.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Välilehdet haluamallasi tavalla
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Pidätkö paljon välilehtiä avoinna? Kokeile sivulla olevia välilehtiä saadaksesi virtaviivaisemman näkymän. Tai pidä välilehdet yläosassa kuten tähän asti. Vaihda milloin tahansa.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Valitse välilehtien asettelu
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Jos haluat keskittymistä helpottavan virtaviivaistetun näkymän, kokeile sivussa olevia välilehtiä. Tai pidä välilehdet yläosassa kuten tähän asti. Vaihda milloin tahansa.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Välilehdet reunassa
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Välilehdet ylhäällä
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Pystysuuntaiset välilehdet ovat täällä
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Esittelyssä pystysuuntaiset välilehdet
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Kokeile reunassa olevia välilehtiä. Voit vaihtaa tätä asetusta milloin vain sivupalkin asetuksista.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Kokeile pystysuuntaisia välilehtiä
+onboarding-flair-text = Uutta!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Pidä vaakasuuntaiset välilehdet
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Selainikkuna, jossa välilehdet näkyvät näytön reunassa osana { -brand-shorter-name }-sivupalkkia.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Selainikkuna, jossa välilehdet näkyvät näytön reunassa osana { -brand-shorter-name }-sivupalkkia.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Selainikkuna, jonka yläosassa näkyvät välilehdet.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Selainikkuna, jonka yläosassa näkyvät välilehdet.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Kokeile AI-chatbottia sivupalkissa
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Tee yhteenveto verkkosivun sisällöstä, pohdi ideoita ja luonnostele viestejä – kaikki selaamisen aikana. Valitse useista palveluntarjoajista. Vaihda milloin tahansa. <a data-l10n-name="learn-more">Lisätietoja</a>
+onboarding-genai-sidebar-primary-button = Valitse chatbotti
+onboarding-genai-sidebar-secondary-button = Aloita selaaminen
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Viimeistele { -brand-short-name }in määritys
+onboarding-checklist-subtitle = Suorita nämä vaiheet saadaksesi kaiken irti selauskokemuksestasi.
+onboarding-checklist-set-default = Aseta { -brand-short-name } oletusselaimeksi
+onboarding-checklist-pin = Kiinnitä { -brand-short-name } tehtäväpalkkiin
+onboarding-checklist-import = Tuo edellisestä selaimesta
+onboarding-checklist-extension = Lisää laajennus
+onboarding-checklist-sign-up = Rekisteröidy tai kirjaudu sisään tilillesi
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Kokeile välilehtiryhmiä vähentääksesi sotkua ja keskittyäksesi paremmin
+tab-groups-onboarding-feature-callout-subtitle = Järjestäydy vetämällä välilehti toisen päälle ja luo siten ensimmäinen ryhmä.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Tervehdi { -brand-product-name }-profiileja
+multi-profile-spotlight-body = Vaihda helposti työn ja huvin välillä selatessasi. Profiilit pitävät selaustietosi, mukaan lukien hakuhistorian ja salasanat, täysin erillään, jotta pysyt järjestyksessä.
+multi-profile-spotlight-cta = Luo profiili
+multi-profile-callout-title = Luo eri profiilit työtä ja vapaa-aikaa varten
+multi-profile-callout-subtitle = Profiilien avulla voit pitää selaustietosi, kuten hakuhistorian ja salasanat, täysin erillään.
+multi-profile-callout-cta = Luo profiili

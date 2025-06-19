@@ -89,6 +89,9 @@ shopping-show-less-button = Moins de détails
 
 shopping-settings-label =
     .label = Paramètres
+shopping-settings-recommendations-toggle2 =
+    .label = Afficher des recommandations et du contenu sponsorisé
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } ne partage pas vos données personnelles. Ces recommandations ne vont donc pas vous suivre sur Internet. <a data-l10n-name="review-quality-url">En savoir plus</a>
 shopping-settings-recommendations-toggle =
     .label = Afficher des publicités dans le vérificateur d’avis
 shopping-settings-recommendations-learn-more2 = Vous verrez à l’occasion des publicités pour des produits pertinents.  Nous faisons uniquement la promotion de produits dont les avis sont fiables. <a data-l10n-name="review-quality-url">En savoir plus</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Évaluer la qualité des avis
 
 more-to-consider-ad-label =
     .label = Produits alternatifs
+shopping-sponsored-label = Sponsorisé
 ad-by-fakespot = Publicité de { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Envoyer
 shopping-survey-terms-link = Conditions d’utilisation
 shopping-survey-thanks =
     .heading = Merci de votre retour !
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Indiquez-nous pourquoi vous avez désactivé le vérificateur d’avis. Sélectionnez plusieurs raisons au besoin.
+shopping-survey-thanks-title = Merci de votre retour !
+shopping-survey-opted-out-hard-to-understand = Il est difficile à comprendre
+shopping-survey-opted-out-too-slow = Il est trop lent
+shopping-survey-opted-out-not-accurate = Il n’est pas précis
+shopping-survey-opted-out-not-helpful = Il ne m’est pas utile
+shopping-survey-opted-out-check-myself = Je préfère vérifier les avis moi-même
+shopping-survey-opted-out-other = Autre
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

@@ -255,6 +255,15 @@ menu-bookmarks-other =
 menu-bookmarks-mobile =
     .label = Adreces del mòbil
 
+## Profiles Menu
+
+menu-profiles =
+    .label = Perfils
+menu-profiles-manage-profiles =
+    .label = Gestiona els perfils
+menu-profiles-new-profile =
+    .label = Perfil nou
+
 ## Tools Menu
 
 menu-tools =
@@ -331,7 +340,7 @@ menu-help-more-troubleshooting-info =
 menu-help-report-site-issue =
     .label = Informa d'un problema amb el lloc…
 menu-help-share-ideas =
-    .label = Compartiu idees i comentaris…
+    .label = Comparteix idees i comentaris…
     .accesskey = s
 menu-help-enter-troubleshoot-mode2 =
     .label = Mode de resolució de problemes…

@@ -11,11 +11,12 @@
     static get inheritedAttributes() {
       return {
         ".popup-notification-icon": "popupid,src=icon,class=iconclass,hasicon",
+        ".popup-notification-body": "popupid",
         ".popup-notification-origin": "value=origin,tooltiptext=origin",
         ".popup-notification-description": "popupid,id=descriptionid",
         ".popup-notification-description > span:first-of-type":
           "text=label,popupid",
-        ".popup-notification-description > b:first-of-type":
+        ".popup-notification-description > .popup-notification-description-name":
           "text=name,popupid",
         ".popup-notification-description > span:nth-of-type(2)":
           "text=endlabel,popupid",
@@ -76,33 +77,29 @@
       <hbox align="start" class="popup-notification-body-container">
         <image class="popup-notification-icon"/>
         <vbox pack="start" class="popup-notification-body">
-          <hbox align="start">
-            <vbox flex="1">
-              <label class="popup-notification-origin header" crop="center"></label>
-              <!-- These need to be on the same line to avoid creating
-                  whitespace between them (whitespace is added in the
-                  localization file, if necessary). -->
-              <description class="popup-notification-description"><html:span></html:span><html:b></html:b><html:span></html:span><html:b></html:b><html:span></html:span></description>
-              <description class="popup-notification-hint-text"></description>
-            </vbox>
-            <toolbarbutton class="messageCloseButton close-icon popup-notification-closebutton tabbable" data-l10n-id="close-notification-message"></toolbarbutton>
-          </hbox>
+          <label class="popup-notification-origin header" crop="center"></label>
+          <!-- These need to be on the same line to avoid creating
+              whitespace between them (whitespace is added in the
+              localization file, if necessary). -->
+          <description class="popup-notification-description"><html:span></html:span><html:b class="popup-notification-description-name"></html:b><html:span></html:span><html:b></html:b><html:span></html:span></description>
+          <description class="popup-notification-hint-text"></description>
           <vbox class="popup-notification-bottom-content" align="start">
             <label class="popup-notification-learnmore-link" is="text-link" data-l10n-id="popup-notification-learn-more"></label>
             <checkbox class="popup-notification-checkbox" oncommand="PopupNotifications._onCheckboxCommand(event)"/>
             <description class="popup-notification-warning"/>
           </vbox>
         </vbox>
+        <toolbarbutton class="messageCloseButton close-icon popup-notification-closebutton tabbable" data-l10n-id="close-notification-message"></toolbarbutton>
       </hbox>
       <hbox class="popup-notification-footer-container"></hbox>
-      <hbox class="popup-notification-button-container panel-footer">
-        <button class="popup-notification-secondary-button"/>
-        <button type="menu" class="popup-notification-dropmarker" data-l10n-id="popup-notification-more-actions-button">
+      <html:moz-button-group class="panel-footer">
+        <button class="popup-notification-secondary-button footer-button"/>
+        <button type="menu" class="popup-notification-dropmarker footer-button" data-l10n-id="popup-notification-more-actions-button">
           <menupopup position="after_end" data-l10n-id="popup-notification-more-actions-button">
           </menupopup>
         </button>
-        <button class="popup-notification-primary-button" data-l10n-id="popup-notification-default-button"/>
-      </hbox>
+        <button class="popup-notification-primary-button primary footer-button" data-l10n-id="popup-notification-default-button"/>
+      </html:moz-button-group>
       `;
     }
 

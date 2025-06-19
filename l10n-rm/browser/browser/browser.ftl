@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = Modus privat da { -brand-shortcut-name }
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = Modus privat da { -brand-full-name }
+    .data-title-default-with-profile = { $profile-name } – { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } – Modus privat da { -brand-full-name }
+    .data-content-title-default = { $content-title } – { -brand-full-name }
+    .data-content-title-private = { $content-title } – Modus privat da { -brand-full-name }
+    .data-content-title-default-with-profile = { $content-title } – { $profile-name } – { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } – { $profile-name } – Modus privat da { -brand-full-name }
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — Modus privat
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — Modus privat da { -brand-full-name }
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — Modus privat
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Modus privat
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -309,6 +367,10 @@ quickactions-cmd-viewsource = mussar la funtauna, funtauna
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Vegnir a savair dapli davart acziuns sveltas
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Smatga la tasta da tabulatur per tscherner:
 
 ## Bookmark Panel
 
@@ -547,6 +609,8 @@ urlbar-go-button =
     .tooltiptext = Chargiar l'adressa endatada en la trav d'adressas
 urlbar-page-action-button =
     .tooltiptext = Acziuns da pagina
+urlbar-revert-button =
+    .tooltiptext = Mussar l’adressa en la trav d’adressas
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -607,6 +671,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = Tschertgar cun { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Tschertgar en { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Tschertgar cun { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Tscherner ina maschina da tschertgar
+urlbar-searchmode-bookmarks =
+    .label = Segnapaginas
+urlbar-searchmode-tabs =
+    .label = Tabs
+urlbar-searchmode-history =
+    .label = Cronologia
+urlbar-searchmode-actions =
+    .label = Acziuns
+urlbar-searchmode-exit-button =
+    .tooltiptext = Serrar
+urlbar-searchmode-popup-description = Per questa giada, tschertgar cun:
+urlbar-searchmode-popup-search-settings = Parameters da tschertga
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, tscherner ina maschina da tschertgar
+    .tooltiptext = { $engine }, tscherner ina maschina da tschertgar
+urlbar-searchmode-button-no-engine =
+    .label = Na selecziunà nagina scursanida, tscherner ina scursanida
+    .tooltiptext = Na selecziunà nagina scursanida, tscherner ina scursanida
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -616,6 +712,12 @@ urlbar-result-action-search-bookmarks = Tschertgar en ils segnapaginas
 urlbar-result-action-search-history = Tschertgar en la cronologia
 urlbar-result-action-search-tabs = Tschertgar en ils tabs
 urlbar-result-action-search-actions = Tschertgar en las acziuns
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Midar a { $group }
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = Avrir { $group }
 
 ## Labels shown above groups of urlbar results
 
@@ -929,6 +1031,9 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Modus privat
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Modus privat
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -937,7 +1042,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Protecziun da datas
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = Tia organisaziun utilisescha { $agentName } per sa proteger cunter la perdita da datas. <a data-l10n-name="info">Ulteriuras infurmaziuns</a>
+content-analysis-panel-text-styled = Tia organisaziun utilisescha <b>{ $agentName }</b> per sa proteger cunter la perdita da datas. <a data-l10n-name="info">Ulteriuras infurmaziuns</a>
 
 ## Unified extensions (toolbar) button
 
@@ -962,6 +1067,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Extensiuns
         Tschertas extensiuns n'èn betg permessas
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Extensiuns
+    .tooltiptext =
+        Extensiuns
+        Tschertas extensiuns èn deactivadas
 
 ## Private browsing reset button
 
@@ -1002,6 +1116,7 @@ firefox-relay-offer-legal-notice = Cun cliccar sin «Utilisar alias dad e-mail»
 popup-notification-addon-install-unsigned =
     .value = (Betg verifitgà)
 popup-notification-xpinstall-prompt-learn-more = Vegnir a savair dapli davart l'installaziun da supplements a moda segira
+popup-notification-xpinstall-prompt-block-url = Mussar detagls
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = Exequir en fanestras privatas
@@ -1035,3 +1150,24 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = Mussar: '{ $popupURI }'
+
+## File-picker crash notification ("FilePickerCrashed.sys.mjs")
+
+file-picker-failed-open = Impussibel dad avrir la fanestra per selecziunar datotecas da Windows. I n’è betg reussì da tscherner ina datoteca u in ordinatur.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-failed-save-somewhere = Impussibel dad avrir la fanestra per selecziunar datotecas da Windows. La datoteca vegn a vegnir memorisada en { $path }.
+file-picker-failed-save-nowhere = Impussibel dad avrir la fanestra per selecziunar datotecas da Windows. Betg chattà in ordinatur predefinì; la datoteca na vegn betg memorisada.
+file-picker-crashed-open = La fanestra per selecziunar datotecas da Windows è collabada. I n’è betg reussì da tscherner ina datoteca u in ordinatur.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-crashed-save-somewhere = La fanestra per selecziunar datotecas da Windows è collabada. La datoteca vegn a vegnir memorisada en { $path }.
+file-picker-crashed-save-nowhere = La fanestra per selecziunar datotecas da Windows è collabada. Betg chattà in ordinatur predefinì; la datoteca na vegn betg memorisada.
+
+# Button used with file-picker-crashed-save-default. Opens the folder in Windows
+# Explorer, with the saved file selected and in focus.
+#
+# The wording here should be consistent with the Windows variant of
+# `downloads-cmd-show-menuitem-2` and similar messages.
+
+file-picker-crashed-show-in-folder =
+    .label = Mussar en l’ordinatur
+    .accessKey = F

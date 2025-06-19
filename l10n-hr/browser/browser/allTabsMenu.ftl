@@ -5,13 +5,16 @@
 # "Search" is a verb, as in "Search through tabs".
 all-tabs-menu-search-tabs =
     .label = Pretraži kartice
-
 all-tabs-menu-new-user-context =
     .label = Nova kontejnerska kartica
-
 all-tabs-menu-hidden-tabs =
     .label = Skrivene kartice
-
 all-tabs-menu-manage-user-context =
     .label = Upravljaj kontejnerima
     .accesskey = s
+all-tabs-menu-close-duplicate-tabs =
+    .label = Zatvori duple kartice
+all-tabs-menu-close-all-duplicate-tabs =
+    .label = Zatvori sve duple kartice
+all-tabs-menu-synced-tabs =
+    .label = Kartice s drugih uređaja

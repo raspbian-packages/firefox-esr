@@ -119,6 +119,7 @@ policy-Permissions2 = Настраивает разрешения для кам�
 policy-PictureInPicture = Включает или отключает функцию «Картинка в картинке».
 policy-PopupBlocking = Разрешает некоторым веб-сайтам открывать всплывающие окна по умолчанию.
 policy-Preferences = Устанавливает и фиксирует значение набора настроек.
+policy-PrivateBrowsingModeAvailability = Устанавливает доступность приватного режима.
 policy-PromptForDownloadLocation = Спрашивает, куда сохранять файлы при загрузке.
 policy-Proxy = Настраивает параметры прокси.
 policy-RequestedLocales = Настраивает список запрашиваемых языков для приложения в порядке предпочтения.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Использует для печати сист�
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Блокирует посещение веб-сайтов. Для получения дополнительной информации о формате обратитесь к документации.
 policy-Windows10SSO = Разрешает единый вход Windows для учётных записей Microsoft, учётных записей на работе и в учебных заведениях.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Разрешать единый вход для аккаунтов Microsoft Entra.

@@ -8,11 +8,18 @@
 newtab-page-title = 新しいタブ
 newtab-settings-button =
     .title = 新しいタブページをカスタマイズ
+newtab-personalize-settings-icon-label =
+    .title = 新しいタブをパーソナライズ
+    .aria-label = 設定
+newtab-settings-dialog-label =
+    .aria-label = 設定
 newtab-personalize-icon-label =
     .title = 新しいタブをパーソナライズ
     .aria-label = 新しいタブをパーソナライズ
 newtab-personalize-dialog-label =
     .aria-label = パーソナライズ
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = { -pocket-brand-name } に保存
 newtab-menu-delete-pocket = { -pocket-brand-name } から削除
 newtab-menu-archive-pocket = { -pocket-brand-name } にアーカイブ
 newtab-menu-show-privacy-info = 私たちのスポンサーとあなたのプライバシー
+newtab-menu-about-fakespot = { -fakespot-brand-name } について
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = ブロック
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = トピックのフォローを解除
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -198,6 +212,8 @@ newtab-section-header-recent-activity = 最近のアクティビティ
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } のおすすめ
 newtab-section-header-stories = 示唆に富むストーリー
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = 本日のおすすめ
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -229,8 +245,26 @@ newtab-pocket-cta-button = { -pocket-brand-name } を入手
 newtab-pocket-cta-text = お気に入りに記事を { -pocket-brand-name } に保存して、魅力的な読み物を思う存分楽しみましょう。
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } は { -brand-product-name } ファミリーの一員です
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = 保存
 newtab-pocket-saved = 保存しました
+
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
+# Clicking the thumbs up button for this story will result in more stories like this one being recommended
+newtab-pocket-thumbs-up-tooltip =
+    .title = お気に入り
+# Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
+newtab-pocket-thumbs-down-tooltip =
+    .title = 興味なし
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = ありがとうございます。あなたのフィードバックがフィードを改善する助けになります。
+newtab-toast-thumbs-up-or-down = ありがとうございます。あなたのフィードバックがフィードを改善する助けになります。
+newtab-toast-dismiss-button =
+    .title = 閉じる
+    .aria-label = 閉じる
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
 
@@ -288,6 +322,8 @@ newtab-wallpaper-dark-panda = 森に隠れるレッサーパンダ
 newtab-wallpaper-dark-sky = 夜空と街の景色
 newtab-wallpaper-dark-mountain = 山の景色
 newtab-wallpaper-dark-city = 紫色の街の景色
+newtab-wallpaper-dark-fox-anniversary = 森林の道路に座るキツネ
+newtab-wallpaper-light-fox-anniversary = 霧がかかった山を背景に草原にたたずむキツネ
 
 ## Solid Colors
 
@@ -352,6 +388,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = 提供: { $provider }
 newtab-weather-menu-change-location = 予報地点を変更
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = 場所を検索
+    .aria-label = 場所を検索
 newtab-weather-change-location-search-input = 場所を検索
 newtab-weather-menu-weather-display = 天気表示
 # Display options are:
@@ -370,3 +409,66 @@ newtab-weather-menu-hide-weather = 新しいタブの天気表示を隠す
 newtab-weather-menu-learn-more = 詳細情報
 # This message is shown if user is working offline
 newtab-weather-error-not-available = 現在、天気データが利用できません。
+
+## Topic Labels
+
+newtab-topic-label-business = 仕事
+newtab-topic-label-career = 経歴
+newtab-topic-label-education = 教育
+newtab-topic-label-arts = 娯楽
+newtab-topic-label-food = 食品
+newtab-topic-label-health = 健康
+newtab-topic-label-hobbies = ゲーム
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = 金融
+newtab-topic-label-society-parenting = 育児
+newtab-topic-label-government = 政治
+newtab-topic-label-education-science = 科学
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = ライフハック
+newtab-topic-label-sports = スポーツ
+newtab-topic-label-tech = 技術
+newtab-topic-label-travel = 旅行
+newtab-topic-label-home = 家庭
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = あなたのフィードに最適なトピックを選択
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = 複数のトピックを選んでください。専門のキュレーターがあなたの関心事に合わせてストーリーに優先順位を付けます。いつでも更新できます。
+newtab-topic-selection-save-button = 保存
+newtab-topic-selection-cancel-button = キャンセル
+newtab-topic-selection-button-maybe-later = 後で選ぶ
+newtab-topic-selection-privacy-link = ユーザーデータの保護と管理について
+newtab-topic-selection-button-update-interests = 関心事を更新
+newtab-topic-selection-button-pick-interests = 関心事を選ぶ
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = フォローする
+newtab-section-following-button = フォロー中
+newtab-section-unfollow-button = フォロー解除
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = このセクションをブロックしてもよろしいですか？
+newtab-section-confirm-block-section-p2 = ブロックされたセクションは今後フィードに表示されなくなります。
+newtab-section-block-section-button = このセクションをブロック
+newtab-section-cancel-button = 後で
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

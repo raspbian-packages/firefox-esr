@@ -41,7 +41,7 @@ about-logins-menu-menuitem-help = Ajuda
 ## Login List
 
 login-list =
-    .aria-label = Contas que combinar com a consulta
+    .aria-label = Contas que correspondem à consulta
 # Variables
 #   $count (number) - Number of logins
 login-list-count =
@@ -140,6 +140,8 @@ login-item-copied-username-button-text = Copiado!
 login-item-password-label = Senha
 login-item-password-reveal-checkbox =
     .aria-label = Mostrar senha
+login-item-password-conceal-checkbox =
+    .aria-label = Ocultar senha
 login-item-copy-password-button-text = Copiar
 login-item-copied-password-button-text = Copiado!
 login-item-save-changes-button = Salvar alterações

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = ਜੇ ਤੁਸੀਂ ਟਰੈਕ ਨਹੀਂ ਕੀਤੇ ਜਾਣਾ ਚਾਹੁੰਦੇ ਹੋ ਤਾਂ ਵੈੱਬਸਾਈਟ ਨੂੰ “ਟਰੈਕ ਨਾ ਕਰੋ” ਸੰਕੇਤ ਭੇਜੋ
+do-not-track-removal = ਅਸੀਂ ਹੁਣ “ਟਰੈਕ ਨਾ ਕਰੋ” ਸਿਗਨਲ ਲਈ ਸਹਿਯੋਗੀ ਨਹੀਂ ਹਾਂ
 do-not-track-description2 =
     .label = ਵੈੱਬਸਾਈਟਾਂ ਨੂ “ਟਰੈਕ ਨਾ ਕਰੋ” ਬੇਨਤੀ ਭੇਜੋ
     .accesskey = d
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = ਜਦੋਂ ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਸ਼ੁਰੂ ਹੋਵੇ ਤਾਂ { -brand-short-name } ਨੂੰ ਆਪਣੇ-ਆਪ ਖੋਲ੍ਹੋ
     .accesskey = O
 windows-launch-on-login-disabled = ਇਸ ਪਸੰਦ ਨੂੰ Windows ਵਿੱਚ ਅਸਮਰੱਥ ਕੀਤਾ ਗਿਆ ਹੈ। ਬਦਲਣ ਲਈ ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ ਵਿੱਚ <a data-l10n-name="startup-link">Startup Apps</a> ਨੂੰ ਵੇਖੋ।
+windows-launch-on-login-profile-disabled = “ਵਰਤੋਂਕਾਰ ਪਰੋਫਾਇਲ ਚੁਣੋ” ਵਿੱਚ “{ profile-manager-use-selected.label }” ਚੁਣ ਕੇ ਇਸ ਪਸੰਦ ਨੂੰ ਸਮਰੱਥ ਕਰੋ।
 startup-restore-warn-on-quit =
     .label = ਜਦੋਂ ਬਰਾਊਜ਼ਰ ਨੂੰ ਬੰਦ ਕਰੋ ਤਾਂ ਸਾਵਧਾਨ ਕਰੋ
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = ਲਿੰਕਾਂ ਨੂੰ ਨਵੀਆਂ ਵਿੰਡੋਆਂ ਦੀ ਬਜਾਏ ਟੈਬਾਂ ਵਿੱਚ ਖੋਲ੍ਹੋ
     .accesskey = w
+ask-on-close-multiple-tabs =
+    .label = ਕਈ ਟੈਬਾਂ ਬੰਦ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਮੈਨੂੰ ਪੁੱਛੋ
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = { $quitKey } ਨਾਲ ਬੰਦ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ
+    .accesskey = b
 confirm-on-close-multiple-tabs =
     .label = ਕਈ ਟੈਬਾਂ ਨੂੰ ਬੰਦ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤਸਦੀਕ ਕਰੋ
     .accesskey = m
@@ -431,7 +444,7 @@ update-application-use-service =
     .label = ਅੱਪਡੇਟ ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਬੈਕਗਰਾਊਂਡ ਸਰਵਿਸ ਵਰਤੋਂ
     .accesskey = b
 update-application-suppress-prompts =
-    .label = ਘੱਟ ਅੱਪਡੇਟ ਨੋਟੀਫਿਕੇਸ਼ਨਾਂ ਲਈ ਪੁੱਛੋ
+    .label = ਅੱਪਡੇਟ ਨੋਟੀਫਿਕੇਸ਼ਨ ਨੂੰ ਘੱਟ ਵੇਖਾਓ
     .accesskey = n
 update-setting-write-failure-title2 = ਅੱਪਡੇਟ ਸੈਟਿੰਗਾਂ ਸੰਭਾਲਣ ਦੌਰਾਨ ਗ਼ਲਤੀ ਹੈ
 # Variables:
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = ਸਾਈਟਾਂ, ਜੋ ਤੁਸੀਂ �
 home-prefs-shortcuts-by-option-sponsored =
     .label = ਸਪਾਂਸਰ ਕੀਤੇ ਸ਼ਾਰਟਕੱਟ
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = { $provider } ਵਲੋਂ ਸਿਫਾਰਸ਼ੀ
@@ -641,6 +653,10 @@ search-show-suggestions-url-bar-option =
     .label = ਸਿਰਨਾਵਾਂ ਪੱਟੀ ਨਤੀਜਿਆਂ 'ਚ ਖੋਜ ਸੁਝਾਅ ਵੇਖਾਓ
     .accesskey = l
 # With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = ਨਤੀਜਾ ਸਫ਼ਿਆਂ ਉੱਤੇ ਸਿਰਨਾਵਾਂ ਪੱਟੀ ਵਿੱਚ ਖੋਜੇ ਸ਼ਬਦਾਂ ਨੂੰ ਵੇਖਾਓ
+# With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
 search-show-search-term-option =
@@ -657,7 +673,7 @@ search-show-suggestions-private-windows =
 suggestions-addressbar-settings-generic2 = ਹੋਰ ਸਿਰਨਾਵਾਂ ਪੱਟੀ ਸੁਝਾਆਵਾਂ ਲਈ ਸੈਟਿੰਗਾਂ ਬਦਲੋ
 search-suggestions-cant-show = ਟਿਕਾਣਾ ਖੋਜ ਨਤੀਜਿਆਂ ਵਿੱਚ ਖੋਜ ਸੁਝਾਅ ਨਹੀਂ ਵੇਖਾਏ ਜਾਣਗੇ, ਕਿਉਂਕਿ ਤੁਸੀਂ { -brand-short-name } ਨੂੰ ਕਦੇ ਵੀ ਅਤੀਤ ਯਾਦ ਨਾ ਰੱਖਣ ਲਈ ਸੰਰਚਿਤ ਕੀਤਾ ਹੈ।
 search-one-click-header2 = ਖੋਜ ਸ਼ਾਰਟਕੱਟ
-search-one-click-desc = ਬਦਲਵੇਂ ਖੋਜ ਇੰਜਣਾਂ ਨੂੰ ਚੁਣੋ, ਜੋ ਕਿ ਸਿਰਨਾਵਾਂ ਪੱਟੀ ਅਤੇ ਖੋਜ ਪੱਟੀ 'ਚ ਦਿਖਾਈ ਦਿੰਦੇ ਹਨ, ਜਦੋਂ ਕਿ ਤੁਸੀਂ ਕੋਈ ਸ਼ਬਦ ਲਿਖਦੇ ਹੋ।
+search-one-click-desc = ਜਦੋਂ ਵੀ ਤੁਸੀਂ ਕੋਈ ਸ਼ਬਦ ਭਰੋ ਤਾਂ ਸਿਰਨਾਵਾਂ ਪੱਟੀ ਅਤੇ ਖੋਜ ਪੱਟੀ ਹੇਠਾਂ ਦਿਖਾਈ ਦੇਣ ਵਾਲੇ ਬਦਲਵੇਂ ਖੋਜ ਇੰਜਣਾਂ ਨੂੰ ਚੁਣੋ।
 search-choose-engine-column =
     .label = ਖੋਜ ਇੰਜਣ
 search-choose-keyword-column =
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = ਕਰੈਡਿਟ ਕਾਰਡ
 sync-currently-syncing-payment-methods = ਭੁਗਤਾਨ ਦੇ ਢੰਗ
 sync-currently-syncing-addons = ਐਡ-ਆਨ
 sync-currently-syncing-settings = ਸੈਟਿੰਗਾਂ
+sync-manage-options =
+    .label = …ਸਿੰਕ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
+    .accesskey = M
 sync-change-options =
     .label = …ਬਦਲੋ
     .accesskey = C
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = ਸੈਟਿੰਗਾਂ
     .tooltiptext = ਆਮ, ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ ਸੈਟਿੰਗਾਂ, ਜੋ ਤੁਸੀਂ ਬਦਲੀਆਂ ਹਨ
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = ਆਪਣੇ ਸਾਰੇ ਡਿਵਾਈਸਾਂ ਵਿਚਾਲੇ ਹੋਣ ਵਾਲੇ ਸਿੰਕ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
+    .style = min-width: 36em;
+    .buttonlabelaccept = ਸੰਭਾਲੋ
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = …ਡਿਸ-ਕਨੈਕਟ ਕਰੋ
+    .buttonaccesskeyextra2 = D
 
 ## The device name controls.
 
@@ -1113,7 +1139,7 @@ addressbar-locbar-quickactions-option =
     .accesskey = Q
 addressbar-suggestions-settings = ਖੋਜ ਇੰਜਣ ਸੁਝਾਵਾਂ ਲਈ ਪਸੰਦਾਂ ਨੂੰ ਬਦਲੋ
 addressbar-locbar-showrecentsearches-option =
-    .label = ਸੱਜਰੀਆਂ ਖੋਜਾਂ ਵੇਖਾਓ
+    .label = ਸੱਜਰੀਆਂ ਖੋਜਾਂ ਨੂੰ ਵੇਖਾਓ
     .accesskey = r
 addressbar-locbar-showtrendingsuggestions-option =
     .label = ਖੋਜ ਸੁਝਾਆਵਾਂ ਦੇ ਰੁਝਾਨਾਂ ਨੂੰ ਵੇਖੋ
@@ -1193,7 +1219,7 @@ content-blocking-tracking-protection-option-all-windows =
     .label = ਸਾਰੀਆਂ ਵਿੰਡੋਆਂ ‘ਚ
     .accesskey = A
 content-blocking-option-private =
-    .label = ਕੇਵਲ ਨਿੱਜੀ ਵਿੰਡੋਆਂ ‘ਚ
+    .label = ਸਿਰਫ਼ ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋਆਂ ‘ਚ
     .accesskey = p
 content-blocking-tracking-protection-change-block-list = ਪਾਬੰਦੀ ਸੂਚੀ ਬਦਲੋ
 content-blocking-cookies-label =
@@ -1290,13 +1316,34 @@ collection-description = ਅਸੀਂ ਤੁਹਾਨੂੰ ਚੋਣ ਕਰਨ 
 collection-privacy-notice = ਪਰਦੇਦਾਰੀ ਸੂਚਨਾ
 collection-health-report-telemetry-disabled = ਤੁਸੀਂ ਹੁਣ { -vendor-short-name } ਨੂੰ ਤਕਨੀਕੀ ਅਤੇ ਤਾਲਮੇਲ ਡਾਟਾ ਫੜਨ ਲਈ ਸਹਿਮਤੀ ਹਟਾ ਦਿੱਤੀ ਹੈ। ਸਾਰੇ ਪਿਛਲੇ ਡਾਟੇ ਨੂੰ 30 ਦਿਨਾਂ ਵਿੱਚ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।
 collection-health-report-telemetry-disabled-link = ਹੋਰ ਜਾਣੋ
+collection-usage-ping =
+    .label = ਰੋਜ਼ਾਨਾ ਵਰਤੋਂ ਪਿੰਗ { -vendor-short-name } ਨੂੰ ਭੇਜੋ
+    .accesskey = u
+collection-usage-ping-description = ਇਹ { -vendor-short-name } ਨੂੰ ਸਰਗਰਮ ਵਰਤੋਂਕਾਰਾਂ ਦਾ ਅੰਦਾਜ਼ਾ ਲਾਉਣ ਲਈ ਮਦਦ ਕਰਦਾ ਹੈ।
+collection-health-report2 =
+    .label = { -vendor-short-name } ਤਕਨੀਕੀ ਅਤੇ ਤਾਲਮੇਲ ਡਾਟਾ ਭੇਜੋ
+    .accesskey = r
 collection-health-report =
     .label = { -brand-short-name } ਨੂੰ { -vendor-short-name } ਨੂੰ ਤਕਨੀਕੀ ਅਤੇ ਤਾਲਮੇਲ ਡਾਟਾ ਭੇਜਣ ਦੀ ਇਜ਼ਾਜ਼ਤ ਦਿਓ
     .accesskey = r
 collection-health-report-link = ਹੋਰ ਜਾਣੋ
+collection-health-report-description = ਇਹ ਸਾਨੂੰ { -brand-product-name } ਦੇ ਫ਼ੀਚਰ, ਕਾਰਗੁਜ਼ਾਰੀ ਅਤੇ ਸਥਿਰਤਾ ਸੁਧਾਰਨ ਲਈ ਮਦਦ ਕਰਦਾ ਹੈ।
+collection-studies2 =
+    .label = ਅਧਿਐਨ ਇੰਸਟਾਲ ਕਰੋ ਅਤੇ ਚਲਾਓ
+collection-studies-description = ਫ਼ੀਚਰ ਅਤੇ ਵਿਚਾਰਾਂ ਨੂੁੰ ਹਰ ਕਿਸੇ ਕੋਲ ਪਹੁੰਚਣ ਤੋਂ ਪਹਿਲਾਂ ਅਜ਼ਮਾਓ।
 collection-studies =
     .label = { -brand-short-name } ਨੂੰ ਅਧਿਐਨ ਇੰਸਟਾਲ ਅਤੇ ਚਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ
 collection-studies-link = { -brand-short-name } ਅਧਿਐਨ ਵੇਖੋ
+addon-recommendations2 =
+    .label = ਨਿੱਜੀ ਬਣਾਈਆਂ ਇਕਸਟੈਨਸ਼ਨ ਸਿਫਾਰਸ਼ਾਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦਿਓ
+addon-recommendations-description = ਤੁਹਾਡੇ ਬਰਾਊਜ਼ਰ ਤਜਰਬੇ ਨੂੰ ਸੁਧਾਰਨ ਲਈ ਇਕਸਟੈਨਸ਼ਨ ਸਿਫਾਰਸ਼ਾਂ ਲਵੋ।
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = ਇਸ ਬਿਲਡ ਸੰਰਚਨਾ ਲਈ ਡਾਟਾ ਰਿਪੋਰਟ ਕਰਨਾ ਅਸਮਰੱਥ ਹੈ।
+collection-backlogged-crash-reports2 =
+    .label = ਕਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਨੂੰ ਆਪਣੇ-ਆਪ ਭੇਜੋ
+    .accesskey = c
+collection-backlogged-crash-reports-description = ਇਹ { -vendor-short-name } ਨੂੰ ਬਰਾਊਜ਼ਰ ਦੀ ਜਾਂਚ ਪੜਤਾਲ ਕਰਨ ਅਤੇ ਮਸਲਿਆਂ ਨੂੰ ਠੀਕ ਕਰਨ ਮਦਦ ਕਰਦੀਆਂ ਹਨ। ਰਿਪੋਰਟਾਂ ਵਿੱਚ ਨਿੱਜੀ ਜਾਂ ਸੰਵੇਦਨਸ਼ੀਲ ਡਾਟਾ ਸ਼ਾਮਲ ਹੋ ਸਕਦਾ ਹੈ।
 addon-recommendations =
     .label = { -brand-short-name } ਨੂੰ ਤੁਹਾਡੇ ਲਈ ਖਾਸ ਇਕਸਟੈਨਸ਼ਨਾਂ ਦੀਆਂ ਸਿਫਾਰਸ਼ਾਂ ਕਰਨ ਲਈ ਸਹਿਮਤੀ ਦਿਓ
 addon-recommendations-link = ਹੋਰ ਜਾਣੋ
@@ -1365,13 +1412,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } ਲਈ ਡਿਸ�
 
 httpsonly-header = ਸਿਰਫ਼-HTTPS ਮੋਡ
 httpsonly-description = HTTPS { -brand-short-name } ਅਤੇ ਤੁਹਾਡੇ ਵਲੋਂ ਖੋਲ੍ਹੀਆਂ ਵੈਬਸਾਈਟਾਂ ਵਿਚਾਲੇ ਇੱਕ ਸੁਰੱਖਿਅਤ, ਇੰਕ੍ਰਿਪਟ ਕੀਤਾ ਕਨੈਕਸ਼ਨ ਦਿੰਦਾ ਹੈ। ਬਹੁਤੀਆਂ ਵੈਬਸਾਈਟਾਂ HTTPS ਦਾ ਸਮਰਥਨ ਕਰਦੀਆਂ ਹਨ, ਅਤੇ ਜੇ ਸਿਰਫ-HTTPS ਮੋਡ ਸਮਰੱਥ ਹੈ ਤਾਂ { -brand-short-name } ਸਾਰੇ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ HTTPS ਵਿੱਚ ਅਪਗਰੇਡ ਕਰੇਗਾ।
+httpsonly-description2 = { -brand-short-name } ਤੁਹਾਡੇ ਵਲੋਂ ਖੋਲ੍ਹੀਆਂ ਸਾਈਟਾਂ ਲਈ ਸੁਰੱਖਿਅਤ ਅਤੇ ਇੰਕ੍ਰਿਪਟ ਕੀਤੇ ਕਨੈਕਸ਼ਨ ਬਣਾਉਂਦਾ ਹੈ। ਸਿਰਫ਼-HTTPS ਚਾਲੂ ਹੋਣ ਦੇ ਦੌਰਾਨ ਜੇ ਕਨੈਕਸ਼ਨ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੋਵੇਗਾ ਤਾਂ { -brand-short-name } ਤੁਹਾਨੂੰ ਸਾਵਧਾਨ ਕਰੇਗਾ।
 httpsonly-learn-more = ਹੋਰ ਜਾਣੋ
 httpsonly-radio-enabled =
     .label = ਸਾਰੀਆਂ ਵਿੰਡੋ ਵਿੱਚ ਸਿਰਫ਼-HTTPS ਮੋਡ ਸਮਰੱਥ ਕਰੋ
+httpsonly-radio-enabled2 =
+    .label = ਸਭ ਵਿੰਡੋਆਂ ਵਿੱਚ ਸਿਰਫ਼ HTTPS ਹੀ ਵਰਤੋਂ
 httpsonly-radio-enabled-pbm =
     .label = ਸਿਰਫ਼ ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋ ਵਿੱਚ ਸਿਰਫ਼-HTTPS ਮੋਡ ਸਮਰੱਥ ਕਰੋ
+httpsonly-radio-enabled-pbm2 =
+    .label = ਸਿਰਫ਼ ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋਆਂ ਵਿੱਚ ਹੀ HTTPS ਨੂੰ ਵਰਤੋਂ
 httpsonly-radio-disabled =
     .label = ਸਿਰਫ਼-HTTPS ਮੋਡ ਸਮਰੱਥ ਨਾ ਕਰੋ
+httpsonly-radio-disabled2 =
+    .label = ਪਹਿਲਾਂ HTTPS ਅਜ਼ਮਾਓ, ਪਰ ਜੇ ਸੁਰੱਖਿਅਤ ਨਾ ਵੀ ਹੋਵੇ ਤਾਂ ਕਨੈਕਸ਼ਨ ਦੀ ਮਨਜ਼ੂਰੀ ਦਿਓ
 
 ## DoH Section
 

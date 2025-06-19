@@ -254,6 +254,15 @@ menu-bookmarks-other =
 menu-bookmarks-mobile =
     .label = Dấu trang trên di động
 
+## Profiles Menu
+
+menu-profiles =
+    .label = Hồ sơ
+menu-profiles-manage-profiles =
+    .label = Quản lý hồ sơ
+menu-profiles-new-profile =
+    .label = Hồ sơ mới
+
 ## Tools Menu
 
 menu-tools =
@@ -273,7 +282,7 @@ menu-tools-turn-on-sync2 =
     .accesskey = n
 menu-tools-sync-now =
     .label = Đồng bộ ngay
-    .accesskey = S
+    .accesskey = o
 menu-tools-fxa-re-auth =
     .label = Kết nối lại vào { -brand-product-name }…
     .accesskey = R

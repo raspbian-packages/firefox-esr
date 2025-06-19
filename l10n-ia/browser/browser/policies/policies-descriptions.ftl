@@ -119,6 +119,7 @@ policy-Permissions2 = Configurar le permissiones pro camera, microphono, positio
 policy-PictureInPicture = Activar o disactivar Imagine annidate
 policy-PopupBlocking = Permitter a certe sitos web de monstrar fenestras emergente per predefinition.
 policy-Preferences = Defini e bloca le valor de un sub-ensemble de preferentias.
+policy-PrivateBrowsingModeAvailability = Predefini le disponibilitate del modalitate Navigation private.
 policy-PromptForDownloadLocation = Demandar ubi salvar le files quando on discarga.
 policy-Proxy = Configurar le parametros del servitor proxy.
 policy-RequestedLocales = Defini le lista del localisationes desirate pro le applicationes in ordine de tu preferentias.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Imprimer usante le fenestra de impression del syst
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Blocar le accesso a sitos web. Vider documentation pro plus detalios sur le formato.
 policy-Windows10SSO = Permitter le autorisation unic de Windows pro le contos de labor e schola de Microsoft.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Permitter authentication singule pro le conto Microsoft Entra.

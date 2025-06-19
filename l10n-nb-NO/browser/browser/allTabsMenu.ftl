@@ -6,7 +6,7 @@
 all-tabs-menu-search-tabs =
     .label = Søk i faner
 all-tabs-menu-new-user-context =
-    .label = Ny innholdsfane
+    .label = Ny beholderfane
 all-tabs-menu-hidden-tabs =
     .label = Skjulte faner
 all-tabs-menu-manage-user-context =
@@ -16,3 +16,5 @@ all-tabs-menu-close-duplicate-tabs =
     .label = Lukk duplikatfaner
 all-tabs-menu-close-all-duplicate-tabs =
     .label = Lukk alle duplikatfaner
+all-tabs-menu-synced-tabs =
+    .label = Faner fra andre enheter

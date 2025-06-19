@@ -217,7 +217,9 @@ mr2022-onboarding-set-default-primary-button-label = Կայեք { -brand-short-n
 mr2022-onboarding-get-started-primary-subtitle = Մեր վերջին տարբերակը ստեղծվել է ձեր շուրջը՝ դարձնելով ավելի հեշտ, քան երբևէ՝ համացանցում համախմբվելու համար: Այն հագեցած է առանձնահատկություններով, որոնք մենք կարծում ենք, որ դուք կպաշտեք:
 mr2022-onboarding-get-started-primary-button-label = Տեղակայեք վայրկյանների ընթացքում
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-primary-button-label-no-attribution = Ներմուծել նախորդ դիտարկիչից
 
@@ -241,6 +243,9 @@ mr2022-onboarding-colorway-description-visionary = <b>Դուք տեսաբան ե
 mr2022-onboarding-colorway-label-activist = Ակտիվիստ
 mr2022-onboarding-colorway-tooltip-activist2 =
     .title = Ակտիվիստ (կապույտ)
+mr2022-onboarding-colorway-label-innovator = Նորարար
+mr2022-onboarding-colorway-tooltip-innovator2 =
+    .title = Նորարար (նարնջագույն)
 mr2022-onboarding-colorway-description-innovator = <b>Դուք նորարար եք:</b> Դուք տեսնում եք հնարավորություններ ամենուր և ազդեցություն եք թողնում ձեր շրջապատի բոլոր մարդկանց կյանքի վրա:
 
 ## MR2022 Multistage Mobile Download screen strings
@@ -283,10 +288,20 @@ onboarding-infrequent-import-primary-button = Ներմուծել { -brand-short-
 onboarding-device-migration-title = Բարի վերադարձ
 onboarding-device-migration-primary-button-label = Մուտք գործել
 
+## Add-ons Picker screen
+
+amo-picker-install-button-label = Հավելել { -brand-short-name }-ին
+amo-picker-install-complete-label = Տեղադրվեց
+amo-picker-collection-link = Ուսումնասիրեք ավելի շատ հավելումներ
+
 ## The following screens have been updated to use security and privacy focused strings:
 
+# Easy setup screen
+onboarding-easy-setup-security-and-privacy-title = Մենք սիրում ենք ձեզ ապահով պահել
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name }-ը Ձեր ողնաշարն է
+onboarding-sign-up-button = Գրանցվեք կամ մուտք գործեք
+onboarding-sign-up-secondary-button = Սկսել դիտարկումը
 
 ## New user time and familiarity survey strings
 
@@ -295,6 +310,7 @@ onboarding-new-user-familiarity-based-survey-title = Որքանո՞վ եք ծա�
 onboarding-new-user-survey-subtitle = Ձեր արձգանքն օգնում է ավելի լավը դարձնել { -brand-short-name }-ը:
 # When translating "next" it means the next screen in onboarding.
 onboarding-new-user-survey-next-button-label = Հաջորդը
+onboarding-new-user-survey-legal-link-label = Ընտրելով «{ onboarding-new-user-survey-next-button-label }»-ը՝ դուք համաձայնում եք { -brand-product-name }-ի <a data-l10n-name="privacy_notice">Գաղտնիության ծանուցմանը</a >
 # When translating "brand new" it means completely new.
 onboarding-new-user-survey-time-based-option-1 = Բոլորովին նոր եմ
 onboarding-new-user-survey-time-based-option-2 = 1 ամսից պակաս
@@ -305,3 +321,41 @@ onboarding-new-user-survey-familiarity-based-option-1 = Ես բոլորովին 
 onboarding-new-user-survey-familiarity-based-option-2 = Օգտագործել եմ մի քանի անգամ
 onboarding-new-user-survey-familiarity-based-option-3 = Ես շատ ծանոթ եմ դրան
 onboarding-new-user-survey-familiarity-based-option-4 = Օգտագործել եմ նախկինում, բայց երկար ժամանակ է անցել
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Ասեք մեզ, թե որտեղ եք ցանկանում ձեր ներդիրները
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Միացրեք այն, երբ ցանկանում եք, կողագոտու կարգավորումներում:
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Ներդիրները կողքից
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Ներդիրները վերևում
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Ուղղահայաց ներդիրներն այստեղ են
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Ներկայացնում ենք ուղղահայաց ներդիրները
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Փորձեք ուղղահայաց ներդիրները
+onboarding-flair-text = Նոր
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Պահել հորիզոնական ներդիրները
+onboarding-genai-sidebar-primary-button = Ընտրեք չաթ բոտ
+onboarding-genai-sidebar-secondary-button = Սկսել դիտարկումը
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Ավարտել { -brand-short-name } կարգավորումը
+onboarding-checklist-subtitle = Կատարեք այս քայլերը՝ ձեր զննարկման փորձից առավելագույն օգուտ քաղելու համար:
+onboarding-checklist-set-default = Կայեք { -brand-short-name }-ը որպես սկզբնադիր դիտարկիչ
+onboarding-checklist-pin = Ամրացրեք { -brand-short-name }-ը խնդրագոտուն
+onboarding-checklist-import = Ներմուծել նախորդ դիտարկիչից
+onboarding-checklist-extension = Հավելել ընդլայնում
+onboarding-checklist-sign-up = Գրանցվեք կամ մուտք գործեք ձեր հաշիվ
+
+## Tab Groups feature onboarding strings
+
+
+## Multi Profiles feature onboarding messages
+

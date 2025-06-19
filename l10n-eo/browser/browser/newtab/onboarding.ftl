@@ -188,6 +188,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Alpingli { -brand-short-name } al la taska ilaro
        *[other] Alpingli { -brand-short-name } al via Dock
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Alpingli { -brand-short-name } al la taska ilaro kaj al la menu Komenci
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -223,7 +225,9 @@ mr2022-onboarding-set-default-subtitle = Uzu retumilon apogatan de neprofitcela 
 mr2022-onboarding-get-started-primary-subtitle = Nia lasta versio estis fasonita por vi, kio faciligas retumon pli ol iam ajn antaŭe. Ĝi pakas amason da trajtoj, kaj ni pensas ke vi ilin ŝategos.
 mr2022-onboarding-get-started-primary-button-label = Agordi en sekundoj
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Fulmrapida agordo
 mr2022-onboarding-import-subtitle = Agordu { -brand-short-name } kiel vi ĝin ŝatas. Aldonu viajn legosignojn, pasvortojn kaj pli el via antaŭa retumilo.
@@ -335,6 +339,14 @@ onboarding-device-migration-subtitle = Komencu seancon en  via { -fxaccount-bran
 onboarding-device-migration-subtitle2 = Komencu seancon en via konto por porti viajn legosignojn, pasvortojn kaj historion al via nova aparato.
 onboarding-device-migration-primary-button-label = Komenci seanconKomenci seancon
 
+## Add-ons Picker screen
+
+amo-picker-title = Personecigu vian { -brand-short-name }
+amo-picker-subtitle = Etendaĵoj estas kvazaŭ apoj por via retumilo kaj ili permesas al vi protekti pasvortojn, elŝuti filmetojn, trovi bonajn ofertojn, bloki ĝenajn reklamojn, ŝanĝi la aspekton de via retumilo kaj multajn aliajn aferojn.
+amo-picker-install-button-label = Aldoni al { -brand-short-name }
+amo-picker-install-complete-label = Instalita
+amo-picker-collection-link = Esplori pli da aldonaĵoj
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -346,6 +358,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = Kiam vi spegulas, { -
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } protektas vin
 onboarding-gratitude-security-and-privacy-subtitle = Dankon pro via elekto de { -brand-short-name }, apogata de Mozilla Foundation. Kun via subteno ni laboras por interreto pli sekura kaj pli alirebla por ĉiuj.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Spegulu viajn datumojn al aliaj aparatoj
+onboarding-sign-up-description = Kreu konton kaj ĉiuj viaj gravaj informoj — pasvortoj, legosignoj, kaj pli — estos sekure konservitaj kaj disponeblaj kiam vi komencas seancon en iu ajn aparato.
+onboarding-sign-up-button = Komenci seancon aŭ krei konton
+onboarding-sign-up-secondary-button = Komenci retumi
 
 ## New user time and familiarity survey strings
 
@@ -365,3 +382,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Mi estas novulo
 onboarding-new-user-survey-familiarity-based-option-2 = Mi iom uzis ĝin
 onboarding-new-user-survey-familiarity-based-option-3 = Mi konas ĝin tre bone
 onboarding-new-user-survey-familiarity-based-option-4 = Mi antaŭe uzis ĝin, sed antaŭ longe
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Bonvolu diri al ni kie vi ŝatus havi viajn langetojn
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = En la agordoj de la flanka strio vi povas ŝanĝi tion iam ajn.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Viaj langetoj, laŭ via maniero
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Ĉu vi havas multajn malfermitajn langetojn? Provu meti ilin flanken por pli simpla vido. Aŭ lasu ilin supre, laŭ la klasika maniero. Ŝanĝu tion kiam ajn vi volas.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Elektu la aranĝon de viaj langetoj
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Por pli simpla vido, kiu povas vin resti fokusigita, provi meti viajn langetojn flanken. Aŭ lasu ilin supre, laŭ la klasika maniero. Ŝanĝu tion kiam ajn vi volas.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Langetoj flanke
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Langetoj supre
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Eblas havi vertikalajn langetojn
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Prezento de vertikalaj langetoj
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Provu viajn langetojn ĉe flanke. Reloku ilin iam ajn en la agordoj de la flanka strio.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Provu vertikalajn langetojn
+onboarding-flair-text = Nova!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Gardi horizontalajn langetojn
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Retumila fenestro kun langetoj flanke, kiel parto de la flanka strio de { -brand-shorter-name }.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Retumila fenestro kun langetoj flanke, kiel parto de la flanka strio de { -brand-shorter-name }.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Retumila fenestro kun langetoj supre.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Retumila fenestro kun langetoj supre.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Provu dialoganton de A.I. en la flanka strio
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Resumu retan enhavon, trovu ideojn, kreu malnetojn de mesaĝoj dum vi retumas. Elektu inter pluraj provizantoj. Ŝanĝu iam ajn. <a data-l10n-name="learn-more">Pli da informo</a>
+onboarding-genai-sidebar-primary-button = Elekti dialoganton
+onboarding-genai-sidebar-secondary-button = Komenci retumi
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Fini la agordadon de { -brand-short-name }
+onboarding-checklist-subtitle = Seku la jenajn paŝojn por eltiri la maksimumon el via retuma sperto.
+onboarding-checklist-set-default = Igu { -brand-short-name } via norma retumilo
+onboarding-checklist-pin = Alpingli { -brand-short-name } al via Dock
+onboarding-checklist-import = Enporti el antaŭa retumilo
+onboarding-checklist-extension = Aldoni etendaĵon
+onboarding-checklist-sign-up = Registriĝu aŭ komencu seancon per via konto
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Provu la grupojn de langetoj, por pli da ordo kaj fokuso.
+tab-groups-onboarding-feature-callout-subtitle = Ordigu viajn langetojn per treno de unu sur alia, por krei vian unuan grupon.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Bonvenon al la profiloj de { -brand-product-name }
+multi-profile-spotlight-body = Facile ŝanĝi inter laboreja kaj libertempa retumo. Profiloj plene izolas viajn retumajn datumojn, kiuj inkluzivas la serĉan historion kaj pasvortojn, tiel ke vi povas resti bone organizita.
+multi-profile-spotlight-cta = Krei profilon
+multi-profile-callout-title = Krei malsamajn profilojn por laboro kaj libertempo
+multi-profile-callout-subtitle = Profiloj permesas al vi plene izolas viajn retumajn datumojn, kiel serĉan historion kaj pasvortojn.
+multi-profile-callout-cta = Krei profilon

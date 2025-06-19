@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Enviar um sinal de “Não Monitorizar” para os sites da Internet com a indicação que não deseja ser monitorizado
+do-not-track-removal = Nós já não suportamos o sinal “Do Not Track”
 do-not-track-description2 =
     .label = Enviar aos sites um pedido de “Não monitorizar”
     .accesskey = d
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Abrir o { -brand-short-name } automaticamente quando o seu computador arranca
     .accesskey = o
 windows-launch-on-login-disabled = Esta preferência foi desativada no Windows. Para alterar, visite <a data-l10n-name="startup-link">Aplicações de arranque</a> nas definições do Sistema.
+windows-launch-on-login-profile-disabled = Ative esta preferência marcando “{ profile-manager-use-selected.label }” na janela “Escolher perfil de utilizador”.
 startup-restore-warn-on-quit =
     .label = Avisar-lhe ao sair do navegador
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Abrir ligações em novos separadores em vez de novas janelas
     .accesskey = j
+ask-on-close-multiple-tabs =
+    .label = Questionar antes de fechar múltiplos separadores
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Questionar antes de sair com { $quitKey }
+    .accesskey = Q
 confirm-on-close-multiple-tabs =
     .label = Confirmar antes de fechar múltiplos separadores
     .accesskey = m
@@ -497,7 +510,7 @@ browsing-search-on-start-typing =
     .label = Pesquisar texto quando começar a escrever
     .accesskey = x
 browsing-picture-in-picture-toggle-enabled =
-    .label = Ativar os controlos de vídeo em janela flutuante
+    .label = Ativar os controlos de janela flutuante
     .accesskey = f
 browsing-picture-in-picture-learn-more = Saber mais
 browsing-media-control =
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Sites que guarda ou visita
 home-prefs-shortcuts-by-option-sponsored =
     .label = Atalhos patrocinados
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Recomendado por { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Mostrar sugestões de pesquisa nos resultados da barra de endereço
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Mostrar os termos de pesquisa na barra de endereço das páginas de resultados
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Cartões de crédito
 sync-currently-syncing-payment-methods = Métodos de pagamento
 sync-currently-syncing-addons = Extras
 sync-currently-syncing-settings = Definições
+sync-manage-options =
+    .label = Gerir a sincronização…
+    .accesskey = G
 sync-change-options =
     .label = Alterar...
     .accesskey = A
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Definições
     .tooltiptext = Definições gerais, de privacidade e de segurança que alterou
     .accesskey = D
+sync-choose-what-to-sync-dialog4 =
+    .title = Faça a gestão do que é sincronizado em todos os seus dispositivos associados
+    .style = min-width: 59em;
+    .buttonlabelaccept = Guardar
+    .buttonaccesskeyaccept = G
+    .buttonlabelextra2 = Desligar…
+    .buttonaccesskeyextra2 = D
 
 ## The device name controls.
 
@@ -1115,6 +1141,9 @@ addressbar-suggestions-settings = Alterar preferências para as sugestões dos m
 addressbar-locbar-showrecentsearches-option =
     .label = Mostrar pesquisas recentes
     .accesskey = r
+addressbar-locbar-showtrendingsuggestions-option =
+    .label = Mostrar sugestões de pesquisa com uma popularidade crescente
+    .accesskey = p
 addressbar-quickactions-learn-more = Saber mais
 
 ## Privacy Section - Content Blocking
@@ -1357,13 +1386,20 @@ space-alert-under-5gb-message2 = <strong>O { -brand-short-name } está a ficar s
 
 httpsonly-header = Modo apenas HTTPS
 httpsonly-description = O HTTPS fornece um ligação segura e encriptada entre o { -brand-short-name } e os sites que visita. A maioria dos sites suporta HTTPS e se o modo apenas HTTPS estiver ativo, então o { -brand-short-name } irá melhorar/atualizar todas as ligações para HTTPS.
+httpsonly-description2 = O { -brand-short-name } estabelece ligações seguras e encriptadas aos sites que visita. Irá alertar caso uma ligação não seja segura, quando o modo Apenas HTTPS estiver ativado.
 httpsonly-learn-more = Saber mais
 httpsonly-radio-enabled =
     .label = Ativar o modo apenas HTTPS em todas as janelas
+httpsonly-radio-enabled2 =
+    .label = Utilizar apenas HTTPS em todas as janelas
 httpsonly-radio-enabled-pbm =
     .label = Ativar o modo apenas HTTPS somente em janelas privadas
+httpsonly-radio-enabled-pbm2 =
+    .label = Utilizar HTTPS apenas nas janelas privadas
 httpsonly-radio-disabled =
     .label = Não ativar o modo apenas HTTPS
+httpsonly-radio-disabled2 =
+    .label = Tentar primeiro HTTPS, mas permitir as ligações que não são seguras
 
 ## DoH Section
 

@@ -4,18 +4,26 @@
 
 tabbrowser-empty-tab-title = Nueva pestaña
 tabbrowser-empty-private-tab-title = Nueva pestaña privada
-
 tabbrowser-menuitem-close-tab =
     .label = Cerrar pestaña
 tabbrowser-menuitem-close =
     .label = Cerrar
-
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Cerrar pestaña
+           *[other] Cerrar { $tabCount } pestañas
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -64,6 +72,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Reproducir { $tabCount } pestañas
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -72,6 +83,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = ¿Cerrar { $tabCount } pestañas?
 tabbrowser-confirm-close-tabs-button = Cerrar pestañas
+tabbrowser-ask-close-tabs-checkbox = Pregúntame antes de cerrar varias pestañas
 tabbrowser-confirm-close-tabs-checkbox = Confirmar antes de cerrar varias pestañas
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -94,7 +106,21 @@ tabbrowser-confirm-close-tabs-with-key-title = ¿Cerrar la ventana y salir de { 
 tabbrowser-confirm-close-tabs-with-key-button = Salir de { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Pregúntame antes de salir con { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Confirmar antes de salir con { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = ¿Salir de { -brand-short-name } o cerrar la pestaña actual?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Salir de { -brand-short-name }
+       *[other] Salir de { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Cerrar pestaña actual
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -114,13 +140,20 @@ tabbrowser-confirm-caretbrowsing-title = Navegación con cursor
 tabbrowser-confirm-caretbrowsing-message = Presionando F7 se habilita o deshabilita la navegación con cursor. Esta característica coloca un cursor móvil en las páginas web, permitiendo seleccionar texto con el teclado. ¿Deseas habilitar la navegación con cursor?
 tabbrowser-confirm-caretbrowsing-checkbox = No mostrar esta ventana de diálogo otra vez.
 
+## Confirmation dialog for closing all duplicate tabs
+
+tabbrowser-confirm-close-duplicate-tabs-title = Atención
+tabbrowser-confirm-close-duplicate-tabs-text = Mantendremos abierta la última pestaña activa.
+tabbrowser-confirm-close-all-duplicate-tabs-title = ¿Cerrar las pestañas duplicadas?
+tabbrowser-confirm-close-all-duplicate-tabs-text = Cerraremos las pestañas duplicadas en esta ventana. La última pestaña activa permanecerá abierta.
+tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Cerrar pestañas
+
 ##
 
 # Variables:
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Permitir que notificaciones como ésta de { $domain } te lleven a su pestaña
-
 tabbrowser-customizemode-tab-title = Personalizar { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -139,7 +172,6 @@ tabbrowser-context-mute-selected-tabs =
 tabbrowser-context-unmute-selected-tabs =
     .label = Restaurar sonido de las pestañas
     .accesskey = m
-
 # This string is used as an additional tooltip and accessibility description for tabs playing audio
 tabbrowser-tab-audio-playing-description = Reproducción de audio
 
@@ -151,4 +183,73 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Listar todas { $tabCount } Pestañas
 
 ## Tab manager menu buttons
+
+tabbrowser-manager-mute-tab =
+    .tooltiptext = Silenciar pestaña
+tabbrowser-manager-unmute-tab =
+    .tooltiptext = Restaurar sonido en pestaña
+tabbrowser-manager-close-tab =
+    .tooltiptext = Cerrar pestaña
+
+## Tab Groups
+
+tab-group-editor-title-create = Crear grupo de pestañas
+tab-group-editor-title-edit = Administrar grupo de pestañas
+tab-group-editor-name-label = Nombre
+tab-group-editor-name-field =
+    .placeholder = Ejemplo: Compras
+tab-group-editor-cancel =
+    .label = Cancelar
+    .accesskey = C
+tab-group-menu-header = Grupos de pestañas
+tab-context-unnamed-group =
+    .label = Grupo sin nombre
+tab-group-name-default = Grupo sin nombre
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Agregar pestaña a un nuevo grupo
+            [one] Agregar `pestaña a un nuevo grupo
+           *[other] Agregar `pestañas a un nuevo grupo
+        }
+    .accesskey = G
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Agregar pestaña a grupo
+            [one] Agregar pestaña a grupo
+           *[other] Agregar pestañas a grupo
+        }
+    .accesskey = G
+tab-group-editor-action-new-tab =
+    .label = Nueva pestaña en grupo
+tab-group-editor-action-new-window =
+    .label = Mover grupo a una nueva ventana
+tab-group-editor-action-save =
+    .label = Guardar y cerrar grupo
+tab-group-editor-action-ungroup =
+    .label = Desagrupar pestañas
+tab-group-editor-action-delete =
+    .label = Eliminar grupo
+tab-group-editor-done =
+    .label = Hecho
+    .accessKey = D
+tab-context-reopen-tab-group =
+    .label = Reabrir grupo de pestañas
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Eliminar de grupo
+            [one] Eliminar de grupo
+           *[other] Eliminar de grupos
+        }
+    .accesskey = R
+
+## Open/saved tab group context menu
 

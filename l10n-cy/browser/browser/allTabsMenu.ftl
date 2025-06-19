@@ -14,3 +14,7 @@ all-tabs-menu-manage-user-context =
     .accesskey = R
 all-tabs-menu-close-duplicate-tabs =
     .label = Cau tabiau dyblyg
+all-tabs-menu-close-all-duplicate-tabs =
+    .label = Cau pob tab dyblyg
+all-tabs-menu-synced-tabs =
+    .label = Tabiau o ddyfeisiau eraill

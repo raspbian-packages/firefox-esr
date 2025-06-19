@@ -89,6 +89,9 @@ shopping-show-less-button = Minder tonen
 
 shopping-settings-label =
     .label = Instellingen
+shopping-settings-recommendations-toggle2 =
+    .label = Aanbevelingen en gesponsorde inhoud tonen
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } deelt uw persoonlijke gegevens niet, dus deze aanbevelingen volgen u niet op het internet. <a data-l10n-name="review-quality-url">Meer info</a>
 shopping-settings-recommendations-toggle =
     .label = Advertenties tonen in beoordelingscontrole
 shopping-settings-recommendations-learn-more2 = U ziet af en toe advertenties voor relevante producten. We adverteren alleen voor producten met betrouwbare beoordelingen. <a data-l10n-name="review-quality-url">Meer info</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Beoordelingskwaliteit controleren
 
 more-to-consider-ad-label =
     .label = Meer overwegingen
+shopping-sponsored-label = Gesponsord
 ad-by-fakespot = Advertentie van { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Verzenden
 shopping-survey-terms-link = Gebruiksvoorwaarden
 shopping-survey-thanks =
     .heading = Bedankt voor uw feedback!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Laat ons weten waarom u Beoordelingscontrole hebt uitgeschakeld. Selecteer meerdere indien nodig.
+shopping-survey-thanks-title = Bedankt voor uw feedback!
+shopping-survey-opted-out-hard-to-understand = Het is moeilijk te begrijpen
+shopping-survey-opted-out-too-slow = Het is te langzaam
+shopping-survey-opted-out-not-accurate = Het is niet nauwkeurig
+shopping-survey-opted-out-not-helpful = Het helpt mij niet
+shopping-survey-opted-out-check-myself = Ik controleer beoordelingen liever zelf
+shopping-survey-opted-out-other = Overig
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

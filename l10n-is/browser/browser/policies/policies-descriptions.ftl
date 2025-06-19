@@ -119,6 +119,7 @@ policy-Permissions2 = Stilla heimildir fyrir myndavél, hljóðnema, staðsetnin
 policy-PictureInPicture = Virkja eða slökkva á mynd-í-mynd.
 policy-PopupBlocking = Leyfa tilteknum vefsvæðum að birta sprettglugga sjálfgefið.
 policy-Preferences = Stilltu og læstu gildið fyrir undirhóp af stillingum.
+policy-PrivateBrowsingModeAvailability = Stilltu framboð á huliðsvafurham.
 policy-PromptForDownloadLocation = Spyrðja hvar eigi að vista skrár frá niðurhali.
 policy-Proxy = Sýsla með stillingar á milliþjóni (proxy).
 policy-RequestedLocales = Stilla lista yfir tungumál sem óskað er eftir af forritinu, raðað eftir vali.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Prenta með prentglugga kerfisins.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Loka fyrir heimsóknir á vefsvæði. Sjá hjálparskjöl fyrir frekari upplýsingar um sniðið.
 policy-Windows10SSO = Leyfa eins-skiptis Windows-innskráningu fyrir Microsoft, vinnu og skólareikninga.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Leyfa einfalda innskráningu (single sign-on) fyrir Microsoft Entra reikninga.

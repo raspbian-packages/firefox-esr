@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = עמוד חסום
 neterror-captive-portal-page-title = כניסה לרשת
 neterror-dns-not-found-title = השרת לא נמצא
 neterror-malformed-uri-page-title = כתובת לא תקנית
+general-body-title = נא להיזהר. משהו לא נראה תקין.
 
 ## Error page actions
 
@@ -41,6 +42,8 @@ neterror-generic-error = מסיבה בלתי ידועה, אין ל־{ -brand-sho
 neterror-load-error-try-again = האתר איננו זמין כרגע או שהוא עמוס מדי. נא לנסות שוב בעוד מספר רגעים.
 neterror-load-error-connection = אם אינך מצליח לטעון שום דף, מומלץ לבדוק את הקישוריות של המחשב שלך לרשת.
 neterror-load-error-firewall = אם המחשב או הרשת שלך מוגנים באמצעות חומת אש או שרת מתווך, יש לוודא כי { -brand-short-name } מורשה לגישה לרשת.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = אם הינך מנסה לטעון דף אינטרנט מקומי, נא לבדוק של־{ -brand-short-name } הוענקה הרשאות לרשת המקומית בהגדרות הפרטיות והאבטחה של macOS.
 neterror-captive-portal = עליך להתחבר לרשת זו כדי לגלוש באינטרנט.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +67,7 @@ neterror-dns-not-found-trr-offline = אין חיבור לאינטרנט.
 neterror-dns-not-found-trr-unknown-host2 = אתר זה לא נמצא על־ידי { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = הייתה בעיה עם { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = כתובת לא תקנית.
+neterror-dns-not-found-system-sleep = המערכת נמצאת במצב שינה.
 neterror-dns-not-found-trr-unknown-problem = בעיה לא צפויה.
 
 ## Native fallback specific messages
@@ -147,3 +151,11 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = אם <b>{ $mitm }</b> אי�
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = ל־<b>{ $hostname }</b> יש מדיניות אבטחה בשם אבטחת תעבורה מחמירה של HTTP ‏(HSTS), כלומר { -brand-short-name } יכול להתחבר לאתר באופן מאובטח בלבד. לא ניתן להוסיף חריגה כדי לבקר באתר זה.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = כנראה שכלום, מכיוון שסביר להניח שיש בעיה באתר עצמו.
+certerror-blocked-by-corp-headers-description = לפעמים אתרים מגדירים הגנות לעצמם ולאנשים כמוך מפני אינטראקציות לא רצויות עם אתרים אחרים.
+certerror-coop-learn-more = מידע נוסף על Cross Origin Opener Policies ‏(COOP)
+certerror-coep-learn-more = מידע נוסף על Cross Origin Embedder Policies ‏(COEP)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = קוד שגיאה: { $responsestatus } { $responsestatustext }

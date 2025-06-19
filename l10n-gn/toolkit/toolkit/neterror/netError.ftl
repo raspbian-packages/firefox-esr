@@ -64,6 +64,7 @@ neterror-dns-not-found-trr-offline = Ndereikekuaamo’ãi ñandutípe.
 neterror-dns-not-found-trr-unknown-host2 = Ko ñandurti renda ndojuhúi { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Oĩ peteĩ apañuái { $trrDomain } ndive.
 neterror-dns-not-found-bad-trr-url = URL oiko’ỹva.
+neterror-dns-not-found-system-sleep = Ko apopyvusu oĩ tekopytápe.
 neterror-dns-not-found-trr-unknown-problem = Jejavy eha’ãrõ’ỹva.
 
 ## Native fallback specific messages
@@ -147,3 +148,4 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Ndereikuaa porãiramo ko <b
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> oguereko tekorosã porureko hérava HTTP Strict transporte Security (HSTS), he’iséva { -brand-short-name } oiketaha hendive tekorosãme. Ndaikatúi embojuaju oĩ’ỹva eike hag̃ua ko tendápe.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Ikatuhína ndaha’éi mba’evete, oikokuaa haguére apañuái upe tenda ndive.

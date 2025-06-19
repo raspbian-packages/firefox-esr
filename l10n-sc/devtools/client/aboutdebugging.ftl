@@ -99,6 +99,9 @@ about-debugging-setup-usb-step-plug-device = Acàpia su dispositivu Android a s'
 # Text shown in the USB section of the setup page with a link to troubleshoot connection errors.
 # The link goes to https://firefox-source-docs.mozilla.org/devtools-user/about_colon_debugging/index.html#connecting-to-a-remote-device
 about-debugging-setup-usb-troubleshoot = Problemas de connessione cun su dispositivu USB? <a>Modalidade de curretzione de faddinas</a>
+# Network section of the Setup page
+about-debugging-setup-network =
+    .title = Positzione de rete
 # Text of a button displayed after the network locations "Host" input.
 # Clicking on it will add the new network location to the list.
 about-debugging-network-locations-add-button = Agiunghe
@@ -147,6 +150,10 @@ about-debugging-runtime-name = { $name } ({ $version })
 about-debugging-runtime-disconnect-button = Disconnete
 # Title of a modal dialog displayed on remote runtime pages after clicking on the Profile Runtime button.
 about-debugging-profiler-dialog-title2 = Analizadore de rendimentu
+# Clicking on the header of a debug target category will expand or collapse the debug
+# target items in the category. This text is used as ’title’ attribute of the header,
+# to describe this feature.
+about-debugging-collapse-expand-debug-targets = Ismànnia/mìnima
 
 # Debug Targets strings
 

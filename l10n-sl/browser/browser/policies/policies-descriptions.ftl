@@ -60,7 +60,7 @@ policy-DisableSecurityBypass = Uporabniku prepreči, da zaobide določena varnos
 policy-DisableSetAsDesktopBackground = Onemogoči menijski ukaz Nastavi kot ozadje namizja za slike.
 policy-DisableSystemAddonUpdate = Prepreči brskalniku nameščanje in posodabljanje sistemskih dodatkov.
 policy-DisableTelemetry = Izključi telemetrijo.
-policy-DisableThirdPartyModuleBlocking = Uporabniku prepreči blokado modulov tretjih ponudnikov, ki se vstavljajo v proces { -brand-short-name(sklon: "rodilnik") }.
+policy-DisableThirdPartyModuleBlocking = Uporabniku prepreči zavračanje modulov tretjih ponudnikov, ki se vstavljajo v proces { -brand-short-name(sklon: "rodilnik") }.
 policy-DisplayBookmarksToolbar = Privzeto prikaži orodno vrstico zaznamkov.
 policy-DisplayMenuBar = Privzeto prikaži vrstico z menijem.
 policy-DNSOverHTTPS = Nastavi DNS preko HTTPS.
@@ -119,6 +119,7 @@ policy-Permissions2 = Nastavi dovoljenja za kamero, mikrofon, lokacijo, obvestil
 policy-PictureInPicture = Omogoči ali onemogoči sliko v sliki
 policy-PopupBlocking = Določenim spletnim mestom privzeto dovoli prikazovanje pojavnih oken.
 policy-Preferences = Nastavi in zakleni vrednost podnabora nastavitev.
+policy-PrivateBrowsingModeAvailability = Nastavi razpoložljivost zasebnega brskanja.
 policy-PromptForDownloadLocation = Pri prenosu vprašaj, kam shraniti datoteko.
 policy-Proxy = Nastavi posrednika.
 policy-RequestedLocales = Nastavi vrstni red zahtevanih jezikov za program.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Tiskaj s pomočjo pogovornega okna sistema.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Prepreči obisk določenih spletnih mest. Za več podrobnosti o obliki glejte dokumentacijo.
 policy-Windows10SSO = Dovoli enotno prijavo v sistem Windows za Microsoftove, službene in šolske račune.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Dovoli enotno prijavo za račune Microsoft Entra.

@@ -89,6 +89,9 @@ shopping-show-less-button = Азырақ көрсету
 
 shopping-settings-label =
     .label = Баптаулар
+shopping-settings-recommendations-toggle2 =
+    .label = Ұсыныстар мен демеушілік мазмұнды көрсету
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } жеке деректеріңізді бөліспейді, сондықтан бұл ұсыныстар интернетте сіздің артыңыздан ермейді. <a data-l10n-name="review-quality-url">Көбірек білу</a>
 shopping-settings-recommendations-toggle =
     .label = Пікірлерді тексеру құралында жарнаманы көрсету
 shopping-settings-recommendations-learn-more2 = Сәйкес өнімдерге арналған кездейсоқ жарнамаларды көресіз. Біз тек сенімді пікірлері бар өнімдерді жарнамалаймыз. <a data-l10n-name="review-quality-url">Көбірек білу</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Пікір сапасын текс�
 
 more-to-consider-ad-label =
     .label = Көбірек қарастыру үшін
+shopping-sponsored-label = Демеуленген
 ad-by-fakespot = { -fakespot-brand-name } ұсынған жарнама
 
 ## Shopping survey strings.
@@ -182,6 +186,17 @@ shopping-survey-submit-button-label = Жіберу
 shopping-survey-terms-link = Қолдану шарттары
 shopping-survey-thanks =
     .heading = Пікіріңізге рахмет!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-thanks-title = Пікіріңізге рахмет!
+shopping-survey-opted-out-hard-to-understand = Бұны түсіну қиын
+shopping-survey-opted-out-too-slow = Бұл тым баяу
+shopping-survey-opted-out-not-accurate = Бұл дәл емес
+shopping-survey-opted-out-not-helpful = Бұл маған пайдалы емес
+shopping-survey-opted-out-check-myself = Мен пікірлерді өзім тексергім келеді
+shopping-survey-opted-out-other = Басқа
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

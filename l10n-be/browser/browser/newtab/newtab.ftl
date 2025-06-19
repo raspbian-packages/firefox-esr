@@ -8,11 +8,18 @@
 newtab-page-title = Новая картка
 newtab-settings-button =
     .title = Наладзіць вашу старонку новай карткі
+newtab-personalize-settings-icon-label =
+    .title = Персаналізаваць новую картку
+    .aria-label = Налады
+newtab-settings-dialog-label =
+    .aria-label = Налады
 newtab-personalize-icon-label =
     .title = Персаналізаваць новую картку
     .aria-label = Персаналізаваць новую картку
 newtab-personalize-dialog-label =
     .aria-label = Персаналізаваць
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Захаваць у { -pocket-brand-name }
 newtab-menu-delete-pocket = Выдаліць з { -pocket-brand-name }
 newtab-menu-archive-pocket = Архіваваць у { -pocket-brand-name }
 newtab-menu-show-privacy-info = Нашы спонсары і ваша прыватнасць
+newtab-menu-about-fakespot = Пра { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Блакаваць
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Адпісацца ад тэмы
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Апошняя актыўнасць
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Рэкамендавана { $provider }
 newtab-section-header-stories = Гісторыі, якія прымушаюць задумацца
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Сённяшняя падборка для вас
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = Атрымаць { -pocket-brand-name }
 newtab-pocket-cta-text = Захоўвайце ўлюбёныя гісторыі ў { -pocket-brand-name }, і сілкуйце свой розум добрай чытанкай.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } уваходзіць у сямейства { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Захаваць
 newtab-pocket-saved = Захавана
 
@@ -242,6 +260,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Не для мяне
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Дзякуй. Ваш водгук дапаможа нам палепшыць вашу стужку.
 newtab-toast-thumbs-up-or-down = Дзякуй. Ваш водгук дапаможа нам палепшыць вашу стужку.
 newtab-toast-dismiss-button =
     .title = Схаваць
@@ -308,6 +329,8 @@ newtab-wallpaper-dark-panda = Чырвоная панда схаваная ў л
 newtab-wallpaper-dark-sky = Гарадскі пейзаж з начным небам
 newtab-wallpaper-dark-mountain = Горны пейзаж
 newtab-wallpaper-dark-city = Пурпурны гарадскі пейзаж
+newtab-wallpaper-dark-fox-anniversary = Ліса на тратуары каля лесу
+newtab-wallpaper-light-fox-anniversary = Ліса ў травяністым полі з туманным горным ландшафтам
 
 ## Solid Colors
 
@@ -372,6 +395,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Спонсар
 newtab-weather-menu-change-location = Змяніць месцазнаходжанне
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Шукаць месцазнаходжанне
+    .aria-label = Шукаць месцазнаходжанне
 newtab-weather-change-location-search-input = Шукаць месцазнаходжанне
 newtab-weather-menu-weather-display = Паказ надвор'я
 # Display options are:
@@ -390,3 +416,76 @@ newtab-weather-menu-hide-weather = Схаваць надвор'е на нова�
 newtab-weather-menu-learn-more = Даведацца больш
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Звесткі пра надвор'е зараз недаступныя.
+
+## Topic Labels
+
+newtab-topic-label-business = Бізнес
+newtab-topic-label-career = Кар'ера
+newtab-topic-label-education = Адукацыя
+newtab-topic-label-arts = Забавы
+newtab-topic-label-food = Ежа
+newtab-topic-label-health = Здароўе
+newtab-topic-label-hobbies = Гульні
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Грошы
+newtab-topic-label-society-parenting = Выхаванне
+newtab-topic-label-government = Палітыка
+newtab-topic-label-education-science = Навука
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Лайфхакі
+newtab-topic-label-sports = Спорт
+newtab-topic-label-tech = Тэхналогіі
+newtab-topic-label-travel = Падарожжы
+newtab-topic-label-home = Дом і сад
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Выберыце тэмы, каб наладзіць сваю стужку
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Выберыце дзве або больш тэм. Нашы эксперты-куратары аддаюць перавагу гісторыям, якія адпавядаюць вашым інтарэсам. Абнаўляйце ў любы час.
+newtab-topic-selection-save-button = Захаваць
+newtab-topic-selection-cancel-button = Скасаваць
+newtab-topic-selection-button-maybe-later = Магчыма пазней
+newtab-topic-selection-privacy-link = Даведайцеся, як мы ахоўваем дадзеныя і распараджаемся імі
+newtab-topic-selection-button-update-interests = Абнавіце свае зацікаўленасці
+newtab-topic-selection-button-pick-interests = Выберыце свае зацікаўленасці
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Падпісацца
+newtab-section-following-button = Падпісаны
+newtab-section-unfollow-button = Адпісацца
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Блакаваць
+newtab-section-blocked-button = Заблакаваны
+newtab-section-unblock-button = Разблакаваць
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Вы сапраўды хочаце заблакаваць гэты раздзел?
+newtab-section-confirm-block-section-p2 = Заблакаваны раздзел больш не будзе з'яўляцца ў вашай стужцы.
+newtab-section-block-section-button = Заблакаваць гэты раздзел
+newtab-section-cancel-button = Не зараз
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Тэмы
+newtab-section-mangage-topics-button =
+    .label = Тэмы, на якія вы падпісаліся, і заблакаваныя тэмы
+newtab-section-mangage-topics-followed-topics-subtitle = Тэмы, на якія вы падпісаліся
+newtab-section-mangage-topics-followed-topics-empty-state = Вы яшчэ не падпісаліся ні на адну тэму.
+newtab-section-mangage-topics-blocked-topics-subtitle = Заблакаваныя тэмы
+newtab-section-mangage-topics-blocked-topics-empty-state = Вы яшчэ не заблакавалі ніводнай тэмы.

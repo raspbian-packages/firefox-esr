@@ -89,6 +89,9 @@ shopping-show-less-button = 덜 보기
 
 shopping-settings-label =
     .label = 설정
+shopping-settings-recommendations-toggle2 =
+    .label = 추천 및 스폰서 콘텐츠 표시
+shopping-settings-recommendations-learn-more3 = { -brand-product-name }는 개인 데이터를 공유하지 않으므로 이러한 추천 항목은 인터넷에서 사용자를 따라다니지 않습니다. <a data-l10n-name="review-quality-url">더 알아보기</a>
 shopping-settings-recommendations-toggle =
     .label = 리뷰 검사기에 광고 표시
 shopping-settings-recommendations-learn-more2 = 관련 제품에 대한 광고가 가끔 표시됩니다. 믿을 수 있는 리뷰가 있는 제품만을 광고합니다. <a data-l10n-name="review-quality-url">더 알아보기</a>
@@ -164,6 +167,7 @@ shopping-unanalyzed-product-analyze-button = 리뷰 품질 확인
 
 more-to-consider-ad-label =
     .label = 더 보기
+shopping-sponsored-label = 스폰서
 ad-by-fakespot = { -fakespot-brand-name }의 광고
 
 ## Shopping survey strings.
@@ -181,9 +185,21 @@ shopping-survey-q2-radio-2-label = 아니오
 shopping-survey-q2-radio-3-label = 모름
 shopping-survey-next-button-label = 다음
 shopping-survey-submit-button-label = 제출
-shopping-survey-terms-link = 사용 약관
+shopping-survey-terms-link = 이용 약관
 shopping-survey-thanks =
     .heading = 의견을 보내 주셔서 감사합니다!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = 리뷰 검사기를 끄신 이유를 알려주세요. 필요한 경우 여러 개를 선택하세요.
+shopping-survey-thanks-title = 의견을 보내 주셔서 감사합니다!
+shopping-survey-opted-out-hard-to-understand = 이해하기 어려움
+shopping-survey-opted-out-too-slow = 너무 느림
+shopping-survey-opted-out-not-accurate = 정확하지 않음
+shopping-survey-opted-out-not-helpful = 도움이 되지 않음
+shopping-survey-opted-out-check-myself = 리뷰를 직접 확인
+shopping-survey-opted-out-other = 기타
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to
@@ -225,7 +241,7 @@ shopping-onboarding-dynamic-subtitle-1 = 구매하기 전에 <b>{ $currentSite }
 #   $currentSite (str) - The current shopping page name
 shopping-onboarding-single-subtitle = 구매하기 전에 <b>{ $currentSite }</b>에서 제품 리뷰가 얼마나 신뢰할 수 있는지 확인하세요. { -brand-product-name }의 실험적 기능인 리뷰 검사기가 브라우저에 바로 내장되어 있습니다.
 shopping-onboarding-body = { -fakespot-brand-full-name }의 기능을 사용하여 편향되고 허위 리뷰를 방지하는 데 도움을 드립니다. AI 모델은 쇼핑하는 동안 사용자를 보호하기 위해 항상 개선되고 있습니다. <a data-l10n-name="learn_more">더 알아보기</a>
-shopping-onboarding-opt-in-privacy-policy-and-terms-of-use3 = "{ shopping-onboarding-opt-in-button }"을 선택하면 { -brand-product-name }의 <a data-l10n-name="privacy_policy">개인정보처리방침</a> 및 { -fakespot-brand-name }의 <a data-l10n-name="terms_of_use">사용 약관</a>에 동의하게 됩니다.
+shopping-onboarding-opt-in-privacy-policy-and-terms-of-use3 = "{ shopping-onboarding-opt-in-button }"을 선택하면 { -brand-product-name }의 <a data-l10n-name="privacy_policy">개인정보처리방침</a> 및 { -fakespot-brand-name }의 <a data-l10n-name="terms_of_use">이용 약관</a>에 동의하게 됩니다.
 shopping-onboarding-opt-in-button = 사용해보기
 shopping-onboarding-not-now-button = 나중에
 shopping-onboarding-dialog-close-button =

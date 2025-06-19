@@ -39,6 +39,8 @@ mr1-return-to-amo-add-extension-label = Добавяне на { $addon-name }
 #   $current (Int) - Number of the current page
 #   $total (Int) - Total number of pages
 
+onboarding-welcome-steps-indicator-label =
+    .aria-label = Напредък: стъпка { $current } от { $total }
 # This button will open system settings to turn on prefers-reduced-motion
 mr1-onboarding-reduce-motion-button-label = Изключване на анимации
 # String for the Firefox Accounts button
@@ -50,6 +52,8 @@ mr1-onboarding-import-primary-button-label-attribution = Внасяне от { $
 mr1-onboarding-theme-header = По свой вкус
 mr1-onboarding-theme-subtitle = Приспособете { -brand-short-name } с тема.
 mr1-onboarding-theme-secondary-button-label = Не сега
+newtab-wallpaper-onboarding-title = Опитайте пръска цвят
+newtab-wallpaper-onboarding-subtitle = Изберете тапет, за да придадете свеж вид на новия си раздел.
 # System theme uses operating system color settings
 mr1-onboarding-theme-label-system = Системна тема
 mr1-onboarding-theme-label-light = Светла
@@ -119,7 +123,7 @@ mr2-onboarding-start-browsing-button-label = Започнете да разгл�
 
 onboarding-live-language-header = Изберете език
 mr2022-onboarding-live-language-text = { -brand-short-name } говори твоя език
-mr2022-language-mismatch-subtitle = Благодарение на нашата общност { -brand-short-name } е преведен на над 90 езика. Изглежда, че вашата система използва { $systemLanguage }, а { -brand-short-name } използва { $appLanguage }.
+mr2022-language-mismatch-subtitle = Благодарение на нашата общност, { -brand-short-name } е преведен на над 90 езика. Изглежда, че вашата система използва { $systemLanguage }, а { -brand-short-name } използва { $appLanguage }.
 onboarding-live-language-button-label-downloading = Изтегляне на { $negotiatedLanguage } езиков пакет…
 onboarding-live-language-waiting-button = Зареждане на наличните езици…
 onboarding-live-language-installing = Инсталиране на { $negotiatedLanguage } езиков пакет…
@@ -158,6 +162,8 @@ mr2022-onboarding-secondary-skip-button-label = Пропускане
 
 # Primary button string used on new user onboarding first screen showing multiple actions such as Set Default, Import from previous browser.
 mr2022-onboarding-easy-setup-primary-button-label = Запазване и продължаване
+# Set Default action checkbox label used on new user onboarding first screen
+mr2022-onboarding-easy-setup-set-default-checkbox-label = Задаване на { -brand-short-name } като браузър по подразбиране
 # Import action checkbox label used on new user onboarding first screen
 mr2022-onboarding-easy-setup-import-checkbox-label = Внасяне от предишен браузър
 
@@ -182,6 +188,7 @@ mr2022-onboarding-existing-pin-header = Благодарим ви, че обич
 
 ## MR2022 New User Set Default screen strings
 
+mr2022-onboarding-set-default-primary-button-label = Задаване на { -brand-short-name } като браузър по подразбиране
 
 ## MR2022 Get Started screen strings.
 ## These strings will be used on the welcome page
@@ -192,7 +199,9 @@ mr2022-onboarding-existing-pin-header = Благодарим ви, че обич
 mr2022-onboarding-get-started-primary-subtitle = Последното издание е изградено на вашите желания, което прави по-лесно от всякога разглеждането в интернет. Изданието е пълно с функции, които смятаме, че ще обикнете.
 mr2022-onboarding-get-started-primary-button-label = Настройва се за секунди
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Светкавично-бърза настройка
 mr2022-onboarding-import-subtitle = Настройте { -brand-short-name } както ви харесва. Добавете своите отметки, пароли и всичко друго от стария си четец.
@@ -207,6 +216,7 @@ mr2022-onboarding-colorway-title = Изберете цвета, който ви 
 mr2022-onboarding-colorway-subtitle = Независимите гласове могат да променят културата.
 mr2022-onboarding-colorway-primary-button-label-continue = Запазване и продължаване
 mr2022-onboarding-existing-colorway-checkbox-label = Направете вашата { -firefox-home-brand-name }  начална страница цветна
+mr2022-onboarding-colorway-label-default = По подразбиране
 mr2022-onboarding-colorway-tooltip-default2 =
     .title = Текущи { -brand-short-name } цветове
 mr2022-onboarding-colorway-label-playmaker = Плеймейкър
@@ -224,6 +234,7 @@ mr2022-onboarding-colorway-tooltip-activist2 =
 mr2022-onboarding-colorway-label-dreamer = Мечтател
 mr2022-onboarding-colorway-tooltip-dreamer2 =
     .title = Мечтател (лилав)
+mr2022-onboarding-colorway-description-dreamer = <b>Вие мечтаете.</b> Вярвате, че късметът е благосклонен към смелите и вдъхновявате другите да бъдат смели.
 mr2022-onboarding-colorway-label-innovator = Изобретател
 mr2022-onboarding-colorway-tooltip-innovator2 =
     .title = Иноватор (оранжев)
@@ -248,6 +259,7 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = Показван
 
 mr2022-onboarding-gratitude-title = Вие ни помагате да изградим по-добра мрежа
 mr2022-onboarding-gratitude-primary-button-label = Вижте какво е ново
+mr2022-onboarding-gratitude-secondary-button-label = Започнете да сърфирате
 
 ## Onboarding spotlight for infrequent users
 
@@ -257,6 +269,10 @@ onboarding-infrequent-import-primary-button = Внасяне към { -brand-sho
 ## MR2022 Illustration alt tags
 ## Descriptive tags for illustrations used by screen readers and other assistive tech
 
+mr2022-onboarding-pin-image-alt =
+    .aria-label = Човек, работещ на лаптоп, заобиколен от звезди и цветя
+mr2022-onboarding-default-image-alt =
+    .aria-label = Човек прегръщащ логото на { -brand-product-name }
 
 ## Device migration onboarding
 
@@ -264,5 +280,47 @@ onboarding-device-migration-title = Добре дошли отново!
 onboarding-device-migration-subtitle = Влезте в { -fxaccount-brand-name(capitalization: "sentence") }, за да пренесете своите отметки, пароли и история със себе си на новото ви устройство.
 onboarding-device-migration-primary-button-label = Вход
 
+## Add-ons Picker screen
+
+amo-picker-title = Персонализирайте вашия { -brand-short-name }
+amo-picker-install-complete-label = Инсталирано
+amo-picker-collection-link = Открийте още добавки
+
 ## The following screens have been updated to use security and privacy focused strings:
 
+# Easy setup screen
+onboarding-easy-setup-security-and-privacy-title = Обичаме да ви пазим в безопасност
+# Sign up or Sign in screen
+onboarding-sign-up-title = Синхронизирайте данните си между устройства
+onboarding-sign-up-button = Регистрирайте се или се впишете
+onboarding-sign-up-secondary-button = Започнете да сърфирате
+
+## New user time and familiarity survey strings
+
+onboarding-new-user-time-based-survey-title = От колко време използвате { -brand-short-name }?
+onboarding-new-user-survey-legal-link-label = С избирането на „{ onboarding-new-user-survey-next-button-label }“ вие се съгласявате с <a data-l10n-name="privacy_notice">Политиката за поверителност на { -brand-product-name }.</a>
+onboarding-new-user-survey-time-based-option-4 = Повече от 1 месец, от време на време
+# When translating "brand new" it means completely new.
+onboarding-new-user-survey-familiarity-based-option-1 = Нямам опит
+onboarding-new-user-survey-familiarity-based-option-2 = Ползвал съм го
+onboarding-new-user-survey-familiarity-based-option-3 = Много съм запознат с него
+onboarding-new-user-survey-familiarity-based-option-4 = Ползвал съм го и преди, но мина доста време
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Кажете ни къде искате да са разделите
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Вашите раздели, по ваш начин
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Опитайте чатбот с AI в страничната лента
+
+## New user onboarding checklist
+
+
+## Tab Groups feature onboarding strings
+
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-cta = Създаване на профил

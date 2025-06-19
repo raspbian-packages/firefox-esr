@@ -80,7 +80,8 @@ elif toolkit == "gtk":
 elif toolkit == "windows":
     XPIDL_SOURCES += [
         "nsIJumpListBuilder.idl",
-        "nsIJumpListItem.idl",
+        "nsILegacyJumpListBuilder.idl",
+        "nsILegacyJumpListItem.idl",
         "nsIPrintSettingsWin.idl",
         "nsITaskbarOverlayIconController.idl",
         "nsITaskbarPreview.idl",
@@ -125,6 +126,7 @@ XPIDL_SOURCES += [
     "nsIFormatConverter.idl",
     "nsIGfxInfo.idl",
     "nsIGfxInfoDebug.idl",
+    "nsIMockDragServiceController.idl",
     "nsIPaper.idl",
     "nsIPaperMargin.idl",
     "nsIPrinter.idl",
@@ -153,6 +155,7 @@ EXPORTS += [
     "nsBaseDragService.h",
     "nsBaseFilePicker.h",
     "nsBaseWidget.h",
+    "nsDragServiceProxy.h",
     "nsIDeviceContextSpec.h",
     "nsIRollupListener.h",
     "nsIWidget.h",
@@ -166,6 +169,10 @@ EXPORTS += [
 
 EXPORTS.mozilla += [
     "BasicEvents.h",
+    "ClipboardContentAnalysisChild.h",
+    "ClipboardContentAnalysisParent.h",
+    "ClipboardReadRequestChild.h",
+    "ClipboardReadRequestParent.h",
     "ClipboardWriteRequestChild.h",
     "ClipboardWriteRequestParent.h",
     "ColorScheme.h",
@@ -215,6 +222,9 @@ EXPORTS.mozilla.widget += [
 ]
 
 UNIFIED_SOURCES += [
+    "ClipboardContentAnalysisChild.cpp",
+    "ClipboardContentAnalysisParent.cpp",
+    "ClipboardReadRequestParent.cpp",
     "ClipboardWriteRequestChild.cpp",
     "ClipboardWriteRequestParent.cpp",
     "CompositorWidget.cpp",
@@ -242,7 +252,6 @@ UNIFIED_SOURCES += [
     "nsIWidgetListener.cpp",
     "nsPrimitiveHelpers.cpp",
     "nsPrintSettingsImpl.cpp",
-    "nsSoundProxy.cpp",
     "nsTransferable.cpp",
     "nsUserIdleService.cpp",
     "nsXPLookAndFeel.cpp",
@@ -320,7 +329,7 @@ if toolkit in {"gtk", "cocoa", "windows", "android", "uikit"}:
         "nsBaseFilePicker.cpp",
     ]
 
-if toolkit in ("gtk", "windows", "cocoa", "android"):
+if toolkit in ("gtk", "windows", "cocoa", "uikit", "android"):
     UNIFIED_SOURCES += [
         "nsNativeTheme.cpp",
     ]
@@ -375,16 +384,21 @@ else:
 
 IPDL_SOURCES += [
     "LookAndFeelTypes.ipdlh",
+    "PClipboardContentAnalysis.ipdl",
+    "PClipboardReadRequest.ipdl",
     "PClipboardWriteRequest.ipdl",
 ]
 
 LOCAL_INCLUDES += [
     "/widget/%s" % toolkit,
 ]
-FINAL_LIBRARY = "xul"
 
-if CONFIG["MOZ_ENABLE_D3D10_LAYER"]:
-    DEFINES["MOZ_ENABLE_D3D10_LAYER"] = True
+if CONFIG["ENABLE_TESTS"]:
+    UNIFIED_SOURCES += [
+        "MockDragServiceController.cpp",
+    ]
+
+FINAL_LIBRARY = "xul"
 
 if CONFIG["MOZ_WIDGET_TOOLKIT"] == "gtk":
     CXXFLAGS += CONFIG["MOZ_GTK3_CFLAGS"]

@@ -162,7 +162,7 @@ fx100-upgrade-thanks-header = 100 благодарностей
 fx100-upgrade-thank-you-body = Это наш 100-й выпуск { -brand-short-name }. Спасибо <em>Вам</em> за помощь в создании лучшего и более здорового Интернета.
 # Message shown with either a pin-to-taskbar or set-default button.
 fx100-upgrade-thanks-keep-body = Это наш 100-й выпуск! Спасибо, что являетесь частью нашего сообщества. Держите { -brand-short-name } под рукой для следующих 100.
-mr2022-onboarding-secondary-skip-button-label = Пропустить этот шаг
+mr2022-onboarding-secondary-skip-button-label = Пропустить шаг
 
 ## MR2022 New User Easy Setup screen strings
 
@@ -188,6 +188,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Добавьте { -brand-short-name } в Dock
        *[other] Закрепите { -brand-short-name } на панели задач
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Закрепите { -brand-short-name } на панели задач и в меню «Пуск»
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -223,7 +225,9 @@ mr2022-onboarding-set-default-subtitle = Используйте браузер, 
 mr2022-onboarding-get-started-primary-subtitle = Наша последняя версия создана специально для вас, что делает путешествия по Интернету проще, чем когда-либо. Она наполнена функциями, которые, как мы думаем, вам понравятся.
 mr2022-onboarding-get-started-primary-button-label = Настроить за считанные секунды
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Молниеносная настройка
 mr2022-onboarding-import-subtitle = Настройте { -brand-short-name } так, как вам нравится. Добавьте свои закладки, пароли и многое другое из старого браузера.
@@ -248,11 +252,11 @@ mr2022-onboarding-colorway-tooltip-playmaker2 =
 mr2022-onboarding-colorway-description-playmaker = <b>Вы — Создатель игр.</b> Вы создаёте возможности победить и помогаете всем вокруг поднять их игру на новый уровень.
 mr2022-onboarding-colorway-label-expressionist = Экспрессионист
 mr2022-onboarding-colorway-tooltip-expressionist2 =
-    .title = Экспрессионист (желтый)
+    .title = Экспрессионист (жёлтый)
 mr2022-onboarding-colorway-description-expressionist = <b>Вы — Экспрессионист.</b> Вы видите мир иначе, а ваши творения поражают остальных.
 mr2022-onboarding-colorway-label-visionary = Провидец
 mr2022-onboarding-colorway-tooltip-visionary2 =
-    .title = Провидец (зеленый)
+    .title = Провидец (зелёный)
 mr2022-onboarding-colorway-description-visionary = <b>Вы — Провидец.</b> Вы ставите под сомнение статус-кво и побуждаете остальных представлять лучшее будущее.
 mr2022-onboarding-colorway-label-activist = Активист
 mr2022-onboarding-colorway-tooltip-activist2 =
@@ -324,7 +328,7 @@ mr2022-onboarding-privacy-segmentation-image-alt =
 mr2022-onboarding-gratitude-image-alt =
     .aria-label = Вид на закат через окно с лисой и комнатным растением на подоконнике
 mr2022-onboarding-colorways-image-alt =
-    .aria-label = Баллончик с краской рисует красочный коллаж из зеленого глаза, оранжевой обуви, красного баскетбольного мяча, фиолетовых наушников, синего сердца и желтой короны
+    .aria-label = Баллончик с краской рисует красочный коллаж из зелёного глаза, оранжевой обуви, красного баскетбольного мяча, фиолетовых наушников, синего сердца и жёлтой короны
 
 ## Device migration onboarding
 
@@ -334,6 +338,14 @@ onboarding-device-migration-title = С возвращением!
 onboarding-device-migration-subtitle = Войдите в свой { -fxaccount-brand-name(case: "accusative") }, чтобы перенести закладки, пароли и историю на ваше новое устройство.
 onboarding-device-migration-subtitle2 = Войдите в свой аккаунт, чтобы перенести свои закладки, пароли и историю на новое устройство.
 onboarding-device-migration-primary-button-label = Войти
+
+## Add-ons Picker screen
+
+amo-picker-title = Настройте свой { -brand-short-name }
+amo-picker-subtitle = Расширения — это вроде приложений для вашего браузера, они позволяют вам защищать пароли, загружать видео, находить выгодные покупки, блокировать раздражающую рекламу, изменять внешний вид браузера и многое другое.
+amo-picker-install-button-label = Добавить в { -brand-short-name }
+amo-picker-install-complete-label = Установлено
+amo-picker-collection-link = Исследуйте больше дополнений
 
 ## The following screens have been updated to use security and privacy focused strings:
 
@@ -346,6 +358,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = При использ
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } прикрывает вашу спину
 onboarding-gratitude-security-and-privacy-subtitle = Благодарим вас за использование { -brand-short-name }, поддерживаемого Mozilla Foundation. При вашей поддержке мы работаем над тем, чтобы сделать Интернет безопаснее и доступнее для всех.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Синхронизируйте свои данные между устройствами
+onboarding-sign-up-description = Зарегистрируйте аккаунт, и вся ваша важная информация — пароли, закладки и многое другое — будет надежно храниться и будет доступна после входа в систему на любом устройстве.
+onboarding-sign-up-button = Зарегистрироваться или войти
+onboarding-sign-up-secondary-button = Начать веб-сёрфинг
 
 ## New user time and familiarity survey strings
 
@@ -365,3 +382,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Я новичок
 onboarding-new-user-survey-familiarity-based-option-2 = Пользовался несколько раз
 onboarding-new-user-survey-familiarity-based-option-3 = Очень хорошо знаком
 onboarding-new-user-survey-familiarity-based-option-4 = Я пользовался им в прошлом, но прошло много времени
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Расскажите нам, где вы хотите видеть свои вкладки
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Включите это, когда захотите, в настройках боковой панели.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Ваши вкладки, ваш путь
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Держите много вкладок открытыми? Попробуйте разместить вкладки сбоку для более удобного просмотра. Или используйте классический вид с вкладками вверху. Переключайтесь в любое время.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Выберите отображение вкладок
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Для удобного просмотра, который поможет вам сосредоточиться, попробуйте вкладки сбоку. Или используйте классический вид с вкладками наверху. Переключайтесь в любое время.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Вкладки сбоку
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Вкладки вверху
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Вертикальные вкладки уже здесь
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Представляем вертикальные вкладки
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Попробуйте свои вкладки сбоку. Включите это, когда захотите, в настройках боковой панели.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Попробуйте вертикальные вкладки
+onboarding-flair-text = Новинка!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Сохраните горизонтальные вкладки
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Окно браузера, отображающее вкладки сбоку экрана как часть боковой панели { -brand-shorter-name }.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Окно браузера, отображающее вкладки сбоку экрана как часть боковой панели { -brand-shorter-name }.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Окно браузера со вкладками вверху.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Окно браузера со вкладками вверху.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Попробуйте ИИ-чат-бот в боковой панели
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Резюмируйте веб-содержимое, проводите мозговые штурмы, готовьте черновики сообщений — и всё это во время интернет-сёрфинга. Выбирайте из множества провайдеров. Переключайтесь в любое время. <a data-l10n-name="learn-more">Подробнее</a>
+onboarding-genai-sidebar-primary-button = Выберите чат-бот
+onboarding-genai-sidebar-secondary-button = Начать веб-сёрфинг
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Завершить настройку { -brand-short-name }
+onboarding-checklist-subtitle = Выполните эти шаги, чтобы получить максимальную отдачу от вашего веб-сёрфинга.
+onboarding-checklist-set-default = Установите { -brand-short-name } своим браузером по умолчанию
+onboarding-checklist-pin = Закрепите { -brand-short-name } на панели задач
+onboarding-checklist-import = Импорт из предыдущего браузера
+onboarding-checklist-extension = Добавить расширение
+onboarding-checklist-sign-up = Зарегистрируйтесь или войдите в свой аккаунт
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Попробуйте группы вкладок — меньше беспорядка, больше внимания
+tab-groups-onboarding-feature-callout-subtitle = Наведите порядок, перетащив одну вкладку на другую, чтобы создать свою первую группу.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Познакомьтесь с профилями { -brand-product-name }
+multi-profile-spotlight-body = Легко переключайтесь между веб-сёрфингом для работы и развлечений. Профили хранят вашу информацию в Интернете, включая историю поиска и пароли, полностью раздельно, что позволяет вам сохранять организованность
+multi-profile-spotlight-cta = Создать профиль
+multi-profile-callout-title = Создавайте разные профили для работы и развлечений
+multi-profile-callout-subtitle = Профили позволяют вам хранить информацию о вашем веб-сёрфинге, такую как история поиска и пароли, полностью раздельно.
+multi-profile-callout-cta = Создать профиль

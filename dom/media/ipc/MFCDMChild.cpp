@@ -7,7 +7,7 @@
 #include "mozilla/EMEUtils.h"
 #include "mozilla/KeySystemConfig.h"
 #include "mozilla/RefPtr.h"
-#include "mozilla/WindowsVersion.h"
+#include "mozilla/StaticString.h"
 #include "mozilla/WMFCDMProxyCallback.h"
 #include "nsString.h"
 #include "RemoteDecoderManagerChild.h"
@@ -18,28 +18,80 @@ namespace mozilla {
   EME_LOG("MFCDMChild[%p]@%s: " msg, this, __func__, ##__VA_ARGS__)
 #define SLOG(msg, ...) EME_LOG("MFCDMChild@%s: " msg, __func__, ##__VA_ARGS__)
 
+#define HANDLE_PENDING_PROMISE(method, callsite, promise, promiseId)         \
+  do {                                                                       \
+    promise->Then(                                                           \
+        self->mManagerThread, callsite,                                      \
+        [self, promiseId, callsite](                                         \
+            PMFCDMChild::method##Promise::ResolveOrRejectValue&& result) {   \
+          MutexAutoLock lock(self->mMutex);                                  \
+          auto iter = self->mPendingGenericPromises.find(promiseId);         \
+          if (iter == self->mPendingGenericPromises.end()) {                 \
+            return;                                                          \
+          }                                                                  \
+          auto& promiseHolder = iter->second;                                \
+          if (result.IsResolve()) {                                          \
+            if (NS_SUCCEEDED(result.ResolveValue())) {                       \
+              promiseHolder.ResolveIfExists(true, callsite);                 \
+            } else {                                                         \
+              promiseHolder.RejectIfExists(result.ResolveValue(), callsite); \
+            }                                                                \
+          } else {                                                           \
+            /* IPC die */                                                    \
+            promiseHolder.RejectIfExists(NS_ERROR_FAILURE, callsite);        \
+          }                                                                  \
+          self->mPendingGenericPromises.erase(iter);                         \
+        });                                                                  \
+  } while (0)
+
+#define INVOKE_ASYNC(method, promiseId, param1)                      \
+  do {                                                               \
+    StaticString callsite = __func__;                                \
+    using ParamType = std::remove_reference<decltype(param1)>::type; \
+    mManagerThread->Dispatch(NS_NewRunnableFunction(                 \
+        callsite, [self = RefPtr{this}, callsite, promiseId,         \
+                   param_1 = std::forward<ParamType>(param1)] {      \
+          auto p = self->Send##method(param_1);                      \
+          HANDLE_PENDING_PROMISE(method, callsite, p, promiseId);    \
+        }));                                                         \
+  } while (0)
+
+#define INVOKE_ASYNC2(method, promiseId, param1, param2)              \
+  do {                                                                \
+    StaticString callsite = __func__;                                 \
+    using ParamType1 = std::remove_reference<decltype(param1)>::type; \
+    using ParamType2 = std::remove_reference<decltype(param2)>::type; \
+    mManagerThread->Dispatch(NS_NewRunnableFunction(                  \
+        callsite, [self = RefPtr{this}, callsite, promiseId,          \
+                   param_1 = std::forward<ParamType1>(param1),        \
+                   param_2 = std::forward<ParamType2>(param2)] {      \
+          auto p = self->Send##method(param_1, param_2);              \
+          HANDLE_PENDING_PROMISE(method, callsite, p, promiseId);     \
+        }));                                                          \
+  } while (0)
+
 MFCDMChild::MFCDMChild(const nsAString& aKeySystem)
     : mKeySystem(aKeySystem),
       mManagerThread(RemoteDecoderManagerChild::GetManagerThread()),
       mState(NS_ERROR_NOT_INITIALIZED),
-      mShutdown(false) {
-  mRemotePromise = EnsureRemote();
-}
+      mShutdown(false) {}
 
 MFCDMChild::~MFCDMChild() {}
 
-RefPtr<MFCDMChild::RemotePromise> MFCDMChild::EnsureRemote() {
+void MFCDMChild::EnsureRemote() {
+  if (mRemotePromise) {
+    LOG("already created remote promise");
+    return;
+  }
+
   if (!mManagerThread) {
     LOG("no manager thread");
     mState = NS_ERROR_NOT_AVAILABLE;
-    return RemotePromise::CreateAndReject(mState, __func__);
+    mRemotePromise = RemotePromise::CreateAndReject(mState, __func__);
+    return;
   }
 
-  if (!IsWin10OrLater()) {
-    LOG("only support MF CDM on Windows 10+");
-    mState = NS_ERROR_NOT_AVAILABLE;
-    return RemotePromise::CreateAndReject(mState, __func__);
-  }
+  mRemotePromise = mRemotePromiseHolder.Ensure(__func__);
 
   RefPtr<MFCDMChild> self = this;
   RemoteDecoderManagerChild::LaunchUtilityProcessIfNeeded(
@@ -59,7 +111,7 @@ RefPtr<MFCDMChild::RemotePromise> MFCDMChild::EnsureRemote() {
             }
 
             mIPDLSelfRef = this;
-            Unused << manager->SendPMFCDMConstructor(this, mKeySystem);
+            MOZ_ALWAYS_TRUE(manager->SendPMFCDMConstructor(this, mKeySystem));
             mState = NS_OK;
             mRemotePromiseHolder.ResolveIfExists(true, __func__);
           },
@@ -70,7 +122,6 @@ RefPtr<MFCDMChild::RemotePromise> MFCDMChild::EnsureRemote() {
             mRemotePromiseHolder.RejectIfExists(rv, __func__);
           })
       ->Track(mRemoteRequest);
-  return mRemotePromiseHolder.Ensure(__func__);
 }
 
 void MFCDMChild::Shutdown() {
@@ -79,21 +130,24 @@ void MFCDMChild::Shutdown() {
   mShutdown = true;
   mProxyCallback = nullptr;
 
-  mRemoteRequest.DisconnectIfExists();
-  mInitRequest.DisconnectIfExists();
-
   if (mState == NS_OK) {
     mManagerThread->Dispatch(
         NS_NewRunnableFunction(__func__, [self = RefPtr{this}, this]() {
-          for (auto& promise : mPendingSessionPromises) {
-            promise.second.RejectIfExists(NS_ERROR_ABORT, __func__);
-          }
-          mPendingSessionPromises.clear();
+          mRemoteRequest.DisconnectIfExists();
+          mInitRequest.DisconnectIfExists();
 
-          for (auto& promise : mPendingGenericPromises) {
-            promise.second.RejectIfExists(NS_ERROR_ABORT, __func__);
+          {
+            MutexAutoLock lock(mMutex);
+            for (auto& promise : mPendingSessionPromises) {
+              promise.second.RejectIfExists(NS_ERROR_ABORT, __func__);
+            }
+            mPendingSessionPromises.clear();
+
+            for (auto& promise : mPendingGenericPromises) {
+              promise.second.RejectIfExists(NS_ERROR_ABORT, __func__);
+            }
+            mPendingGenericPromises.clear();
           }
-          mPendingGenericPromises.clear();
 
           mRemotePromiseHolder.RejectIfExists(NS_ERROR_ABORT, __func__);
           mCapabilitiesPromiseHolder.RejectIfExists(NS_ERROR_ABORT, __func__);
@@ -103,7 +157,8 @@ void MFCDMChild::Shutdown() {
   }
 }
 
-RefPtr<MFCDMChild::CapabilitiesPromise> MFCDMChild::GetCapabilities() {
+RefPtr<MFCDMChild::CapabilitiesPromise> MFCDMChild::GetCapabilities(
+    MFCDMCapabilitiesRequest&& aRequest) {
   MOZ_ASSERT(mManagerThread);
 
   if (mShutdown) {
@@ -111,12 +166,12 @@ RefPtr<MFCDMChild::CapabilitiesPromise> MFCDMChild::GetCapabilities() {
   }
 
   if (mState != NS_OK && mState != NS_ERROR_NOT_INITIALIZED) {
-    LOG("error=%x", nsresult(mState));
+    LOG("error=%x", uint32_t(nsresult(mState)));
     return CapabilitiesPromise::CreateAndReject(mState, __func__);
   }
 
-  auto doSend = [self = RefPtr{this}, this]() {
-    SendGetCapabilities()->Then(
+  auto doSend = [self = RefPtr{this}, request = std::move(aRequest), this]() {
+    SendGetCapabilities(request)->Then(
         mManagerThread, __func__,
         [self, this](MFCDMCapabilitiesResult&& aResult) {
           if (aResult.type() == MFCDMCapabilitiesResult::Tnsresult) {
@@ -143,7 +198,7 @@ void MFCDMChild::AssertSendable() {
 
 template <typename PromiseType>
 already_AddRefed<PromiseType> MFCDMChild::InvokeAsync(
-    std::function<void()>&& aCall, const char* aCallerName,
+    std::function<void()>&& aCall, StaticString aCallerName,
     MozPromiseHolder<PromiseType>& aPromise) {
   AssertSendable();
 
@@ -156,7 +211,7 @@ already_AddRefed<PromiseType> MFCDMChild::InvokeAsync(
     mRemotePromise->Then(
         mManagerThread, __func__, std::move(aCall),
         [self = RefPtr{this}, this, &aPromise, aCallerName](nsresult rv) {
-          LOG("error=%x", rv);
+          LOG("error=%x", uint32_t(rv));
           mState = rv;
           aPromise.RejectIfExists(rv, aCallerName);
         });
@@ -168,7 +223,9 @@ already_AddRefed<PromiseType> MFCDMChild::InvokeAsync(
 RefPtr<MFCDMChild::InitPromise> MFCDMChild::Init(
     const nsAString& aOrigin, const CopyableTArray<nsString>& aInitDataTypes,
     const KeySystemConfig::Requirement aPersistentState,
-    const KeySystemConfig::Requirement aDistinctiveID, const bool aHWSecure,
+    const KeySystemConfig::Requirement aDistinctiveID,
+    const CopyableTArray<MFCDMMediaCapability>& aAudioCapabilities,
+    const CopyableTArray<MFCDMMediaCapability>& aVideoCapabilities,
     WMFCDMProxyCallback* aProxyCallback) {
   MOZ_ASSERT(mManagerThread);
 
@@ -177,13 +234,14 @@ RefPtr<MFCDMChild::InitPromise> MFCDMChild::Init(
   }
 
   if (mState != NS_OK && mState != NS_ERROR_NOT_INITIALIZED) {
-    LOG("error=%x", nsresult(mState));
+    LOG("error=%x", uint32_t(nsresult(mState)));
     return InitPromise::CreateAndReject(mState, __func__);
   }
 
   mProxyCallback = aProxyCallback;
-  MFCDMInitParamsIPDL params{nsString(aOrigin), aInitDataTypes, aDistinctiveID,
-                             aPersistentState, aHWSecure};
+  MFCDMInitParamsIPDL params{nsString(aOrigin),  aInitDataTypes,
+                             aDistinctiveID,     aPersistentState,
+                             aAudioCapabilities, aVideoCapabilities};
   auto doSend = [self = RefPtr{this}, this, params]() {
     SendInit(params)
         ->Then(
@@ -220,6 +278,7 @@ RefPtr<MFCDMChild::SessionPromise> MFCDMChild::CreateSessionAndGenerateRequest(
                                                        __func__);
   }
 
+  MutexAutoLock lock(mMutex);
   MOZ_ASSERT(mPendingSessionPromises.find(aPromiseId) ==
              mPendingSessionPromises.end());
   mPendingSessionPromises.emplace(aPromiseId,
@@ -233,6 +292,7 @@ RefPtr<MFCDMChild::SessionPromise> MFCDMChild::CreateSessionAndGenerateRequest(
         SendCreateSessionAndGenerateRequest(params)->Then(
             mManagerThread, __func__,
             [self, aPromiseId, this](const MFCDMSessionResult& result) {
+              MutexAutoLock lock(mMutex);
               auto iter = mPendingSessionPromises.find(aPromiseId);
               if (iter == mPendingSessionPromises.end()) {
                 return;
@@ -249,6 +309,7 @@ RefPtr<MFCDMChild::SessionPromise> MFCDMChild::CreateSessionAndGenerateRequest(
             },
             [self, aPromiseId,
              this](const mozilla::ipc::ResponseRejectReason& aReason) {
+              MutexAutoLock lock(mMutex);
               auto iter = mPendingSessionPromises.find(aPromiseId);
               if (iter == mPendingSessionPromises.end()) {
                 return;
@@ -271,37 +332,12 @@ RefPtr<GenericPromise> MFCDMChild::LoadSession(
     return GenericPromise::CreateAndReject(NS_ERROR_ABORT, __func__);
   }
 
+  MutexAutoLock lock(mMutex);
   MOZ_ASSERT(mPendingGenericPromises.find(aPromiseId) ==
              mPendingGenericPromises.end());
   mPendingGenericPromises.emplace(aPromiseId,
                                   MozPromiseHolder<GenericPromise>{});
-  mManagerThread->Dispatch(NS_NewRunnableFunction(
-      __func__, [self = RefPtr{this}, this, aSessionType,
-                 sessionId = nsString{aSessionId}, aPromiseId] {
-        SendLoadSession(aSessionType, sessionId)
-            ->Then(mManagerThread, __func__,
-                   [self, this, aPromiseId](
-                       PMFCDMChild::LoadSessionPromise::ResolveOrRejectValue&&
-                           aResult) {
-                     auto iter = mPendingGenericPromises.find(aPromiseId);
-                     if (iter == mPendingGenericPromises.end()) {
-                       return;
-                     }
-                     auto& promiseHolder = iter->second;
-                     if (aResult.IsResolve()) {
-                       if (NS_SUCCEEDED(aResult.ResolveValue())) {
-                         promiseHolder.ResolveIfExists(true, __func__);
-                       } else {
-                         promiseHolder.RejectIfExists(aResult.ResolveValue(),
-                                                      __func__);
-                       }
-                     } else {
-                       // IPC died
-                       promiseHolder.RejectIfExists(NS_ERROR_FAILURE, __func__);
-                     }
-                     mPendingGenericPromises.erase(iter);
-                   });
-      }));
+  INVOKE_ASYNC2(LoadSession, aPromiseId, aSessionType, nsString{aSessionId});
   return mPendingGenericPromises[aPromiseId].Ensure(__func__);
 }
 
@@ -315,37 +351,13 @@ RefPtr<GenericPromise> MFCDMChild::UpdateSession(uint32_t aPromiseId,
     return GenericPromise::CreateAndReject(NS_ERROR_ABORT, __func__);
   }
 
+  MutexAutoLock lock(mMutex);
   MOZ_ASSERT(mPendingGenericPromises.find(aPromiseId) ==
              mPendingGenericPromises.end());
   mPendingGenericPromises.emplace(aPromiseId,
                                   MozPromiseHolder<GenericPromise>{});
-  mManagerThread->Dispatch(NS_NewRunnableFunction(
-      __func__, [self = RefPtr{this}, this, sessionId = nsString{aSessionId},
-                 response = std::move(aResponse), aPromiseId] {
-        SendUpdateSession(sessionId, response)
-            ->Then(mManagerThread, __func__,
-                   [self, this, aPromiseId](
-                       PMFCDMChild::UpdateSessionPromise::ResolveOrRejectValue&&
-                           aResult) {
-                     auto iter = mPendingGenericPromises.find(aPromiseId);
-                     if (iter == mPendingGenericPromises.end()) {
-                       return;
-                     }
-                     auto& promiseHolder = iter->second;
-                     if (aResult.IsResolve()) {
-                       if (NS_SUCCEEDED(aResult.ResolveValue())) {
-                         promiseHolder.ResolveIfExists(true, __func__);
-                       } else {
-                         promiseHolder.RejectIfExists(aResult.ResolveValue(),
-                                                      __func__);
-                       }
-                     } else {
-                       // IPC died
-                       promiseHolder.RejectIfExists(NS_ERROR_FAILURE, __func__);
-                     }
-                     mPendingGenericPromises.erase(iter);
-                   });
-      }));
+  INVOKE_ASYNC2(UpdateSession, aPromiseId, nsString{aSessionId},
+                std::move(aResponse));
   return mPendingGenericPromises[aPromiseId].Ensure(__func__);
 }
 
@@ -358,37 +370,12 @@ RefPtr<GenericPromise> MFCDMChild::CloseSession(uint32_t aPromiseId,
     return GenericPromise::CreateAndReject(NS_ERROR_ABORT, __func__);
   }
 
+  MutexAutoLock lock(mMutex);
   MOZ_ASSERT(mPendingGenericPromises.find(aPromiseId) ==
              mPendingGenericPromises.end());
   mPendingGenericPromises.emplace(aPromiseId,
                                   MozPromiseHolder<GenericPromise>{});
-  mManagerThread->Dispatch(NS_NewRunnableFunction(
-      __func__, [self = RefPtr{this}, this, sessionId = nsString{aSessionId},
-                 aPromiseId] {
-        SendCloseSession(sessionId)->Then(
-            mManagerThread, __func__,
-            [self, this, aPromiseId](
-                PMFCDMChild::CloseSessionPromise::ResolveOrRejectValue&&
-                    aResult) {
-              auto iter = mPendingGenericPromises.find(aPromiseId);
-              if (iter == mPendingGenericPromises.end()) {
-                return;
-              }
-              auto& promiseHolder = iter->second;
-              if (aResult.IsResolve()) {
-                if (NS_SUCCEEDED(aResult.ResolveValue())) {
-                  promiseHolder.ResolveIfExists(true, __func__);
-                } else {
-                  promiseHolder.RejectIfExists(aResult.ResolveValue(),
-                                               __func__);
-                }
-              } else {
-                // IPC died
-                promiseHolder.RejectIfExists(NS_ERROR_FAILURE, __func__);
-              }
-              mPendingGenericPromises.erase(iter);
-            });
-      }));
+  INVOKE_ASYNC(CloseSession, aPromiseId, nsString{aSessionId});
   return mPendingGenericPromises[aPromiseId].Ensure(__func__);
 }
 
@@ -401,37 +388,48 @@ RefPtr<GenericPromise> MFCDMChild::RemoveSession(uint32_t aPromiseId,
     return GenericPromise::CreateAndReject(NS_ERROR_ABORT, __func__);
   }
 
+  MutexAutoLock lock(mMutex);
   MOZ_ASSERT(mPendingGenericPromises.find(aPromiseId) ==
              mPendingGenericPromises.end());
   mPendingGenericPromises.emplace(aPromiseId,
                                   MozPromiseHolder<GenericPromise>{});
-  mManagerThread->Dispatch(NS_NewRunnableFunction(
-      __func__, [self = RefPtr{this}, this, sessionId = nsString{aSessionId},
-                 aPromiseId] {
-        SendRemoveSession(sessionId)->Then(
-            mManagerThread, __func__,
-            [self, this, aPromiseId](
-                PMFCDMChild::RemoveSessionPromise::ResolveOrRejectValue&&
-                    aResult) {
-              auto iter = mPendingGenericPromises.find(aPromiseId);
-              if (iter == mPendingGenericPromises.end()) {
-                return;
-              }
-              auto& promiseHolder = iter->second;
-              if (aResult.IsResolve()) {
-                if (NS_SUCCEEDED(aResult.ResolveValue())) {
-                  promiseHolder.ResolveIfExists(true, __func__);
-                } else {
-                  promiseHolder.RejectIfExists(aResult.ResolveValue(),
-                                               __func__);
-                }
-              } else {
-                // IPC died
-                promiseHolder.RejectIfExists(NS_ERROR_FAILURE, __func__);
-              }
-              mPendingGenericPromises.erase(iter);
-            });
-      }));
+  INVOKE_ASYNC(RemoveSession, aPromiseId, nsString{aSessionId});
+  return mPendingGenericPromises[aPromiseId].Ensure(__func__);
+}
+
+RefPtr<GenericPromise> MFCDMChild::SetServerCertificate(
+    uint32_t aPromiseId, nsTArray<uint8_t>& aCert) {
+  MOZ_ASSERT(mManagerThread);
+  MOZ_ASSERT(mId > 0, "Should call Init() first and wait for it");
+
+  if (mShutdown) {
+    return GenericPromise::CreateAndReject(NS_ERROR_ABORT, __func__);
+  }
+
+  MutexAutoLock lock(mMutex);
+  MOZ_ASSERT(mPendingGenericPromises.find(aPromiseId) ==
+             mPendingGenericPromises.end());
+  mPendingGenericPromises.emplace(aPromiseId,
+                                  MozPromiseHolder<GenericPromise>{});
+  INVOKE_ASYNC(SetServerCertificate, aPromiseId, std::move(aCert));
+  return mPendingGenericPromises[aPromiseId].Ensure(__func__);
+}
+
+RefPtr<GenericPromise> MFCDMChild::GetStatusForPolicy(
+    uint32_t aPromiseId, const dom::HDCPVersion& aMinHdcpVersion) {
+  MOZ_ASSERT(mManagerThread);
+  MOZ_ASSERT(mId > 0, "Should call Init() first and wait for it");
+
+  if (mShutdown) {
+    return GenericPromise::CreateAndReject(NS_ERROR_ABORT, __func__);
+  }
+
+  MutexAutoLock lock(mMutex);
+  MOZ_ASSERT(mPendingGenericPromises.find(aPromiseId) ==
+             mPendingGenericPromises.end());
+  mPendingGenericPromises.emplace(aPromiseId,
+                                  MozPromiseHolder<GenericPromise>{});
+  INVOKE_ASYNC(GetStatusForPolicy, aPromiseId, aMinHdcpVersion);
   return mPendingGenericPromises[aPromiseId].Ensure(__func__);
 }
 

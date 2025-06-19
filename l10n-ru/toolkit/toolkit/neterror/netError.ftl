@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = Заблокированная стра�
 neterror-captive-portal-page-title = Вход в сеть
 neterror-dns-not-found-title = Сервер не найден
 neterror-malformed-uri-page-title = Некорректный URL
+general-body-title = Будьте осторожны. Что-то выглядит неправильно.
 
 ## Error page actions
 
@@ -41,6 +42,8 @@ neterror-generic-error = { -brand-short-name } не может загрузит�
 neterror-load-error-try-again = Возможно, сайт временно недоступен или перегружен запросами. Подождите некоторое время и попробуйте снова.
 neterror-load-error-connection = Если вы не можете загрузить ни одну страницу – проверьте настройки соединения с Интернетом.
 neterror-load-error-firewall = Если ваш компьютер или сеть защищены межсетевым экраном или прокси-сервером – убедитесь, что { -brand-short-name } разрешён выход в Интернет.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Если вы пытаетесь загрузить страницу из локальной сети, проверьте, что { -brand-short-name } были предоставлены разрешения Локальной сети в настройках «Приватность и защита» macOS.
 neterror-captive-portal = Вы должны войти в эту сеть перед тем как сможете получить доступ в Интернет.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +67,7 @@ neterror-dns-not-found-trr-offline = Вы не подключены к Инте�
 neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } не смог найти этот сайт.
 neterror-dns-not-found-trr-server-problem = С { $trrDomain } возникла проблема.
 neterror-dns-not-found-bad-trr-url = Некорректный URL.
+neterror-dns-not-found-system-sleep = Система в спящем режиме.
 neterror-dns-not-found-trr-unknown-problem = Неожиданная проблема.
 
 ## Native fallback specific messages
@@ -147,3 +151,11 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Если вы не знак
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> имеет политику безопасности называемую Форсированное защищённое соединение HTTP (HSTS), что означает, что { -brand-short-name } может подключиться к нему только через защищённое соединение. Вы не можете добавить исключение, чтобы посетить этот сайт.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Вероятно, ничего, так как, вероятно, возникла проблема с самим сайтом.
+certerror-blocked-by-corp-headers-description = Иногда веб-сайты устанавливают защиту для себя и для людей, таких как вы, от нежелательного взаимодействия с другими сайтами.
+certerror-coop-learn-more = Подробнее о Политиках открытия сайтов из разных источников (COOP)
+certerror-coep-learn-more = Подробнее о Политиках встраивания из разных источников (COER)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Код ошибки: { $responsestatus } { $responsestatustext }

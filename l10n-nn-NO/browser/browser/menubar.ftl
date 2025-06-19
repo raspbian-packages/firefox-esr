@@ -61,7 +61,7 @@ menu-file-new-tab =
     .accesskey = f
 menu-file-new-container-tab =
     .label = Ny behaldarfane
-    .accesskey = i
+    .accesskey = b
 menu-file-new-window =
     .label = Nytt vindauge
     .accesskey = N
@@ -254,6 +254,15 @@ menu-bookmarks-other =
 menu-bookmarks-mobile =
     .label = Mobile bokmerke
 
+## Profiles Menu
+
+menu-profiles =
+    .label = Profilar
+menu-profiles-manage-profiles =
+    .label = Handsam profilar
+menu-profiles-new-profile =
+    .label = Ny profil
+
 ## Tools Menu
 
 menu-tools =
@@ -339,7 +348,7 @@ menu-help-exit-troubleshoot-mode =
     .label = Slå av feilsøkingsmodus
     .accesskey = S
 menu-help-switch-device =
-    .label = Byter til ei ny eining
+    .label = Byte til ei ny eining
     .accesskey = B
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.

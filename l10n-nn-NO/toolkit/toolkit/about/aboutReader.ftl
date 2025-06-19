@@ -12,20 +12,6 @@ about-reader-color-scheme-sepia = Sepia
     .title = Fargeskjema, sepia
 about-reader-color-scheme-auto = Auto
     .title = Automatisk fargeskjema
-about-reader-color-theme-light = Lyst
-    .title = Fargetema lyst
-about-reader-color-theme-dark = Mørkt
-    .title = Fargetema mørkt
-about-reader-color-theme-sepia = Sepia
-    .title = Fargetema sepia
-about-reader-color-theme-auto = Automatisk
-    .title = Fargetema automatisk
-about-reader-color-theme-gray = Grå
-    .title = Fargetema grått
-about-reader-color-theme-contrast = Kontrast
-    .title = Fargetema kontrast
-about-reader-color-theme-custom = Eigendefinerte fargar
-    .title = Fargetema eigendefinerte fargar
 about-reader-color-light-theme = Lyst
     .title = Lyst tema
 about-reader-color-dark-theme = Mørkt
@@ -49,7 +35,7 @@ about-reader-estimated-read-time =
        *[other] { $range } minutt
     }
 
-## These are used as tooltips in Type Control
+## Reader View text and layout menu
 
 about-reader-toolbar-minus =
     .title = MInske skriftstorleik
@@ -74,7 +60,6 @@ about-reader-font-type-monospace = Fast breidde
 
 about-reader-toolbar-close = Lat att lesevising
 about-reader-toolbar-type-controls = Skriftinnstillingar
-about-reader-toolbar-color-controls = Fargar
 about-reader-toolbar-text-layout-controls = Tekst og utforming
 about-reader-toolbar-theme-controls = Tema
 about-reader-toolbar-savetopocket = Lagre til { -pocket-brand-name }
@@ -99,10 +84,9 @@ about-reader-custom-colors-visited-links = Besøkte lenker
     .title = Endre farge
 about-reader-custom-colors-selection-highlight = Markering for høgtlesing
     .title = Endre farge
-about-reader-custom-colors-reset-button = Tilbakestill standardverdiar
-about-reader-reset-button = Tilbakestill standardverdiar
+about-reader-reset-button = Still tilbake til standardverdiar
 
-## Reader View improved text and layout menu
+## Reader View text and layout menu
 
 about-reader-text-header = Tekst
 about-reader-text-size-label = Tekststorleik
@@ -119,9 +103,6 @@ about-reader-content-width-label =
 about-reader-line-spacing-label =
     .label = Linjeavstand
 about-reader-advanced-layout-header = Avansert
-about-reader-slider-label-width-narrow = Smal
-about-reader-slider-label-width-wide = Brei
-about-reader-slider-label-spacing-narrow = Smal
 about-reader-character-spacing-label =
     .label = Teiknavstand
 about-reader-word-spacing-label =

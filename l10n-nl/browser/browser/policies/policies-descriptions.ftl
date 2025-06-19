@@ -41,7 +41,7 @@ policy-DisableDefaultBrowserAgent = Voorkomen dat de standaard browseragent enig
 policy-DisableDeveloperTools = Toegang tot de ontwikkelaarshulpmiddelen blokkeren.
 policy-DisableEncryptedClientHello = Gebruik van de TLS-functie Encrypted Client Hello (ECH) uitschakelen.
 policy-DisableFeedbackCommands = Opdrachten voor het verzenden van feedback vanuit het menu Help uitschakelen (Feedback verzenden en Misleidende website rapporteren).
-policy-DisableFirefoxAccounts = Op { -fxaccount-brand-name } gebaseerde services uitschakelen, waaronder Sync.
+policy-DisableFirefoxAccounts = Op { -fxaccount-brand-name } gebaseerde services uitschakelen, waaronder Synchronisatie.
 # This string is in the process of being deprecated in favor of policy-DisableAccounts.
 policy-DisableFirefoxAccounts1 = Accountgebaseerde services uitschakelen, waaronder synchronisatie.
 # Firefox Screenshots is the name of the feature, and should not be translated.
@@ -119,6 +119,7 @@ policy-Permissions2 = Toestemmingen voor camera, microfoon, locatie, notificatie
 policy-PictureInPicture = Picture-in-picture in- of uitschakelen.
 policy-PopupBlocking = Toestaan dat bepaalde websites standaard pop-ups weergeven.
 policy-Preferences = De waarde voor een subset van voorkeuren instellen en vergrendelen.
+policy-PrivateBrowsingModeAvailability = Beschikbaarheid van privénavigatiemodus instellen.
 policy-PromptForDownloadLocation = Vragen waar gedownloade bestanden moeten worden opgeslagen.
 policy-Proxy = Proxyinstellingen configureren.
 policy-RequestedLocales = De lijst van gevraagde locales voor de toepassing instellen, op volgorde van voorkeur.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Afdrukken via het afdrukdialoogvenster van het sys
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Het bezoeken van websites blokkeren. Zie de documentatie voor meer informatie over de notatie.
 policy-Windows10SSO = Windows-single-sign-on toestaan voor Microsoft- werk- en schoolaccounts.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Single sign-on voor Microsoft Entra-accounts toestaan.

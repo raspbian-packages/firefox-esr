@@ -119,6 +119,7 @@ policy-Permissions2 = カメラ、マイク、位置情報、通知、自動再�
 policy-PictureInPicture = ピクチャーインピクチャーを有効または無効にします。
 policy-PopupBlocking = 特定のウェブサイトのポップアップ表示を既定で許可します。
 policy-Preferences = 設定のサブセットに対する値を設定してロックします。
+policy-PrivateBrowsingModeAvailability = プライベートブラウジングモードの利用許可を設定します。
 policy-PromptForDownloadLocation = ダウンロード時にファイルの保存先を確認します。
 policy-Proxy = プロキシーの設定を指示します。
 policy-RequestedLocales = アプリケーションに要求される言語リストと優先順位を設定します。
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = システムの印刷ダイアログで印刷し�
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = ウェブサイトを訪問済みにしません。書式の詳細はドキュメントをご覧ください。
 policy-Windows10SSO = Microsoft アカウント、職場または学校アカウントで Windows のシングルサインオンを許可します。
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Microsoft Entra アカウントでシングルサインオンを許可します。

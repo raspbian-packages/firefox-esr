@@ -89,6 +89,9 @@ shopping-show-less-button = 顯示更少
 
 shopping-settings-label =
     .label = 設定
+shopping-settings-recommendations-toggle2 =
+    .label = 顯示推薦與贊助內容
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } 不會將您的個人資料與他人分享，這些建議設定不會在網路上偷偷跟蹤您。<a data-l10n-name="review-quality-url">更多資訊</a>
 shopping-settings-recommendations-toggle =
     .label = 在商品評論檢查器中顯示廣告
 shopping-settings-recommendations-learn-more2 = 您會偶而看到相關商品的廣告，我們僅會推薦評論品質可靠的商品。<a data-l10n-name="review-quality-url">了解更多資訊</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = 檢查評論品質
 
 more-to-consider-ad-label =
     .label = 可參考其他產品
+shopping-sponsored-label = 贊助項目
 ad-by-fakespot = { -fakespot-brand-name } 提供的商品廣告
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = 送出
 shopping-survey-terms-link = 使用條款
 shopping-survey-thanks =
     .heading = 感謝您的意見回饋！
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = 請告訴我們為什麼您關閉了商品評論檢查器，選項可多選。
+shopping-survey-thanks-title = 感謝您的意見回饋！
+shopping-survey-opted-out-hard-to-understand = 很難懂
+shopping-survey-opted-out-too-slow = 運作太慢了
+shopping-survey-opted-out-not-accurate = 資訊不精準
+shopping-survey-opted-out-not-helpful = 對我沒有幫助
+shopping-survey-opted-out-check-myself = 我想要自己檢查商品評論
+shopping-survey-opted-out-other = 其他
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

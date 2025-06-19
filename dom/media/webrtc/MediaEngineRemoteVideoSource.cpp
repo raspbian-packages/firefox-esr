@@ -108,8 +108,7 @@ MediaEngineRemoteVideoSource::MediaEngineRemoteVideoSource(
     Maybe<VideoFacingModeEnum> facingMode =
         GetFacingMode(mMediaDevice->mRawName);
     if (facingMode.isSome()) {
-      NS_ConvertASCIItoUTF16 facingString(
-          dom::VideoFacingModeEnumValues::GetString(*facingMode));
+      NS_ConvertASCIItoUTF16 facingString(dom::GetEnumString(*facingMode));
       mSettings->mFacingMode.Construct(facingString);
       mFacingMode.emplace(facingString);
     }
@@ -203,7 +202,7 @@ void MediaEngineRemoteVideoSource::SetTrack(const RefPtr<MediaTrack>& aTrack,
 
   if (!mImageContainer) {
     mImageContainer = MakeAndAddRef<layers::ImageContainer>(
-        layers::ImageContainer::ASYNCHRONOUS);
+        layers::ImageUsageType::Webrtc, layers::ImageContainer::ASYNCHRONOUS);
   }
 
   {
@@ -217,7 +216,7 @@ nsresult MediaEngineRemoteVideoSource::Start() {
   LOG("%s", __PRETTY_FUNCTION__);
   AssertIsOnOwningThread();
 
-  MOZ_ASSERT(mState == kAllocated || mState == kStopped);
+  MOZ_ASSERT(mState == kAllocated || mState == kStarted || mState == kStopped);
   MOZ_ASSERT(mTrack);
 
   {
@@ -318,26 +317,13 @@ nsresult MediaEngineRemoteVideoSource::Reconfigure(
     return NS_OK;
   }
 
-  bool started = mState == kStarted;
-  if (started) {
-    nsresult rv = Stop();
-    if (NS_WARN_IF(NS_FAILED(rv))) {
-      nsAutoCString name;
-      GetErrorName(rv, name);
-      LOG("Video source %p for video device %d Reconfigure() failed "
-          "unexpectedly in Stop(). rv=%s",
-          this, mCaptureId, name.Data());
-      return NS_ERROR_UNEXPECTED;
-    }
-  }
-
   {
     MutexAutoLock lock(mMutex);
     // Start() applies mCapability on the device.
     mCapability = newCapability;
   }
 
-  if (started) {
+  if (mState == kStarted) {
     nsresult rv = Start();
     if (NS_WARN_IF(NS_FAILED(rv))) {
       nsAutoCString name;
@@ -391,6 +377,11 @@ const TrackingId& MediaEngineRemoteVideoSource::GetTrackingId() const {
   AssertIsOnOwningThread();
   MOZ_ASSERT(mState != kReleased);
   return mTrackingId;
+}
+
+void MediaEngineRemoteVideoSource::OnCaptureEnded() {
+  mFirstFramePromiseHolder.RejectIfExists(NS_ERROR_UNEXPECTED, __func__);
+  mCaptureEndedEvent.Notify();
 }
 
 int MediaEngineRemoteVideoSource::DeliverFrame(
@@ -527,7 +518,7 @@ int MediaEngineRemoteVideoSource::DeliverFrame(
     PerformanceRecorder<CopyVideoStage> rec(
         "MERVS::Copy"_ns, *mFrameDeliveringTrackingId, dst_width, dst_height);
     image = mImageContainer->CreatePlanarYCbCrImage();
-    if (!image->CopyData(data)) {
+    if (NS_FAILED(image->CopyData(data))) {
       MOZ_ASSERT_UNREACHABLE(
           "We might fail to allocate a buffer, but with this "
           "being a recycling container that shouldn't happen");

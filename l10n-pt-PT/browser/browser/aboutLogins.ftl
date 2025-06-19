@@ -141,6 +141,8 @@ login-item-copied-username-button-text = Copiado!
 login-item-password-label = Palavra-passe
 login-item-password-reveal-checkbox =
     .aria-label = Mostrar palavra-passe
+login-item-password-conceal-checkbox =
+    .aria-label = Ocultar palavra-passe
 login-item-copy-password-button-text = Copiar
 login-item-copied-password-button-text = Copiada!
 login-item-save-changes-button = Guardar alterações
@@ -207,7 +209,7 @@ about-logins-export-password-os-auth-dialog-message2-macosx = exportar palavras-
 
 ## Primary Password notification
 
-about-logins-primary-password-notification-message = Por favor introduza a sua palavra-passe principal para ver credenciais e palavras-passe guardadas
+about-logins-primary-password-notification-message = Introduza a sua palavra-passe principal para ver credenciais e palavras-passe guardadas
 master-password-reload-button =
     .label = Iniciar sessão
     .accesskey = I

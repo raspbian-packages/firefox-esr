@@ -88,17 +88,17 @@ detail-show-preferences =
     .label =
         { PLATFORM() ->
             [windows] ตัวเลือก
-           *[other] การกำหนดลักษณะ
+           *[other] ค่าปรับแต่ง
         }
     .accesskey =
         { PLATFORM() ->
             [windows] ต
-           *[other] ก
+           *[other] ค
         }
     .tooltiptext =
         { PLATFORM() ->
             [windows] เปลี่ยนตัวเลือกของส่วนเสริมนี้
-           *[other] เปลี่ยนการกำหนดลักษณะของส่วนเสริมนี้
+           *[other] เปลี่ยนค่าปรับแต่งของส่วนเสริมนี้
         }
 detail-rating =
     .value = การจัดอันดับ
@@ -296,6 +296,9 @@ find-more-themes = ค้นหาชุดตกแต่งเพิ่มเ�
 # used for screen readers.
 addon-options-button =
     .aria-label = ตัวเลือกเพิ่มเติม
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro2 = ส่วนขยายและชุดตกแต่งให้คุณปรับแต่ง { -brand-product-name } และสามารถเพิ่มประสิทธิภาพด้านความเป็นส่วนตัว การทำงาน สื่อ รวมทั้งเปลี่ยนรูปแบบหน้าตาของ { -brand-product-name } และอีกมากมาย โปรแกรมซอฟต์แวร์ขนาดเล็กเหล่านี้มักจะพัฒนาโดยบุคคลที่สาม และต่อไปนี้คือชุดส่วนขยายที่คัดสรรมาซึ่ง { -brand-product-name } <a data-l10n-name="learn-more-trigger">แนะนำ</a>เพื่อความปลอดภัย ประสิทธิภาพ และฟังก์ชันการทำงานที่เหนือชั้นยิ่งขึ้น
 
 ## Add-on actions
 
@@ -312,7 +315,7 @@ extension-enable-addon-button-label =
 preferences-addon-button =
     { PLATFORM() ->
         [windows] ตัวเลือก
-       *[other] การกำหนดลักษณะ
+       *[other] ค่าปรับแต่ง
     }
 details-addon-button = รายละเอียด
 release-notes-addon-button = บันทึกประจำรุ่น
@@ -427,6 +430,7 @@ available-updates-heading = การอัปเดตที่มี
 recent-updates-heading = การอัปเดตล่าสุด
 release-notes-loading = กำลังโหลด…
 release-notes-error = ขออภัย แต่เกิดข้อผิดพลาดในการโหลดบันทึกประจำรุ่น
+addon-permissions-empty2 = ส่วนขยายนี้ไม่จำเป็นต้องขอสิทธิ์ใด
 addon-permissions-empty = ส่วนขยายนี้ไม่จำเป็นต้องขอสิทธิ์ใด
 addon-permissions-required = สิทธิ์ที่ต้องการสำหรับฟังก์ชันการทำงานหลัก:
 addon-permissions-optional = สิทธิ์เผื่อเลือกสำหรับฟังก์ชันการทำงานเพิ่มเติม:
@@ -476,10 +480,24 @@ details-notification-unsigned-and-disabled-link = ข้อมูลเพิ่
 details-notification-unsigned = { $name } ไม่สามารถยืนยันสำหรับใช้ใน { -brand-short-name } ดำเนินการต่อด้วยความระมัดระวัง
 details-notification-unsigned2 =
     .message = { $name } ไม่สามารถยืนยันสำหรับใช้ใน { -brand-short-name } ดำเนินการต่อด้วยความระมัดระวัง
+details-notification-hard-blocked-extension =
+    .message = ส่วนขยายนี้ถูกปิดกั้นเนื่องจากละเมิดนโยบายของ Mozilla และถูกปิดใช้งานแล้ว
+details-notification-hard-blocked-other =
+    .message = ส่วนเสริมนี้ถูกปิดกั้นเนื่องจากละเมิดนโยบายของ Mozilla และถูกปิดใช้งานแล้ว
 details-notification-unsigned-link = ข้อมูลเพิ่มเติม
 details-notification-blocked = { $name } ถูกปิดใช้งานเนื่องจากปัญหาด้านความปลอดภัยหรือเสถียรภาพ
 details-notification-blocked2 =
     .message = { $name } ถูกปิดใช้งานเนื่องจากปัญหาด้านความปลอดภัยหรือเสถียรภาพ
+details-notification-blocked-link2 = ดูรายละเอียด
+details-notification-soft-blocked-extension-disabled =
+    .message = ส่วนขยายนี้ถูกจำกัดเนื่องจากละเมิดนโยบายของ Mozilla และถูกปิดใช้งานแล้ว คุณสามารถเปิดใช้งานได้ แต่อาจมีความเสี่ยง
+details-notification-soft-blocked-extension-enabled =
+    .message = ส่วนขยายนี้ละเมิดนโยบายของ Mozilla การใช้ส่วนขยายนี้อาจมีความเสี่ยง
+details-notification-soft-blocked-other-disabled =
+    .message = ส่วนเสริมนี้ถูกจำกัดเนื่องจากละเมิดนโยบายของ Mozilla และถูกปิดใช้งานแล้ว คุณสามารถเปิดใช้งานได้ แต่อาจมีความเสี่ยง
+details-notification-soft-blocked-other-enabled =
+    .message = ส่วนเสริมนี้ละเมิดนโยบายของ Mozilla การใช้ส่วนเสริมนี้อาจมีความเสี่ยง
+details-notification-softblocked-link2 = ดูรายละเอียด
 details-notification-blocked-link = ข้อมูลเพิ่มเติม
 details-notification-softblocked = { $name } เป็นที่ทราบว่าก่อให้เกิดปัญหาด้านความปลอดภัยหรือเสถียรภาพ
 details-notification-softblocked2 =

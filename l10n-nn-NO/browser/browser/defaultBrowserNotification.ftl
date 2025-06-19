@@ -14,7 +14,9 @@ default-browser-notification-button =
 
 default-browser-prompt-title-pin = Velje { -brand-short-name } som primærnettlesar?
 default-browser-prompt-message-pin = Ha alltid { -brand-short-name } tilgjengeleg — vel han som standard nettlesar og fest han til oppgåvelinja.
+default-browser-prompt-message-pin-msix = Ha alltid { -brand-short-name } tilgjengeleg — vel han som standard nettlesar og fest han til oppgåvelinja og startmenyen.
 default-browser-prompt-message-pin-mac = Ha alltid { -brand-short-name } tilgjengeleg — bruk han som standard nettlesar og behald han i Dock.
+default-browser-prompt-button-primary-set = Vel som primærnettlesar
 default-browser-prompt-button-primary-pin = Vel som primærnettlesar
 default-browser-prompt-title-alt = Bruke { -brand-short-name } som standardnettlesar?
 default-browser-prompt-message-alt = Få fart, sikkerheit og personvern kvar gong du surfar.

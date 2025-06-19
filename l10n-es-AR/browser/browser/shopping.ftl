@@ -89,6 +89,9 @@ shopping-show-less-button = Mostrar menos
 
 shopping-settings-label =
     .label = Configuración
+shopping-settings-recommendations-toggle2 =
+    .label = Mostrar recomendaciones y contenido patrocinado
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } no comparte datos personales, por lo que estas recomendaciones no lo seguirán en Internet. <a data-l10n-name="review-quality-url">Conocer más</a>
 shopping-settings-recommendations-toggle =
     .label = Mostrar publicidad en el verificador de revisiones
 shopping-settings-recommendations-learn-more2 = Verá publicidades ocasionales de productos relevantes. Sólo publicitamos productos con revisiones confiables. <a data-l10n-name="review-quality-url">Conocer más</a>
@@ -143,9 +146,9 @@ shopping-analysis-explainer-review-grading-scale-unreliable = Revisiones poco fi
 ## Strings for UrlBar button
 
 shopping-sidebar-open-button2 =
-    .tooltiptext = Abrir el verificador de reseñas
+    .tooltiptext = Abrir el verificador de revisiones
 shopping-sidebar-close-button2 =
-    .tooltiptext = Cerrar el verificador de reseñas
+    .tooltiptext = Cerrar el verificador de revisiones
 
 ## Strings for the unanalyzed product card.
 ## The word 'analyzer' when used here reflects what this tool is called on
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Verificar la calidad de la revisió
 
 more-to-consider-ad-label =
     .label = Más para considerar
+shopping-sponsored-label = Patrocinado
 ad-by-fakespot = Publicidad de { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Enviar
 shopping-survey-terms-link = Términos de uso
 shopping-survey-thanks =
     .heading = ¡Gracias por sus comentarios!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Díganos por qué desactivó el verificador de revisiones. Puede seleccionar múltiples si es necesario.
+shopping-survey-thanks-title = ¡Gracias por sus comentarios!
+shopping-survey-opted-out-hard-to-understand = Es difícil de entender
+shopping-survey-opted-out-too-slow = Es demasiado lento
+shopping-survey-opted-out-not-accurate = No es exacto
+shopping-survey-opted-out-not-helpful = No me resulta útil
+shopping-survey-opted-out-check-myself = Prefiero comprobar las revisiones por mí mismo
+shopping-survey-opted-out-other = Otra
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

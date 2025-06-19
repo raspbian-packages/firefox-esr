@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = 向网站发出“请勿跟踪”信号，示明您不想被跟踪
+do-not-track-removal = 我们已停止支持“请勿跟踪”信号
 do-not-track-description2 =
     .label = 向网站发出“请勿跟踪”请求
     .accesskey = d
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = 启动电脑时自动打开 { -brand-short-name }
     .accesskey = O
 windows-launch-on-login-disabled = 此首选项在 Windows 中被禁用。请在系统设置中打开<a data-l10n-name="startup-link">启动应用</a>以更改。
+windows-launch-on-login-profile-disabled = 在“选择用户配置文件”窗口中勾选“{ profile-manager-use-selected.label }”以启用此首选项。
 startup-restore-warn-on-quit =
     .label = 退出浏览器时向您确认
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = 在标签页中打开链接而非新窗口
     .accesskey = w
+ask-on-close-multiple-tabs =
+    .label = 关闭多个标签页前先询问
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = 按 { $quitKey } 退出前先询问
+    .accesskey = b
 confirm-on-close-multiple-tabs =
     .label = 关闭多个标签页时向您确认
     .accesskey = m
@@ -206,7 +219,7 @@ containers-remove-alert-msg = 如果您现在移除此身份，{ $count } 个身
 containers-remove-ok-button = 移除此身份
 containers-remove-cancel-button = 不移除此身份
 settings-tabs-show-image-in-preview =
-    .label = 悬停在标签页上时显示预览图
+    .label = 悬停在标签页的标签上时显示预览图
     .accessKey = h
 
 ## General Section - Language & Appearance
@@ -564,8 +577,7 @@ home-prefs-shortcuts-description = 您保存或访问过的网站
 home-prefs-shortcuts-by-option-sponsored =
     .label = 赞助商网站
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = { $provider } 推荐
@@ -632,6 +644,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = 在地址栏结果中显示搜索建议
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = 在结果页的地址栏中显示搜索词
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -775,6 +791,9 @@ sync-currently-syncing-creditcards = 信用卡
 sync-currently-syncing-payment-methods = 付款方式
 sync-currently-syncing-addons = 附加组件
 sync-currently-syncing-settings = 设置
+sync-manage-options =
+    .label = 管理同步…
+    .accesskey = M
 sync-change-options =
     .label = 更改…
     .accesskey = C
@@ -827,6 +846,13 @@ sync-engine-settings =
     .label = 设置
     .tooltiptext = 您更改过的常规、隐私与安全等设置
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = 管理需要同步到所有已连接设备上的项目
+    .style = min-width: 36em;
+    .buttonlabelaccept = 保存
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = 断开连接…
+    .buttonaccesskeyextra2 = D
 
 ## The device name controls.
 
@@ -914,7 +940,7 @@ forms-primary-pw-use =
     .accesskey = U
 # This operation requires the user to authenticate with the operating system (device sign-in)
 forms-os-reauth =
-    .label = 要填写或管理密码，需验证设备登录信息
+    .label = 填写或管理密码前需验证设备登录信息
 forms-primary-pw-learn-more-link = 详细了解
 # This string uses the former name of the Primary Password feature
 # ("Master Password" in English) so that the preferences can be found
@@ -969,7 +995,7 @@ autofill-payment-methods-checkbox-submessage = 包括信用卡和借记卡
 autofill-saved-payment-methods-button = 保存的付款方式
     .accesskey = v
 # This operation requires the user to authenticate with the operating system (device sign-in)
-autofill-reauth-payment-methods-checkbox = 要填写和管理付款方式，需验证设备登录信息。
+autofill-reauth-payment-methods-checkbox = 填写和管理付款方式前需验证设备登录信息
     .accesskey = o
 
 ## Privacy Section - History
@@ -1277,13 +1303,34 @@ collection-description = 我们力图为您提供选择权，并保证只收集�
 collection-privacy-notice = 隐私声明
 collection-health-report-telemetry-disabled = 您不再允许 { -vendor-short-name } 捕获技术和交互数据。过去收集的所有数据将在 30 天内删除。
 collection-health-report-telemetry-disabled-link = 详细了解
+collection-usage-ping =
+    .label = 向 { -vendor-short-name } 发送每日使用情况报告
+    .accesskey = u
+collection-usage-ping-description = 此数据可帮助 { -vendor-short-name } 估算活跃用户数量。
+collection-health-report2 =
+    .label = 向 { -vendor-short-name } 发送技术与交互数据
+    .accesskey = r
 collection-health-report =
     .label = 允许 { -brand-short-name } 向 { -vendor-short-name } 发送技术信息及交互数据
     .accesskey = r
 collection-health-report-link = 详细了解
+collection-health-report-description = 此数据可帮助我们改进 { -brand-product-name } 的功能、性能和稳定性。
+collection-studies2 =
+    .label = 安装并运行研究
+collection-studies-description = 抢先体验尚未全面推出的功能和概念。
 collection-studies =
     .label = 允许 { -brand-short-name } 安装并运行一些实验项目
 collection-studies-link = 查看 { -brand-short-name } 在进行的实验
+addon-recommendations2 =
+    .label = 允许进行个性化扩展推荐
+addon-recommendations-description = 获取扩展推荐，改进浏览体验。
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = 在此构建配置下数据反馈被禁用。
+collection-backlogged-crash-reports2 =
+    .label = 自动发送崩溃报告
+    .accesskey = c
+collection-backlogged-crash-reports-description = 此信息可帮助 { -vendor-short-name } 诊断和修复浏览器的问题。报告中可能包含个人或敏感数据。
 addon-recommendations =
     .label = 允许 { -brand-short-name } 提供个性化扩展推荐
 addon-recommendations-link = 详细了解
@@ -1352,13 +1399,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } 运行所需的�
 
 httpsonly-header = HTTPS-Only 模式
 httpsonly-description = HTTPS 可在 { -brand-short-name } 和您访问的网站之间提供安全、加密的连接。现今，大多数网站都支持 HTTPS，若选择启用 HTTPS-Only 模式，{ -brand-short-name } 将会升级所有连接为 HTTPS。
+httpsonly-description2 = { -brand-short-name } 会与您访问的网站创建安全的加密连接。HTTPS-Only 模式启用时，{ -brand-short-name } 会向您警示不安全连接。
 httpsonly-learn-more = 详细了解
 httpsonly-radio-enabled =
     .label = 在所有窗口启用 HTTPS-Only 模式
+httpsonly-radio-enabled2 =
+    .label = 在所有窗口中都仅使用 HTTPS
 httpsonly-radio-enabled-pbm =
     .label = 仅在隐私窗口启用 HTTPS-Only 模式
+httpsonly-radio-enabled-pbm2 =
+    .label = 在隐私窗口中仅使用 HTTPS
 httpsonly-radio-disabled =
     .label = 不启用 HTTPS-Only 模式
+httpsonly-radio-disabled2 =
+    .label = 首选 HTTPS，同时仍允许不安全连接
 
 ## DoH Section
 

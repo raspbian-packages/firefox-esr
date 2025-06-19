@@ -6,7 +6,14 @@
 # NOTE: For English locales, strings in this file should be in APA-style Title Case.
 # See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
 #
+# NOTE: For Engineers, please don't re-use these strings outside of the menubar.
+
+
+# NOTE: For English locales, strings in this file should be in APA-style Title Case.
+# See https://apastyle.apa.org/style-grammar-guidelines/capitalization/title-case
+#
 # NOTE: For Engineers, please don't reuse these strings outside of the menubar.
+
 
 ## Application Menu (macOS only)
 
@@ -246,6 +253,15 @@ menu-bookmarks-other =
     .label = 他のブックマーク
 menu-bookmarks-mobile =
     .label = モバイルのブックマーク
+
+## Profiles Menu
+
+menu-profiles =
+    .label = プロファイル
+menu-profiles-manage-profiles =
+    .label = プロファイルを管理
+menu-profiles-new-profile =
+    .label = 新しいプロファイル
 
 ## Tools Menu
 

@@ -9,10 +9,8 @@
 use crate::computed_value_flags::ComputedValueFlags;
 use crate::dom::TElement;
 use crate::logical_geometry::{LogicalSize, WritingMode};
-use crate::media_queries::Device;
 use crate::parser::ParserContext;
 use crate::properties::ComputedValues;
-use crate::queries::condition::KleeneValue;
 use crate::queries::feature::{AllowsRanges, Evaluator, FeatureFlags, QueryFeatureDescription};
 use crate::queries::values::Orientation;
 use crate::queries::{FeatureType, QueryCondition};
@@ -21,6 +19,7 @@ use crate::shared_lock::{
 };
 use crate::str::CssStringWriter;
 use crate::stylesheets::CssRules;
+use crate::stylist::Stylist;
 use crate::values::computed::{CSSPixelLength, ContainerType, Context, Ratio};
 use crate::values::specified::ContainerName;
 use app_units::Au;
@@ -28,6 +27,7 @@ use cssparser::{Parser, SourceLocation};
 use euclid::default::Size2D;
 #[cfg(feature = "gecko")]
 use malloc_size_of::{MallocSizeOfOps, MallocUnconditionalShallowSizeOf};
+use selectors::kleene_value::KleeneValue;
 use servo_arc::Arc;
 use std::fmt::{self, Write};
 use style_traits::{CssWriter, ParseError, ToCss};
@@ -135,14 +135,14 @@ enum TraversalResult<T> {
     Done(T),
 }
 
-fn traverse_container<E, S, F, R>(
+fn traverse_container<E, F, R>(
     mut e: E,
-    originating_element_style: Option<&S>,
+    originating_element_style: Option<&ComputedValues>,
     evaluator: F,
 ) -> Option<(E, R)>
 where
     E: TElement,
-    F: Fn(E, Option<&S>) -> TraversalResult<R>,
+    F: Fn(E, Option<&ComputedValues>) -> TraversalResult<R>,
 {
     if originating_element_style.is_some() {
         match evaluator(e, originating_element_style) {
@@ -185,7 +185,7 @@ impl ContainerCondition {
     fn valid_container_info<E>(
         &self,
         potential_container: E,
-        originating_element_style: Option<&Arc<ComputedValues>>,
+        originating_element_style: Option<&ComputedValues>,
     ) -> TraversalResult<ContainerLookupResult<E>>
     where
         E: TElement,
@@ -198,7 +198,7 @@ impl ContainerCondition {
                     Some(d) => d,
                     None => return TraversalResult::InProgress,
                 };
-                data.styles.primary()
+                &**data.styles.primary()
             },
         };
         let wm = style.writing_mode;
@@ -220,7 +220,7 @@ impl ContainerCondition {
         }
 
         let size = potential_container.query_container_size(&box_style.clone_display());
-        let style = style.clone();
+        let style = style.to_arc();
         TraversalResult::Done(ContainerLookupResult {
             element: potential_container,
             info: ContainerInfo { size, wm },
@@ -232,7 +232,7 @@ impl ContainerCondition {
     pub fn find_container<E>(
         &self,
         e: E,
-        originating_element_style: Option<&Arc<ComputedValues>>,
+        originating_element_style: Option<&ComputedValues>,
     ) -> Option<ContainerLookupResult<E>>
     where
         E: TElement,
@@ -252,9 +252,9 @@ impl ContainerCondition {
     /// Tries to match a container query condition for a given element.
     pub(crate) fn matches<E>(
         &self,
-        device: &Device,
+        stylist: &Stylist,
         element: E,
-        originating_element_style: Option<&Arc<ComputedValues>>,
+        originating_element_style: Option<&ComputedValues>,
         invalidation_flags: &mut ComputedValueFlags,
     ) -> KleeneValue
     where
@@ -265,10 +265,14 @@ impl ContainerCondition {
             Some(r) => (Some(r.element), Some((r.info, r.style))),
             None => (None, None),
         };
-        // Set up the lookup for the container in question, as the condition may be using container query lengths.
-        let size_query_container_lookup = ContainerSizeQuery::for_option_element(container, None);
+        // Set up the lookup for the container in question, as the condition may be using container
+        // query lengths.
+        let size_query_container_lookup = ContainerSizeQuery::for_option_element(
+            container, /* known_parent_style = */ None, /* is_pseudo = */ false,
+        );
         Context::for_container_query_evaluation(
-            device,
+            stylist.device(),
+            Some(stylist),
             info,
             size_query_container_lookup,
             |context| {
@@ -564,13 +568,17 @@ impl<'a> ContainerSizeQuery<'a> {
     }
 
     /// Create a new instance of the container size query for given element, with a deferred lookup callback.
-    pub fn for_element<E>(element: E, originating_element_style: Option<&'a ComputedValues>) -> Self
+    pub fn for_element<E>(
+        element: E,
+        known_parent_style: Option<&'a ComputedValues>,
+        is_pseudo: bool,
+    ) -> Self
     where
         E: TElement + 'a,
     {
         let parent;
         let data;
-        let style = match originating_element_style {
+        let parent_style = match known_parent_style {
             Some(s) => Some(s),
             None => {
                 // No need to bother if we're the top element.
@@ -582,30 +590,32 @@ impl<'a> ContainerSizeQuery<'a> {
                 data.as_ref().map(|data| &**data.styles.primary())
             },
         };
-        let should_traverse = match style {
-            Some(style) => style
-                .flags
-                .contains(ComputedValueFlags::SELF_OR_ANCESTOR_HAS_SIZE_CONTAINER_TYPE),
-            None => true, // `display: none`, still want to show a correct computed value, so give it a try.
-        };
-        if should_traverse {
-            return Self::NotEvaluated(Box::new(move || {
-                Self::lookup(element, originating_element_style)
-            }));
+
+        // If there's no style, such as being `display: none` or so, we still want to show a
+        // correct computed value, so give it a try.
+        let should_traverse = parent_style.map_or(true, |s| {
+            s.flags
+                .contains(ComputedValueFlags::SELF_OR_ANCESTOR_HAS_SIZE_CONTAINER_TYPE)
+        });
+        if !should_traverse {
+            return Self::none();
         }
-        Self::none()
+        return Self::NotEvaluated(Box::new(move || {
+            Self::lookup(element, if is_pseudo { known_parent_style } else { None })
+        }));
     }
 
     /// Create a new instance, but with optional element.
     pub fn for_option_element<E>(
         element: Option<E>,
-        originating_element_style: Option<&'a ComputedValues>,
+        known_parent_style: Option<&'a ComputedValues>,
+        is_pseudo: bool,
     ) -> Self
     where
         E: TElement + 'a,
     {
         if let Some(e) = element {
-            Self::for_element(e, originating_element_style)
+            Self::for_element(e, known_parent_style, is_pseudo)
         } else {
             Self::none()
         }

@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } — { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Cerrar pestaña
+           *[other] Cerrar { $tabCount } pestañas
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,16 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Reproducir { $tabCount } pestañas
         }
 
+## Tooltips for tab audio control
+
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Desenmudecer pestaña
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Enmudecer pestaña
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Reproducir pestaña
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -69,6 +90,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = ¿Cerrar { $tabCount } pestañas?
 tabbrowser-confirm-close-tabs-button = Cerrar pestañas
+tabbrowser-ask-close-tabs-checkbox = Preguntar antes de cerrar múltiples pestañas
 tabbrowser-confirm-close-tabs-checkbox = Confirmar antes de cerrar múltiples pestañas
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -91,7 +113,21 @@ tabbrowser-confirm-close-tabs-with-key-title = ¿Cerrar la ventana y salir de { 
 tabbrowser-confirm-close-tabs-with-key-button = Salir de { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Preguntar antes de salir con { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Confirmar antes de salir con { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = ¿Salir de { -brand-short-name } o cerrar la pestaña actual?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Salir de { -brand-short-name }
+       *[other] Salir de { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Cerrar la pestaña actual
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -161,3 +197,99 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Desenmudecer pestaña
 tabbrowser-manager-close-tab =
     .tooltiptext = Cerrar pestaña
+
+## Tab Groups
+
+tab-group-editor-title-create = Crear grupo de pestañas
+tab-group-editor-title-edit = Administrar grupo de pestañas
+tab-group-editor-name-label = Nombre
+tab-group-editor-name-field =
+    .placeholder = Ejemplo: Compras
+tab-group-editor-cancel =
+    .label = Cancelar
+    .accesskey = C
+tab-group-editor-color-selector =
+    .aria-label = Color del grupo de pestañas
+tab-group-editor-color-selector-blue = Azul
+tab-group-editor-color-selector-purple = Púrpura
+tab-group-editor-color-selector-cyan = Cian
+tab-group-editor-color-selector-orange = Naranja
+tab-group-editor-color-selector-yellow = Amarillo
+tab-group-editor-color-selector-pink = Rosa
+tab-group-editor-color-selector-green = Verde
+tab-group-editor-color-selector-gray = Gris
+tab-group-editor-color-selector-red = Rojo
+tab-group-menu-header = Grupos de pestañas
+tab-context-unnamed-group =
+    .label = Grupo sin nombre
+tab-group-name-default = Grupo sin nombre
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Agregar pestaña al nuevo grupo
+            [one] Agregar pestaña al nuevo grupo
+           *[other] Agregar pestañas al nuevo grupo
+        }
+    .accesskey = g
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Agregar pestaña a un grupo
+            [one] Agregar pestaña a un grupo
+           *[other] Agregar pestañas a ungrupo
+        }
+    .accesskey = g
+tab-group-editor-action-new-tab =
+    .label = Nueva pestaña en el grupo
+tab-group-editor-action-new-window =
+    .label = Mover grupo a nueva ventana
+tab-group-editor-action-save =
+    .label = Guardar y cerrar grupo
+tab-group-editor-action-ungroup =
+    .label = Desagrupar pestañas
+tab-group-editor-action-delete =
+    .label = Borrar grupo
+tab-group-editor-done =
+    .label = Listo
+    .accessKey = L
+tab-context-reopen-tab-group =
+    .label = Reabrir grupo de pestañas
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Eliminar del grupo
+            [one] Eliminar del grupo
+           *[other] Eliminar de grupos
+        }
+    .accesskey = r
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Mover grupo a nueva ventana
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Mover grupo a esta ventana
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Borrar grupo
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Abrir grupo en esta ventana
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Abrir grupo en nueva ventana

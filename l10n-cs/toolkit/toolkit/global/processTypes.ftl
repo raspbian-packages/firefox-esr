@@ -5,7 +5,6 @@
 
 ##
 ## Localization for remote types defined in RemoteType.h
-##
 
 process-type-web = Webový obsah
 # process used to run privileged about pages,
@@ -30,7 +29,6 @@ process-type-prealloc = Předem alokováno
 
 ##
 ## Localization for Gecko process types defined in GeckoProcessTypes.h
-##
 
 process-type-default = Hlavní
 process-type-tab = Panel
@@ -41,6 +39,8 @@ process-type-gpu = GPU
 process-type-socket = Socket
 # process used to decode media
 process-type-rdd = RDD
+# process used to run inference
+process-type-inference = Inference
 # process used to run some IPC actor in their own sandbox
 process-type-utility = Sandboxovaný IPC Actor
 process-type-utility-actor-audio-decoder-generic = Utilita Všeobecný zvukový dekodér
@@ -53,7 +53,6 @@ process-type-utility-actor-windows-file-dialog = Utilita Windows File Dialog
 
 ##
 ## Other
-##
 
 # fallback
 process-type-unknown = Neznámý

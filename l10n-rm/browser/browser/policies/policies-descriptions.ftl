@@ -119,6 +119,7 @@ policy-Permissions2 = Configurar permissiuns per camera, microfon, posiziun, not
 policy-PictureInPicture = Activar u deactivar maletg-en-maletg.
 policy-PopupBlocking = Permetter a tschertas websites da mussar popups sco standard.
 policy-Preferences = Definescha e fixescha la valur per ina subgruppa da preferenzas.
+policy-PrivateBrowsingModeAvailability = Definir la disponibladad dal modus privat.
 policy-PromptForDownloadLocation = Dumandar nua memorisar datotecas cun telechargiar.
 policy-Proxy = Configurar ils parameters dal proxy.
 policy-RequestedLocales = Definescha, en la successiun da preferenza, la glista da las linguas («locales») dumandadas da l'applicaziun.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Stampar cun agid dal dialog da stampa dal sistem.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Impedir l'access a tschertas websites. Consultar la documentaziun per ulteriuras infurmaziuns davart il format.
 policy-Windows10SSO = Permetter l'utilisaziun da Windows single sign-on per ils contos Microsoft, da scola e da fatschenta.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Permetter l’autentificaziun unica per ils contos Microsoft Entra.

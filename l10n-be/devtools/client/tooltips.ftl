@@ -40,13 +40,18 @@ inactive-css-placeholder-pseudo-element-not-supported = <strong>{ $property }</s
 inactive-css-property-because-of-display = <strong>{ $property }</strong> не ўплывае на гэты элемент, паколькі яго ўласцівасць display зададзена <strong>{ $display }</strong>.
 inactive-css-not-display-block-on-floated = Значэнне <strong>display</strong> было заменена рухавіком на <strong>block</strong>, таму што элемент <strong>floated</strong>.
 inactive-css-not-display-block-on-floated-2 = Значэнне <strong>display</strong> было заменена рухавіком на <strong>{ $display }</strong>, таму што элемент <strong>floated</strong>.
+inactive-css-only-non-grid-or-flex-item = <strong>{ $property }</strong> не мае ніякага эфекту, таму што яе нельга выкарыстоўваць для grid- або flex-элементаў.
+inactive-css-not-block = <strong>{ $property }</strong> не ўплывае на гэты элемент, таму што яна прымяняецца толькі да элементаў блочных элементаў.
+inactive-css-not-floated = <strong>{ $property }</strong> не мае ніякага эфекту, таму што прымяняецца толькі да элементаў, якія плаваюць.
 inactive-css-property-is-impossible-to-override-in-visited = Немагчыма перавызначыць <strong>{ $property }</strong> з-за абмежавання <strong>:visited</strong>.
 inactive-css-position-property-on-unpositioned-box = <strong>{ $property }</strong> не ўплывае на гэты элемент, паколькі ён не пазіцыянаваны элемент.
 inactive-css-only-replaced-elements = <strong>{ $property }</strong> не ўплывае на гэты элемент, паколькі яго можна прымяніць толькі да замененых элементаў.
 inactive-text-overflow-when-no-overflow = <strong>{ $property }</strong> не ўплывае на гэты элемент, паколькі <strong>overflow:hidden</strong> не ўсталяваны.
+inactive-css-no-size-containment = <strong>{ $property }</strong> не ўплывае на гэты элемент, паколькі ён не мае абмежавання ў памеры.
 inactive-css-not-for-internal-table-elements = <strong>{ $property }</strong> не ўплывае на ўнутраныя элементы табліцы.
 inactive-css-not-for-internal-table-elements-except-table-cells = <strong>{ $property }</strong> не ўплывае на ўнутраныя элементы табліцы, акрамя ячэек табліцы.
 inactive-css-not-table = <strong>{ $property }</strong> не ўплывае на гэты элемент, паколькі ён не з’яўляецца таблiцай.
+inactive-css-collapsed-table-borders = <strong>{ $property }</strong> не ўплывае на гэты элемент, бо гэта табліца са згорнутымі межамі.
 inactive-css-not-table-cell = <strong>{ $property }</strong> не ўплывае на гэты элемент, паколькі ён не з’яўляецца ячэйкай табліцы.
 inactive-scroll-padding-when-not-scroll-container = <strong>{ $property }</strong> не ўплывае на гэты элемент, паколькi ён не пракручваецца.
 inactive-css-border-image = <strong>{ $property }</strong> не мае ніякага ўплыву на гэты элемент, паколькі ён не можа быць ужыты да ўнутраных элементаў табліцы, дзе для <strong>border-collapse</strong> усталявана значэнне <strong>collapse</strong> на элемент бацькоўскай табліцы.
@@ -54,8 +59,13 @@ inactive-css-resize = <strong>{ $property }</strong> не ўплывае на г
 inactive-css-ruby-element = <strong>{ $property }</strong> не ўплывае на гэты элемент, таму што гэта элемент ruby. Яго памер вызначаны памерам шрыфту тэксту ruby.
 
 ## In the Rule View when a CSS property cannot be successfully applied we display
-## an icon. When this icon is hovered this message is displayed to explain how
-## the problem can be solved.
+## an icon. When this icon is hovered this message is displayed to explain why
+## the property is not applied.
+## The variables are all passed from the same place, in `InactiveCssTooltipHelper#getTemplate`
+## (devtools/client/shared/widgets/tooltip/inactive-css-tooltip-helper.js#95)
+## Variables:
+##   $property (string) - A CSS property name e.g. "color".
+##   $display (string) - A CSS display value e.g. "inline-block".
 
 inactive-css-highlight-pseudo-elements-not-supported = <strong>{ $property }</strong> не падтрымліваецца на псеўда-элементах вылучэння.
 inactive-css-cue-pseudo-element-not-supported = <strong>{ $property }</strong> не падтрымліваецца на псеўда-элементах ::cue.
@@ -89,12 +99,17 @@ inactive-css-not-inline-or-tablecell-fix = Паспрабуйце дадаць <
 inactive-css-non-replaced-inline-or-table-row-or-row-group-fix = Паспрабуйце дадаць <strong>display:inline-block</strong> або <strong>display:block</strong>. { learn-more }
 inactive-css-non-replaced-inline-or-table-column-or-column-group-fix = Паспрабуйце дадаць <strong>display:inline-block</strong>. { learn-more }
 inactive-css-not-display-block-on-floated-fix = Паспрабуйце выдаліць <strong>float</strong> або дадаць <strong>display:block</strong>. { learn-more }
+inactive-css-only-non-grid-or-flex-item-fix = Паспрабуйце змяніць значэнне <strong>display</strong> кантэйнера элемента на нешта іншае, чым <strong>flex</strong>, <strong>grid</strong>, <strong>inline-flex</strong> або <strong>inline-grid</strong>, ці выдаліць <strong>float</strong>. { learn-more }
+inactive-css-not-block-fix = Паспрабуйце дадаць уласцівасці, такія як <strong>display:block</strong> ці <strong>float:left</strong>. { learn-more }
+inactive-css-not-floated-fix = Паспрабуйце дадаць уласцівасць <strong>float</strong> са значэннем, адрозным ад <strong>none</strong>. { learn-more }
 inactive-css-position-property-on-unpositioned-box-fix = Паспрабуйце ўсталяваць яго ўласцівасць <strong>position</strong> на што-небудзь іншае, ніж <strong>static</strong>. { learn-more }
 inactive-css-only-replaced-elements-fix = Пераканайцеся, што дадаяце ўласцівасць да замененага элемента. { learn-more }
 inactive-text-overflow-when-no-overflow-fix = Паспрабуйце дадаць <strong>overflow:hidden</strong>. { learn-more }
+inactive-css-no-size-containment-fix = Паспрабуйце ўсталяваць для ўласцівасці <strong>display</strong> нешта іншае, чым <strong>none</strong>, <strong>contents</strong>, <strong>table</strong> або <strong>inline-table</strong> і пераканайцеся, што яна не ў табліцы або сегменце ruby. { learn-more }
 inactive-css-not-for-internal-table-elements-fix = Паспрабуйце ўстанавіць для ўласцівасці <strong>display</strong> нешта іншае, ніж <strong>table-cell </strong>, <strong>table-column</strong>, <strong>table-row</strong>, <strong>table-column-group</strong>, <strong>table-row-group</strong> ці <strong>table-footer-group</strong>. { learn-more }
 inactive-css-not-for-internal-table-elements-except-table-cells-fix = Паспрабуйце ўстанавіць для ўласцівасці <strong>display</strong> нешта іншае, ніж <strong>table-column</strong>, <strong>table-row</strong>, <strong>table-column-group</strong>, <strong>table-row-group</strong> ці <strong>table-footer-group</strong>. { learn-more }
 inactive-css-not-table-fix = Паспрабуйце дадаць <strong>display:table</strong> альбо <strong>display:inline-table</strong>. { learn-more }
+inactive-css-collapsed-table-borders-fix = Паспрабуйце дадаць <strong>border-collapse:separate</strong>. { learn-more }
 inactive-css-not-table-cell-fix = Паспрабуйце дадаць <strong>display:table-cell</strong>. { learn-more }
 inactive-scroll-padding-when-not-scroll-container-fix = Паспрабуйце дадаць <strong>overflow:auto</strong>, <strong>overflow:scroll</strong> альбо <strong>overflow:hidden</strong>. { learn-more }
 inactive-css-border-image-fix = У элеменце бацькоўскай табліцы выдаліце ўласцівасць або змяніце значэнне <strong>border-collapse</strong> на іншае, ніж <strong>collapse</strong>. { learn-more }

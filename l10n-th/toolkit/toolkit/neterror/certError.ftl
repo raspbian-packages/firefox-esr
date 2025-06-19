@@ -18,6 +18,9 @@ cert-error-trust-signature-algorithm-disabled = ใบรับรองไม�
 cert-error-trust-expired-issuer = ใบรับรองไม่ได้รับความเชื่อถือเนื่องจากผู้ออกใบรับรองหมดอายุแล้ว
 cert-error-trust-self-signed = ใบรับรองไม่ได้รับความเชื่อถือเนื่องจากเป็นการออกใบรับรองโดยเจ้าของเว็บไซต์เอง
 cert-error-trust-symantec = ใบรับรองที่ออกโดย GeoTrust, RapidSSL, Symantec, Thawte และ VeriSign จะไม่ได้รับการพิจารณาว่าปลอดภัยอีกต่อไปเนื่องจากผู้ออกใบรับรองเหล่านี้ไม่ปฏิบัติตามแนวทางด้านความปลอดภัยในอดีต
+# Variables:
+#   $hostname (string) - Hostname of the website with cert error.
+cert-error-trust-certificate-transparency = { -brand-short-name } ไม่เชื่อถือ { $hostname } เนื่องจากไม่สามารถพิสูจน​์ได้ว่าสอดคล้องตามข้อกำหนดความโปร่งใสสำหรับใบรับรองสาธารณะ
 cert-error-untrusted-default = ใบรับรองไม่ได้มาจากแหล่งที่ได้รับความเชื่อถือ
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
@@ -68,6 +71,45 @@ open-in-new-window-for-csp-or-xfo-error = เปิดไซต์ในหน�
 # Variables:
 #   $hostname (string) - Hostname of the website blocked by csp or xfo error.
 csp-xfo-blocked-long-desc = เพื่อปกป้องความปลอดภัยของคุณ { $hostname } จะไม่อนุญาตให้ { -brand-short-name } แสดงหน้าหากไซต์อื่นฝังไว้ หากต้องการดูหน้านี้ คุณต้องเปิดในหน้าต่างใหม่
+fp-certerror-view-certificate-link = ดูใบรับรองของไซต์นี้
+fp-certerror-return-to-previous-page-recommended-button = ย้อนกลับ (แนะนำ)
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $hostname (String) - Hostname of the website to which the user was trying to connect.
+#   $validHosts (String) - Valid hostnames.
+fp-certerror-bad-domain-why-dangerous-body = ไซต์นี้ถูกตั้งค่ามาให้อนุญาตเฉพาะการเชื่อมต่อปลอดภัยเท่านั้น แต่มีปัญหากับใบรับรองของไซต์ ซึ่งเป็นไปได้ว่ามีผู้ไม่หวังดีกำลังพยายามปลอมแปลงไซต์นี้ ไซต์ต่างๆ จะใช้ใบรับรองซึ่งออกโดยผู้ออกใบรับรองเพื่อพิสูจน์ตนเองว่าเป็นบุคคลตามที่อ้างจริง { -brand-short-name } จึงไม่เชื่อถือไซต์นี้เนื่องจากใบรับรองของไซต์นั้นใช้ไม่ได้กับ { $hostname } แต่ใช้ได้กับเฉพาะ: { $validHosts }
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-bad-domain-what-can-you-do-body = น่าจะไม่ต้องทำอะไร เนื่องจากน่าจะเป็นปัญหากับตัวไซต์มากกว่า ไซต์ต่างๆ จะใช้ใบรับรองซึ่งออกโดยผู้ออกใบรับรองเพื่อพิสูจน์ตนเองว่าเป็นบุคคลตามที่อ้างจริง แต่ถ้าคุณใช้เครือข่ายองค์กร ทีมช่วยเหลือของคุณอาจจะมีข้อมูลมากกว่านี้ ถ้าคุณกำลังใช้ซอฟต์แวร์แอนติไวรัส ให้ลองค้นหาเกี่ยวกับข้อขัดแย้งที่เป็นไปได้หรือปัญหาที่ทราบ
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+fp-certerror-unknown-issuer-why-dangerous-body = มีปัญหาเกี่ยวกับใบรับรองของไซต์ ซึ่งเป็นไปได้ว่ามีผู้ไม่หวังดีกำลังพยายามปลอมแปลงไซต์นี้ ไซต์ต่างๆ จะใช้ใบรับรองซึ่งออกโดยผู้ออกใบรับรองเพื่อพิสูจน์ตนเองว่าเป็นบุคคลตามที่อ้างจริง { -brand-short-name } จึงไม่เชื่อถือไซต์นี้เนื่องจากเราบอกไม่ได้ว่าใครเป็นผู้ออกใบรับรอง หรือใบรับรองนั้นมีการลงลายเซ็นด้วยตัวเอง หรือไซต์นั้นไม่ส่งใบรับรองระดับกลางที่เราเชื่อถือได้
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-unknown-issuer-what-can-you-do-body = น่าจะไม่ต้องทำอะไร เนื่องจากน่าจะเป็นปัญหากับตัวไซต์มากกว่า แต่ถ้าคุณใช้เครือข่ายองค์กร ทีมช่วยเหลือของคุณอาจจะมีข้อมูลมากกว่านี้ ถ้าคุณกำลังใช้ซอฟต์แวร์แอนติไวรัส ก็อาจจะต้องไปกำหนดค่าใหม่ให้ทำงานกับ { -brand-short-name } ได้
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+fp-certerror-self-signed-why-dangerous-body = เนื่องจากมีปัญหากับใบรับรองของไซต์ ไซต์ต่างๆ จะใช้ใบรับรองซึ่งออกโดยผู้ออกใบรับรองเพื่อพิสูจน์ตนเองว่าเป็นบุคคลตามที่อ้างจริง ใบรับรองของไซต์นี้มีการลงลายเซ็นด้วยตัวเอง และไม่ได้ออกโดยผู้ออกใบรับรองที่รู้จัก ดังนั้นตามค่าเริ่มต้นแล้ว เราจึงไม่เชื่อถือใบรับรองนี้
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-self-signed-what-can-you-do-body = ไม่มีอะไรต้องทำมากนัก เนื่องจากน่าจะเป็นเพราะมีปัญหากับตัวไซต์มากกว่า
+fp-certerror-self-signed-important-note = หมายเหตุสำคัญ: ถ้าคุณกำลังพยายามเยี่ยมชมไซต์นี้บนอินทราเน็ตองค์กร เจ้าหน้าที่ฝ่ายไอทีของคุณอาจจะใช้ใบรับรองที่ลงลายเซ็นด้วยตัวเอง ซึ่งจะสามารถช่วยคุณตรวจสอบความถูกต้องได้
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $date (Date) - Certificate expiration date.
+fp-certerror-expired-why-dangerous-body = ไซต์ต่างๆ จะใช้ใบรับรองซึ่งออกโดยผู้ออกใบรับรองเพื่อพิสูจน์ตนเองว่าเป็นบุคคลตามที่อ้างจริง { -brand-short-name } ไม่เชื่อถือไซต์นี้เนื่องจากดูเหมือนว่าใบรับรองจะหมดอายุไปแล้วเมื่อ { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") }
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $date (Date) - Certificate start date.
+fp-certerror-not-yet-valid-why-dangerous-body = ไซต์ต่างๆ จะใช้ใบรับรองซึ่งออกโดยผู้ออกใบรับรองเพื่อพิสูจน์ตนเองว่าเป็นบุคคลตามที่อ้างจริง { -brand-short-name } ไม่เชื่อถือไซต์นี้เนื่องจากดูเหมือนว่าใบรับรองจะไม่สามารถใช้ได้จนถึง { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") }
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+# Variables:
+#   $date (Date) - Clock date.
+fp-certerror-expired-what-can-you-do-body = นาฬิกาของอุปกรณ์คุณถูกตั้งเป็น { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") } ถ้าเวลาดังกล่าวถูกต้องแล้ว ปัญหาด้านความปลอดภัยน่าจะเป็นที่ตัวไซต์เอง ถ้าเวลาผิด คุณสามารถเปลี่ยนได้ในการตั้งค่าระบบของอุปกรณ์คุณ
+# Variables:
+#   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
+fp-cert-error-code = รหัสข้อผิดพลาด: { $error }
+# Variables:
+#   $datetime (Date) - Current datetime.
+fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+fp-learn-more-about-secure-connection-failures = เรียนรู้เพิ่มเติมเกี่ยวกับความล้มเหลวในการเชื่อมต่อปลอดภัย
+fp-learn-more-about-cert-issues = เรียนรู้เพิ่มเติมเกี่ยวกับปัญหาใบรับรองประเภทเหล่านี้
+fp-learn-more-about-time-related-errors = เรียนรู้เพิ่มเติมเกี่ยวกับการแก้ไขปัญหาจากข้อผิดพลาดที่เกี่ยวกับเวลา
 
 ## Messages used for certificate error titles
 
@@ -92,6 +134,7 @@ contentEncodingError-title = ข้อผิดพลาดการเข้า
 unsafeContentType-title = ชนิดไฟล์ที่ไม่ปลอดภัย
 netReset-title = ตัดการเชื่อมต่อแล้ว
 netTimeout-title = การเชื่อมต่อหมดเวลา
+serverError-title = ดูเหมือนว่าเว็บไซต์นี้จะมีปัญหา
 unknownProtocolFound-title = ไม่เข้าใจที่อยู่
 proxyConnectFailure-title = เซิร์ฟเวอร์พร็อกซีปฏิเสธการเชื่อมต่อ
 proxyResolveFailure-title = ไม่พบเซิร์ฟเวอร์พร็อกซี
@@ -108,3 +151,20 @@ networkProtocolError-title = ข้อผิดพลาดโพรโทคอ
 nssBadCert-title = คำเตือน: ความเสี่ยงด้านความปลอดภัยที่อาจเกิดขึ้นข้างหน้า
 nssBadCert-sts-title = ไม่ได้เชื่อมต่อ: ปัญหาความปลอดภัยที่อาจเกิดขึ้น
 certerror-mitm-title = มีซอฟต์แวร์ที่ทำให้ { -brand-short-name } ไม่สามารถเชื่อมต่อไปที่ไซต์นี้อย่างปลอดภัยได้
+
+## Felt Privacy V1 Strings
+
+fp-certerror-page-title = คำเตือน: ความเสี่ยงด้านความปลอดภัย
+fp-certerror-body-title = ระวังหน่อย มีบางอย่างผิดปกติ
+fp-certerror-why-site-dangerous = สิ่งที่ทำให้ไซต์ดูอันตรายคืออะไร?
+fp-certerror-what-can-you-do = คุณสามารถทำอะไรเกี่ยวกับเรื่องนี้ได้บ้าง?
+fp-certerror-advanced-title = ขั้นสูง
+fp-certerror-advanced-button = ขั้นสูง
+fp-certerror-hide-advanced-button = ซ่อนส่วนขั้นสูง
+
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-certerror-override-exception-button = ไปยัง { $hostname } ต่อ (มีความเสี่ยง)
+fp-certerror-intro = { -brand-short-name } พบปัญหาด้านความปลอดภัยที่น่าจะดูร้ายแรงสำหรับ <strong>{ $hostname }</strong> ผู้ที่แอบอ้างไซต์นี้อาจจะพยายามขโมยข้อมูลต่างๆ เช่น ข้อมูลบัตรเครดิต รหัสผ่าน หรืออีเมล
+fp-certerror-expired-into = { -brand-short-name } พบปัญหาด้านความปลอดภัยสำหรับ <strong>{ $hostname }</strong> ซึ่งอาจเป็นเพราะไซต์มีการตั้งค่าไม่ถูกต้อง หรือนาฬิกาของอุปกรณ์คุณถูกตั้งเป็นวันที่/เวลาไม่ถูกต้อง

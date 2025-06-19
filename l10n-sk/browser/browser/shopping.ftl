@@ -89,6 +89,9 @@ shopping-show-less-button = Zobraziť menej
 
 shopping-settings-label =
     .label = Nastavenia
+shopping-settings-recommendations-toggle2 =
+    .label = Zobrazovať odporúčania a sponzorovaný obsah
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } nezdieľa vaše osobné údaje, takže tieto odporúčania vás nebudú na internete sledovať. <a data-l10n-name="review-quality-url">Ďalšie informácie</a>
 shopping-settings-recommendations-toggle =
     .label = Zobrazovať reklamy v nástroji Kontrola recenzií
 shopping-settings-recommendations-learn-more2 = Príležitostne sa vám budú zobrazovať reklamy na relevantné produkty. Inzerujeme iba produkty so spoľahlivými recenziami. <a data-l10n-name="review-quality-url">Ďalšie informácie</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Skontrolovať kvalitu recenzií
 
 more-to-consider-ad-label =
     .label = Ďalšie na zváženie
+shopping-sponsored-label = Sponzorované
 ad-by-fakespot = Reklama od { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Odoslať
 shopping-survey-terms-link = Podmienky používania
 shopping-survey-thanks =
     .heading = Ďakujeme za vašu spätnú väzbu.
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Dajte nám vedieť, prečo ste vypli Kontrolu recenzií. Môžete vybrať viacero dôvodov.
+shopping-survey-thanks-title = Ďakujeme za vašu spätnú väzbu.
+shopping-survey-opted-out-hard-to-understand = Je to ťažké ju pochopiť
+shopping-survey-opted-out-too-slow = Je príliš pomalá
+shopping-survey-opted-out-not-accurate = Nie je presná
+shopping-survey-opted-out-not-helpful = Nie je pre mňa užitočná
+shopping-survey-opted-out-check-myself = Radšej si pozriem recenzie sám
+shopping-survey-opted-out-other = Iné
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

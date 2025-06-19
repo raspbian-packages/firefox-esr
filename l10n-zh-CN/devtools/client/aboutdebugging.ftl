@@ -112,6 +112,8 @@ about-debugging-setup-usb-step-enable-dev-menu2 = 在您的 Android 设备上启
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = 启用 Android 开发者选项中的“USB 调试”功能
 # USB section step by step guide
+about-debugging-setup-usb-step-enable-file-transfer = 请启用文件传输功能，并确认您的设备不处于“仅充电”模式。
+# USB section step by step guide
 about-debugging-setup-usb-step-enable-debug-firefox2 = 在 Android 设备的 Firefox 中启用“USB 调试”功能。
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = 将 Android 设备连接到您的计算机。
@@ -313,6 +315,9 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = 推送服务
+# Displayed for service workers in runtime pages, to label the origin of a worker.
+about-debugging-worker-origin =
+    .label = 来源
 # Displayed as title of the inspect button when service worker debugging is disabled.
 about-debugging-worker-inspect-action-disabled =
     .title = Service Worker 检查功能目前在多进程 { -brand-shorter-name } 下暂时无法使用

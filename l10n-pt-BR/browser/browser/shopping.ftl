@@ -89,6 +89,9 @@ shopping-show-less-button = Mostrar menos
 
 shopping-settings-label =
     .label = Configurações
+shopping-settings-recommendations-toggle2 =
+    .label = Mostrar recomendações e conteúdo patrocinado
+shopping-settings-recommendations-learn-more3 = O { -brand-product-name } não compartilha seus dados pessoais, então essas recomendações não te perseguem pela internet. <a data-l10n-name="review-quality-url">Saiba mais</a>
 shopping-settings-recommendations-toggle =
     .label = Mostrar anúncios no verificador de avaliações
 shopping-settings-recommendations-learn-more2 = Aparecem anúncios ocasionais de produtos relevantes. Só anunciamos produtos com avaliações confiáveis. <a data-l10n-name="review-quality-url">Saiba mais</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Verificar qualidade das avaliaçõe
 
 more-to-consider-ad-label =
     .label = Mais a considerar
+shopping-sponsored-label = Patrocinado
 ad-by-fakespot = Anúncio do { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Enviar
 shopping-survey-terms-link = Termos de uso
 shopping-survey-thanks =
     .heading = Obrigado por sua opinião!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Diga-nos porque você desativou o verificador de avaliações. Pode indicar vários motivos.
+shopping-survey-thanks-title = Obrigado por sua opinião!
+shopping-survey-opted-out-hard-to-understand = É difícil de entender
+shopping-survey-opted-out-too-slow = É lento demais
+shopping-survey-opted-out-not-accurate = Não é preciso
+shopping-survey-opted-out-not-helpful = Não é útil para mim
+shopping-survey-opted-out-check-myself = Prefiro verificar avaliações eu mesmo
+shopping-survey-opted-out-other = Outro
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

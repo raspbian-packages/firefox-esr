@@ -154,7 +154,7 @@ fx100-thank-you-hero-text =
 fx100-thank-you-subtitle = 100. sürümümüze ulaştık! Daha iyi ve daha sağlıklı bir internet inşa etmemize destek verdiğiniz için teşekkür ederiz.
 fx100-thank-you-pin-primary-button-label =
     { PLATFORM() ->
-        [macos] { -brand-short-name } tarayıcısını Dock’a sabitla
+        [macos] { -brand-short-name } tarayıcısını Dock’a sabitle
        *[other] { -brand-short-name } tarayıcısını görev çubuğuma sabitle
     }
 fx100-upgrade-thanks-header = 100 Kere Teşekkürler
@@ -189,6 +189,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] { -brand-short-name } uygulamasını Dock’ta tut
        *[other] { -brand-short-name } uygulamasını görev çubuğuma sabitle
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = { -brand-short-name } uygulamasını görev çubuğuna ve başlat menüsüne sabitle
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -224,7 +226,9 @@ mr2022-onboarding-set-default-subtitle = Kâr amacı gütmeyen bir tarayıcıyla
 mr2022-onboarding-get-started-primary-subtitle = Yeni sürümümüz web’de gezinmenizi daha da kolaylaştıracak özelliklerle dolu.
 mr2022-onboarding-get-started-primary-button-label = Ayarlamaya başla
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Işık hızında kurulum
 mr2022-onboarding-import-subtitle = { -brand-short-name } tarayıcınızı istediğiniz gibi ayarlayın. İsterseniz eski tarayıcınızdaki yer imlerinizi, parolalarınızı ve diğer verilerinizi alabiliriz.
@@ -336,6 +340,14 @@ onboarding-device-migration-subtitle = Yer imlerinizi, parolalarınızı ve geç
 onboarding-device-migration-subtitle2 = Yer imlerinizi, parolalarınızı ve geçmişinizi yeni cihazınızda yanınızda taşımak için hesabınıza giriş yapın.
 onboarding-device-migration-primary-button-label = Giriş yap
 
+## Add-ons Picker screen
+
+amo-picker-title = { -brand-short-name } tarayıcınızı özelleştirin
+amo-picker-subtitle = Uzantılar tarayıcınızın içinde çalışan uygulamalara benzer. Parolalarınızı korumanızı, video indirmenizi, indirimleri bulmanızı, sinir bozucu reklamları engellemenizi, tarayıcınızın görünümünü değiştirmenizi ve çok daha fazlasını yapmanızı sağlarlar.
+amo-picker-install-button-label = { -brand-short-name } tarayıcısına ekle
+amo-picker-install-complete-label = Yüklendi
+amo-picker-collection-link = Daha fazla eklenti keşfedin
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -347,6 +359,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = Eşitleme yaptığın
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } sizi koruyor
 onboarding-gratitude-security-and-privacy-subtitle = Mozilla Vakfı tarafından geliştirilen { -brand-short-name } tarayıcısını kullandığınız için teşekkür ederiz. Desteğinizle interneti herkes için daha güvenli ve daha erişilebilir bir yere dönüştürüyoruz.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Verilerinizi cihazlarınız arasında eşitleyin
+onboarding-sign-up-description = Hesap açarsanız parolalarınız, yer imleriniz gibi tüm önemli bilgileriniz güvenli bir şekilde saklanır ve başka bir cihazdan giriş yaptığınızda bilgilerinizi kullanabilirsiniz.
+onboarding-sign-up-button = Kaydol veya giriş yap
+onboarding-sign-up-secondary-button = Gezinmeye başla
 
 ## New user time and familiarity survey strings
 
@@ -366,3 +383,70 @@ onboarding-new-user-survey-familiarity-based-option-1 = Yeni kullanmaya başlad�
 onboarding-new-user-survey-familiarity-based-option-2 = Biraz kullandım
 onboarding-new-user-survey-familiarity-based-option-3 = Çok iyi tanıyorum
 onboarding-new-user-survey-familiarity-based-option-4 = Eskiden kullandım ama epey zaman geçti
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Sekmelerinizi nerede görmek istersiniz?
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = İstediğiniz zaman kenar çubuğu ayarlarından değiştirebilirsiniz.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Senin sekmelerin, senin kararın
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Sekme düzeninizi seçin
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Kenarda
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Üstte
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Karşınızda dikey sekmeler
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Dikey sekmelerle tanışın
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Sekmelerinizi kenarda kullanmayı deneyin. İstediğiniz zaman kenar çubuğu ayarlarından değiştirebilirsiniz.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Dikey sekmeleri dene
+onboarding-flair-text = Yeni!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Yatay sekmeleri kullanmaya devam et
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = { -brand-shorter-name } kenar çubuğunda sekmelerin göründüğü bir tarayıcı penceresi.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = { -brand-shorter-name } kenar çubuğunda sekmelerin göründüğü bir tarayıcı penceresi.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Sekmelerin üstte göründüğü bir tarayıcı penceresi.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Sekmelerin üstte göründüğü bir tarayıcı penceresi.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Kenar çubuğunda yapay zekâ sohbet botlarını deneyin
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = İnternette gezinirken web içeriklerini özetleyin, yeni fikirler üretin, mesaj taslakları oluşturun. Farklı sağlayıcılar arasından seçim yapabilir, istediğiniz zaman başka bir sağlayıcıya geçebilirsiniz. <a data-l10n-name="learn-more">Daha fazla bilgi alın</a>
+onboarding-genai-sidebar-primary-button = Bir sohbet botu seçin
+onboarding-genai-sidebar-secondary-button = Gezinmeye başla
+
+## New user onboarding checklist
+
+onboarding-checklist-title = { -brand-short-name } kurulumunu tamamlayın
+onboarding-checklist-subtitle = Tarayıcınızdan en iyi şekilde yararlanmak için bu adımları tamamlayın.
+onboarding-checklist-set-default = { -brand-short-name } tarayıcısını varsayılan tarayıcım yap
+onboarding-checklist-pin = { -brand-short-name } tarayıcısını görev çubuğuma sabitle
+onboarding-checklist-import = Önceki tarayıcımdan içe aktar
+onboarding-checklist-extension = Bir uzantı ekle
+onboarding-checklist-sign-up = Hesap aç veya hesaba giriş yap
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Dağınıklığı azaltarak daha iyi odaklanmak için sekme gruplarını deneyin
+tab-groups-onboarding-feature-callout-subtitle = İlk grubunuzu oluşturmak için sekmeleri üst üste sürükleyin.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = { -brand-product-name } profilleriyle tanışın
+multi-profile-spotlight-cta = Profil oluşturun
+multi-profile-callout-title = İş ve eğlence için farklı profiller oluşturun
+multi-profile-callout-subtitle = Profiller, arama geçmişi ve parolalar gibi gezinti bilgilerinizi tamamen ayrı tutmanızı sağlar.
+multi-profile-callout-cta = Profil oluştur

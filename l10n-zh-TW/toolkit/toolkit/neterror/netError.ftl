@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = 已封鎖頁面
 neterror-captive-portal-page-title = 登入到網路
 neterror-dns-not-found-title = 找不到伺服器
 neterror-malformed-uri-page-title = 網址無效
+general-body-title = 請小心，有些東西不對勁。
 
 ## Error page actions
 
@@ -41,6 +42,8 @@ neterror-generic-error = { -brand-short-name } 因為某些原因無法載入此
 neterror-load-error-try-again = 該網站可能暫時無法使用或太過忙碌，請過幾分鐘後再試試。
 neterror-load-error-connection = 若無法載入任何網站，請檢查您的網路連線狀態。
 neterror-load-error-firewall = 若電腦或網路被防火牆或 Proxy 保護，請確定 { -brand-short-name } 被允許存取網路。
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = 若您要開啟的本地區域網路頁面，請確認已經在 macOS 的「隱私權與安全性」選項當中，授權 { -brand-short-name } 存取本地網路權限。
 neterror-captive-portal = 您必須先登入才能存取網際網路。
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +67,7 @@ neterror-dns-not-found-trr-offline = 您未連線到網際網路。
 neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } 找不到此網站。
 neterror-dns-not-found-trr-server-problem = { $trrDomain } 發生問題。
 neterror-dns-not-found-bad-trr-url = 網址無效。
+neterror-dns-not-found-system-sleep = 系統處於睡眠模式。
 neterror-dns-not-found-trr-unknown-problem = 發生未預期的問題。
 
 ## Native fallback specific messages
@@ -147,3 +151,11 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = 若您不了解 <b>{ $mitm 
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> 有一條稱為 HTTP Strict Transport Security (HSTS) 的安全性政策，讓 { -brand-short-name } 僅能與其進行安全連線。您無法加入例外，手動排除此政策。
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = 可能無法由您解決，因為這通常是網站本身的問題。
+certerror-blocked-by-corp-headers-description = 有時網站會設定一些保護機制，避免網站本身與像您這樣的使用者，受到與其他網站間不必要的互動影響。
+certerror-coop-learn-more = 了解 Cross Origin Opener Policies（COOP）的更多資訊
+certerror-coep-learn-more = 了解 Cross Origin Embedder Policies（COEP）的更多資訊
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = 錯誤代碼：{ $responsestatus } { $responsestatustext }

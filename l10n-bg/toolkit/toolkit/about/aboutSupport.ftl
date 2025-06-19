@@ -50,6 +50,9 @@ app-basics-enabled-plugins = Включени приставки
 app-basics-build-config = Настройки на компилацията
 app-basics-user-agent = Потребителски агент
 app-basics-os = ОС
+# Rosetta is Apple's translation process to run apps containing x86_64
+# instructions on Apple Silicon. This should remain in English.
+app-basics-rosetta = Rosetta Translated
 app-basics-memory-use = Използване на паметта
 app-basics-performance = Производителност
 app-basics-service-workers = Регистрирани Service Workers
@@ -59,6 +62,10 @@ app-basics-remote-processes-count = Отдалечени процеси
 app-basics-enterprise-policies = Ведомствени ограничения
 app-basics-key-mozilla = Mozilla Location Service Key
 app-basics-safe-mode = Надежден режим
+# Variables:
+#   $value (number) - Amount of data being stored
+#   $unit (string) - The unit of data being stored (e.g. MB)
+app-basics-data-size = { $value } { $unit }
 show-dir-label =
     { PLATFORM() ->
         [macos] Показване във Finder
@@ -242,6 +249,8 @@ webgl2-renderer = Рендер на драйвера за WebGL 2
 webgl2-version = Версия на драйвера за WebGL 2
 webgl2-driver-extensions = Разширения на драйвера за WebGL 2
 webgl2-extensions = Разширения на WebGL 2
+webgpu-default-adapter = Адаптер по подразбиране за WebGPU
+webgpu-fallback-adapter = Резервен адаптер за WebGPU
 # Variables
 # $failureCode (string) - String that can be searched in the source tree.
 unknown-failure = В списъка на блокираните: код на грешка { $failureCode }
@@ -262,6 +271,9 @@ has-seccomp-bpf = Seccomp-BPF (филтриране на системни изв
 has-seccomp-tsync = Синхронизиране на нишката на Seccomp
 has-user-namespaces = Потребителски пространства от имена
 has-privileged-user-namespaces = Потребителски пространства от имена за привилегировани процеси
+# Variables
+# $status (string) - Boolean value of hasUserNamespaces (should only be false when support-user-namespaces-unavailable is used)
+support-user-namespaces-unavailable = { $status } — Тази възможност не е разрешена от вашата система. Това може да ограничи функциите за сигурност на { -brand-short-name }.
 can-sandbox-content = Изолиране на процес за съдържанието във виртуална среда
 can-sandbox-media = Отделяне на медийна приставка във виртуална среда
 content-sandbox-level = Степен на изолация на процес за съдържание
@@ -273,6 +285,10 @@ sandbox-proc-type-media-plugin = приставка за медия
 # $remoteWindows (integer) - Number of remote windows
 # $totalWindows (integer) - Number of total windows
 multi-process-windows = { $remoteWindows }/{ $totalWindows }
+# Variables
+# $fissionWindows (integer) - Number of remote windows
+# $totalWindows (integer) - Number of total windows
+fission-windows = { $fissionWindows }/{ $totalWindows }
 async-pan-zoom = Асинхронно преместване / мащабиране
 apz-none = няма
 wheel-enabled = използване на колелцето на мишката
@@ -298,11 +314,14 @@ policies-error = Грешка
 
 ## Remote Settings sections
 
+support-remote-settings-title = Отдалечени настройки
 # Status when synchronization is not working.
 support-remote-settings-status-broken = Не работи
 
 ## Normandy sections
 
+support-remote-experiments-title = Отдалечени експерименти
+support-remote-features-title = Отдалечени функции
 
 ## Pointing devices
 

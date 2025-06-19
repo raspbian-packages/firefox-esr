@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Luk faneblad
+           *[other] Luk { $tabCount } faneblade
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Afspil lyd i { $tabCount } faneblade
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -69,6 +83,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = Luk { $tabCount } faneblade?
 tabbrowser-confirm-close-tabs-button = Luk faneblade
+tabbrowser-ask-close-tabs-checkbox = Spørg, når jeg lukker flere faneblade
 tabbrowser-confirm-close-tabs-checkbox = Bekræft, når jeg lukker flere faneblade
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -91,7 +106,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Luk vindue og afslut { -brand-sho
 tabbrowser-confirm-close-tabs-with-key-button = Afslut { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Spørg. inden jeg afslutter med { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Bekræft, inden jeg afslutter med { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = Afslut { -brand-short-name } eller luk det aktuelle faneblad?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Afslut { -brand-short-name }
+       *[other] Afslut { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Luk det aktuelle faneblad
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -115,6 +144,11 @@ tabbrowser-confirm-caretbrowsing-checkbox = Vis ikke denne dialogboks igen
 
 tabbrowser-confirm-close-duplicate-tabs-title = Vigtigt
 tabbrowser-confirm-close-duplicate-tabs-text = Vi lader det senest aktive faneblad være åbent
+tabbrowser-confirm-close-all-duplicate-tabs-title = Luk kopierede faneblade?
+tabbrowser-confirm-close-all-duplicate-tabs-text =
+    Vi lukker kopierede faneblade i dette vindue. Det sidste aktive
+    vil forblive åbent.
+tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Luk faneblade
 
 ##
 
@@ -158,3 +192,88 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Slå lyden til i faneblad
 tabbrowser-manager-close-tab =
     .tooltiptext = Luk faneblad
+
+## Tab Groups
+
+tab-group-editor-title-create = Opret fanebladsgruppe
+tab-group-editor-title-edit = Håndter fanebladsgruppe
+tab-group-editor-name-label = Navn
+tab-group-editor-name-field =
+    .placeholder = Eksempel: Shopping
+tab-group-editor-cancel =
+    .label = Annuller
+    .accesskey = A
+tab-group-menu-header = Fanebladsgrupper
+tab-context-unnamed-group =
+    .label = Unavngiven gruppe
+tab-group-name-default = Gruppe uden navn
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Føj faneblad til en ny gruppe
+            [one] Føj faneblad til en ny gruppe
+           *[other] Føj faneblade til en ny gruppe
+        }
+    .accesskey = g
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Føj faneblad til gruppe
+            [one] Føj faneblad til gruppe
+           *[other] Føj faneblade til gruppe
+        }
+    .accesskey = g
+tab-group-editor-action-new-tab =
+    .label = Nyt faneblad i gruppe
+tab-group-editor-action-new-window =
+    .label = Flyt gruppe til et nyt vindue
+tab-group-editor-action-save =
+    .label = Gem og luk gruppen
+tab-group-editor-action-ungroup =
+    .label = Ophæv gruppering af faneblade
+tab-group-editor-action-delete =
+    .label = Slet gruppe
+tab-group-editor-done =
+    .label = Færdig
+    .accessKey = F
+tab-context-reopen-tab-group =
+    .label = Åbn fanebladsgruppe igen
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Fjern fra gruppe
+            [one] Fjern fra gruppe
+           *[other] Fjern fra grupper
+        }
+    .accesskey = F
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Flyt gruppe til et nyt vindue
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Flyt gruppe til dette vindue
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Slet gruppe
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Åbn gruppe i dette vindue
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Åbn gruppe i et nyt vindue

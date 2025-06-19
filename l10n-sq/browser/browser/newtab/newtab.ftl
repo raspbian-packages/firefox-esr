@@ -8,11 +8,18 @@
 newtab-page-title = Skedë e Re
 newtab-settings-button =
     .title = Personalizoni faqen tuaj Skedë e Re
+newtab-personalize-settings-icon-label =
+    .title = Personalizoni Skedën e Re
+    .aria-label = Rregullime
+newtab-settings-dialog-label =
+    .aria-label = Rregullime
 newtab-personalize-icon-label =
     .title = Personalizoni skedën e re
     .aria-label = Personalizoni skedën e re
 newtab-personalize-dialog-label =
     .aria-label = Personalizojeni
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Ruaje te { -pocket-brand-name }
 newtab-menu-delete-pocket = Fshije nga { -pocket-brand-name }
 newtab-menu-archive-pocket = Arkivoje në { -pocket-brand-name }
 newtab-menu-show-privacy-info = Sponsorët tanë & privatësia jonë
+newtab-menu-about-fakespot = Mvi { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Bllokoje
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Hiqe Ndjekjen e Subjektit
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -196,6 +210,8 @@ newtab-section-header-recent-activity = Veprimtari së fundi
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Rekomanduar nga { $provider }
 newtab-section-header-stories = Histori që të vënë në mendim
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Zgjedhjet e sotme për ju
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -227,6 +243,8 @@ newtab-pocket-cta-button = Merreni { -pocket-brand-name }-in
 newtab-pocket-cta-text = Ruajini në { -pocket-brand-name } shkrimet që doni dhe ushqejeni mendjen me lexime të mahnitshme.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } është pjesë e familjes { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Ruaje
 newtab-pocket-saved = U ruajt
 
@@ -238,6 +256,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Jo për mua
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Faleminderit. Përshtypjet tuaja do të na ndihmojnë të përmirësojmë prurjen për ju.
 newtab-toast-thumbs-up-or-down = Faleminderit. Përshtypjet tuaja do të na ndihmojnë të përmirësojmë prurjen për ju.
 newtab-toast-dismiss-button =
     .title = Hidhe tej
@@ -303,6 +324,8 @@ newtab-wallpaper-dark-panda = Panda e kuqe e fshehur në pyll
 newtab-wallpaper-dark-sky = Reliev qyteti me qiell nate
 newtab-wallpaper-dark-mountain = Peizazh malor
 newtab-wallpaper-dark-city = Peizazh qyteti i purpurt
+newtab-wallpaper-dark-fox-anniversary = Një dhelpër në shesh pranë një pylli
+newtab-wallpaper-light-fox-anniversary = Një dhelpër në një lëndinë, në një peizazh malor të mjegullt
 
 ## Solid Colors
 
@@ -367,6 +390,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ E sponsorizuar
 newtab-weather-menu-change-location = Ndryshoni vendndodhje
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Kërkoni për vendndodhje
+    .aria-label = Kërkoni për vendndodhje
 newtab-weather-change-location-search-input = Kërkoni për vendndodhje
 newtab-weather-menu-weather-display = Shfaqje moti
 # Display options are:
@@ -385,3 +411,65 @@ newtab-weather-menu-hide-weather = Fshihe motin në Skedë të Re
 newtab-weather-menu-learn-more = Mësoni më tepër
 # This message is shown if user is working offline
 newtab-weather-error-not-available = S’ka të dhëna moti tani për tani.
+
+## Topic Labels
+
+newtab-topic-label-business = Biznes
+newtab-topic-label-career = Punësime
+newtab-topic-label-education = Edukim
+newtab-topic-label-arts = Spektakël
+newtab-topic-label-food = Ushqim
+newtab-topic-label-health = Shëndet
+newtab-topic-label-hobbies = Lojëra
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Para
+newtab-topic-label-government = Politikë
+newtab-topic-label-education-science = Shkencë
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Vetëpërmirësim
+newtab-topic-label-sports = Sporte
+newtab-topic-label-tech = Teknologji
+newtab-topic-label-travel = Udhëtime
+newtab-topic-label-home = Shtëpi & Kopsht
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Përzgjidhni subjekte, që të përimtohet prurja për ju
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Zgjidhni dy ose më shumë subjekte. Ekspertët tanë u japin përparësi historive që përkojnë me interesat tuaja. Përditësojeni kur të doni.
+newtab-topic-selection-save-button = Ruaje
+newtab-topic-selection-cancel-button = Anuloje
+newtab-topic-selection-button-maybe-later = Ndoshta më vonë
+newtab-topic-selection-privacy-link = Mësoni se si i mbrojmë dhe administrojmë të dhënat
+newtab-topic-selection-button-update-interests = Përditësoni interesat tuaja
+newtab-topic-selection-button-pick-interests = Zgjidhni interesat tuaja
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Ndiqe
+newtab-section-following-button = Po e Ndiqni
+newtab-section-unfollow-button = Hiqi Ndjekjen
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Jeni i sigurt se doni të bllokohet kjo ndarje?
+newtab-section-confirm-block-section-p2 = Pjesa e bllokuar s’do të shfaqet më në prurjen tuaj.
+newtab-section-block-section-button = Bllokoje këtë pjesë
+newtab-section-cancel-button = Jo tani
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

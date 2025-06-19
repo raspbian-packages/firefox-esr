@@ -119,6 +119,7 @@ policy-Permissions2 = Pšawa za kameru, mikrofon, stojnišćo, powěźeńki a aw
 policy-PictureInPicture = Wobraz-we-wobrazu zmóžniś abo znjemóžniś.
 policy-PopupBlocking = Wěstym websedłam dowóliś, wuskokujuce wokna pó standarźe pokazaś.
 policy-Preferences = Gódnotu za pódsajźbu nastajenjow stajiś a zastajiś
+policy-PrivateBrowsingModeAvailability = Nastajśo k-dispoziciji-byśe priwatnego modusa.
 policy-PromptForDownloadLocation = Pšašaś se, źož maju se dataje pśi ześěgowanju składowaś.
 policy-Proxy = Nastajenja proksy konfigurěrowaś.
 policy-RequestedLocales = Pódajśo lisćinu pominanych rěcow za nałoženje w preferěrowanem pórěźe.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Z pomocu systemowego śišćaŕskego dialoga śiš
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Woglědowanju k websydłam zajźowaś. Glejśo dokumentaciju za dalšne drobnostki wó formaśe.
 policy-Windows10SSO = Jadnotne pśizjawjenje za konta Microsoft, źěłowe konta a šulske konta zmóžniś.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Jadnotliwe pśizjawjenje za konta Microsoft Entra dowóliś.

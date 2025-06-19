@@ -4,22 +4,18 @@
 
 page-info-window =
     .style = width: 600px; min-height: 550px;
-
 copy =
     .key = C
 menu-copy =
     .label = Kopiraj
     .accesskey = K
-
 select-all =
     .key = A
 menu-select-all =
     .label = Označi sve
     .accesskey = a
-
 close-dialog =
     .key = w
-
 general-tab =
     .label = Opće
     .accesskey = O
@@ -43,7 +39,6 @@ general-meta-name =
     .label = Naziv
 general-meta-content =
     .label = Sadržaj
-
 media-tab =
     .label = Mediji
     .accesskey = M
@@ -65,19 +60,20 @@ media-dimension =
     .value = Dimenzije:
 media-long-desc =
     .value = Dugi opis:
+media-select-all =
+    .label = Označi sve
+    .accesskey = e
 media-save-as =
     .label = Spasi kao…
     .accesskey = a
 media-save-image-as =
     .label = Spasi kao…
     .accesskey = e
-
 perm-tab =
     .label = Dozvole
     .accesskey = D
 permissions-for =
     .value = Dozvole za:
-
 security-tab =
     .label = Sigurnost
     .accesskey = S
@@ -98,22 +94,17 @@ security-view-identity-validity =
     .value = Ističe:
 security-view-privacy =
     .value = Privatnost & Historija
-
 security-view-privacy-history-value = Da li sam posjetio ovu web stranicu ranije danas?
 security-view-privacy-sitedata-value = Da li ova web stranica pohranjuje podatke na moj računar?
-
 security-view-privacy-clearsitedata =
     .label = Obriši kolačiće i podatke stranice
     .accesskey = O
-
 security-view-privacy-passwords-value = Da li sam spasio ijednu lozinku za ovu web stranicu?
-
 security-view-privacy-viewpasswords =
     .label = Prikaži spašene lozinke
     .accesskey = w
 security-view-technical =
     .value = Tehnički detalji
-
 help-button =
     .label = Pomoć
 
@@ -125,7 +116,6 @@ help-button =
 
 security-site-data-cookies = Da, kolačiće o { $value } { $unit } podataka stranice
 security-site-data-only = Da, { $value } { $unit } podataka stranice
-
 security-site-data-cookies-only = Da, kolačiće
 security-site-data-no = Ne
 
@@ -149,7 +139,6 @@ media-video = Video
 media-audio = Audio
 saved-passwords-yes = Da
 saved-passwords-no = Ne
-
 no-page-title =
     .value = Nenaslovljena stranica:
 general-quirks-mode =
@@ -164,7 +153,6 @@ media-unknown-not-cached =
 permissions-use-default =
     .label = Koristi izvorno
 security-no-visits = Ne
-
 # This string is used to display the number of meta tags
 # in the General Tab
 # Variables:
@@ -172,11 +160,10 @@ security-no-visits = Ne
 general-meta-tags =
     .value =
         { $tags ->
-            [one] Meta (1 tag)
-            [few] Meta ({ $tags } taga)
-           *[many] Meta ({ $tags } tagova)
+            [one] Meta (1 oznaka)
+            [few] Meta ({ $tags } oznake)
+           *[other] Meta ({ $tags } oznaka)
         }
-
 # This string is used to display the number of times
 # the user has visited the website prior
 # Variables:
@@ -185,10 +172,9 @@ security-visits-number =
     { $visits ->
         [0] Ne
         [one] Da, jednom
-        [few] Da, dvaput
-       *[many] Da, { $visits } puta
+        [few] Da, { $visits } puta
+       *[other] Da, { $visits } puta
     }
-
 # This string is used to display the size of a media file
 # Variables:
 #   $kb (number) - The size of an image in Kilobytes
@@ -198,9 +184,8 @@ properties-general-size =
         { $bytes ->
             [one] { $kb } KB ({ $bytes } bajt)
             [few] { $kb } KB ({ $bytes } bajta)
-           *[many] { $kb } KB ({ $bytes } bajta)
+           *[other] { $kb } KB ({ $bytes } bajtova)
         }
-
 # This string is used to display the type and number
 # of frames of a animated image
 # Variables:
@@ -209,18 +194,16 @@ properties-general-size =
 media-animated-image-type =
     .value =
         { $frames ->
-            [one] { $type } Slika (animirana, { $frames } frejm)
-            [few] { $type } Slika (animirana, { $frames } frejma)
-           *[many] { $type } Slika (animirana, { $frames } frejmova)
+            [one] { $type } slika (animirano, { $frames } sličica)
+            [few] { $type } slika (animirano, { $frames } sličice)
+           *[other] { $type } slika (animirano, { $frames } sličica)
         }
-
 # This string is used to display the type of
 # an image
 # Variables:
 #   $type (string) - The type of an image
 media-image-type =
     .value = { $type } Slika
-
 # This string is used to display the size of a scaled image
 # in both scaled and unscaled pixels
 # Variables:
@@ -230,14 +213,12 @@ media-image-type =
 #   $scaledy (number) - The scaled vertical size of an image
 media-dimensions-scaled =
     .value = { $dimx }px × { $dimy }px (skalirano na { $scaledx }px × { $scaledy }px)
-
 # This string is used to display the size of an image in pixels
 # Variables:
 #   $dimx (number) - The horizontal size of an image
 #   $dimy (number) - The vertical size of an image
 media-dimensions =
     .value = { $dimx }px × { $dimy }px
-
 # This string is used to display the size of a media
 # file in kilobytes
 # Variables:
@@ -249,16 +230,11 @@ media-file-size = { $size } KB
 
 # This string is used to display the website name next to the
 # "Block Images" checkbox in the media tab
-# Variables:
-#   $website (string) - The website name
 media-block-image =
     .label = Blokiraj slike od { $website }
     .accesskey = B
-
 # This string is used to display the URL of the website on top of the
 # pageInfo dialog box
-# Variables:
-#   $website (string) - The url of the website pageInfo is getting info for
 page-info-page =
     .title = Podaci o stranici - { $website }
 page-info-frame =

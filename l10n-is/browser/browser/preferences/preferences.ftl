@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Senda vefsvæðum “Do Not Track” merki um að þú viljir ekki láta fylgjast með þér
+do-not-track-removal = Við styðjum ekki lengur „Ekki rekja“ merkinguna
 do-not-track-description2 =
     .label = Senda vefsvæðum „Ekki rekja“ beiðni
     .accesskey = d
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Opna { -brand-short-name } sjálfkrafa þegar tölvan þín ræsir
     .accesskey = O
 windows-launch-on-login-disabled = Þessi kjörstilling hefur verið gerð óvirk í Windows. Til að breyta því, skaltu fara í <a data-l10n-name="startup-link">Ræsiforrit / Startup Apps</a> í kerfisstillingunum.
+windows-launch-on-login-profile-disabled = Virkjaðu þessa stillingu með því að merkja við „{ profile-manager-use-selected.label }“ í glugganum „Veldu notandasnið“.
 startup-restore-warn-on-quit =
     .label = Aðvara þegar vafra er lokað
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Opna tengla sem flipa í staðinn fyrir nýja glugga
     .accesskey = g
+ask-on-close-multiple-tabs =
+    .label = Staðfesta áður en mörgum flipum er lokað
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Staðfesta áður en þú hættir með { $quitKey }
+    .accesskey = f
 confirm-on-close-multiple-tabs =
     .label = Staðfesta áður en mörgum flipum er lokað
     .accesskey = m
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Vefsvæði sem þú vistar eða heimsækir
 home-prefs-shortcuts-by-option-sponsored =
     .label = Kostaðar flýtileiðir
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Með þessu mælir { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Sýna leitartillögur í niðurstöðum veffangastikunnar
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Sýna leitarorð í veffangastikunni á niðurstöðusíðum
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Greiðslukort
 sync-currently-syncing-payment-methods = Greiðslumátar
 sync-currently-syncing-addons = Viðbætur
 sync-currently-syncing-settings = Stillingar
+sync-manage-options =
+    .label = Stjórna samstillingu...
+    .accesskey = m
 sync-change-options =
     .label = Breyta…
     .accesskey = B
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Stillingar
     .tooltiptext = Almennar, Friðhelgi og Öryggisstillingar sem þú hefur breytt
     .accesskey = S
+sync-choose-what-to-sync-dialog4 =
+    .title = Stjórnaðu því sem samstillist á öllum tengdum tækjum þínum
+    .style = min-width: 36em;
+    .buttonlabelaccept = Vista
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Aftengja…
+    .buttonaccesskeyextra2 = g
 
 ## The device name controls.
 
@@ -1285,13 +1311,34 @@ collection-description = Við reynum alltaf að bjóða upp á valkosti og söfn
 collection-privacy-notice = Meðferð persónuupplýsinga
 collection-health-report-telemetry-disabled = Þú leyfir { -vendor-short-name } ekki lengur að safna tækni- og samskiptagögnum. Öllum fyrri gögnum verður eytt innan 30 daga.
 collection-health-report-telemetry-disabled-link = Frekari upplýsingar
+collection-usage-ping =
+    .label = Senda upplýsingar um daglega notkun til { -vendor-short-name }
+    .accesskey = u
+collection-usage-ping-description = Þetta hjálpar { -vendor-short-name } að áætla virka notendur.
+collection-health-report2 =
+    .label = Senda tækni- og samskiptagögn til { -vendor-short-name }
+    .accesskey = n
 collection-health-report =
     .label = Leyfa { -brand-short-name } að senda sjálkrafa tæknilegar og notkunar upplýsingar til { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Fræðast meira
+collection-health-report-description = Þetta hjálpar okkur að bæta eiginleika, afköst og stöðugleika í { -brand-product-name }.
+collection-studies2 =
+    .label = Settu upp og keyrðu rannsóknir
+collection-studies-description = Prófaðu eiginleika og hugmyndir áður en þær eru settar í dreifingu.
 collection-studies =
     .label = Leyfa { -brand-short-name } að setja upp og keyra rannsóknir
 collection-studies-link = Skoða rannsóknir frá { -brand-short-name }
+addon-recommendations2 =
+    .label = Leyfa persónusniðnar ráðleggingar um forritsauka
+addon-recommendations-description = Fáðu ráðleggingar um forritsauka til að bæta notkun þína við vafur.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Gagna skýrsla er óvirk í þessari útgáfu.
+collection-backlogged-crash-reports2 =
+    .label = Senda hrunskýrslur inn sjálfkrafa
+    .accesskey = h
+collection-backlogged-crash-reports-description = Þetta gerir { -vendor-short-name } kleift að greina og laga vandamál með vafrann. Slíkar skýrslur geta innihaldið persónuleg eða viðkvæm gögn.
 addon-recommendations =
     .label = Leyfa { -brand-short-name } að gera sérsniðnar tillögur um viðbætur.
 addon-recommendations-link = Fræðast meira
@@ -1360,13 +1407,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } er að verða upp
 
 httpsonly-header = Einungis-HTTPS-hamur
 httpsonly-description = HTTPS veitir örugga, dulkóðaða tengingu milli { -brand-short-name } og vefsvæðanna sem þú heimsækir. Flest vefsvæði styðja HTTPS og ef Einungis-HTTPS-hamur er virkt mun { -brand-short-name } verða allar tengingar uppfærðar í HTTPS.
+httpsonly-description2 = { -brand-short-name } skapar öruggar og dulritaðar tengingar við vefsvæði sem þú skoðar. { -brand-short-name } mun vara þig við ef tenging er ekki örugg þegar kveikt er á Einungis-HTTPS.
 httpsonly-learn-more = Fræðast meira
 httpsonly-radio-enabled =
     .label = Virkja Einungis-HTTPS-ham í öllum gluggum
+httpsonly-radio-enabled2 =
+    .label = Nota einungis HTTPS í öllum gluggum
 httpsonly-radio-enabled-pbm =
     .label = Virkja Einungis-HTTPS-ham aðeins í huliðsgluggum
+httpsonly-radio-enabled-pbm2 =
+    .label = Nota einungis HTTPS í huliðsgluggum
 httpsonly-radio-disabled =
     .label = Ekki virkja Einungis-HTTPS-ham
+httpsonly-radio-disabled2 =
+    .label = Prófa fyrst HTTPS, en leyfa tengingar sem eru ekki öruggar
 
 ## DoH Section
 

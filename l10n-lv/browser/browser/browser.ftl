@@ -211,7 +211,7 @@ search-one-offs-context-set-as-default =
     .label = Iestatīt par noklusējuma meklētāju
     .accesskey = n
 search-one-offs-context-set-as-default-private =
-    .label = Iestatīt kā noklusējuma meklētājprogrammu privātajiem logiem
+    .label = Iestatīt kā noklusējuma meklētāju privātajiem logiem
     .accesskey = p
 # Search engine one-off buttons with an @alias shortcut/keyword.
 # Variables:
@@ -322,13 +322,13 @@ bookmark-panel-cancel =
 bookmark-panel-remove =
     .label =
         { $count ->
-            [zero] Aizvākt grāmatzīmi
-            [one] Aizvākt grāmatzīmes ({ $count })
-           *[other] Aizvākt grāmatzīmes ({ $count })
+            [zero] Noņemt grāmatzīmi
+            [one] Noņemt grāmatzīmes ({ $count })
+           *[other] Noņemt grāmatzīmes ({ $count })
         }
-    .accesskey = A
+    .accesskey = N
 bookmark-panel-show-editor-checkbox =
-    .label = Rādīt redaktoru saglabājot
+    .label = Saglabājot rādīt redaktoru
     .accesskey = S
 bookmark-panel-save-button =
     .label = Saglabāt
@@ -357,7 +357,7 @@ identity-extension-page = Šī lapa ir ielādēta no papildinājuma.
 identity-active-blocked = { -brand-short-name } bloķēja nedrošo saturu šajā lapā.
 identity-custom-root = Savienojumu ir pārbaudījis sertifikāta izdevējs, kuru Mozilla neatpazīst.
 identity-passive-loaded = Šīs lapas daļas (piemēram, attēli) nav drošas.
-identity-active-loaded = Jūs esat atspējojis aizsardzību šajā lapā.
+identity-active-loaded = Jūs esat izslēdzis aizsardzību šajā lapā.
 identity-weak-encryption = Šī lapa izmanto vāju šifrēšanu.
 identity-insecure-login-forms = Šajā lapā ievadītie lietotājvārdi nav aizsargāti un var tikt pārtverti.
 identity-https-only-connection-upgraded = (jaunināts uz HTTPS)
@@ -404,7 +404,7 @@ identity-enable-mixed-content-blocking =
     .label = Ieslēgt aizsardzību
     .accesskey = e
 identity-more-info-link-text =
-    .label = Sīkāka informācija
+    .label = Vairāk informācijas
 
 ## Window controls
 
@@ -478,7 +478,7 @@ popup-select-speaker-icon =
 popup-select-window-or-screen =
     .label = Logs vai ekrāns:
     .accesskey = L
-popup-all-windows-shared = Visi uz ekrāna redzamie logi tiks koplietoti.
+popup-all-windows-shared = Visi uz ekrāna redzamie logi tiks kopīgoti.
 
 ## WebRTC window or screen share tab switch warning
 
@@ -551,7 +551,7 @@ urlbar-switch-to-tab =
 urlbar-extension =
     .value = Paplašinājums:
 urlbar-go-button =
-    .tooltiptext = Pāriet uz adresi, kas redzama vietas joslā
+    .tooltiptext = Iet uz adresi, kas ir atrašanās vietas joslā
 urlbar-page-action-button =
     .tooltiptext = Lapas darbības
 
@@ -740,7 +740,7 @@ bookmarks-tools-toolbar-visibility-panel =
 bookmarks-tools-menu-button-visibility =
     .label =
         { $isVisible ->
-            [true] Aizvākt grāmatzīmju izvēlni no rīkjoslas
+            [true] Noņemt grāmatzīmju izvēlni no rīkjoslas
            *[other] Pievienot grāmatzīmju izvēlni rīkjoslai
         }
 
@@ -852,17 +852,17 @@ ui-tour-info-panel-close =
 ##  $uriHost (String): URI host for which the popup was allowed or blocked.
 
 popups-infobar-allow =
-    .label = Pieņemt jaunos logus no { $uriHost }
-    .accesskey = p
+    .label = Atļaut uznirstošos logus vietnei { $uriHost }
+    .accesskey = u
 popups-infobar-block =
-    .label = Bloķēt jaunos logus no { $uriHost }
-    .accesskey = p
+    .label = Bloķēt uznirstošos logus vietnei { $uriHost }
+    .accesskey = u
 
 ##
 
 popups-infobar-dont-show-message =
-    .label = Nerādīt šo paziņojumu, bloķējot jaunos logus
-    .accesskey = D
+    .label = Nerādīt šo paziņojumu, ja uznirstošie logi ir bloķēti
+    .accesskey = N
 edit-popup-settings =
     .label = Pārvaldīt uznirstošo logu iestatījumus…
     .accesskey = m
@@ -893,7 +893,7 @@ navbar-accessible =
 navbar-downloads =
     .label = Lejupielādes
 navbar-overflow =
-    .tooltiptext = Citi rīki…
+    .tooltiptext = Vairāk rīku…
 # Variables:
 #   $shortcut (String): keyboard shortcut to print the page
 navbar-print =
@@ -942,9 +942,6 @@ private-browsing-indicator-label = Privātā pārlūkošana
 content-analysis-indicator-tooltip =
     .tooltiptext = Datu zuduma novēršana (DLP), ko nodrošina { $agentName }. Spiediet, lai uzzinātu vairāk.
 content-analysis-panel-title = Datu aizsardzība
-# Variables:
-#   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = Jūsu organizācija izmanto { $agentName }, lai aizsargātu pret datu zudumu. <a data-l10n-name="info">Uzzināt vairāk</a>
 
 ## Unified extensions (toolbar) button
 
@@ -969,6 +966,10 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Paplašinājumi
         Daži paplašinājumi nav atļauti
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
 
 ## Private browsing reset button
 
@@ -1047,7 +1048,7 @@ popup-warning-button =
 # Variables:
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
-    .label = Rādīt '{ $popupURI }'
+    .label = Rādīt “{ $popupURI }”
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 

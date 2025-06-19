@@ -102,6 +102,8 @@ class NeckoTargetChannelFunctionEvent : public ChannelFunctionEvent {
 // event loop (ex: IPDL rpc) could cause listener->OnDataAvailable (for
 // instance) to be dispatched and called before mListener->OnStartRequest has
 // completed.
+// The ChannelEventQueue implementation ensures strict ordering of
+// event execution across target threads.
 
 class ChannelEventQueue final {
   NS_INLINE_DECL_THREADSAFE_REFCOUNTING(ChannelEventQueue)
@@ -112,8 +114,8 @@ class ChannelEventQueue final {
         mSuspended(false),
         mForcedCount(0),
         mFlushing(false),
-        mHasCheckedForXMLHttpRequest(false),
-        mForXMLHttpRequest(false),
+        mHasCheckedForAsyncXMLHttpRequest(false),
+        mForAsyncXMLHttpRequest(false),
         mOwner(owner),
         mMutex("ChannelEventQueue::mMutex"),
         mRunningMutex("ChannelEventQueue::mRunningMutex") {}
@@ -182,10 +184,11 @@ class ChannelEventQueue final {
       MOZ_GUARDED_BY(mMutex);
   bool mFlushing MOZ_GUARDED_BY(mMutex);
 
-  // Whether the queue is associated with an XHR. This is lazily instantiated
-  // the first time it is needed. These are MainThread-only.
-  bool mHasCheckedForXMLHttpRequest;
-  bool mForXMLHttpRequest;
+  // Whether the queue is associated with an ssync XHR.
+  // This is lazily instantiated the first time it is needed.
+  // These are MainThread-only.
+  bool mHasCheckedForAsyncXMLHttpRequest;
+  bool mForAsyncXMLHttpRequest;
 
   // Keep ptr to avoid refcount cycle: only grab ref during flushing.
   nsISupports* mOwner MOZ_GUARDED_BY(mMutex);
@@ -220,7 +223,12 @@ inline void ChannelEventQueue::RunOrEnqueue(ChannelEvent* aCallback,
     bool enqueue = !!mForcedCount || mSuspended || mFlushing ||
                    !mEventQueue.IsEmpty() ||
                    MaybeSuspendIfEventsAreSuppressed();
-
+    // To ensure strict ordering of events across multiple threads we buffer the
+    // events for the below cases:
+    // a. event queuing is forced by AutoEventEnqueuer
+    // b. event queue is suspended
+    // c. an event is currently flushed/executed from the queue
+    // d. queue is non-empty (pending events on remote thread targets)
     if (enqueue) {
       mEventQueue.AppendElement(std::move(event));
       return;
@@ -236,6 +244,14 @@ inline void ChannelEventQueue::RunOrEnqueue(ChannelEvent* aCallback,
     if (!isCurrentThread) {
       // Leverage Suspend/Resume mechanism to trigger flush procedure without
       // creating a new one.
+      // The execution of further events in the queue is blocked until the
+      // target thread completes the execution of this event.
+      // A callback is dispatched to the target thread to flush events from the
+      // queue. This is done
+      // by ResumeInternal which dispatches a runnable
+      // (CompleteResumeRunnable) to the target thread. The target thread will
+      // call CompleteResume to flush the queue. All the events are run
+      // synchronously in their respective target threads.
       SuspendInternal();
       mEventQueue.AppendElement(std::move(event));
       ResumeInternal();
@@ -244,6 +260,8 @@ inline void ChannelEventQueue::RunOrEnqueue(ChannelEvent* aCallback,
   }
 
   MOZ_RELEASE_ASSERT(!aAssertionWhenNotQueued);
+  // execute the event synchronously if we are not queuing it and
+  // the target thread is the current thread
   event->Run();
 }
 

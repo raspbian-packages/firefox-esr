@@ -636,10 +636,12 @@ nsresult nsExternalHelperAppService::Init() {
 nsExternalHelperAppService::~nsExternalHelperAppService() {}
 
 nsresult nsExternalHelperAppService::DoContentContentProcessHelper(
-    const nsACString& aMimeContentType, nsIRequest* aRequest,
+    const nsACString& aMimeContentType, nsIChannel* aChannel,
     BrowsingContext* aContentContext, bool aForceSave,
     nsIInterfaceRequestor* aWindowContext,
     nsIStreamListener** aStreamListener) {
+  NS_ENSURE_ARG_POINTER(aChannel);
+
   // We need to get a hold of a ContentChild so that we can begin forwarding
   // this data to the parent.  In the HTTP case, this is unfortunate, since
   // we're actually passing data from parent->child->parent wastefully, but
@@ -660,32 +662,21 @@ nsresult nsExternalHelperAppService::DoContentContentProcessHelper(
   nsAutoString fileName;
   nsCOMPtr<nsILoadInfo> loadInfo;
 
-  nsCOMPtr<nsIChannel> channel = do_QueryInterface(aRequest);
-  if (channel) {
-    channel->GetURI(getter_AddRefs(uri));
-    channel->GetContentLength(&contentLength);
-    channel->GetContentDisposition(&contentDisposition);
-    channel->GetContentDispositionFilename(fileName);
-    channel->GetContentDispositionHeader(disp);
-    loadInfo = channel->LoadInfo();
+  aChannel->GetURI(getter_AddRefs(uri));
+  aChannel->GetContentLength(&contentLength);
+  aChannel->GetContentDisposition(&contentDisposition);
+  aChannel->GetContentDispositionFilename(fileName);
+  aChannel->GetContentDispositionHeader(disp);
+  loadInfo = aChannel->LoadInfo();
 
-    nsCOMPtr<nsIFileChannel> fileChan(do_QueryInterface(aRequest));
-    wasFileChannel = fileChan != nullptr;
-  }
+  nsCOMPtr<nsIFileChannel> fileChan(do_QueryInterface(aChannel));
+  wasFileChannel = fileChan != nullptr;
 
   nsCOMPtr<nsIURI> referrer;
-  NS_GetReferrerFromChannel(channel, getter_AddRefs(referrer));
+  NS_GetReferrerFromChannel(aChannel, getter_AddRefs(referrer));
 
-  Maybe<mozilla::net::LoadInfoArgs> loadInfoArgs;
+  mozilla::net::LoadInfoArgs loadInfoArgs;
   MOZ_ALWAYS_SUCCEEDS(LoadInfoToLoadInfoArgs(loadInfo, &loadInfoArgs));
-
-  nsCOMPtr<nsIPropertyBag2> props(do_QueryInterface(aRequest));
-  // Determine whether a new window was opened specifically for this request
-  bool shouldCloseWindow = false;
-  if (props) {
-    props->GetPropertyAsBool(u"docshell.newWindowTarget"_ns,
-                             &shouldCloseWindow);
-  }
 
   // Now we build a protocol for forwarding our data to the parent.  The
   // protocol will act as a listener on the child-side and create a "real"
@@ -695,7 +686,7 @@ nsresult nsExternalHelperAppService::DoContentContentProcessHelper(
   MOZ_ALWAYS_TRUE(child->SendPExternalHelperAppConstructor(
       childListener, uri, loadInfoArgs, nsCString(aMimeContentType), disp,
       contentDisposition, fileName, aForceSave, contentLength, wasFileChannel,
-      referrer, aContentContext, shouldCloseWindow));
+      referrer, aContentContext));
 
   NS_ADDREF(*aStreamListener = childListener);
 
@@ -715,23 +706,21 @@ nsresult nsExternalHelperAppService::DoContentContentProcessHelper(
 }
 
 NS_IMETHODIMP nsExternalHelperAppService::CreateListener(
-    const nsACString& aMimeContentType, nsIRequest* aRequest,
+    const nsACString& aMimeContentType, nsIChannel* aChannel,
     BrowsingContext* aContentContext, bool aForceSave,
     nsIInterfaceRequestor* aWindowContext,
     nsIStreamListener** aStreamListener) {
   MOZ_ASSERT(!XRE_IsContentProcess());
+  NS_ENSURE_ARG_POINTER(aChannel);
 
   nsAutoString fileName;
   nsAutoCString fileExtension;
   uint32_t reason = nsIHelperAppLauncherDialog::REASON_CANTHANDLE;
 
-  nsCOMPtr<nsIChannel> channel = do_QueryInterface(aRequest);
-  if (channel) {
-    uint32_t contentDisposition = -1;
-    channel->GetContentDisposition(&contentDisposition);
-    if (contentDisposition == nsIChannel::DISPOSITION_ATTACHMENT) {
-      reason = nsIHelperAppLauncherDialog::REASON_SERVERREQUEST;
-    }
+  uint32_t contentDisposition = -1;
+  aChannel->GetContentDisposition(&contentDisposition);
+  if (contentDisposition == nsIChannel::DISPOSITION_ATTACHMENT) {
+    reason = nsIHelperAppLauncherDialog::REASON_SERVERREQUEST;
   }
 
   *aStreamListener = nullptr;
@@ -739,7 +728,7 @@ NS_IMETHODIMP nsExternalHelperAppService::CreateListener(
   // Get the file extension and name that we will need later
   nsCOMPtr<nsIURI> uri;
   bool allowURLExtension =
-      GetFileNameFromChannel(channel, fileName, getter_AddRefs(uri));
+      GetFileNameFromChannel(aChannel, fileName, getter_AddRefs(uri));
 
   uint32_t flags = VALIDATE_ALLOW_EMPTY;
   if (aMimeContentType.Equals(APPLICATION_GUESS_FROM_EXT,
@@ -758,12 +747,10 @@ NS_IMETHODIMP nsExternalHelperAppService::CreateListener(
   }
 
   if (flags & VALIDATE_GUESS_FROM_EXTENSION) {
-    if (channel) {
-      // Replace the content type with what was guessed.
-      nsAutoCString mimeType;
-      mimeInfo->GetMIMEType(mimeType);
-      channel->SetContentType(mimeType);
-    }
+    // Replace the content type with what was guessed.
+    nsAutoCString mimeType;
+    mimeInfo->GetMIMEType(mimeType);
+    aChannel->SetContentType(mimeType);
 
     if (reason == nsIHelperAppLauncherDialog::REASON_CANTHANDLE) {
       reason = nsIHelperAppLauncherDialog::REASON_TYPESNIFFED;
@@ -790,7 +777,7 @@ NS_IMETHODIMP nsExternalHelperAppService::CreateListener(
 }
 
 NS_IMETHODIMP nsExternalHelperAppService::DoContent(
-    const nsACString& aMimeContentType, nsIRequest* aRequest,
+    const nsACString& aMimeContentType, nsIChannel* aChannel,
     nsIInterfaceRequestor* aContentContext, bool aForceSave,
     nsIInterfaceRequestor* aWindowContext,
     nsIStreamListener** aStreamListener) {
@@ -809,12 +796,12 @@ NS_IMETHODIMP nsExternalHelperAppService::DoContent(
   }
 
   if (XRE_IsContentProcess()) {
-    return DoContentContentProcessHelper(aMimeContentType, aRequest, bc,
+    return DoContentContentProcessHelper(aMimeContentType, aChannel, bc,
                                          aForceSave, aWindowContext,
                                          aStreamListener);
   }
 
-  nsresult rv = CreateListener(aMimeContentType, aRequest, bc, aForceSave,
+  nsresult rv = CreateListener(aMimeContentType, aChannel, bc, aForceSave,
                                aWindowContext, aStreamListener);
   return rv;
 }
@@ -981,13 +968,14 @@ nsExternalHelperAppService::LoadURI(nsIURI* aURI,
                                     nsIPrincipal* aRedirectPrincipal,
                                     BrowsingContext* aBrowsingContext,
                                     bool aTriggeredExternally,
-                                    bool aHasValidUserGestureActivation) {
+                                    bool aHasValidUserGestureActivation,
+                                    bool aNewWindowTarget) {
   NS_ENSURE_ARG_POINTER(aURI);
 
   if (XRE_IsContentProcess()) {
     mozilla::dom::ContentChild::GetSingleton()->SendLoadURIExternal(
         aURI, aTriggeringPrincipal, aRedirectPrincipal, aBrowsingContext,
-        aTriggeredExternally, aHasValidUserGestureActivation);
+        aTriggeredExternally, aHasValidUserGestureActivation, aNewWindowTarget);
     return NS_OK;
   }
 
@@ -1056,7 +1044,6 @@ nsExternalHelperAppService::LoadURI(nsIURI* aURI,
   // restriction, only aiming to prevent some types of spoofing attacks
   // from otherwise disjoint browsingcontext trees.
   if (aBrowsingContext && aTriggeringPrincipal &&
-      !StaticPrefs::security_allow_disjointed_external_uri_loads() &&
       // Add-on principals are always allowed:
       !BasePrincipal::Cast(aTriggeringPrincipal)->AddonPolicy() &&
       // As is chrome code:
@@ -1065,12 +1052,22 @@ nsExternalHelperAppService::LoadURI(nsIURI* aURI,
     WindowGlobalParent* wgp = bc->Canonical()->GetCurrentWindowGlobal();
     bool foundAccessibleFrame = false;
 
-    // Also allow this load if the target is a toplevel BC and contains a
-    // non-web-controlled about:blank document
-    if (bc->IsTop() && !bc->HadOriginalOpener() && wgp) {
-      RefPtr<nsIURI> uri = wgp->GetDocumentURI();
-      foundAccessibleFrame =
-          uri && uri->GetSpecOrDefault().EqualsLiteral("about:blank");
+    // Don't block the load if it is the first load in a new window (e.g. due to
+    // a call to window.open, or a target=_blank link click).
+    if (aNewWindowTarget) {
+      MOZ_ASSERT(bc->IsTop());
+      foundAccessibleFrame = true;
+    }
+
+    // Also allow this load if the target is a toplevel BC which contains a
+    // non-web-controlled about:blank document.
+    // NOTE: This catches cases like shift-clicking a link which do not set
+    // `newWindowTarget`, but do open a link in a new window on behalf of web
+    // content.
+    if (!foundAccessibleFrame && bc->IsTop() &&
+        !bc->GetTopLevelCreatedByWebContent() && wgp) {
+      nsIURI* uri = wgp->GetDocumentURI();
+      foundAccessibleFrame = uri && NS_IsAboutBlank(uri);
     }
 
     while (!foundAccessibleFrame) {
@@ -1282,7 +1279,6 @@ nsExternalAppHandler::nsExternalAppHandler(
       mCanceled(false),
       mStopRequestIssued(false),
       mIsFileChannel(false),
-      mShouldCloseWindow(false),
       mHandleInternally(false),
       mDialogShowing(false),
       mReason(aReason),
@@ -1598,15 +1594,12 @@ NS_IMETHODIMP nsExternalAppHandler::OnStartRequest(nsIRequest* request) {
 
   if (mBrowsingContext) {
     mMaybeCloseWindowHelper = new MaybeCloseWindowHelper(mBrowsingContext);
-    mMaybeCloseWindowHelper->SetShouldCloseWindow(mShouldCloseWindow);
-    nsCOMPtr<nsIPropertyBag2> props(do_QueryInterface(request, &rv));
+
     // Determine whether a new window was opened specifically for this request
-    if (props) {
-      bool tmp = false;
-      if (NS_SUCCEEDED(
-              props->GetPropertyAsBool(u"docshell.newWindowTarget"_ns, &tmp))) {
-        mMaybeCloseWindowHelper->SetShouldCloseWindow(tmp);
-      }
+    if (aChannel) {
+      nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
+      mMaybeCloseWindowHelper->SetShouldCloseWindow(
+          loadInfo->GetIsNewWindowTarget());
     }
   }
 

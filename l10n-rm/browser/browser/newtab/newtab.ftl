@@ -8,11 +8,18 @@
 newtab-page-title = Nov tab
 newtab-settings-button =
     .title = Persunalisar tia pagina per novs tabs
+newtab-personalize-settings-icon-label =
+    .title = Persunalisar novs tabs
+    .aria-label = Parameters
+newtab-settings-dialog-label =
+    .aria-label = Parameters
 newtab-personalize-icon-label =
     .title = Persunalisar novs tabs
     .aria-label = Persunalisar novs tabs
 newtab-personalize-dialog-label =
     .aria-label = Persunalisar
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Memorisar en { -pocket-brand-name }
 newtab-menu-delete-pocket = Stizzar da { -pocket-brand-name }
 newtab-menu-archive-pocket = Archivar en { -pocket-brand-name }
 newtab-menu-show-privacy-info = Noss sponsurs & tia sfera privata
+newtab-menu-about-fakespot = Davart { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Bloccar
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Betg pli suandar il tema
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Activitad recenta
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Recumandà da { $provider }
 newtab-section-header-stories = Istorgias che dattan da pensar
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Noss tips dad oz per tai
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = Obtegnair { -pocket-brand-name }
 newtab-pocket-cta-text = Memorisescha ils artitgels che ta plaschan en { -pocket-brand-name } e procura per inspiraziun cuntinuanta cun lectura fascinanta.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } fa part da la paletta da products { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Memorisar
 newtab-pocket-saved = Memorisà
 
@@ -242,6 +260,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Na m’interessescha betg
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Grazia. Tes resun ans vegn a gidar a meglierar tes pavel.
 newtab-toast-thumbs-up-or-down = Grazia. Tes resun ans vegn a gidar a meglierar tes pavel.
 newtab-toast-dismiss-button =
     .title = Serrar
@@ -307,6 +328,8 @@ newtab-wallpaper-dark-panda = Panda cotschen zuppà en il guaud
 newtab-wallpaper-dark-sky = Cuntrada da citad cun tschiel nocturn
 newtab-wallpaper-dark-mountain = Cuntrada da muntognas
 newtab-wallpaper-dark-city = Cuntrada da citad violetta
+newtab-wallpaper-dark-fox-anniversary = Ina vulp sin la sulada datiers dad in guaud
+newtab-wallpaper-light-fox-anniversary = Ina vulp sin in prà en ina cuntrada muntagnarda cun brentina
 
 ## Solid Colors
 
@@ -371,6 +394,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Sponsurà
 newtab-weather-menu-change-location = Midar la posiziun
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Tschertgar in lieu
+    .aria-label = Tschertgar in lieu
 newtab-weather-change-location-search-input = Tschertgar in lieu
 newtab-weather-menu-weather-display = Visualisaziun da l’aura
 # Display options are:
@@ -389,3 +415,76 @@ newtab-weather-menu-hide-weather = Zuppentar l’aura sin ils novs tabs
 newtab-weather-menu-learn-more = Ulteriuras infurmaziuns
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Datas meteorologicas n’èn actualmain betg disponiblas.
+
+## Topic Labels
+
+newtab-topic-label-business = Economia
+newtab-topic-label-career = Carriera
+newtab-topic-label-education = Furmaziun
+newtab-topic-label-arts = Divertiment
+newtab-topic-label-food = Nutriment
+newtab-topic-label-health = Sanadad
+newtab-topic-label-hobbies = Gieus
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Daners
+newtab-topic-label-society-parenting = Educaziun
+newtab-topic-label-government = Politica
+newtab-topic-label-education-science = Scienza
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Life hacks
+newtab-topic-label-sports = Sport
+newtab-topic-label-tech = Tecnologia
+newtab-topic-label-travel = Viagiar
+newtab-topic-label-home = Chasa e curtin
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Tscherna temas per persunalisar tes feed
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Tscherna dus u dapli temas. Noss curaturs experts prioriseschan istorgias che correspundan a tes interess. Ils temas pos ti adattar da tut temp.
+newtab-topic-selection-save-button = Memorisar
+newtab-topic-selection-cancel-button = Interrumper
+newtab-topic-selection-button-maybe-later = Forsa pli tard
+newtab-topic-selection-privacy-link = Ve a savair co nus protegin e gestin las datas
+newtab-topic-selection-button-update-interests = Actualisescha tes interess
+newtab-topic-selection-button-pick-interests = Tscherna tes interess
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Suandar
+newtab-section-following-button = Ti suondas
+newtab-section-unfollow-button = Chalar da suandar
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Bloccar
+newtab-section-blocked-button = Bloccà
+newtab-section-unblock-button = Debloccar
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Vuls ti propi bloccar questa secziun?
+newtab-section-confirm-block-section-p2 = La secziun bloccada na vegn pli a cumparair en tes feed.
+newtab-section-block-section-button = Bloccar questa secziun
+newtab-section-cancel-button = Betg ussa
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Temas
+newtab-section-mangage-topics-button =
+    .label = Temas suandads e bloccads
+newtab-section-mangage-topics-followed-topics-subtitle = Temas suandads
+newtab-section-mangage-topics-followed-topics-empty-state = Ti na suondas anc nagins temas.
+newtab-section-mangage-topics-blocked-topics-subtitle = Temas bloccads
+newtab-section-mangage-topics-blocked-topics-empty-state = Ti n’has anc bloccà nagins temas.

@@ -70,13 +70,17 @@ appmenuitem-fullscreen =
 ## Firefox Account toolbar button and Sync panel in App menu.
 
 appmenu-remote-tabs-sign-into-sync =
-    .label = Вписване в Sync…
+    .label = Вписване за синхронизиране…
 appmenu-remote-tabs-turn-on-sync =
     .label = Включване на Sync…
 # This is shown after the tabs list if we can display more tabs by clicking on the button
 appmenu-remote-tabs-showmore =
     .label = Показване на повече раздели
     .tooltiptext = Повече раздели от други устройства
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Неактивни раздели
+    .tooltiptext = Вижте неактивните раздели на това устройство
 # This is shown beneath the name of a device when that device has no open tabs
 appmenu-remote-tabs-notabs = Няма отворени раздели
 # This is shown when Sync is configured but syncing tabs is disabled.
@@ -104,8 +108,11 @@ appmenu-fxa-sync-and-save-data2 = Синхронизиране и запазва
 appmenu-fxa-signed-in-label = Вход
 appmenu-fxa-setup-sync =
     .label = Включване синхронизиране
+appmenu-fxa-setup-sync-new = Включване
 appmenuitem-save-page =
     .label = Запазване като…
+appmenuitem-fxa-sync-off-title = Синхронизирането е изключено
+appmenuitem-fxa-sync-off-description = Защитете и имайте достъп до отметки, пароли и други навсякъде.
 
 ## What's New panel in App menu.
 
@@ -192,6 +199,9 @@ profiler-popup-presets-power-description = Предварителни настр
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = Захранване
+profiler-popup-presets-debug-description = Предварителни настройки за отстраняване на грешки в { -brand-shorter-name }. Имат голямо и негативно въздействие на системата, не се използват за работа по производителността, а за фокусиране върху разбиране на поведението на браузъра.
+profiler-popup-presets-debug-label =
+    .label = Дебъг
 profiler-popup-presets-custom-label =
     .label = Потребителски
 
@@ -256,12 +266,12 @@ appmenu-help-not-deceptive =
 ## More Tools
 
 appmenu-customizetoolbar =
-    .label = Настройки на лентата с инструменти…
+    .label = Приспособяване на лентата…
 appmenu-developer-tools-subheader = Инструменти за четеца
 appmenu-developer-tools-extensions =
     .label = Разширения за разработчици
 appmenuitem-report-broken-site =
-    .label = Съобщаване за неработеща страница
+    .label = Доклад за повредена страница
 
 ## Panel for privacy and security products
 
@@ -272,3 +282,14 @@ appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Скрива истинския телефонен номер и адрес на ел. поща
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Защита на действията ви онлайн
+
+## Profiles panel
+
+appmenu-profiles = Профили
+appmenu-other-profiles = Други профили
+appmenu-manage-profiles =
+    .label = Управление на профили
+appmenu-create-profile =
+    .label = Нов профил
+appmenu-edit-profile =
+    .aria-label = Промяна на профила

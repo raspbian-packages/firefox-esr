@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = Navegação privativa do { -brand-shortcut-name }
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — navegação privativa
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } — navegação privativa
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } — navegação privativa
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name } — { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — { -brand-full-name } — navegação privativa
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — navegação privativa
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } — navegação privativa
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — navegação privativa
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — navegação privativa
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -309,6 +367,10 @@ quickactions-cmd-viewsource = ver fonte, fonte
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Saiba mais sobre ações rápidas
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Pressione a tecla Tab para selecionar:
 
 ## Bookmark Panel
 
@@ -547,6 +609,8 @@ urlbar-go-button =
     .tooltiptext = Abrir a página
 urlbar-page-action-button =
     .tooltiptext = Ações da página
+urlbar-revert-button =
+    .tooltiptext = Mostrar o endereço na barra de endereços
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -607,6 +671,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = Pesquisar com { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Pesquisar em { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Pesquisar com { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Escolha um mecanismo de pesquisa
+urlbar-searchmode-bookmarks =
+    .label = Favoritos
+urlbar-searchmode-tabs =
+    .label = Abas
+urlbar-searchmode-history =
+    .label = Histórico
+urlbar-searchmode-actions =
+    .label = Ações
+urlbar-searchmode-exit-button =
+    .tooltiptext = Fechar
+urlbar-searchmode-popup-description = Desta vez, pesquisar com:
+urlbar-searchmode-popup-search-settings = Configurações de pesquisa
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, escolha um mecanismo de pesquisa
+    .tooltiptext = { $engine }, escolha um mecanismo de pesquisa
+urlbar-searchmode-button-no-engine =
+    .label = Nenhum atalho selecionado, escolha um atalho
+    .tooltiptext = Nenhum atalho selecionado, escolha um atalho
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -616,6 +712,12 @@ urlbar-result-action-search-bookmarks = Procurar favoritos
 urlbar-result-action-search-history = Pesquisar no histórico
 urlbar-result-action-search-tabs = Pesquisar nas abas
 urlbar-result-action-search-actions = Ações de pesquisa
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Mudar para { $group }
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = Abrir { $group }
 
 ## Labels shown above groups of urlbar results
 
@@ -657,10 +759,10 @@ urlbar-trending-dismissal-acknowledgment = Obrigado por sua opinião Não aparec
 
 # This should match menu-view-enter-readerview in menubar.ftl
 reader-view-enter-button =
-    .aria-label = Ativar leitor
+    .aria-label = Ativar modo de leitura
 # This should match menu-view-close-readerview in menubar.ftl
 reader-view-close-button =
-    .aria-label = Desativar leitor
+    .aria-label = Desativar modo de leitura
 
 ## Picture-in-Picture urlbar button
 ## Variables:
@@ -929,6 +1031,9 @@ data-reporting-notification-button =
     .accesskey = E
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Navegação privativa
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Navegação privativa
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -937,7 +1042,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Proteção de dados
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = Sua organização usa { $agentName } para se proteger contra perda de dados. <a data-l10n-name="info">Saiba mais</a>
+content-analysis-panel-text-styled = Sua organização usa <b>{ $agentName }</b> para se proteger contra perda de dados. <a data-l10n-name="info">Saiba mais</a>
 
 ## Unified extensions (toolbar) button
 
@@ -962,6 +1067,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Extensões
         Algumas extensões não estão permitidas
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Extensões
+    .tooltiptext =
+        Extensões
+        Algumas extensões estão desativadas
 
 ## Private browsing reset button
 
@@ -995,13 +1109,14 @@ firefox-relay-offer-why-to-use-relay = Nossas máscaras seguras e fáceis de usa
 # Variables:
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = Todos os emails enviados para suas máscaras de email são encaminhados para <strong>{ $useremail }</strong> (a menos que você decida bloquear).
-firefox-relay-offer-legal-notice = Ao clicar em “Usar máscara de email”, você concorda com os <label data-l10n-name="tos-url">Termos do serviço</label> e o <label data-l10n-name="privacy-url">Aviso de privacidade </label>.
+firefox-relay-offer-legal-notice = Ao clicar em “Usar máscara de email”, você declara que concorda com os <label data-l10n-name="tos-url">Termos do serviço</label> e o <label data-l10n-name="privacy-url">Aviso de privacidade </label>.
 
 ## Add-on Pop-up Notifications
 
 popup-notification-addon-install-unsigned =
     .value = (Não verificado)
 popup-notification-xpinstall-prompt-learn-more = Saiba mais sobre instalação de extensões com segurança
+popup-notification-xpinstall-prompt-block-url = Ver detalhes
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = Funcionar em janelas privativas

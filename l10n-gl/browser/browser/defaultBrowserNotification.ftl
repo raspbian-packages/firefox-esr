@@ -15,9 +15,17 @@ default-browser-notification-button =
 default-browser-prompt-title-pin = Converter o { -brand-short-name } no seu navegador principal?
 default-browser-prompt-message-pin = Manteña o { -brand-short-name } ao alcance dos seus dedos: convértao no seu navegador predeterminado e fíxeo á barra de tarefas.
 default-browser-prompt-message-pin-mac = Manteña o { -brand-short-name } ao alcance dos seus dedos: convértao no seu navegador predeterminado e fíxeo á súa doca.
+default-browser-prompt-button-primary-set = Establecer como navegador principal
 default-browser-prompt-button-primary-pin = Converter no navegador principal
 default-browser-prompt-title-alt = Converter o { -brand-short-name } no navegador predeterminado?
 default-browser-prompt-message-alt = Obteña velocidade, seguranza e privacidade cada vez que navegue.
 default-browser-prompt-button-primary-alt = Estabelecer como navegador predeterminado
 default-browser-prompt-checkbox-not-again-label = Non mostrar máis esta imaxe
 default-browser-prompt-button-secondary = Agora non
+
+## Strings for a Windows native guidance notification when the user is forced to
+## use Windows Settings to set the default browser. Instructions differ for
+## Windows 10 and 11.
+
+default-browser-guidance-notification-info-page = Móstrame
+default-browser-guidance-notification-dismiss = Feito

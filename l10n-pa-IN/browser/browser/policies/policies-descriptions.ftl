@@ -125,6 +125,7 @@ policy-Permissions2 = ਕੈਮਰਾ, ਮਾਈਕਰੋਫੋਨ, ਟਿਕਾ
 policy-PictureInPicture = ਤਸਵੀਰ-ਚ-ਤਸਵੀਰ ਨੂੰ ਸਮਰੱਥ ਜਾਂ ਅਸਮਰੱਥ ਕਰੋ।
 policy-PopupBlocking = ਕੁਝ ਵੈਬਸਾਈਟਾਂ ਨੂੰ ਡਿਫੌਲਟ ਦੁਆਰਾ ਪੌਪਅਪਸ ਪ੍ਰਦਰਸ਼ਿਤ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ।
 policy-Preferences = ਤਰਜੀਹਾਂ ਦੇ ਸਬਸੈਟ ਲਈ ਮੁੱਲ ਨੂੰ ਸੈਟ ਕਰੋ ਅਤੇ ਲਾਕ ਕਰੋ।
+policy-PrivateBrowsingModeAvailability = ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ ਕਰਨ ਦੇ ਢੰਗ ਦੀ ਮੌਜੂਦਗੀ ਸੈੱਟ ਕਰੋ।
 policy-PromptForDownloadLocation = ਡਾਊਨਲੋਡ ਕਰਨ ਵੇਲੇ ਫਾਈਲਾਂ ਨੂੰ ਕਿੱਥੇ ਸੁਰੱਖਿਅਤ ਕਰਨ ਦੇ ਬਾਰੇ ਪੁੱਛੋ।
 policy-Proxy = ਪਰਾਕਸੀ ਸੈਟਿੰਗਾਂ ਦੀ ਸੰਰਚਨਾ।
 policy-RequestedLocales = ਤਰਜੀਹ ਦੇ ਅਨੁਸਾਰ ਅਰਜ਼ੀ ਲਈ ਲੋੜੀਦੇ ਲੋਕਲਾਂ ਦੀ ਸੂਚੀ ਸੈਟ ਕਰੋ।
@@ -145,3 +146,5 @@ policy-UseSystemPrintDialog = ਸਿਸਟਮ ਪਰਿੰਟ ਡਾਈਲਾਗ
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = ਵੈਬਸਾਈਟ ਨੂੰ ਬਲਾਕ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕਰੋ। ਫੌਰਮੈਟ ਤੇ ਹੋਰ ਵੇਰਵਿਆਂ ਲਈ ਦਸਤਾਵੇਜ਼ ਵੇਖੋ।
 policy-Windows10SSO = Microsoft, ਕੰਮ ਤੇ ਸਕੂਲ ਖਾਤਿਆਂ ਲਈ Windows ਇਕਹੇਰੇ ਸਾਈਨ-ਆਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ।
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Microsoft Entra ਖਾਤਿਆਂ ਲਈ ਸਿੰਗਲ ਸਾਈਨ-ਆਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੰਦਾ ਹੈ।

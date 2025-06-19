@@ -8,11 +8,18 @@
 newtab-page-title = Új lap
 newtab-settings-button =
     .title = Az Új lap oldal személyre szabása
+newtab-personalize-settings-icon-label =
+    .title = Új lap testreszabása
+    .aria-label = Beállítások
+newtab-settings-dialog-label =
+    .aria-label = Beállítások
 newtab-personalize-icon-label =
     .title = Új lap testreszabása
     .aria-label = Új lap testreszabása
 newtab-personalize-dialog-label =
     .aria-label = Testreszabás
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -49,13 +56,13 @@ newtab-topsites-add-shortcut-label = Indítóikon hozzáadása
 newtab-topsites-title-label = Cím
 newtab-topsites-title-input =
     .placeholder = Cím megadása
-newtab-topsites-url-label = URL
+newtab-topsites-url-label = Webcím
 newtab-topsites-url-input =
-    .placeholder = Írjon vagy illesszen be egy URL-t
-newtab-topsites-url-validation = Érvényes URL szükséges
-newtab-topsites-image-url-label = Egyéni kép URL
+    .placeholder = Írjon vagy illesszen be egy webcímet
+newtab-topsites-url-validation = Érvényes webcím szükséges
+newtab-topsites-image-url-label = Egyéni kép webcíme
 newtab-topsites-use-image-link = Egyéni kép használata…
-newtab-topsites-image-validation = A kép betöltése nem sikerült. Próbáljon meg egy másik URL-t.
+newtab-topsites-image-validation = A kép betöltése nem sikerült. Próbáljon meg egy másik webcímet.
 
 ## Top Sites - General form dialog buttons. These are verbs/actions.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Mentés a { -pocket-brand-name }be
 newtab-menu-delete-pocket = Törlés a { -pocket-brand-name }ből
 newtab-menu-archive-pocket = Archiválás a { -pocket-brand-name }ben
 newtab-menu-show-privacy-info = Támogatóink és az Ön adatvédelme
+newtab-menu-about-fakespot = A { -fakespot-brand-name } névjegye
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Tiltás
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Téma követésének megszüntetése
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Legutóbbi tevékenység
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = A(z) { $provider } ajánlásával
 newtab-section-header-stories = Elgondolkodtató történetek
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Mai kedvencek
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = { -pocket-brand-name } beszerzése
 newtab-pocket-cta-text = Mentse az Ön által kedvelt történeteket a { -pocket-brand-name }be, és töltse fel elméjét lebilincselő olvasnivalókkal.
 newtab-pocket-pocket-firefox-family = A { -pocket-brand-name } a { -brand-product-name } család része
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Mentés
 newtab-pocket-saved = Mentve
 
@@ -239,6 +257,13 @@ newtab-pocket-saved = Mentve
 # Clicking the thumbs up button for this story will result in more stories like this one being recommended
 newtab-pocket-thumbs-up-tooltip =
     .title = Több hasonló
+# Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
+newtab-pocket-thumbs-down-tooltip =
+    .title = Nem nekem való
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Köszönjük. Visszajelzése segít nekünk a hírforrás fejlesztésében.
+newtab-toast-thumbs-up-or-down = Köszönjük. Visszajelzése segít nekünk a hírforrás fejlesztésében.
 newtab-toast-dismiss-button =
     .title = Eltüntetés
     .aria-label = Eltüntetés
@@ -303,6 +328,8 @@ newtab-wallpaper-dark-panda = Vörös panda elrejtve az erdőben
 newtab-wallpaper-dark-sky = Városi táj éjszakai égbolttal
 newtab-wallpaper-dark-mountain = Hegyvidéki táj
 newtab-wallpaper-dark-city = Lila városi táj
+newtab-wallpaper-dark-fox-anniversary = Egy róka a járdán, közel egy erdőhöz
+newtab-wallpaper-light-fox-anniversary = Egy róka egy füves mezőben, ködös hegyi tájjal
 
 ## Solid Colors
 
@@ -367,6 +394,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Szponzorálva
 newtab-weather-menu-change-location = Hely módosítása
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Keresési hely
+    .aria-label = Keresési hely
 newtab-weather-change-location-search-input = Keresési hely
 newtab-weather-menu-weather-display = Időjárás-kijelző
 # Display options are:
@@ -385,3 +415,76 @@ newtab-weather-menu-hide-weather = Időjárás elrejtése az Új lapon
 newtab-weather-menu-learn-more = További tudnivalók
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Az időjárásadatok most nem érhetők el
+
+## Topic Labels
+
+newtab-topic-label-business = Üzlet
+newtab-topic-label-career = Karrier
+newtab-topic-label-education = Oktatás
+newtab-topic-label-arts = Szórakozás
+newtab-topic-label-food = Étel
+newtab-topic-label-health = Egészség
+newtab-topic-label-hobbies = Játék
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Pénz
+newtab-topic-label-society-parenting = Gyereknevelés
+newtab-topic-label-government = Politika
+newtab-topic-label-education-science = Tudomány
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Életmód
+newtab-topic-label-sports = Sport
+newtab-topic-label-tech = Technika
+newtab-topic-label-travel = Utazás
+newtab-topic-label-home = Otthon és kert
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Válasszon témákat a hírforrás finomhangolásához
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Válasszon kettő vagy több témát. Szakértő kurátoraink az érdeklődési körének megfelelő történeteket részesítik előnyben. Frissítse bármikor.
+newtab-topic-selection-save-button = Mentés
+newtab-topic-selection-cancel-button = Mégse
+newtab-topic-selection-button-maybe-later = Talán később
+newtab-topic-selection-privacy-link = Tudja meg, hogyan védjük és kezeljük az adatait
+newtab-topic-selection-button-update-interests = Frissítse az érdeklődési köreit
+newtab-topic-selection-button-pick-interests = Válassza ki az érdeklődési köreit
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Követés
+newtab-section-following-button = Követés
+newtab-section-unfollow-button = Követés megszüntetése
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Blokkolás
+newtab-section-blocked-button = Blokkolva
+newtab-section-unblock-button = Blokkolás feloldása
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Biztos, hogy blokkolja ezt a szakaszt?
+newtab-section-confirm-block-section-p2 = A blokkolt szakasz nem fog megjelenni a hírfolyamában.
+newtab-section-block-section-button = Szakasz blokkolása
+newtab-section-cancel-button = Most nem
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Témák
+newtab-section-mangage-topics-button =
+    .label = Követett és blokkolt témák
+newtab-section-mangage-topics-followed-topics-subtitle = Követett témák
+newtab-section-mangage-topics-followed-topics-empty-state = Még nem követ egyetlen témát sem.
+newtab-section-mangage-topics-blocked-topics-subtitle = Blokkolt témák
+newtab-section-mangage-topics-blocked-topics-empty-state = Még nem blokkol egyetlen témát sem.

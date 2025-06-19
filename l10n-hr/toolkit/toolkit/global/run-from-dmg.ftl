@@ -9,7 +9,7 @@
 ## user accepts.
 
 prompt-to-install-title = Završiti instalaciju programa { -brand-short-name }?
-prompt-to-install-message = Završi ovu instalaciju u jednom koraku i zadrži { -brand-short-name } aktualnim i spriječi gubitak podataka. { -brand-short-name } bit će dodan u tvoju mapu Aplikacije i Dock.
+prompt-to-install-message = Završi ovu instalaciju u jednom koraku i zadrži { -brand-short-name } aktualnim i spriječi gubljenje podataka. { -brand-short-name } će se dodati u tvoju mapu Aplikacije i u Dock.
 prompt-to-install-yes-button = Instaliraj
 prompt-to-install-no-button = Nemoj instalirati
 
@@ -22,3 +22,7 @@ install-failed-message = { -brand-short-name } instalacija nije uspjela, ali i d
 ## installation of the app in the Applications directory if one is detected,
 ## rather than the app that was double-clicked in a .dmg.
 
+prompt-to-launch-existing-app-title = Otvoriti postojeću aplikaciju { -brand-short-name }?
+prompt-to-launch-existing-app-message = Već imate instaliran { -brand-short-name }. Koristite instaliranu aplikaciju kako biste bili u toku i spriječili gubitak podataka.
+prompt-to-launch-existing-app-yes-button = Otvori postojeću
+prompt-to-launch-existing-app-no-button = Ne hvala

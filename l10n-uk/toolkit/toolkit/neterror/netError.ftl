@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = Заблокована сторінка
 neterror-captive-portal-page-title = Вхід в мережу
 neterror-dns-not-found-title = Сервер не знайдено
 neterror-malformed-uri-page-title = Недійсна URL-адреса
+general-body-title = Будьте обережні. Тут щось не так.
 
 ## Error page actions
 
@@ -41,6 +42,8 @@ neterror-generic-error = { -brand-short-name } не може завантажи�
 neterror-load-error-try-again = Сайт може бути тимчасово недоступний, або перевантажений запитами. Спробуйте знову трохи згодом.
 neterror-load-error-connection = Якщо жодна сторінка не завантажується, перевірте з'єднання комп'ютера з інтернетом.
 neterror-load-error-firewall = Якщо ваш комп'ютер або мережа захищені мережевим екраном чи проксі-сервером, переконайтеся, що для { -brand-short-name } дозволено доступ до інтернету.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Якщо ви намагаєтеся завантажити сторінку локальної мережі, обов'язково надайте дозволи локальної мережі для { -brand-short-name } в параметрах приватності та безпеки macOS.
 neterror-captive-portal = Перш ніж отримати доступ до Інтернету, ви повинні увійти в цю мережу.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -56,7 +59,7 @@ neterror-dns-not-found-hint-firewall = Перевірити чи { -brand-short-
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-trr-only-reason = { -brand-short-name } не може захистити ваш запит для адреси цього сайту через нашу довірену службу DNS. Ось чому:
-neterror-dns-not-found-trr-only-reason2 = { -brand-short-name } не може захистити ваш запит на адресу цього сайту через нашого надійного постачальника DNS. Ось чому:
+neterror-dns-not-found-trr-only-reason2 = { -brand-short-name } не може захистити ваш запит на адресу цього сайту через нашого провайдера захищеної DNS. Ось чому:
 neterror-dns-not-found-trr-third-party-warning2 = Ви можете продовжити роботу з типовим DNS-перетворювачем. Однак, сторонні можуть мати змогу бачити відвідувані вами вебсайти.
 neterror-dns-not-found-trr-only-could-not-connect = { -brand-short-name } не зміг встановити з'єднання з { $trrDomain }.
 neterror-dns-not-found-trr-only-timeout = З'єднання з { $trrDomain } тривало довше, ніж очікувалося.
@@ -64,6 +67,7 @@ neterror-dns-not-found-trr-offline = Ви не під'єднані до інте
 neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } не може знайти цей вебсайт.
 neterror-dns-not-found-trr-server-problem = Виникла проблема з { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = Недійсна URL-адреса.
+neterror-dns-not-found-system-sleep = Система в режимі сну.
 neterror-dns-not-found-trr-unknown-problem = Неочікувана проблема.
 
 ## Native fallback specific messages
@@ -71,7 +75,7 @@ neterror-dns-not-found-trr-unknown-problem = Неочікувана пробле
 ##   $trrDomain (String) - Hostname of the DNS over HTTPS server that is currently in use.
 
 neterror-dns-not-found-native-fallback-reason = { -brand-short-name } не може захистити ваш запит для адреси цього сайту через нашу довірену службу DNS. Ось чому:
-neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } не може захистити ваш запит на адресу цього сайту через нашого надійного постачальника DNS. Ось чому:
+neterror-dns-not-found-native-fallback-reason2 = { -brand-short-name } не може захистити ваш запит на адресу цього сайту через нашого провайдера захищеної DNS. Ось чому:
 neterror-dns-not-found-native-fallback-heuristic = DNS через HTTPS було вимкнено у вашій мережі.
 neterror-dns-not-found-native-fallback-not-confirmed2 = { -brand-short-name } не зміг встановити з'єднання з { $trrDomain }.
 
@@ -147,3 +151,11 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Якщо ви не знай
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> має політику безпеки, що називається HTTP Strict Transport Security (HSTS), і це означає, що { -brand-short-name } може перейти сюди лише з використанням захищеного з'єднання. Ви не можете додати виняток для відвідування цього сайту.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Швидше за все, нічого. Ймовірно, проблема з самим сайтом.
+certerror-blocked-by-corp-headers-description = Іноді вебсайти встановлюють захист від небажаної взаємодії з іншими сайтами для себе й інших людей.
+certerror-coop-learn-more = Докладніше про політику відкриття сайтів з різних джерел (COOP)
+certerror-coep-learn-more = Докладніше про політику вбудовування з різних джерел (COEP)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Код помилки: { $responsestatus } { $responsestatustext }

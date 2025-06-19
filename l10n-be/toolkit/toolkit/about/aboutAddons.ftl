@@ -299,6 +299,14 @@ find-more-themes = Знайсці іншыя тэмы
 # used for screen readers.
 addon-options-button =
     .aria-label = Дадатковыя параметры
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro2 =
+    Пашырэнні і тэмы дазваляюць уладкаваць { -brand-product-name }. Яны могуць павысіць
+    прыватнасць, павялічыць прадукцыйнасць, палепшыць мультымедыя, змяніць выгляд
+    { -brand-product-name } і багата чаго яшчэ. Гэтыя невялікія праграмы часта распрацаваныя
+    трэцімі асобамі. Вось падборка, якую { -brand-product-name } <a data-l10n-name="learn-more-trigger">рэкамендуе</a>
+    для выключнай бяспекі, прадукцыйнасці і функцыянальнасці.
 
 ## Add-on actions
 
@@ -432,6 +440,7 @@ available-updates-heading = Даступныя абнаўленні
 recent-updates-heading = Нядаўнія абнаўленні
 release-notes-loading = Загрузка…
 release-notes-error = Выбачайце, здарылася памылка пры загрузцы заўваг да выпуску.
+addon-permissions-empty2 = Гэта пашырэнне не патрабуе якіх-небудзь дазволаў.
 addon-permissions-empty = Гэта пашырэнне не патрабуе якіх-небудзь дазволаў
 addon-permissions-required = Неабходныя дазволы для асноўнай функцыянальнасці:
 addon-permissions-optional = Неабавязковыя дазволы для дадатковай функцыянальнасці:
@@ -481,10 +490,24 @@ details-notification-unsigned-and-disabled-link = Больш звестак
 details-notification-unsigned = Праца { $name } у { -brand-short-name } не была праверана. Працягвайце з асцярогай.
 details-notification-unsigned2 =
     .message = Праца { $name } у { -brand-short-name } не была праверана. Працягвайце з асцярогай.
+details-notification-hard-blocked-extension =
+    .message = Гэта пашырэнне заблакавана за парушэнне палітык Mozilla і было адключана.
+details-notification-hard-blocked-other =
+    .message = Гэты дадатак заблакаваны за парушэнне палітык Mozilla і быў адключаны.
 details-notification-unsigned-link = Больш звестак
 details-notification-blocked = { $name } забаронены, бо маюцца праблемы сумяшчальнасці або ўстойлівасці.
 details-notification-blocked2 =
     .message = { $name } забаронены, бо маюцца праблемы сумяшчальнасці або ўстойлівасці.
+details-notification-blocked-link2 = Паказаць падрабязнасці
+details-notification-soft-blocked-extension-disabled =
+    .message = Гэта пашырэнне абмежавана з-за парушэння палітык Mozilla і было адключана. Вы можаце ўключыць яго, але гэта можа быць рызыкоўна.
+details-notification-soft-blocked-extension-enabled =
+    .message = Гэта пашырэнне парушае палітыку Mozilla. Яго выкарыстанне можа быць рызыкоўным.
+details-notification-soft-blocked-other-disabled =
+    .message = Гэты дадатак абмежаваны з-за парушэння палітык Mozilla і быў адключаны. Вы можаце ўключыць яго, але гэта можа быць рызыкоўна.
+details-notification-soft-blocked-other-enabled =
+    .message = Гэты дадатак парушае палітыку Mozilla. Яго выкарыстанне можа быць рызыкоўным.
+details-notification-softblocked-link2 = Паказаць падрабязнасці
 details-notification-blocked-link = Падрабязней
 details-notification-softblocked = Вядома, што { $name } мае праблемы сумяшчальнасці або ўстойлівасці.
 details-notification-softblocked2 =

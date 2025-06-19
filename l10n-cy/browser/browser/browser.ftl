@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = Pori Preifat { -brand-shortcut-name }
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = Pori Preifat { -brand-full-name }
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — Pori Preifat { -brand-full-name }
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — Pori Preifat { -brand-full-name }
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name } — { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Pori Preifat { -brand-full-name }
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — Pori Preifat
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — Pori Preifat { -brand-full-name }
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } —Pori Preifat
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Pori Preifat
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -309,6 +367,10 @@ quickactions-cmd-viewsource = gweld ffynhonnell, ffynhonnell
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Darllen rhagor am weithredoedd Cyflym
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Pwyswch y tab i ddewis:
 
 ## Bookmark Panel
 
@@ -414,7 +476,7 @@ identity-more-info-link-text =
 browser-window-minimize-button =
     .tooltiptext = Lleihau
 browser-window-maximize-button =
-    .tooltiptext = Mwyhau
+    .tooltiptext = Ehangu
 browser-window-restore-down-button =
     .tooltiptext = Adfer i Lawr
 browser-window-close-button =
@@ -566,6 +628,8 @@ urlbar-go-button =
     .tooltiptext = Mynd i'r cyfeiriad yn y Bar Lleoliad
 urlbar-page-action-button =
     .tooltiptext = Gweithredoedd tudalen
+urlbar-revert-button =
+    .tooltiptext = Dangos y cyfeiriad yn y Bar Lleoliad
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -626,6 +690,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = Chwilio gyda { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Chwilio { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Chwilio gyda { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Dewiswch Beiriant Chwilio
+urlbar-searchmode-bookmarks =
+    .label = Nodau Tudalen
+urlbar-searchmode-tabs =
+    .label = Tabiau
+urlbar-searchmode-history =
+    .label = Hanes
+urlbar-searchmode-actions =
+    .label = Gweithredoedd
+urlbar-searchmode-exit-button =
+    .tooltiptext = Cau
+urlbar-searchmode-popup-description = Y tro hwn, chwilio gyda:
+urlbar-searchmode-popup-search-settings = Gosodiadau chwilio
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine } , dewiswch beiriant chwilio
+    .tooltiptext = { $engine } , dewiswch beiriant chwilio
+urlbar-searchmode-button-no-engine =
+    .label = Dim llwybr byr wedi'i ddewis, dewiswch lwybr byr
+    .tooltiptext = Dim llwybr byr wedi'i ddewis, dewiswch lwybr byr
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -635,6 +731,12 @@ urlbar-result-action-search-bookmarks = Chwilio'r Nodau Tudalen
 urlbar-result-action-search-history = Chwilio'ch Hanes
 urlbar-result-action-search-tabs = Chwilio'r Tabiau
 urlbar-result-action-search-actions = Gweithredoedd Chwilio
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Newid i { $group }
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = Agor { $group }
 
 ## Labels shown above groups of urlbar results
 
@@ -656,6 +758,21 @@ urlbar-group-quickactions =
 #  $engine (String): the name of the search engine used to search.
 urlbar-group-recent-searches =
     .label = Chwilio Diweddar
+# The header shown above trending results.
+# Variables:
+#  $engine (String): the name of the search engine providing the trending suggestions
+urlbar-group-trending =
+    .label = Yn tueddu ar { $engine }
+# The result menu labels shown next to trending results.
+urlbar-result-menu-trending-dont-show =
+    .label = Peidio â dangos chwiliadau tuedd
+    .accesskey = P
+urlbar-result-menu-trending-why =
+    .label = Pam ydw i'n gweld hyn?
+    .accesskey = g
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-trending-dismissal-acknowledgment = Diolch am eich adborth. Fyddwch chi ddim yn gweld chwiliadau tuedd bellach.
 
 ## Reader View toolbar buttons
 
@@ -933,6 +1050,9 @@ data-reporting-notification-button =
     .accesskey = D
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Pori preifat
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Pori preifat
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -941,7 +1061,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Diogelu data
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = Mae eich sefydliad yn defnyddio { $agentName } i ddiogelu rhag colli data. <a data-l10n-name="info">Dysgu rhagor</a>
+content-analysis-panel-text-styled = Mae eich sefydliad yn defnyddio <b>{ $agentName }</b> i ddiogelu rhag colli data. <a data-l10n-name="info">Rhagor</a>
 
 ## Unified extensions (toolbar) button
 
@@ -966,6 +1086,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Estyniadau
         Nid oes caniatâd i rai estyniadau
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Estyniadau
+    .tooltiptext =
+        Estyniadau
+        Mae rhai estyniadau wedi'u hanalluogi
 
 ## Private browsing reset button
 
@@ -1005,7 +1134,8 @@ firefox-relay-offer-legal-notice = Drwy glicio “Defnyddio arallenw e-bost”, 
 
 popup-notification-addon-install-unsigned =
     .value = (Heb eu gwirio)
-popup-notification-xpinstall-prompt-learn-more = Dysgwch ragor am osod ategion yn ddiogel
+popup-notification-xpinstall-prompt-learn-more = Rhagor am osod ategion yn ddiogel
+popup-notification-xpinstall-prompt-block-url = Gweld manylion
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = Rhedeg mewn Ffenestri Preifat
@@ -1051,3 +1181,24 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = Dangos '{ $popupURI }'
+
+## File-picker crash notification ("FilePickerCrashed.sys.mjs")
+
+file-picker-failed-open = Nid oedd modd agor deialog ffeil Windows. Nid oedd modd dewis ffeil neu ffolder.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-failed-save-somewhere = Nid oedd modd agor deialog ffeil Windows. Bydd y ffeil yn cael ei chadw i { $path }.
+file-picker-failed-save-nowhere = Nid oedd modd agor deialog ffeil Windows. Nid oedd modd dod o hyd i ffolder rhagosodedig; ni fydd y ffeil yn cael ei chadw.
+file-picker-crashed-open = Mae deialog ffeil Windows wedi chwalu. Nid oedd modd dewis ffeil neu ffolder.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-crashed-save-somewhere = Mae deialog ffeil Windows wedi chwalu. Bydd y ffeil yn cael ei chadw i { $path }.
+file-picker-crashed-save-nowhere = Mae deialog ffeil Windows wedi chwalu. Nid oedd modd dod o hyd i ffolder rhagosodedig; ni fydd y ffeil yn cael ei chadw.
+
+# Button used with file-picker-crashed-save-default. Opens the folder in Windows
+# Explorer, with the saved file selected and in focus.
+#
+# The wording here should be consistent with the Windows variant of
+# `downloads-cmd-show-menuitem-2` and similar messages.
+
+file-picker-crashed-show-in-folder =
+    .label = Dangos mewn Ffolder
+    .accessKey = F

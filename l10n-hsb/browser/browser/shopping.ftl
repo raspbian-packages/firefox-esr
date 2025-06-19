@@ -89,6 +89,9 @@ shopping-show-less-button = Mjenje pokazać
 
 shopping-settings-label =
     .label = Nastajenja
+shopping-settings-recommendations-toggle2 =
+    .label = Poručenja a sponserowany wobsah pokazać
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } waše wosobinske daty njedźěla, tohodla tute poručenja njebudu wam přez internet slědować. <a data-l10n-name="review-quality-url">Dalše informacije</a>
 shopping-settings-recommendations-toggle =
     .label = Wabjenje w kontroli pohódnoćenjow pokazać
 shopping-settings-recommendations-learn-more2 = Budźeće hdys a hdys wabjenje za relewantne produkty widźeć. Wabimy jenož za produkty ze spušćomnymi pohódnoćenjemi. <a data-l10n-name="review-quality-url">Dalše informacije</a>
@@ -164,6 +167,7 @@ shopping-unanalyzed-product-analyze-button = Kwalitu pohódnoćenjow kontrolowa�
 
 more-to-consider-ad-label =
     .label = Dalše móžnosće
+shopping-sponsored-label = Sponserowany
 ad-by-fakespot = Wabjenje wot { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -184,6 +188,18 @@ shopping-survey-submit-button-label = Wotpósłać
 shopping-survey-terms-link = Wužiwanske wuměnjenja
 shopping-survey-thanks =
     .heading = Dźakujemy so za waš komentar!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Prošu zdźělće nam, čehodla sće kontrolu pohódnoćenjow znjemóžnił. Móžeće wjacore móžnosće wubrać, jeli trjeba.
+shopping-survey-thanks-title = Dźakujemy so za waš komentar!
+shopping-survey-opted-out-hard-to-understand = Je ćežko rozumić
+shopping-survey-opted-out-too-slow = Je přepomały
+shopping-survey-opted-out-not-accurate = Njeje dokładny
+shopping-survey-opted-out-not-helpful = Njeje wužitny za mnje
+shopping-survey-opted-out-check-myself = Přepruwuju radšo pohódnoćenja sam
+shopping-survey-opted-out-other = Druhe
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

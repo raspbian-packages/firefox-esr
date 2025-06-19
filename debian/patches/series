@@ -1,3 +1,6 @@
+fixes/Bug-1855960-MIPS64-Make-some-assembler-routines-retu.patch
+fixes/Bug-1855960-MIPS64-Implement-SummarizeTrapInstructio.patch
+fixes/Apply-wasm2c-upstream-fix-for-clang-targetting-mips.patch
 debian-hacks/Avoid-wrong-sessionstore-data-to-keep-windows-out-of.patch
 debian-hacks/Add-another-preferences-directory-for-applications-p.patch
 debian-hacks/Add-a-2-minutes-timeout-on-xpcshell-tests.patch
@@ -9,13 +12,12 @@ debian-hacks/Fix-math_private.h-for-i386-FTBFS.patch
 debian-hacks/Allow-to-override-rust-LTO-flag.patch
 debian-hacks/Remove-workaround-for-old-libstdc-problem-which-now-.patch
 debian-hacks/Relax-nodejs-minimum-version.patch
-debian-hacks/Relax-minimum-supporter-rust-version-to-1.63.patch
 debian-hacks/Work-around-https-sourceware.org-bugzilla-show_bug.c.patch
 debian-hacks/Allow-.js-preference-files-to-set-locked-prefs-with-.patch
 debian-hacks/Set-DPI-to-system-settings.patch
 debian-hacks/Don-t-auto-disable-extensions-in-system-directories.patch
 debian-hacks/Work-around-GCC-ICE-on-ppc64el.patch
-debian-hacks/Allow-to-build-oxilangtag-ffi-with-rustc-1.65.patch
+debian-hacks/Adjust-our-gfx-skia-moz.build-patch-to-upstream-chan.patch
 raspbian-rust-triplet-hack.patch
 try-to-disable-neon.patch
 try-harder-to-disable-neon.patch

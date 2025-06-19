@@ -4,7 +4,7 @@
 
 tab-context-new-tab =
     .label = Ivinell nevez
-    .accesskey = w
+    .accesskey = I
 reload-tab =
     .label = Adkargañ an ivinell
     .accesskey = A
@@ -28,10 +28,16 @@ duplicate-tabs =
 close-tabs-to-the-start =
     .label = Serriñ an ivinelloù war an tu kleiz
     .accesskey = l
+close-tabs-to-the-start-vertical =
+    .label = Serriñ an ivinelloù a-us
+    .accesskey = u
 # The following string is displayed on a menuitem that will close the tabs from the end of the tabstrip to the currently targeted tab (excluding the currently targeted and any other selected tabs).
 # In left-to-right languages this should use "Right" and in right-to-left languages this should use "Left".
 close-tabs-to-the-end =
     .label = Serriñ an ivinelloù war an tu dehou
+    .accesskey = i
+close-tabs-to-the-end-vertical =
+    .label = Serriñ an ivinelloù a-is
     .accesskey = i
 close-other-tabs =
     .label = Serriñ an ivinelloù all
@@ -56,7 +62,7 @@ bookmark-selected-tabs =
     .accesskey = i
 tab-context-bookmark-tab =
     .label = Ouzhpennañ an ivinell d'ar sinedoù…
-    .accesskey = B
+    .accesskey = O
 tab-context-open-in-new-container-tab =
     .label = Digeriñ en un ivinell enderc’hel nevez
     .accesskey = e
@@ -89,7 +95,7 @@ tab-context-reopen-closed-tabs =
             [many] Addigeriñ an ivinelloù serret
            *[other] Addigeriñ an ivinelloù serret
         }
-    .accesskey = o
+    .accesskey = g
 tab-context-close-n-tabs =
     .label =
         { $tabCount ->
@@ -100,7 +106,7 @@ tab-context-close-n-tabs =
             [many] Serriñ { $tabCount } ivinell
            *[other] Serriñ { $tabCount } ivinell
         }
-    .accesskey = C
+    .accesskey = S
 tab-context-move-tabs =
     .label =
         { $tabCount ->

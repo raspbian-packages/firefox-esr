@@ -8,11 +8,18 @@
 newtab-page-title = Novo separador
 newtab-settings-button =
     .title = Personalizar a sua página de novo separador
+newtab-personalize-settings-icon-label =
+    .title = Personalizar o novo separador
+    .aria-label = Definições
+newtab-settings-dialog-label =
+    .aria-label = Definições
 newtab-personalize-icon-label =
     .title = Personalizar novo separador
     .aria-label = Personalizar novo separador
 newtab-personalize-dialog-label =
     .aria-label = Personalizar
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Guardar no { -pocket-brand-name }
 newtab-menu-delete-pocket = Apagar do { -pocket-brand-name }
 newtab-menu-archive-pocket = Arquivar no { -pocket-brand-name }
 newtab-menu-show-privacy-info = Os nossos patrocinadores e a sua privacidade
+newtab-menu-about-fakespot = Sobre o { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Bloquear
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Deixar de seguir tópico
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Atividade recente
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Recomendado por { $provider }
 newtab-section-header-stories = Histórias que fazem pensar
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Escolhas de hoje para si
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,8 +247,26 @@ newtab-pocket-cta-button = Obter o { -pocket-brand-name }
 newtab-pocket-cta-text = Guarde as histórias que adora no { -pocket-brand-name }, e abasteça a sua mente com leituras fascinantes.
 newtab-pocket-pocket-firefox-family = O { -pocket-brand-name } faz parte da família { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Guardar
 newtab-pocket-saved = Guardado
+
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
+# Clicking the thumbs up button for this story will result in more stories like this one being recommended
+newtab-pocket-thumbs-up-tooltip =
+    .title = Mais assim
+# Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
+newtab-pocket-thumbs-down-tooltip =
+    .title = Não é para mim
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Obrigado. O seu comentário irá ajudar-nos a melhorar a sua fonte.
+newtab-toast-thumbs-up-or-down = Obrigado. O seu comentário irá ajudar-nos a melhorar a sua fonte.
+newtab-toast-dismiss-button =
+    .title = Ignorar
+    .aria-label = Ignorar
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
 
@@ -294,6 +328,8 @@ newtab-wallpaper-dark-panda = Panda-vermelho escondido na floresta
 newtab-wallpaper-dark-sky = Paisagem da cidade com um pôr do sol
 newtab-wallpaper-dark-mountain = Paisagem montanhosa
 newtab-wallpaper-dark-city = Paisagem urbana em tons de roxo
+newtab-wallpaper-dark-fox-anniversary = Uma raposa no passeio junto a uma floresta
+newtab-wallpaper-light-fox-anniversary = Uma raposa num campo verdejante com uma paisagem de montanhas envoltas em nevoeiro.
 
 ## Solid Colors
 
@@ -358,6 +394,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } · Patrocinado
 newtab-weather-menu-change-location = Alterar localização
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Pesquisar localização
+    .aria-label = Pesquisar localização
 newtab-weather-change-location-search-input = Pesquisar localização
 newtab-weather-menu-weather-display = Apresentação da meteorologia
 # Display options are:
@@ -376,3 +415,66 @@ newtab-weather-menu-hide-weather = Ocultar a meteorologia no novo separador
 newtab-weather-menu-learn-more = Saber mais
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Atualmente não estão disponíveis informações de meteorologia.
+
+## Topic Labels
+
+newtab-topic-label-business = Negócios
+newtab-topic-label-career = Carreiras
+newtab-topic-label-education = Educação
+newtab-topic-label-arts = Entretenimento
+newtab-topic-label-food = Comida
+newtab-topic-label-health = Saúde
+newtab-topic-label-hobbies = Jogos
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Dinheiro
+newtab-topic-label-society-parenting = Parentalidade
+newtab-topic-label-government = Política
+newtab-topic-label-education-science = Ciência
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Dicas
+newtab-topic-label-sports = Desporto
+newtab-topic-label-tech = Tecnologia
+newtab-topic-label-travel = Viagens
+newtab-topic-label-home = Casa e jardim
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Escolha os temas para personalizar a seu feed.
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Escolha dois ou mais temas. Os nossos curadores especializados priorizam histórias adaptadas aos seus interesses. Atualize a qualquer momento.
+newtab-topic-selection-save-button = Guardar
+newtab-topic-selection-cancel-button = Cancelar
+newtab-topic-selection-button-maybe-later = Talvez mais tarde
+newtab-topic-selection-privacy-link = Descubra como protegemos e gerimos os seus dados
+newtab-topic-selection-button-update-interests = Atualize os seus interesses
+newtab-topic-selection-button-pick-interests = Escolha os seus interesses
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Seguir
+newtab-section-following-button = A seguir
+newtab-section-unfollow-button = Deixar de seguir
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Tem a certeza que pretende bloquear esta secção?
+newtab-section-confirm-block-section-p2 = A secção bloqueada deixará de aparecer na sua fonte.
+newtab-section-block-section-button = Bloquear esta secção
+newtab-section-cancel-button = Agora não
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

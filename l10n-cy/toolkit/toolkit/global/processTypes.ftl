@@ -5,7 +5,6 @@
 
 ##
 ## Localization for remote types defined in RemoteType.h
-##
 
 process-type-web = Cynnwys Gwe
 # process used to run privileged about pages,
@@ -30,7 +29,6 @@ process-type-prealloc = Rhagddyranwyd
 
 ##
 ## Localization for Gecko process types defined in GeckoProcessTypes.h
-##
 
 process-type-default = Prif
 process-type-tab = Tab
@@ -41,6 +39,8 @@ process-type-gpu = GPU
 process-type-socket = Soced
 # process used to decode media
 process-type-rdd = RDD
+# process used to run inference
+process-type-inference = Rhesymiad
 # process used to run some IPC actor in their own sandbox
 process-type-utility = Actor IPC mewn blwch tywod
 process-type-utility-actor-audio-decoder-generic = Gwasanaeth Datgodiwr Sain Generig
@@ -53,7 +53,6 @@ process-type-utility-actor-windows-file-dialog = Gwasanaeth Windows File Dialog
 
 ##
 ## Other
-##
 
 # fallback
 process-type-unknown = Anhysbys

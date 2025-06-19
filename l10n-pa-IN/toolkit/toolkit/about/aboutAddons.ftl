@@ -67,10 +67,10 @@ detail-private-disallowed-description2 = ਇਹ ਇਕਟੈਨਸ਼ਨ ਪ੍ਰ�
 detail-private-required-label = ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋਆਂ ਲਈ ਪਹੁੰਚ ਦੀ ਲੋੜ ਹੈ
 detail-private-required-description2 = ਇਹ ਇਕਸਟੈਨਸ਼ਨ ਨੂੰ ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ ਕਰਨ ਦੌਰਾਨ ਤੁਹਾਡੀਆਂ ਆਨਲਾਈਨ ਸਰਗਰਮੀਆਂ ਲਈ ਪਹੁੰਚ ਹੈ। <a data-l10n-name="learn-more">ਹੋਰ ਜਾਣੋ</a>
 detail-private-browsing-on =
-    .label = ਇਜਾਜ਼ਤ ਹੈ
+    .label = ਮਨਜ਼ੂਰ
     .tooltiptext = ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ ਕਰਨ ‘ਚ ਸਮਰੱਥ ਹੈ
 detail-private-browsing-off =
-    .label = ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ
+    .label = ਨਾ-ਮਨਜ਼ੂਰ ਕਰੋ
     .tooltiptext = ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਰ ਵਿੱਚ ਅਸਮਰੱਥ
 detail-home =
     .label = ਮੁੱਖ ਸਫ਼ਾ
@@ -115,7 +115,7 @@ legacy-extensions =
     .value = ਪੁਰਾਣੀਆਂ ਇਕਟੈਨਸ਼ਨਾਂ
 legacy-extensions-description = ਇਹ ਇਕਟੈਸ਼ਨਾਂ ਮੌਜੂਦਾ { -brand-short-name } ਸਟੈਂਡਰਡਾਂ ਨੂੰ ਪੂਰਾ ਨਹੀਂ ਕਰਦੀਆਂ ਹਨ ਇਸਕਰਕੇ ਇਹਨਾਂ ਨੂੰ ਨਾ-ਸਰਗਰਮ ਕੀਤਾ ਗਿਆ ਹੈ। <label data-l10n-name="legacy-learn-more">ਐਡ-ਆਨ 'ਚ ਤਬਦੀਲੀਆਂ ਬਾਰੇ ਜਾਣੋ</label>
 private-browsing-description2 =
-    { -brand-short-name } ਪਰਾਈਵੇਟ ਬਰਾਊਜ਼ ਕਰਨ ਵਾਲੇ ਇਕਸਟੈਨਸ਼ਨਾਂ ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਢੰਗ ਨੂੰ ਬਦਲ ਰਿਹਾ ਹੈ। ਤੁਹਾਡੇ { -brand-short-name } ਵਿੱਚ ਜੋੜੀ ਗਈ ਕੋਈ ਵੀ ਨਵੀਂ ਇਕਸਟੈਨਸ਼ਨ ਆਪਣੇ-ਆਪ ਪਰਾਈਵੇਟ ਵਿੰਡੋ ਵਿੱਚ ਨਹੀਂ ਚੱਲੇਗੀ। ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਉਸ ਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿਉਂਗੇ, ਇਕਸਟੈਨਸ਼ਨ ਪਰਾਈਵੇਟ ਬਰਾਊਜ਼ ਕਰਨ ਦੌਰਾਨ ਕੰਮ ਨਹੀਂ ਕਰੇਗੀ ਅਤੇ ਤੁਹਾੀਡਆਂ ਆਨਲਾਈਨ ਸਰਗਰਮੀਆਂ ਲਈ ਪਹੁੰਚ ਨਹੀਂ ਕਰ ਸਕੇਗੀ। ਅਸੀਂ ਇਹ ਤਬਦੀਲੀ ਤੁਹਾਡੀ ਪਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ ਨੂੰ ਨਿੱਜੀ ਬਣਾਈ ਰੱਖਣ ਲਈ ਕੀਤੀ ਹੈ।
+    { -brand-short-name } ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ ਕਰਨ ਵਾਲੇ ਇਕਸਟੈਨਸ਼ਨਾਂ ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਢੰਗ ਨੂੰ ਬਦਲ ਰਿਹਾ ਹੈ। ਤੁਹਾਡੇ { -brand-short-name } ਵਿੱਚ ਜੋੜੀ ਗਈ ਕੋਈ ਵੀ ਨਵੀਂ ਇਕਸਟੈਨਸ਼ਨ ਆਪਣੇ-ਆਪ ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋ ਵਿੱਚ ਨਹੀਂ ਚੱਲੇਗੀ। ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਉਸ ਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿਉਂਗੇ, ਇਕਸਟੈਨਸ਼ਨ ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ ਕਰਨ ਦੌਰਾਨ ਕੰਮ ਨਹੀਂ ਕਰੇਗੀ ਅਤੇ ਤੁਹਾੀਡਆਂ ਆਨਲਾਈਨ ਸਰਗਰਮੀਆਂ ਲਈ ਪਹੁੰਚ ਨਹੀਂ ਕਰ ਸਕੇਗੀ। ਅਸੀਂ ਇਹ ਤਬਦੀਲੀ ਤੁਹਾਡੀ ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ ਨੂੰ ਨਿੱਜੀ ਬਣਾਈ ਰੱਖਣ ਲਈ ਕੀਤੀ ਹੈ।
     <label data-l10n-name="private-browsing-learn-more">ਇਕਸਟੈਨਸ਼ਨ ਸੈਟਿੰਗਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</label>
 addon-category-discover = ਸਿਫਾਰਸ਼
 addon-category-discover-title =
@@ -291,6 +291,9 @@ find-more-themes = ਹੋਰ ਥੀਮ ਲੱਭੋ
 # used for screen readers.
 addon-options-button =
     .aria-label = ਹੋਰ ਚੋਣਾਂ
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro2 = ਇਕਸਟੈਨਸ਼ਨ ਅਤੇ ਥੀਮ ਤੁਹਾਨੂੰ { -brand-product-name } ਕਸਟਮਾਈਜ਼ ਕਰਨ ਦਿੰਦੇ ਹਨ। ਇਹ ਪਰਦੇਦਾਰੀ ਵਧਾਉਣ, ਕਾਰਗੁਜ਼ਾਰੀ ਵਿੱਚ ਵਾਧਾ, ਮੀਡੀਏ ਨੂੰ ਵਧੀਆ ਬਣਾਉਣ, { -brand-product-name } ਦੀ ਦਿੱਖ ਨੂੰ ਬਦਲਣ, ਅਤੇ ਕੋਈ ਕੁਝ ਹੋਰ ਕਰਨ ਸਕਦੇ ਹਨ। ਇਹਨਾਂ ਛੋਟੇ ਸਾਫਟਵੇਅਰਾਂ ਨੂੰ ਅਕਸਰ ਸੁਤੰਤਰ ਧਿਰਾਂ ਵਲੋਂ ਤਿਆਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਸ਼ਾਨਦਾਰ ਸੁਰੱਖਿਆ, ਕਾਰਗੁਜ਼ਾਰੀ ਅਤੇ ਕਾਰਜ ਸਮਰੱਥਾ ਲਈ { -brand-product-name } <a data-l10n-name="learn-more-trigger">ਸਿਫਾਰਸ਼ਾਂ</a> ਇਹ ਹਨ।
 
 ## Add-on actions
 
@@ -423,6 +426,7 @@ available-updates-heading = ਉਪਲੱਬਧ ਅੱਪਡੇਟ
 recent-updates-heading = ਤਾਜ਼ਾ ਅੱਪਡੇਟ
 release-notes-loading = …ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ
 release-notes-error = ਅਫਸੋਸ, ਪਰ ਰੀਲਿਜ਼ ਨੋਟਿਸ ਡਾਊਨਲੋਡ ਕਰਨ ਦੌਰਾਨ ਸਮੱਸਿਆ ਆਈ ਹੈ।
+addon-permissions-empty2 = ਇਸ ਇਕਸਟੈਨਸ਼ਨ ਲਈ ਕਿਸੇ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।
 addon-permissions-empty = ਇਸ ਇਕਸਟੈਨਸ਼ਨ ਲਈ ਕਿਸੇ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ
 addon-permissions-required = ਮੂਲ ਕੰਮਾਂ ਲਈ ਚਾਹੀਦੀਆਂ ਇਜਾਜ਼ਤਾਂ:
 addon-permissions-optional = ਵਾਧੂ ਕੰਮਾਂ ਲਈ ਚੋਣਵੀਆਂ ਇਜਾਜ਼ਤਾਂ:
@@ -472,10 +476,24 @@ details-notification-unsigned-and-disabled-link = ਹੋਰ ਜਾਣਕਾਰ�
 details-notification-unsigned = { $name } ਨੂੰ { -brand-short-name } ਵਿੱਚ ਵਰਤਣ ਲਈ ਤਸਦੀਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਧਿਆਨ ਨਾਲ ਵਰਤੋਂ।
 details-notification-unsigned2 =
     .message = { $name } ਨੂੰ { -brand-short-name } ਵਿੱਚ ਵਰਤਣ ਲਈ ਤਸਦੀਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਧਿਆਨ ਨਾਲ ਵਰਤੋਂ।
+details-notification-hard-blocked-extension =
+    .message = ਇਸ ਇਕਸਟੈਨਸ਼ਨ ਨੂੰ Mozilla ਦੀਆਂ ਪਾਲਸੀਆਂ ਦਾ ਉਲੰਘਣ ਕਰਨ ਕਰਕੇ ਪਾਬੰਦੀ ਲਾਈ ਹੈ ਅਤੇ ਅਸਮਰੱਥ ਕੀਤਾ ਗਿਆ ਹੈ।
+details-notification-hard-blocked-other =
+    .message = ਇਸ ਐਡ-ਆਨ ਨੂੰ Mozilla ਦੀਆਂ ਪਾਲਸੀਆਂ ਦਾ ਉਲੰਘਣ ਕਰਨ ਕਰਕੇ ਪਾਬੰਦੀ ਲਾਈ ਹੈ ਅਤੇ ਅਸਮਰੱਥ ਕੀਤਾ ਗਿਆ ਹੈ।
 details-notification-unsigned-link = ਹੋਰ ਜਾਣਕਾਰੀ
 details-notification-blocked = { $name } ਨੂੰ ਸੁਰੱਖਿਆ ਜਾਂ ਸਥਿਰਤਾ ਸਮੱਸਿਆਵਾਂ ਕਰਕੇ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ।
 details-notification-blocked2 =
     .message = { $name } ਨੂੰ ਸੁਰੱਖਿਆ ਜਾਂ ਸਥਿਰਤਾ ਸਮੱਸਿਆਵਾਂ ਕਰਕੇ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ।
+details-notification-blocked-link2 = ਵੇਰਵੇ ਵੇਖੋ
+details-notification-soft-blocked-extension-disabled =
+    .message = ਇਸ ਇਕਸਟੈਨਸ਼ਨ ਨੂੰ Mozilla ਦੀਆਂ ਪਾਲਸੀਆਂ ਦਾ ਉਲੰਘਣ ਕਰਕੇ ਸੀਮਿਤ ਅਤੇ ਅਸਮਰੱਥ ਕੀਤਾ ਹੈ। ਤੁਸੀਂ ਇਸ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ, ਪਰ ਇਸ ਖ਼ਤਰਾ ਹੋ ਸਕਦਾ ਹੈ।
+details-notification-soft-blocked-extension-enabled =
+    .message = ਇਹ ਇਕਸਟੈਨਸ਼ਨ Mozilla ਦੀਆਂ ਪਾਲਸੀਆਂ ਦਾ ਉਲੰਘਣ ਕਰਦੀ ਹੈ। ਇਸ ਨੂੰ ਵਰਤਣਾ ਖ਼ਤਰਨਾਕ ਹੋ ਸਕਦਾ ਹੈ।
+details-notification-soft-blocked-other-disabled =
+    .message = ਇਸ ਐਡ-ਆਨ ਨੂੰ Mozilla ਦੀਆਂ ਪਾਲਸੀਆਂ ਦਾ ਉਲੰਘਣ ਕਰਕੇ ਸੀਮਿਤ ਅਤੇ ਅਸਮਰੱਥ ਕੀਤਾ ਹੈ। ਤੁਸੀਂ ਇਸ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ, ਪਰ ਇਸ ਖ਼ਤਰਾ ਹੋ ਸਕਦਾ ਹੈ।
+details-notification-soft-blocked-other-enabled =
+    .message = ਇਹ ਐਡ-ਆਨ Mozilla ਦੀਆਂ ਪਾਲਸੀਆਂ ਦਾ ਉਲੰਘਣ ਕਰਦੀ ਹੈ। ਇਸ ਨੂੰ ਵਰਤਣਾ ਖ਼ਤਰਨਾਕ ਹੋ ਸਕਦਾ ਹੈ।
+details-notification-softblocked-link2 = ਵੇਰਵੇ ਵੇਖੋ
 details-notification-blocked-link = ਹੋਰ ਜਾਣਕਾਰੀ
 details-notification-softblocked = { $name } ਨੂੰ ਸੁਰੱਖਿਆ ਜਾਂ ਸਥਿਰਤਾ ਸਮੱਸਿਆ ਦਾ ਕਾਰਨ ਮੰਨਿਆ ਗਿਆ ਹੈ।
 details-notification-softblocked2 =

@@ -119,6 +119,7 @@ policy-Permissions2 = 設定攝影機、麥克風、地理位置、通知、自�
 policy-PictureInPicture = 開啟或關閉子母畫面功能。
 policy-PopupBlocking = 允許某些網站預設可顯示彈出型視窗。
 policy-Preferences = 鎖定部分偏好設定的內容。
+policy-PrivateBrowsingModeAvailability = 設定是否可使用隱私瀏覽模式。
 policy-PromptForDownloadLocation = 下載檔案時，詢問要將檔案儲存至何處。
 policy-Proxy = 設定代理伺服器選項。
 policy-RequestedLocales = 為應用程式設定使用的語系清單順序。
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = 使用系統列印對話框列印。
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = 封鎖網站，不讓使用者開啟。請參考文件取得設定格式的詳細資料。
 policy-Windows10SSO = 允許使用 Windows 單一登入系統，登入微軟、工作單位、學校提供的帳號。
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = 允許使用 Microsoft Entra 帳號單一登入。

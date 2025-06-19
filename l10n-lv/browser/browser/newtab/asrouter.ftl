@@ -65,6 +65,7 @@ cfr-doorhanger-extension-total-users =
 
 cfr-doorhanger-bookmark-fxa-header = Sinhronizējiet savas grāmatzīmes visur.
 cfr-doorhanger-bookmark-fxa-body = Lielisks atradums! Tagad nepalieciet bez šīs grāmatzīmes savās mobilajās ierīcēs. Sāciet darbu ar { -fxaccount-brand-name }.
+cfr-doorhanger-bookmark-fxa-body-2 = Lielisks atradums! Tagad nepalieciet bez šīs grāmatzīmes savās mobilajās ierīcēs. Sāciet darbu ar kontu.
 cfr-doorhanger-bookmark-fxa-link-text = Sinhronizēt grāmatzīmes tūlīt…
 cfr-doorhanger-bookmark-fxa-close-btn-tooltip =
     .aria-label = Aizvērt poga
@@ -284,3 +285,15 @@ tail-fox-spotlight-title = Neļaujiet kaitinošajiem izsekotājiem sēdēt jums 
 tail-fox-spotlight-subtitle = Sakiet ardievas kaitinošajiem reklāmu izsekotājiem un izbaudiet drošāku un ātrāku internetu.
 tail-fox-spotlight-primary-button = Atvērt manas saites ar { -brand-short-name }
 tail-fox-spotlight-secondary-button = Ne tagad
+
+## Root Certificate Succession Infobar
+
+
+## Root Certificate Succession Windows Background Notification
+
+
+## FxA Menu Message variants
+
+
+## Multi-CTA Fox Doodle Spotlight
+

@@ -20,6 +20,7 @@
 #include "mozilla/Components.h"
 #include "mozilla/ErrorNames.h"
 #include "mozilla/ResultExtensions.h"
+#include "mozilla/Try.h"
 #include "mozilla/Unused.h"
 #include "mozilla/dom/Element.h"
 #include "mozilla/dom/Event.h"
@@ -85,7 +86,7 @@ static const ClassificationStruct classificationArray[] = {
 namespace {
 class ChannelListHolder : public LinkedList<ChannelWrapper> {
  public:
-  ChannelListHolder() : LinkedList<ChannelWrapper>() {}
+  ChannelListHolder() = default;
 
   ~ChannelListHolder();
 };
@@ -520,22 +521,18 @@ bool ChannelWrapper::IsSystemLoad() const {
       return IsSystemPrincipal(prin);
     }
 
-    if (RefPtr<BrowsingContext> bc = loadInfo->GetBrowsingContext();
-        !bc || bc->IsTop()) {
-      return false;
-    }
-
-    if (nsIPrincipal* prin = loadInfo->PrincipalToInherit()) {
-      return IsSystemPrincipal(prin);
-    }
-    if (nsIPrincipal* prin = loadInfo->TriggeringPrincipal()) {
-      return IsSystemPrincipal(prin);
-    }
+    // loadingPrincipal is only non-null for top-level loads.
+    // In practice we would never encounter a system principal for a top-level
+    // load that passes through ChannelWrapper, at least not for HTTP channels.
+    MOZ_ASSERT(Type() == MozContentPolicyType::Main_frame);
   }
   return false;
 }
 
 bool ChannelWrapper::CanModify() const {
+  if (!HaveChannel()) {
+    return false;
+  }
   if (WebExtensionPolicy::IsRestrictedURI(FinalURLInfo())) {
     return false;
   }
@@ -594,9 +591,10 @@ void ChannelWrapper::GetDocumentURL(nsCString& aRetVal) const {
 }
 
 const URLInfo& ChannelWrapper::FinalURLInfo() const {
+  MOZ_ASSERT(HaveChannel());
   if (mFinalURLInfo.isNothing()) {
     ErrorResult rv;
-    nsCOMPtr<nsIURI> uri = FinalURI();
+    nsCOMPtr<nsIURI> uri = GetFinalURI();
     MOZ_ASSERT(uri);
 
     // If this is a view-source scheme, get the nested uri.
@@ -808,6 +806,8 @@ void ChannelWrapper::RegisterTraceableChannel(const WebExtensionPolicy& aAddon,
                                               nsIRemoteTab* aBrowserParent) {
   // We can't attach new listeners after the response has started, so don't
   // bother registering anything.
+  // NOTE: It is possible for mResponseStarted to be false despite the response
+  // having been started, when ChannelWrapper is instantiated after that point.
   if (mResponseStarted || !CanModify()) {
     return;
   }
@@ -824,7 +824,7 @@ already_AddRefed<nsITraceableChannel> ChannelWrapper::GetTraceableChannel(
     dom::ContentParent* aContentParent) const {
   nsCOMPtr<nsIRemoteTab> remoteTab;
   if (mAddonEntries.Get(aAddon.Id(), getter_AddRefs(remoteTab))) {
-    if (FinalURLInfo().URI() &&
+    if (!HaveChannel() ||
         !aAddon.CanAccessURI(FinalURLInfo(), false, true, true)) {
       return nullptr;
     }
@@ -897,6 +897,8 @@ MozContentPolicyType GetContentPolicyType(ExtContentPolicyType aType) {
     case ExtContentPolicy::TYPE_INVALID:
     case ExtContentPolicy::TYPE_OTHER:
     case ExtContentPolicy::TYPE_SAVEAS_DOWNLOAD:
+    case ExtContentPolicy::TYPE_WEB_TRANSPORT:
+    case ExtContentPolicy::TYPE_WEB_IDENTITY:
       break;
       // Do not add default: so that compilers can catch the missing case.
   }
@@ -966,7 +968,7 @@ uint64_t ChannelWrapper::RequestSize() const {
  * ...
  *****************************************************************************/
 
-already_AddRefed<nsIURI> ChannelWrapper::FinalURI() const {
+already_AddRefed<nsIURI> ChannelWrapper::GetFinalURI() const {
   nsCOMPtr<nsIURI> uri;
   if (nsCOMPtr<nsIChannel> chan = MaybeChannel()) {
     NS_GetFinalChannelURI(chan, getter_AddRefs(uri));
@@ -1207,6 +1209,18 @@ ChannelWrapper::RequestListener::CheckListenerChain() {
     return retargetableListener->CheckListenerChain();
   }
   return rv;
+}
+
+NS_IMETHODIMP
+ChannelWrapper::RequestListener::OnDataFinished(nsresult aStatus) {
+  MOZ_ASSERT(mOrigStreamListener, "Should have mOrigStreamListener");
+  nsCOMPtr<nsIThreadRetargetableStreamListener> retargetableListener =
+      do_QueryInterface(mOrigStreamListener);
+  if (retargetableListener) {
+    return retargetableListener->OnDataFinished(aStatus);
+  }
+
+  return NS_OK;
 }
 
 /*****************************************************************************

@@ -119,6 +119,7 @@ policy-Permissions2 = Камера, микрофон, орналасулар, х
 policy-PictureInPicture = Суреттегі сурет режимін іске қосу немесе сөндіру.
 policy-PopupBlocking = Кейбір веб-сайттарға үнсіз келісім бойынша қалқымалы хабарламаларды көрсетуге рұқсат ету.
 policy-Preferences = Баптаулардың бір жиыны үшін мәндерін орнату және бұғаттау.
+policy-PrivateBrowsingModeAvailability = Жекелік шолу режимінің қолжетімділігін орнату.
 policy-PromptForDownloadLocation = Жүктеп алу кезінде файлдарды сақтау орны туралы сұрау.
 policy-Proxy = Прокси баптауларын орнату.
 policy-RequestedLocales = Таңдау ретімен қолданба үшін сұралатын локальдер тізімін орнату.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Жүйелік сұхбатын қолданып, 
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Веб-сайттарды шолуға тыйым салады. Пішімі туралы көбірек білу үшін, құжаттаманы қараңыз.
 policy-Windows10SSO = Microsoft, жұмыс және мектеп есептік жазбаларына Windows дара кіруін рұқсат ету.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Microsoft Entra тіркелгілері үшін бірыңғай кіруді рұқсат ету.

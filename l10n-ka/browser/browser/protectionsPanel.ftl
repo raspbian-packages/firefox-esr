@@ -23,6 +23,11 @@ protections-panel-etp-more-info =
     .aria-label = ვრცლად თვალთვალისგან გაძლიერებული დაცვის შესახებ
 protections-panel-etp-on-header = თვალთვალისგან დაცვა ჩართულია ამ საიტზე
 protections-panel-etp-off-header = თვალთვალისგან დაცვა გამორთულია ამ საიტზე
+# The link to be clicked to open the sub-panel view
+protections-panel-site-not-working = არ მუშაობს საიტი?
+# The heading/title of the sub-panel view
+protections-panel-site-not-working-view =
+    .title = არ მუშაობს საიტი?
 
 ## Text for the toggles shown when ETP is enabled/disabled for a given site.
 ## .description is transferred into a separate paragraph by the moz-toggle
@@ -37,11 +42,6 @@ protections-panel-etp-toggle-off =
     .label = თვალთვალისგან გაძლიერებული დაცვა
     .description = გამორთ. ამ საიტზე
     .aria-label = თვალთვალისგან გაძლიერებული დაცვა; გამორთულია { $host }
-# The link to be clicked to open the sub-panel view
-protections-panel-site-not-working = არ მუშაობს საიტი?
-# The heading/title of the sub-panel view
-protections-panel-site-not-working-view =
-    .title = არ მუშაობს საიტი?
 
 ## The "Allowed" header also includes a "Why?" link that, when hovered, shows
 ## a tooltip explaining why these items were not blocked in the page.
@@ -71,6 +71,19 @@ protections-panel-content-blocking-fingerprinters-label = მომხმარ�
 protections-panel-blocking-label = შეზღუდულია
 protections-panel-not-blocking-label = დაშვებულია
 protections-panel-not-found-label = არ აღმოჩენილა
+
+## Smartblock strings
+
+protections-panel-smartblock-desc-label = { -brand-short-name } ზღუდავს მეთვალყურე შიგთავსს ამ საიტზე ყოფნისას, სანამ თავად არ დართავთ ნებას.
+# Variables
+#  $trackername (String): the name of the tracker that is currently being blocked.
+protections-panel-smartblock-blocking-toggle =
+    .label = დაიშვას { $trackername }
+#  $trackername (String): the name of the tracker that is currently being blocked.
+smartblock-placeholder-title = { $trackername } მეთვალყურეები და შიგთავსი შეზღუდულია
+smartblock-placeholder-desc = თქვენი { -brand-short-name } მითითებული პარამეტრებით უზღუდავს ამ შიგთავსს თქვენს თვალთვალს სხვადასხვა საიტებზე ან სარეკლამოებისთვის გამოყენებას.
+#  $websitehost (String): host of website with blocked content.
+smartblock-placeholder-button-text = დაიშვას { $websitehost }
 
 ##
 
@@ -106,9 +119,8 @@ protections-panel-content-blocking-manage-settings =
     .label = დაცვის პარამეტრების მართვა
     .accesskey = მ
 protections-panel-content-blocking-breakage-report-view =
-    .title = მოხსენება დაზიანებულ საიტზე
+    .title = საიტზე გაუმართაობის მოხსენება
 protections-panel-content-blocking-breakage-report-view-description = შიგთავსის შეზღუდვის შედეგად შესაძლოა, საიტებმა გამართულად ვერ იმუშაოს. ხარვეზების მოხსენებით, თქვენ დაგვეხმარებით, რომ { -brand-short-name } გავხადოთ უკეთესი ყველასთვის. შედეგად, Mozilla-ს გადაეგზავნება როგორც URL-ბმული, აგრეთვე თქვენი ბრაუზერის პარამეტრების მონაცემები. <label data-l10n-name="learn-more">ვრცლად</label>
-protections-panel-content-blocking-breakage-report-view-description2 = შიგთავსის შეზღუდვის შედეგად შესაძლოა, საიტებმა გამართულად ვერ იმუშაოს. ხარვეზების მოხსენებით, თქვენ დაგვეხმარებით, რომ { -brand-short-name } გავხადოთ უკეთესი ყველასთვის. შედეგად, { -vendor-short-name }-ს გადაეგზავნება როგორც URL-ბმული, აგრეთვე თქვენი ბრაუზერის პარამეტრების მონაცემები.
 protections-panel-content-blocking-breakage-report-view-collection-url = მისამართი
 protections-panel-content-blocking-breakage-report-view-collection-url-label =
     .aria-label = მისამართი
@@ -152,8 +164,8 @@ protections-panel-cookie-banner-view-turn-off-label =
 protections-panel-cookie-banner-view-turn-on-label =
     .label = ჩართვა
 protections-panel-report-broken-site =
-    .label = მოხსენება დაზიანებული საიტის შესახებ
-    .title = მოხსენება დაზიანებული საიტის შესახებ
+    .label = საიტზე გაუმართაობის მოხსენება
+    .title = საიტზე გაუმართაობის მოხსენება
 
 ## Protections panel info message
 

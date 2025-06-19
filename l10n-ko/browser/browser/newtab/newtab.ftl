@@ -8,11 +8,18 @@
 newtab-page-title = 새 탭
 newtab-settings-button =
     .title = 새 탭 페이지 사용자 지정
+newtab-personalize-settings-icon-label =
+    .title = 새 탭 개인화
+    .aria-label = 설정
+newtab-settings-dialog-label =
+    .aria-label = 설정
 newtab-personalize-icon-label =
     .title = 새 탭 개인화
     .aria-label = 새 탭 개인화
 newtab-personalize-dialog-label =
     .aria-label = 개인화
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = { -pocket-brand-name }에 저장
 newtab-menu-delete-pocket = { -pocket-brand-name }에서 삭제
 newtab-menu-archive-pocket = { -pocket-brand-name }에 보관
 newtab-menu-show-privacy-info = 우리의 스폰서와 개인 정보 보호
+newtab-menu-about-fakespot = { -fakespot-brand-name } 정보
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = 차단
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = 주제 팔로우 취소
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -183,7 +197,7 @@ newtab-section-menu-add-topsite = 상위 사이트 추가
 newtab-section-menu-add-search-engine = 검색 엔진 추가
 newtab-section-menu-move-up = 위로 이동
 newtab-section-menu-move-down = 아래로 이동
-newtab-section-menu-privacy-notice = 개인정보처리방침
+newtab-section-menu-privacy-notice = 개인정보 보호정책
 
 ## Section aria-labels
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = 최근 활동
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } 추천
 newtab-section-header-stories = 생각하게 하는 이야기
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = 오늘의 추천
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = { -pocket-brand-name } 받기
 newtab-pocket-cta-text = 좋아하는 이야기를 { -pocket-brand-name }에 저장하고 재미있게 읽어 보세요.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name }은 { -brand-product-name } 제품군의 일부입니다.
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = 저장
 newtab-pocket-saved = 저장됨
 
@@ -242,6 +260,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = 싫어요
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = 감사합니다. 사용자의 의견은 제품 개선에 도움이 됩니다.
 newtab-toast-thumbs-up-or-down = 감사합니다. 사용자의 의견은 제품 개선에 도움이 됩니다.
 newtab-toast-dismiss-button =
     .title = 닫기
@@ -288,7 +309,7 @@ newtab-custom-weather-toggle =
     .label = 날씨
     .description = 오늘의 일기예보를 한눈에 보기
 newtab-custom-close-button = 닫기
-newtab-custom-settings = 설정 더 보기
+newtab-custom-settings = 추가 설정
 
 ## New Tab Wallpapers
 
@@ -298,7 +319,7 @@ newtab-wallpaper-light-red-panda = 레서판다
 newtab-wallpaper-light-mountain = 하얀 산
 newtab-wallpaper-light-sky = 보라색과 분홍색 구름이 있는 하늘
 newtab-wallpaper-light-color = 파란색, 분홍색, 노란색 모양
-newtab-wallpaper-light-landscape = 푸른 안개 산 풍경
+newtab-wallpaper-light-landscape = 파란 안개 산 풍경
 newtab-wallpaper-light-beach = 야자수가 있는 해변
 newtab-wallpaper-dark-aurora = 북극 오로라
 newtab-wallpaper-dark-color = 빨간색과 파란색 모양
@@ -306,6 +327,8 @@ newtab-wallpaper-dark-panda = 숲속에 숨어있는 레서판다
 newtab-wallpaper-dark-sky = 밤하늘이 있는 도시 풍경
 newtab-wallpaper-dark-mountain = 산 풍경
 newtab-wallpaper-dark-city = 보라색 도시 풍경
+newtab-wallpaper-dark-fox-anniversary = 숲 근처 포장도로에 있는 여우
+newtab-wallpaper-light-fox-anniversary = 안개가 자욱한 산 풍경이 있는 풀밭에 있는 여우
 
 ## Solid Colors
 
@@ -370,6 +393,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ 스폰서
 newtab-weather-menu-change-location = 위치 변경
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = 위치 검색
+    .aria-label = 위치 검색
 newtab-weather-change-location-search-input = 위치 검색
 newtab-weather-menu-weather-display = 날씨 표시
 # Display options are:
@@ -388,3 +414,76 @@ newtab-weather-menu-hide-weather = 새 탭에서 날씨 숨기기
 newtab-weather-menu-learn-more = 더 알아보기
 # This message is shown if user is working offline
 newtab-weather-error-not-available = 지금은 날씨 데이터를 사용할 수 없습니다.
+
+## Topic Labels
+
+newtab-topic-label-business = 사업
+newtab-topic-label-career = 직업
+newtab-topic-label-education = 교육
+newtab-topic-label-arts = 연예
+newtab-topic-label-food = 음식
+newtab-topic-label-health = 건강
+newtab-topic-label-hobbies = 게임
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = 금융
+newtab-topic-label-society-parenting = 육아
+newtab-topic-label-government = 정치
+newtab-topic-label-education-science = 과학
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = 생활
+newtab-topic-label-sports = 스포츠
+newtab-topic-label-tech = 기술
+newtab-topic-label-travel = 여행
+newtab-topic-label-home = 홈 & 마당
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = 피드를 세부 조정하려면 주제를 선택하세요
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = 두 개 이상의 주제를 선택하세요. 전문 큐레이터가 여러분의 관심사에 맞는 이야기를 우선적으로 선정합니다. 언제든지 업데이트하세요.
+newtab-topic-selection-save-button = 저장
+newtab-topic-selection-cancel-button = 취소
+newtab-topic-selection-button-maybe-later = 나중에요
+newtab-topic-selection-privacy-link = 데이터를 보호하고 관리하는 방법 알아보기
+newtab-topic-selection-button-update-interests = 관심 분야 업데이트
+newtab-topic-selection-button-pick-interests = 관심 분야를 선택하세요
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = 팔로우
+newtab-section-following-button = 팔로잉
+newtab-section-unfollow-button = 팔로우 취소
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = 차단
+newtab-section-blocked-button = 차단됨
+newtab-section-unblock-button = 차단 해제
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = 정말로 이 섹션을 차단하시겠습니까?
+newtab-section-confirm-block-section-p2 = 차단된 섹션은 더 이상 피드에 나타나지 않습니다.
+newtab-section-block-section-button = 이 섹션 차단
+newtab-section-cancel-button = 나중에
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = 주제
+newtab-section-mangage-topics-button =
+    .label = 팔로우 및 차단한 주제
+newtab-section-mangage-topics-followed-topics-subtitle = 팔로우한 주제
+newtab-section-mangage-topics-followed-topics-empty-state = 아직 주제를 팔로우하지 않았습니다.
+newtab-section-mangage-topics-blocked-topics-subtitle = 차단한 주제
+newtab-section-mangage-topics-blocked-topics-empty-state = 아직 주제를 차단하지 않았습니다.

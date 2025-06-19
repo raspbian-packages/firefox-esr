@@ -3,12 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = ಹೊಸ ಹಾಳೆ
-
 tabbrowser-menuitem-close-tab =
     .label = ಹಾಳೆಯನ್ನು ಮುಚ್ಚು
 tabbrowser-menuitem-close =
     .label = ಮುಚ್ಚು
-
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
@@ -18,6 +16,9 @@ tabbrowser-container-tab-title = { $title } - { $containerName }
 ## Tooltips for tab audio control
 ## Variables:
 ##   $tabCount (Number): The number of tabs that will be affected.
+
+
+## Tooltips for tab audio control
 
 
 ## Confirmation dialog when closing a window with more than one tab open,
@@ -32,12 +33,19 @@ tabbrowser-confirm-close-tabs-button = ಹಾಳೆಗಳನ್ನು ಮುಚ�
 ## Windows does not show a prompt on quit when using the keyboard shortcut by default.
 
 
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+
 ## Confirmation dialog when opening multiple tabs simultaneously
 
 tabbrowser-confirm-open-multiple-tabs-title = ತೆರೆಯಲ್ಪಟ್ಟಿದ್ದನ್ನು ಖಚಿತಪಡಿಸು
 tabbrowser-confirm-open-multiple-tabs-button = ತೆರೆದ ಹಾಳೆಗಳು
 
 ## Confirmation dialog for enabling caret browsing
+
+
+## Confirmation dialog for closing all duplicate tabs
 
 
 ##
@@ -61,4 +69,14 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = ಎಲ್ಲಾ ಪಟ್ಟಿ ಮಾಡು { $tabCount } ಹಾಳೆಗಳು
 
 ## Tab manager menu buttons
+
+
+## Tab Groups
+
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+
+## Open/saved tab group context menu
 

@@ -41,6 +41,8 @@ neterror-generic-error = Nid yw { -brand-short-name } yn gallu llwytho'r dudalen
 neterror-load-error-try-again = Efallai bod y wefan yn brysur neu nad yw ar gael dros dro. Ceisiwch eto ymhen ychydig.
 neterror-load-error-connection = Os nad ydych yn gallu llwytho unrhyw dudalennau, gwiriwch gysylltiad rhwydwaith eich cyfrifiadur.
 neterror-load-error-firewall = Os yw eich cyfrifiadur neu rwydwaith wedi ei ddiogelu gan fur cadarn neu ddirprwy, gwnewch yn siŵr fod gan { -brand-short-name } hawl i fynediad i'r we.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Os ydych chi'n ceisio llwytho tudalen rhwydwaith lleol, gwiriwch fod { -brand-short-name } wedi cael caniatâd Rhwydwaith Lleol yng ngosodiadau Preifatrwydd a Diogelwch macOS.
 neterror-captive-portal = Rhaid i chi fewngofnodi i'r rhwydwaith hwn cyn i chi gael mynediad i'r Rhyngrwyd.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +66,7 @@ neterror-dns-not-found-trr-offline = Nid ydych wedi'ch cysylltu â'r rhyngrwyd.
 neterror-dns-not-found-trr-unknown-host2 = Nid yw { $trrDomain } wedi canfod y wefan hon.
 neterror-dns-not-found-trr-server-problem = Bu anhawster gyda { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = URL annilys.
+neterror-dns-not-found-system-sleep = Mae'r system yn y modd cysgu.
 neterror-dns-not-found-trr-unknown-problem = Anhawster annisgwyl.
 
 ## Native fallback specific messages
@@ -147,3 +150,8 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Os nad ydych yn gyfarwydd �
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = Mae gan <b>{ $hostname }</b> bolisi diogelwch o'r enw HTTP Strict Transport Security (HSTS), sy'n golygu mai dim ond yn ddiogel mae modd i { -brand-short-name } gysylltu. Nid oes modd gosod eithriad er mwyn ymweld â'r wefan.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Dim byd yn ôl pob tebyg, gan ei bod hi'n debygol bod problem gyda'r wefan ei hun.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Cod gwall: { $responsestatus } { $responsestatustext }

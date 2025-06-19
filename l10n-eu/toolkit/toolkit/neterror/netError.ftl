@@ -41,6 +41,8 @@ neterror-generic-error = { -brand-short-name }(e)k ezin du orria kargatu.
 neterror-load-error-try-again = Gunea une batez desgaituta edo oso lanpetuta egon daiteke. Saiatu berriro geroago.
 neterror-load-error-connection = Beste inolako orririk ezin baduzu kargatu, egiaztatu ordenagailuaren sareko konexioa.
 neterror-load-error-firewall = Ordenagailua edo sarea suebaki edo proxy baten bidez babestuta badaude, egiaztatu { -brand-short-name }(e)k webera sartzeko baimena daukala.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Sare lokaleko orri bat kargatzen saiatzen ari bazara, egiaztatu { -brand-short-name }(e)k sare lokalerako baimena duela macOS-en pribatutasun- eta segurtasun-ezarpenetan.
 neterror-captive-portal = Internetera sartu ahal izateko saioa hasi behar duzu sare honetan.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +66,7 @@ neterror-dns-not-found-trr-offline = Ez zaude Internetera konektatuta.
 neterror-dns-not-found-trr-unknown-host2 = Webgune hau ez du aurkitu { $trrDomain } ostalariak
 neterror-dns-not-found-trr-server-problem = Arazo bat egon da { $trrDomain } ostalariarekin.
 neterror-dns-not-found-bad-trr-url = URL baliogabea.
+neterror-dns-not-found-system-sleep = Sistema lotarako moduan dago.
 neterror-dns-not-found-trr-unknown-problem = Ustekabeko arazoa.
 
 ## Native fallback specific messages
@@ -147,3 +150,8 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Ez bazaizu <b>{ $mitm }</b>
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> guneak HTTP Strict Transport Security (HSTS) izeneko segurtasun-politika dauka eta { -brand-short-name } modu seguruan konekta daiteke soilik. Ezin duzu gunea bisitatzeko salbuespenik gehitu.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Ziurrenik ezer ez, litekeena baita gunearekin berarekin arazo bat dagoela.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Errore-kodea: { $responsestatus } { $responsestatustext }

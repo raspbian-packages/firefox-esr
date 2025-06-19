@@ -253,7 +253,16 @@ menu-bookmarks-toolbar =
 menu-bookmarks-other =
     .label = Más könyvjelzők
 menu-bookmarks-mobile =
-    .label = Mobil könyvjelzők
+    .label = Mobilos könyvjelzők
+
+## Profiles Menu
+
+menu-profiles =
+    .label = Profilok
+menu-profiles-manage-profiles =
+    .label = Profilok kezelése
+menu-profiles-new-profile =
+    .label = Új profil
 
 ## Tools Menu
 

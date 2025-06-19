@@ -89,6 +89,9 @@ shopping-show-less-button = Mussar damain
 
 shopping-settings-label =
     .label = Parameters
+shopping-settings-recommendations-toggle2 =
+    .label = Mussar recumandaziuns e cuntegn sponsurà
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } na cundivida betg tias datas persunalas, uschia che questas recumandaziuns na ta suondan betg en l’internet. <a data-l10n-name="review-quality-url">Ulteriuras infurmaziuns</a>
 shopping-settings-recommendations-toggle =
     .label = Mussar reclamas en la verificaziun da recensiuns
 shopping-settings-recommendations-learn-more2 = Ti vegns a vesair reclamas occasiunalas per products relevants. Nus faschain mo reclama per products cun recensiuns fidablas. <a data-l10n-name="review-quality-url">Ulteriuras infurmaziuns</a>
@@ -164,6 +167,7 @@ shopping-unanalyzed-product-analyze-button = Controllar la qualitad da las recen
 
 more-to-consider-ad-label =
     .label = Dapli pussaivladads
+shopping-sponsored-label = Sponsurà
 ad-by-fakespot = Reclama da { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -184,6 +188,18 @@ shopping-survey-submit-button-label = Trametter
 shopping-survey-terms-link = Cundiziuns d'utilisaziun
 shopping-survey-thanks =
     .heading = Grazia per tes resun!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Ans fa per plaschair a savair pertge che ti has deactivà la verificaziun da recensiuns. Ti pos era tscherner pliras respostas.
+shopping-survey-thanks-title = Grazia per tes resun!
+shopping-survey-opted-out-hard-to-understand = Igl è grev da chapir
+shopping-survey-opted-out-too-slow = Igl è memia plaun
+shopping-survey-opted-out-not-accurate = I n’è betg correct
+shopping-survey-opted-out-not-helpful = I na ma gida betg
+shopping-survey-opted-out-check-myself = Jau preferesch da sez verifitgar las recensiuns
+shopping-survey-opted-out-other = Auter
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

@@ -8,7 +8,7 @@
 ### file that are used for the profiler popup.
 
 perftools-intro-title = Profiler Ayarları
-perftools-intro-description = Kayıtlar yeni bir sekmede profiler.firefox.com adresini açar. Tüm veriler cihazınızda yerel olarak depolanır. Paylaşmak istediklerinizi upload edebilirsiniz.
+perftools-intro-description = Kayıtlar yeni bir sekmede profiler.firefox.com adresini açar. Tüm veriler cihazınızda yerel olarak depolanır. Paylaşmak istediklerinizi karşıya yükleyebilirsiniz.
 
 ## All of the headings for the various sections.
 
@@ -24,7 +24,7 @@ perftools-heading-local-build = Yerel build
 
 ##
 
-perftools-description-intro = Kayıtlar yeni bir sekmede <a>profiler.firefox.com</a> adresini açar. Tüm veriler cihazınızda yerel olarak depolanır. Paylaşmak istediklerinizi upload edebilirsiniz.
+perftools-description-intro = Kayıtlar yeni bir sekmede <a>profiler.firefox.com</a> adresini açar. Tüm veriler cihazınızda yerel olarak depolanır. Paylaşmak istediklerinizi karşıya yükleyebilirsiniz.
 perftools-description-local-build = Eğer bu makinede kendi derlediğiniz bir yapının profilini çıkarıyorsanız, lütfen yapı objdir’inizi aşağıdaki listeye ekleyin. Böylece sembol bilgilerini aramak için kullanılabilir.
 
 ## The controls for the interval at which the profiler samples the code.
@@ -140,6 +140,7 @@ perftools-presets-networking-description = { -brand-shorter-name } tarayıcısı
 perftools-presets-power-label = Güç
 perftools-presets-power-description = { -brand-shorter-name } tarayıcısında güç tüketimi hatalarını araştırma ayarı, düşük ek yük.
 perftools-presets-debug-label = Hata ayıklama
+perftools-presets-debug-description = { -brand-shorter-name } tarayıcısında hata ayıklama ayarı. Yüksek ek yük nedeniyle performans çalışması için uygun değildir, tarayıcı davranışını anlamaya odaklanmak için kullanın.
 perftools-presets-custom-label = Özel
 
 ##

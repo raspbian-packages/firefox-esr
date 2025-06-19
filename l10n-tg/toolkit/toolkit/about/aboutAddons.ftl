@@ -62,16 +62,16 @@ detail-private-browsing-label = Иҷро кардан дар равзанаҳо�
 # Some add-ons may elect to not run in private windows by setting incognito: not_allowed in the manifest.  This
 # cannot be overridden by the user.
 detail-private-disallowed-label = Дар равзанаҳои хусусӣ иҷозат дода намешавад
-detail-private-disallowed-description2 = Ин васеъшавӣ дар реҷаи тамошокунии хусусӣ иҷро намешавад. <a data-l10n-name="learn-more">Маълумоти бештар</a>
+detail-private-disallowed-description2 = Ин васеъшавӣ дар реҷаи тамошобинии хусусӣ иҷро намешавад. <a data-l10n-name="learn-more">Маълумоти бештар</a>
 # Some special add-ons are privileged, run in private windows automatically, and this permission can't be revoked
 detail-private-required-label = Дастрасӣ ба равзанаҳои хусусӣ лозим аст
-detail-private-required-description2 = Ин васеъшавӣ дар реҷаи тамошокунии хусусӣ дорои қобили дастрасӣ ба фаъолияти шумо дар Интернет мебошад. <a data-l10n-name="learn-more">Маълумоти бештар</a>
+detail-private-required-description2 = Ин васеъшавӣ дар реҷаи тамошобинии хусусӣ дорои қобили дастрасӣ ба фаъолияти шумо дар Интернет мебошад. <a data-l10n-name="learn-more">Маълумоти бештар</a>
 detail-private-browsing-on =
     .label = Иҷозат додан
-    .tooltiptext = Фаъол кардан дар тамошокунии хусусӣ
+    .tooltiptext = Фаъол кардан дар тамошобинии хусусӣ
 detail-private-browsing-off =
     .label = Иҷозат дода нашавад
-    .tooltiptext = Ғайрифаъол кардан дар тамошокунии хусусӣ
+    .tooltiptext = Ғайрифаъол кардан дар тамошобинии хусусӣ
 detail-home =
     .label = Саҳифаи асосӣ
 detail-home-value =
@@ -117,10 +117,10 @@ legacy-extensions =
     .value = Васеъшавиҳои қуҳнашуда
 legacy-extensions-description = Васеъшавиҳои мазкур ба стандартҳои ҷории «{ -brand-short-name }» мувофиқат намекунанд ва аз ин боис онҳо ғайрифаъол карда шудаанд. <label data-l10n-name="legacy-learn-more">Дар бораи тағйироти воридшуда ба васеъшавиҳо маълумоти бештар гиред</label>
 private-browsing-description2 =
-    «{ -brand-short-name }» тарзи кори васеъшавиҳоро дар реҷаи тамошокунии хусусӣ иваз мекунад. Ҳар гуна васеъшавии наве, ки шумо ба «{ -brand-short-name }» илова мекунед,
-    дар равзанаи хусусӣ ба сурати пешфарз иҷро намешавад. То вақте ки шумо ба он дар танзимот иҷозат надиҳед, васеъшавӣ дар реҷаи тамошокунии хусусӣ иҷро намешавад
+    «{ -brand-short-name }» тарзи кори васеъшавиҳоро дар реҷаи тамошобинии хусусӣ иваз мекунад. Ҳар гуна васеъшавии наве, ки шумо ба «{ -brand-short-name }» илова мекунед,
+    дар равзанаи хусусӣ ба сурати пешфарз иҷро намешавад. То вақте ки шумо ба он дар танзимот иҷозат надиҳед, васеъшавӣ дар реҷаи тамошобинии хусусӣ иҷро намешавад
     ва ба фаъолияти шумо дар Интернет дастрасӣ пайдо намекунад.
-    Мо барои таъмини тамошокунии хусусии шумо дар Интернет, ин тағйирот ворид кардем.
+    Мо барои таъмини тамошобинии хусусии шумо дар Интернет, ин тағйирот ворид кардем.
     <label data-l10n-name="private-browsing-learn-more">Дар бораи идоракунии танзимоти васеъшавӣ маълумоти бештар гиред</label>
 addon-category-discover = Тавсияҳо
 addon-category-discover-title =
@@ -295,6 +295,12 @@ find-more-themes = Гирифтани мавзуъҳои бештар
 # used for screen readers.
 addon-options-button =
     .aria-label = Имконоти бештар
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro2 =
+    Васеъшавиҳо ва мавзуъҳо ба шумо барои татбиқи танзимоти шахсӣ дар «{ -brand-product-name }» имкон медиҳанд.
+    Онҳо метавонанд махфияти шуморо афзоиш диҳанд, расонаҳоро беҳтар кунанд, намуди зоҳирии «{ -brand-product-name }» иваз кунанд
+    ва имкониятҳои дигар пешниҳод намоянд. Ин барномаҳои нармафзории хурд  аксари вақт аз ҷониби тарафҳои сеюм таҳия карда мешаванд. Дар ин маҷмуъ аз ҷониби «{ -brand-product-name }» чизҳои беҳтарин барои амнияти махсус, самаранокӣ ва қобилиятнокӣ <a data-l10n-name="learn-more-trigger">тавсия дода мешаванд</a>.
 
 ## Add-on actions
 
@@ -384,7 +390,7 @@ addon-detail-group-label-updates =
 addon-badge-private-browsing-allowed2 =
     .title = Дар равзанаҳои хусусӣ иҷозат дода мешавад
     .aria-label = { addon-badge-private-browsing-allowed2.title }
-addon-detail-private-browsing-help = Агар иҷозат бошад, васеъшавӣ дар реҷаи тамошокунии хусусӣ дорои қобили дастрасӣ ба фаъолияти шумо дар Интернет мебошад. <a data-l10n-name="learn-more">Маълумоти бештар</a>
+addon-detail-private-browsing-help = Агар иҷозат бошад, васеъшавӣ дар реҷаи тамошобинии хусусӣ дорои қобили дастрасӣ ба фаъолияти шумо дар Интернет мебошад. <a data-l10n-name="learn-more">Маълумоти бештар</a>
 addon-detail-private-browsing-allow = Иҷозат додан
 addon-detail-private-browsing-disallow = Иҷозат дода нашавад
 # aria-label associated to the private browsing row to help screen readers to announce the group
@@ -427,6 +433,7 @@ available-updates-heading = Навсозиҳои дастрас
 recent-updates-heading = Навсозиҳои охирин
 release-notes-loading = Бор шуда истодааст…
 release-notes-error = Мутаассифона, ҳангоми боркунии тавзеҳоти релиз хато ба миён омад.
+addon-permissions-empty2 = Ин васеъшавӣ ягон иҷозатро талаб намекунад.
 addon-permissions-empty = Ин васеъшавӣ ягон иҷозатро талаб намекунад
 addon-permissions-required = Иҷозатҳои лозимӣ барои фаъолияти асосӣ:
 addon-permissions-optional = Иҷозатҳои ихтиёрӣ барои фаъолияти иловагӣ:
@@ -476,10 +483,24 @@ details-notification-unsigned-and-disabled-link = Маълумоти бешта�
 details-notification-unsigned = Истифодаи «{ $name }» дар «{ -brand-short-name }» тасдиқ карда нашуд. Бо эҳтиёт истифода баред.
 details-notification-unsigned2 =
     .message = Истифодаи «{ $name }» дар «{ -brand-short-name }» тасдиқ карда нашуд. Бо эҳтиёт истифода баред.
+details-notification-hard-blocked-extension =
+    .message = Ин васеъшавӣ ба сабаби вайрон кардани сиёсатҳои «Mozilla» манъ карда шуд ва ғайрифаъол шудааст.
+details-notification-hard-blocked-other =
+    .message = Ин ҷузъи иловагӣ ба сабаби вайрон кардани сиёсатҳои «Mozilla» манъ карда шуд ва ғайрифаъол шудааст.
 details-notification-unsigned-link = Маълумоти бештар
 details-notification-blocked = Ба сабабҳои мушкилиҳои амниятӣ ё ноустувории кор, { $name } ғайрифаъол карда шуд.
 details-notification-blocked2 =
     .message = Ба сабабҳои мушкилиҳои амниятӣ ё ноустувории кор, { $name } ғайрифаъол карда шуд.
+details-notification-blocked-link2 = Дидани тафсилот
+details-notification-soft-blocked-extension-disabled =
+    .message = Ин васеъшавӣ ба сабаби вайрон кардани сиёсатҳои «Mozilla» маҳдуд карда шуд ва ғайрифаъол шудааст. Шумо метавонед онро фаъол созед, аммо ин метавонад хатарнок бошад.
+details-notification-soft-blocked-extension-enabled =
+    .message = Ин васеъшавӣ сиёсати «Mozilla»-ро вайрон мекунад. Истифодаи он метавонад хатарнок бошад.
+details-notification-soft-blocked-other-disabled =
+    .message = Ин ҷузъи иловагӣ ба сабаби вайрон кардани сиёсатҳои «Mozilla» маҳдуд карда шуд ва ғайрифаъол шудааст. Шумо метавонед онро фаъол созед, аммо ин метавонад хатарнок бошад.
+details-notification-soft-blocked-other-enabled =
+    .message = Ин ҷузъи иловагӣ сиёсати «Mozilla»-ро вайрон мекунад. Истифодаи он метавонад хатарнок бошад.
+details-notification-softblocked-link2 = Дидани тафсилот
 details-notification-blocked-link = Маълумоти бештар
 details-notification-softblocked = { $name } мушкилиҳои амниятӣ ва ноустувории корро ба вуҷуд меорад.
 details-notification-softblocked2 =

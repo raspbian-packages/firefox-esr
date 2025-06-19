@@ -75,11 +75,11 @@ webext-imported-addons = Pabeigt paplašinājumu instalēšanu, kas importēti u
 
 # Variables:
 #  $name (String): The name of the add-on that will be removed.
-addon-removal-title = Izņemt { $name }?
+addon-removal-title = Vai noņemt { $name }?
 # Variables:
 #   $name (String): the name of the extension which is about to be removed.
-addon-removal-message = Aizvākt { $name } no { -brand-shorter-name }?
-addon-removal-button = Aizvākt
+addon-removal-message = Vai noņemt { $name } no { -brand-shorter-name }?
+addon-removal-button = Noņemt
 addon-removal-abuse-report-checkbox = Ziņot par šo paplašinājumu { -vendor-short-name }
 # Variables:
 #   $addonCount (Number): the number of add-ons being downloaded
@@ -140,3 +140,5 @@ addon-local-install-error-not-signed = Šo papildinājumu nevar uzinstalēt, jo 
 #   $appVersion (String): the application version.
 addon-install-error-incompatible = { $addonName } nevar uzinstalēt, jo tas nav saderīgs ar { -brand-short-name } { $appVersion }.
 addon-install-error-blocklisted = { $addonName } nevar uzinstalēt, jo tas rada lielu drošības un stabilitātes risku.
+# Enterprise policies is a feature aimed at system administrators who want to deploy custom settings for Firefox.
+addon-install-error-admin-install-only = Kā galalietotājs jūs nevarat instalēt { $addonName }, to var instalēt tikai organizācija, kas izmanto uzņēmuma politikas.

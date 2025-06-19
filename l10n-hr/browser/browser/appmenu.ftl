@@ -8,13 +8,13 @@
 appmenuitem-banner-update-downloading =
     .label = Preuzimanje nadogradnje za { -brand-shorter-name }
 appmenuitem-banner-update-available =
-    .label = Dostupna nadogradnja — preuzmi sada
+    .label = Dostupna nadogradnja – preuzmi sada
 appmenuitem-banner-update-manual =
-    .label = Dostupna nadogradnja — preuzmi sada
+    .label = Dostupna nadogradnja – preuzmi sada
 appmenuitem-banner-update-unsupported =
-    .label = Nije moguće nadograditi — sustav nije kompatibilan
+    .label = Nije moguće nadograditi – sustav nije kompatibilan
 appmenuitem-banner-update-restart =
-    .label = Dostupna nadogradnja — ponovno pokreni sada
+    .label = Dostupna je nova verzija – ponovo pokreni sada
 appmenuitem-new-tab =
     .label = Nova kartica
 appmenuitem-new-window =
@@ -77,6 +77,10 @@ appmenu-remote-tabs-turn-on-sync =
 appmenu-remote-tabs-showmore =
     .label = Prikaži više kartica
     .tooltiptext = Prikaz više kartica s ovoga uređaja
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Neaktivne kartice
+    .tooltiptext = Pogledaj neaktivne kartice na ovom uređaju
 # This is shown beneath the name of a device when that device has no open tabs
 appmenu-remote-tabs-notabs = Nema otvorenih kartica
 # This is shown when Sync is configured but syncing tabs is disabled.
@@ -98,14 +102,17 @@ appmenu-account-header = Račun
 # Variables
 # $time (string) - Localized relative time since last sync (e.g. 1 second ago,
 # 3 hours ago, etc.)
-appmenu-fxa-last-sync = Posljednja sinkronizacija { $time }
-    .label = Posljednja sinkronizacija { $time }
+appmenu-fxa-last-sync = Zadnja sinkronizacija { $time }
+    .label = Zadnja sinkronizacija { $time }
 appmenu-fxa-sync-and-save-data2 = Sinkroniziraj i spremi podatke
 appmenu-fxa-signed-in-label = Prijavi se
 appmenu-fxa-setup-sync =
     .label = Uključi sinkronizaciju…
+appmenu-fxa-setup-sync-new = Uključi
 appmenuitem-save-page =
     .label = Spremi stranicu kao …
+appmenuitem-fxa-sync-off-title = Sinkronizacija je isključena
+appmenuitem-fxa-sync-off-description = Zaštiti i pristupi zabilješkama, lozinkama i drugim podacima bilo gdje.
 
 ## What's New panel in App menu.
 
@@ -173,24 +180,28 @@ profiler-popup-capture-shortcut =
 # devtools/client/performance-new/shared/background.sys.mjs
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
+profiler-popup-presets-web-developer-description = Preporučene postavke za većinu otklanjanja pogrešaka u web aplikacijama s malim opterećenjem.
 profiler-popup-presets-web-developer-label =
     .label = Web programer
-profiler-popup-presets-firefox-description = Preporučena zadana postavka za profiliranje { -brand-shorter-name }a.
+profiler-popup-presets-firefox-description = Preporučena zadana postavka za profiliranje { -brand-shorter-name(case: "gen") }.
 profiler-popup-presets-firefox-label =
     .label = { -brand-shorter-name }
-profiler-popup-presets-graphics-description = Zadana postavka za istraživanje slikovnih grešaka u { -brand-shorter-name }u.
+profiler-popup-presets-graphics-description = Zadana postavka za istraživanje slikovnih grešaka u { -brand-shorter-name(case: "loc") }.
 profiler-popup-presets-graphics-label =
     .label = Slike
-profiler-popup-presets-media-description2 = Zadana postavka za istraživanje audio i video grešaka u { -brand-shorter-name }u.
+profiler-popup-presets-media-description2 = Zadana postavka za istraživanje audio i video grešaka u { -brand-shorter-name(case: "loc") }.
 profiler-popup-presets-media-label =
     .label = Mediji
-profiler-popup-presets-networking-description = Zadana postavka za istraživanje grešaka mrežnog povezivanja u { -brand-shorter-name }u.
+profiler-popup-presets-networking-description = Zadana postavka za istraživanje grešaka mrežnog povezivanja u { -brand-shorter-name(case: "loc") }.
 profiler-popup-presets-networking-label =
     .label = Mrežno povezivanje
-profiler-popup-presets-power-description = Zadana postavka za istraživanje grešaka struje u { -brand-shorter-name }u.
+profiler-popup-presets-power-description = Zadana postavka za istraživanje grešaka potrošnje energije u { -brand-shorter-name(case: "loc") }.
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = Struja
+profiler-popup-presets-debug-description = Preporučene postavke za otklanjanje grešaka u { -brand-shorter-name(case: "loc") }. Visoko opterećenje, nemoj koristiti za rad koji zahtijeva performanse, već za fokusiranje na razumijevanje ponašanja preglednika.
+profiler-popup-presets-debug-label =
+    .label = Otklanjanje grešaka
 profiler-popup-presets-custom-label =
     .label = Prilagođeno
 
@@ -199,7 +210,7 @@ profiler-popup-presets-custom-label =
 appmenu-manage-history =
     .label = Upravljanje poviješću
 appmenu-restore-session =
-    .label = Vrati prethodnu sesiju
+    .label = Obnovi prethodnu sesiju
 appmenu-clear-history =
     .label = Izbriši nedavnu povijest …
 appmenu-recent-history-subheader = Nedavna povijest
@@ -209,18 +220,18 @@ appmenu-recently-closed-windows =
     .label = Nedavno zatvoreni prozori
 # This allows to search through the browser's history.
 appmenu-search-history =
-    .label = Povijest pretrage
+    .label = Pretraži povijest
 
 ## Help panel
 
 appmenu-help-header =
     .title = Pomoć za { -brand-shorter-name }
 appmenu-about =
-    .label = O { -brand-shorter-name }u
+    .label = O { -brand-shorter-name(case: "loc") }
     .accesskey = O
 appmenu-get-help =
-    .label = Potraži pomoć
-    .accesskey = p
+    .label = Dobij pomoć
+    .accesskey = D
 appmenu-help-more-troubleshooting-info =
     .label = Više informacija za rješavanje problema
     .accesskey = v
@@ -236,11 +247,11 @@ appmenu-help-switch-device =
 ## are mutually exclusive, so it's possible to use the same accesskey for both.
 
 appmenu-help-enter-troubleshoot-mode2 =
-    .label = Način rada za rješavanje problema
-    .accesskey = m
+    .label = Modus za rješavanje problema …
+    .accesskey = M
 appmenu-help-exit-troubleshoot-mode =
-    .label = Isključi način rada za rješavanje problema
-    .accesskey = N
+    .label = Isključi modus za rješavanje problema
+    .accesskey = I
 
 ## appmenu-help-report-deceptive-site and appmenu-help-not-deceptive
 ## are mutually exclusive, so it's possible to use the same accesskey for both.
@@ -258,7 +269,30 @@ appmenu-customizetoolbar =
     .label = Prilagodi alatnu traku…
 appmenu-developer-tools-subheader = Alati preglednika
 appmenu-developer-tools-extensions =
-    .label = Proširenja za razvijatelje
+    .label = Proširenja za programere
+appmenuitem-report-broken-site =
+    .label = Prijavi neispravnu stranicu
 
 ## Panel for privacy and security products
 
+appmenuitem-sign-in-account = Prijavi se na tvoj račun
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = Primaj upozorenja o povredi podataka
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-description = Maskiraj svoju pravu e-mail adresu i telefon
+appmenuitem-services-relay-description = Pokreni nadzornu ploču maski e-mail adresa
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description = Zaštiti svoju online aktivnost
+appmenu-services-header = Moje usluge
+appmenu-other-protection-header = Isprobaj druge { -vendor-short-name } alate za zaštitu:
+
+## Profiles panel
+
+appmenu-profiles = Profili
+appmenu-other-profiles = Drugi profili
+appmenu-manage-profiles =
+    .label = Upravljaj profilima
+appmenu-create-profile =
+    .label = Novi profil
+appmenu-edit-profile =
+    .aria-label = Uredi profil

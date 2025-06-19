@@ -41,14 +41,16 @@ neterror-generic-error = لا يستطيع { -brand-short-name } تحميل هذ
 neterror-load-error-try-again = قد يكون الموقع متوقفًا مؤقتًا أو مشغولا جدًا. حاول ثانية بعد عدّة دقائق.
 neterror-load-error-connection = إذا كنت غير قادر على تحميل أي صفحة، افحص اتصال الحاسوب بالشبكة.
 neterror-load-error-firewall = إذا كان حاسوبك محميًا بجدار حماية أو وسيط، تأكد من السماح ل‍{ -brand-short-name } بالوصول إلى الوِب.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = إذا كنت تحاول تحميل صفحة شبكة محلية، فيُرجى التأكد مِن منح { -brand-short-name } تصاريح الشبكة المحلية في إعدادات الخصوصية والأمان في نظام التشغيل macOS.
 neterror-captive-portal = تحتاج الولوج إلى هذه الشبكة أولا لتستطيع الوصول إلى الإنترنت.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
 neterror-dns-not-found-with-suggestion = هل قصدت الانتقال إلى <a data-l10n-name="website">{ $hostAndPath }</a>؟
 neterror-dns-not-found-hint-header = <strong>إذا أدخلت العنوان الصحيح، فيمكنك:</strong>
-neterror-dns-not-found-hint-try-again = حاول مجددًا لاحقاً
-neterror-dns-not-found-hint-check-network = افحص اتصال الشبكة
-neterror-dns-not-found-hint-firewall = تأكد من أن { -brand-short-name } لديه إذن للوصول إلى الوب (قد تكون متصلاً ولكن خلف جدار حماية)
+neterror-dns-not-found-hint-try-again = المحاولة مجددًا لاحقاً
+neterror-dns-not-found-hint-check-network = فحص اتصال الشبكة
+neterror-dns-not-found-hint-firewall = التأكد من أن { -brand-short-name } لديه إذن للوصول إلى الوب (قد تكون متصلاً ولكن خلف جدار حماية)
 
 ## TRR-only specific messages
 ## Variables:
@@ -64,6 +66,7 @@ neterror-dns-not-found-trr-offline = أنت غير متصل بالإنترنت.
 neterror-dns-not-found-trr-unknown-host2 = لم يتم العثور على موقع الوب هذا بواسطة { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = حدثت مشكلة في { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = مسار غير صحيح.
+neterror-dns-not-found-system-sleep = النظام في وضع السكون.
 neterror-dns-not-found-trr-unknown-problem = خطأ غير متوقّع.
 
 ## Native fallback specific messages
@@ -147,3 +150,8 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = إن لم تكن تعلم �
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = يستخدم الموقع <b>{ $hostname }</b> سياسة النقل الصارمة (HSTS)، ما يعني بأن { -brand-short-name } لا يستطيع الاتصال به إلا بأمان. لا يمكنك إضافة استثناء لزيارة هذا الموقع.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = ربما لا يوجد شيء، لأنه من المحتمل أن تكون هناك مشكلة في الموقع نفسه.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = رمز الخطأ: { $responsestatus } { $responsestatustext }

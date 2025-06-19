@@ -118,10 +118,11 @@ policy-PDFjs = ปิดใช้งานหรือกำหนดค่า P
 policy-Permissions2 = กำหนดค่าการอนุญาตสิทธิ์สำหรับกล้อง ไมโครโฟน ตำแหน่งที่ตั้ง การแจ้งเตือน และการเล่นอัตโนมัติ
 policy-PictureInPicture = เปิดหรือปิดใช้งานภาพที่เล่นควบคู่
 policy-PopupBlocking = อนุญาตให้บางเว็บไซต์แสดงป็อปอัปตามค่าเริ่มต้น
-policy-Preferences = ตั้งค่าและล็อคค่าสำหรับชุดย่อยของการกำหนดลักษณะ
+policy-Preferences = ตั้งค่าและล็อคค่าสำหรับชุดย่อยของค่าปรับแต่ง
+policy-PrivateBrowsingModeAvailability = ตั้งค่าความพร้อมใช้งานของโหมดการเรียกดูแบบส่วนตัว
 policy-PromptForDownloadLocation = ถามตำแหน่งที่จะบันทึกไฟล์เมื่อดาวน์โหลด
 policy-Proxy = กำหนดค่าการตั้งค่าพร็อกซี
-policy-RequestedLocales = ตั้งค่ารายการภาษาสำหรับแอปพลิเคชันตามลำดับที่ต้องการ
+policy-RequestedLocales = ตั้งค่ารายการรูปแบบภาษาสำหรับแอปพลิเคชันตามลำดับในค่าปรับแต่ง
 policy-SanitizeOnShutdown2 = ล้างข้อมูลการนำทางเมื่อปิดเครื่อง
 policy-SearchBar = ตั้งค่าตำแหน่งที่ตั้งเริ่มต้นของแถบค้นหา โดยที่ผู้ใช้ยังคงสามารถปรับแต่งได้
 policy-SearchEngines = กำหนดค่าการตั้งค่าเครื่องมือค้นหา นโยบายนี้ใช้ได้บนรุ่น Extended Support Release (ESR) เท่านั้น
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = พิมพ์โดยใช้กล่อง�
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = ปิดกั้นไม่ให้เยี่ยมชมเว็บไซต์ ดูคู่มือสำหรับรายละเอียดเพิ่มเติมเกี่ยวกับรูปแบบ
 policy-Windows10SSO = อนุญาต Windows single sign-on สำหรับบัญชีที่ทำงานและโรงเรียนของ Microsoft
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = อนุญาต Single Sign-On สำหรับบัญชี Microsoft Entra

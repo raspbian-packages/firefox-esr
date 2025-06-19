@@ -13,13 +13,13 @@ const TEST_URI = `
   <style>
   body {
     color: blue;
-    scrollbar-width: thin;
+    scrollbar-color: gold;
     user-modify: read-only;
     hyphenate-limit-chars: auto;
     overflow-clip-box: padding-box;
   }
   div {
-    ruby-align: center;
+    overflow-anchor: auto;
   }
   </style>
   <body>
@@ -30,8 +30,8 @@ const TEST_URI = `
 const TEST_DATA_SELECTED = [
   {
     type: COMPATIBILITY_ISSUE_TYPE.CSS_PROPERTY,
-    property: "scrollbar-width",
-    url: "https://developer.mozilla.org/docs/Web/CSS/scrollbar-width",
+    property: "scrollbar-color",
+    url: "https://developer.mozilla.org/docs/Web/CSS/scrollbar-color",
     deprecated: false,
     experimental: false,
   },
@@ -52,23 +52,24 @@ const TEST_DATA_SELECTED = [
     deprecated: false,
     experimental: false,
   },
-  {
+  // TODO: Re-enable it when we have another property with no MDN url nor spec url Bug 1840910
+  /*{
     // No MDN url nor spec url
     type: COMPATIBILITY_ISSUE_TYPE.CSS_PROPERTY,
     property: "overflow-clip-box",
     deprecated: false,
     experimental: false,
-  },
+  },*/
 ];
 
 const TEST_DATA_ALL = [
   ...TEST_DATA_SELECTED,
   {
     type: COMPATIBILITY_ISSUE_TYPE.CSS_PROPERTY,
-    property: "ruby-align",
-    url: "https://developer.mozilla.org/docs/Web/CSS/ruby-align",
+    property: "overflow-anchor",
+    url: "https://developer.mozilla.org/docs/Web/CSS/overflow-anchor",
     deprecated: false,
-    experimental: true,
+    experimental: false,
   },
 ];
 

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Websydłam signal “Njeslědować” pósłać, zo nochceće, zo wone was slěduja
+do-not-track-removal = Hižo njepodpěrujemy signal „Njeslědować“
 do-not-track-description2 =
     .label = Websydłam naprašowanje „Njeslědować“ pósłać
     .accesskey = s
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = { -brand-short-name } awtomatisce wočinić, hdyž so waš ličak startuje
     .accesskey = a
 windows-launch-on-login-disabled = Tute nastajenje je so we Windows znjemóžniło. Zo byšće nastajenje změnił, wopytajće <a data-l10n-name="startup-link">Autostart</a> w systemowych nastajenjach.
+windows-launch-on-login-profile-disabled = Markěrujće “{ profile-manager-use-selected.label }” we woknje „Wužiwarski profil wubrać“, zo byšće tute nastajenje zmóžnił.
 startup-restore-warn-on-quit =
     .label = Warnować, hdyž so wobhladowak kónči
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Wotkazy w rajtarkach město nowych woknow wočinić
     .accesskey = r
+ask-on-close-multiple-tabs =
+    .label = Prašeć so, prjedy hač so wjacore rajtarki začinjeja
+    .accesskey = P
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Prašeć so, prjedy hač so z { $quitKey } skónči
+    .accesskey = s
 confirm-on-close-multiple-tabs =
     .label = Wobkrućić, prjedy hač so wjacore rajtarki začinjeja
     .accesskey = W
@@ -574,8 +587,7 @@ home-prefs-shortcuts-description = Sydła, kotrež składujeće abo wopytujeće
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponserowane zwjazanja
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Wot { $provider } doporučeny
@@ -648,6 +660,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Pytanske namjety we wuslědkach adresoweho pola pokazać
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Pytanske wurazy w adresowym polu na wuslědkowych stronach pokazać
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -791,6 +807,9 @@ sync-currently-syncing-creditcards = Kreditne karty
 sync-currently-syncing-payment-methods = Płaćenske metody
 sync-currently-syncing-addons = Přidatki
 sync-currently-syncing-settings = Nastajenja
+sync-manage-options =
+    .label = Synchronizaciju rjadować…
+    .accesskey = S
 sync-change-options =
     .label = Změnić…
     .accesskey = Z
@@ -843,6 +862,13 @@ sync-engine-settings =
     .label = Nastajenja
     .tooltiptext = Powšitkowne nastajenja a nastajenja priwatnosće a wěstoty su so změnili
     .accesskey = N
+sync-choose-what-to-sync-dialog4 =
+    .title = Rjadujće daty synchronizacijow na wšěch wašich zwjazanych gratach
+    .style = min-width: 36em;
+    .buttonlabelaccept = Składować
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Zwisk dźělić…
+    .buttonaccesskeyextra2 = Z
 
 ## The device name controls.
 
@@ -1293,13 +1319,34 @@ collection-description = Chcemy was z wuběrami wobstarać a jenož to zběrać,
 collection-privacy-notice = Zdźělenka priwatnosće
 collection-health-report-telemetry-disabled = Sće { -vendor-short-name } dowolnosć zebrał, techniske a interakciske daty hromadźić. Wšě dotal zhromadźene daty so w běhu 30 dnjow zhašeja.
 collection-health-report-telemetry-disabled-link = Dalše informacije
+collection-usage-ping =
+    .label = Ping za wšědne wužiwanje na { -vendor-short-name } pósłać
+    .accesskey = P
+collection-usage-ping-description = To { -vendor-short-name } pomha, sej aktiwnych wužiwarjow wažić.
+collection-health-report2 =
+    .label = Techniske daty a daty interakcije na { -vendor-short-name } pósłać
+    .accesskey = T
 collection-health-report =
     .label = { -brand-short-name } zmóžnić, techniske a interakciske daty na { -vendor-short-name } pósłać
     .accesskey = t
 collection-health-report-link = Dalše informacije
+collection-health-report-description = To nam pomha, funkcije, wukon a stabilnosć { -brand-product-name } polěpšić.
+collection-studies2 =
+    .label = Studije instalować a přewjesć
+collection-studies-description = Testujće funkcije a ideje, prjedy hač so za wšěch wozjewjeja.
 collection-studies =
     .label = { -brand-short-name } dowolić, studije instalować a přewjesć
 collection-studies-link = Studije { -brand-short-name } pokazać
+addon-recommendations2 =
+    .label = Personalizowane doporučenja za rozšěrjenja dowolić
+addon-recommendations-description = Wobstarajće sej doporučenja za rozšěrjenja, zo byšće swoje přehladowanske dožiwjenje polěpšił.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Datowe rozprawjenje je znjemóžnjene za tutu programowu konfiguraciju.
+collection-backlogged-crash-reports2 =
+    .label = Spadowe rozprawy awtomatisce pósłać
+    .accesskey = d
+collection-backlogged-crash-reports-description = To { -vendor-short-name } pomha, problemy z wobhladowakom diagnosticěrować a rozrisać. Rozprawy móža wosobinske abo sensibelne daty wobsahować.
 addon-recommendations =
     .label = { -brand-short-name } dowolić, personalizowane poručenja za rozšěrjenja dać
 addon-recommendations-link = Dalše informacije
@@ -1368,13 +1415,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } hižo dosć skła
 
 httpsonly-header = Modus Jenož-HTTPS
 httpsonly-description = HTTPS wěsty, zaklučowany zwisk mjez { -brand-short-name } a websydłami skići, kotrež wopytujeće. Najwjace websydłow HTTPS podpěruje, a jeli modus Jenož-HTTPS je zmóžnjeny, { -brand-short-name } budźe wšě zwiski na HTTPS aktualizować.
+httpsonly-description2 = { -brand-short-name } wěste a zaklučowane zwiski ze sydłami, kotrež wopytujeće, wutworja. { -brand-short-name } budźe was warnować, jeli zwisk wěsty njeje, hdyž Jenož-HTTPS je aktiwny.
 httpsonly-learn-more = Dalše informacije
 httpsonly-radio-enabled =
     .label = Modus Jenož-HTTPS we wšěch woknach zmóžnić
+httpsonly-radio-enabled2 =
+    .label = HTTPS jenož we wšěch woknach wužiwać
 httpsonly-radio-enabled-pbm =
     .label = Modus Jenož-HTTPS jenož w priwatnych woknach zmóžnić
+httpsonly-radio-enabled-pbm2 =
+    .label = HTTPS jenož w priwatnych woknach wužiwać
 httpsonly-radio-disabled =
     .label = Modus Jenož-HTTPS njezmóžnić
+httpsonly-radio-disabled2 =
+    .label = HTTPS najprjedy wupruwować, ale zwiski dowolić, kotrež wěste njejsu
 
 ## DoH Section
 

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Сайттарға "Мені бақыламау" сигналын жіберу арқылы сіз өзіңізді бақыламауды қалайтыныңыз туралы хабарлау
+do-not-track-removal = Біз енді «Мені бақыламау» сигналын қолдамаймыз
 do-not-track-description2 =
     .label = Веб-сайттарға "Мені бақыламау" сұранымын жіберу
     .accesskey = л
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Компьютеріңіз іске қосылғанда { -brand-short-name } қолданбасын автоматты түрде іске қосу
     .accesskey = о
 windows-launch-on-login-disabled = Бұл баптау Windows жүйесінде сөндірілген. Оны өзгерту үшін, Жүйе баптауларынан <a data-l10n-name="startup-link">Қолданбалардың автоматты іске қосылуы</a> қараңыз.
+windows-launch-on-login-profile-disabled = "Пайдаланушы профилін таңдау" терезесіндегі "{ profile-manager-use-selected.label }" жалаушасын орнату арқылы бұл баптауды іске қосыңыз.
 startup-restore-warn-on-quit =
     .label = Браузерден шыққан кезде ескерту
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Сілтемелерді жаңа терезелер орнына жаңа беттерде ашу
     .accesskey = р
+ask-on-close-multiple-tabs =
+    .label = Бірнеше бетті жабу бұрын сұрау
+    .accesskey = ш
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = { $quitKey } көмегімен шығу алдында сұрау
+    .accesskey = л
 confirm-on-close-multiple-tabs =
     .label = Бірнеше бетті жаппас бұрын растау
     .accesskey = с
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Сіз сақтайтын немесе шол
 home-prefs-shortcuts-by-option-sponsored =
     .label = Демеушілік жарлықтары
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Ұсынушы { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Адрестер жолағы нәтижелерінде іздеу ұсыныстарын көрсету
     .accesskey = р
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Нәтижелер беттеріндегі адрес жолағында іздеу ұғымдарын көрсету
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Несиелік карталар
 sync-currently-syncing-payment-methods = Төлем әдістері
 sync-currently-syncing-addons = Қосымшалар
 sync-currently-syncing-settings = Баптаулар
+sync-manage-options =
+    .label = Синхрондауды басқару…
+    .accesskey = б
 sync-change-options =
     .label = Өзгерту…
     .accesskey = з
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Баптаулар
     .tooltiptext = Сіз өзгерткен Жалпы, Жекелік және Қауіпсіздік баптаулары
     .accesskey = п
+sync-choose-what-to-sync-dialog4 =
+    .title = Барлық қосылған құрылғыларда синхрондалатын деректерді басқарыңыз
+    .style = min-width: 36em;
+    .buttonlabelaccept = Сақтау
+    .buttonaccesskeyaccept = С
+    .buttonlabelextra2 = Байланысты үзу…
+    .buttonaccesskeyextra2 = з
 
 ## The device name controls.
 
@@ -1360,13 +1386,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } үшін бос �
 
 httpsonly-header = Тек-HTTPS режимі
 httpsonly-description = HTTPS { -brand-short-name } және сіз кіретін веб-сайттар арасында қауіпсіз, шифрленген байланысты ұсынады. Веб-сайттардың көбі HTTPS қолдайды, тек-HTTPS режимі іске қосылған болса, { -brand-short-name } барлық байланыстарды HTTPS-ке дейін жаңартады.
+httpsonly-description2 = { -brand-short-name } сіз кіретін сайттарға қауіпсіз және шифрленген байланыстарды жасайды. { -brand-short-name } "Тек-HTTPS" режимі іске қосулы кезде байланыс қауіпсіз болмаса, ескертеді.
 httpsonly-learn-more = Көбірек білу
 httpsonly-radio-enabled =
     .label = Барлық терезелерде тек-HTTPS режимін іске қосу
+httpsonly-radio-enabled2 =
+    .label = Барлық терезелерде тек HTTPS пайдалану
 httpsonly-radio-enabled-pbm =
     .label = Тек-HTTPS режимін тек жекелік терезелерде іске қосу
+httpsonly-radio-enabled-pbm2 =
+    .label = Барлық жекелік терезелерде тек HTTPS пайдалану
 httpsonly-radio-disabled =
     .label = Тек-HTTPS режимін іске қоспау
+httpsonly-radio-disabled2 =
+    .label = Алдымен HTTPS қолданып көру, бірақ қауіпсіз емес байланыстарға рұқсат беру
 
 ## DoH Section
 

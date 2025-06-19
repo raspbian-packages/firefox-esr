@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = Pagina bloccada
 neterror-captive-portal-page-title = S'annunziar tar la rait
 neterror-dns-not-found-title = Betg chattà il server
 neterror-malformed-uri-page-title = URL nunvalid
+general-body-title = Sajas precaut. I para da dar in problem.
 
 ## Error page actions
 
@@ -41,6 +42,8 @@ neterror-generic-error = { -brand-short-name } na po betg chargiar questa pagina
 neterror-load-error-try-again = Eventualmain n'è la website temporarmain betg cuntanschibla. Emprova per plaschair pli tard anc ina giada.
 neterror-load-error-connection = Sche ti na pos era betg chargiar in'autra website, controllescha per plaschair la connexiun a l'internet / a la rait.
 neterror-load-error-firewall = Sche tes computer u tia rait èn protegids d'ina firewall u d'in proxy, controllescha per plaschair schebain { -brand-short-name } dastga acceder a l'internet.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Sche ti emprovas da chargiar ina pagina da la rait locala, controllescha per plaschair che { -brand-short-name } haja las permissiuns necessarias per la rait locala en ils parameters da protecziun da datas e da segirezza da macOS.
 neterror-captive-portal = Ti stos t'annunziar en questa rait avant che ti pos acceder a l'internet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -68,6 +71,7 @@ neterror-dns-not-found-trr-offline = Ti n'es betg connectà cun l'internet.
 neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } n'ha betg chattà questa website.
 neterror-dns-not-found-trr-server-problem = Igl ha dà in problem cun { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = URL nunvalid.
+neterror-dns-not-found-system-sleep = Il sistem dorma.
 neterror-dns-not-found-trr-unknown-problem = Problem nunspetgà.
 
 ## Native fallback specific messages
@@ -155,3 +159,11 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Sche ti n'enconuschas betg 
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> ha ina directiva da segirezza che sa numna HTTP Strict Transport Security (HSTS). Quai munta che { -brand-short-name } po mo connectar a moda segirada. Igl è impussibel dad agiuntar ina excepziun per visitar questa website.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Probablamain nagut cunquai ch’i sa tracta pli probabel dad in problem cun la website sezza.
+certerror-blocked-by-corp-headers-description = Mintgatant protegian websites sasezzas ed autras persunas sco tai dad interacziuns nungiavischadas cun autras websites.
+certerror-coop-learn-more = Ulteriuras infurmaziuns davart directivas COOP (Cross Origin Opener Policies)
+certerror-coep-learn-more = Ulteriuras infurmaziuns davart directivas COEP (Cross Origin Embedder Policies)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Code d’errur: { $responsestatus } { $responsestatustext }

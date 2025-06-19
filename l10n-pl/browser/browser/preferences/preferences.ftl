@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Informowanie witryn o preferencjach względem śledzenia (wysyłanie nagłówka „Do Not Track”):
+do-not-track-removal = Nagłówek „Do Not Track” (prośba o nieśledzenie) nie jest już obsługiwany
 do-not-track-description2 =
     .label = Wysyłanie witrynom prośby o nieśledzenie (nagłówka „Do Not Track”).
     .accesskey = D
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Automatyczne otwieranie { -brand-short-name(case: "gen") } po włączeniu komputera
     .accesskey = A
 windows-launch-on-login-disabled = Ta preferencja została wyłączona w systemie Windows. Aby ją zmienić, przejdź do <a data-l10n-name="startup-link">Autostartu</a> w ustawieniach systemu.
+windows-launch-on-login-profile-disabled = Włącz tę preferencję, zaznaczając opcję „{ profile-manager-use-selected.label }” w oknie „Wybierz profil użytkownika”.
 startup-restore-warn-on-quit =
     .label = Ostrzeganie przy zamykaniu przeglądarki
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Otwieranie odnośników w kartach zamiast w nowych oknach
     .accesskey = O
+ask-on-close-multiple-tabs =
+    .label = Pytanie o potwierdzenie przed zamknięciem wielu kart
+    .accesskey = a
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Pytanie o potwierdzenie przed zamknięciem programu za pomocą { $quitKey }
+    .accesskey = P
 confirm-on-close-multiple-tabs =
     .label = Pytanie o potwierdzenie przed zamknięciem wielu kart
     .accesskey = a
@@ -571,8 +584,7 @@ home-prefs-shortcuts-description = Zachowane i odwiedzane strony.
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponsorowane skróty
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Polecane przez { $provider }
@@ -644,6 +656,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Podpowiedzi wyszukiwania w wynikach paska adresu
     .accesskey = e
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Na stronie wyników pasek adresu wyświetla wyszukiwane słowa
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -787,6 +803,9 @@ sync-currently-syncing-creditcards = dane kart płatniczych
 sync-currently-syncing-payment-methods = metody płatności
 sync-currently-syncing-addons = dodatki
 sync-currently-syncing-settings = ustawienia
+sync-manage-options =
+    .label = Zarządzaj synchronizacją…
+    .accesskey = d
 sync-change-options =
     .label = Zmień…
     .accesskey = m
@@ -839,6 +858,13 @@ sync-engine-settings =
     .label = ustawienia
     .tooltiptext = Zmienione ustawienia ogólne, uruchamiania, wyszukiwania, prywatności i bezpieczeństwa
     .accesskey = u
+sync-choose-what-to-sync-dialog4 =
+    .title = Zarządzaj, co ma być synchronizowane na wszystkich połączonych urządzeniach
+    .style = min-width: 36em;
+    .buttonlabelaccept = Zachowaj
+    .buttonaccesskeyaccept = Z
+    .buttonlabelextra2 = Rozłącz…
+    .buttonaccesskeyextra2 = R
 
 ## The device name controls.
 
@@ -1117,8 +1143,11 @@ addressbar-locbar-quickactions-option =
     .accesskey = d
 addressbar-suggestions-settings = Zmień preferencje podpowiedzi dostarczanych przez wyszukiwarki
 addressbar-locbar-showrecentsearches-option =
-    .label = ostatnich wyszukiwaniach
+    .label = Ostatnie wyszukiwania
     .accesskey = n
+addressbar-locbar-showtrendingsuggestions-option =
+    .label = Popularne wyszukiwania.
+    .accesskey = u
 addressbar-quickactions-learn-more = Więcej informacji
 
 ## Privacy Section - Content Blocking
@@ -1286,22 +1315,43 @@ collection-description = Dążymy do zapewnienia odpowiedniego wyboru i zbieran
 collection-privacy-notice = Prywatność
 collection-health-report-telemetry-disabled = { -vendor-short-name } nie ma już zezwolenia na zbieranie danych technicznych i o interakcjach z przeglądarką. Wszystkie wcześniej zebrane dane zostaną usunięte w ciągu 30 dni.
 collection-health-report-telemetry-disabled-link = Więcej informacji
+collection-usage-ping =
+    .label = Wysyłanie dziennego sygnału o użyciu do { -vendor-short-name(case: "gen") }
+    .accesskey = d
+collection-usage-ping-description = To pomaga { -vendor-short-name(case: "dat") } oszacować liczbę aktywnych użytkowników.
+collection-health-report2 =
+    .label = Wysyłanie danych technicznych i o interakcjach do { -vendor-short-name(case: "gen") }
+    .accesskey = z
 collection-health-report =
-    .label = Przesyłanie do { -vendor-short-name(case: "gen") } danych technicznych i o interakcjach z przeglądarką { -brand-short-name }.
+    .label = Wysyłanie do { -vendor-short-name(case: "gen") } danych technicznych i o interakcjach z przeglądarką { -brand-short-name }.
     .accesskey = z
 collection-health-report-link = Więcej informacji
+collection-health-report-description = To pomaga nam ulepszać funkcje, wydajność i stabilność { -brand-product-name(case: "gen") }.
+collection-studies2 =
+    .label = Instalowanie i przeprowadzanie badań
+collection-studies-description = Wypróbuj funkcje i pomysły, zanim zostaną udostępnione wszystkim użytkownikom.
 collection-studies =
     .label = Instalowanie i przeprowadzanie badań przez przeglądarkę { -brand-short-name }.
 collection-studies-link = Wyświetl badania { -brand-short-name(case: "gen") }
+addon-recommendations2 =
+    .label = Personalizowane polecenia rozszerzeń
+addon-recommendations-description = Polecenia rozszerzeń, które usprawnią przeglądanie Internetu.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Przesyłanie danych jest wyłączone przy tej konfiguracji programu.
+collection-backlogged-crash-reports2 =
+    .label = Automatyczne wysyłanie zgłoszeń awarii
+    .accesskey = o
+collection-backlogged-crash-reports-description = Umożliwia to { -vendor-short-name(case: "dat") } diagnozowanie i naprawianie problemów z przeglądarką. Zgłoszenia mogą zawierać dane osobowe lub prywatne informacje.
 addon-recommendations =
     .label = Personalizowane polecenia rozszerzeń przez przeglądarkę { -brand-short-name }.
 addon-recommendations-link = Więcej informacji
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = Przesyłanie danych jest wyłączone przy tej konfiguracji programu
-collection-backlogged-crash-reports-with-link = Przesyłanie zgromadzonych zgłoszeń awarii przeglądarki { -brand-short-name }. <a data-l10n-name="crash-reports-link">Więcej informacji</a>
+collection-backlogged-crash-reports-with-link = Wysyłanie zgromadzonych zgłoszeń awarii przeglądarki { -brand-short-name }. <a data-l10n-name="crash-reports-link">Więcej informacji</a>
     .accesskey = o
-collection-backlogged-crash-reports = Przesyłanie zgromadzonych zgłoszeń awarii przeglądarki { -brand-short-name }.
+collection-backlogged-crash-reports = Wysyłanie zgromadzonych zgłoszeń awarii przeglądarki { -brand-short-name }.
     .accesskey = o
 privacy-segmentation-section-header = Nowe funkcje usprawniające przeglądanie
 privacy-segmentation-section-description = Kiedy oferujemy funkcje wykorzystujące Twoje dane do zapewniania bardziej spersonalizowanej przeglądarki:
@@ -1361,13 +1411,20 @@ space-alert-under-5gb-message2 = <strong>Przeglądarce { -brand-short-name } zac
 
 httpsonly-header = Tryb używania wyłącznie protokołu HTTPS
 httpsonly-description = Protokół HTTPS zapewnia zabezpieczone, zaszyfrowane połączenie między przeglądarką { -brand-short-name } a odwiedzanymi witrynami. Większość witryn obsługuje HTTPS, a jeśli tryb używania wyłącznie protokołu HTTPS jest włączony, to { -brand-short-name } przełączy wszystkie połączenia na HTTPS.
+httpsonly-description2 = { -brand-short-name } tworzy zabezpieczone i zaszyfrowane połączenia z odwiedzanymi witrynami. { -brand-short-name } będzie ostrzegać, jeśli połączenie nie jest zabezpieczone, gdy włączony jest tryb używania wyłącznie protokołu HTTPS.
 httpsonly-learn-more = Więcej informacji
 httpsonly-radio-enabled =
     .label = Włącz we wszystkich oknach
+httpsonly-radio-enabled2 =
+    .label = Używanie wyłącznie protokołu HTTPS we wszystkich oknach
 httpsonly-radio-enabled-pbm =
     .label = Włącz tylko w oknach prywatnych
+httpsonly-radio-enabled-pbm2 =
+    .label = Używanie wyłącznie protokołu HTTPS w prywatnych oknach
 httpsonly-radio-disabled =
     .label = Nie włączaj
+httpsonly-radio-disabled2 =
+    .label = Najpierw próbowanie protokołu HTTPS, ale zezwalanie na niezabezpieczone połączenia
 
 ## DoH Section
 

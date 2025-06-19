@@ -13,6 +13,19 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] { $tabCount } rejtarik zacyniś
+            [two] { $tabCount } rejtarika zacyniś
+            [few] { $tabCount } rejtariki zacyniś
+           *[other] { $tabCount } rejtarikow zacyniś
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -73,6 +86,16 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] { $tabCount } rejtarikow wótgraś
         }
 
+## Tooltips for tab audio control
+
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Rejtarik głosny cyniś
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Rejtarik nimy cyniś
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Rejtarik wótgraś
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -87,6 +110,7 @@ tabbrowser-confirm-close-tabs-title =
        *[other] { $tabCount } rejtarikow zacyniś?
     }
 tabbrowser-confirm-close-tabs-button = Rejtariki zacyniś
+tabbrowser-ask-close-tabs-checkbox = Pšašaś se, nježli až se někotare rejtariki zacynjaju
 tabbrowser-confirm-close-tabs-checkbox = Wobkšuśiś, nježli až se někotare rejtariki zacynjaju
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -115,7 +139,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Wokno zacyniś a { -brand-short-n
 tabbrowser-confirm-close-tabs-with-key-button = { -brand-short-name } skóńcyś
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Pšašaś se, nježli až se z { $quitKey } skóńcyjo
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Wobkšuśiś, nježli až se z { $quitKey } skóńcyjo
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = { -brand-short-name } skóńcyś abo aktualny rejtarik zacyniś?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } skóńcyś
+       *[other] { -brand-short-name } skóńcyś
+    }
+tabbrowser-confirm-close-tab-only-button = Aktualny rejtarik zacyniś
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -150,7 +188,7 @@ tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Rejtariki zacyni�
 # Variables:
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
-    .label = Powěźeńki dowóliś ako tós tu wót { $domain }, aby k wótpowědnemu rejtarkoju dójšeł
+    .label = Powěźeńki dowóliś ako tós tu wót { $domain }, aby k wótpowědnemu rejtarikoju dojšeł
 tabbrowser-customizemode-tab-title = { -brand-short-name } pśiměriś
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -193,3 +231,105 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Rejtarik głosny cyniś
 tabbrowser-manager-close-tab =
     .tooltiptext = Rejtarik zacyniś
+
+## Tab Groups
+
+tab-group-editor-title-create = Rejtarikowu kupku napóraś
+tab-group-editor-title-edit = Rejtarikowu kupku zastojaś
+tab-group-editor-name-label = Mě
+tab-group-editor-name-field =
+    .placeholder = Pśikład: Nakupowanje
+tab-group-editor-cancel =
+    .label = Pśetergnuś
+    .accesskey = P
+tab-group-editor-color-selector =
+    .aria-label = Barwa kupki rejtarikow
+tab-group-editor-color-selector-blue = Módry
+tab-group-editor-color-selector-purple = Purpurowy
+tab-group-editor-color-selector-cyan = Cyan
+tab-group-editor-color-selector-orange = Oranžowy
+tab-group-editor-color-selector-yellow = Žołty
+tab-group-editor-color-selector-pink = Pink
+tab-group-editor-color-selector-green = Zeleny
+tab-group-editor-color-selector-gray = Šery
+tab-group-editor-color-selector-red = Cerwjeny
+tab-group-menu-header = Kupki rejtarikow
+tab-context-unnamed-group =
+    .label = Kupka bźez mjenja
+tab-group-name-default = Kupka bźez mjenja
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Nowej kupce { $tabCount } rejtarik pśidaś
+            [one] Nowej kupce { $tabCount } rejtarik pśidaś
+            [two] Nowej kupce { $tabCount } rejtarika pśidaś
+            [few] Nowej kupce { $tabCount } rejtariki pśidaś
+           *[other] Nowej kupce { $tabCount } rejtarikow pśidaś
+        }
+    .accesskey = N
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Kupce { $tabCount } rejtarik pśidaś
+            [one] Kupce { $tabCount } rejtarik pśidaś
+            [two] Kupce { $tabCount } rejtarika pśidaś
+            [few] Kupce { $tabCount } rejtariki pśidaś
+           *[other] Kupce { $tabCount } rejtarikow pśidaś
+        }
+    .accesskey = K
+tab-group-editor-action-new-tab =
+    .label = Nowy rejtarik w kupce
+tab-group-editor-action-new-window =
+    .label = Kupku do nowego wokna pśesunuś
+tab-group-editor-action-save =
+    .label = Kupku składowaś a zacyniś
+tab-group-editor-action-ungroup =
+    .label = Kupku rejtarikow wótpóraś
+tab-group-editor-action-delete =
+    .label = Kupku lašowaś
+tab-group-editor-done =
+    .label = Dokóńcony
+    .accessKey = D
+tab-context-reopen-tab-group =
+    .label = Rejtarikowu kupku zasej wócyniś
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Z { $groupCount } kupki wótwónoźeś
+            [one] Z { $groupCount } kupki wótwónoźeś
+            [two] Z { $groupCount } kupkowu wótwónoźeś
+            [few] Z { $groupCount } kupkow wótwónoźeś
+           *[other] Z { $groupCount } kupkow wótwónoźeś
+        }
+    .accesskey = Z
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Kupku do nowego wokna pśesunuś
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Kupku do toś togo wokna pśesunuś
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Kupku lašowaś
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Kupku w toś tom woknje wócyniś
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Kupku w nowem woknje wócyniś

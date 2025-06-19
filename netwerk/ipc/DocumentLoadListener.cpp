@@ -8,11 +8,13 @@
 #include "DocumentLoadListener.h"
 
 #include "NeckoCommon.h"
+#include "nsLoadGroup.h"
 #include "mozilla/AntiTrackingUtils.h"
 #include "mozilla/DebugOnly.h"
+#include "mozilla/Components.h"
 #include "mozilla/LoadInfo.h"
-#include "mozilla/MozPromiseInlines.h"  // For MozPromise::FromDomPromise
 #include "mozilla/NullPrincipal.h"
+#include "mozilla/RefPtr.h"
 #include "mozilla/ResultVariant.h"
 #include "mozilla/ScopeExit.h"
 #include "mozilla/StaticPrefs_extensions.h"
@@ -153,13 +155,17 @@ static auto CreateDocumentLoadInfo(CanonicalBrowsingContext* aBrowsingContext,
         sandboxFlags);
   }
 
-  if (aLoadState->IsExemptFromHTTPSOnlyMode()) {
+  if (aLoadState->IsExemptFromHTTPSFirstMode()) {
     uint32_t httpsOnlyStatus = loadInfo->GetHttpsOnlyStatus();
-    httpsOnlyStatus |= nsILoadInfo::HTTPS_ONLY_EXEMPT;
+    httpsOnlyStatus |= nsILoadInfo::HTTPS_FIRST_EXEMPT_NEXT_LOAD;
     loadInfo->SetHttpsOnlyStatus(httpsOnlyStatus);
   }
 
+  loadInfo->SetWasSchemelessInput(aLoadState->GetWasSchemelessInput());
+
   loadInfo->SetTriggeringSandboxFlags(aLoadState->TriggeringSandboxFlags());
+  loadInfo->SetTriggeringWindowId(aLoadState->TriggeringWindowId());
+  loadInfo->SetTriggeringStorageAccess(aLoadState->TriggeringStorageAccess());
   loadInfo->SetHasValidUserGestureActivation(
       aLoadState->HasValidUserGestureActivation());
   loadInfo->SetIsMetaRefresh(aLoadState->IsMetaRefresh());
@@ -187,6 +193,8 @@ static auto CreateObjectLoadInfo(nsDocShellLoadState* aLoadState,
   loadInfo->SetHasValidUserGestureActivation(
       aLoadState->HasValidUserGestureActivation());
   loadInfo->SetTriggeringSandboxFlags(aLoadState->TriggeringSandboxFlags());
+  loadInfo->SetTriggeringWindowId(aLoadState->TriggeringWindowId());
+  loadInfo->SetTriggeringStorageAccess(aLoadState->TriggeringStorageAccess());
   loadInfo->SetIsMetaRefresh(aLoadState->IsMetaRefresh());
 
   return loadInfo.forget();
@@ -256,9 +264,9 @@ class ParentProcessDocumentOpenInfo final : public nsDocumentOpenInfo,
     }
 
     nsresult rv;
-    nsCOMPtr<nsIStreamConverterService> streamConvService =
-        do_GetService(NS_STREAMCONVERTERSERVICE_CONTRACTID, &rv);
+    nsCOMPtr<nsIStreamConverterService> streamConvService;
     nsAutoCString str;
+    streamConvService = mozilla::components::StreamConverter::Service(&rv);
     rv = streamConvService->ConvertedType(mContentType, aChannel, str);
     NS_ENSURE_SUCCESS(rv, rv);
 
@@ -297,12 +305,12 @@ class ParentProcessDocumentOpenInfo final : public nsDocumentOpenInfo,
 
     nsresult rv = nsDocumentOpenInfo::OnStartRequest(request);
 
-    // If we didn't find a content handler,
-    // and we don't have a listener, then just forward to our
-    // default listener. This happens when the channel is in
-    // an error state, and we want to just forward that on to be
-    // handled in the content process.
-    if (NS_SUCCEEDED(rv) && !mUsedContentHandler && !m_targetStreamListener) {
+    // If we didn't find a content handler, and we don't have a listener, then
+    // just forward to our default listener. This happens when the channel is in
+    // an error state, and we want to just forward that on to be handled in the
+    // content process, or when DONT_RETARGET is set.
+    if ((NS_SUCCEEDED(rv) || rv == NS_ERROR_WONT_HANDLE_CONTENT) &&
+        !mUsedContentHandler && !m_targetStreamListener) {
       m_targetStreamListener = mListener;
       return m_targetStreamListener->OnStartRequest(request);
     }
@@ -334,6 +342,17 @@ class ParentProcessDocumentOpenInfo final : public nsDocumentOpenInfo,
 
   nsresult OnObjectStartRequest(nsIRequest* request) {
     LOG(("ParentProcessDocumentOpenInfo OnObjectStartRequest [this=%p]", this));
+
+    // If this load will be treated as a document load, run through
+    // nsDocumentOpenInfo for consistency with other document loads.
+    //
+    // If the dom.navigation.object_embed.allow_retargeting pref is enabled,
+    // this may lead to the resource being downloaded.
+    if (nsCOMPtr<nsIChannel> channel = do_QueryInterface(request);
+        channel && channel->IsDocument()) {
+      return OnDocumentStartRequest(request);
+    }
+
     // Just redirect to the nsObjectLoadingContent in the content process.
     m_targetStreamListener = mListener;
     return m_targetStreamListener->OnStartRequest(request);
@@ -447,9 +466,25 @@ void DocumentLoadListener::AddURIVisit(nsIChannel* aChannel,
   nsCOMPtr<nsIWidget> widget =
       browsingContext->GetParentProcessWidgetContaining();
 
+  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
+
+  // Check if the URI has a http scheme and if either HSTS is enabled for this
+  // host, or if we were upgraded by HTTPS-Only/First. If this is the case, we
+  // want to mark this URI specially, as it will be followed shortly by an
+  // almost identical https history entry. That way the global history
+  // implementation can handle the visit appropriately (e.g. by marking it as
+  // `hidden`, so only the https url appears in default history views).
+  bool wasUpgraded =
+      uri->SchemeIs("http") &&
+      (loadInfo->GetHstsStatus() ||
+       (loadInfo->GetHttpsOnlyStatus() &
+        (nsILoadInfo::HTTPS_ONLY_UPGRADED_HTTPS_FIRST |
+         nsILoadInfo::HTTPS_ONLY_UPGRADED_LISTENER_NOT_REGISTERED |
+         nsILoadInfo::HTTPS_ONLY_UPGRADED_LISTENER_REGISTERED)));
+
   nsDocShell::InternalAddURIVisit(uri, previousURI, previousFlags,
                                   responseStatus, browsingContext, widget,
-                                  mLoadStateLoadType);
+                                  mLoadStateLoadType, wasUpgraded);
 }
 
 CanonicalBrowsingContext* DocumentLoadListener::GetLoadingBrowsingContext()
@@ -614,6 +649,7 @@ auto DocumentLoadListener::Open(nsDocShellLoadState* aLoadState,
   // See description of  mFileName in nsDocShellLoadState.h
   mIsDownload = !aLoadState->FileName().IsVoid();
   mIsLoadingJSURI = net::SchemeIsJavascript(aLoadState->URI());
+  mHTTPSFirstDowngradeData = aLoadState->GetHttpsFirstDowngradeData().forget();
 
   // Check for infinite recursive object or iframe loads
   if (aLoadState->OriginalFrameSrc() || !mIsDocumentLoad) {
@@ -814,11 +850,9 @@ auto DocumentLoadListener::Open(nsDocShellLoadState* aLoadState,
   }
 
   // Recalculate the openFlags, matching the logic in use in Content process.
-  // NOTE: The only case not handled here to mirror Content process is
-  // redirecting to re-use the channel.
   MOZ_ASSERT(!aLoadState->GetPendingRedirectedChannel());
-  uint32_t openFlags =
-      nsDocShell::ComputeURILoaderFlags(loadingContext, aLoadState->LoadType());
+  uint32_t openFlags = nsDocShell::ComputeURILoaderFlags(
+      loadingContext, aLoadState->LoadType(), mIsDocumentLoad);
 
   RefPtr<ParentProcessDocumentOpenInfo> openInfo =
       new ParentProcessDocumentOpenInfo(mParentChannelListener, openFlags,
@@ -929,10 +963,10 @@ auto DocumentLoadListener::Open(nsDocShellLoadState* aLoadState,
 }
 
 auto DocumentLoadListener::OpenDocument(
-    nsDocShellLoadState* aLoadState, uint32_t aCacheKey,
+    nsDocShellLoadState* aLoadState, nsLoadFlags aLoadFlags, uint32_t aCacheKey,
     const Maybe<uint64_t>& aChannelId, const TimeStamp& aAsyncOpenTime,
     nsDOMNavigationTiming* aTiming, Maybe<dom::ClientInfo>&& aInfo,
-    Maybe<bool> aUriModified, Maybe<bool> aIsXFOError,
+    bool aUriModified, Maybe<bool> aIsEmbeddingBlockedError,
     dom::ContentParent* aContentParent, nsresult* aRv) -> RefPtr<OpenPromise> {
   LOG(("DocumentLoadListener [%p] OpenDocument [uri=%s]", this,
        aLoadState->URI()->GetSpecOrDefault().get()));
@@ -942,16 +976,54 @@ auto DocumentLoadListener::OpenDocument(
   RefPtr<CanonicalBrowsingContext> browsingContext =
       GetDocumentBrowsingContext();
 
+  // As a security check, check that aLoadFlags matches what we expect. We
+  // expect them to be the same we compute on the parent, except for the load
+  // group flags.
+  {
+    const nsLoadFlags parentLoadFlags = aLoadState->CalculateChannelLoadFlags(
+        browsingContext, aUriModified, std::move(aIsEmbeddingBlockedError));
+    const nsLoadFlags differing = parentLoadFlags ^ aLoadFlags;
+    if (differing & ~nsLoadGroup::kInheritedLoadFlags) {
+#ifdef MOZ_DIAGNOSTIC_ASSERT_ENABLED
+      MOZ_CRASH_UNSAFE_PRINTF(
+          "DocumentLoadListener::OpenDocument: Unexpected load flags: "
+          "%x vs. %x (differing %x vs. %x)",
+          parentLoadFlags, aLoadFlags, differing & parentLoadFlags,
+          differing & aLoadFlags);
+#endif
+      *aRv = NS_ERROR_UNEXPECTED;
+      return nullptr;
+    }
+  }
+
   // If this is a top-level load, then rebuild the LoadInfo from scratch,
   // since the goal is to be able to initiate loads in the parent, where the
   // content process won't have provided us with an existing one.
   RefPtr<LoadInfo> loadInfo =
       CreateDocumentLoadInfo(browsingContext, aLoadState);
 
-  nsLoadFlags loadFlags = aLoadState->CalculateChannelLoadFlags(
-      browsingContext, std::move(aUriModified), std::move(aIsXFOError));
+  // Keep track of navigation for the Bounce Tracking Protection.
+  if (browsingContext->IsTopContent()) {
+    RefPtr<BounceTrackingState> bounceTrackingState =
+        browsingContext->GetBounceTrackingState();
 
-  return Open(aLoadState, loadInfo, loadFlags, aCacheKey, aChannelId,
+    // Not every browsing context has a BounceTrackingState. It's also null when
+    // the feature is disabled.
+    if (bounceTrackingState) {
+      nsCOMPtr<nsIPrincipal> triggeringPrincipal;
+      nsresult rv =
+          loadInfo->GetTriggeringPrincipal(getter_AddRefs(triggeringPrincipal));
+
+      if (!NS_WARN_IF(NS_FAILED(rv))) {
+        DebugOnly<nsresult> rv = bounceTrackingState->OnStartNavigation(
+            triggeringPrincipal, loadInfo->GetHasValidUserGestureActivation());
+        NS_WARNING_ASSERTION(NS_SUCCEEDED(rv),
+                             "BounceTrackingState::OnStartNavigation failed");
+      }
+    }
+  }
+
+  return Open(aLoadState, loadInfo, aLoadFlags, aCacheKey, aChannelId,
               aAsyncOpenTime, aTiming, std::move(aInfo), false, aContentParent,
               aRv);
 }
@@ -994,19 +1066,6 @@ auto DocumentLoadListener::OpenInParent(nsDocShellLoadState* aLoadState,
       !browsingContext->GetContentParent()) {
     LOG(("DocumentLoadListener::OpenInParent failed because of subdoc"));
     return nullptr;
-  }
-
-  if (nsCOMPtr<nsIContentSecurityPolicy> csp = aLoadState->Csp()) {
-    // Check CSP navigate-to
-    bool allowsNavigateTo = false;
-    nsresult rv = csp->GetAllowsNavigateTo(aLoadState->URI(),
-                                           aLoadState->IsFormSubmission(),
-                                           false, /* aWasRedirected */
-                                           false, /* aEnforceWhitelist */
-                                           &allowsNavigateTo);
-    if (NS_FAILED(rv) || !allowsNavigateTo) {
-      return nullptr;
-    }
   }
 
   // Clone because this mutates the load flags in the load state, which
@@ -1052,8 +1111,8 @@ auto DocumentLoadListener::OpenInParent(nsDocShellLoadState* aLoadState,
       CreateDocumentLoadInfo(browsingContext, aLoadState);
 
   nsLoadFlags loadFlags = loadState->CalculateChannelLoadFlags(
-      browsingContext,
-      Some(loadingInfo && loadingInfo->mInfo.GetURIWasModified()), Nothing());
+      browsingContext, loadingInfo && loadingInfo->mInfo.GetURIWasModified(),
+      Nothing());
 
   nsresult rv;
   return Open(loadState, loadInfo, loadFlags, cacheKey, channelId,
@@ -1486,7 +1545,7 @@ void DocumentLoadListener::RegisterEarlyHintLinksAndGetConnectArgs(
 
 void DocumentLoadListener::SerializeRedirectData(
     RedirectToRealChannelArgs& aArgs, bool aIsCrossProcess,
-    uint32_t aRedirectFlags, uint32_t aLoadFlags, ContentParent* aParent,
+    uint32_t aRedirectFlags, uint32_t aLoadFlags,
     nsTArray<EarlyHintConnectArgs>&& aEarlyHints,
     uint32_t aEarlyHintLinkType) const {
   aArgs.uri() = GetChannelCreationURI();
@@ -1538,6 +1597,17 @@ void DocumentLoadListener::SerializeRedirectData(
 
   aArgs.registrarId() = mRedirectChannelId;
 
+#ifdef DEBUG
+  // We only set the granularFingerprintingProtection field when opening http
+  // channels. So, we mark the field as set here if the channel is not a
+  // nsHTTPChannel to pass the assertion check for getting this field in below
+  // LoadInfoToLoadInfoArgs() call.
+  if (!baseChannel) {
+    static_cast<mozilla::net::LoadInfo*>(redirectLoadInfo.get())
+        ->MarkOverriddenFingerprintingSettingsAsSet();
+  }
+#endif
+
   MOZ_ALWAYS_SUCCEEDS(
       ipc::LoadInfoToLoadInfoArgs(redirectLoadInfo, &aArgs.loadInfo()));
 
@@ -1563,7 +1633,7 @@ void DocumentLoadListener::SerializeRedirectData(
                  ->CloneReplacementChannelConfig(
                      true, aRedirectFlags,
                      HttpBaseChannel::ReplacementReason::DocumentChannel)
-                 .Serialize(aParent));
+                 .Serialize());
   }
 
   uint32_t contentDispositionTemp;
@@ -1595,13 +1665,8 @@ void DocumentLoadListener::SerializeRedirectData(
 }
 
 static bool IsFirstLoadInWindow(nsIChannel* aChannel) {
-  if (nsCOMPtr<nsIPropertyBag2> props = do_QueryInterface(aChannel)) {
-    bool tmp = false;
-    nsresult rv =
-        props->GetPropertyAsBool(u"docshell.newWindowTarget"_ns, &tmp);
-    return NS_SUCCEEDED(rv) && tmp;
-  }
-  return false;
+  nsCOMPtr<nsILoadInfo> loadInfo = aChannel->LoadInfo();
+  return loadInfo->GetIsNewWindowTarget();
 }
 
 // Get where the document loaded by this nsIChannel should be rendered. This
@@ -1636,6 +1701,8 @@ static int32_t GetWhereToOpen(nsIChannel* aChannel, bool aIsDocumentLoad) {
       where == nsIBrowserDOMWindow::OPEN_NEWTAB) {
     return where;
   }
+  // NOTE: nsIBrowserDOMWindow::OPEN_NEWTAB_BACKGROUND is not allowed as a pref
+  //       value.
   return nsIBrowserDOMWindow::OPEN_NEWTAB;
 }
 
@@ -1727,6 +1794,7 @@ static bool ContextCanProcessSwitch(CanonicalBrowsingContext* aBrowsingContext,
 static RefPtr<dom::BrowsingContextCallbackReceivedPromise> SwitchToNewTab(
     CanonicalBrowsingContext* aLoadingBrowsingContext, int32_t aWhere) {
   MOZ_ASSERT(aWhere == nsIBrowserDOMWindow::OPEN_NEWTAB ||
+                 aWhere == nsIBrowserDOMWindow::OPEN_NEWTAB_BACKGROUND ||
                  aWhere == nsIBrowserDOMWindow::OPEN_NEWWINDOW,
              "Unsupported open location");
 
@@ -1964,12 +2032,6 @@ bool DocumentLoadListener::MaybeTriggerProcessSwitch(
     return false;
   }
 
-  if (!StaticPrefs::fission_remoteObjectEmbed()) {
-    MOZ_LOG(gProcessIsolationLog, LogLevel::Verbose,
-            ("Process Switch Abort: remote <object>/<embed> disabled"));
-    return false;
-  }
-
   mObjectUpgradeHandler->UpgradeObjectLoad()->Then(
       GetMainThreadSerialEventTarget(), __func__,
       [self = RefPtr{this}, options, parentWindow](
@@ -1981,6 +2043,15 @@ bool DocumentLoadListener::MaybeTriggerProcessSwitch(
                    "upgrade!"));
           self->RedirectToRealChannelFinished(NS_ERROR_FAILURE);
           return;
+        }
+
+        // At this point the element has stored the container feature policy in
+        // the new browsing context, but we need to make sure that we copy it
+        // over to the load info.
+        nsCOMPtr<nsILoadInfo> loadInfo = self->mChannel->LoadInfo();
+        if (aBrowsingContext->GetContainerFeaturePolicy()) {
+          loadInfo->SetContainerFeaturePolicyInfo(
+              *aBrowsingContext->GetContainerFeaturePolicy());
         }
 
         MOZ_LOG(gProcessIsolationLog, LogLevel::Verbose,
@@ -2128,18 +2199,11 @@ DocumentLoadListener::RedirectToRealChannel(
 
     RedirectToRealChannelArgs args;
     SerializeRedirectData(args, /* aIsCrossProcess */ true, aRedirectFlags,
-                          aLoadFlags, cp, std::move(ehArgs),
+                          aLoadFlags, std::move(ehArgs),
                           mEarlyHintsService.LinkType());
     if (mTiming) {
       mTiming->Anonymize(args.uri());
       args.timing() = std::move(mTiming);
-    }
-
-    auto loadInfo = args.loadInfo();
-
-    if (loadInfo.isNothing()) {
-      return PDocumentChannelParent::RedirectToRealChannelPromise::
-          CreateAndReject(ipc::ResponseRejectReason::SendError, __func__);
     }
 
     cp->TransmitBlobDataIfBlobURL(args.uri());
@@ -2316,15 +2380,9 @@ bool DocumentLoadListener::DocShellWillDisplayContent(nsresult aStatus) {
 
   auto* loadingContext = GetLoadingBrowsingContext();
 
-  bool isInitialDocument = true;
-  if (WindowGlobalParent* currentWindow =
-          loadingContext->GetCurrentWindowGlobal()) {
-    isInitialDocument = currentWindow->IsInitialDocument();
-  }
-
   nsresult rv = nsDocShell::FilterStatusForErrorPage(
       aStatus, mChannel, mLoadStateLoadType, loadingContext->IsTop(),
-      loadingContext->GetUseErrorPages(), isInitialDocument, nullptr);
+      loadingContext->GetUseErrorPages(), nullptr);
 
   if (NS_SUCCEEDED(rv)) {
     MOZ_LOG(gProcessIsolationLog, LogLevel::Verbose,
@@ -2346,11 +2404,13 @@ bool DocumentLoadListener::MaybeHandleLoadErrorWithURIFixup(nsresult aStatus) {
   }
 
   nsCOMPtr<nsIInputStream> newPostData;
+  bool wasSchemelessInput = false;
   nsCOMPtr<nsIURI> newURI = nsDocShell::AttemptURIFixup(
       mChannel, aStatus, mOriginalUriString, mLoadStateLoadType, bc->IsTop(),
       mLoadStateInternalLoadFlags &
           nsDocShell::INTERNAL_LOAD_FLAGS_ALLOW_THIRD_PARTY_FIXUP,
-      bc->UsePrivateBrowsing(), true, getter_AddRefs(newPostData));
+      bc->UsePrivateBrowsing(), true, getter_AddRefs(newPostData),
+      &wasSchemelessInput);
 
   // Since aStatus will be NS_OK for 4xx and 5xx error codes we
   // have to check each request which was upgraded by https-first.
@@ -2358,8 +2418,8 @@ bool DocumentLoadListener::MaybeHandleLoadErrorWithURIFixup(nsresult aStatus) {
   // we can downgrade the scheme to HTTP again.
   bool isHTTPSFirstFixup = false;
   if (!newURI) {
-    newURI = nsHTTPSOnlyUtils::PotentiallyDowngradeHttpsFirstRequest(mChannel,
-                                                                     aStatus);
+    newURI =
+        nsHTTPSOnlyUtils::PotentiallyDowngradeHttpsFirstRequest(this, aStatus);
     isHTTPSFirstFixup = true;
   }
 
@@ -2383,10 +2443,11 @@ bool DocumentLoadListener::MaybeHandleLoadErrorWithURIFixup(nsresult aStatus) {
 
   loadState->SetPostDataStream(newPostData);
 
+  // Record whether the protocol was added through a fixup.
+  loadState->SetWasSchemelessInput(wasSchemelessInput);
+
   if (isHTTPSFirstFixup) {
-    // We have to exempt the load from HTTPS-First to prevent a
-    // upgrade-downgrade loop.
-    loadState->SetIsExemptFromHTTPSOnlyMode(true);
+    nsHTTPSOnlyUtils::UpdateLoadStateAfterHTTPSFirstDowngrade(this, loadState);
   }
 
   // Ensure to set referrer information in the fallback channel equally to the
@@ -2528,6 +2589,17 @@ DocumentLoadListener::OnStartRequest(nsIRequest* aRequest) {
     return NS_OK;
   }
 
+  // If this is a successful load with a successful status code, we can possibly
+  // submit HTTPS-First telemetry.
+  if (NS_SUCCEEDED(status) && httpChannel) {
+    uint32_t responseStatus = 0;
+    if (NS_SUCCEEDED(httpChannel->GetResponseStatus(&responseStatus)) &&
+        responseStatus < 400) {
+      nsHTTPSOnlyUtils::SubmitHTTPSFirstTelemetry(
+          mChannel->LoadInfo(), mHTTPSFirstDowngradeData.forget());
+    }
+  }
+
   mStreamListenerFunctions.AppendElement(StreamListenerFunction{
       VariantIndex<0>{}, OnStartRequestParams{aRequest}});
 
@@ -2537,6 +2609,24 @@ DocumentLoadListener::OnStartRequest(nsIRequest* aRequest) {
     // We can also have multiple calls to OnStartRequest when dealing with
     // multi-part content, but only want to redirect once.
     return NS_OK;
+  }
+
+  // Keep track of server responses resulting in a document for the Bounce
+  // Tracking Protection.
+  if (mIsDocumentLoad && GetParentWindowContext() == nullptr &&
+      loadingContext->IsTopContent()) {
+    RefPtr<BounceTrackingState> bounceTrackingState =
+        loadingContext->GetBounceTrackingState();
+
+    // Not every browsing context has a BounceTrackingState. It's also null when
+    // the feature is disabled.
+    if (bounceTrackingState) {
+      DebugOnly<nsresult> rv =
+          bounceTrackingState->OnDocumentStartRequest(mChannel);
+      NS_WARNING_ASSERTION(
+          NS_SUCCEEDED(rv),
+          "BounceTrackingState::OnDocumentStartRequest failed.");
+    }
   }
 
   mChannel->Suspend();
@@ -2976,7 +3066,8 @@ NS_IMETHODIMP DocumentLoadListener::EarlyHint(const nsACString& aLinkHeader,
                                               const nsACString& aCSPHeader) {
   LOG(("DocumentLoadListener::EarlyHint.\n"));
   mEarlyHintsService.EarlyHint(aLinkHeader, GetChannelCreationURI(), mChannel,
-                               aReferrerPolicy, aCSPHeader);
+                               aReferrerPolicy, aCSPHeader,
+                               GetLoadingBrowsingContext());
   return NS_OK;
 }
 

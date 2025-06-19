@@ -289,6 +289,14 @@ find-more-themes = Dalše drasty pytać
 # used for screen readers.
 addon-options-button =
     .aria-label = Dalše nastajenja
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro2 =
+    Rozšěrjenja a drasty wam zmóžnjeja, { -brand-product-name } přiměrić. Móža priwatnosć  powyšić,
+    produktiwitu powyšić, medije polěpšić, napohlad { -brand-product-name } změnić a
+    wjele wjace. Tute małe programy so husto wot třećich wuwiwaja. Tu je
+    wuběr, kotryž { -brand-product-name } <a data-l10n-name="learn-more-trigger">doporučuje</a>
+    za wurjadnu wěstotu, wurjadny wukon a wurjadnu funkcionalnosć.
 
 ## Add-on actions
 
@@ -423,6 +431,7 @@ available-updates-heading = K dispoziciji stejace aktualizacije
 recent-updates-heading = Najnowše aktualizacije
 release-notes-loading = Začituje so…
 release-notes-error = Při začitowanju wersijowych informacijow je bohužel zmylk wustupił.
+addon-permissions-empty2 = Tute rozšěrjenje sej prawa njewužaduje.
 addon-permissions-empty = Tute rozšěrjenje sej prawa njewužaduje
 addon-permissions-required = Trěbne prawa za jadrowu funkcionalnosć:
 addon-permissions-optional = Opcionalne prawa za přidatu funkcionalnosć:
@@ -472,10 +481,24 @@ details-notification-unsigned-and-disabled-link = Dalše informacije
 details-notification-unsigned = { $name } njeda so za wužiwanje w { -brand-short-name } wobkrućić. Pokročujće z kedźbliwosću.
 details-notification-unsigned2 =
     .message = { $name } njeda so za wužiwanje w { -brand-short-name } wobkrućić. Pokročujće z kedźbliwosću.
+details-notification-hard-blocked-extension =
+    .message = Tute rozšěrjenje je přeńdźenja přećiwo prawidłam Mozilla dla zablokowane a je so znjemóžniło.
+details-notification-hard-blocked-other =
+    .message = Tutón přidatk je přeńdźenja přećiwo prawidłam Mozilla dla zablokowany a je so znjemóžnił.
 details-notification-unsigned-link = Dalše informacije
 details-notification-blocked = { $name } je so dla problemow wěstoty abo stabilnosće znjemóžnił.
 details-notification-blocked2 =
     .message = { $name } je so dla problemow wěstoty abo stabilnosće znjemóžnił.
+details-notification-blocked-link2 = Hlejće podrobnosće
+details-notification-soft-blocked-extension-disabled =
+    .message = Tute rozšěrjenje je přeńdźenja přećiwo prawidłam Mozilla dla wobmjezowane a je so znjemóžniło. Móžeće jo zmóžnić, ale to je snano riskantne.
+details-notification-soft-blocked-extension-enabled =
+    .message = Tute rozšěrjenje so přećiwo prawidłam Mozilla přeńdźe. Je riskantne jo wužiwać.
+details-notification-soft-blocked-other-disabled =
+    .message = Tutón přidatk je přeńdźenja přećiwo prawidłam Mozilla dla wobmjezowany a je so znjemóžnił. Móžeće jo zmóžnić, ale to je snano riskantne.
+details-notification-soft-blocked-other-enabled =
+    .message = Tutón přidatk so přećiwo prawidłam Mozilla přeńdźe. Je riskantne jón wužiwać.
+details-notification-softblocked-link2 = Hlejće podrobnosće
 details-notification-blocked-link = Dalše informacije
 details-notification-softblocked = { $name } je za to znaty, zo problemy wěstoty abo stabilnosće zawinuje.
 details-notification-softblocked2 =

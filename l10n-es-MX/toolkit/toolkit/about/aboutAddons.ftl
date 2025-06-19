@@ -149,7 +149,7 @@ addon-category-sitepermission-title =
     .title = Permisos del sitio
 # String displayed in about:addons in the Site Permissions section
 # Variables:
-#  $host (string): DNS host name for which the webextension enables permissions
+#  $host (string) - DNS host name for which the webextension enables permissions
 addon-sitepermission-host = Permisos del sitio para { $host }
 
 ## These are global warnings
@@ -167,6 +167,9 @@ extensions-warning-update-security2 =
     .message = El chequeo de seguridad para actualización del complemento esta deshabilitada. Tu navegador puede estar en peligro por las actualizaciones.
 extensions-warning-update-security-button = Habilitar
     .title = Habilitar chequeo de seguridad para la actualización del complemento
+extensions-warning-imported-addons2 =
+    .message = Por favor, finalice la instalación de las extensiones que se importaron a { -brand-short-name }.
+extensions-warning-imported-addons-button = Instalar extensiones
 
 ## Strings connected to add-on updates
 
@@ -217,6 +220,9 @@ shortcuts-no-addons = No tienes complementos habilitados.
 shortcuts-no-commands = Las siguientes extensiones no tienen atajos:
 shortcuts-input =
     .placeholder = Escribe un atajo
+# Accessible name for a trashcan icon button that removes an existent shortcut
+shortcuts-remove-button =
+    .aria-label = Eliminar acceso directo
 shortcuts-browserAction2 = Activar botón de la barra de herramientas
 shortcuts-pageAction = Activar acción de página
 shortcuts-sidebarAction = Alternar la barra lateral
@@ -240,6 +246,8 @@ shortcuts-duplicate-warning-message2 =
 # Variables:
 #   $addon (string) - Name of the add-on
 shortcuts-exists = Ya lo está usando { $addon }
+# Variables:
+#   $numberToShow (number) - Number of other elements available to show
 shortcuts-card-expand-button =
     { $numberToShow ->
         [one] Mostrar { $numberToShow } más
@@ -286,6 +294,14 @@ find-more-themes = Encontrar más temas
 # used for screen readers.
 addon-options-button =
     .aria-label = Más opciones
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro2 =
+    Las extensiones y los temas te permiten personalizar { -brand-product-name }. Pueden mejorar la privacidad,
+    aumentar la productividad, mejorar contenido multimedia, cambiar la apariencia de { -brand-product-name } y
+    mucho más. Estos pequeños programas de software a menudo son desarrollados por terceros. Aquí tienes
+    una selección que { -brand-product-name } <a data-l10n-name="learn-more-trigger">recomienda</a>
+    para una seguridad, rendimiento y funcionalidad excepcionales.
 
 ## Add-on actions
 
@@ -366,6 +382,10 @@ addon-detail-updates-radio-on = Activado
 addon-detail-updates-radio-off = Desactivado
 addon-detail-update-check-label = Buscar actualizaciones
 install-update-button = Actualizar
+# aria-label associated to the updates row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-updates =
+    .aria-label = { addon-detail-updates-label }
 # This is the tooltip text for the private browsing badge in about:addons. The
 # badge is the private browsing icon included next to the extension's name.
 addon-badge-private-browsing-allowed2 =
@@ -374,10 +394,24 @@ addon-badge-private-browsing-allowed2 =
 addon-detail-private-browsing-help = Cuando está activada, la extensión tendrá acceso a todo lo que haces mientras navegas de forma privada. <a data-l10n-name="learn-more">Saber más</a>
 addon-detail-private-browsing-allow = Permitir
 addon-detail-private-browsing-disallow = No permitir
+# aria-label associated to the private browsing row to help screen readers to announce the group
+# of input controls being entered.
+addon-detail-group-label-private-browsing =
+    .aria-label = { detail-private-browsing-label }
 
 ## "sites with restrictions" (internally called "quarantined") are special domains
 ## where add-ons are normally blocked for security reasons.
 
+# Used as a description for the option to allow or block an add-on on quarantined domains.
+addon-detail-quarantined-domains-label = Ejecutar en sitios con restricciones
+# Used as help text part of the quarantined domains UI controls row.
+addon-detail-quarantined-domains-help = Cuando esté permitido, la extensión tendrá acceso a sitios restringidos por { -vendor-short-name }. Permitir solo si confía en esta extensión.
+# Used as label and tooltip text on the radio inputs associated to the quarantined domains UI controls.
+addon-detail-quarantined-domains-allow = Permitir
+addon-detail-quarantined-domains-disallow = No permitir
+# aria-label associated to the quarantined domains exempt row to help screen readers to announce the group.
+addon-detail-group-label-quarantined-domains =
+    .aria-label = { addon-detail-quarantined-domains-label }
 
 ## This is the tooltip text for the recommended badges for an extension in about:addons. The
 ## badge is a small icon displayed next to an extension when it is recommended on AMO.
@@ -400,12 +434,15 @@ available-updates-heading = Actualizaciones disponibles
 recent-updates-heading = Actualizaciones recientes
 release-notes-loading = Cargando…
 release-notes-error = Lo sentimos, pero ha sucedido un error al cargar las notas de versión.
+addon-permissions-empty2 = Esta extensión no requiere ningún permiso.
 addon-permissions-empty = Esta extensión no requiere ningún permiso
 addon-permissions-required = Permisos necesarios para la funcionalidad principal:
 addon-permissions-optional = Permisos opcionales para funciones adicionales:
 addon-permissions-learnmore = Conocer más sobre permisos
 recommended-extensions-heading = Complementos recomendados
 recommended-themes-heading = Temas recomendados
+# Variables:
+#   $hostname (string) - Host where the permissions are granted
 addon-sitepermissions-required = Otorga las siguientes capacidades a <span data-l10n-name="hostname">{ $hostname }</span>:
 # A recommendation for the Firefox Color theme shown at the bottom of the theme
 # list view. The "Firefox Color" name itself should not be translated.
@@ -433,7 +470,7 @@ addon-page-options-button =
 ##   $name (string) - Name of the add-on.
 
 # Variables:
-#   $version (String): application version.
+#   $version (string) - Application version.
 details-notification-incompatible = { $name } es incompatible con { -brand-short-name } { $version }.
 # Variables:
 #   $version (string) - Application version.
@@ -447,10 +484,24 @@ details-notification-unsigned-and-disabled-link = Más información
 details-notification-unsigned = { $name } no se ha podido verificar para su uso en { -brand-short-name }. Procede con precaución.
 details-notification-unsigned2 =
     .message = { $name } no se ha podido verificar para su uso en { -brand-short-name }. Procede con precaución.
+details-notification-hard-blocked-extension =
+    .message = Esta extensión está bloqueada por infringir las políticas de Mozilla y ha sido deshabilitada.
+details-notification-hard-blocked-other =
+    .message = Este complemento está bloqueado por infringir las políticas de Mozilla y ha sido deshabilitado.
 details-notification-unsigned-link = Más información
 details-notification-blocked = { $name } ha sido deshabilitado debido a problemas de seguridad o estabilidad.
 details-notification-blocked2 =
     .message = { $name } ha sido deshabilitado debido a problemas de seguridad o estabilidad.
+details-notification-blocked-link2 = Ver Detalles
+details-notification-soft-blocked-extension-disabled =
+    .message = Esta extensión está restringida por violar las políticas de Mozilla y ha sido desactivada. Se puede activar, pero podría ser arriesgado.
+details-notification-soft-blocked-extension-enabled =
+    .message = Esta extensión viola las políticas de Mozilla. Usarla podría ser arriesgado.
+details-notification-soft-blocked-other-disabled =
+    .message = Este complemento está restringido por violar las políticas de Mozilla y ha sido desactivada. Se puede activar, pero podría ser arriesgado.
+details-notification-soft-blocked-other-enabled =
+    .message = Este complemento viola las políticas de Mozilla. Usarlo podría ser arriesgado.
+details-notification-softblocked-link2 = Ver Detalles
 details-notification-blocked-link = Más información
 details-notification-softblocked = { $name } se sabe que causa problemas de seguridad o estabilidad.
 details-notification-softblocked2 =

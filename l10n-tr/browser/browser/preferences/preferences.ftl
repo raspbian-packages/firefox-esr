@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Web sitelerine izlenmek istemediğimi bildiren “Do Not Track” sinyalini gönder
+do-not-track-removal = Artık “Do Not Track” sinyalini desteklemiyoruz
 do-not-track-description2 =
     .label = Web sitelerine “Do Not Track” isteği gönder
     .accesskey = d
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Bilgisayarım açıldığında { -brand-short-name } tarayıcısını otomatik olarak aç
     .accesskey = B
 windows-launch-on-login-disabled = Bu tercih Windows’ta devre dışıdır. Değiştirmek için sistem ayarlarındaki <a data-l10n-name="startup-link">Başlangıç Uygulamaları</a> kısmına bakabilirsiniz.
+windows-launch-on-login-profile-disabled = “Kullanıcı profilini seçin” penceresindeki “{ profile-manager-use-selected.label }” seçeneğini işaretleyerek bu tercihi etkinleştirin.
 startup-restore-warn-on-quit =
     .label = Tarayıcıdan çıkarken beni uyar
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Bağlantıları yeni pencere yerine yeni sekmede aç
     .accesskey = B
+ask-on-close-multiple-tabs =
+    .label = Birden fazla sekmeyi kapatırken bana sor
+    .accesskey = i
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = { $quitKey } ile çıkış yaparken bana sor
+    .accesskey = ı
 confirm-on-close-multiple-tabs =
     .label = Birden fazla sekmeyi kapatırken onay iste
     .accesskey = o
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Kaydettiğiniz veya ziyaret ettiğiniz sitele
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponsorlu kısayollar
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = { $provider } öneriyor
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Adres çubuğu sonuçlarında arama önerilerini göster
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Sonuç sayfalarında adres çubuğunda arama terimlerini göster
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Kredi kartları
 sync-currently-syncing-payment-methods = Ödeme yöntemleri
 sync-currently-syncing-addons = Eklentiler
 sync-currently-syncing-settings = Ayarlar
+sync-manage-options =
+    .label = Eşitlemeyi yönet…
+    .accesskey = E
 sync-change-options =
     .label = Değiştir…
     .accesskey = D
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Ayarlar
     .tooltiptext = Değiştirdiğiniz genel ayarlar, gizlilik ayarları ve güvenlik ayarları
     .accesskey = A
+sync-choose-what-to-sync-dialog4 =
+    .title = Bağlı tüm cihazlarınızda nelerin eşitleneceğini yönetin
+    .style = min-width: 36em;
+    .buttonlabelaccept = Kaydet
+    .buttonaccesskeyaccept = K
+    .buttonlabelextra2 = Bağlantıyı kes…
+    .buttonaccesskeyextra2 = B
 
 ## The device name controls.
 
@@ -1285,13 +1311,31 @@ collection-description = Yalnızca { -brand-short-name } tarayıcınızı geliş
 collection-privacy-notice = Gizlilik bildirimi
 collection-health-report-telemetry-disabled = Artık { -vendor-short-name }’nın teknik veri ve etkileşim verisi toplamasına izin vermiyorsunuz. Eski verilerinizin hepsi 30 gün içinde silinecektir.
 collection-health-report-telemetry-disabled-link = Daha fazla bilgi al
+collection-usage-ping =
+    .label = Günlük kullanım ping’ini { -vendor-short-name }’ya gönder
+    .accesskey = u
+collection-usage-ping-description = Bu sayede { -vendor-short-name } aktif kullanıcı sayısını tahmin edebilir.
+collection-health-report2 =
+    .label = Teknik verileri ve etkileşim verilerini { -vendor-short-name }’ya gönder
+    .accesskey = r
 collection-health-report =
     .label = { -brand-short-name }, teknik ve etkileşim verilerimi { -vendor-short-name }’ya gönderebilir
     .accesskey = r
 collection-health-report-link = Daha fazla bilgi al
+collection-health-report-description = Bu, { -brand-product-name } tarayıcısının özelliklerini, performansını ve kararlılığını geliştirmemize yardımcı olur.
+collection-studies2 =
+    .label = Araştırmaları yükle ve çalıştır
+collection-studies-description = Yeni özellikleri ve fikirleri herkesin kullanımına açılmadan önce deneyin.
 collection-studies =
     .label = { -brand-short-name }, araştırmalar yükleyip çalıştırabilir
 collection-studies-link = { -brand-short-name } araştırmalarını göster
+addon-recommendations2 =
+    .label = Kişiselleştirilmiş uzantı önerilerine izin ver
+addon-recommendations-description = Gezinti deneyiminizi geliştirmek için uzantı önerileri alın.
+collection-backlogged-crash-reports2 =
+    .label = Çökme raporlarını otomatik olarak gönder
+    .accesskey = m
+collection-backlogged-crash-reports-description = Bu sayede { -vendor-short-name }, tarayıcıyla ilgili sorunları tanılayıp düzeltebilir. Raporlar kişisel veya hassas veriler içerebilir.
 addon-recommendations =
     .label = { -brand-short-name }, bana özel uzantı tavsiyelerinde bulunabilir
 addon-recommendations-link = Daha fazla bilgi al
@@ -1360,13 +1404,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } tarafından kulll
 
 httpsonly-header = Yalnızca HTTPS modu
 httpsonly-description = HTTPS, ziyaret ettiğiniz sitelerle { -brand-short-name } arasında güvenli ve şifrelenmiş bağlantı sağlar. Çoğu site HTTPS desteği sunar. “Yalnızca HTTPS” modunu açarsanız { -brand-short-name } tüm bağlantılarda HTTPS kullanmaya çalışır.
+httpsonly-description2 = { -brand-short-name }, ziyaret ettiğiniz sitelerle sizin aranızda güvenli ve şifrelenmiş bağlantılar kurar. Yalnızca HTTPS modu açıkken bir bağlantı güvenli değilse { -brand-short-name } sizi uyarır.
 httpsonly-learn-more = Daha fazla bilgi al
 httpsonly-radio-enabled =
     .label = Yalnızca HTTPS modunu tüm pencerelerde etkinleştir
+httpsonly-radio-enabled2 =
+    .label = Tüm pencerelerde yalnızca HTTPS kullan
 httpsonly-radio-enabled-pbm =
     .label = Yalnızca HTTPS modunu yalnızca gizli pencerelerde etkinleştir
+httpsonly-radio-enabled-pbm2 =
+    .label = Gizli pencerelerde yalnızca HTTPS kullan
 httpsonly-radio-disabled =
     .label = Yalnızca HTTPS modunu etkinleştirme
+httpsonly-radio-disabled2 =
+    .label = Önce HTTPS’i dene ama güvenli olmayan bağlantılara da izin ver
 
 ## DoH Section
 

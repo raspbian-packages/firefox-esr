@@ -135,7 +135,7 @@ menu-view-toolbars-menu =
     .accesskey = и
 menu-view-customize-toolbar2 =
     .label = Приспособяване на лентата…
-    .accesskey = л
+    .accesskey = П
 menu-view-sidebar =
     .label = Странична лента
     .accesskey = С
@@ -145,6 +145,8 @@ menu-view-history-button =
     .label = История
 menu-view-synced-tabs-sidebar =
     .label = Синхронизирани раздели
+menu-view-megalist-sidebar =
+    .label = Пароли
 menu-view-full-zoom =
     .label = Мащабиране
     .accesskey = М
@@ -225,6 +227,9 @@ menu-history-undo-menu =
     .label = Последно затворени раздели
 menu-history-undo-window-menu =
     .label = Последно затворени прозорци
+# "Search" is a verb, as in "Search in History"
+menu-history-search =
+    .label = Търсене в историята
 
 ## Bookmarks Menu
 
@@ -237,6 +242,9 @@ menu-bookmark-tab =
     .label = Отмятане на текущия раздел…
 menu-edit-bookmark =
     .label = Промяна на отметка…
+# "Search" is a verb, as in "Search in bookmarks"
+menu-bookmarks-search =
+    .label = Търсене в отметките
 menu-bookmarks-all-tabs =
     .label = Отмятане на всички раздели…
 menu-bookmarks-toolbar =
@@ -245,6 +253,15 @@ menu-bookmarks-other =
     .label = Други отметки
 menu-bookmarks-mobile =
     .label = Мобилни отметки
+
+## Profiles Menu
+
+menu-profiles =
+    .label = Профили
+menu-profiles-manage-profiles =
+    .label = Управление на профили
+menu-profiles-new-profile =
+    .label = Нов профил
 
 ## Tools Menu
 
@@ -330,6 +347,9 @@ menu-help-enter-troubleshoot-mode2 =
 menu-help-exit-troubleshoot-mode =
     .label = Изкл. режим за отстраняване на неизправности
     .accesskey = м
+menu-help-switch-device =
+    .label = Преминаване към ново устройство
+    .accesskey = у
 # Label of the Help menu item. Either this or
 # menu-help-notdeceptive is shown.
 menu-help-report-deceptive-site =
@@ -339,4 +359,4 @@ menu-help-not-deceptive =
     .label = Това не е измамническа страница…
     .accesskey = н
 menu-report-broken-site =
-    .label = Съобщаване за неработеща страница
+    .label = Доклад за повредена страница

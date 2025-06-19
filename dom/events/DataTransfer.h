@@ -8,6 +8,7 @@
 #define mozilla_dom_DataTransfer_h
 
 #include "nsString.h"
+#include "nsStringStream.h"
 #include "nsTArray.h"
 #include "nsIVariant.h"
 #include "nsIPrincipal.h"
@@ -23,6 +24,7 @@
 #include "mozilla/dom/DataTransferItemList.h"
 #include "mozilla/dom/File.h"
 
+class nsIAsyncGetClipboardData;
 class nsINode;
 class nsITransferable;
 class nsILoadContext;
@@ -386,14 +388,6 @@ class DataTransfer final : public nsISupports, public nsWrapperCache {
   }
   bool MozShowFailAnimation() const { return mShowFailAnimation; }
 
-  // Retrieve a list of clipboard formats supported
-  //
-  // If kFileMime is supported, then it will be placed either at
-  // index 0 or at index 1 in aResult
-  static void GetExternalClipboardFormats(const int32_t& aWhichClipboard,
-                                          const bool& aPlainTextOnly,
-                                          nsTArray<nsCString>* aResult);
-
   // Retrieve a list of supporting formats in aTransferable.
   //
   // If kFileMime is supported, then it will be placed either at
@@ -426,7 +420,32 @@ class DataTransfer final : public nsISupports, public nsWrapperCache {
                                                      kImageRequestMime,
                                                      kPDFJSMime};
 
+  already_AddRefed<nsIGlobalObject> GetGlobal() const;
+
+  already_AddRefed<WindowContext> GetWindowContext() const;
+
+  nsIAsyncGetClipboardData* GetAsyncGetClipboardData() const;
+
+  // The drag session on the widget of the owner, if any.
+  nsIDragSession* GetOwnerDragSession();
+
+  // format is first element, data is second
+  using ParseExternalCustomTypesStringData = std::pair<nsString&&, nsString&&>;
+
+  // Parses out the contents of aString and calls aCallback for every data
+  // of type eCustomClipboardTypeId_String.
+  static void ParseExternalCustomTypesString(
+      mozilla::Span<const char> aString,
+      std::function<void(ParseExternalCustomTypesStringData&&)>&& aCallback);
+
  protected:
+  // Retrieve a list of clipboard formats supported
+  //
+  // If kFileMime is supported, then it will be placed either at
+  // index 0 or at index 1 in aResult
+  void GetExternalClipboardFormats(const bool& aPlainTextOnly,
+                                   nsTArray<nsCString>& aResult);
+
   // caches text and uri-list data formats that exist in the drag service or
   // clipboard for retrieval later.
   nsresult CacheExternalData(const char* aFormat, uint32_t aIndex,
@@ -454,7 +473,7 @@ class DataTransfer final : public nsISupports, public nsWrapperCache {
   nsresult SetDataAtInternal(const nsAString& aFormat, nsIVariant* aData,
                              uint32_t aIndex, nsIPrincipal* aSubjectPrincipal);
 
-  friend class ContentParent;
+  friend class BrowserParent;
   friend class Clipboard;
 
   void FillAllExternalData();
@@ -467,6 +486,9 @@ class DataTransfer final : public nsISupports, public nsWrapperCache {
   void MozClearDataAtHelper(const nsAString& aFormat, uint32_t aIndex,
                             nsIPrincipal& aSubjectPrincipal,
                             mozilla::ErrorResult& aRv);
+
+  // Returns the widget of the owner, if known.
+  nsIWidget* GetOwnerWidget();
 
   nsCOMPtr<nsISupports> mParent;
 
@@ -503,6 +525,11 @@ class DataTransfer final : public nsISupports, public nsWrapperCache {
   // Indicates which clipboard type to use for clipboard operations. Ignored for
   // drag and drop.
   int32_t mClipboardType;
+
+  // The nsIAsyncGetClipboardData that is used for getting clipboard formats.
+  // XXXedgar we should get the actual data from this in the future, see bug
+  // 1879401.
+  nsCOMPtr<nsIAsyncGetClipboardData> mAsyncGetClipboardData;
 
   // The items contained with the DataTransfer
   RefPtr<DataTransferItemList> mItems;

@@ -2,10 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import { XPCOMUtils } from "resource://gre/modules/XPCOMUtils.sys.mjs";
-
 /**
  * Implements nsIPromptCollection
+ *
  * @class PromptCollection
  */
 export class PromptCollection {
@@ -38,8 +37,8 @@ export class PromptCollection {
       return false;
     }
 
-    let contentViewer = browsingContext?.docShell?.contentViewer;
-    let modalType = contentViewer?.isTabModalPromptAllowed
+    let docViewer = browsingContext?.docShell?.docViewer;
+    let modalType = docViewer?.isTabModalPromptAllowed
       ? Ci.nsIPromptService.MODAL_TYPE_CONTENT
       : Ci.nsIPromptService.MODAL_TYPE_WINDOW;
     let buttonFlags =
@@ -85,10 +84,10 @@ export class PromptCollection {
       return false;
     }
 
-    let contentViewer = browsingContext?.docShell?.contentViewer;
+    let docViewer = browsingContext?.docShell?.docViewer;
 
     if (
-      (contentViewer && !contentViewer.isTabModalPromptAllowed) ||
+      (docViewer && !docViewer.isTabModalPromptAllowed) ||
       !browsingContext.ancestorsAreCurrent
     ) {
       console.error("Can't prompt from inactive content viewer");
@@ -156,7 +155,7 @@ export class PromptCollection {
         Services.prompt.MODAL_TYPE_TAB,
         title,
         message,
-        buttonFlags,
+        buttonFlags | Ci.nsIPrompt.BUTTON_DELAY_ENABLE,
         acceptLabel,
         null,
         null,
@@ -176,7 +175,7 @@ const BUNDLES = {
 PromptCollection.prototype.stringBundles = {};
 
 for (const [bundleName, bundleUrl] of Object.entries(BUNDLES)) {
-  XPCOMUtils.defineLazyGetter(
+  ChromeUtils.defineLazyGetter(
     PromptCollection.prototype.stringBundles,
     bundleName,
     function () {

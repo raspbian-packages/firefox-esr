@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = Pagina blocate
 neterror-captive-portal-page-title = Aperir session in le rete
 neterror-dns-not-found-title = Servitor non trovate
 neterror-malformed-uri-page-title = URL invalide
+general-body-title = Attention! Alco non pare correcte.
 
 ## Error page actions
 
@@ -40,7 +41,9 @@ neterror-error-reporting-automatic = Reporta errores como tal pro adjutar { -ven
 neterror-generic-error = { -brand-short-name } non pote cargar iste pagina pro alcun ration.
 neterror-load-error-try-again = Le sito pote esser temporarimente indisponibile o troppo occupate. Retenta in un momento.
 neterror-load-error-connection = Si tu non pote cargar alcun pagina, verifica le connexion de tu computator al rete.
-neterror-load-error-firewall = Si tu computator o rete es protegite per un firewall o proxy, assecura te que { -brand-short-name } es permittite a acceder al Web.
+neterror-load-error-firewall = Si tu computator o rete es protegite per un firewall o proxy, assecura te que { -brand-short-name } es autorisate a acceder al Web.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Si tu tenta cargar un pagina de rete local, verifica que a { -brand-short-name } ha essite concedite le permissos de Rete local in le macOS Privacy e le Parametros de securitate.
 neterror-captive-portal = Tu debe aperir session in iste rete ante que tu pote acceder a internet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +67,7 @@ neterror-dns-not-found-trr-offline = Nulle connexion a internet
 neterror-dns-not-found-trr-unknown-host2 = Iste sito web non era trovate per { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Il habeva un problema con { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = URL invalide.
+neterror-dns-not-found-system-sleep = Le systema es in modo somno.
 neterror-dns-not-found-trr-unknown-problem = Problema inexpectate.
 
 ## Native fallback specific messages
@@ -125,8 +129,8 @@ neterror-inadequate-security-code = Codice de error: NS_ERROR_NET_INADEQUATE_SEC
 neterror-clock-skew-error = Tu computator signa que es { DATETIME($now, dateStyle: "medium") }. isto impedi a { -brand-short-name } de connecter se con securitate. Pro visitar <b>{ $hostname }</b>, actualisa le horologio de tu computator al data, tempore e fuso horari currente. Pois refresca <b>{ $hostname }</b>.
 neterror-network-protocol-error-intro = Le pagina que tu tenta vider non pote esser monstrate perque un error ha essite detegite in le protocollo de rete.
 neterror-network-protocol-error-contact-website = Contacta le proprietarios del sito web pro informar les de iste problema.
-certerror-expired-cert-second-para = Il pare que le certificato del sito es expirate, isto impedi a { -brand-short-name } de connecter se in modo secur. Si tu visita iste sito, alicuno pote attaccar e tentar de robar informationes como tu contrasignos, emails, o detalios de cartas de credito.
-certerror-expired-cert-sts-second-para = Il pare que le certificato del sito es expirate, isto impedi a { -brand-short-name } de connecter se in modo secur.
+certerror-expired-cert-second-para = Es probabile que le certificato del sito ha expirate, impediente a { -brand-short-name } de connecter se in modo secur. Si tu visita iste sito, attaccantes poterea tentar robar informationes como tu contrasignos, e-mails o detalios de cartas de credito.
+certerror-expired-cert-sts-second-para = Es probabile que le certificato del sito ha expirate, impediente a { -brand-short-name } de connecter se in modo secur.
 certerror-what-can-you-do-about-it-title = Que pote tu facer concernente a isto?
 certerror-unknown-issuer-what-can-you-do-about-it-website = Le problema es probabilemente in le sito web, e il ha nihil que tu pote facer pro resolver lo.
 certerror-unknown-issuer-what-can-you-do-about-it-contact-admin = Si tu es in un rete de interprisa o usa un programma anti-virus, tu pote contactar le respective equipas de assistentia technic. Tu pote tamben signalar le problema al administrator del sito.
@@ -147,3 +151,8 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Si tu non cognosce <b>{ $mi
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> ha un politica de securitate appellate HTTP Strict Transport Security (HSTS), le qual vole dicer que { -brand-short-name } solmente pote connecter se a illo de maniera secur. Tu pote adder un exception pro visitar iste sito.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Probabilemente nihil, pois que il es probabile que il ha un problema con le sito mesme.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Codice de error: { $responsestatus } { $responsestatustext }

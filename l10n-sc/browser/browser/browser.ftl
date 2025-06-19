@@ -547,6 +547,8 @@ urlbar-go-button =
     .tooltiptext = Bae a s'indiritzu in sa barra de positzione
 urlbar-page-action-button =
     .tooltiptext = Atziones de sa pàgina
+urlbar-revert-button =
+    .tooltiptext = Ammustra s’indiritzu in sa barra de indiritzos
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -607,6 +609,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = Chirca cun { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Chirca { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Chirca cun { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Sèbera unu motore de chirca
+urlbar-searchmode-bookmarks =
+    .label = Sinnalibros
+urlbar-searchmode-tabs =
+    .label = Ischedas
+urlbar-searchmode-history =
+    .label = Cronologia
+urlbar-searchmode-actions =
+    .label = Atziones
+urlbar-searchmode-exit-button =
+    .tooltiptext = Serra
+urlbar-searchmode-popup-description = Custa borta chirca cun:
+urlbar-searchmode-popup-search-settings = Cunfiguratzione de chirca
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, sèbera unu motore de chirca
+    .tooltiptext = { $engine }, sèbera unu motore de chirca
+urlbar-searchmode-button-no-engine =
+    .label = Nissunu curtzadòrgiu seletzionadu, sèbera·nde unu
+    .tooltiptext = Nissunu curtzadòrgiu seletzionadu, sèbera·nde unu
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -929,6 +963,9 @@ data-reporting-notification-button =
     .accesskey = S
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Navigatzione privada
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Navigatzione privada
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -937,7 +974,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Protetzione datos
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = S'organizatzione tua impreat { $agentName } pro protègere dae sa pèrdida de datos. <a data-l10n-name="info">Àteras informatziones</a>
+content-analysis-panel-text-styled = S’organizatzione tua impreat <b>{ $agentName }</b> pro t’amparare de sa pèrdida de datos. <a data-l10n-name="info">Àteras informatziones</a>
 
 ## Unified extensions (toolbar) button
 
@@ -963,6 +1000,10 @@ unified-extensions-button-quarantined =
         Estensiones
         Ddoe at carchi estensione non permìtida
 
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+
 ## Private browsing reset button
 
 reset-pbm-toolbar-button =
@@ -987,7 +1028,7 @@ refresh-blocked-refresh-label = { -brand-short-name } at impedidu a custa pàgin
 refresh-blocked-redirect-label = { -brand-short-name } at impedidu a custa pàgina de si torrare a deretare a un'àtera pàgina.
 refresh-blocked-allow =
     .label = Permite
-    .accesskey = C
+    .accesskey = P
 
 ## Firefox Relay integration
 
@@ -1002,6 +1043,11 @@ firefox-relay-offer-legal-notice = Faghende clic subra “Imprea alias de posta�
 popup-notification-addon-install-unsigned =
     .value = (No averiguadu)
 popup-notification-xpinstall-prompt-learn-more = Àteras informatziones subra de s'installatzione segura de cumplementos
+popup-notification-xpinstall-prompt-block-url = Ammustra detàllios
+# Note: Access key is set to P to match "Private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox =
+    .label = Imprea in is ventanas privadas
+    .accesskey = p
 
 ## Pop-up warning
 
@@ -1031,3 +1077,24 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = Ammustra “{ $popupURI }”
+
+## File-picker crash notification ("FilePickerCrashed.sys.mjs")
+
+file-picker-failed-open = Impossìbile abèrrere sa ventana de seletzione de archìvios de Windows. Nissunu archìviu nen cartella seletzionadu.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-failed-save-somewhere = Impossìbile abèrrere sa ventana de seletzione de archìvios de Windows. S’archìviu at a èssere sarvadu in { $path }.
+file-picker-failed-save-nowhere = Impossìbile abèrrere sa ventana de seletzione de archìvios de Windows. Impossìbile agatare sa cartella predefinida; s’archìviu no at a èssere sarvadu.
+file-picker-crashed-open = Sa ventana de seletzione de archìvios de Windows s’est serrada. Nissunu archìviu nen cartella sunt istados seletzionados.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-crashed-save-somewhere = Sa ventana de seletzione de archìvios de Windows s’est serrada. S’archìviu at a èssere sarvadu in { $path }.
+file-picker-crashed-save-nowhere = Sa ventana de seletzione de archìvios de Windows s’est serrada. Impossìbile agatare sa cartella predefinida; s’archìviu no at a èssere sarvadu.
+
+# Button used with file-picker-crashed-save-default. Opens the folder in Windows
+# Explorer, with the saved file selected and in focus.
+#
+# The wording here should be consistent with the Windows variant of
+# `downloads-cmd-show-menuitem-2` and similar messages.
+
+file-picker-crashed-show-in-folder =
+    .label = Ammustra in sa cartella
+    .accessKey = A

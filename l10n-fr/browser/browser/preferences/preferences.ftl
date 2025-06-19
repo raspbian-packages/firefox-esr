@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Envoyer aux sites web un signal « Ne pas me pister » indiquant que vous ne souhaitez pas être pisté·e
+do-not-track-removal = Le signal « Ne pas me pister » n’est plus pris en charge
 do-not-track-description2 =
     .label = Demander aux sites web de « Ne pas me pister »
     .accesskey = e
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Ouvrir { -brand-short-name } automatiquement au démarrage de votre ordinateur
     .accesskey = O
 windows-launch-on-login-disabled = Cette préférence a été désactivée dans Windows. Pour modifier ce paramètre, accédez aux <a data-l10n-name="startup-link">Applications de démarrage</a> dans les paramètres système.
+windows-launch-on-login-profile-disabled = Activez cette préférence en cochant « { profile-manager-use-selected.label } » dans la fenêtre « Choisissez un profil utilisateur ».
 startup-restore-warn-on-quit =
     .label = Prévenir à la fermeture du navigateur
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Ouvrir les liens dans des onglets au lieu de nouvelles fenêtres
     .accesskey = f
+ask-on-close-multiple-tabs =
+    .label = Me demander avant de fermer plusieurs onglets
+    .accesskey = M
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Me demander avant de quitter avec { $quitKey }
+    .accesskey = e
 confirm-on-close-multiple-tabs =
     .label = Avertir lors de la fermeture de plusieurs onglets
     .accesskey = A
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Sites que vous enregistrez ou visitez
 home-prefs-shortcuts-by-option-sponsored =
     .label = Raccourcis sponsorisés
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Recommandations par { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Afficher les suggestions de recherche parmi les résultats de la barre d’adresse
     .accesskey = c
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Afficher les termes des recherches dans la barre d’adresse des pages de résultats
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Cartes bancaires
 sync-currently-syncing-payment-methods = Moyens de paiement
 sync-currently-syncing-addons = Modules complémentaires
 sync-currently-syncing-settings = Paramètres
+sync-manage-options =
+    .label = Gérer la synchronisation…
+    .accesskey = G
 sync-change-options =
     .label = Modifier…
     .accesskey = M
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Paramètres
     .tooltiptext = Les paramètres que vous avez modifiés dans les sections Général, Vie privée et Sécurité
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = Gérer les données à synchroniser sur tous vos appareils connectés
+    .style = min-width: 38em;
+    .buttonlabelaccept = Enregistrer
+    .buttonaccesskeyaccept = E
+    .buttonlabelextra2 = Se déconnecter…
+    .buttonaccesskeyextra2 = S
 
 ## The device name controls.
 
@@ -1285,13 +1311,26 @@ collection-description = Nous nous efforçons de vous laisser le choix et de rec
 collection-privacy-notice = Politique de confidentialité
 collection-health-report-telemetry-disabled = Vous n’autorisez plus { -vendor-short-name } à capturer des données techniques et d’interaction. Toutes les données passées seront supprimées dans les 30 jours.
 collection-health-report-telemetry-disabled-link = En savoir plus
+collection-usage-ping =
+    .label = Envoyer un ping quotidien d’utilisation à { -vendor-short-name }
+    .accesskey = u
+collection-usage-ping-description = Ce paramètre aide { -vendor-short-name } à évaluer le nombre d’utilisateurs actifs.
+collection-health-report2 =
+    .label = Envoyer des données techniques et d’interaction à { -vendor-short-name }
+    .accesskey = d
 collection-health-report =
     .label = Autoriser { -brand-short-name } à envoyer des données techniques et des données d’interaction à { -vendor-short-name }
     .accesskey = A
 collection-health-report-link = En savoir plus
+collection-studies2 =
+    .label = Installer et lancer des études
+collection-studies-description = Testez des fonctionnalités et des idées avant qu’elles ne soient disponibles pour tout le monde.
 collection-studies =
     .label = Autoriser { -brand-short-name } à installer et à lancer des études
 collection-studies-link = Consulter les études de { -brand-short-name }
+collection-backlogged-crash-reports2 =
+    .label = Envoyer automatiquement les rapports de plantage
+    .accesskey = E
 addon-recommendations =
     .label = Autoriser { -brand-short-name } à effectuer des recommandations personnalisées d’extensions
 addon-recommendations-link = En savoir plus
@@ -1360,13 +1399,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } n’a plus assez 
 
 httpsonly-header = Mode HTTPS uniquement
 httpsonly-description = HTTPS procure une connexion sûre et chiffrée entre { -brand-short-name } et les sites web sur lesquels vous vous rendez. La plupart des sites web prennent en charge HTTPS. Si le mode HTTPS uniquement est activé, { -brand-short-name } surclassera alors toutes les connexions en HTTPS.
+httpsonly-description2 = { -brand-short-name } établit des connexions sécurisées et chiffrées avec les sites que vous visitez. { -brand-short-name } vous avertira si une connexion n’est pas sécurisée lorsque « HTTPS uniquement » est activé.
 httpsonly-learn-more = En savoir plus
 httpsonly-radio-enabled =
     .label = Activer le mode HTTPS uniquement dans toutes les fenêtres
+httpsonly-radio-enabled2 =
+    .label = Utiliser uniquement HTTPS dans toutes les fenêtres
 httpsonly-radio-enabled-pbm =
     .label = Activer le mode HTTPS uniquement dans les fenêtres privées seulement
+httpsonly-radio-enabled-pbm2 =
+    .label = Utiliser uniquement HTTPS dans les fenêtres de navigation privée
 httpsonly-radio-disabled =
     .label = Ne pas activer le mode HTTPS uniquement
+httpsonly-radio-disabled2 =
+    .label = Essayer d’abord HTTPS, mais autoriser les connexions non sécurisées
 
 ## DoH Section
 

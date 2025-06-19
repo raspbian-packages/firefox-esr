@@ -89,6 +89,9 @@ shopping-show-less-button = Näytä vähemmän
 
 shopping-settings-label =
     .label = Asetukset
+shopping-settings-recommendations-toggle2 =
+    .label = Näytä suosituksia ja sponsoroitua sisältöä
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } ei jaa henkilökohtaisia tietojasi, joten nämä suositukset eivät seuraa sinua Internetissä. <a data-l10n-name="review-quality-url">Lisätietoja</a>
 shopping-settings-recommendations-toggle =
     .label = Näytä mainoksia arvostelujen tarkistimessa
 shopping-settings-opt-out-button = Poista arvostelujen tarkistus käytöstä
@@ -159,6 +162,7 @@ shopping-unanalyzed-product-analyze-button = Tarkista arvostelun laatu
 
 more-to-consider-ad-label =
     .label = Lisää harkittavaa
+shopping-sponsored-label = Sponsoroitu
 ad-by-fakespot = Mainostaja { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -179,6 +183,17 @@ shopping-survey-submit-button-label = Lähetä
 shopping-survey-terms-link = Käyttöehdot
 shopping-survey-thanks =
     .heading = Kiitos palautteestasi!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-thanks-title = Kiitos palautteestasi!
+shopping-survey-opted-out-hard-to-understand = Sitä on vaikea ymmärtää
+shopping-survey-opted-out-too-slow = Se on liian hidas
+shopping-survey-opted-out-not-accurate = Se ei ole tarkka
+shopping-survey-opted-out-not-helpful = Siitä ei ole minulle hyötyä
+shopping-survey-opted-out-check-myself = Tarkistan arvostelut mieluummin itse
+shopping-survey-opted-out-other = Muu
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

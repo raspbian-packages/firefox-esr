@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Stäng flik
+           *[other] Stäng { $tabCount } flikar
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,16 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Spela { $tabCount } flikar
         }
 
+## Tooltips for tab audio control
+
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Ljud på för flik
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Ljud av för flik
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Spela flik
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -69,6 +90,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = Stäng { $tabCount } flikar?
 tabbrowser-confirm-close-tabs-button = Stäng flikar
+tabbrowser-ask-close-tabs-checkbox = Fråga innan du stänger flera flikar
 tabbrowser-confirm-close-tabs-checkbox = Bekräfta innan du stänger flera flikar
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -91,7 +113,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Stäng fönster och avsluta { -br
 tabbrowser-confirm-close-tabs-with-key-button = Avsluta { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Fråga innan du avslutar med { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Bekräfta innan du avslutar med { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = Avsluta { -brand-short-name } eller stäng aktuell flik?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Avsluta { -brand-short-name }
+       *[other] Avsluta { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Stäng aktuell flik
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -161,3 +197,96 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Ljud på för flik
 tabbrowser-manager-close-tab =
     .tooltiptext = Stäng flik
+
+## Tab Groups
+
+tab-group-editor-title-create = Skapa flikgrupp
+tab-group-editor-title-edit = Hantera flikgrupp
+tab-group-editor-name-label = Namn
+tab-group-editor-name-field =
+    .placeholder = Exempel: Shopping
+tab-group-editor-cancel =
+    .label = Avbryt
+    .accesskey = A
+tab-group-editor-color-selector =
+    .aria-label = Färg på flikgrupp
+tab-group-editor-color-selector-blue = Blå
+tab-group-editor-color-selector-purple = Lila
+tab-group-editor-color-selector-cyan = Cyan
+tab-group-editor-color-selector-orange = Orange
+tab-group-editor-color-selector-yellow = Gul
+tab-group-editor-color-selector-pink = Rosa
+tab-group-editor-color-selector-green = Grön
+tab-group-editor-color-selector-gray = Grå
+tab-group-editor-color-selector-red = Röd
+tab-group-menu-header = Flikgrupper
+tab-context-unnamed-group =
+    .label = Namnlös grupp
+tab-group-name-default = Namnlös grupp
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Lägg till flik i en ny grupp
+           *[other] Add Tabs to New Group
+        }
+    .accesskey = g
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Lägg till flik i en grupp
+           *[other] Add Tabs to Group
+        }
+    .accesskey = L
+tab-group-editor-action-new-tab =
+    .label = Ny flik i grupp
+tab-group-editor-action-new-window =
+    .label = Flytta grupp till nytt fönster
+tab-group-editor-action-save =
+    .label = Spara och stäng grupp
+tab-group-editor-action-ungroup =
+    .label = Dela upp flikar
+tab-group-editor-action-delete =
+    .label = Ta bort grupp
+tab-group-editor-done =
+    .label = Klar
+    .accessKey = K
+tab-context-reopen-tab-group =
+    .label = Återöppna flikgrupp
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Ta bort från gruppen
+           *[other] Remove from Groups
+        }
+    .accesskey = T
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Flytta grupp till nytt fönster
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Flytta grupp till det här fönstret
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Ta bort grupp
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Öppna grupp i det här fönstret
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Öppna grupp i nytt fönster

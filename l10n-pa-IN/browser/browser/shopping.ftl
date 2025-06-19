@@ -89,6 +89,9 @@ shopping-show-less-button = ਘੱਟ ਵੇਖਾਓ
 
 shopping-settings-label =
     .label = ਸੈਟਿੰਗਾਂ
+shopping-settings-recommendations-toggle2 =
+    .label = ਸਿਫ਼ਾਰਸਾਂ ਅਤੇ ਸਪੌਂਸਰ ਕੀਤੀ ਸਮੱਗਰੀ ਵੇਖਾਓ
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } ਤੁਹਾਡੇ ਨਿੱਜੀ ਡਾਟੇ ਨੂੰ ਸਾਂਝਾ ਨਹੀਂ ਕਰਦਾ ਹੈ, ਇਸਕਰਕੇ ਇਹ ਸਿਫ਼ਾਰਸ਼ਾਂ ਇੰਟਰਨੈੱਟ ਉੱਤੇ ਤੁਹਾਡੀ ਸੂਹ ਨਹੀਂ ਲੈਣਗੀਆਂ। <a data-l10n-name="review-quality-url">ਹੋਰ ਜਾਣੋ</a>
 shopping-settings-recommendations-toggle =
     .label = ਰੀਵਿਊ ਚੈਕਰ ਵਿੱਚ ਇਸ਼ਤਿਹਾਰ ਵੇਖਾਓ
 shopping-settings-recommendations-learn-more2 = ਤੁਸੀਂ ਕਦੇ ਕਦਾਈ ਸੰਬੰਧਿਤ ਉਤਪਾਦਾਂ ਲਈ ਇਸ਼ਤਿਹਾਰ ਵੇਖੋਗੇ। ਅਸੀਂ ਭਰੋਸੇਯੋਗ ਰੀਵਿਊ ਵਾਲੇ ਉਤਪਾਦ ਲਈ ਹੀ ਇਸ਼ਤਿਹਾਰ ਦਿੰਦੇ ਹਾਂ। <a data-l10n-name="review-quality-url">ਹੋਰ ਸਿੱਖੋ</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = ਰੀਵਿਊ ਕੁਆਲਟੀ 
 
 more-to-consider-ad-label =
     .label = ਵਿਚਾਰਨ ਲਈ ਹੋਰ
+shopping-sponsored-label = ਸਪੌਂਸਰ ਕੀਤੇ
 ad-by-fakespot = { -fakespot-brand-name } ਵਲੋਂ ਇਸ਼ਤਿਹਾਰ
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = ਭੇਜੋ
 shopping-survey-terms-link = ਵਰਤਣ ਦੀ ਸ਼ਰਤਾਂ
 shopping-survey-thanks =
     .heading = ਤੁਹਾਡੀ ਫ਼ੀਡਬੈਕ ਲਈ ਤੁਹਾਡਾ ਧੰਨਵਾਦ ਹੈ!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = ਕਿਰਪਾ ਕਰਕੇ ਸਾਨੂੰ ਦੱਸੋ ਕਿ ਤੁਸੀਂ ਰੀਵਿਊ ਚੈਕਰ ਨੂੰ ਬੰਦ ਕਿਉਂ ਕੀਤਾ ਹੈ। ਜੇ ਲੋੜ ਪਵੇ ਤਾਂ ਕਈ ਸਾਰਿਆਂ ਦੀ ਚੋਣ ਕਰੋ।
+shopping-survey-thanks-title = ਤੁਹਾਡੇ ਸੁਝਾਅ ਲਈ ਧੰਨਵਾਦ ਹੈ!
+shopping-survey-opted-out-hard-to-understand = ਇਸ ਨੂੰ ਸਮਝਣਾ ਔਖਾ ਹੈ
+shopping-survey-opted-out-too-slow = ਇਹ ਬਹੁਤ ਹੌਲੀ ਹੈ
+shopping-survey-opted-out-not-accurate = ਇਹ ਦਰੁਸਤ ਨਹੀਂ ਹੈ
+shopping-survey-opted-out-not-helpful = ਇਹ ਮੇਰੇ ਲਈ ਮਦਦਗਾਰ ਨਹੀਂ ਹੈ
+shopping-survey-opted-out-check-myself = ਮੈਂ ਖੁਦ ਰੀਵਿਊ ਵੇਖਣਾ ਚਾਹੁੰਦਾ/ਚਾਹੁੰਦੀ ਹਾਂ
+shopping-survey-opted-out-other = ਹੋਰ
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

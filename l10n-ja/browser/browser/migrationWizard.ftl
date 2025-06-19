@@ -140,11 +140,7 @@ migration-bookmarks-from-file-json-filter-title = JSON ファイル
 #
 # Variables:
 #  $newEntries (Number): the number of imported bookmarks.
-migration-wizard-progress-success-new-bookmarks =
-    { $newEntries ->
-        [one] ブックマーク { $newEntries } 件
-       *[other] ブックマーク { $newEntries } 件
-    }
+migration-wizard-progress-success-new-bookmarks = ブックマーク { $newEntries } 件
 migration-import-button-label = インポート
 migration-choose-to-import-from-file-button-label = ファイルからインポート
 migration-import-from-file-button-label = ファイルを選択
@@ -198,11 +194,7 @@ migration-safari-password-import-select-button = ファイルを選択
 #
 # Variables:
 #  $quantity (Number): the number of successfully imported bookmarks
-migration-wizard-progress-success-bookmarks =
-    { $quantity ->
-        [one] { $quantity } 個のブックマーク
-       *[other] { $quantity } 個のブックマーク
-    }
+migration-wizard-progress-success-bookmarks = ブックマーク { $quantity } 件
 # Shown in the migration wizard after importing bookmarks from either
 # Internet Explorer or Edge.
 #
@@ -210,11 +202,7 @@ migration-wizard-progress-success-bookmarks =
 #
 # Variables:
 #  $quantity (Number): the number of successfully imported bookmarks
-migration-wizard-progress-success-favorites =
-    { $quantity ->
-        [one] { $quantity } 個のお気に入り
-       *[other] { $quantity } 個のお気に入り
-    }
+migration-wizard-progress-success-favorites = お気に入り { $quantity } 件
 
 ## The import process identifies extensions installed in other supported
 ## browsers and installs the corresponding (matching) extensions compatible
@@ -225,18 +213,14 @@ migration-wizard-progress-success-favorites =
 #
 # Variables:
 #   $quantity (Number): the number of successfully imported extensions
-migration-wizard-progress-success-extensions =
-    { $quantity ->
-        [one] { $quantity } 個の拡張機能
-       *[other] { $quantity } 個の拡張機能
-    }
+migration-wizard-progress-success-extensions = 拡張機能 { $quantity } 個
 # Shown in the migration wizard after importing a partial amount of
 # matched extensions from supported browsers.
 #
 # Variables:
 #   $matched (Number): the number of matched imported extensions
 #   $quantity (Number): the number of total extensions found during import
-migration-wizard-progress-partial-success-extensions = { $matched } / { $quantity } 個の拡張機能
+migration-wizard-progress-partial-success-extensions = 拡張機能 { $quantity } 個中 { $matched } 個
 migration-wizard-progress-extensions-support-link = { -brand-product-name } に適合する拡張機能についての詳細
 # Shown in the migration wizard if there are no matched extensions
 # on import from supported browsers.
@@ -250,32 +234,20 @@ migration-wizard-progress-extensions-addons-link = { -brand-short-name } 用の�
 #
 # Variables:
 #  $quantity (Number): the number of successfully imported passwords
-migration-wizard-progress-success-passwords =
-    { $quantity ->
-        [one] { $quantity } 件のパスワード
-       *[other] { $quantity } 件のパスワード
-    }
+migration-wizard-progress-success-passwords = パスワード { $quantity } 件
 # Shown in the migration wizard after importing history from another
 # browser has completed.
 #
 # Variables:
 #  $maxAgeInDays (Number): the maximum number of days of history that might be imported.
-migration-wizard-progress-success-history =
-    { $maxAgeInDays ->
-        [one] 最近 1 日分
-       *[other] 最近 { $maxAgeInDays } 日分
-    }
+migration-wizard-progress-success-history = 最近 { $maxAgeInDays } 日分
 migration-wizard-progress-success-formdata = フォームの入力履歴
 # Shown in the migration wizard after importing payment methods from another
 # browser has completed.
 #
 # Variables:
 #  $quantity (Number): the number of successfully imported payment methods
-migration-wizard-progress-success-payment-methods =
-    { $quantity ->
-        [one] 支払い方法 { $quantity } 件
-       *[other] 支払い方法 { $quantity } 件
-    }
+migration-wizard-progress-success-payment-methods = 支払い方法 { $quantity } 件
 migration-wizard-safari-permissions-sub-header = Safari のブックマークと閲覧履歴をインポートするには:
 migration-wizard-safari-instructions-continue = [続ける] を選択します
 migration-wizard-safari-instructions-folder = リストから Safari フォルダーを選択し、[開く] をクリックします

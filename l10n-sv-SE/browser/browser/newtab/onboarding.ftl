@@ -188,6 +188,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Behåll { -brand-short-name } i Dock
        *[other] Fäst { -brand-short-name } i aktivitetsfältet
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Fäst { -brand-short-name } i aktivitetsfältet och startmenyn
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -223,7 +225,9 @@ mr2022-onboarding-set-default-subtitle = Använd en webbläsare som stöds av en
 mr2022-onboarding-get-started-primary-subtitle = Vår senaste version är byggd runt dig, vilket gör det enklare än någonsin att surfa runt på webben. Den är fullproppad med funktioner som vi tror att du kommer att älska.
 mr2022-onboarding-get-started-primary-button-label = Konfigurera på några sekunder
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Blixtsnabb konfiguration
 mr2022-onboarding-import-subtitle = Ställ in { -brand-short-name } som du vill. Lägg till dina bokmärken, lösenord och mer från din gamla webbläsare.
@@ -335,6 +339,14 @@ onboarding-device-migration-subtitle = Logga in på ditt { -fxaccount-brand-name
 onboarding-device-migration-subtitle2 = Logga in på ditt konto för att ta med dig dina bokmärken, lösenord och historik på din nya enhet.
 onboarding-device-migration-primary-button-label = Logga in
 
+## Add-ons Picker screen
+
+amo-picker-title = Anpassa { -brand-short-name }
+amo-picker-subtitle = Tillägg är som appar för din webbläsare och de låter dig skydda lösenord, ladda ner videor, hitta erbjudanden, blockera irriterande annonser, ändra hur din webbläsare ser ut och mycket mer.
+amo-picker-install-button-label = Lägg till i { -brand-short-name }
+amo-picker-install-complete-label = Installerad
+amo-picker-collection-link = Utforska fler tillägg
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -346,6 +358,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = När du synkroniserar
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } tar hand om dig
 onboarding-gratitude-security-and-privacy-subtitle = Tack för att du använder { -brand-short-name }, med stöd av Mozilla Foundation. Med ditt stöd arbetar vi för att göra internet säkrare och mer tillgängligt för alla.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Synkronisera din data mellan enheter
+onboarding-sign-up-description = Registrera dig för ett konto så lagras all din viktiga information — lösenord, bokmärken och mer — säkert och tillgänglig när du loggar in på vilken enhet som helst.
+onboarding-sign-up-button = Registrera dig eller logga in
+onboarding-sign-up-secondary-button = Börja surfa
 
 ## New user time and familiarity survey strings
 
@@ -365,3 +382,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Jag är ny
 onboarding-new-user-survey-familiarity-based-option-2 = Jag har använt det en del
 onboarding-new-user-survey-familiarity-based-option-3 = Jag är mycket bekant med det
 onboarding-new-user-survey-familiarity-based-option-4 = Jag använde det tidigare, men det var ett tag sedan
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Berätta var du vill ha dina flikar
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Växla när du vill i sidofältsinställningarna.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Dina flikar, på ditt sätt
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Vill du ha många flikar öppna? Prova dina flikar på sidan för en mer strömlinjeformad vy. Eller behåll det klassiska med flikar på toppen. Byt när som helst.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Välj din fliklayout
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = För en strömlinjeformad vy som kan hjälpa dig att hålla fokus, prova flikarna på sidan. Eller behåll det klassiska med flikar på toppen. Byt när som helst.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Flikar på sidan
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Flikar på toppen
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Vertikala flikar är här
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Introducerar vertikala flikar
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Prova dina flikar på sidan. Växla när du vill i sidofältsinställningarna.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Prova vertikala flikar
+onboarding-flair-text = Nytt!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Beåll horisontella flikar
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Ett webbläsarfönster som visar flikar längs sidan av skärmen som en del av sidofältet i { -brand-shorter-name }.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Ett webbläsarfönster som visar flikar längs sidan av skärmen som en del av sidofältet i { -brand-shorter-name }.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Ett webbläsarfönster som visar flikar längst upp.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Ett webbläsarfönster som visar flikar längst upp.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Testa en AI chatbot i sidofältet
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Sammanfatta webbinnehåll, brainstorma idéer, skapa utkast — allt när du surfar. Välj bland flera leverantörer. Byt när som helst. <a data-l10n-name="learn-more">Läs mer</a>
+onboarding-genai-sidebar-primary-button = Välj en chatbot
+onboarding-genai-sidebar-secondary-button = Börja surfa
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Slutför konfigureringen av { -brand-short-name }
+onboarding-checklist-subtitle = Slutför de här stegen för att få ut det mesta av din surfupplevelse.
+onboarding-checklist-set-default = Ange { -brand-short-name } som standardwebbläsare
+onboarding-checklist-pin = Fäst { -brand-short-name } i aktivitetsfältet
+onboarding-checklist-import = Importera från tidigare webbläsare
+onboarding-checklist-extension = Lägg till ett tillägg
+onboarding-checklist-sign-up = Registrera dig eller logga in på ditt konto
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Testa flikgrupper för mindre röra, mer fokus
+tab-groups-onboarding-feature-callout-subtitle = Bli organiserad genom att dra en flik ovanpå en annan för att skapa din första grupp.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Säg hej till { -brand-product-name } profiler
+multi-profile-spotlight-body = Växla enkelt mellan att surfa för arbete och nöje. Profiler håller din webbinformation, inklusive sökhistorik och lösenord, helt åtskilda så att du kan hålla ordning.
+multi-profile-spotlight-cta = Skapa en profil
+multi-profile-callout-title = Skapa olika profiler för arbete och underhållning
+multi-profile-callout-subtitle = Profiler låter dig hålla din webbinformation, som sökhistorik och lösenord, helt åtskilda.
+multi-profile-callout-cta = Skapa en profil

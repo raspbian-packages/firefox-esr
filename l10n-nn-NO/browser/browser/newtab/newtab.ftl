@@ -8,11 +8,15 @@
 newtab-page-title = Ny fane
 newtab-settings-button =
     .title = Tilpass sida for Ny fane
+newtab-settings-dialog-label =
+    .aria-label = Innstillingar
 newtab-personalize-icon-label =
     .title = Tilpass ny fane-side
     .aria-label = Tilpass ny fane-side
 newtab-personalize-dialog-label =
     .aria-label = Tilpass
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +113,10 @@ newtab-menu-save-to-pocket = Lagre til { -pocket-brand-name }
 newtab-menu-delete-pocket = Slett frå { -pocket-brand-name }
 newtab-menu-archive-pocket = Arkiver i { -pocket-brand-name }
 newtab-menu-show-privacy-info = Våre sponsorar og ditt personvern
+newtab-menu-about-fakespot = Om { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Blokker
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -199,6 +207,8 @@ newtab-section-header-recent-activity = Nyleg aktivitet
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Tilrådd av { $provider }
 newtab-section-header-stories = Tankevekkjande artiklar
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Dagens utvalde artiklar for deg
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -230,6 +240,8 @@ newtab-pocket-cta-button = Last ned { -pocket-brand-name }
 newtab-pocket-cta-text = Lagre artiklane du synest er interessante i { -pocket-brand-name }, og stimuler tankane dine med fasinerande lesemateriell.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } er ein del av { -brand-product-name }-familien.
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Lagre
 newtab-pocket-saved = Lagra
 
@@ -241,6 +253,10 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Ikkje for meg
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Takk. Tilbakemeldinga di  vil hjelpe oss med å gjere kjelda di betre.
+newtab-toast-thumbs-up-or-down = Takk. Tilbakemeldinga di  vil hjelpe oss med å gjere kjelda di betre.
 newtab-toast-dismiss-button =
     .title = Avvis
     .aria-label = Avvis
@@ -369,6 +385,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Sponsa
 newtab-weather-menu-change-location = Endre plassering
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Søk plassering
+    .aria-label = Søk plassering
 newtab-weather-change-location-search-input = Søk plassering
 newtab-weather-menu-weather-display = Vêrvising
 # Display options are:
@@ -387,3 +406,67 @@ newtab-weather-menu-hide-weather = Skjul vêret på ny fane
 newtab-weather-menu-learn-more = Les meir
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Vêrdata er ikkje tilgjengeleg akkurat no.
+
+## Topic Labels
+
+newtab-topic-label-business = Business
+newtab-topic-label-career = Karriere
+newtab-topic-label-education = Utdanning
+newtab-topic-label-arts = Underhaldning
+newtab-topic-label-food = Mat
+newtab-topic-label-health = Helse
+newtab-topic-label-hobbies = Spel
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Pengar
+newtab-topic-label-society-parenting = Foreldreskap
+newtab-topic-label-government = Politikk
+newtab-topic-label-education-science = Vitskap
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Kvardagsknep og småtriks
+newtab-topic-label-sports = Sport
+newtab-topic-label-tech = Teknologi
+newtab-topic-label-travel = Reise
+newtab-topic-label-home = Heim og hage
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Vel emne for å finjustere feed-en din
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Vel to eller fleire emne. Ekspertkuratorane våre prioriterer artiklar tilpassa etter dine interesser. Oppdater når som helst.
+newtab-topic-selection-save-button = Lagre
+newtab-topic-selection-cancel-button = Avbryt
+newtab-topic-selection-button-maybe-later = Kanskje seinare
+newtab-topic-selection-privacy-link = FInn ut korleis vi vernar og handsamar data
+newtab-topic-selection-button-update-interests = Oppdater interessene dine
+newtab-topic-selection-button-pick-interests = Vel interessene dine
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Følg
+newtab-section-following-button = Følgjer
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Blokker
+newtab-section-blocked-button = Blokkert
+newtab-section-unblock-button = Opphev blokkeringa
+
+## Confirmation modal for blocking a section
+
+newtab-section-cancel-button = Ikkje no
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Emne
+newtab-section-mangage-topics-blocked-topics-subtitle = Blokkerte emne

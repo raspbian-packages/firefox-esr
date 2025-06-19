@@ -89,6 +89,9 @@ shopping-show-less-button = Montri malpli
 
 shopping-settings-label =
     .label = Agordoj
+shopping-settings-recommendations-toggle2 =
+    .label = Montri rekomenditan kaj patronitan enhavon
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } ne dividas viajn personajn datumojn, tial tiuj ĉi rekomendoj ne sekvos vin tra la reto. <a data-l10n-name="review-quality-url">Pli da informo</a>
 shopping-settings-recommendations-toggle =
     .label = Montri reklamojn en la kontrolilo de recenzoj
 shopping-settings-recommendations-learn-more2 = De tempo al tempo vi vidos reklamojn pri elstaraj produktoj. Ni nur reklamas produktojn kun fidindaj recenzoj. <a data-l10n-name="review-quality-url">Pli da informo</a>
@@ -134,6 +137,8 @@ shopping-analysis-explainer-learn-more2 = Pli da informo pri <a data-l10n-name="
 # websites, which will be inserted without being translated.
 #  $retailer (String) - capitalized name of the shopping website, for example, "Amazon".
 shopping-analysis-explainer-highlights-description = <strong>Elstaraĵoj</strong> venas el recenzoj de { $retailer }, kiujn ni opinias fidindaj kaj okazis dum la lastaj 80 tagoj.
+# Fallback for analysis highlights explainer if the retailer is ever unknown
+shopping-analysis-explainer-highlights-description-unknown-retailer = <strong>Elstaraĵoj</strong> venas el recenzoj, kiuj okazis dum la lastaj 80 tagoj kaj kiujn ni opinias fidindaj.
 shopping-analysis-explainer-review-grading-scale-reliable = Fidindaj recenzoj. Ni pensas ke tiuj venas el verŝajnaj veraj klientoj, kiuj donis sincerajn kaj objektivajn recenzojn.
 shopping-analysis-explainer-review-grading-scale-mixed = Ni pensas ke estas miksaĵo de findindaj kaj nefidindaj recenzoj.
 shopping-analysis-explainer-review-grading-scale-unreliable = Nefidindaj recenzoj. Ni pensas ke tiuj estas verŝajne ĉu malveraj ĉu donitaj de neobjektivaj recenzintoj.
@@ -160,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Kontroli kvaliton de recenzoj
 
 more-to-consider-ad-label =
     .label = Alternativaj produktoj
+shopping-sponsored-label = Patronita
 ad-by-fakespot = Reklamo de { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -180,6 +186,18 @@ shopping-survey-submit-button-label = Sendi
 shopping-survey-terms-link = Kondiĉoj de uzo
 shopping-survey-thanks =
     .heading = Dankon pro via opinio!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Bonvolu rakonti al ni kial vi malŝaltis la kontrolilo de recenzoj. Elektu plurajn eblojn se bezonatas.
+shopping-survey-thanks-title = Dankon pro via opinio!
+shopping-survey-opted-out-hard-to-understand = Ĝi ne estas facile komprenebla
+shopping-survey-opted-out-too-slow = Ĝi tro malrapidas
+shopping-survey-opted-out-not-accurate = Ĝi ne estas korekta
+shopping-survey-opted-out-not-helpful = Ĝi ne utilas por mi
+shopping-survey-opted-out-check-myself = Mi preferas mem kontroli recenzojn
+shopping-survey-opted-out-other = Aliaj kialoj
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

@@ -8,11 +8,18 @@
 newtab-page-title = Nová karta
 newtab-settings-button =
     .title = Prispôsobte si svoju stránku Nová karta
+newtab-personalize-settings-icon-label =
+    .title = Prispôsobte si Novú kartu
+    .aria-label = Nastavenia
+newtab-settings-dialog-label =
+    .aria-label = Nastavenia
 newtab-personalize-icon-label =
     .title = Prispôsobiť stránku novej karty
     .aria-label = Prispôsobiť stránku novej karty
 newtab-personalize-dialog-label =
     .aria-label = Prispôsobiť
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Uložiť do { -pocket-brand-name(case: "gen") }
 newtab-menu-delete-pocket = Odstrániť z { -pocket-brand-name(case: "gen") }
 newtab-menu-archive-pocket = Archivovať v { -pocket-brand-name(case: "loc") }
 newtab-menu-show-privacy-info = Naši sponzori a vaše súkromie
+newtab-menu-about-fakespot = Čo je { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Blokovať
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Prestať sledovať tému
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -196,6 +210,8 @@ newtab-section-header-recent-activity = Nedávna aktivita
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Odporúča { $provider }
 newtab-section-header-stories = Príbehy na zamyslenie
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Dnešný výber pre vás
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -227,6 +243,8 @@ newtab-pocket-cta-button = Získajte { -pocket-brand-name }
 newtab-pocket-cta-text = Ukladajte si články do { -pocket-brand-name(case: "gen") } a užívajte si skvelé čítanie.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } je súčasťou rodiny { -brand-product-name(case: "gen") }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Uložiť
 newtab-pocket-saved = Uložené
 
@@ -238,6 +256,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Nie je pre mňa
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Vďaka. Vaša spätná väzba nám pomôže zlepšiť váš informačný kanál.
 newtab-toast-thumbs-up-or-down = Vďaka. Vaša spätná väzba nám pomôže zlepšiť váš informačný kanál.
 newtab-toast-dismiss-button =
     .title = Zavrieť
@@ -304,6 +325,8 @@ newtab-wallpaper-dark-panda = Panda červená ukrytá v lese
 newtab-wallpaper-dark-sky = Mestská scenéria s nočnou oblohou
 newtab-wallpaper-dark-mountain = Horská scenéria
 newtab-wallpaper-dark-city = Fialová mestská scenéria
+newtab-wallpaper-dark-fox-anniversary = Líška na chodníku pri lese
+newtab-wallpaper-light-fox-anniversary = Líška na trávnatom poli so zahmlenou horskou krajinou
 
 ## Solid Colors
 
@@ -368,6 +391,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Sponzorované
 newtab-weather-menu-change-location = Zmeniť oblasť
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Hľadať oblasť
+    .aria-label = Hľadať oblasť
 newtab-weather-change-location-search-input = Hľadať oblasť
 newtab-weather-menu-weather-display = Zobrazenie počasia
 # Display options are:
@@ -386,3 +412,76 @@ newtab-weather-menu-hide-weather = Skryť počasie na novej karte
 newtab-weather-menu-learn-more = Ďalšie informácie
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Údaje o počasí nie sú momentálne k dispozícii.
+
+## Topic Labels
+
+newtab-topic-label-business = Podnikanie
+newtab-topic-label-career = Kariéra
+newtab-topic-label-education = Vzdelávanie
+newtab-topic-label-arts = Zábava
+newtab-topic-label-food = Jedlo
+newtab-topic-label-health = Zdravie
+newtab-topic-label-hobbies = Hranie hier
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Financie
+newtab-topic-label-society-parenting = Rodičovstvo
+newtab-topic-label-government = Politika
+newtab-topic-label-education-science = Veda
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Zaujímavé tipy
+newtab-topic-label-sports = Šport
+newtab-topic-label-tech = Technológie
+newtab-topic-label-travel = Cestovanie
+newtab-topic-label-home = Dom a záhrada
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Vyberte témy na doladenie informačného kanála
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Vyberte si dve alebo viac tém. Naši odborní kurátori uprednostňujú príbehy prispôsobené vašim záujmom. Aktualizovať môžete kedykoľvek.
+newtab-topic-selection-save-button = Uložiť
+newtab-topic-selection-cancel-button = Zrušiť
+newtab-topic-selection-button-maybe-later = Možno neskôr
+newtab-topic-selection-privacy-link = Zistite, ako chránime a spravujeme údaje
+newtab-topic-selection-button-update-interests = Aktualizujte svoje záujmy
+newtab-topic-selection-button-pick-interests = Vyberte si svoje záujmy
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Sledovať
+newtab-section-following-button = Sledované
+newtab-section-unfollow-button = Prestať sledovať
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Zablokovať
+newtab-section-blocked-button = Zablokované
+newtab-section-unblock-button = Odblokovať
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Naozaj chcete zablokovať túto sekciu?
+newtab-section-confirm-block-section-p2 = Blokovaná sekcia sa už nebude zobrazovať vo vašom informačnom kanáli.
+newtab-section-block-section-button = Blokovať túto sekciu
+newtab-section-cancel-button = Teraz nie
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Témy
+newtab-section-mangage-topics-button =
+    .label = Sledované a zablokované témy
+newtab-section-mangage-topics-followed-topics-subtitle = Sledované témy
+newtab-section-mangage-topics-followed-topics-empty-state = Zatiaľ nesledujete žiadne témy.
+newtab-section-mangage-topics-blocked-topics-subtitle = Zablokované témy
+newtab-section-mangage-topics-blocked-topics-empty-state = Zatiaľ ste nezablokovali žiadne témy.

@@ -84,6 +84,7 @@ policy-Handlers = Määritä oletussovelluskäsittelijät.
 policy-HardwareAcceleration = Jos epätosi, poista laitteistokiihdytys käytöstä.
 # “lock” means that the user won’t be able to change this setting
 policy-Homepage = Aseta ja valinnaisesti lukitse aloitussivu.
+policy-HttpAllowlist = Alkuperät, joita ei päivitetä HTTPS:ään.
 policy-HttpsOnlyMode = Salli, että "Vain HTTPS"-tila on mahdollista ottaa käyttöön.
 policy-InstallAddonsPermission = Salli tiettyjen sivustojen asentaa lisäosia.
 policy-LegacyProfiles = Poista käytöstä ominaisuus, joka pakottaa erillisen profiilin kullekin asennukselle
@@ -118,6 +119,7 @@ policy-Permissions2 = Aseta kameran, mikrofonin, sijainnin, ilmoitusten ja autom
 policy-PictureInPicture = Ota käyttöön tai poista käytöstä Kuva kuvassa -ominaisuus.
 policy-PopupBlocking = Salli tiettyjen sivustojen näyttää ponnahdusikkunoita oletusarvoisesti.
 policy-Preferences = Aseta ja lukitse arvo asetusten osajoukolle.
+policy-PrivateBrowsingModeAvailability = Aseta yksityisen selaustilan saatavuus.
 policy-PromptForDownloadLocation = Kysy ladattaessa minne tiedostot tallennetaan.
 policy-Proxy = Määritä välityspalvelimen asetukset.
 policy-RequestedLocales = Aseta pyydetyt sovelluksen kielet suosituimmuusjärjestyksessä.
@@ -138,3 +140,5 @@ policy-UseSystemPrintDialog = Tulosta käyttäen järjestelmän tulostusikkunaa.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Estä sivustojen avaaminen. Katso ohjeista lisätietoja käyttötavasta.
 policy-Windows10SSO = Salli Windowsin kertakirjautuminen Microsoft-, työ- ja koulutileille.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Salli kertakirjautuminen Microsoft Entra -tileille.

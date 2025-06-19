@@ -34,7 +34,7 @@ about-logins-menu-menuitem-remove-all-logins2 = ลบรหัสผ่าน�
 menu-menuitem-preferences =
     { PLATFORM() ->
         [windows] ตัวเลือก
-       *[other] การกำหนดลักษณะ
+       *[other] ค่าปรับแต่ง
     }
 about-logins-menu-menuitem-help = ช่วยเหลือ
 
@@ -131,6 +131,8 @@ login-item-copied-username-button-text = คัดลอกแล้ว!
 login-item-password-label = รหัสผ่าน
 login-item-password-reveal-checkbox =
     .aria-label = แสดงรหัสผ่าน
+login-item-password-conceal-checkbox =
+    .aria-label = ซ่อนรหัสผ่าน
 login-item-copy-password-button-text = คัดลอก
 login-item-copied-password-button-text = คัดลอกแล้ว!
 login-item-save-changes-button = บันทึกการเปลี่ยนแปลง

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Websites in ‘Net folgje’-sinjaal stjoere om litte te witten dat jo net folge wurde wolle
+do-not-track-removal = Wy stypje it ‘Net folgje’-sinjaal net mear
 do-not-track-description2 =
     .label = Stjoer websites in ‘Net-folgje’-fersyk.
     .accesskey = f
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = { -brand-short-name } automatysk iepenje by it opstarten fan jo computer
     .accesskey = a
 windows-launch-on-login-disabled = Dizze foarkar is útskeakele yn Windows. Gean nei <a data-l10n-name="startup-link">Apps</a> yn Systeemynstellingen om dit te wizigjen.
+windows-launch-on-login-profile-disabled = Skeakelje dizze foarkar yn troch ‘{ profile-manager-use-selected.label }’ yn it finster ‘Brûkersprofyl kieze’ oan te finken.
 startup-restore-warn-on-quit =
     .label = Warskôgje by it ôfsluten fan de browser
 disable-extension =
@@ -152,6 +154,17 @@ ctrl-tab-recently-used-order =
     .accesskey = T
 open-new-link-as-tabs =
     .label = Keppelingen iepenje yn ljepblêden yn stee fan nije finsters
+    .accesskey = f
+ask-on-close-multiple-tabs =
+    .label = Freegje foar it sluten fan meardere ljepblêden
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Freegje foar ôfsluten mei { $quitKey }
     .accesskey = f
 confirm-on-close-multiple-tabs =
     .label = Warskôgje by it sluten fan meardere ljepblêden
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Bewarre of besochte websites
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponsore fluchkeppelingen
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Oanrekommandearre troch { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Sykfoarstellen yn adresbalkeresultaten toane
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Syktermen yn de adresbalke op resultaatsiden toane
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Creditcards
 sync-currently-syncing-payment-methods = Betellingsmetoaden
 sync-currently-syncing-addons = Add-ons
 sync-currently-syncing-settings = Ynstellingen
+sync-manage-options =
+    .label = Syngronisaasje beheare…
+    .accesskey = b
 sync-change-options =
     .label = Wizigje…
     .accesskey = W
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Ynstellingen
     .tooltiptext = Troch jo wizige algemiene, privacy- en befeiligingsynstellingen
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = Beheare wat syngronisearre wurdt op al jo ferbûne apparaten
+    .style = min-width: 36em;
+    .buttonlabelaccept = Bewarje
+    .buttonaccesskeyaccept = j
+    .buttonlabelextra2 = Ferbining ferbrekke…
+    .buttonaccesskeyextra2 = f
 
 ## The device name controls.
 
@@ -1285,13 +1311,34 @@ collection-description = Wy stribje dernei jo kar te bieden en allinnich te samm
 collection-privacy-notice = Privacyferklearring
 collection-health-report-telemetry-disabled = Jo steane { -vendor-short-name } net langer ta technyske en ynteraksjegegevens fêst te lizzen. Alle eardere gegevens wurde binnen 30 dagen fuortsmiten.
 collection-health-report-telemetry-disabled-link = Mear ynfo
+collection-usage-ping =
+    .label = Ping foar deistich gebrûk nei { -vendor-short-name } ferstjoerd
+    .accesskey = d
+collection-usage-ping-description = Dit helpt { -vendor-short-name } om aktive brûkers te skatten.
+collection-health-report2 =
+    .label = Technyske en ynteraksjegegevens nei { -vendor-short-name } ferstjoere
+    .accesskey = r
 collection-health-report =
     .label = Tastean dat { -brand-short-name } technyske en brûksgegevens ferstjoert nei { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Mear ynfo
+collection-health-report-description = Dit helpt ús de funksjes, prestaasjes en stabiliteit fan { -brand-product-name } te ferbetterjen.
+collection-studies2 =
+    .label = Undersiken ynstallearje en útfiere
+collection-studies-description = Probearje funksjes en ideeën eardat se foar elkenien beskikber binne.
 collection-studies =
     .label = { -brand-short-name } tastean om ûndersiken te ynstallearjen en út te fieren
 collection-studies-link = { -brand-short-name }-ûndersiken werjaan
+addon-recommendations2 =
+    .label = Personalisearre útwreidingsoanrekommandaasjes tastean
+addon-recommendations-description = Untfang útwreidingsoanrekommandaasjes om jo sneupûnderfining te ferbetterjen.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Gegevensrapportaazje is útskeakele foar dizze buildkonfiguraasje.
+collection-backlogged-crash-reports2 =
+    .label = Automatysk ûngelokrapporten ferstjoere
+    .accesskey = r
+collection-backlogged-crash-reports-description = Dit helpt { -vendor-short-name } problemen mei de browser analysearjen en op te lossen. Rapporten kinne persoanlike of gefoelige gegevens befetsje.
 addon-recommendations =
     .label = { -brand-short-name } tastean om personalisearre útrweidingsrekommandaasjes te dwaan
 addon-recommendations-link = Mear ynfo
@@ -1360,13 +1407,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } hat hast gjin ski
 
 httpsonly-header = Allinnich-HTTPS-modus
 httpsonly-description = HTTPS biedt in feilige, fersifere ferbining tusken { -brand-short-name } en de troch jo besochte websites. De measte websites stypje HTTPS en as de Allinnich-HTTPS-modus ynskeakele is, sil { -brand-short-name } alle ferbiningen fernije nei HTTPS.
+httpsonly-description2 = { -brand-short-name } makket feilige en fersifere ferbiningen mei websites dy’t jo besykje. { -brand-short-name } warskôget jo as in ferbining net feilich is wannear Allinnich-HTTPS ynskeakele is.
 httpsonly-learn-more = Mear ynfo
 httpsonly-radio-enabled =
     .label = Allinnich-HTTPS-modus yn alle finsters ynskeakelje
+httpsonly-radio-enabled2 =
+    .label = Allinnich HTTPS yn alle finsters brûke
 httpsonly-radio-enabled-pbm =
     .label = Allinnich-HTTPS-modus yn alle priveefinsters ynskeakelje
+httpsonly-radio-enabled-pbm2 =
+    .label = Allinnich HTTPS yn priveefinsters brûke
 httpsonly-radio-disabled =
     .label = Allinnich-HTTPS-modus net ynskeakelje
+httpsonly-radio-disabled2 =
+    .label = Earst HTTPS probearje, mar net-befeilige ferbiningen tastean
 
 ## DoH Section
 

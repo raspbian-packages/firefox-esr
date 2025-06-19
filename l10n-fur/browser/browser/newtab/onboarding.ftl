@@ -189,6 +189,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Ten { -brand-short-name } tal Dock
        *[other] Fisse { -brand-short-name } te sbare des aplicazions
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Fisse { -brand-short-name } te sbare des aplicazions e tal menù Start
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -224,7 +226,9 @@ mr2022-onboarding-set-default-subtitle = Dopre un navigadôr sostignût di une o
 mr2022-onboarding-get-started-primary-subtitle = La nestre ultime version e je costruide su misure par te, rindint plui facil che mai lâ ator pal web. E inclût funzionalitâts che o crodìn che tu adorarâs.
 mr2022-onboarding-get-started-primary-button-label = Configure in pôcs seconts
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Configurazion super-svelte
 mr2022-onboarding-import-subtitle = Configure { -brand-short-name } come che ti plâs. Zonte segnelibris, passwords e altri dal to vecjo navigadôr.
@@ -336,6 +340,14 @@ onboarding-device-migration-subtitle = Jentre tal to { -fxaccount-brand-name(cap
 onboarding-device-migration-subtitle2 = Jentre tal to account par puartâ cun te, sul to gnûf dispositîf, i tiei segnelibris, lis passwords e la cronologjie.
 onboarding-device-migration-primary-button-label = Jentre
 
+## Add-ons Picker screen
+
+amo-picker-title = Personalize { -brand-short-name }
+amo-picker-subtitle = Lis estensions a son come aplicazions pal to navigadôr, ti permetin di protezi passwords, discjariâ videos, sparagnâ tes compris in rêt, blocâ publicitâts fastidiosis, cambiâ l’aspiet dal navigadôr e tant altri.
+amo-picker-install-button-label = Zonte a { -brand-short-name }
+amo-picker-install-complete-label = Instalât
+amo-picker-collection-link = Esplore altris components adizionâi
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -366,3 +378,52 @@ onboarding-new-user-survey-familiarity-based-option-1 = No lu cognòs
 onboarding-new-user-survey-familiarity-based-option-2 = Lu ai doprât ogni tant
 onboarding-new-user-survey-familiarity-based-option-3 = Lu cognòs une vore ben
 onboarding-new-user-survey-familiarity-based-option-4 = Une volte lu dopravi, ma al è passât un pôc di timp
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Continus dulà che tu preferissis tignî lis tôs schedis
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Tu puedis cambiâ idee cuant che tu vûs tes impostazions de sbare laterâl.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Schedis in bande
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Schedis parsore
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = A son rivadis lis schedis verticâls
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Introduzion aes schedis verticâls
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Prove a meti lis tôs schedis in bande. Tu puedis cambiâ idee cuant che tu vûs tes impostazions de sbare laterâl.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Prove lis schedis verticâls
+onboarding-flair-text = Gnovis!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Manten lis schedis orizontâls
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Un barcon dal navigadôr che al mostre lis schedis dilunc il flanc dal schermi te sbare laterâl di { -brand-shorter-name }.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Un barcon dal navigadôr che al mostre lis schedis dilunc il flanc dal schermi te sbare laterâl di { -brand-shorter-name }.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Un barcon dal navigadôr cu lis schedis te part superiôr.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Un barcon dal navigadôr cu lis schedis te part superiôr.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Prove un chatbot IA te sbare laterâl
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Met in struc i contignûts dal web, gjenere ideis, bute jù stampons di messaç — dut intant che tu navighis. Sielç tra varis furnidôrs, cambilu cuant che tu vûs. <a data-l10n-name="learn-more">Plui informazions</a>
+onboarding-genai-sidebar-primary-button = Sielç un chatbot
+onboarding-genai-sidebar-secondary-button = Scomence a navigâ
+
+## New user onboarding checklist
+
+
+## Tab Groups feature onboarding strings
+
+
+## Multi Profiles feature onboarding messages
+

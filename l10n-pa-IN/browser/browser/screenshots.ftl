@@ -40,7 +40,7 @@ screenshots-login-error-details = { -screenshots-brand-name } ਸੇਵਾ ਨ�
 screenshots-unshootable-page-error-title = ਅਸੀਂ ਇਸ ਸਫੇ ਦਾ ਸਕਰੀਨਸ਼ਾਟ ਨਹੀਂ ਲੈ ਸਕਦੇ।
 screenshots-unshootable-page-error-details = ਇਹ ਸਟੈਂਡਰਡ ਵੈੱਬ ਸਫ਼ਾ ਨਹੀਂ ਹੈ, ਇਸਕਰਕੇ ਤੁਸੀਂ ਇਸ ਦਾ ਸਕਰੀਨਸ਼ਾਟ ਨਹੀਂ ਲੈ ਸਕਦੇ ਹੋ।
 screenshots-empty-selection-error-title = ਤੁਹਾਡੀ ਚੋਣ ਬਹੁਤ ਛੋਟੀ ਹੈ
-screenshots-private-window-error-title = ਨਿੱਜੀ ਬਰਾਊਜਿੰਗ ਮੋਡ ਵਿੱਚ { -screenshots-brand-name } ਸਮਰੱਥ ਹੈ
+screenshots-private-window-error-title = ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜਿੰਗ ਮੋਡ ਵਿੱਚ { -screenshots-brand-name } ਸਮਰੱਥ ਹੈ
 screenshots-private-window-error-details = ਔਖਿਆਈ ਲਈ ਅਫ਼ਸੋਸ ਹੈ। ਅਸੀਂ ਆਉਣ ਵਾਲੇ ਰੀਲਿਜ਼ ਲਈ ਇਹ ਫੀਚਰ ਉੱਤੇ ਕੰਮ ਕਰ ਰਹੇ ਹਨ।
 screenshots-generic-error-title = ਠਹਿਰੋ! { -screenshots-brand-name } ਲੈਣ 'ਚ ਸਮੱਸਿਆ ਆਈ
 screenshots-generic-error-details = ਸਾਨੂੰ ਨਹੀਂ ਪਤਾ ਹੈ ਕਿ ਹੁਣੇ ਕੀ ਵਾਪਰਿਆ ਹੈ। ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰਨੀ ਹੈ ਜਾਂ ਵੱਖਰੇ ਸਫ਼ੇ ਉੱਤੇ ਫੋਟੋ ਖਿੱਚਣੀ ਹੈ?
@@ -56,18 +56,6 @@ screenshots-component-cancel-button =
            *[other] ਰੱਦ ਕਰੋ (Esc)
         }
     .aria-label = ਰੱਦ ਕਰੋ
-# Variables
-#   $shortcut (String) - A keyboard shortcut for copying the screenshot.
-screenshots-component-copy-button =
-    .title = ਕਾਪੀ ਕਰੋ ({ $shortcut })
-    .aria-label = ਕਾਪੀ ਕਰੋ
-screenshots-component-copy-button-label = ਕਾਪੀ
-# Variables
-#   $shortcut (String) - A keyboard shortcut for saving/downloading the screenshot.
-screenshots-component-download-button =
-    .title = ਡਾਊਨਲੋਡ ਕਰੋ ({ $shortcut })
-    .aria-label = ਡਾਊਨਲੋਡ ਕਰੋ
-screenshots-component-download-button-label = ਡਾਊਨਲੋਡ
 # Variables
 #   $shortcut (String) - A keyboard shortcut for copying the screenshot.
 screenshots-component-copy-button-2 = ਕਾਪੀ
@@ -88,14 +76,10 @@ screenshots-component-copy-key = C
 ##
 
 # This string represents the selection size area
-# "x" here represents "by" (i.e 123 by 456)
-# Variables:
-#   $width (Number) - The width of the selection region in pixels
-#   $height (Number) - The height of the selection region in pixels
-screenshots-overlay-selection-region-size-2 = { $width } x { $height }
-# This string represents the selection size area
 # "×" here represents "by" (i.e 123 by 456)
 # Variables:
 #   $width (Number) - The width of the selection region in pixels
 #   $height (Number) - The height of the selection region in pixels
 screenshots-overlay-selection-region-size-3 = { $width } × { $height }
+screenshots-overlay-preview-face-label =
+    .aria-label = ਇਸ ਖੇਤਰ ਚੁਣੋ

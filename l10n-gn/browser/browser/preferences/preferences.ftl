@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Emondo ñanduti rendápe kuaaharã “Jehapykueho’ỹ” ipota’ỹva ojehapykueho
+do-not-track-removal = Nañamoneĩvéima pe kuaaukaha “Ani ehapykueho”
 do-not-track-description2 =
     .label = Emondo ñanduti rendápe mba’ejeure “Jehapykueho’ỹ”
     .accesskey = d
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Embjuruja { -brand-short-name } ijeheguiete hendývo ne mohendaha
     .accesskey = O
 windows-launch-on-login-disabled = Ko jeguerohoryvéva osẽma Windows-gui. Emoambue hag̃ua, eike <a data-l10n-name="startup-link">Tembiporu’i ñepyrũgua</a> apopyvusu ñembohekópe.
+windows-launch-on-login-profile-disabled = Emyandy ko erohoryvéva emongurusúvo “{ profile-manager-use-selected.label }” ovetã “Eiporavo poruhára mba’ete”.
 startup-restore-warn-on-quit =
     .label = Eñatoĩva’erã esẽnguévo kundahágui.
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Eike tendayke joajuhápe ovetã pyahu rendaguépe
     .accesskey = E
+ask-on-close-multiple-tabs =
+    .label = Eporandu emboty mboyve heta tendayke
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Eporandu esẽ mboyve { $quitKey } ndive
+    .accesskey = b
 confirm-on-close-multiple-tabs =
     .label = Emoneĩ emboty mboyve heta tendayke
     .accesskey = m
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Tenda eñongatúva térã eikeha
 home-prefs-shortcuts-by-option-sponsored =
     .label = Jeike pya’eha jehepyme’ẽpyre
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = { $provider } he’i ndéve reike hag̃ua
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Ehechauka ñe’ẽreka joguaha kundaharape ha avei jejuhu hague rendápe
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Ehechauka ñe’ẽ ehekaséva kundaharape renda kuatiarogue jehechatahápe
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Kuatia’atã ñemurã
 sync-currently-syncing-payment-methods = Mba’éicha ehepyme’ẽta
 sync-currently-syncing-addons = Moĩmbaha
 sync-currently-syncing-settings = Ñemboheko
+sync-manage-options =
+    .label = Eñangareko ñembojuehére
+    .accesskey = M
 sync-change-options =
     .label = Moambue
     .accesskey = M
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Ñemboheko
     .tooltiptext = Ñembokeo tuichaháicha, ñemigua ha tekorosã emoambuéva
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = Eñengareko embojuehéva ne mba’e’oka pa’ũmere
+    .style = min-width: 36em;
+    .buttonlabelaccept = Ñongatu
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Embogue…
+    .buttonaccesskeyextra2 = D
 
 ## The device name controls.
 
@@ -1115,6 +1141,9 @@ addressbar-suggestions-settings = Jerohoryvéva jehekaha mongu’eha je’epyre 
 addressbar-locbar-showrecentsearches-option =
     .label = Ehechauka ojeheka ramóva
     .accesskey = r
+addressbar-locbar-showtrendingsuggestions-option =
+    .label = Ehechauka jehekarã ojeporuvévape
+    .accesskey = t
 addressbar-quickactions-learn-more = Kuaave
 
 ## Privacy Section - Content Blocking
@@ -1360,10 +1389,16 @@ httpsonly-description = HTTPS ome’ẽ jeikekatu ha ipapapýva { -brand-short-n
 httpsonly-learn-more = Eikuaave
 httpsonly-radio-enabled =
     .label = Emyandy HTTPS año ayvu opaite ovetãme
+httpsonly-radio-enabled2 =
+    .label = Eiporu HTTPS año opaite ovetãme
 httpsonly-radio-enabled-pbm =
     .label = Embojuruja HTTPS año ayvu opaite ovetãme
+httpsonly-radio-enabled-pbm2 =
+    .label = Eiporu HTTPS año umi ovetã ñemiguápe
 httpsonly-radio-disabled =
     .label = Ani embojuruja HTTPS año ayvu
+httpsonly-radio-disabled2 =
+    .label = Eiporu HTTPS, hákatu emoneĩkuaa umi jeike hekorosã’ỹva
 
 ## DoH Section
 

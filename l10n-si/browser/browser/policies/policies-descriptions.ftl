@@ -15,6 +15,8 @@ policy-AllowedDomainsForApps = ගූගල් වැඩබිමට ප්‍�
 policy-AppAutoUpdate = ස්වයංක්‍රීයව යෙදුම යාවත්කාල වීම සබල හෝ අබල කරන්න.
 policy-AppUpdateURL = අභිරුචි යෙදුම් යාවත්කාල ඒ.ස.නි. සකසන්න.
 policy-Authentication = සහාය දක්වන වියමන අඩවි සඳහා අනුකලිත සත්‍යාපනය වින්‍යාස කරන්න.
+policy-AutofillAddressEnabled = ලිපින සඳහා ස්වයං පිරවීම සබල කරන්න.
+policy-AutofillCreditCardEnabled = ගෙවීම් ක්‍රම සඳහා ස්වයං පිරවීම සබල කරන්න.
 policy-BackgroundAppUpdate2 = පසුබිම් යාවත්කාලකරනය සබල හෝ අබල කරන්න.
 policy-BlockAboutAddons = එක්කහු කළමණාකරු වෙත ප්‍රවේශය අවහිර කරන්න (about:addons).
 policy-BlockAboutConfig = about:config පිටුවට ප්‍රවේශය අවහිර කරන්න.
@@ -43,7 +45,7 @@ policy-DisablePrivateBrowsing = පෞද්. පිරික්සීම අබ
 policy-DisableProfileImport = අන් අතිරික්සුවකින් දත්ත ආයාත කිරීමට වට්ටෝරුවෙහි විධානය අබල කරන්න.
 policy-DisableProfileRefresh = about:support පිටුවෙහි { -brand-short-name } නැවුම් කරන්න බොත්තම අබල කරන්න.
 policy-DisableSafeMode = ආරක්‍ෂිත ප්‍රකාරයෙහි යළි අරඹන්න විශේෂාංගය අබල කරන්න. සටහන: ආරක්‍ෂිත ප්‍රකාරයට ඇතුල් වන මාරුව යතුර අබල කළ හැකි වන්නේ වින්ඩෝස් හි සමූහ ප්‍රතිපත්ති තුළින් පමණි.
-policy-DisableSecurityBypass = ඇතැම් ආරක්‍ෂණ අවවාද මඟ හැරීමෙන් පරිශීලකයා වළක්වන්න.
+policy-DisableSecurityBypass = ඇතැම් ආරක්‍ෂණ අවවාද මඟ හැරීමෙන් පරිශ්‍රීලකයා වළක්වන්න.
 policy-DisableSetAsDesktopBackground = රූප සඳහා වැඩතල පසුබිම ලෙස සකසන්න යන විධානය අබල කරන්න.
 policy-DisableSystemAddonUpdate = අතිරික්සුව විසින් පද්ධතියේ එක්කහු ස්ථාපනය හා යාවත්කාල කිරීමෙන් වළක්වන්න.
 policy-DisplayBookmarksToolbar = පෙරනිමි ලෙස පොත්යොමු මෙවලම් තීරුව පෙන්වන්න.
@@ -67,7 +69,7 @@ policy-InstallAddonsPermission = ඇතැම් අඩවි වලට එක�
 
 ##
 
-policy-ManualAppUpdateOnly = අතින් යාවත්කාලයට පමණක් ඉඩ දෙන්න හා යාවත්කාල ගැන පරිශීලකයාට දැනුම් නොදෙන්න.
+policy-ManualAppUpdateOnly = අතින් යාවත්කාලයට පමණක් ඉඩ දෙන්න හා යාවත්කාල ගැන පරිශ්‍රීලකයාට දැනුම් නොදෙන්න.
 policy-PrimaryPassword = ප්‍රාථමික මුරපදයක් නියම කිරීමය හෝ වැළැක්වීම.
 policy-NewTabPage = නව පටිත්ත පිටුව සබල හෝ අබල කරන්න.
 policy-PasswordManagerEnabled = මුරපද කළමනාකරු වෙත මුරපද සුරැකීම සබල කරන්න.
@@ -81,6 +83,6 @@ policy-SearchSuggestEnabled = සෙවුම් යෝජනා සබල හ�
 policy-ShowHomeButton = මෙවලම් තීරුවේ මුල්පිටුව බොත්තම පෙන්වන්න.
 policy-SSLVersionMax = උපරිම SSL අනුවාදය සකසන්න.
 policy-SSLVersionMin = අවම SSL අනුවාදය සකසන්න.
-policy-UserMessaging = පරිශීලකයාට ඇතැම් පණිවිඩ පෙන්වන්න එපා.
+policy-UserMessaging = පරිශ්‍රීලකයාට ඇතැම් පණිවිඩ පෙන්වන්න එපා.
 policy-UseSystemPrintDialog = පද්ධති මුද්‍රණ කවුළුව භාවිතයෙන් මුද්‍රණය.
 policy-Windows10SSO = මයික්‍රොසොෆ්ට්, වැඩ සහ පාසල් ගිණුම් සඳහා වින්ඩෝස් තනි පිවිසුමට ඉඩ දෙන්න.

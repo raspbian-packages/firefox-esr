@@ -22,7 +22,7 @@ menu-application-preferences =
 menu-application-services =
     .label = ਸਰਵਿਸਾਂ
 menu-application-hide-this =
-    .label = { -brand-shorter-name } ਓਹਲੇ
+    .label = { -brand-shorter-name } ਨੂੰ ਓਹਲੇ ਕਰੋ
 menu-application-hide-other =
     .label = ਹੋਰ ਓਹਲੇ
 menu-application-show-all =
@@ -253,6 +253,15 @@ menu-bookmarks-other =
     .label = ਹੋਰ ਬੁੱਕਮਾਰਕ
 menu-bookmarks-mobile =
     .label = ਮੋਬਾਈਲ ਬੁੱਕਮਾਰਕ
+
+## Profiles Menu
+
+menu-profiles =
+    .label = ਪਰੋਫਾਈਲ
+menu-profiles-manage-profiles =
+    .label = ਪਰੋਫਾਈਲਾਂ ਦਾ ਬੰਦੋਬਸਤ ਕਰੋ
+menu-profiles-new-profile =
+    .label = ਨਵਾਂ ਪਰੋਫਾਈਲ
 
 ## Tools Menu
 

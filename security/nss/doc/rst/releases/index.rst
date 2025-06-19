@@ -8,9 +8,21 @@ Releases
    :glob:
    :hidden:
 
-   nss_3_90_3.rst
-   nss_3_90_2.rst
-   nss_3_90_1.rst
+   nss_3_101_3.rst
+   nss_3_101_2.rst
+   nss_3_101_1.rst
+   nss_3_101.rst
+   nss_3_100.rst
+   nss_3_99.rst
+   nss_3_98.rst
+   nss_3_97.rst
+   nss_3_96_1.rst
+   nss_3_96.rst
+   nss_3_95.rst
+   nss_3_94.rst
+   nss_3_93.rst
+   nss_3_92.rst
+   nss_3_91_0.rst
    nss_3_90_0.rst
    nss_3_89_1.rst
    nss_3_89.rst
@@ -57,16 +69,18 @@ Releases
 
 .. note::
 
-   **NSS 3.90.3 (ESR)** is the latest version of NSS.
-   Complete release notes are available here: :ref:`mozilla_projects_nss_nss_3_91_0_release_notes`
-
+   **NSS 3.101.3 (ESR)** is the latest ESR version of NSS.
+   Complete release notes are available here: :ref:`mozilla_projects_nss_nss_3_101_3_release_notes`
 
 .. container::
 
-   Changes in 3.90.3 included in this release:
+   Changes in 3.101.3 included in this release:
 
-   - Bug 1901080 - GLOBALTRUST 2020: Set Distrust After for TLS and S/MIME.
-   - Bug 1748105 - clean up escape handling.
-   - Bug 1895032 - remove redundant AllocItem implementation. r=nss-reviewers,rrelyea
-   - Bug 1836925 - Disable ASM support for Curve25519.
-   - Bug 1836781 - Disable ASM support for Curve25519 for all but X86_64.
+   - Bug 1935984 - Ensure zero-initialization of collectArgs.cert
+   - Bug 1927953 - don't look for secmod.db in nssutil_ReadSecmodDB if NSS_DISABLE_DBM is set
+   - Bug 1926256 - fix build error from 9505f79d
+   - Bug 1926256 - simplify error handling in get_token_objects_for_cache.
+   - Bug 1923767 - pk12util: improve error handling in p12U_ReadPKCS12File.
+   - Bug 1909768 - UBSAN fix: applying zero offset to null pointer in sslsnce.c.
+   - Bug 1908623 - move list size check after lock acquisition in sftk_PutObjectToList.
+   - Bug 1899402 - Correctly destroy bulkkey in error scenario.

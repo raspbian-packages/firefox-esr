@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } – Navigazione anonima
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } Navigazione anonima
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } Navigazione anonima
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } Navigazione anonima
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name } — { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — { -brand-full-name } Navigazione anonima
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — Navigazione anonima
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } Navigazione anonima
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — Navigazione anonima
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Navigazione anonima
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -309,6 +367,10 @@ quickactions-cmd-viewsource = visualizza sorgente, sorgente
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Ulteriori informazioni sulle azioni rapide
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Premi il tasto di tabulazione per selezionare:
 
 ## Bookmark Panel
 
@@ -412,7 +474,7 @@ browser-window-minimize-button =
 browser-window-maximize-button =
     .tooltiptext = Ingrandisci
 browser-window-restore-down-button =
-    .tooltiptext = Ripristina giù
+    .tooltiptext = Ripristina dimensioni
 browser-window-close-button =
     .tooltiptext = Chiudi
 
@@ -546,7 +608,9 @@ urlbar-extension =
 urlbar-go-button =
     .tooltiptext = Vai all’URL inserito nella barra degli indirizzi
 urlbar-page-action-button =
-    .tooltiptext = Azioni per questa pagina
+    .tooltiptext = Azioni per la pagina
+urlbar-revert-button =
+    .tooltiptext = Mostra l’indirizzo nella barra degli indirizzi
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -607,6 +671,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = Cerca con { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Cerca { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Cerca con { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Scegli un motore di ricerca
+urlbar-searchmode-bookmarks =
+    .label = Segnalibri
+urlbar-searchmode-tabs =
+    .label = Schede
+urlbar-searchmode-history =
+    .label = Cronologia
+urlbar-searchmode-actions =
+    .label = Azioni
+urlbar-searchmode-exit-button =
+    .tooltiptext = Chiudi
+urlbar-searchmode-popup-description = Adesso cerca con:
+urlbar-searchmode-popup-search-settings = Impostazioni ricerca
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, scegli un motore di ricerca
+    .tooltiptext = { $engine }, scegli un motore di ricerca
+urlbar-searchmode-button-no-engine =
+    .label = Nessuna scorciatoia selezionata, scegline una
+    .tooltiptext = Nessuna scorciatoia selezionata, scegline una
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -616,6 +712,12 @@ urlbar-result-action-search-bookmarks = Cerca nei segnalibri
 urlbar-result-action-search-history = Cerca nella cronologia
 urlbar-result-action-search-tabs = Cerca nelle schede
 urlbar-result-action-search-actions = Cerca nelle azioni
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Passa a { $group }
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = Apri { $group }
 
 ## Labels shown above groups of urlbar results
 
@@ -637,13 +739,11 @@ urlbar-group-quickactions =
 #  $engine (String): the name of the search engine used to search.
 urlbar-group-recent-searches =
     .label = Ricerche recenti
-
 # The header shown above trending results.
 # Variables:
 #  $engine (String): the name of the search engine providing the trending suggestions
 urlbar-group-trending =
-  .label = Di tendenza su { $engine }
-
+    .label = Di tendenza su { $engine }
 # The result menu labels shown next to trending results.
 urlbar-result-menu-trending-dont-show =
     .label = Non mostrare ricerche di tendenza
@@ -651,7 +751,6 @@ urlbar-result-menu-trending-dont-show =
 urlbar-result-menu-trending-why =
     .label = Perché viene visualizzato questo elemento?
     .accesskey = P
-
 # A message that replaces a result when the user dismisses all suggestions of a
 # particular type.
 urlbar-trending-dismissal-acknowledgment = Grazie per il tuo feedback. Le ricerche di tendenza non verranno più visualizzate.
@@ -932,7 +1031,9 @@ data-reporting-notification-button =
     .accesskey = S
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Navigazione anonima
-
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Navigazione anonima
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -941,7 +1042,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Protezione dati
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = La tua organizzazione utilizza { $agentName } per proteggersi da eventuali perdite di dati. <a data-l10n-name="info">Ulteriori informazioni</a>
+content-analysis-panel-text-styled = La tua organizzazione utilizza <b>{ $agentName }</b> per proteggersi da eventuali perdite di dati. <a data-l10n-name="info">Ulteriori informazioni</a>
 
 ## Unified extensions (toolbar) button
 
@@ -966,6 +1067,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Estensioni
         Alcune estensioni non sono consentite
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Estensioni
+    .tooltiptext =
+        Estensioni
+        Alcune estensioni sono disattivate
 
 ## Private browsing reset button
 
@@ -999,14 +1109,14 @@ firefox-relay-offer-why-to-use-relay = I nostri alias di posta elettronica, sicu
 # Variables:
 #  $useremail (String): user email that will receive messages
 firefox-relay-offer-what-relay-provides = Tutte le email inviate al tuo alias verranno inoltrate a <strong>{ $useremail }</strong> (a meno che tu non decida di bloccarle).
-firefox-relay-offer-legal-notice = Facendo clic su “Utilizza alias di posta elettronica”, accetti le <label data-l10n-name="tos-url">Condizioni di utilizzo del servizio</label> e l’<label data-l10n-name="privacy-url">Informativa sulla privacy</label>.
+firefox-relay-offer-legal-notice = Facendo clic su “Utilizza alias di posta elettronica” accetti le <label data-l10n-name="tos-url">condizioni di utilizzo del servizio</label> e l’<label data-l10n-name="privacy-url">informativa sulla privacy</label>.
 
 ## Add-on Pop-up Notifications
 
 popup-notification-addon-install-unsigned =
     .value = (non verificato)
 popup-notification-xpinstall-prompt-learn-more = Scopri come installare componenti aggiuntivi in completa sicurezza
-
+popup-notification-xpinstall-prompt-block-url = Mostra dettagli
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = Esegui in finestre anonime
@@ -1047,7 +1157,6 @@ file-picker-failed-open = Impossibile aprire la finestra di selezione file di Wi
 #   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
 file-picker-failed-save-somewhere = Impossibile aprire la finestra di selezione file di Windows. Il file verrà salvato come { $path }.
 file-picker-failed-save-nowhere = Impossibile aprire la finestra di selezione file di Windows. Non è stata trovata una cartella predefinita e il file non verrà salvato.
-
 file-picker-crashed-open = La finestra di selezione file di Windows si è chiusa in modo anomalo. Non è stato selezionato alcun file o cartella.
 #   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
 file-picker-crashed-save-somewhere = La finestra di selezione file di Windows si è chiusa in modo anomalo. Il file verrà salvato come { $path }.
@@ -1062,3 +1171,4 @@ file-picker-crashed-save-nowhere = La finestra di selezione file di Windows si �
 file-picker-crashed-show-in-folder =
     .label = Mostra nella cartella
     .accessKey = M
+

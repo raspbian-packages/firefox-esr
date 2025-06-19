@@ -8,11 +8,18 @@
 newtab-page-title = Neuer Tab
 newtab-settings-button =
     .title = Einstellungen für neue Tabs anpassen
+newtab-personalize-settings-icon-label =
+    .title = Neuen Tab anpassen
+    .aria-label = Einstellungen
+newtab-settings-dialog-label =
+    .aria-label = Einstellungen
 newtab-personalize-icon-label =
     .title = Neuen Tab anpassen
     .aria-label = Neuen Tab anpassen
 newtab-personalize-dialog-label =
     .aria-label = Anpassen
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Bei { -pocket-brand-name } speichern
 newtab-menu-delete-pocket = Aus { -pocket-brand-name } löschen
 newtab-menu-archive-pocket = In { -pocket-brand-name } archivieren
 newtab-menu-show-privacy-info = Unsere Sponsoren & Ihre Privatsphäre
+newtab-menu-about-fakespot = Über { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Blockieren
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Thema nicht mehr folgen
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Neueste Aktivität
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Empfohlen von { $provider }
 newtab-section-header-stories = Geschichten, die zum Nachdenken anregen
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Unsere heutigen Tipps für Sie
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,8 +247,26 @@ newtab-pocket-cta-button = { -pocket-brand-name } holen
 newtab-pocket-cta-text = Speichern Sie Ihre Lieblingstexte in { -pocket-brand-name } und gewinnen Sie gedankenreiche Einblicke durch faszinierende Texte.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } ist Teil der { -brand-product-name }-Familie
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Speichern
 newtab-pocket-saved = Gespeichert
+
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
+# Clicking the thumbs up button for this story will result in more stories like this one being recommended
+newtab-pocket-thumbs-up-tooltip =
+    .title = Mehr solcher Artikel
+# Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
+newtab-pocket-thumbs-down-tooltip =
+    .title = Nichts für mich
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Vielen Dank. Ihr Feedback hilft uns, Ihren Feed zu verbessern.
+newtab-toast-thumbs-up-or-down = Vielen Dank. Ihr Feedback hilft uns, Ihren Feed zu verbessern.
+newtab-toast-dismiss-button =
+    .title = Schließen
+    .aria-label = Schließen
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
 
@@ -294,6 +328,8 @@ newtab-wallpaper-dark-panda = Roter Panda im Wald versteckt
 newtab-wallpaper-dark-sky = Stadtlandschaft mit Nachthimmel
 newtab-wallpaper-dark-mountain = Berg in der Landschaft
 newtab-wallpaper-dark-city = Violette Stadtlandschaft
+newtab-wallpaper-dark-fox-anniversary = Ein Fuchs auf einer Straße in der Nähe eines Waldes
+newtab-wallpaper-light-fox-anniversary = Ein Fuchs auf einer Weide vor einer nebligen Berglandschaft
 
 ## Solid Colors
 
@@ -358,6 +394,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Gesponsert
 newtab-weather-menu-change-location = Standort ändern
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Standort suchen
+    .aria-label = Standort suchen
 newtab-weather-change-location-search-input = Standort suchen
 newtab-weather-menu-weather-display = Wetteranzeige
 # Display options are:
@@ -376,3 +415,76 @@ newtab-weather-menu-hide-weather = Wetter bei neuem Tab ausblenden
 newtab-weather-menu-learn-more = Weitere Informationen
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Wetterdaten sind derzeit nicht verfügbar.
+
+## Topic Labels
+
+newtab-topic-label-business = Wirtschaft
+newtab-topic-label-career = Karriere
+newtab-topic-label-education = Bildung
+newtab-topic-label-arts = Unterhaltung
+newtab-topic-label-food = Essen
+newtab-topic-label-health = Gesundheit
+newtab-topic-label-hobbies = Gaming
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Finanzen
+newtab-topic-label-society-parenting = Erziehung
+newtab-topic-label-government = Politik
+newtab-topic-label-education-science = Wissenschaft
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Life-Hacks
+newtab-topic-label-sports = Sport
+newtab-topic-label-tech = Technik
+newtab-topic-label-travel = Reisen
+newtab-topic-label-home = Haus und Garten
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Wählen Sie Themen aus, um Ihren Feed zu optimieren
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Wählen Sie zwei oder mehr Themen aus. Unsere erfahrenen Kuratoren priorisieren Geschichten, die auf Ihre Interessen zugeschnitten sind. Passen Sie die Themen jederzeit an.
+newtab-topic-selection-save-button = Speichern
+newtab-topic-selection-cancel-button = Abbrechen
+newtab-topic-selection-button-maybe-later = Vielleicht später
+newtab-topic-selection-privacy-link = Erfahren Sie, wie wir Daten schützen und verwalten
+newtab-topic-selection-button-update-interests = Aktualisieren Sie Ihre Interessen
+newtab-topic-selection-button-pick-interests = Wählen Sie Ihre Interessen aus
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Folgen
+newtab-section-following-button = Folgen
+newtab-section-unfollow-button = Nicht mehr folgen
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Blockieren
+newtab-section-blocked-button = Blockiert
+newtab-section-unblock-button = Nicht mehr blockieren
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Soll dieser Abschnitt wirklich blockiert werden?
+newtab-section-confirm-block-section-p2 = Ein blockierter Abschnitt erscheint nicht mehr in Ihrem Feed.
+newtab-section-block-section-button = Diesen Abschnitt blockieren
+newtab-section-cancel-button = Nicht jetzt
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Themen
+newtab-section-mangage-topics-button =
+    .label = Gefolgte und blockierte Themen
+newtab-section-mangage-topics-followed-topics-subtitle = Gefolgte Themen
+newtab-section-mangage-topics-followed-topics-empty-state = Sie folgen noch keinen Themen.
+newtab-section-mangage-topics-blocked-topics-subtitle = Blockierte Themen
+newtab-section-mangage-topics-blocked-topics-empty-state = Sie haben noch keine Themen blockiert.

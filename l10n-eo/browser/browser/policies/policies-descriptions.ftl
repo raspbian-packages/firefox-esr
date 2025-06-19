@@ -119,6 +119,7 @@ policy-Permissions2 = Agordi permesojn por filmilo, mikrofono, pozicio,sciigoj k
 policy-PictureInPicture = Aktivigi aŭ malaktivigi la reĝimon bildo en bildo
 policy-PopupBlocking = Norme permesi al kelkaj retejoj montri ŝprucfenestrojn.
 policy-Preferences = Difini kaj bloki la valoron por aro de preferoj.
+policy-PrivateBrowsingModeAvailability = Agordi la disponeblon de la reĝimo de privata retumo.
 policy-PromptForDownloadLocation = Demandi kie konservi elŝutitajn dosierojn.
 policy-Proxy = Agordi retperantojn.
 policy-RequestedLocales = Agordi la liston de lingvoj petataj de la programo, ordigitaj laŭ prefero.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Presi per la sistema presa dialogo.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Bloki viziton al kelkaj retejoj. Vidu la dokumentaron por havi pli da informo pri la formo.
 policy-Windows10SSO = Permesi nurfojan komencon de seancon de Windows por kontoj laboraj, lernejaj aŭ de Microsoft.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Permesi nurfojan komencon de seanco por konton de Microsoft Entra.

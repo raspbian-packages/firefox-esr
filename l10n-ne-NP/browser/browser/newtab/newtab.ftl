@@ -22,12 +22,10 @@ newtab-topsites-edit-topsites-header = शीर्ष साइट सम्प
 newtab-topsites-title-label = शीर्षक
 newtab-topsites-title-input =
     .placeholder = शीर्षक प्रविष्ट गर्नुहोस्
-
 newtab-topsites-url-label = URL
 newtab-topsites-url-input =
     .placeholder = URL लेख्नुहोस् वा पेस्ट गर्नुहोस्
 newtab-topsites-url-validation = मान्य URL चाहिन्छ
-
 newtab-topsites-image-url-label = अनुकूल तस्बिर URL
 newtab-topsites-use-image-link = अनुकूल तस्बिर प्रयोग गर्नुहोस्…
 newtab-topsites-image-validation = तस्बिर लोड गर्न असफल भयो । फरक URL प्रयास गर्नुहोस् ।
@@ -126,16 +124,15 @@ newtab-section-menu-privacy-notice = गोपनीयता नीति
 
 newtab-section-header-topsites = शीर्ष साइटहरु
 # Variables:
-#  $provider (String): Name of the corresponding content provider.
+#   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } द्वारा सिफारिस गरिएको
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
 newtab-empty-section-highlights = ब्राउज गर्न सुरू गर्नुहोस्, र हामी केहि उत्कृष्ट लेखहरू, भिडियोहरू, र अन्य पृष्ठहरू जुन तपाईंले भर्खरै भ्रमण गर्नुभएको वा पुस्तकचिनो राख्नुभएको छ यहाँ देखाउँछौ ।
-
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
-#  $provider (String): Name of the content provider for this section, e.g "Pocket".
+#   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = अहिले यति नै । { $provider } बाट थप शीर्ष कथाहरूको हेर्नका लागि पछि फेरि जाँच गर्नुहोस् । अाफुलाई रोक्न सक्नुहुदैन ? वेबभरिका राम्रा कथाहरु भेटाउन कुनै एउटा लोकप्रिय विषय छान्नुहोस् ।
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
@@ -146,11 +143,11 @@ newtab-empty-section-topstories = अहिले यति नै । { $provid
 # This is shown at the bottom of the trending stories section and precedes a list of links to popular topics.
 newtab-pocket-read-more = लोकप्रिय शीर्षकहरू:
 
-## Pocket Final Card Section.
-## This is for the final card in the Pocket grid.
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
 
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
+
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
@@ -159,4 +156,41 @@ newtab-error-fallback-info = उफ्, सामाग्री लोड ग�
 newtab-error-fallback-refresh-link = पुनः प्रयास गर्न पृष्ठ ताजा गर्नुहोस् ।
 
 ## Customization Menu
+
+
+## New Tab Wallpapers
+
+
+## Solid Colors
+
+
+## Abstract
+
+
+## Photographs
+
+
+## New Tab Weather
+
+
+## Topic Labels
+
+
+## Topic Selection Modal
+
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+
+## Panel in the Customize menu section to manage followed and blocked topics
 

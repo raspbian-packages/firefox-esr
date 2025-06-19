@@ -89,6 +89,9 @@ shopping-show-less-button = 表示を減らす
 
 shopping-settings-label =
     .label = 設定
+shopping-settings-recommendations-toggle2 =
+    .label = おすすめと広告コンテンツを表示する
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } はユーザーの個人データを共有しないため、これらのおすすめコンテンツがインターネット上であなたを追跡することはありません。 <a data-l10n-name="review-quality-url">詳細情報</a>
 shopping-settings-recommendations-toggle =
     .label = レビューチェッカーに広告を表示する
 shopping-settings-recommendations-learn-more2 = 時々、関連製品の広告が表示されます。私たちは信頼できるレビューの付いた製品のみを広告します。<a data-l10n-name="review-quality-url">詳細情報</a>
@@ -134,6 +137,8 @@ shopping-analysis-explainer-learn-more2 = 詳細は、<a data-l10n-name="review-
 # websites, which will be inserted without being translated.
 #  $retailer (String) - capitalized name of the shopping website, for example, "Amazon".
 shopping-analysis-explainer-highlights-description = <strong>注目レビュー</strong> は最近 80 日以内の { $retailer } からのレビューで私たちが信頼するに足ると評価したものです。
+# Fallback for analysis highlights explainer if the retailer is ever unknown
+shopping-analysis-explainer-highlights-description-unknown-retailer =<strong>注目レビュー</strong> は最近 80 日以内の私たちが信頼するに足ると評価したレビューです。
 shopping-analysis-explainer-review-grading-scale-reliable = 信頼できるレビューです。これは正直で偏見を持たない本物の顧客によるレビューであると思われます。
 shopping-analysis-explainer-review-grading-scale-mixed = 信頼できるレビューと信頼できないレビューが混在していると思われます。
 shopping-analysis-explainer-review-grading-scale-unreliable = 信頼できないレビューです。これは偽物または偏見を持ったレビュアーによるレビューであると思われます。
@@ -160,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = レビュー品質を確認
 
 more-to-consider-ad-label =
     .label = さらに検討する
+shopping-sponsored-label = 広告
 ad-by-fakespot = { -fakespot-brand-name } による広告
 
 ## Shopping survey strings.
@@ -179,7 +185,19 @@ shopping-survey-next-button-label = 次へ
 shopping-survey-submit-button-label = 送信
 shopping-survey-terms-link = 利用規約
 shopping-survey-thanks =
-    .heading = フィードバックのご提供ありがとうございます。
+    .heading = ご回答ありがとうございます。
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = レビューチェッカーをオフにしている理由を教えてください。(複数回答可)
+shopping-survey-thanks-title = ご回答ありがとうございます
+shopping-survey-opted-out-hard-to-understand = 機能が理解できない
+shopping-survey-opted-out-too-slow = 動作が遅い
+shopping-survey-opted-out-not-accurate = 正確でない
+shopping-survey-opted-out-not-helpful = 自分の役には立たない
+shopping-survey-opted-out-check-myself = 自分でレビューをチェックしたい
+shopping-survey-opted-out-other = その他
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

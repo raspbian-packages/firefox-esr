@@ -8,11 +8,18 @@
 newtab-page-title = Tab Newydd
 newtab-settings-button =
     .title = Cyfaddasu eich tudalen Tab Newydd
+newtab-personalize-settings-icon-label =
+    .title = Personoli Tab Newydd
+    .aria-label = Gosodiadau
+newtab-settings-dialog-label =
+    .aria-label = Gosodiadau
 newtab-personalize-icon-label =
     .title = Personoli tab newydd
     .aria-label = Personoli tab newydd
 newtab-personalize-dialog-label =
     .aria-label = Personoli
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Cadw i { -pocket-brand-name }
 newtab-menu-delete-pocket = Dileu o { -pocket-brand-name }
 newtab-menu-archive-pocket = Archifo i { -pocket-brand-name }
 newtab-menu-show-privacy-info = Ein noddwyr a'ch preifatrwydd
+newtab-menu-about-fakespot = Ynghylch { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Rhwystro
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Dad-ddilyn Pwnc
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -201,6 +215,8 @@ newtab-section-header-recent-activity = Gweithgaredd diweddar
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Argymhellwyd gan { $provider }
 newtab-section-header-stories = Straeon sy’n procio’r meddwl
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Dewisiadau heddiw i chi
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -232,6 +248,8 @@ newtab-pocket-cta-button = Defnyddio { -pocket-brand-name }
 newtab-pocket-cta-text = Cadw'r straeon rydych yn eu hoffi i { -pocket-brand-name } a bwydo'ch meddwl á deunydd diddorol.
 newtab-pocket-pocket-firefox-family = Mae { -pocket-brand-name } yn rhan o deulu { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Cadw
 newtab-pocket-saved = Wedi'u Cadw
 
@@ -243,6 +261,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Nid i mi
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Diolch. Bydd eich adborth yn ein helpu i wella'ch llif.
 newtab-toast-thumbs-up-or-down = Diolch. Bydd eich adborth yn ein helpu i wella'ch llif.
 newtab-toast-dismiss-button =
     .title = Cau
@@ -292,7 +313,7 @@ newtab-custom-recent-toggle =
     .description = Detholiad o wefannau a chynnwys diweddar
 newtab-custom-weather-toggle =
     .label = Y Tywydd
-    .description = Cip ar ragolygon y tywydd heddiw
+    .description = Cipolwg ar ragolygon tywydd heddiw
 newtab-custom-close-button = Cau
 newtab-custom-settings = Rheoli rhagor o osodiadau
 
@@ -312,6 +333,8 @@ newtab-wallpaper-dark-panda = Panda coch wedi'i guddio yn y goedwig
 newtab-wallpaper-dark-sky = Tirwedd y ddinas gydag awyr y nos
 newtab-wallpaper-dark-mountain = Tirwedd mynydd
 newtab-wallpaper-dark-city = Tirwedd dinas borffor
+newtab-wallpaper-dark-fox-anniversary = Llwynog ar y palmant ger coedwig
+newtab-wallpaper-light-fox-anniversary = Llwynog mewn cae glaswelltog gyda thirlun mynydd niwlog
 
 ## Solid Colors
 
@@ -376,6 +399,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Wedi'i noddi
 newtab-weather-menu-change-location = Newid lleoliad
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Chwilio am leoliad
+    .aria-label = Chwilio am leoliad
 newtab-weather-change-location-search-input = Chwilio am leoliad
 newtab-weather-menu-weather-display = Dangos y tywydd
 # Display options are:
@@ -391,6 +417,69 @@ newtab-weather-menu-temperature-option-celsius = Celsius
 newtab-weather-menu-change-temperature-units-fahrenheit = Newid i Fahrenheit
 newtab-weather-menu-change-temperature-units-celsius = Newid i Celsius
 newtab-weather-menu-hide-weather = Cuddio'r tywydd ar Dab Newydd
-newtab-weather-menu-learn-more = Dysgu rhagor
+newtab-weather-menu-learn-more = Rhagor
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Nid yw data tywydd ar gael ar hyn o bryd.
+
+## Topic Labels
+
+newtab-topic-label-business = Busnes
+newtab-topic-label-career = Gyrfaoedd
+newtab-topic-label-education = Addysg
+newtab-topic-label-arts = Adloniant
+newtab-topic-label-food = Bwyd
+newtab-topic-label-health = Iechyd
+newtab-topic-label-hobbies = Gemau
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Arian
+newtab-topic-label-society-parenting = Rhiantu
+newtab-topic-label-government = Gwleidyddiaeth
+newtab-topic-label-education-science = Gwyddoniaeth
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Gwella'ch Bywyd
+newtab-topic-label-sports = Chwaraeon
+newtab-topic-label-tech = Technoleg
+newtab-topic-label-travel = Teithio
+newtab-topic-label-home = Cartref a Gardd
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Dewiswch bynciau i fireinio'ch llif
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Dewiswch ddau bwnc neu fwy. Mae ein curaduron arbenigol yn blaenoriaethu straeon sydd wedi'u teilwra i'ch diddordebau. Diweddarwch nhw ar unrhyw adeg.
+newtab-topic-selection-save-button = Cadw
+newtab-topic-selection-cancel-button = Diddymu
+newtab-topic-selection-button-maybe-later = Rhywbryd eto
+newtab-topic-selection-privacy-link = Dyma sut rydym yn diogelu ac yn rheoli data
+newtab-topic-selection-button-update-interests = Diweddarwch eich diddordebau
+newtab-topic-selection-button-pick-interests = Dewiswch eich diddordebau
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Dilyn
+newtab-section-following-button = Yn dilyn
+newtab-section-unfollow-button = Dad-ddilyn
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Ydych chi'n siŵr eich bod am rwystro'r adran hon?
+newtab-section-confirm-block-section-p2 = Ni fydd adran sydd wedi'i rwystro'n ymddangos yn eich llif bellach.
+newtab-section-block-section-button = Rhwystro'r adran hon
+newtab-section-cancel-button = Nid nawr
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

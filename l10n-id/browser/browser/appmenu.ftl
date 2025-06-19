@@ -108,8 +108,11 @@ appmenu-fxa-sync-and-save-data2 = Sinkronkan dan Simpan Data
 appmenu-fxa-signed-in-label = Masuk
 appmenu-fxa-setup-sync =
     .label = Aktifkan Sinkronisasi…
+appmenu-fxa-setup-sync-new = Nyalakan
 appmenuitem-save-page =
     .label = Simpan Laman dengan Nama…
+appmenuitem-fxa-sync-off-title = Sinkronisasi nonaktif
+appmenuitem-fxa-sync-off-description = Lindungi dan akses markah, sandi, dan berbagai hal lainnya milik Anda di mana saja.
 
 ## What's New panel in App menu.
 
@@ -196,6 +199,7 @@ profiler-popup-presets-power-description = Prasetel untuk menyelidiki bug penggu
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = Daya
+profiler-popup-presets-debug-description = Prasetel untuk debugging di { -brand-shorter-name }. Profiler ini memiliki overhead tinggi, jangan gunakan untuk kinerja tetapi gunakan untuk fokus pada pemahaman perilaku peramban.
 profiler-popup-presets-debug-label =
     .label = Debug
 profiler-popup-presets-custom-label =
@@ -276,5 +280,19 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Dapatkan peringatan kebocoran data
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Tutupi surel dan telepon asli Anda
+appmenuitem-services-relay-description = Luncurkan dasbor masker surel
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Lindungi aktivitas daring Anda
+appmenu-services-header = Layanan saya
+appmenu-other-protection-header = Coba alat perlindungan lain dari { -vendor-short-name }:
+
+## Profiles panel
+
+appmenu-profiles = Profil
+appmenu-other-profiles = Profil lainnya
+appmenu-manage-profiles =
+    .label = Kelola profil
+appmenu-create-profile =
+    .label = Profil baru
+appmenu-edit-profile =
+    .aria-label = Sunting profil

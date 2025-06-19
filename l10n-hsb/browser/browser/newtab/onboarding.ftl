@@ -189,6 +189,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Wobchowajće { -brand-short-name } w doku
        *[other] Připniće { -brand-short-name } k nadawkowej lajsće
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = { -brand-short-name } k nadawkowej lajsće a startowemu menijej připjeć
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -224,7 +226,9 @@ mr2022-onboarding-set-default-subtitle = Wužiwajće wobhladowak, kotryž so wot
 mr2022-onboarding-get-started-primary-subtitle = Naša najnowša wersija je wokoło was natwarjena, kotraž wam lóšo hdy do toho čini, web přehladować. Je połny funkcijow, wo kotrychž sej myslimy, zo so wam spodobaja.
 mr2022-onboarding-get-started-primary-button-label = Instalacija za sekundy
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Błyskospěšna instalacija
 mr2022-onboarding-import-subtitle = Zarjadujće { -brand-short-name }, kak so wam spodoba. Přidajće swoje zapołožki, hesła a wjace ze swojeho stareho wobhladowaka.
@@ -336,6 +340,14 @@ onboarding-device-migration-subtitle = Přizjewće so pola { -fxaccount-brand-na
 onboarding-device-migration-subtitle2 = Přizjewće so pola swojeho konta, zo byšće swoje zapołožki, hesła a swoju historiju na swój nowy grat přenošował.
 onboarding-device-migration-primary-button-label = Přizjewić
 
+## Add-ons Picker screen
+
+amo-picker-title = Přiměrće swój { -brand-short-name }
+amo-picker-subtitle = Rozšěrjenja kaž nałoženja za waš wobhladowak a móžeće z nimi hesła škitać, wideja sćahnyć, poskitki namakać, wobćežowace wabjenje blokować, napohlad wašeho wobhladowaka změnić a wjele wjace.
+amo-picker-install-button-label = { -brand-short-name } přidać
+amo-picker-install-complete-label = Instalowany
+amo-picker-collection-link = Wuslědźće dalše přidatki
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -347,6 +359,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = Hdyž sće synchroniz
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } za wami steji
 onboarding-gratitude-security-and-privacy-subtitle = Wulki dźak, zo { -brand-short-name } wužiwaće, kotryž so wot załožby Mozilla Foundation spěchuje. Z wašej pomocu dźěłamy na tym, internet wěsćiši a přistupniši za kóždeho činić.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Waše daty mjez gratami synchronizować
+onboarding-sign-up-description = Registrujće so za konto a wšě waše wažne informacije – hesła, zapołožki a wjace – so wěsće składuja a su k dispoziciji, hdyž so w někajkim graće přizjewjeće.
+onboarding-sign-up-button = Registrować abo přizjewić
+onboarding-sign-up-secondary-button = Přehladowanje započeć
 
 ## New user time and familiarity survey strings
 
@@ -366,3 +383,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Sym cyle nowy
 onboarding-new-user-survey-familiarity-based-option-2 = Sym jón hižo něštokróć wužiwał
 onboarding-new-user-survey-familiarity-based-option-3 = Znaju jón jara derje
 onboarding-new-user-survey-familiarity-based-option-4 = Sym jón w zańdźenosći wužiwał, ale je tomu hižo chwila
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Zdźělće nam, hdźež chceće swoje rajtarki měć
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Přepinajće w nastajenjach bóčnicy, hdyžkuli chceće.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Waše rajtarki, waša móžnosć
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Maće wjele rajtarkow wočinjene? Rjadujće swoje rajtarki na boku za racionelniši napohlad. Abo wužiwajće klasiski napohlad z rajtarkami horjeka. Přeměńće kóždy čas.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Wubjerće swoje wuhotowanje rajtarkow
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Za racionelny napohlad, kotryž móže wam pomhać, koncentrowany wostać, wupruwujće swoje rajtarki na boku. Abo wužiwajće klasiski napohlad z rajtarkami horjeka. Přeměńće kóždy čas.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Rajtarki naboku
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Rajtarki horjeka
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Wertikalne rajtarki su tu
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Wertikalne rajtarki předstajić
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Spytajće swoje rajtarki naboku. Přepinajće w nastajenjach bóčnicy, hdyžkuli chceće.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Wupruwujće wertikalne rajtarki
+onboarding-flair-text = Nowy!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Horicontalne rajtarki wobchować
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Wokno wobhladowaka, kotrež rajtarki podłu boka wobrazowki jako dźěl bóčnicy { -brand-shorter-name } pokazuje.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Wokno wobhladowaka, kotrež rajtarki podłu boka wobrazowki jako dźěl bóčnicy { -brand-shorter-name }.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Wokno wobhladowaka, kotrež rajtarki horjeka pokazuje.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Wokno wobhladowaka, kotrež rajtarki horjeka pokazuje.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Wupruwujće chatowy bot KI w bóčnicy.
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Zjimajće webwobsah, ideje namakanja idejow, naćiski powěsćow – wšitko, hdyž přehladujeće. Wubjerće z wjacorych poskićowarjow. Móžeće jeho kóždy raz změnić. <a data-l10n-name="learn-more">Dalše informacije</a>
+onboarding-genai-sidebar-primary-button = Wubjerće chatowy bot
+onboarding-genai-sidebar-secondary-button = Přehladowanje započeć
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Konfiguraciju { -brand-short-name } skónčić
+onboarding-checklist-subtitle = Dokónčće tute kroki, zo byšće najwjace ze swojeho dožiwjenja přehladowanja wućahnyć.
+onboarding-checklist-set-default = Nastajće { -brand-short-name } jako standardny wobhladowak
+onboarding-checklist-pin = Připniće { -brand-short-name } k nadawkowej lajsće
+onboarding-checklist-import = Z předchadneho wobhladowaka importować
+onboarding-checklist-extension = Rozšěrjenje přidać
+onboarding-checklist-sign-up = Registrujće so abo přizjewće so pola swojeho konta
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Wupruwujće skupiny rajtarkow za mjenje njeporjada a wjace fokusa
+tab-groups-onboarding-feature-callout-subtitle = Organizujće so, ćehńće jedyn rajtark horjeka na druhi, zo byšće wašu prěnju skupinu wutworił.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Witajće profile { -brand-product-name }
+multi-profile-spotlight-body = Přeměńće lochko mjez přehladowanjom za dźěło a zabawu. Profile waše přehladowanske informacije, mjez nimi pytansku historiju a hesła, dospołnje separatne wobchowuja, zo byšće organizowany wostał.
+multi-profile-spotlight-cta = Profil załožić
+multi-profile-callout-title = Załožće rozdźělne profile za dźěło a zabawu
+multi-profile-callout-subtitle = Profile wam zmóžnjeja, waše přehladowanske informacije kaž pytansku historiju a hesła dospołnje separatnje wobchować.
+multi-profile-callout-cta = Profil załožić

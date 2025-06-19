@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Trametter a websites il signal «Do Not Track» per inditgar che ti na vuls betg vegnir fastizà
+do-not-track-removal = Nus na sustegnain betg pli il signal «Betg ma fastizar»
 do-not-track-description2 =
     .label = Trametter a websites la dumonda da «Betg ma fastizar»
     .accesskey = d
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Avrir automaticamain { -brand-short-name } cura ch'il computer vegn avià
     .accesskey = o
 windows-launch-on-login-disabled = Questa preferenza è vegnida deactivada en Windows. Per midar, visitar <a data-l10n-name="startup-link">Startup Apps</a> en ils parameters dal sistem.
+windows-launch-on-login-profile-disabled = Activar questa preferenza cun selecziunar «{ profile-manager-use-selected.label }» en la fanestra «Tscherner il profil d‘utilisader».
 startup-restore-warn-on-quit =
     .label = Avisar avant che terminar il navigatur
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Avrir colliaziuns en tabs e betg en novas fanestras
     .accesskey = v
+ask-on-close-multiple-tabs =
+    .label = Dumandar avant che serrar plirs tabs
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Dumandar avant che terminar cun { $quitKey }
+    .accesskey = a
 confirm-on-close-multiple-tabs =
     .label = Confermar sch'ina fanestra cun plirs tabs vegn serrada
     .accesskey = m
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Websites che ti memoriseschas u visitas
 home-prefs-shortcuts-by-option-sponsored =
     .label = Scursanidas sponsuradas
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Recumandà da { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Mussar propostas da tschertga en ils resultats da la trav d'adressas
     .accesskey = M
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Mussar ils terms da tschertga en la trav d’adressas per las paginas da resultats
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Cartas da credit
 sync-currently-syncing-payment-methods = Metodas da pajament
 sync-currently-syncing-addons = Supplements
 sync-currently-syncing-settings = Parameters
+sync-manage-options =
+    .label = Administrar la sincronisaziun…
+    .accesskey = m
 sync-change-options =
     .label = Modifitgar…
     .accesskey = M
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Parameters
     .tooltiptext = Parameters generals, da la protecziun da datas e da segirezza che ti has midà
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = Tscherna ils elements per sincronisar sin tut tes apparats connectads
+    .style = min-width: 36em;
+    .buttonlabelaccept = Memorisar
+    .buttonaccesskeyaccept = M
+    .buttonlabelextra2 = Deconnectar…
+    .buttonaccesskeyextra2 = D
 
 ## The device name controls.
 
@@ -1285,13 +1311,34 @@ collection-description = Nus ta laschain la tscherna e ramassain mo las infurmaz
 collection-privacy-notice = Infurmaziuns davart la protecziun da datas
 collection-health-report-telemetry-disabled = Ti na permettas betg pli a { -vendor-short-name } da registrar datas davart la tecnica e l'interacziun. Tut las datas dal passà vegnan stizzadas entaifer 30 dis.
 collection-health-report-telemetry-disabled-link = Ulteriuras infurmaziuns
+collection-usage-ping =
+    .label = Trametter in ping d’utilisaziun quotidian a { -vendor-short-name }
+    .accesskey = u
+collection-usage-ping-description = Quai gida { -vendor-short-name } a stimar ils utilisaders activs.
+collection-health-report2 =
+    .label = Trametter datas tecnicas e d’interacziun a { -vendor-short-name }
+    .accesskey = r
 collection-health-report =
     .label = Permetter a { -brand-short-name } da trametter datas tecnicas e datas d'interacziun a { -vendor-short-name }
     .accesskey = r
 collection-health-report-link = Ulteriuras infurmaziuns
+collection-health-report-description = Quai ans gida a meglierar las funcziuns, la prestaziun e la stabilitad da { -brand-product-name }.
+collection-studies2 =
+    .label = Installar ed exequir studis
+collection-studies-description = Emprova novas funcziuns ed ideas avant ch’ellas stattan a disposiziun a mintgin.
 collection-studies =
     .label = Permetter a { -brand-short-name } dad installar e lantschar studis
 collection-studies-link = Vesair ils studis da { -brand-short-name }
+addon-recommendations2 =
+    .label = Permetta recumandaziuns persunalisadas per extensiuns
+addon-recommendations-description = Retschaiva recumandaziuns dad extensiuns per meglierar tia experientscha da navigaziun.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = La funcziun dals rapports da datas è vegnida deactivada en la configuraziun da cumpilaziun da questa versiun.
+collection-backlogged-crash-reports2 =
+    .label = Trametter automaticamain rapports da collaps
+    .accesskey = c
+collection-backlogged-crash-reports-description = Quai gida { -vendor-short-name } a diagnostitgar e curreger problems dal navigatur. Rapports pon cuntegnair datas persunalas u sensiblas.
 addon-recommendations =
     .label = Permetter a { -brand-short-name } da recumandar extensiuns a moda persunalisada
 addon-recommendations-link = Ulteriuras infurmaziuns
@@ -1360,13 +1407,20 @@ space-alert-under-5gb-message2 = <strong>La memoria da { -brand-short-name } è 
 
 httpsonly-header = Modus mo HTTPS
 httpsonly-description = HTTPS porscha ina connexiun segira, criptada tranter { -brand-short-name } e las websites che ti visitas. Las bleras websites sustegnan HTTPS e sch'il modus «mo HTTPS» è activà, connectescha { -brand-short-name } automaticamain cun HTTPS.
+httpsonly-description2 = { -brand-short-name } creescha connexiuns segiradas e criptadas cun las websites che ti visitas. { -brand-short-name } t’avertescha sche ina connexiun n’è betg segirada cura ch’il modus «mo HTTPS» è activà.
 httpsonly-learn-more = Ulteriuras infurmaziuns
 httpsonly-radio-enabled =
     .label = Activar il modus mo HTTPS en tut las fanestras
+httpsonly-radio-enabled2 =
+    .label = Mo utilisar HTTPS en tut las fanestras
 httpsonly-radio-enabled-pbm =
     .label = Activar il modus mo HTTPS sulettamain en fanestras privatas
+httpsonly-radio-enabled-pbm2 =
+    .label = Mo utilisar HTTPS en fanestras privatas
 httpsonly-radio-disabled =
     .label = Betg activar il modus mo HTTPS
+httpsonly-radio-disabled2 =
+    .label = Empruvar l’emprim HTTPS, ma permetter connexiuns betg segiradas
 
 ## DoH Section
 

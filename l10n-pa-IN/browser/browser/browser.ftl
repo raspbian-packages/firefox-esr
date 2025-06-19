@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name } — { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — { -brand-full-name } ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -62,7 +120,7 @@ urlbar-identity-button =
 urlbar-services-notification-anchor =
     .tooltiptext = ਇੰਸਟਾਲ ਸੁਨੇਹਾ ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ
 urlbar-web-notification-anchor =
-    .tooltiptext = ਕੀ ਤੁਸੀਂ ਸਾਈਟ ਤੋਂ ਨੋਟੀਫਿਕੇਸ਼ਨ ਪ੍ਰਾਪਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਨੂੰ ਬਦਲੋ
+    .tooltiptext = ਬਦਲੋ ਕਿ ਕੀ ਸਾਈਟ ਤੋਂ ਤੁਸੀਂ ਨੋਟੀਫਿਕੇਸ਼ਨ ਲੈਣਾ ਚਾਹੁੰਦੇ ਹੋ
 urlbar-midi-notification-anchor =
     .tooltiptext = MIDI ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ
 urlbar-eme-notification-anchor =
@@ -78,9 +136,9 @@ urlbar-default-notification-anchor =
 urlbar-geolocation-notification-anchor =
     .tooltiptext = ਟਿਕਾਣਾ ਬੇਨਤੀ ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ
 urlbar-xr-notification-anchor =
-    .tooltiptext = ਫ਼ਰਜ਼ੀ ਅਸਲੀਅਤ ਇਜਾਜ਼ਤ ਪੈਨਲ ਖੋਲ੍ਹੋ
+    .tooltiptext = ਫ਼ਰਜ਼ੀ ਅਸਲੀਅਤ ਇਜਾਜ਼ਤ ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ
 urlbar-storage-access-anchor =
-    .tooltiptext = ਬਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਇਜਾਜ਼ਤ ਪੈਨਲ ਖੋਲ੍ਹੋ
+    .tooltiptext = ਬਰਾਊਜ਼ਿੰਗ ਸਰਗਰਮੀ ਇਜਾਜ਼ਤ ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ
 urlbar-web-rtc-share-screen-notification-anchor =
     .tooltiptext = ਸਾਈਟ ਨਾਲ ਆਪਣੀਆਂ ਵਿੰਡੋਆਂ ਜਾਂ ਸਕਰੀਨ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦਾ ਬੰਦੋਬਸਤ ਕਰੋ
 urlbar-indexed-db-notification-anchor =
@@ -96,7 +154,7 @@ urlbar-web-rtc-share-devices-notification-anchor =
 urlbar-web-rtc-share-speaker-notification-anchor =
     .tooltiptext = ਸਾਈਟ ਦੇ ਹੋਰ ਬੁਲਾਰਿਆਂ ਨਾਲ ਸਾਂਝਾ ਕਰਨ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
 urlbar-autoplay-notification-anchor =
-    .tooltiptext = ਆਪੇ-ਚਲਾਓ ਪੈਨਲ ਖੋਲ੍ਹੋ
+    .tooltiptext = ਆਪੇ-ਚਲਾਓ ਪੈਨਲ ਨੂੰ ਖੋਲ੍ਹੋ
 urlbar-persistent-storage-notification-anchor =
     .tooltiptext = ਪੱਕੀ ਸਟੋਰੇਜ਼ 'ਚ ਡਾਟੇ ਨੂੰ ਸਟੋਰ ਕਰੋ
 urlbar-addons-notification-anchor =
@@ -111,9 +169,9 @@ urlbar-search-tips-confirm-short = ਸਮਝੇ
 urlbar-tip-icon-description =
     .alt = ਟੋਟਕਾ:
 urlbar-result-menu-button =
-    .title = ਮੇਨੂ ਖੋਲ੍ਹੋ
+    .title = ਮੇਨੂ ਨੂੰ ਖੋਲ੍ਹੋ
 urlbar-result-menu-button-feedback = ਫ਼ੀਡਬੈਕ
-    .title = ਮੇਨੂ ਖੋਲ੍ਹੋ
+    .title = ਮੇਨੂ ਨੂੰ ਖੋਲ੍ਹੋ
 urlbar-result-menu-learn-more =
     .label = ਹੋਰ ਜਾਣੋ
     .accesskey = L
@@ -185,7 +243,7 @@ page-action-manage-extension2 =
     .label = …ਇਕਸਟੈਨਸ਼ਨਾਂ ਦਾ ਬੰਦੋਬਸਤ
     .accesskey = E
 page-action-remove-extension2 =
-    .label = ਇਕਸਟੈਨਸ਼ਨ ਹਟਾਓ
+    .label = ਇਕਸਟੈਨਸ਼ਨ ਨੂੰ ਹਟਾਓ
     .accesskey = v
 
 ## Auto-hide Context Menu
@@ -259,16 +317,16 @@ quickactions-cmd-addons2 = ਐਡ-ਆਨ
 quickactions-bookmarks2 = ਬੁੱਕਮਾਰਕਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
 quickactions-cmd-bookmarks = ਬੁੱਕਮਾਰਕ
 # Opens a SUMO article explaining how to clear history
-quickactions-clearhistory = ਅਤੀਤ ਮਿਟਾਓ
-quickactions-cmd-clearhistory = ਅਤੀਤ ਮਿਟਾਓ
+quickactions-clearhistory = ਅਤੀਤ ਨੂੰ ਮਿਟਾਓ
+quickactions-cmd-clearhistory = ਅਤੀਤ ਨੂੰ ਮਿਟਾਓ
 # Opens about:downloads page
-quickactions-downloads2 = ਡਾਊਨਲੋਡ ਵੇਖੋ
+quickactions-downloads2 = ਡਾਊਨਲੋਡਾਂ ਨੂੰ ਵੇਖੋ
 quickactions-cmd-downloads = ਡਾਊਨਲੋਡ
 # Opens about:addons page in the extensions section
-quickactions-extensions = ਇਕਸਟੈਨਸ਼ਨ ਦਾ ਇੰਤਜ਼ਾਮ
-quickactions-cmd-extensions = ਇਕਸਟੈਨਸ਼ਨ
+quickactions-extensions = ਇਕਸਟੈਨਸ਼ਨਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
+quickactions-cmd-extensions = ਇਕਸਟੈਨਸ਼ਨਾਂ
 # Opens the devtools web inspector
-quickactions-inspector2 = ਡਿਵੈਲਪਰ ਟੂਲ ਖੋਲ੍ਹੋ
+quickactions-inspector2 = ਡਿਵੈਲਪਰ ਟੂਲਾਂ ਨੂੰ ਖੋਲ੍ਹੋ
 quickactions-cmd-inspector = ਇੰਸਪੈਕਟਰ, ਡਿਵ-ਟੂਲ
 # Opens about:logins
 quickactions-logins2 = ਪਾਸਵਰਡਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
@@ -277,13 +335,13 @@ quickactions-cmd-logins = ਲਾਗਇਨ, ਪਾਸਵਰਡ
 quickactions-plugins = ਪਲੱਗਇਨਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
 quickactions-cmd-plugins = ਪਲੱਗਇਨ
 # Opens the print dialog
-quickactions-print2 = ਸਫ਼਼ਾ ਪਰਿੰਟ ਕਰੋ
+quickactions-print2 = ਸਫ਼ੇ ਨੂੰ ਪਰਿੰਟ ਕਰੋ
 quickactions-cmd-print = ਪਰਿੰਟ ਕਰੋ
 # Opens the print dialog at the save to PDF option
 quickactions-savepdf = ਸਫ਼ੇ ਨੂੰ PDF ਵਜੋਂ ਸੰਭਾਲੋ
 quickactions-cmd-savepdf = pdf
 # Opens a new private browsing window
-quickactions-private2 = ਨਿੱਜੀ ਵਿੰਡੋ ਖੋਲ੍ਹੋ
+quickactions-private2 = ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋ ਨੂੰ ਖੋਲ੍ਹੋ
 quickactions-cmd-private = ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = { -brand-short-name } ਨੂੰ ਤਾਜ਼ਾ ਕਰੋ
@@ -309,11 +367,15 @@ quickactions-cmd-viewsource = ਸਰੋਤ ਵੇਖੋ, ਸਰੋਤ
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = ਫ਼ੌਰੀ ਕਾਰਵਾਈਆਂ ਬਾਰੇ ਹੋਰ ਸਿੱਖੋ
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = ਚੁਣਨ ਵਾਸਤੇ ਟੈਬ ਨੂੰ ਦਬਾਓ:
 
 ## Bookmark Panel
 
-bookmarks-add-bookmark = ਬੁੱਕਮਾਰਕ ਜੋੜੋ
-bookmarks-edit-bookmark = ਬੁੱਕਮਾਰਕ ਸੋਧੋ
+bookmarks-add-bookmark = ਬੁੱਕਮਾਰਕ ਨੂੰ ਜੋੜੋ
+bookmarks-edit-bookmark = ਬੁੱਕਮਾਰਕ ਨੂੰ ਸੋਧੋ
 bookmark-panel-cancel =
     .label = ਰੱਦ ਕਰੋ
     .accesskey = C
@@ -354,7 +416,7 @@ identity-connection-file = ਇਹ ਸਫ਼ਾ ਤੁਹਾਡੇ ਕੰਪਿਊ�
 identity-connection-associated = ਇਸ ਸਫ਼ੇ ਨੂੰ ਹੋਰ ਸਫ਼ੇ ਤੋਂ ਲੋਡ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।
 identity-extension-page = ਇਸ ਸਫ਼ੇ ਨੂੰ ਇਕਸਟੈਨਸ਼ਨ ਤੋਂ ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।
 identity-active-blocked = { -brand-short-name } ਨੇ ਇਸ ਸਫ਼ੇ ਦੇ ਕੁਝ ਭਾਗਾਂ ਉੱਤੇ ਪਾਬੰਦੀ ਲਗਾਈ ਹੈ, ਜੋ ਕਿ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹਨ।
-identity-custom-root = ਕਨੈਕਸ਼ਨ ਨੂੰ ਅਜਿਹੇ ਸਰਟੀਫਿਕੇਟ ਜਾਰੀ ਕਰਤੇ ਵਲੋਂ ਤਸਦੀਕ ਕੀਤਾ ਹੈ, ਜਿਸ ਨੂੰ ਮੌਜ਼ੀਲਾ ਵਲੋਂ ਮਾਨਤਾ ਨਹੀਂ ਹੈ।
+identity-custom-root = ਕਨੈਕਸ਼ਨ ਨੂੰ ਅਜਿਹੇ ਸਰਟੀਫਿਕੇਟ ਜਾਰੀ ਕਰਤੇ ਵਲੋਂ ਤਸਦੀਕ ਕੀਤਾ ਹੈ, ਜਿਸ ਨੂੰ Mozilla ਵਲੋਂ ਮਾਨਤਾ ਨਹੀਂ ਹੈ।
 identity-passive-loaded = ਇਸ ਸਫ਼ੇ ਦੇ ਕੁਝ ਭਾਗ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹਨ (ਜਿਵੇਂ ਕਿ ਚਿੱਤਰ)।
 identity-active-loaded = ਤੁਸੀਂ ਇਸ ਸਫ਼ੇ ਉੱਤੇ ਸੁਰੱਖਿਆ ਨੂੰ ਅਸਮਰੱਥ ਕਰ ਚੁੱਕੇ ਹੋ।
 identity-weak-encryption = ਇਹ ਸਫ਼ਾ ਕਮਜ਼ੋਰ ਇੰਕ੍ਰਿਪਸ਼ਨ ਵਰਤਦਾ ਹੈ।
@@ -368,27 +430,21 @@ identity-https-only-dropdown-off =
     .label = ਬੰਦ
 identity-https-only-dropdown-off-temporarily =
     .label = ਆਰਜ਼ੀ ਤੌਰ ਉੱਤੇ ਬੰਦ
-identity-https-only-info-turn-on2 =
-    ਜੇ ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ ਕਿ ਜਦੋਂ ਵੀ ਹੋ ਸਕੇ ਇਸ ਸਾਈਟ ਲਈ { -brand-short-name } 
-    ਕਨੈਕਸ਼ਨ ਨੂੰ ਅੱਪਗਰੇਡ ਕਰੇ ਤਾਂ ਸਿਰਫ਼-HTTPS ਨੂੰ ਚਾਲੂ ਕਰੋ।
-identity-https-only-info-turn-off2 =
-    ਜੇ ਸਫ਼ਾ ਠੀਕ ਤਰ੍ਹਾਂ ਕੰਮ ਨਹੀਂ ਕਰਦਾ ਤਾਂ ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨੂੰ ਅਸੁਰੱਖਿਅਤ HTTP
-    ਰਾਹੀਂ ਮੁੜ-ਲੋਡ ਕਰਨ ਵਾਸਤੇ ਸਿਰਫ਼-HTTPS ਮੋਡ ਨੂੰ ਬੰਦ ਕਰਕੇ ਵੇਖ ਸਕਦੇ ਹੋ।
+identity-https-only-info-turn-on2 = ਜੇ ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ ਕਿ ਜਦੋਂ ਵੀ ਹੋ ਸਕੇ ਇਸ ਸਾਈਟ ਲਈ { -brand-short-name } ਕਨੈਕਸ਼ਨ ਨੂੰ ਅੱਪਗਰੇਡ ਕਰੇ ਤਾਂ ਸਿਰਫ਼-HTTPS ਨੂੰ ਚਾਲੂ ਕਰੋ।
+identity-https-only-info-turn-off2 = ਜੇ ਸਫ਼ਾ ਠੀਕ ਤਰ੍ਹਾਂ ਕੰਮ ਨਹੀਂ ਕਰਦਾ ਤਾਂ ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨੂੰ ਅਸੁਰੱਖਿਅਤ HTTP ਰਾਹੀਂ ਮੁੜ-ਲੋਡ ਕਰਨ ਵਾਸਤੇ ਸਿਰਫ਼-HTTPS ਮੋਡ ਨੂੰ ਬੰਦ ਕਰਕੇ ਵੇਖ ਸਕਦੇ ਹੋ।
 identity-https-only-info-turn-on3 = ਜੇ ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਹੋ ਕਿ { -brand-short-name } ਜਦ ਵੀ ਸੰਭਵ ਹੋਵੇ ਤਾਂ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਲਈ ਅੱਪਗਰੇਡ ਕਰੇ ਤਾਂ ਇਸ ਸਾਈਟ ਲਈ HTTPS ਅੱਪਗਰੇਡ ਕਰੋ।
 identity-https-only-info-turn-off3 = ਜੇ ਸਫ਼ਾ ਠੀਕ ਤਰ੍ਹਾਂ ਕੰਮ ਨਾ ਕਰਦਾ ਹੋਵੇ ਤਾਂ ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਲਈ ਅਸੁਰੱਖਿਅਤ HTTP ਵਰਤੋਂ ਕਰਕੇ ਇਸ ਸਾਈਟ ਨੂੰ ਮੁੜ ਲੋੜ ਕਰਨ ਲਈ HTTPS ਨੂੰ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।
 identity-https-only-info-no-upgrade = HTTP ਤੋਂ ਕਨੈਕਸ਼ਨ ਅੱਪਗਰੇਡ ਕਰਨ ਅਸਮਰੱਥ ਹੈ।
 identity-permissions-storage-access-header = ਅੰਤਰ-ਸਾਈਟ ਕੂਕੀਜ਼
-identity-permissions-storage-access-hint =
-    ਤੁਹਾਡੇ ਵਲੋਂ ਇਸ ਸਾਈਟ ਖੋਲ੍ਹਣ ਦੇ ਦੌਰਾਨ ਇਹ ਧਿਰਾਂ ਅੰਤਰ-ਸਾਈਟ ਕੂਕੀਜ਼ ਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ
-    ਵਰਤ ਸਕਦੀਆਂ ਹਨ।
+identity-permissions-storage-access-hint = ਤੁਹਾਡੇ ਵਲੋਂ ਇਸ ਸਾਈਟ ਖੋਲ੍ਹਣ ਦੇ ਦੌਰਾਨ ਇਹ ਧਿਰਾਂ ਅੰਤਰ-ਸਾਈਟ ਕੂਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਵਰਤ ਸਕਦੀਆਂ ਹਨ।
 identity-permissions-storage-access-learn-more = ਹੋਰ ਜਾਣੋ
 identity-permissions-reload-hint = ਤਬਦੀਲੀਆਂ ਲਾਗੂ ਕਰਨ ਵਾਸਤੇ ਤੁਹਾਨੂੰ ਸਫ਼ੇ ਨੂੰ ਮੁੜ-ਲੋਡ ਕਰਨ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ।
 identity-clear-site-data =
-    .label = …ਕੂਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਸਾਫ਼ ਕਰੋ
+    .label = …ਕੂਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟੇ ਨੂੰ ਮਿਟਾਓ
 identity-connection-not-secure-security-view = ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨਾਲ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਹੋ।
 identity-connection-verified = ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਨਾਲ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਕਨੈਕਟ ਹੋ।
-identity-ev-owner-label = ਸਰਟੀਫਿਕੇਟ ਜਾਰੀ ਕੀਤਾ:
-identity-description-custom-root2 = ਮੌਜ਼ੀਲਾ ਇਸ ਸਰਟੀਫਿਕੇਟ ਜਾਰੀ ਕਰਨ ਵਾਲੇ ਨੂੰ ਪਛਾਣਦਾ ਨਹੀਂ ਹੈ। ਇਹ ਤੁਹਾਡੇ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਜਾਂ ਪਰਸ਼ਾਸ਼ਕ ਵਲੋਂ ਜੋੜਿਆ ਗਿਆ ਹੋ ਸਕਦਾ ਹੈ।
+identity-ev-owner-label = ਸਰਟੀਫਿਕੇਟ ਇਸ ਨੂੰ ਜਾਰੀ ਕੀਤਾ:
+identity-description-custom-root2 = Mozilla ਇਸ ਸਰਟੀਫਿਕੇਟ ਜਾਰੀ ਕਰਨ ਵਾਲੇ ਨੂੰ ਪਛਾਣਦਾ ਨਹੀਂ ਹੈ। ਇਹ ਤੁਹਾਡੇ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਜਾਂ ਪਰਸ਼ਾਸ਼ਕ ਵਲੋਂ ਜੋੜਿਆ ਗਿਆ ਹੋ ਸਕਦਾ ਹੈ।
 identity-remove-cert-exception =
     .label = ਛੋਟ ਨੂੰ ਹਟਾਓ
     .accesskey = R
@@ -449,15 +505,15 @@ browser-tab-unmute =
     }
 browser-tab-unblock =
     { $count ->
-        [1] ਟੈਬ ਚਲਾਓ
-       *[other] { $count } ਟੈਬਾਂ ਚਲਾਓ
+        [1] ਟੈਬ ਨੂੰ ਚਲਾਓ
+       *[other] { $count } ਟੈਬਾਂ ਨੂੰ ਚਲਾਓ
     }
 
 ## Bookmarks toolbar items
 
 browser-import-button2 =
-    .label = …ਬੁੱਕਮਾਰਕ ਇੰਪੋਰਟ ਕਰੋ
-    .tooltiptext = ਹੋਰ ਬੁੱਕਮਾਰਕ ਤੋਂ { -brand-short-name } ਲਈ ਬੁੱਕਮਾਰਕ ਇੰਪੋਰਟ ਕਰੋ
+    .label = …ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਇੰਪੋਰਟ ਕਰੋ
+    .tooltiptext = ਹੋਰ ਬੁੱਕਮਾਰਕ ਤੋਂ { -brand-short-name } ਲਈ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਇੰਪੋਰਟ ਕਰੋ
 bookmarks-toolbar-empty-message =
     ਫ਼ੌਰੀ ਪਹੁੰਚ ਲਈ, ਆਪਣੇ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਇੱਥੇ ਆਪਣੀ ਬੁੱਕਮਾਰਕ ਪੱਟੀ ਉੱਤੇ ਰੱਖੋ।
     <a data-l10n-name="manage-bookmarks">…ਬੁੱਕਮਾਰਕ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ</a>
@@ -552,9 +608,11 @@ urlbar-switch-to-tab =
 urlbar-extension =
     .value = ਇਕਟੈਨਸ਼ਨ:
 urlbar-go-button =
-    .tooltiptext = ਟਿਕਾਣਾ ਪੱਟੀ ਵਿੱਚ ਦਿੱਤੇ ਐਡਰੈੱਸ 'ਤੇ ਜਾਓ
+    .tooltiptext = ਟਿਕਾਣਾ ਪੱਟੀ ਵਿੱਚ ਦਿੱਤੇ ਸਿਰਨਾਵੇਂ 'ਤੇ ਜਾਓ
 urlbar-page-action-button =
     .tooltiptext = ਸਫ਼ਾ ਕਾਰਵਾਈਆਂ
+urlbar-revert-button =
+    .tooltiptext = ਸਿਰਨਾਵੇਂ ਨੂੰ ਟਿਕਾਣਾ ਪੱਟੀ ਵਿੱਚ ਵੇਖਾਓ
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -615,6 +673,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = { $engine } ਨਾਲ ਖੋਜੋ
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - { $localSearchMode } ਨੂੰ ਖੋਜੋ
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - { $engine } ਨਾਲ ਖੋਜੋ
+urlbar-searchmode-dropmarker =
+    .tooltiptext = ਖੋਜ ਇੰਜਣ ਦੀ ਚੋਣ ਕਰੋ
+urlbar-searchmode-bookmarks =
+    .label = ਬੁੱਕਮਾਰਕ
+urlbar-searchmode-tabs =
+    .label = ਟੈਬਾਂ
+urlbar-searchmode-history =
+    .label = ਅਤੀਤ
+urlbar-searchmode-actions =
+    .label = ਕਾਰਵਾਈਆਂ
+urlbar-searchmode-exit-button =
+    .tooltiptext = ਬੰਦ ਕਰੋ
+urlbar-searchmode-popup-description = ਇਹ ਵਾਰ ਖੋਜ ਇਸ ਨਾਲ ਕਰੋ:
+urlbar-searchmode-popup-search-settings = ਖੋਜ ਸੈਟਿੰਗਾਂ
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, ਇੱਕ ਖੋਜ ਇੰਜਣ ਨੂੰ ਚੁਣੋ
+    .tooltiptext = { $engine }, ਇੱਕ ਖੋਜ ਇੰਜਣ ਨੂੰ ਚੁਣੋ
+urlbar-searchmode-button-no-engine =
+    .label = ਕੋਈ ਸ਼ਾਰਟਕੱਟ ਚੁਣਿਆ ਨਹੀਂ ਹੈ, ਸ਼ਾਰਟਕੱਟ ਚੁਣੋ
+    .tooltiptext = ਕੋਈ ਸ਼ਾਰਟਕੱਟ ਚੁਣਿਆ ਨਹੀਂ ਹੈ, ਕੋਈ ਇੱਕ ਸ਼ਾਰਟਕੱਟ ਚੁਣੋ
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -624,6 +714,12 @@ urlbar-result-action-search-bookmarks = ਬੁੱਕਮਾਰਕ ਖੋਜੋ
 urlbar-result-action-search-history = ਅਤੀਤ ਖੋਜੋ
 urlbar-result-action-search-tabs = ਟੈਬਾਂ ਖੋਜੋ
 urlbar-result-action-search-actions = ਖੋਜ ਕਾਰਵਾਈਆਂ
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = { $group } ਉੱਤੇ ਜਾਓ
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = { $group } ਨੂੰ ਖੋਲ੍ਹੋ
 
 ## Labels shown above groups of urlbar results
 
@@ -668,16 +764,16 @@ reader-view-enter-button =
     .aria-label = ਪੜ੍ਹਨ ਝਲਕ ਖੋਲ੍ਹੋ
 # This should match menu-view-close-readerview in menubar.ftl
 reader-view-close-button =
-    .aria-label = ਪੜ੍ਹਨ ਝਲਕ ਬੰਦ ਕਰੋ
+    .aria-label = ਪੜ੍ਹਨ ਝਲਕ ਨੂੰ ਬੰਦ ਕਰੋ
 
 ## Picture-in-Picture urlbar button
 ## Variables:
 ##   $shortcut (String) - Keyboard shortcut to execute the command.
 
 picture-in-picture-urlbar-button-open =
-    .tooltiptext = ਤਸਵੀਰ-ਚ-ਤਸਵੀਰ ਖੋਲ੍ਹੋ ({ $shortcut })
+    .tooltiptext = ਤਸਵੀਰ-ਚ-ਤਸਵੀਰ ਨੂੰ ਖੋਲ੍ਹੋ ({ $shortcut })
 picture-in-picture-urlbar-button-close =
-    .tooltiptext = ਤਸਵੀਰ-ਚ-ਤਸਵੀਰ ਬੰਦ ਕਰੋ ({ $shortcut })
+    .tooltiptext = ਤਸਵੀਰ-ਚ-ਤਸਵੀਰ ਨੂੰ ਬੰਦ ਕਰੋ ({ $shortcut })
 picture-in-picture-panel-header = ਤਸਵੀਰ-‘ਚ-ਤਸਵੀਰ
 picture-in-picture-panel-headline = ਇਹ ਵੈੱਬਸਾਈਟ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ ਹੈ
 picture-in-picture-panel-body = ਵੀਡੀਓ ਡਿਵੈਲਪਰ ਵਲੋਂ ਦਿੱਤੇ ਢੰਗ ਨਾਲ ਨਾ ਦਿਖਾਈ ਦੇਵੇ ਜਦੋਂ ਵੀ ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਢੰਗ ਨੂੰ ਸਮਰੱਥ ਕਰਦੇ ਹੋ।
@@ -703,8 +799,8 @@ pointerlock-warning-no-domain = ਇਹ ਦਸਤਾਵੇਜ਼ ਤੁਹਾਡੇ 
 ## Bookmarks panels, menus and toolbar
 
 bookmarks-manage-bookmarks =
-    .label = ਬੁੱਕਮਾਰਕਾਂ ਇੰਤਜ਼ਾਮ
-bookmarks-recent-bookmarks-panel-subheader = ਹਾਲੀਆ ਬੁੱਕਮਾਰਕ
+    .label = ਬੁੱਕਮਾਰਕਾਂ ਦਾ ਇੰਤਜ਼ਾਮ
+bookmarks-recent-bookmarks-panel-subheader = ਸੱਜਰੇ ਬੁੱਕਮਾਰਕ
 bookmarks-toolbar-chevron =
     .tooltiptext = ਹੋਰ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਵੇਖੋ
 bookmarks-sidebar-content =
@@ -723,20 +819,20 @@ bookmarks-mobile-bookmarks-menu =
 bookmarks-tools-sidebar-visibility =
     .label =
         { $isVisible ->
-            [true] ਬੁੱਕਮਾਰਕ ਬਾਹੀ ਓਹਲੇ ਕਰੋ
-           *[other] ਬੁੱਕਮਾਰਕ ਬਾਹੀ ਵੇਖੋ
+            [true] ਬੁੱਕਮਾਰਕ ਬਾਹੀ ਨੂੰ ਓਹਲੇ ਕਰੋ
+           *[other] ਬੁੱਕਮਾਰਕ ਬਾਹੀ ਨੂੰ ਵੇਖੋ
         }
 bookmarks-tools-toolbar-visibility-menuitem =
     .label =
         { $isVisible ->
-            [true] ਬੁੱਕਮਾਰਕ ਟੂਲਬਾਰ ਓਹਲੇ ਕਰੋ
-           *[other] ਬੁੱਕਮਾਰਕ ਟੂਲਬਾਰ ਵੇਖੋ
+            [true] ਬੁੱਕਮਾਰਕ ਟੂਲਬਾਰ ਨੂੰ ਓਹਲੇ ਕਰੋ
+           *[other] ਬੁੱਕਮਾਰਕ ਟੂਲਬਾਰ ਨੂੰ ਵੇਖੋ
         }
 bookmarks-tools-toolbar-visibility-panel =
     .label =
         { $isVisible ->
-            [true] ਬੁੱਕਮਾਰਕ ਟੂਲਬਾਰ ਲੁਕਾਓ
-           *[other] ਬੁੱਕਮਾਰਕ ਟੂਲਬਾਰ ਵੇਖਾਓ
+            [true] ਬੁੱਕਮਾਰਕ ਟੂਲਬਾਰ ਨੂੰ ਲੁਕਾਓ
+           *[other] ਬੁੱਕਮਾਰਕ ਟੂਲਬਾਰ ਨੂੰ ਵੇਖਾਓ
         }
 bookmarks-tools-menu-button-visibility =
     .label =
@@ -750,7 +846,7 @@ bookmarks-tools-menu-button-visibility =
 bookmarks-search =
     .label = ਬੁੱਕਮਾਰਕ ਲੱਭੋ
 bookmarks-tools =
-    .label = ਬੁੱਕਮਾਰਕ ਬਣਾਉਣ ਵਾਲਾ ਟੂਲ
+    .label = ਬੁੱਕਮਾਰਕ ਬਣਾਉਣ ਵਾਲੇ ਟੂਲ
 bookmarks-subview-edit-bookmark =
     .label = …ਇਸ ਬੁੱਕਮਾਰਕ ਨੂੰ ਸੋਧੋ
 # The aria-label is a spoken label that should not include the word "toolbar" or
@@ -775,7 +871,7 @@ bookmarks-subview-bookmark-tab =
 library-bookmarks-menu =
     .label = ਬੁੱਕਮਾਰਕ
 library-recent-activity-title =
-    .value = ਹਾਲੀਆ ਸਰਗਰਮੀ
+    .value = ਸੱਜਰੀ ਸਰਗਰਮੀ
 
 ## Pocket toolbar button
 
@@ -804,8 +900,8 @@ toolbar-overflow-customize-button =
     .label = …ਟੂਲਬਾਰ ਨੂੰ ਕਸਟਮਾਈਜ਼ ਕਰੋ
     .accesskey = C
 toolbar-button-email-link =
-    .label = ਲਿੰਕ ਈਮੇਲ ਕਰੋ
-    .tooltiptext = ਇਹ ਸਫ਼ੇ ਲਈ ਲਿੰਕ ਈਮੇਲ ਕਰਕੇ ਭੇਜੋ
+    .label = ਲਿੰਕ ਨੂੰ ਈਮੇਲ ਕਰੋ
+    .tooltiptext = ਇਹ ਸਫ਼ੇ ਲਈ ਲਿੰਕ ਨੂੰ ਈਮੇਲ ਕਰਕੇ ਭੇਜੋ
 toolbar-button-logins =
     .label = ਪਾਸਵਰਡ
     .tooltiptext = ਆਪਣੇ ਸੰਭਾਲੇ ਹੋਏ ਪਾਸਵਰਡ ਵੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
@@ -817,8 +913,8 @@ toolbar-button-save-page =
 # Variables:
 #  $shortcut (String): keyboard shortcut to open a local file
 toolbar-button-open-file =
-    .label = ਫਾਈਲ ਖੋਲ੍ਹੋ
-    .tooltiptext = ਫਾਈਲ ਨੂੰ ਖੋਲ੍ਹੋ ({ $shortcut })
+    .label = ਫਾਇਲ ਨੂੰ ਖੋਲ੍ਹੋ
+    .tooltiptext = ਫਾਇਲ ਨੂੰ ਖੋਲ੍ਹੋ ({ $shortcut })
 toolbar-button-synced-tabs =
     .label = ਸਿੰਕ ਕੀਤੀਆਂ ਟੈਬਾਂ
     .tooltiptext = ਹੋਰ ਡਿਵਾਈਸਾਂ ਤੋਂ ਟੈਬਾਂ ਨੂੰ ਵੇਖਾਓ
@@ -865,7 +961,7 @@ popups-infobar-dont-show-message =
     .label = ਜਦੋਂ ਪੋਪਅੱਪ ਬਲਾਕ ਕੀਤੇ ਹੋਣ ਤਾਂ ਇਹ ਸੁਨੇਹਾ ਨਾ ਵੇਖਾਓ
     .accesskey = D
 edit-popup-settings =
-    .label = …ਪੌਪ-ਅੱਪ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
+    .label = …ਪੌਪ-ਅੱਪ ਸੈਟਿੰਗਾਂ ਦਾ ਇੰਤਜ਼ਾਮ ਕਰੋ
     .accesskey = M
 picture-in-picture-hide-toggle =
     .label = ਤਸਵੀਰ-ਚ-ਤਸਵੀਰ ਬਦਲਣ ਨੂੰ ਲੁਕਾਓ
@@ -937,6 +1033,9 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = ਪ੍ਰਾਈਵੇਟ ਬਰਾਊਜ਼ਿੰਗ
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -945,38 +1044,47 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = ਡਾਟਾ ਰੋਕੂ
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = ਤੁਹਾਡਾ ਸੰਗਠਨ { $agentName } ਨੂੰ ਡਾਟਾ ਨੁਕਸਾਨ ਤੋਂ ਰੋਕਣ ਲਈ ਸੁਰੱਖਿਆ ਲਈ ਵਰਤਦੀ ਹੈ। <a data-l10n-name="info">ਹੋਰ ਜਾਣੋ</a>
+content-analysis-panel-text-styled = ਤੁਹਾਡਾ ਸੰਗਠਨ <b>{ $agentName }</b> ਨੂੰ ਡਾਟਾ ਨੁਕਸਾਨ ਤੋਂ ਰੋਕਣ ਲਈ ਸੁਰੱਖਿਆ ਲਈ ਵਰਤਦਾ ਹੈ। <a data-l10n-name="info">ਹੋਰ ਜਾਣੋ</a>
 
 ## Unified extensions (toolbar) button
 
 unified-extensions-button =
-    .label = ਇਕਟੈਨਸ਼ਨਾਂ
-    .tooltiptext = ਇਕਟੈਨਸ਼ਨਾਂ
+    .label = ਇਕਸਟੈਨਸ਼ਨਾਂ
+    .tooltiptext = ਇਕਸਟੈਨਸ਼ਨਾਂ
 
 ## Unified extensions button when permission(s) are needed.
 ## Note that the new line is intentionally part of the tooltip.
 
 unified-extensions-button-permissions-needed =
-    .label = ਇਕਸਟੈਨਸ਼ਨ
+    .label = ਇਕਸਟੈਨਸ਼ਨਾਂ
     .tooltiptext =
-        Extensions
+        ਇਕਸਟੈਨਸ਼ਨਾਂ
         ਇਜਾਜ਼ਤਾਂ ਚਾਹੀਦੀਆਂ ਹਨ
 
 ## Unified extensions button when some extensions are quarantined.
 ## Note that the new line is intentionally part of the tooltip.
 
 unified-extensions-button-quarantined =
-    .label = ਇਕਸਟੈਨਸ਼ਨ
+    .label = ਇਕਸਟੈਨਸ਼ਨਾਂ
     .tooltiptext =
         ਇਕਸਟੈਨਸ਼ਨਾਂ
         ਕੁਝ ਇਕਸਟੈਨਸ਼ਨਾਂ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ
 
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = ਇਕਸਟੈਨਸ਼ਨ
+    .tooltiptext =
+        ਇਕਸਟੈਨਸ਼ਨਾਂ
+        ਕੁਝ ਇਕਸਟੈਨਸ਼ਨਾਂ ਅਸਮਰੱਥ ਹਨ
+
 ## Private browsing reset button
 
 reset-pbm-toolbar-button =
-    .label = ਪ੍ਰਾਈਵੇਟ ਸ਼ੈਸ਼ਨ ਸਮਾਪਤ ਕਰੋ
-    .tooltiptext = ਪ੍ਰਾਈਵੇਟ ਸ਼ੈਸ਼ਨ ਸਮਾਪਤ ਕਰੋ
-reset-pbm-panel-heading = ਤੁਹਾਡਾ ਪ੍ਰਾਈਵੇਟ ਸ਼ੈਸ਼ਨ ਸਮਾਪਤ ਕਰਨਾ ਹੈ?
+    .label = ਪ੍ਰਾਈਵੇਟ ਸ਼ੈਸ਼ਨ ਨੂੰ ਸਮਾਪਤ ਕਰੋ
+    .tooltiptext = ਪ੍ਰਾਈਵੇਟ ਸ਼ੈਸ਼ਨ ਨੂੰ ਸਮਾਪਤ ਕਰੋ
+reset-pbm-panel-heading = ਆਪਣੇ ਪ੍ਰਾਈਵੇਟ ਸ਼ੈਸ਼ਨ ਨੂੰ ਸਮਾਪਤ ਕਰਨਾ ਹੈ?
 reset-pbm-panel-description = ਸਾਰੀਆਂ ਪ੍ਰਾਈਵੇਟ ਟੈਬਾਂ ਬੰਦ ਕਰੋ ਅਤੇ ਅਤੀਤ, ਕੂਕੀਜ਼ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟਾ ਹਟਾ ਦਿਓ।
 reset-pbm-panel-always-ask-checkbox =
     .label = ਹਮੇਸ਼ਾਂ ਮੈਨੂੰ ਪੁੱਛੋ
@@ -1010,6 +1118,7 @@ firefox-relay-offer-legal-notice = “ਈਮੇਲ ਮਾਸਕ ਵਰਤੋਂ�
 popup-notification-addon-install-unsigned =
     .value = (ਨਾ-ਜਾਂਚ ਕੀਤੇ)
 popup-notification-xpinstall-prompt-learn-more = ਐਡ-ਆਨਾਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਇੰਸਟਾਲ ਕਰਨ ਬਾਰੇ ਹੋਰ ਜਾਣੋ
+popup-notification-xpinstall-prompt-block-url = ਵੇਰਵਿਆਂ ਨੂੰ ਵੇਖਾਓ
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = ਪ੍ਰਾਈਵੇਟ ਵਿੰਡੋ ਵਿੱਚ ਚਲਾਓ
@@ -1032,7 +1141,7 @@ popup-warning-button =
     .label =
         { PLATFORM() ->
             [windows] ਚੋਣਾਂ
-           *[other] ਮੇਰੀ ਪਸੰਦ
+           *[other] ਮੇਰੀਆਂ ਪਸੰਦਾਂ
         }
     .accesskey =
         { PLATFORM() ->

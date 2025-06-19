@@ -28,7 +28,8 @@ add_task(
 
     info("Test pausing on an original source");
     invokeInTab("foo");
-    await waitForPaused(dbg, "original.js");
+    await waitForPausedInOriginalFileAndToggleMapScopes(dbg, "original.js");
+
     assertPausedAtSourceAndLine(dbg, findSource(dbg, "original.js").id, 8);
 
     info("Then stepping into a generated source");
@@ -66,7 +67,66 @@ add_task(
 
     // We can't use the `stepIn` helper as this last step will resume
     // and the helper is expecting to pause again
-    await dbg.actions.stepIn(getThreadContext(dbg));
+    await dbg.actions.stepIn();
     await assertNotPaused(dbg);
   }
 );
+
+/**
+ * Tests that the source tree works with all the various types of sources
+ * coming from the integration test page.
+ *
+ * Also assert a few extra things on sources with query strings:
+ *  - they can be pretty printed,
+ *  - quick open matches them,
+ *  - you can set breakpoint on them.
+ */
+add_task(async function testSourceTreeOnTheIntegrationTestPage() {
+  const dbg = await initDebuggerWithAbsoluteURL("about:blank");
+
+  await navigateToAbsoluteURL(
+    dbg,
+    TEST_URL,
+    "index.html",
+    "script.js",
+    "log-worker.js"
+  );
+
+  info("Select the source and add a breakpoint");
+  await selectSource(dbg, "script.js");
+  await addBreakpoint(dbg, "script.js", 7);
+
+  info("Trigger the breakpoint and wait for the debugger to pause");
+  invokeInTab("nonSourceMappedFunction");
+  await waitForPaused(dbg);
+
+  info("Resume and remove the breakpoint");
+  await resume(dbg);
+  await removeBreakpoint(dbg, findSource(dbg, "script.js").id, 7);
+
+  info("Trigger the function again and check the debugger does not pause");
+  invokeInTab("nonSourceMappedFunction");
+  await wait(500);
+  assertNotPaused(dbg);
+
+  info("[worker] Select the source and add a breakpoint");
+  await selectSource(dbg, "log-worker.js");
+  await addBreakpoint(dbg, "log-worker.js", 2);
+
+  info("[worker] Trigger the breakpoint and wait for the debugger to pause");
+  invokeInTab("invokeLogWorker");
+  await waitForPaused(dbg);
+
+  info("[worker] Resume and remove the breakpoint");
+  await resume(dbg);
+  await removeBreakpoint(dbg, findSource(dbg, "log-worker.js").id, 2);
+
+  info(
+    "[worker] Trigger the function again and check the debugger does not pause"
+  );
+  invokeInTab("invokeLogWorker");
+  await wait(500);
+  assertNotPaused(dbg);
+
+  dbg.toolbox.closeToolbox();
+});

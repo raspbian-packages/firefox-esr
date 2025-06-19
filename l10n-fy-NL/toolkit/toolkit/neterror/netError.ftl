@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = Blokkearre side
 neterror-captive-portal-page-title = Oanmelde by netwurk
 neterror-dns-not-found-title = Server net fûn
 neterror-malformed-uri-page-title = Unjildige URL
+general-body-title = Wês foarsichtich. Eatwat sjocht der net goed út.
 
 ## Error page actions
 
@@ -41,6 +42,8 @@ neterror-generic-error = { -brand-short-name } kin om ien oft oare reden dizze s
 neterror-load-error-try-again = Miskien is de website tydlik net beskikber. Probearje it letter nochris.
 neterror-load-error-connection = As jo gjin inkelde side lade kinne, kontrolearje dan de netwurkferbining fan jo kompjûter.
 neterror-load-error-firewall = As jo kompjûter of netwurk befeilige wurdt troch in firewall of proxy, soargje der dan foar dat { -brand-short-name } tagong hat ta it web.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = As jo in lokale netwurkside probearje te laden, kontrolearje dan yn de privacy- en befeiligingsynstellingen fan macOS of { -brand-short-name } tastimming hat foar in Lokaal netwurk.
 neterror-captive-portal = Jo moatte jo oanmelde by dit netwurk eardat jo tagong krije ta it ynternet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +67,7 @@ neterror-dns-not-found-trr-offline = Jo binne net ferbûn mei it ynternet.
 neterror-dns-not-found-trr-unknown-host2 = Dizze website is net fûn troch { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Der is in probleem mei { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = Unjildige URL.
+neterror-dns-not-found-system-sleep = Systeem is yn sliepmodus.
 neterror-dns-not-found-trr-unknown-problem = Unferwachte probleem.
 
 ## Native fallback specific messages
@@ -147,3 +151,11 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = As jo net bekend binne mei 
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> hat in befeiligingsbelied mei de namme HTTP Strict Transport Security (HSTS), wat betsjut dat { -brand-short-name } allinnich in befeilige ferbining dêrmei meitsje kin. Jo kinne gjin útsûndering tafoegje om dizze website te besykjen.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Wierskynlik neat, omdat der wierskynlik in probleem mei de website sels is.
+certerror-blocked-by-corp-headers-description = Somtiden stelle websites beskerming foar harsels en minsken lykas jo tsjin net-winske ynteraksjes mei oare websites.
+certerror-coop-learn-more = Mear ynfo oer Cross Origin Opener-belied (COOP)
+certerror-coep-learn-more = Mear ynfo oer Cross Origin Embedder-belied (COEP)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Flaterkoade: { $responsestatus } { $responsestatustext }

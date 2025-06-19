@@ -2,21 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-## The following feature name must be treated as a brand.
-##
-## They cannot be:
-## - Transliterated.
-## - Translated.
-##
-## Declension should be avoided where possible, leaving the original
-## brand unaltered in prominent UI positions.
-##
-## For further details, consult:
-## https://mozilla-l10n.github.io/styleguides/mozilla_general/#brands-copyright-and-trademark
-
-##
-
 # This is the title of the page
 about-logging-title = Acerca del registro
 about-logging-page-title = Administrador de registros
@@ -41,16 +26,33 @@ about-logging-logging-to-profiler = Registrar en el { -profiler-brand-name }
 about-logging-no-log-modules = Ninguno
 about-logging-no-log-file = Ninguno
 about-logging-logging-preset-selector-text = Registro preestablecido:
+about-logging-with-profiler-stacks-checkbox = Habilitar seguimientos de pila para mensajes de registro
 
 ## Logging presets
 
 about-logging-preset-networking-label = Red
 about-logging-preset-networking-description = Módulos de registro para diagnosticar problemas de red
+about-logging-preset-networking-cookie-label = Cookies
+about-logging-preset-networking-cookie-description = Módulos de registro para diagnosticar problemas de cookies
+about-logging-preset-networking-websocket-label = WebSockets
+about-logging-preset-networking-websocket-description = Módulos de registro para diagnosticar problemas de WebSocket
+about-logging-preset-networking-http3-label = HTTP/3
+about-logging-preset-networking-http3-description = Módulos de registro para diagnosticar problemas de HTTP/3 y QUIC
+about-logging-preset-networking-http3-upload-speed-label = Velocidad de carga HTTP/3
+about-logging-preset-networking-http3-upload-speed-description = Módulos de registro para diagnosticar problemas de velocidad de carga HTTP/3
 about-logging-preset-media-playback-label = Reproducción multimedia
 about-logging-preset-media-playback-description = Módulos de registro para diagnosticar problemas de reproducción de medios (no problemas de videoconferencia)
+about-logging-preset-webrtc-label = WebRTC
+about-logging-preset-webrtc-description = Módulos de registro para diagnosticar llamadas WebRTC
+about-logging-preset-webgpu-label = WebGPU
+about-logging-preset-webgpu-description = Módulos de registro para diagnosticar problemas de WebGPU
+about-logging-preset-gfx-label = Gráficas
+about-logging-preset-gfx-description = Módulos de registro para diagnosticar problemas gráficos
+# This is specifically "Microsoft Windows". Microsoft normally doesn't localize it, and we should follow their convention here.
+about-logging-preset-windows-label = Windows
+about-logging-preset-windows-description = Módulos de registro para diagnosticar problemas específicos de Microsoft Windows
 about-logging-preset-custom-label = Personalizado
 about-logging-preset-custom-description = Módulos de registro seleccionados manualmente
-
 # Error handling
 about-logging-error = Error:
 
@@ -64,5 +66,4 @@ about-logging-unknown-profiler-preset = Valor preestablecido de perfilador desco
 about-logging-unknown-option = Opción de about:loggin desconocida “{ $k }“
 about-logging-configuration-url-ignored = URL de configuración ignorada
 about-logging-file-and-profiler-override = No se puede forzar la salida a un archivo y anular las opciones del perfilador al mismo tiempo
-
 about-logging-configured-via-url = Opción configurada vía URL

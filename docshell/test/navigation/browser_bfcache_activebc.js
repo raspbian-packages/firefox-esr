@@ -24,7 +24,7 @@ add_task(async function () {
   // Load Site 1
   const tab = await BrowserTestUtils.openNewForegroundTab(gBrowser, SITE_URL_1);
 
-  BrowserTestUtils.loadURIString(tab.linkedBrowser, SITE_URL_2);
+  BrowserTestUtils.startLoadingURIString(tab.linkedBrowser, SITE_URL_2);
   // Navigated to Site 2 in the same tab
   await BrowserTestUtils.browserLoaded(tab.linkedBrowser);
 

@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Invia ai siti web un segnale “Do Not Track” per chiedere di non effettuare alcun tracciamento
+do-not-track-removal = Il segnale “Do Not Track” non è più supportato
 do-not-track-description2 =
     .label = Invia ai siti web una richiesta “Do Not Track”
     .accesskey = b
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Apri automaticamente { -brand-short-name } quando si avvia il computer
     .accesskey = A
 windows-launch-on-login-disabled = Questa opzione è stata disattivata in Windows. Per modificarla, apri <a data-l10n-name="startup-link">App di avvio</a> in Impostazioni.
+windows-launch-on-login-profile-disabled = Attiva questa preferenza selezionando “{ profile-manager-use-selected.label }” nella finestra “Scelta del profilo utente”.
 startup-restore-warn-on-quit =
     .label = Avvisa quando si chiude il browser
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Apri link in schede invece di nuove finestre
     .accesskey = A
+ask-on-close-multiple-tabs =
+    .label = Chiedi prima di chiudere più schede
+    .accesskey = d
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Chiedi prima di uscire con { $quitKey }
+    .accesskey = u
 confirm-on-close-multiple-tabs =
     .label = Chiedi conferma quando si chiudono più schede
     .accesskey = d
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = Siti che hai salvato oppure visitato
 home-prefs-shortcuts-by-option-sponsored =
     .label = Scorciatoie sponsorizzate
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Consigliati da { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Visualizza suggerimenti di ricerca tra i risultati della barra degli indirizzi
     .accesskey = i
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Mostra i termini di ricerca nella barra degli indirizzi nelle pagine dei risultati
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = Carte di credito
 sync-currently-syncing-payment-methods = Metodi di pagamento
 sync-currently-syncing-addons = Componenti aggiuntivi
 sync-currently-syncing-settings = Impostazioni
+sync-manage-options =
+    .label = Gestisci sincronizzazione
+    .accesskey = z
 sync-change-options =
     .label = Cambia…
     .accesskey = b
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = Impostazioni
     .tooltiptext = Impostazioni modificate nei pannelli “Generale” e “Privacy e sicurezza”
     .accesskey = z
+sync-choose-what-to-sync-dialog4 =
+    .title = Scelta elementi da sincronizzare
+    .style = min-width: 36em;
+    .buttonlabelaccept = Salva
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Disconnetti…
+    .buttonaccesskeyextra2 = D
 
 ## The device name controls.
 
@@ -1285,19 +1311,40 @@ collection-description = Cerchiamo di garantire agli utenti la possibilità di s
 collection-privacy-notice = Informativa sulla privacy
 collection-health-report-telemetry-disabled = È stato revocato il permesso a { -vendor-short-name } di raccogliere dati tecnici e relativi all’interazione con il browser. Tutti i dati esistenti verranno rimossi entro 30 giorni.
 collection-health-report-telemetry-disabled-link = Ulteriori informazioni
+collection-usage-ping =
+    .label = Invia ping di utilizzo giornaliero a { -vendor-short-name }
+    .accesskey = u
+collection-usage-ping-description = Questo consente a { -vendor-short-name } di stimare il numero di utenti attivi.
+collection-health-report2 =
+    .label = Invia dati tecnici e di interazione a { -vendor-short-name }
+    .accesskey = v
 collection-health-report =
     .label = Consenti a { -brand-short-name } di inviare a { -vendor-short-name } dati tecnici e relativi all’interazione con il browser
     .accesskey = v
 collection-health-report-link = Ulteriori informazioni
+collection-health-report-description = Questo ci aiuta a migliorare caratteristiche, prestazioni e stabilità di { -brand-product-name }.
+collection-studies2 =
+    .label = Installa e conduci studi
+collection-studies-description = Prova funzionalità e idee prima che diventino disponibili per tutti.
 collection-studies =
     .label = Consenti a { -brand-short-name } di installare e condurre studi
 collection-studies-link = Visualizza studi di { -brand-short-name }
+addon-recommendations2 =
+    .label = Consenti consigli personalizzati sulle estensioni
+addon-recommendations-description = Ricevi consigli sulle estensioni per migliorare la tua esperienza di navigazione.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = L’invio dei dati è stato disattivato nella configurazione utilizzata per questa versione.
+collection-backlogged-crash-reports2 =
+    .label = Invia automaticamente rapporti sugli arresti anomali
+    .accesskey = u
+collection-backlogged-crash-reports-description = Questo aiuta { -vendor-short-name } a diagnosticare e risolvere problemi con il browser. Le segnalazioni possono includere dati personali o sensibili.
 addon-recommendations =
     .label = Consenti a { -brand-short-name } di visualizzare suggerimenti personalizzati relativi alle estensioni
 addon-recommendations-link = Ulteriori informazioni
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
-collection-health-report-disabled = L’invio dei dati è stato disattivato nella configurazione utilizzata per questa build
+collection-health-report-disabled = L’invio dei dati è stato disattivato nella configurazione utilizzata per questa versione
 collection-backlogged-crash-reports-with-link = Consenti a { -brand-short-name } di inviare segnalazioni di arresto anomalo in sospeso <a data-l10n-name="crash-reports-link">Ulteriori informazioni</a>
     .accesskey = C
 collection-backlogged-crash-reports = Consenti a { -brand-short-name } di inviare segnalazioni di arresto anomalo in sospeso
@@ -1360,13 +1407,20 @@ space-alert-under-5gb-message2 = <strong>Lo spazio a disposizione di { -brand-sh
 
 httpsonly-header = Modalità solo HTTPS
 httpsonly-description = HTTPS garantisce una connessione sicura e crittata tra { -brand-short-name } e i siti web visitati. La maggior parte dei siti web supporta HTTPS e, quando la modalità solo HTTPS è attiva, { -brand-short-name } si connetterà automaticamente con HTTPS.
+httpsonly-description2 = { -brand-short-name } crea connessioni sicure e crittate ai siti che visiti. Quando la modalità solo HTTPS è attiva, { -brand-short-name } ti avviserà se una connessione non è sicura.
 httpsonly-learn-more = Ulteriori informazioni
 httpsonly-radio-enabled =
     .label = Attiva in tutte le finestre
+httpsonly-radio-enabled2 =
+    .label = Utilizza solo HTTPS in tutte le finestre
 httpsonly-radio-enabled-pbm =
     .label = Attiva solo in finestre anonime
+httpsonly-radio-enabled-pbm2 =
+    .label = Utilizza solo HTTPS in finestre anonime
 httpsonly-radio-disabled =
     .label = Non attivare
+httpsonly-radio-disabled2 =
+    .label = Prova prima HTTPS, ma consenti connessioni non sicure
 
 ## DoH Section
 
@@ -1432,3 +1486,4 @@ preferences-doh-manage-exceptions =
 desktop-folder-name = Desktop
 downloads-folder-name = Download
 choose-download-folder-title = Selezionare la cartella di download:
+

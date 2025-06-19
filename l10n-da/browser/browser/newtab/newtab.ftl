@@ -8,11 +8,18 @@
 newtab-page-title = Nyt faneblad
 newtab-settings-button =
     .title = Tilpas siden Nyt faneblad
+newtab-personalize-settings-icon-label =
+    .title = Tilpas nyt faneblad
+    .aria-label = Indstillinger
+newtab-settings-dialog-label =
+    .aria-label = Indstillinger
 newtab-personalize-icon-label =
     .title = Tilpas nyt faneblad
     .aria-label = Tilpas nyt faneblad
 newtab-personalize-dialog-label =
     .aria-label = Tilpas
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Gem til { -pocket-brand-name }
 newtab-menu-delete-pocket = Slet fra { -pocket-brand-name }
 newtab-menu-archive-pocket = Arkiver i { -pocket-brand-name }
 newtab-menu-show-privacy-info = Vores sponsorer og dit privatliv
+newtab-menu-about-fakespot = Om { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Bloker
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Stop med at følge emne
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -201,6 +215,8 @@ newtab-section-header-recent-activity = Seneste aktivitet
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Anbefalet af { $provider }
 newtab-section-header-stories = Tankevækkende historier
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Dagens valg til dig
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -232,8 +248,26 @@ newtab-pocket-cta-button = Hent { -pocket-brand-name }
 newtab-pocket-cta-text = Gem dine yndlingshistorier i { -pocket-brand-name } og hav dem altid ved hånden.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } er en del af { -brand-product-name }-familien
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Gem
 newtab-pocket-saved = Gemt
+
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
+# Clicking the thumbs up button for this story will result in more stories like this one being recommended
+newtab-pocket-thumbs-up-tooltip =
+    .title = Mere som dette
+# Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
+newtab-pocket-thumbs-down-tooltip =
+    .title = Ikke noget for mig
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Tak. Din tilbagemelding hjælper os med at forbedre dit feed.
+newtab-toast-thumbs-up-or-down = Tak. Din tilbagemelding hjælper os med at forbedre dit feed.
+newtab-toast-dismiss-button =
+    .title = Afvis
+    .aria-label = Afvis
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
 
@@ -295,6 +329,8 @@ newtab-wallpaper-dark-panda = Rød panda skjult i en skov
 newtab-wallpaper-dark-sky = Udsigt over by med nattehimmel
 newtab-wallpaper-dark-mountain = Bjerglandskab
 newtab-wallpaper-dark-city = Lilla bylandskab
+newtab-wallpaper-dark-fox-anniversary = En ræv på fortovet i nærheden af en skov
+newtab-wallpaper-light-fox-anniversary = En ræv på en græsmark i et tåget bjerglandskab
 
 ## Solid Colors
 
@@ -359,6 +395,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Sponsoreret
 newtab-weather-menu-change-location = Skift sted
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Søg efter sted
+    .aria-label = Søg efter sted
 newtab-weather-change-location-search-input = Søg efter sted
 newtab-weather-menu-weather-display = Visning af vejr
 # Display options are:
@@ -373,7 +412,77 @@ newtab-weather-menu-temperature-option-fahrenheit = Fahrenheit
 newtab-weather-menu-temperature-option-celsius = Celsius
 newtab-weather-menu-change-temperature-units-fahrenheit = Skift til Fahrenheit
 newtab-weather-menu-change-temperature-units-celsius = Skift til Celsius
-newtab-weather-menu-hide-weather = Skjul vejr på nyt faneblad
+newtab-weather-menu-hide-weather = Skjul vejr på Nyt faneblad
 newtab-weather-menu-learn-more = Læs mere
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Vejrdata er ikke tilgængelige lige nu.
+
+## Topic Labels
+
+newtab-topic-label-business = Forretning
+newtab-topic-label-career = Karriere
+newtab-topic-label-education = Uddannelse
+newtab-topic-label-arts = Underholdning
+newtab-topic-label-food = Mad
+newtab-topic-label-health = Sundhed
+newtab-topic-label-hobbies = Spil
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Penge
+newtab-topic-label-society-parenting = Forældreskab
+newtab-topic-label-government = Politik
+newtab-topic-label-education-science = Videnskab
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Lifehacks
+newtab-topic-label-sports = Sport
+newtab-topic-label-tech = Teknologi
+newtab-topic-label-travel = Rejser
+newtab-topic-label-home = Hus og have
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Vælg emner for at finjustere dit feed
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Vælg to eller flere emner. Vores ekspertkuratorer prioriterer historier målrettet dine interesser. Opdater når som helst.
+newtab-topic-selection-save-button = Gem
+newtab-topic-selection-cancel-button = Annuller
+newtab-topic-selection-button-maybe-later = Måske senere
+newtab-topic-selection-privacy-link = Lær, hvordan vi beskytter og håndterer data
+newtab-topic-selection-button-update-interests = Opdater dine interesser
+newtab-topic-selection-button-pick-interests = Vælg dine interesser
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Følg
+newtab-section-following-button = Følger
+newtab-section-unfollow-button = Stop med at følge
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Bloker
+newtab-section-blocked-button = Blokeret
+newtab-section-unblock-button = Fjern blokering
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Er du sikker på, at du vil blokere dette afsnit
+newtab-section-confirm-block-section-p2 = Det blokerede afsnit vil ikke længere blive vist i dit feed.
+newtab-section-block-section-button = Bloker dette afsnit
+newtab-section-cancel-button = Ikke nu
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Emner
+newtab-section-mangage-topics-followed-topics-empty-state = Du har ikke fulgt nogle emner endnu.
+newtab-section-mangage-topics-blocked-topics-subtitle = Blokerede emner
+newtab-section-mangage-topics-blocked-topics-empty-state = Du har ikke blokeret nogen emner endnu.

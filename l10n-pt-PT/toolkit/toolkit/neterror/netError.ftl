@@ -41,6 +41,8 @@ neterror-generic-error = O { -brand-short-name } não conseguiu carregar a pági
 neterror-load-error-try-again = O site pode estar temporariamente indisponível ou demasiado ocupado. Tente novamente dentro de alguns momentos.
 neterror-load-error-connection = Se não conseguir carregar quaisquer páginas, verifique a ligação do seu computador à rede.
 neterror-load-error-firewall = Se o seu computador ou rede estiverem protegidos por uma firewall ou proxy, certifique-se de que o { -brand-short-name } tem permissão para aceder à Web.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Se está a tentar carregar uma página de rede local, verifique se o { -brand-short-name } tem permissões de Rede Local nas definições de Privacidade e Segurança do macOS.
 neterror-captive-portal = Tem de iniciar sessão nesta rede antes de poder aceder à Internet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +66,7 @@ neterror-dns-not-found-trr-offline = Não se encontra ligado à Internet.
 neterror-dns-not-found-trr-unknown-host2 = Este site não foi encontrado por { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Houve um problema com { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = URL inválido.
+neterror-dns-not-found-system-sleep = O sistema está no modo de hibernação.
 neterror-dns-not-found-trr-unknown-problem = Problema inesperado.
 
 ## Native fallback specific messages
@@ -147,3 +150,8 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Se não estiver familiariza
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> tem uma política de segurança chamada HTTP Strict Transport Security (HSTS), que significa que o { -brand-short-name } apenas pode ligar-se em segurança. Não pode adicionar uma exceção para visitar este site.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Provavelmente nada, já que é provável que exista um problema com o próprio site.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Código de erro: { $responsestatus } { $responsestatustext }

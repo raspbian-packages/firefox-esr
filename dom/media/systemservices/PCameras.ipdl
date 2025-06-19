@@ -54,15 +54,15 @@ async protocol PCameras
   manager PBackground;
 
 child:
+  async CaptureEnded(int streamId);
   // transfers ownership of |buffer| from parent to child
-  async DeliverFrame(CaptureEngine capEngine, int streamId,
-                     Shmem buffer, VideoFrameProperties props);
+  async DeliverFrame(int streamId, Shmem buffer, VideoFrameProperties props);
   async DeviceChange();
   async ReplyNumberOfCaptureDevices(int deviceCount);
   async ReplyNumberOfCapabilities(int capabilityCount);
   async ReplyAllocateCapture(int captureId);
   async ReplyGetCaptureCapability(VideoCaptureCapability cap);
-  async ReplyGetCaptureDevice(nsCString device_name, nsCString device_id, bool scary);
+  async ReplyGetCaptureDevice(nsCString device_name, nsCString device_id, bool scary, bool placeholder);
   async ReplyFailure();
   async ReplySuccess();
   async __delete__();

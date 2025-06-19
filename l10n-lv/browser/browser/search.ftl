@@ -9,7 +9,7 @@
 ## $location-url (String) - the URL of the OpenSearch engine that was attempted to be installed.
 
 opensearch-error-duplicate-title = Instalēšanas kļūda
-opensearch-error-duplicate-desc = { -brand-short-name } nevar pievienot jaunu meklētāju no "{ $location-url }", jo šāds meklētājs jau ir pievienots.
+opensearch-error-duplicate-desc = { -brand-short-name } nevar pievienot jaunu meklēšanas spraudni no "{ $location-url }", jo jau pastāv dzinis ar šādu nosaukumu.
 opensearch-error-format-title = Nederīgs formāts
 opensearch-error-format-desc = { -brand-short-name } nevarēja instalēt meklētāju no: { $location-url }
 opensearch-error-download-title = Lejupielādes kļūda
@@ -33,3 +33,8 @@ searchbar-icon =
 removed-search-engine-message = <strong>Jūsu noklusējuma meklētājs ir mainīts.</strong> { $oldEngine } vairs nav pieejams kā noklusējuma { -brand-short-name } meklētājs. { $newEngine } tagad ir jūsu noklusējuma meklētājs. Lai pārslēgtos uz citu noklusējuma meklētāju, atveriet iestatījumus. <label data-l10n-name="remove-search-engine-article">Uzziniet vairāk</label>
 removed-search-engine-message2 = <strong>Jūsu noklusējuma meklētājs ir mainīts.</strong> { $oldEngine } vairs nav pieejams kā noklusējuma { -brand-short-name } meklētājs. { $newEngine } tagad ir jūsu noklusējuma meklētājs. Lai pārslēgtos uz citu noklusējuma meklētāju, atveriet iestatījumus.
 remove-search-engine-button = Labi
+
+## Infobar shown when user is prompted to install search engine.
+## Variables
+## $engineName (String) - the name of the search engine to install.
+

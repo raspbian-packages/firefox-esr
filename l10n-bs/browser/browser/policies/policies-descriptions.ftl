@@ -119,6 +119,7 @@ policy-Permissions2 = Konfigurirajte dozvole za kameru, mikrofon, lokaciju, obav
 policy-PictureInPicture = Omogućite ili onemogućite Slika u slici.
 policy-PopupBlocking = Dozvolite određenim web stranicama da prikazuju iskačuće prozore prema zadanim postavkama.
 policy-Preferences = Postavite i zaključajte vrijednost za podskup preferencija.
+policy-PrivateBrowsingModeAvailability = Podesite dostupnost režima privatnog pretraživanja.
 policy-PromptForDownloadLocation = Pitajte gdje da sačuvate datoteke prilikom preuzimanja.
 policy-Proxy = Konfigurišite postavke proxyja.
 policy-RequestedLocales = Postavite listu traženih lokaliteta za aplikaciju prema željenom redoslijedu.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Štampajte pomoću sistemskog dijaloga za štampan
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Blokirajte posjećivanje web stranica. Pogledajte dokumentaciju za više detalja o formatu.
 policy-Windows10SSO = Dozvolite Windows jednokratnu prijavu za Microsoft, poslovne i školske račune.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Dozvolite jedinstvenu prijavu za Microsoft Entra račune.

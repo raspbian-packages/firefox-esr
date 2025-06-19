@@ -3,18 +3,26 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = Bagong Tab
-
 tabbrowser-menuitem-close-tab =
     .label = Isara ang Tab
 tabbrowser-menuitem-close =
     .label = Isara
-
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Isara ang tab
+           *[other] Isara mga ang { $tabCount } tab
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -63,6 +71,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Patakbuhin ang mga { $tabCount } tab
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -73,6 +84,10 @@ tabbrowser-confirm-close-tabs-button = Isara ang mga Tab
 
 ## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
 ## Windows does not show a prompt on quit when using the keyboard shortcut by default.
+
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
 
 
 ## Confirmation dialog when opening multiple tabs simultaneously
@@ -93,13 +108,15 @@ tabbrowser-confirm-caretbrowsing-title = Caret Browsing
 tabbrowser-confirm-caretbrowsing-message = Ang pagpindot sa F7 ay nagbubukas o nagsasara ng Caret Browsing. Naglalagay ang feature na ito ng isang nagagalaw na cursor sa mga web page, para pwede kang makapili ng text gamit ang keyboard. Gusto mo bang buksan ang Caret Browsing?
 tabbrowser-confirm-caretbrowsing-checkbox = Huwag kailanman ipakita ang dialog box na ito.
 
+## Confirmation dialog for closing all duplicate tabs
+
+
 ##
 
 # Variables:
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Payagan ang mga katulad nitong notification mula sa { $domain } na dalhin ka sa kanilang tab
-
 tabbrowser-customizemode-tab-title = I-customize ang { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -127,4 +144,14 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Ilista ang lahat ng { $tabCount } na tab
 
 ## Tab manager menu buttons
+
+
+## Tab Groups
+
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+
+## Open/saved tab group context menu
 

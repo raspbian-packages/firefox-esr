@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } privát böngészés
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } privát böngészés
+    .data-title-default-with-profile = { $profile-name } – { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } – { -brand-full-name } privát böngészés
+    .data-content-title-default = { $content-title } – { -brand-full-name }
+    .data-content-title-private = { $content-title } – { -brand-full-name } privát böngészés
+    .data-content-title-default-with-profile = { $content-title } – { $profile-name } – { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } – { $profile-name } – { -brand-full-name } privát böngészés
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } – privát böngészés
+    .data-title-default-with-profile = { $profile-name } – { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } – { -brand-full-name } – privát böngészés
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } – privát böngészés
+    .data-content-title-default-with-profile = { $content-title } – { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } – { $profile-name } – privát böngészés
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -309,6 +367,10 @@ quickactions-cmd-viewsource = forrás megtekintése, forrás, forráskód
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = További információ a gyors műveletekről
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Nyomja meg a Tabot a kiválasztáshoz:
 
 ## Bookmark Panel
 
@@ -550,6 +612,8 @@ urlbar-go-button =
     .tooltiptext = Ugrás a címmezőben levő címre
 urlbar-page-action-button =
     .tooltiptext = Oldalműveletek
+urlbar-revert-button =
+    .tooltiptext = A cím megjelenítése a címmezőben
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -610,6 +674,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = { $engine } keresés
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } – { $localSearchMode } keresés
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } – Keresés ezzel: { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Válasszon keresőszolgáltatást
+urlbar-searchmode-bookmarks =
+    .label = Könyvjelzők
+urlbar-searchmode-tabs =
+    .label = Lapok
+urlbar-searchmode-history =
+    .label = Előzmények
+urlbar-searchmode-actions =
+    .label = Műveletek
+urlbar-searchmode-exit-button =
+    .tooltiptext = Bezárás
+urlbar-searchmode-popup-description = Ezúttal keressen a következővel:
+urlbar-searchmode-popup-search-settings = Keresési beállítások
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, válasszon keresőszolgáltatást
+    .tooltiptext = { $engine }, válasszon keresőszolgáltatást
+urlbar-searchmode-button-no-engine =
+    .label = Nincs gyorsparancs kiválasztva, válasszon egyet
+    .tooltiptext = Nincs gyorsparancs kiválasztva, válasszon egyet
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -619,6 +715,12 @@ urlbar-result-action-search-bookmarks = Könyvjelzők keresése
 urlbar-result-action-search-history = Előzmények keresése
 urlbar-result-action-search-tabs = Lapok keresése
 urlbar-result-action-search-actions = Keresési műveletek
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Váltás erre: { $group }
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = { $group } megnyitása
 
 ## Labels shown above groups of urlbar results
 
@@ -709,7 +811,7 @@ bookmarks-menu-button =
 bookmarks-other-bookmarks-menu =
     .label = Más könyvjelzők
 bookmarks-mobile-bookmarks-menu =
-    .label = Mobil könyvjelzők
+    .label = Mobilos könyvjelzők
 
 ## Variables:
 ##   $isVisible (boolean): if the specific element (e.g. bookmarks sidebar,
@@ -932,6 +1034,9 @@ data-reporting-notification-button =
     .accesskey = v
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Privát böngészés
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Privát böngészés
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -940,7 +1045,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Adatbiztonság
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = A szervezete a(z) { $agentName } eszközt használja az adatvesztés elleni védelemhez. <a data-l10n-name="info">További tudnivalók</a>
+content-analysis-panel-text-styled = A szervezete a(z) <b>{ $agentName }</b> eszközt használja az adatvesztés elleni védelemhez. <a data-l10n-name="info">További tudnivalók</a>
 
 ## Unified extensions (toolbar) button
 
@@ -965,6 +1070,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Kiegészítők
         Egyes kiegészítők nem engedélyezettek
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Kiegészítők
+    .tooltiptext =
+        Kiegészítők
+        Egyes kiegészítők le vannak tiltva
 
 ## Private browsing reset button
 
@@ -1005,6 +1119,7 @@ firefox-relay-offer-legal-notice = Az „E-mail-maszk használata” gombra katt
 popup-notification-addon-install-unsigned =
     .value = (Ellenőrizetlen)
 popup-notification-xpinstall-prompt-learn-more = Tudjon meg többet a bővítmények biztonságos telepítéséről
+popup-notification-xpinstall-prompt-block-url = Részletek megtekintése
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = Futtatás privát ablakokban
@@ -1038,3 +1153,24 @@ popup-warning-button =
 #   $popupURI (String): the URI for the pop-up window
 popup-show-popup-menuitem =
     .label = „{ $popupURI }” megjelenítése
+
+## File-picker crash notification ("FilePickerCrashed.sys.mjs")
+
+file-picker-failed-open = A Windows fájlválasztó párbeszédablaka nem nyitható meg. Nem választható ki fájl vagy mappa.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-failed-save-somewhere = A Windows fájlválasztó párbeszédablaka nem nyitható meg. A fájl ide lesz mentve: { $path }.
+file-picker-failed-save-nowhere = A Windows fájlválasztó párbeszédablaka nem nyitható meg. Nem található alapértelmezett mappa; a fájl nem lesz mentve.
+file-picker-crashed-open = A Windows fájlválasztó párbeszédablaka összeomlott. Nem választható ki fájl vagy mappa.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-crashed-save-somewhere = A Windows fájlválasztó párbeszédablaka összeomlott. A fájl ide lesz mentve: { $path }.
+file-picker-crashed-save-nowhere = A Windows fájlválasztó párbeszédablaka összeomlott. Nem található alapértelmezett mappa; a fájl nem lesz mentve.
+
+# Button used with file-picker-crashed-save-default. Opens the folder in Windows
+# Explorer, with the saved file selected and in focus.
+#
+# The wording here should be consistent with the Windows variant of
+# `downloads-cmd-show-menuitem-2` and similar messages.
+
+file-picker-crashed-show-in-folder =
+    .label = Megjelenítés mappában
+    .accessKey = m

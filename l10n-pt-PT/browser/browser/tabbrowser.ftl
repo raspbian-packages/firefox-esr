@@ -13,6 +13,17 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Fechar separador
+           *[other] Fechar { $tabCount } separadores
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -61,6 +72,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Reproduzir { $tabCount } separadores
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -69,6 +83,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = Fechar { $tabCount } separadores?
 tabbrowser-confirm-close-tabs-button = Fechar separadores
+tabbrowser-ask-close-tabs-checkbox = Questionar antes de fechar múltiplos separadores
 tabbrowser-confirm-close-tabs-checkbox = Confirmar antes de fechar múltiplos separadores
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -91,7 +106,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Fechar janela e sair do { -brand-
 tabbrowser-confirm-close-tabs-with-key-button = Sair de { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Questionar antes de sair com { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Confirmar antes de sair com { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = Sair do { -brand-short-name } ou fechar o separador atual?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Sair de { -brand-short-name }
+       *[other] Sair de { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Fechar separador atual
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -115,6 +144,11 @@ tabbrowser-confirm-caretbrowsing-checkbox = Não voltar a mostrar esta janela.
 
 tabbrowser-confirm-close-duplicate-tabs-title = Atenção
 tabbrowser-confirm-close-duplicate-tabs-text = Iremos manter aberto o último separador ativo
+tabbrowser-confirm-close-all-duplicate-tabs-title = Fechar os separadores duplicados?
+tabbrowser-confirm-close-all-duplicate-tabs-text =
+    Nós iremos fechar os separadores duplicados nesta janela. O último separador
+    ativo irá permanecer aberto.
+tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = Fechar separadores
 
 ##
 
@@ -158,3 +192,85 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Ativar separador
 tabbrowser-manager-close-tab =
     .tooltiptext = Fechar separador
+
+## Tab Groups
+
+tab-group-editor-title-create = Criar grupo de separadores
+tab-group-editor-title-edit = Gerir grupo de separadores
+tab-group-editor-name-label = Nome
+tab-group-editor-name-field =
+    .placeholder = Exemplo: compras
+tab-group-editor-cancel =
+    .label = Cancelar
+    .accesskey = C
+tab-group-menu-header = Grupos de separadores
+tab-context-unnamed-group =
+    .label = Grupo sem nome
+tab-group-name-default = Grupo sem nome
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Adicionar separador ao novo grupo
+           *[other] Add Tabs to New Group
+        }
+    .accesskey = g
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Adicionar separador ao grupo
+           *[other] Add Tabs to Group
+        }
+    .accesskey = g
+tab-group-editor-action-new-tab =
+    .label = Novo separador no grupo
+tab-group-editor-action-new-window =
+    .label = Mover grupo para uma nova janela
+tab-group-editor-action-save =
+    .label = Guardar e fechar grupo
+tab-group-editor-action-ungroup =
+    .label = Desagrupar separadores
+tab-group-editor-action-delete =
+    .label = Eliminar grupo
+tab-group-editor-done =
+    .label = Concluído
+    .accessKey = d
+tab-context-reopen-tab-group =
+    .label = Reabrir grupo de separadores
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Remover do grupo
+           *[other] Remove from Groups
+        }
+    .accesskey = R
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Mover grupo para nova janela
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Mover grupo para esta janela
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Eliminar grupo
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Abrir grupo nesta janela
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Abrir grupo numa nova janela

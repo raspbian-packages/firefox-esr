@@ -98,7 +98,7 @@ extension-controlling-password-saving = <img data-l10n-name="icon"/> <strong>{ $
 extension-controlling-web-notifications = <img data-l10n-name="icon"/> <strong>{ $name }</strong> kontrollerer denne innstillingen.
 # This string is shown to notify the user that Container Tabs
 # are being enabled by an extension.
-extension-controlling-privacy-containers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> krever innholdsfaner.
+extension-controlling-privacy-containers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> krever beholderfaner.
 # This string is shown to notify the user that their content blocking "All Detected Trackers"
 # preferences are being controlled by an extension.
 extension-controlling-websites-content-blocking-all-trackers = <img data-l10n-name="icon"/> <strong>{ $name }</strong> kontrollerer denne innstillingen.
@@ -137,6 +137,7 @@ windows-launch-on-login =
     .label = Åpne { -brand-short-name } automatisk når datamaskinen din starter opp
     .accesskey = p
 windows-launch-on-login-disabled = Denne innstillingen er deaktivert i Windows. For å endre, gå til <a data-l10n-name="startup-link">Oppstartsapper</a> i Systeminnstillinger.
+windows-launch-on-login-profile-disabled = Aktiver denne innstillingen ved å merke av for «{ profile-manager-use-selected.label }» i «Velg brukerprofil»-vinduet.
 startup-restore-warn-on-quit =
     .label = Advarer når du avslutter nettleseren
 disable-extension =
@@ -174,26 +175,26 @@ show-tabs-in-taskbar =
     .label = Vis forhåndsvisning av faner i Windows-oppgavelinjen
     .accesskey = s
 browser-containers-enabled =
-    .label = Aktiver innholdsfaner
+    .label = Aktiver beholderfaner
     .accesskey = k
 browser-containers-learn-more = Les mer
 browser-containers-settings =
     .label = Innstillinger …
     .accesskey = I
-containers-disable-alert-title = Lukk alle innholdsfaner?
+containers-disable-alert-title = Lukk alle beholderfaner?
 
 ## Variables:
 ##   $tabCount (number) - Number of tabs
 
 containers-disable-alert-desc =
     { $tabCount ->
-        [one] Hvis du deaktiverer innholdsfaner nå, vil { $tabCount } innholdsfane bli stengt. Er du sikker på at du vil deaktivere innholdsfaner?
-       *[other] Hvis du deaktiverer innholdsfaner nå, vil { $tabCount } innholdsfaner bli stengt. Er du sikker på at du vil deaktivere innholdsfaner?
+        [one] Hvis du deaktiverer beholderfaner nå, vil { $tabCount } beholderfane bli stengt. Er du sikker på at du vil deaktivere beholderfaner?
+       *[other] Hvis du deaktiverer beholderfaner nå, vil { $tabCount } beholderfaner bli stengt. Er du sikker på at du vil deaktivere beholderfaner?
     }
 containers-disable-alert-ok-button =
     { $tabCount ->
-        [one] Lukk { $tabCount } innholdsfane
-       *[other] Lukk { $tabCount } innholdsfaner
+        [one] Lukk { $tabCount } beholderfane
+       *[other] Lukk { $tabCount } beholderfaner
     }
 
 ##
@@ -204,13 +205,13 @@ containers-remove-alert-title = Fjern denne beholderen?
 #   $count (number) - Number of tabs that will be closed.
 containers-remove-alert-msg =
     { $count ->
-        [one] Hvis du fjerner denne beholdere nå, vil { $count } innholdsfane bli stengt. Er du sikker på at du vil fjerne denne beholderen?
-       *[other] Hvis du fjerner denne beholdere nå, vil { $count } innholdsfaner bli stengt. Er du sikker på at du vil fjerne denne beholderen?
+        [one] Hvis du fjerner denne beholderen nå, vil { $count } beholderfane bli stengt. Er du sikker på at du vil fjerne denne beholderen?
+       *[other] Hvis du fjerner denne beholderen nå, vil { $count } beholderfaner bli stengt. Er du sikker på at du vil fjerne denne beholderen?
     }
 containers-remove-ok-button = Fjern denne beholderen?
 containers-remove-cancel-button = Ikke fjern denne beholderen
 settings-tabs-show-image-in-preview =
-    .label = Vis en forhåndsvisning av et bilde når du holder musepekeren på en fane
+    .label = Vis en forhåndsvisning når du holder musepekeren over en fane
     .accessKey = f
 
 ## General Section - Language & Appearance
@@ -568,8 +569,7 @@ home-prefs-shortcuts-description = Nettsteder du lagrer eller besøker
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponsede snarveier
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Anbefalt av { $provider }
@@ -641,6 +641,10 @@ search-show-suggestions-url-bar-option =
     .label = Vis søkeforslag i adresselinjens resultater
     .accesskey = l
 # With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Vis søkeord i adressefeltet på resultatsidene
+# With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
 search-show-search-term-option =
@@ -684,7 +688,7 @@ search-keyword-warning-bookmark = Du har valgt et nøkkelord som brukes av et an
 
 containers-back-button2 =
     .aria-label = Tilbake til innstillinger
-containers-header = Innholdsfaner
+containers-header = Beholderfaner
 containers-add-button =
     .label = Legg til ny beholder
     .accesskey = L
@@ -1115,6 +1119,9 @@ addressbar-suggestions-settings = Endre innstillinger for søkeforslag
 addressbar-locbar-showrecentsearches-option =
     .label = Vis nylige søk
     .accesskey = V
+addressbar-locbar-showtrendingsuggestions-option =
+    .label = Vis populære søkeforslag
+    .accesskey = s
 addressbar-quickactions-learn-more = Les mer
 
 ## Privacy Section - Content Blocking
@@ -1357,13 +1364,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } er i ferd med å 
 
 httpsonly-header = Kun-HTTPS-modus
 httpsonly-description = HTTPS gir en sikker, kryptert forbindelse mellom { -brand-short-name } og nettstedene du besøker. De fleste nettsteder støtter HTTPS, og hvis kun-HTTPS er aktivert, vil { -brand-short-name } oppgradere alle tilkoblinger til HTTPS.
+httpsonly-description2 = { -brand-short-name } oppretter sikre og krypterte forbindelser til nettsteder du besøker. { -brand-short-name } vil advare deg hvis en tilkobling ikke er sikker når Kun-HTTPS er på.
 httpsonly-learn-more = Les mer
 httpsonly-radio-enabled =
     .label = Aktiver kun-HTTPS i alle vinduer
+httpsonly-radio-enabled2 =
+    .label = Bruk kun HTTPS i alle vinduer
 httpsonly-radio-enabled-pbm =
     .label = Aktiver kun-HTTPS kun i private vinduer
+httpsonly-radio-enabled-pbm2 =
+    .label = Bruk kun HTTPS i private vinduer
 httpsonly-radio-disabled =
     .label = Ikke aktiver kun-HTTPS
+httpsonly-radio-disabled2 =
+    .label = Prøv HTTPS først, men tillat tilkoblinger som ikke er sikre
 
 ## DoH Section
 

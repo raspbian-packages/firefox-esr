@@ -202,7 +202,9 @@ mr2022-onboarding-set-default-primary-button-label = Lakaat { -brand-short-name 
 
 mr2022-onboarding-get-started-primary-button-label = Staliañ en un nebeut eilennoù
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-primary-button-label-no-attribution = Emporzhiañ diouzh ar merdeer diwezhañ
 
@@ -273,6 +275,12 @@ mr2022-onboarding-default-image-alt =
 onboarding-device-migration-title = Donemat en-dro!
 onboarding-device-migration-primary-button-label = Kennaskañ
 
+## Add-ons Picker screen
+
+amo-picker-install-button-label = Ouzhpennañ da { -brand-short-name }
+amo-picker-install-complete-label = Staliet
+amo-picker-collection-link = Ergerzhout muioc’h a askouezhioù
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -286,3 +294,17 @@ onboarding-new-user-time-based-survey-title = Pegeit zo emaoc’h oc’h implij 
 # When translating "next" it means the next screen in onboarding.
 onboarding-new-user-survey-next-button-label = War-lerc’h
 onboarding-new-user-survey-time-based-option-2 = Nebeutoc’h eget 1 miz
+
+## UI strings for the sidebar and vertical tabs
+
+onboarding-flair-text = Nevez!
+onboarding-genai-sidebar-secondary-button = Kregiñ gant ar merdeiñ
+
+## New user onboarding checklist
+
+
+## Tab Groups feature onboarding strings
+
+
+## Multi Profiles feature onboarding messages
+

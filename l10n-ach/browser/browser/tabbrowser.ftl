@@ -3,18 +3,26 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = Dirica matidi manyen
-
 tabbrowser-menuitem-close-tab =
     .label = Lor dirica matidi
 tabbrowser-menuitem-close =
     .label = Lor
-
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Lor dirica matidi
+           *[other] Lor dirica matino { $tabCount }
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -29,6 +37,9 @@ tabbrowser-close-tabs-tooltip =
 ##   $tabCount (Number): The number of tabs that will be affected.
 
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -39,6 +50,10 @@ tabbrowser-confirm-close-tabs-button = Lor dirica matino
 
 ## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
 ## Windows does not show a prompt on quit when using the keyboard shortcut by default.
+
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
 
 
 ## Confirmation dialog when opening multiple tabs simultaneously
@@ -54,6 +69,9 @@ tabbrowser-confirm-open-multiple-tabs-button = Yab dirica matino
 tabbrowser-confirm-open-multiple-tabs-checkbox = Niang an ka ce yabo dirica matino mapol romo weko { -brand-short-name } woto mot
 
 ## Confirmation dialog for enabling caret browsing
+
+
+## Confirmation dialog for closing all duplicate tabs
 
 
 ##
@@ -77,4 +95,14 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Rye dirica matino { $tabCount } weng
 
 ## Tab manager menu buttons
+
+
+## Tab Groups
+
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+
+## Open/saved tab group context menu
 

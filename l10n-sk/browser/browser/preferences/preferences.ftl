@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Požiadať webové stránky pomocou príznaku “Do Not Track”, aby vás nesledovali
+do-not-track-removal = Príznak “Nesledovať” (Do Not Track) už nie je podporovaný
 do-not-track-description2 =
     .label = Odosielať webovým stránkam požiadavku “Nesledovať” (Do Not Track).
     .accesskey = w
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Spustiť { -brand-short-name } automaticky po spustení počítača
     .accesskey = S
 windows-launch-on-login-disabled = Táto predvoľba bola v systéme Windows zakázaná. Ak to chcete zmeniť, navštívte stránku <a data-l10n-name="startup-link">Aplikácie pri spustení</a> v nastaveniach systému.
+windows-launch-on-login-profile-disabled = Povoľte túto predvoľbu začiarknutím položky “{ profile-manager-use-selected.label }” v okne „Výber používateľského profilu“.
 startup-restore-warn-on-quit =
     .label = Upozorniť pri ukončení prehliadača
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Otvárať odkazy v kartách namiesto okien
     .accesskey = r
+ask-on-close-multiple-tabs =
+    .label = Opýtať sa pred zatvorením viacerých kariet naraz
+    .accesskey = v
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Opýtať sa pred ukončením pomocou skratky { $quitKey }
+    .accesskey = u
 confirm-on-close-multiple-tabs =
     .label = Vyžadovať potvrdenie pred zatvorením viacerých kariet naraz
     .accesskey = V
@@ -571,8 +584,7 @@ home-prefs-shortcuts-description = Stránky, ktoré si uložíte alebo navštív
 home-prefs-shortcuts-by-option-sponsored =
     .label = Sponzorované skratky
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Odporúča { $provider }
@@ -644,6 +656,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Zobrazovať návrhy vyhľadávania vo výsledkoch panela s adresou
     .accesskey = a
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Na stránkach s výsledkami zobrazovať v paneli s adresou hľadané výrazy
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -787,6 +803,9 @@ sync-currently-syncing-creditcards = Platobné karty
 sync-currently-syncing-payment-methods = Spôsoby platby
 sync-currently-syncing-addons = Doplnky
 sync-currently-syncing-settings = Nastavenia
+sync-manage-options =
+    .label = Spravovať synchronizáciu…
+    .accesskey = S
 sync-change-options =
     .label = Zmeniť…
     .accesskey = Z
@@ -839,6 +858,13 @@ sync-engine-settings =
     .label = Nastavenia
     .tooltiptext = Zmenené nastavenia v sekciách Všeobecné, Súkromie a bezpečnosť
     .accesskey = a
+sync-choose-what-to-sync-dialog4 =
+    .title = Spravujte, čo sa synchronizuje na všetkých vašich pripojených zariadeniach
+    .style = min-width: 40em;
+    .buttonlabelaccept = Uložiť
+    .buttonaccesskeyaccept = U
+    .buttonlabelextra2 = Odpojiť…
+    .buttonaccesskeyextra2 = O
 
 ## The device name controls.
 
@@ -1287,15 +1313,36 @@ collection-header2 = Zber a použitie údajov o aplikácii { -brand-short-name }
     .searchkeywords = telemetria
 collection-description = Keď sa jedná o údaje, dávame vám vždy na výber. Zbierame len údaje, ktoré nám pomôžu aplikáciu { -brand-short-name } naďalej zlepšovať. Pred odoslaním osobných údajov vždy žiadame o váš súhlas.
 collection-privacy-notice = Vyhlásenie o ochrane osobných údajov
-collection-health-report-telemetry-disabled = Odosielanie technických údajov a údajov o interakcii spoločnosti { -vendor-short-name } nie je naďalej povolené. Všetky historické údaje budú odstránené v priebehu 30 dní.
+collection-health-report-telemetry-disabled = Odosielanie technických údajov a údajov o interakciách spoločnosti { -vendor-short-name } nie je naďalej povolené. Všetky historické údaje budú odstránené v priebehu 30 dní.
 collection-health-report-telemetry-disabled-link = Ďalšie informácie
+collection-usage-ping =
+    .label = Odosielať ping denného používania { -vendor-short-name(case: "gen") }
+    .accesskey = l
+collection-usage-ping-description = Toto pomáha spoločnosti { -vendor-short-name } odhadnúť počet aktívnych používateľov.
+collection-health-report2 =
+    .label = Odosielať { -vendor-short-name(case: "dat") } technické údaje a údaje o interakciách
+    .accesskey = t
 collection-health-report =
     .label = Povoliť { -brand-short-name(case: "dat") } odosielať technické údaje a údaje o interakciách spoločnosti { -vendor-short-name }
     .accesskey = o
 collection-health-report-link = Ďalšie informácie
+collection-health-report-description = Pomáha nám to zlepšovať funkcie, výkon a stabilitu { -brand-product-name(case: "gen") }.
+collection-studies2 =
+    .label = Inštalovať a spúšťať štúdie
+collection-studies-description = Vyskúšajte funkcie a nápady skôr, ako budú zverejnené pre všetkých.
 collection-studies =
     .label = Povoliť { -brand-short-name(case: "dat") } inštalovať a spúšťať štúdie
 collection-studies-link = Zobraziť štúdie aplikácie { -brand-short-name }
+addon-recommendations2 =
+    .label = Povoliť prispôsobené odporúčania rozšírení
+addon-recommendations-description = Získajte odporúčania na rozšírenia, ktoré zlepšujú zážitok z prehliadania.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Odosielanie údajov je v konfigurácii tohto zostavenia zakázané.
+collection-backlogged-crash-reports2 =
+    .label = Automaticky odosielať správy o zlyhaní
+    .accesskey = A
+collection-backlogged-crash-reports-description = Toto umožňuje { -vendor-short-name(case: "dat") } diagnostikovať a opraviť problémy s prehliadačom. Hlásenia môžu obsahovať osobné alebo citlivé údaje.
 addon-recommendations =
     .label = Povoliť { -brand-short-name(case: "dat") } odporúčať rozšírenia vybrané priamo pre mňa
 addon-recommendations-link = Ďalšie informácie
@@ -1364,13 +1411,20 @@ space-alert-under-5gb-message2 = <strong>Aplikácii { -brand-short-name } dochá
 
 httpsonly-header = Režim "Len HTTPS"
 httpsonly-description = Protokol HTTPS poskytuje bezpečné a šifrované spojenie medzi aplikáciou { -brand-short-name } a webmi, ktoré navštevujete. Väčšina webových stránok podporuje protokol HTTPS a ak je povolený režim "Len HTTPS", { -brand-short-name } zmení všetky pripojenia na zabezpečené.
+httpsonly-description2 = { -brand-short-name } vytvára bezpečné a šifrované pripojenia k stránkam, ktoré navštevujete. { -brand-short-name } vás upozorní v prípade, že pripojenie nie je zabezpečené a vy chcete používať len HTTPS.
 httpsonly-learn-more = Ďalšie informácie
 httpsonly-radio-enabled =
     .label = Povoliť režim "Len HTTPS" vo všetkých oknách
+httpsonly-radio-enabled2 =
+    .label = Používať výhradne HTTPS vo všetkých oknách
 httpsonly-radio-enabled-pbm =
     .label = Povoliť režim "Len HTTPS" iba v súkromných oknách
+httpsonly-radio-enabled-pbm2 =
+    .label = Používať HTTPS iba v súkromných oknách
 httpsonly-radio-disabled =
     .label = Nezapínať režim "Len HTTPS"
+httpsonly-radio-disabled2 =
+    .label = Najprv vyskúšať HTTPS, ale povoliť pripojenia, ktoré nie sú zabezpečené
 
 ## DoH Section
 

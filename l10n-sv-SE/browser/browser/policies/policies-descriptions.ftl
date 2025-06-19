@@ -69,14 +69,14 @@ policy-DownloadDirectory = Ange och lås nedladdningskatalogen.
 # “lock” means that the user won’t be able to change this setting
 policy-EnableTrackingProtection = Aktivera eller inaktivera Innehållsblockering med möjlighet att låsa valet.
 # “lock” means that the user won’t be able to change this setting
-policy-EncryptedMediaExtensions = Aktivera eller inaktivera krypterade medieutökningar och lås den eventuellt.
+policy-EncryptedMediaExtensions = Aktivera eller inaktivera Encrypted Media Extensions och lås eventuellt inställningen.
 policy-ExemptDomainFileTypePairsFromFileTypeDownloadWarnings = Inaktivera varningar baserade på filtillägg för specifika filtyper på domäner.
 # A “locked” extension can’t be disabled or removed by the user. This policy
 # takes 3 keys (“Install”, ”Uninstall”, ”Locked”), you can either keep them in
 # English or translate them as verbs.
 policy-Extensions = Installera, avinstallera eller låsa tillägg. Installeringsalternativet tar webbadresser eller sökvägar som parametrar. Alternativen för borttagning och låsning använder tilläggs-ID.
 policy-ExtensionSettings = Hantera alla aspekter av tilläggsinstallation.
-policy-ExtensionUpdate = Aktivera eller inaktivera automatiska utökningsuppdateringar.
+policy-ExtensionUpdate = Aktivera eller inaktivera automatiska tilläggsuppdateringar.
 policy-FirefoxHome2 = Konfigurera { -firefox-home-brand-name }.
 policy-FirefoxSuggest = Konfigurera { -firefox-suggest-brand-name }.
 policy-GoToIntranetSiteForSingleWordEntryInAddressBar = Tvinga direkt navigering på intranätet istället för att söka när du skriver in enstaka ord i adressfältet.
@@ -119,6 +119,7 @@ policy-Permissions2 = Konfigurera behörigheter för kamera, mikrofon, plats, av
 policy-PictureInPicture = Aktivera eller inaktivera bild-i-bild.
 policy-PopupBlocking = Tillåt vissa webbplatser att visa popup-fönster som standard.
 policy-Preferences = Ställ in och lås värdet för en delmängd av inställningar.
+policy-PrivateBrowsingModeAvailability = Ange tillgänglighet för privat surfläge.
 policy-PromptForDownloadLocation = Fråga var du ska spara filer när du laddar ner.
 policy-Proxy = Ange inställningar för proxy.
 policy-RequestedLocales = Ange listan över begärda språk för programmet efter ordning i inställningar.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Skriv ut med hjälp av systemets utskriftsdialog.
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Blockera besök på webbplatser. Läs dokumentationen för mer detaljer om hur de anges.
 policy-Windows10SSO = Tillåt Windows enkel inloggning för Microsoft-, arbets- och skolkonton.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Tillåt enkel inloggning för Microsoft Entra-konton.

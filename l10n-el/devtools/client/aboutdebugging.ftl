@@ -112,6 +112,8 @@ about-debugging-setup-usb-step-enable-dev-menu2 = Ενεργοποιήστε τ�
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = Ενεργοποιήστε το «Εντοπισμός σφαλμάτων μέσω USB» στο μενού προγραμματιστή Android.
 # USB section step by step guide
+about-debugging-setup-usb-step-enable-file-transfer = Ενεργοποιήστε τη μεταφορά αρχείων και βεβαιωθείτε ότι η συσκευή σας δεν είναι σε λειτουργία «Μόνο φόρτιση».
+# USB section step by step guide
 about-debugging-setup-usb-step-enable-debug-firefox2 = Ενεργοποιήστε τον έλεγχο σφαλμάτων μέσω USB στο Firefox της Android συσκευής σας.
 # USB section step by step guide
 about-debugging-setup-usb-step-plug-device = Συνδέστε τη συσκευή Android στον υπολογιστή σας.
@@ -311,6 +313,9 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Υπηρεσία Push
+# Displayed for service workers in runtime pages, to label the origin of a worker.
+about-debugging-worker-origin =
+    .label = Προέλευση
 # Displayed as title of the inspect button when service worker debugging is disabled.
 about-debugging-worker-inspect-action-disabled =
     .title = Η επιθεώρηση του service worker είναι απενεργοποιημένη αυτήν τη στιγμή για το { -brand-shorter-name } πολλαπλών διεργασιών

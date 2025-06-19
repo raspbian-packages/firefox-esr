@@ -125,6 +125,7 @@ translations-manage-description = Telecargar de lengas per la traduccion fòra l
 translations-manage-all-language = Totas les lengas
 translations-manage-download-button = Telecargar
 translations-manage-delete-button = Suprimir
+translations-manage-intro-2 = Definissètz vòstras preferéncias de lenga e de traduccion dels sites, e gerissètz lo telecargament de las lengas per la traduccion fòra linha.
 translations-manage-download-description = Telecargar de lengas per la traduccion fòra linha
 translations-manage-language-download-button =
     .label = Telecargar
@@ -167,6 +168,11 @@ translations-settings-remove-all-sites-button =
 translations-settings-close-dialog =
     .buttonlabelaccept = Tampar
     .buttonaccesskeyaccept = T
+# Text displayed in the right-click context menu for translating
+# selected text to a yet-to-be-determined language.
+main-context-menu-translate-selection =
+    .label = Traduire la seleccion…
+    .accesskey = n
 # Text displayed in the select translations panel header.
 select-translations-panel-header = Traduccion
 select-translations-panel-cancel-button =

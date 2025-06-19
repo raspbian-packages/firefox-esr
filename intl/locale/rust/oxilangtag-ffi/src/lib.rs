@@ -85,9 +85,7 @@ pub extern "C" fn lang_tag_matches(attribute: *const LangTag, selector: &nsACStr
     loop {
         // 4.  When the language range's list has no more subtags, the match
         // succeeds.
-        let range_subtag_str = if let Some(range_subtag_str) = range_subtag {
-            range_subtag_str
-        } else {
+        let Some(range_subtag_str) = range_subtag else {
             return true;
         };
 
@@ -101,9 +99,7 @@ pub extern "C" fn lang_tag_matches(attribute: *const LangTag, selector: &nsACStr
 
         // B.  Else, if there are no more subtags in the language tag's
         //     list, the match fails.
-        let lang_subtag_str = if let Some(lang_subtag_str) = lang_subtag {
-            lang_subtag_str
-        } else {
+        let Some(lang_subtag_str) = lang_subtag else {
             return false;
         };
 

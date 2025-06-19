@@ -119,6 +119,7 @@ policy-Permissions2 = Tastimmingen foar kamera, mikrofoan, lokaasje, notifikaasj
 policy-PictureInPicture = Picture-in-Picture yn- of útskeakelje.
 policy-PopupBlocking = Tastean dat bepaalde websites standert pop-ups werjaan.
 policy-Preferences = De wearde foar in subset fan foarkarren ynstelle en beskoattelje.
+policy-PrivateBrowsingModeAvailability = Beskikberheid fan priveenavigaasjemodus ynstelle.
 policy-PromptForDownloadLocation = Freegje wêr’t downloade bestannen bewarre moatte wurde.
 policy-Proxy = Proxyynstellingen konfigurearje.
 policy-RequestedLocales = De list fan frege locales foar de tapassing ynstelle, op folchoarder fan foarkar.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Ofdrukke fia it systeemdialoochfienster fan it sys
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = It besykjen fan websites blokkearje. Sjoch de dokumintaasje foar mear ynformaasje oer de notaasje.
 policy-Windows10SSO = Windows-single-sign-on tastean foar Microsoft- wurk- en skoalle-accounts.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Single sign-on foar Microsoft Entra-accounts tastean.

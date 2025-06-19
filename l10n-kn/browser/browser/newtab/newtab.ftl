@@ -22,7 +22,6 @@ newtab-topsites-edit-topsites-header = ಅಗ್ರ ತಾಣಗಳನ್ನು 
 newtab-topsites-title-label = ಶೀರ್ಷಿಕೆ
 newtab-topsites-title-input =
     .placeholder = ಶೀರ್ಷಿಕೆಯನ್ನು ನಮೂದಿಸಿ
-
 newtab-topsites-url-label = URL
 newtab-topsites-url-input =
     .placeholder = ಒಂದು URL ಅನ್ನು ಟೈಪಿಸಿ ಅಥವಾ ನಕಲಿಸಿ
@@ -36,8 +35,6 @@ newtab-topsites-save-button = ಉಳಿಸು
 newtab-topsites-preview-button = ಮುನ್ನೋಟ
 newtab-topsites-add-button = ಸೇರಿಸು
 
-## Top Sites - Delete history confirmation dialog. 
-
 ## Top Sites - Delete history confirmation dialog.
 
 # "This action" refers to deleting a page from history.
@@ -45,13 +42,13 @@ newtab-confirm-delete-history-p2 = ಈ ಕಾರ್ಯವನ್ನು ರದ್�
 
 ## Top Sites - Sponsored label
 
+
 ## Context Menu - Action Tooltips.
 
 # General tooltip for context menus.
 newtab-menu-section-tooltip =
     .title = ಮೆನು ತೆರೆ
     .aria-label = ಮೆನು ತೆರೆ
-
 # Tooltip on an empty topsite box to open the New Top Site dialog.
 newtab-menu-topsites-placeholder-tooltip =
     .title = ಈ ತಾಣವನ್ನು ಸಂಪಾದಿಸು
@@ -72,15 +69,13 @@ newtab-menu-archive-pocket = { -pocket-brand-name } ಆರ್ಕೈವ್ ಮಾ
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
+
 ##
 
 # Bookmark is a noun in this case, "Remove bookmark".
 newtab-menu-remove-bookmark = ಪುಟ ಗುರುತು ತೆಗೆ
 # Bookmark is a verb here.
 newtab-menu-bookmark = ಪುಟ ಗುರುತು
-
-## Context Menu - Downloaded Menu. "Download" in these cases is not a verb, 
-## it is a noun. As in, "Copy the link that belongs to this downloaded item".
 
 ## Context Menu - Downloaded Menu. "Download" in these cases is not a verb,
 ## it is a noun. As in, "Copy the link that belongs to this downloaded item".
@@ -110,9 +105,6 @@ newtab-label-recommended = ಪ್ರಚಲಿತ
 newtab-label-saved = { -pocket-brand-name } ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ
 newtab-label-download = ಡೌನ್ಲೋಡ್ ಮಾಡಲಾಗಿದೆ
 
-## Section Menu: These strings are displayed in the section context menu and are 
-## meant as a call to action for the given section.
-
 ## Section Menu: These strings are displayed in the section context menu and are
 ## meant as a call to action for the given section.
 
@@ -126,17 +118,17 @@ newtab-section-menu-move-down = ಕೆಳಗೆ ಜರುಗಿಸು
 
 ## Section aria-labels
 
+
 ## Section Headers.
 
 newtab-section-header-topsites = ಪ್ರಮುಖ ತಾಣಗಳು
 # Variables:
-#  $provider (String): Name of the corresponding content provider.
+#   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } ರಿಂದ ಶಿಫಾರಸುಮಾಡುಲಾಗಿದೆ
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
 newtab-empty-section-highlights = ವೀಕ್ಷಣೆ ಮಾಡಲು ಶುರುಮಾಡಿ, ಮತ್ತು ನಾವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿದ ಅಥವಾ ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಲಾದ ಕೆಲವು ಶ್ರೇಷ್ಠ ಲೇಖನಗಳು, ವೀಡಿಯೊಗಳು ಮತ್ತು ಇತರ ಪುಟಗಳನ್ನು ನಾವು ತೋರಿಸುತ್ತೇವೆ.
-
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -147,13 +139,52 @@ newtab-empty-section-highlights = ವೀಕ್ಷಣೆ ಮಾಡಲು ಶು�
 newtab-pocket-read-more = ಜನಪ್ರಿಯವಾದ ವಿಷಯಗಳು:
 newtab-pocket-cta-button = { -pocket-brand-name } ಪಡೆಯಿರಿ
 
-## Pocket Final Card Section.
-## This is for the final card in the Pocket grid.
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
+
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
 
+
 ## Customization Menu
+
+
+## New Tab Wallpapers
+
+
+## Solid Colors
+
+
+## Abstract
+
+
+## Photographs
+
+
+## New Tab Weather
+
+
+## Topic Labels
+
+
+## Topic Selection Modal
+
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+
+## Panel in the Customize menu section to manage followed and blocked topics
 

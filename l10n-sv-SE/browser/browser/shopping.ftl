@@ -12,7 +12,7 @@ shopping-beta-marker = Beta
 # Any changes to shopping-main-container-title and
 # shopping-beta-marker should also be reflected here.
 shopping-a11y-header =
-    .aria-label = Recesionsgranskaren - beta
+    .aria-label = Recensionsgranskaren - beta
 shopping-close-button =
     .title = Stäng
 # This string is for notifying screen reader users that the
@@ -89,6 +89,9 @@ shopping-show-less-button = Visa mindre
 
 shopping-settings-label =
     .label = Inställningar
+shopping-settings-recommendations-toggle2 =
+    .label = Visa rekommendationer och sponsrat innehåll
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } delar inte dina personuppgifter, så dessa rekommendationer kommer inte att följa dig runt på internet. <a data-l10n-name="review-quality-url">Läs mer</a>
 shopping-settings-recommendations-toggle =
     .label = Visa annonser i recensionsgranskaren
 shopping-settings-recommendations-learn-more2 = Du ser då och då annonser för relevanta produkter. Vi annonserar endast produkter med pålitliga recensioner. <a data-l10n-name="review-quality-url">Läs mer</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Kontrollera recensionens kvalitet
 
 more-to-consider-ad-label =
     .label = Mer att tänka på
+shopping-sponsored-label = Sponsrad
 ad-by-fakespot = Annons av { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Skicka in
 shopping-survey-terms-link = Användarvillkor
 shopping-survey-thanks =
     .heading = Tack för din feedback!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Berätta för oss varför du stängde av recensionsgranskaren. Välj flera om det behövs.
+shopping-survey-thanks-title = Tack för din feedback!
+shopping-survey-opted-out-hard-to-understand = Den är svår att förstå
+shopping-survey-opted-out-too-slow = Den är för långsam
+shopping-survey-opted-out-not-accurate = Den stämmer inte
+shopping-survey-opted-out-not-helpful = Den hjälper mig inte
+shopping-survey-opted-out-check-myself = Jag kontrollerar hellre recensioner själv
+shopping-survey-opted-out-other = Annat
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

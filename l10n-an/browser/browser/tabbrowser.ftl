@@ -3,18 +3,26 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 tabbrowser-empty-tab-title = Nueva pestanya
-
 tabbrowser-menuitem-close-tab =
     .label = Zarrar a pestanya
 tabbrowser-menuitem-close =
     .label = Zarrar
-
 # Displayed as a tooltip on container tabs
 # Variables:
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
-
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Zarrar la pestanya
+           *[other] Zarrar { $tabCount } pestanyas
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -63,6 +71,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] Reproducir { $tabCount } pestanyas
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -73,6 +84,10 @@ tabbrowser-confirm-close-tabs-button = Zarrar as pestanyas
 
 ## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
 ## Windows does not show a prompt on quit when using the keyboard shortcut by default.
+
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
 
 
 ## Confirmation dialog when opening multiple tabs simultaneously
@@ -93,13 +108,15 @@ tabbrowser-confirm-caretbrowsing-title = Navegación con cursor
 tabbrowser-confirm-caretbrowsing-message = En pretar a tecla F7, s'activa u desactiva o modo de navegación con cursor. Esta caracteristica mete un cursor mobil en as pachinas web, permitindo a selección de texto con o teclau. Quiere activar o modo de navegación con cursor?
 tabbrowser-confirm-caretbrowsing-checkbox = No me tornes a amostrar esta finestra de dialogo.
 
+## Confirmation dialog for closing all duplicate tabs
+
+
 ##
 
 # Variables:
 #   $domain (String): URL of the page that is trying to steal focus.
 tabbrowser-allow-dialogs-to-get-focus =
     .label = Permite que las notificacions como esta de { $domain } te leven ta la suya pestanya
-
 tabbrowser-customizemode-tab-title = Personalizar lo { -brand-short-name }
 
 ## Context menu buttons, of which only one will be visible at a time
@@ -127,4 +144,14 @@ tabbrowser-ctrl-tab-list-all-tabs =
     .label = Listar as { $tabCount } pestanyas
 
 ## Tab manager menu buttons
+
+
+## Tab Groups
+
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+
+## Open/saved tab group context menu
 

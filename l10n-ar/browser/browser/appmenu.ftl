@@ -77,6 +77,10 @@ appmenu-remote-tabs-turn-on-sync =
 appmenu-remote-tabs-showmore =
     .label = أظهِر ألسنة أكثر
     .tooltiptext = اعرض المزيد من الألسنة من هذا الجهاز
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = الألسنة غير النشطة
+    .tooltiptext = أظهِر الألسنة غير النشطة على هذا الجهاز
 # This is shown beneath the name of a device when that device has no open tabs
 appmenu-remote-tabs-notabs = لا ألسنة مفتوحة
 # This is shown when Sync is configured but syncing tabs is disabled.
@@ -104,8 +108,11 @@ appmenu-fxa-sync-and-save-data2 = زامِن واحفظ البيانات
 appmenu-fxa-signed-in-label = لِج
 appmenu-fxa-setup-sync =
     .label = فعّل المزامنة…
+appmenu-fxa-setup-sync-new = فعّل
 appmenuitem-save-page =
     .label = احفظ الصفحة باسم…
+appmenuitem-fxa-sync-off-title = التزامن متوقف
+appmenuitem-fxa-sync-off-description = احمِ و اطلع على علاماتك وكلمات سرك والمزيد في أي مكان.
 
 ## What's New panel in App menu.
 
@@ -168,6 +175,11 @@ profiler-popup-capture-shortcut =
 # devtools/client/performance-new/shared/background.jsm.js
 # Please take care that the same values are also defined in devtools' perftools.ftl.
 
+
+# Presets and their l10n IDs are defined in the file
+# devtools/client/performance-new/shared/background.sys.mjs
+# Please take care that the same values are also defined in devtools' perftools.ftl.
+
 profiler-popup-presets-web-developer-description = الإعداد المسبق الموصى به لتنقيح أغلبية تطبيقات الوِب دون استهلاك موارد كثيرة.
 profiler-popup-presets-web-developer-label =
     .label = مطوّري الوب
@@ -177,13 +189,19 @@ profiler-popup-presets-firefox-label =
 profiler-popup-presets-graphics-description = إعداد مسبق للتحقيق في أخطاء الرسومات في { -brand-shorter-name }.
 profiler-popup-presets-graphics-label =
     .label = الرسوميات
+profiler-popup-presets-media-description2 = إعداد مسبق للتحرّي عن مشاكل الصوت والفيديو في { -brand-shorter-name }.
 profiler-popup-presets-media-label =
     .label = الوسائط
+profiler-popup-presets-networking-description = إعداد مسبق للتحرّي عن مشاكل الشبكة في { -brand-shorter-name }.
 profiler-popup-presets-networking-label =
     .label = الشبكة
+profiler-popup-presets-power-description = إعداد مسبق للتحرّي عن العلل التي تستخدم الطاقة في { -brand-shorter-name }، مع حمل منخفض.
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = طاقة
+profiler-popup-presets-debug-description = إعداد مسبق للتنقيح في { -brand-shorter-name }. تكلفة إضافية عالية، لا تستخدمه لأعمال الأداء ولكن استخدمه للتركيز على فهم سلوك المتصفح.
+profiler-popup-presets-debug-label =
+    .label = نقّح
 profiler-popup-presets-custom-label =
     .label = مخصّص
 
@@ -254,3 +272,24 @@ appmenu-developer-tools-extensions =
     .label = الامتدادات التي تخصّ المطوّرين
 appmenuitem-report-broken-site =
     .label = أبلِغ عن موقع معطوب
+
+## Panel for privacy and security products
+
+appmenuitem-sign-in-account = لِج إلى حسابك
+appmenuitem-monitor-title = { -monitor-brand-short-name }
+appmenuitem-monitor-description = احصل على تنبيهات تسريب البيانات
+appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
+appmenuitem-vpn-description = احمِ نشاطك على الإنترنت
+appmenu-services-header = خدماتي
+
+## Profiles panel
+
+appmenu-profiles = ملفات تعريف
+appmenu-other-profiles = ملفات تعريف أخرى
+appmenu-manage-profiles =
+    .label = أدِر ملفات التعريف
+appmenu-create-profile =
+    .label = ملف شخصي جديد
+appmenu-edit-profile =
+    .aria-label = حرّر الملف الشخصي

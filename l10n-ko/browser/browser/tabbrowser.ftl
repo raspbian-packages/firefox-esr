@@ -13,6 +13,13 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext = 탭 { $tabCount }개 닫기
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -37,6 +44,16 @@ tabbrowser-unmute-tab-audio-background-tooltip =
 tabbrowser-unblock-tab-audio-tooltip =
     .label = 탭 { $tabCount }개 재생
 
+## Tooltips for tab audio control
+
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = 탭 음소거 해제
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = 탭 음소거
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = 탭 재생
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -45,6 +62,7 @@ tabbrowser-unblock-tab-audio-tooltip =
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-confirm-close-tabs-title = 탭 { $tabCount }개를 닫으시겠습니까?
 tabbrowser-confirm-close-tabs-button = 탭 닫기
+tabbrowser-ask-close-tabs-checkbox = 여러 탭을 닫기 전에 묻기
 tabbrowser-confirm-close-tabs-checkbox = 여러 탭을 닫기 전에 확인
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -67,7 +85,21 @@ tabbrowser-confirm-close-tabs-with-key-title = 창을 닫고 { -brand-short-name
 tabbrowser-confirm-close-tabs-with-key-button = { -brand-short-name } 종료
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = { $quitKey } 단축키로 종료하기 전에 묻기
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = { $quitKey } 단축키로 종료하기 전에 확인
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = { -brand-short-name }를 종료하거나 현재 탭을 닫으시겠습니까?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] { -brand-short-name } 종료
+       *[other] { -brand-short-name } 종료
+    }
+tabbrowser-confirm-close-tab-only-button = 현재 탭 닫기
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -139,3 +171,96 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = 탭 음소거 해제
 tabbrowser-manager-close-tab =
     .tooltiptext = 탭 닫기
+
+## Tab Groups
+
+tab-group-editor-title-create = 탭 그룹 만들기
+tab-group-editor-title-edit = 탭 그룹 관리
+tab-group-editor-name-label = 이름
+tab-group-editor-name-field =
+    .placeholder = 예: 쇼핑
+tab-group-editor-cancel =
+    .label = 취소
+    .accesskey = C
+tab-group-editor-color-selector =
+    .aria-label = 탭 그룹 색상
+tab-group-editor-color-selector-blue = 파란색
+tab-group-editor-color-selector-purple = 보라색
+tab-group-editor-color-selector-cyan = 청록색
+tab-group-editor-color-selector-orange = 주황색
+tab-group-editor-color-selector-yellow = 노란색
+tab-group-editor-color-selector-pink = 분홍색
+tab-group-editor-color-selector-green = 초록색
+tab-group-editor-color-selector-gray = 회색
+tab-group-editor-color-selector-red = 빨간색
+tab-group-menu-header = 탭 그룹
+tab-context-unnamed-group =
+    .label = 익명 그룹
+tab-group-name-default = 익명 그룹
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] 새 그룹에 탭 추가
+           *[other] 새 그룹에 탭 추가
+        }
+    .accesskey = G
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] 그룹에 탭 추가
+           *[other] 그룹에 탭 추가
+        }
+    .accesskey = G
+tab-group-editor-action-new-tab =
+    .label = 그룹에 새 탭
+tab-group-editor-action-new-window =
+    .label = 그룹을 새 창으로 이동
+tab-group-editor-action-save =
+    .label = 그룹 저장 후 닫기
+tab-group-editor-action-ungroup =
+    .label = 그룹 해제
+tab-group-editor-action-delete =
+    .label = 그룹 삭제
+tab-group-editor-done =
+    .label = 완료
+    .accessKey = D
+tab-context-reopen-tab-group =
+    .label = 탭 그룹 다시 열기
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] 그룹에서 제거
+           *[other] 그룹에서 제거
+        }
+    .accesskey = R
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = 그룹을 새 창으로 이동
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = 그룹을 이 창으로 이동
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = 그룹 삭제
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = 그룹을 이 창에서 열기
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = 그룹을 새 창에서 열기

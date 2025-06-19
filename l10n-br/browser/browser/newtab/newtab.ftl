@@ -13,6 +13,8 @@ newtab-personalize-icon-label =
     .aria-label = Personelaat un ivinell nevez
 newtab-personalize-dialog-label =
     .aria-label = Personelaat
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -225,11 +227,16 @@ newtab-pocket-cta-button = Staliañ { -pocket-brand-name }
 newtab-pocket-cta-text = Enrollit pennadoù a-zoare e { -pocket-brand-name } ha magit ho spered gant lennadennoù boemus.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } a zo ul lodenn eus familh { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Enrollañ
 newtab-pocket-saved = Enrollet
 
 ## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
 
+newtab-toast-dismiss-button =
+    .title = Argas
+    .aria-label = Argas
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
 
@@ -291,6 +298,7 @@ newtab-wallpaper-dark-mountain = Menezioù
 newtab-wallpaper-blue = Glas
 newtab-wallpaper-light-blue = Glas sklaer
 newtab-wallpaper-light-purple = Limestra sklaer
+newtab-wallpaper-light-green = Gwer sklaer
 newtab-wallpaper-green = Gwer
 newtab-wallpaper-yellow = Melen
 newtab-wallpaper-orange = Orañjez
@@ -300,9 +308,14 @@ newtab-wallpaper-red = Ruz
 newtab-wallpaper-dark-blue = Glas teñval
 newtab-wallpaper-dark-purple = Limestra teñval
 newtab-wallpaper-dark-green = Gwer teñval
+newtab-wallpaper-brown = Gell
 
 ## Abstract
 
+newtab-wallpaper-category-title-abstract = Difetis
+newtab-wallpaper-abstract-green = Furmoù gwer
+newtab-wallpaper-abstract-blue = Furmoù glas
+newtab-wallpaper-abstract-purple = Furmoù limestra
 newtab-wallpaper-abstract-orange = Furmoù orañjez
 newtab-wallpaper-abstract-blue-purple = Furmoù limestra hag orañjez
 
@@ -320,6 +333,10 @@ newtab-wallpaper-white-mountains = Menezioù gwenn
 #   $webpage_string (String) - The name of the webpage where the photo is located.
 newtab-wallpaper-attribution = Foto gant <a data-l10n-name="name-link">{ $author_string }</a> war <a data-l10n-name="webpage-link">{ $webpage_string }</a>
 newtab-wallpaper-feature-highlight-button = Komprenet am eus
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .title = Argas
+    .aria-label = Serriñ an diflugell
 feature-highlight-wallpaper =
     .title = { -newtab-wallpaper-feature-highlight-header }
     .aria-label = { -newtab-wallpaper-feature-highlight-content }
@@ -330,12 +347,55 @@ feature-highlight-wallpaper =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Paeroniet
 newtab-weather-menu-change-location = Cheñch al lec’hiadur
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Klask ul lec’h
+    .aria-label = Klask ul lec’h
 newtab-weather-change-location-search-input = Klask ul lec’h
 # Display options are:
 # - Simple: Displays a current weather condition icon and the current temperature
 # - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
 newtab-weather-menu-weather-display-option-simple = Eeun
+newtab-weather-menu-weather-display-option-detailed = Munudoù
 newtab-weather-menu-temperature-units = Unanenn wrezverk
 newtab-weather-menu-temperature-option-fahrenheit = Fahrenheit
 newtab-weather-menu-temperature-option-celsius = Celsius
 newtab-weather-menu-learn-more = Gouzout hiroc’h
+
+## Topic Labels
+
+newtab-topic-label-education = Deskadurezh
+newtab-topic-label-arts = Dudi
+newtab-topic-label-food = Boued
+newtab-topic-label-health = Yec’hed
+newtab-topic-label-hobbies = C’hoarioù video
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Arc’hant
+newtab-topic-label-government = Politikerezh
+newtab-topic-label-education-science = Skiantoù
+newtab-topic-label-sports = Sportoù
+newtab-topic-label-tech = Teknologiezh
+newtab-topic-label-travel = Beajiñ
+
+## Topic Selection Modal
+
+newtab-topic-selection-save-button = Enrollañ
+newtab-topic-selection-cancel-button = Nullañ
+newtab-topic-selection-button-maybe-later = Diwezhatoc’h marteze
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

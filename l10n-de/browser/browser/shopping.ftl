@@ -89,6 +89,9 @@ shopping-show-less-button = Weniger anzeigen
 
 shopping-settings-label =
     .label = Einstellungen
+shopping-settings-recommendations-toggle2 =
+    .label = Empfehlungen und gesponserte Inhalte anzeigen
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } gibt Ihre persönlichen Daten nicht weiter, daher verfolgen Sie diese Empfehlungen nicht im Internet. <a data-l10n-name="review-quality-url">Weitere Informationen</a>
 shopping-settings-recommendations-toggle =
     .label = Werbung im Review Checker anzeigen
 shopping-settings-recommendations-learn-more2 = Sie sehen gelegentlich Anzeigen für relevante Produkte. Wir bewerben nur Produkte mit vertrauenswürdigen Bewertungen. <a data-l10n-name="review-quality-url">Weitere Informationen</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Qualität der Bewertung überprüfe
 
 more-to-consider-ad-label =
     .label = Weitere Möglichkeiten
+shopping-sponsored-label = Gesponsert
 ad-by-fakespot = Anzeige von { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Absenden
 shopping-survey-terms-link = Nutzungsbedingungen
 shopping-survey-thanks =
     .heading = Danke für Ihr Feedback!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Bitte teilen Sie uns mit, warum Sie den Review Checker deaktiviert haben. Wählen Sie bei Bedarf mehrere Optionen aus.
+shopping-survey-thanks-title = Danke für Ihr Feedback!
+shopping-survey-opted-out-hard-to-understand = Es ist schwer zu verstehen
+shopping-survey-opted-out-too-slow = Es ist zu langsam
+shopping-survey-opted-out-not-accurate = Es ist nicht korrekt
+shopping-survey-opted-out-not-helpful = Es ist für mich nicht hilfreich
+shopping-survey-opted-out-check-myself = Ich überprüfe Bewertungen lieber selbst
+shopping-survey-opted-out-other = Sonstiges
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

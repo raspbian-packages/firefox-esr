@@ -89,6 +89,9 @@ shopping-show-less-button = แสดงน้อยลง
 
 shopping-settings-label =
     .label = การตั้งค่า
+shopping-settings-recommendations-toggle2 =
+    .label = แสดงคำแนะนำและเนื้อหาที่ได้รับการสนับสนุน
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } จะไม่แบ่งปันข้อมูลส่วนตัวของคุณ ดังนั้นคำแนะนำเหล่านี้จะไม่ติดตามคุณไปบนโลกอินเทอร์เน็ต <a data-l10n-name="review-quality-url">เรียนรู้เพิ่มเติม</a>
 shopping-settings-recommendations-toggle =
     .label = แสดงโฆษณาในเครื่องมือตรวจสอบบทวิจารณ์
 shopping-settings-recommendations-learn-more2 = คุณจะเห็นโฆษณาสำหรับผลิตภัณฑ์ที่เกี่ยวข้องเป็นครั้งคราว เราจะโฆษณาเฉพาะผลิตภัณฑ์ที่มีบทวิจารณ์ที่เชื่อถือได้เท่านั้น <a data-l10n-name="review-quality-url">เรียนรู้เพิ่มเติม</a>
@@ -115,6 +118,7 @@ shopping-settings-sidebar-enabled-state = เครื่องมือตร�
 shopping-adjusted-rating-label =
     .label = คะแนนที่ปรับแล้ว
 shopping-adjusted-rating-unreliable-reviews = เอาบทวิจารณ์ที่ไม่น่าเชื่อถือออกแล้ว
+shopping-adjusted-rating-based-reliable-reviews = อ้างอิงจากบทวิจารณ์ที่เชื่อถือได้
 
 ## Strings for the review reliability component
 
@@ -133,6 +137,8 @@ shopping-analysis-explainer-learn-more2 = เรียนรู้เพิ่�
 # websites, which will be inserted without being translated.
 #  $retailer (String) - capitalized name of the shopping website, for example, "Amazon".
 shopping-analysis-explainer-highlights-description = <strong>ไฮไลต์</strong>มาจากบทวิจารณ์ใน { $retailer } ภายใน 80 วันที่ผ่านมา ซึ่งเราเชื่อว่าน่าเชื่อถือ
+# Fallback for analysis highlights explainer if the retailer is ever unknown
+shopping-analysis-explainer-highlights-description-unknown-retailer = <strong>ไฮไลต์</strong>มาจากบทวิจารณ์ภายใน 80 วันที่ผ่านมา ซึ่งเราเชื่อว่าน่าเชื่อถือ
 shopping-analysis-explainer-review-grading-scale-reliable = บทวิจารณ์ที่น่าเชื่อถือ เราเชื่อว่าบทวิจารณ์นั้นน่าจะมาจากลูกค้าจริงซึ่งให้คำวิจารณ์อย่างตรงไปตรงมาและไม่มีอคติ
 shopping-analysis-explainer-review-grading-scale-mixed = เราเชื่อว่ามีทั้งบทวิจารณ์ที่น่าเชื่อถือและไม่น่าเชื่อถือปะปนกัน
 shopping-analysis-explainer-review-grading-scale-unreliable = บทวิจารณ์ที่ไม่น่าเชื่อถือ เราเชื่อว่าบทวิจารณ์นั้นน่าจะเป็นของปลอมหรือมาจากผู้วิจารณ์ที่มีอคติ
@@ -159,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = ตรวจสอบคุณภ�
 
 more-to-consider-ad-label =
     .label = ลองดูเพิ่ม
+shopping-sponsored-label = ได้รับการสนับสนุน
 ad-by-fakespot = โฆษณาโดย { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -179,6 +186,18 @@ shopping-survey-submit-button-label = ส่ง
 shopping-survey-terms-link = เงื่อนไขการใช้งาน
 shopping-survey-thanks =
     .heading = ขอบคุณสำหรับข้อคิดเห็นของคุณ!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = โปรดแจ้งให้เราทราบว่าทำไมคุณจึงปิดเครื่องมือตรวจสอบบทวิจารณ์ ให้เลือกหลายข้อถ้าต้องการ
+shopping-survey-thanks-title = ขอบคุณสำหรับข้อคิดเห็นของคุณ!
+shopping-survey-opted-out-hard-to-understand = มันเข้าใจยาก
+shopping-survey-opted-out-too-slow = มันช้าเกินไป
+shopping-survey-opted-out-not-accurate = มันไม่แม่นยำ
+shopping-survey-opted-out-not-helpful = มันไม่มีประโยชน์กับฉัน
+shopping-survey-opted-out-check-myself = ฉันอยากตรวจสอบบทวิจารณ์ด้วยตัวเองมากกว่า
+shopping-survey-opted-out-other = อื่นๆ
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

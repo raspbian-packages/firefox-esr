@@ -8,11 +8,18 @@
 newtab-page-title = Nýr flipi
 newtab-settings-button =
     .title = Sérsníða nýju flipasíðuna
+newtab-personalize-settings-icon-label =
+    .title = Sérsníða nýjan flipa
+    .aria-label = Stillingar
+newtab-settings-dialog-label =
+    .aria-label = Stillingar
 newtab-personalize-icon-label =
     .title = Sérsníða nýjan flipa
     .aria-label = Sérsníða nýjan flipa
 newtab-personalize-dialog-label =
     .aria-label = Sérsníða
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Vista í { -pocket-brand-name }
 newtab-menu-delete-pocket = Eyða úr { -pocket-brand-name }
 newtab-menu-archive-pocket = Safna í { -pocket-brand-name }
 newtab-menu-show-privacy-info = Styrktaraðilar okkar og friðhelgi þín
+newtab-menu-about-fakespot = Um { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Loka á
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Hætta að fylgjast með viðfangsefni
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Nýleg virkni
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Með þessu mælir { $provider }
 newtab-section-header-stories = Umhugsunarverðar sögur
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Úrval dagsins fyrir þig
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = Sækja { -pocket-brand-name }
 newtab-pocket-cta-text = Vistaðu sögurnar sem þú elskar í { -pocket-brand-name } og fáðu innblástur í huga þinn með heillandi lesningu.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } er hluti af { -brand-product-name } fjölskyldunni
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Vista
 newtab-pocket-saved = Vistað
 
@@ -242,6 +260,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Ekki fyrir mig
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Takk. Álit þitt mun hjálpa okkur að bæta streymið þitt.
 newtab-toast-thumbs-up-or-down = Takk. Álit þitt mun hjálpa okkur að bæta streymið þitt.
 newtab-toast-dismiss-button =
     .title = Afgreiða
@@ -307,6 +328,8 @@ newtab-wallpaper-dark-panda = Rauð panda falin í skógi
 newtab-wallpaper-dark-sky = Borgarlandslag með næturhimni
 newtab-wallpaper-dark-mountain = Fjöllótt landslag
 newtab-wallpaper-dark-city = Fjólublátt borgarlandslag
+newtab-wallpaper-dark-fox-anniversary = Refur á gangstétt nálægt skógi
+newtab-wallpaper-light-fox-anniversary = Refur í grasi með þokufullu fjallalandslagi
 
 ## Solid Colors
 
@@ -371,6 +394,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Kostað
 newtab-weather-menu-change-location = Breyta staðsetningu
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Leita að staðsetningu
+    .aria-label = Leita að staðsetningu
 newtab-weather-change-location-search-input = Leita að staðsetningu
 newtab-weather-menu-weather-display = Birting veðurs
 # Display options are:
@@ -389,3 +415,76 @@ newtab-weather-menu-hide-weather = Fela veður á nýjum flipa
 newtab-weather-menu-learn-more = Kanna nánar
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Veðurgögn eru ekki tiltæk í augnablikinu.
+
+## Topic Labels
+
+newtab-topic-label-business = Viðskipti
+newtab-topic-label-career = Starfsferill
+newtab-topic-label-education = Menntun
+newtab-topic-label-arts = Afþreying
+newtab-topic-label-food = Matur
+newtab-topic-label-health = Heilsa
+newtab-topic-label-hobbies = Leikir
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Peningar
+newtab-topic-label-society-parenting = Uppeldi
+newtab-topic-label-government = Stjórnmál
+newtab-topic-label-education-science = Vísindi
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Sjálfshjálp
+newtab-topic-label-sports = Íþróttir
+newtab-topic-label-tech = Tækni
+newtab-topic-label-travel = Ferðalög
+newtab-topic-label-home = Heimili & garðar
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Veldu efni til að fínstilla streymið þitt
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Veldu tvö eða fleiri viðfangsefni. Sérfróðir ritstjórar okkar setja sögur sem eru sérsniðnar að þínum áhugamálum í forgang. Uppfærðu hvenær sem er.
+newtab-topic-selection-save-button = Vista
+newtab-topic-selection-cancel-button = Hætta við
+newtab-topic-selection-button-maybe-later = Kannski seinna
+newtab-topic-selection-privacy-link = Sjáðu hvernig við verndum og stjórnum gögnum
+newtab-topic-selection-button-update-interests = Uppfærðu áhugamálin þín
+newtab-topic-selection-button-pick-interests = Veldu áhugamálin þín
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Fylgjast með
+newtab-section-following-button = Fylgist með
+newtab-section-unfollow-button = Hætta að fylgjast með
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Loka á
+newtab-section-blocked-button = Lokað á
+newtab-section-unblock-button = Opna fyrir
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Ertu viss um að þú viljir loka á þennan hluta?
+newtab-section-confirm-block-section-p2 = Hluti sem lokað er á mun ekki lengur birtast í streyminu þínu.
+newtab-section-block-section-button = Loka á þennan hluta
+newtab-section-cancel-button = Ekki núna
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Umfjöllunarefni
+newtab-section-mangage-topics-button =
+    .label = Efni sem fylgst er með og lokað á
+newtab-section-mangage-topics-followed-topics-subtitle = Efni sem fylgst er með
+newtab-section-mangage-topics-followed-topics-empty-state = Þú hefur ekki fylgst með neinu umfjöllunarefni ennþá.
+newtab-section-mangage-topics-blocked-topics-subtitle = Umfjöllunarefni sem lokað er á
+newtab-section-mangage-topics-blocked-topics-empty-state = Þú hefur ekki lokað á neitt umfjöllunarefni ennþá.

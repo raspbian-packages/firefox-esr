@@ -119,6 +119,7 @@ policy-Permissions2 = Emboheko ñemoneĩ ta’ãnganohẽha, ñe’ẽatãha, te
 policy-PictureInPicture = Emyandy térã embogue Picture-in-Picture.
 policy-PopupBlocking = Emoneĩ ndahetái ñanduti rendápe ohechaukávo ovetã iñapysẽva ijypykue rupi.
 policy-Preferences = Emboheko ha ejoko tepykue jeguerohoryvéva aty’ípe g̃uarã.
+policy-PrivateBrowsingModeAvailability = Emboheko ñeikundaha ñemiguáva rekópe.
 policy-PromptForDownloadLocation = Eporandu moõpa eñongatúta marandurenda emboguejykuévo.
 policy-Proxy = Emboheko proxy mohendahavusu.
 policy-RequestedLocales = Emopyenda tenda jerurepyre rusýi emomba’apo hag̃ua hekoitépe.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Eguenohẽ kuatiáre eiporuhápe apopyvusúpe ñe�
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Ejoko ñanduti rendápe jeike. Emoñe’ẽ kuatiaita ehechakuaa hag̃ua mba’emimi ko ysaja rehegua.
 policy-Windows10SSO = Emoneĩ tembiapo ñepyrũ Windows rupi Microsoft-pe, mba’apo ha mbo’ehaogua mba’ete.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Emoneĩ tembiapo ñepyrũ Microsoft Entra mba’etépe.

@@ -115,7 +115,7 @@ mr2-onboarding-default-theme-label = Eksploroni tema parazgjedhje.
 ## Strings for Thank You page
 
 mr2-onboarding-thank-you-header = Faleminderit që na zgjidhni ne
-mr2-onboarding-thank-you-text = { -brand-short-name }-i është një shfletues i pavarur, me në ent jofitimprurës nga pas. Tok, po e bëmë web-in më të sigurt, më të shëndetshëm dhe më privat.
+mr2-onboarding-thank-you-text = { -brand-short-name }-i është një shfletues i pavarur, me në ent jofitimprurës nga pas. Tok, po e bëmë web-in më të siguruar, më të shëndetshëm dhe më privat.
 mr2-onboarding-start-browsing-button-label = Nisni shfletimin
 
 ## Multistage live language reloading onboarding strings (about:welcome pages)
@@ -188,11 +188,13 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Mbaje { -brand-short-name }-in në Panel
        *[other] Fiksoje { -brand-short-name }-in te paneli
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Fiksoje { -brand-short-name }-in te paneli dhe menuja e nisjes
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
 # and makes sense in the context of navigating the web.
-mr2022-onboarding-set-default-only-subtitle = Fillojani me një shfletues që ka nga pas një ent jofitimprurësS. Mbrojmë privatësinë tuaj, teksa ju bridhni nëpër web.
+mr2022-onboarding-set-default-only-subtitle = Fillojani me një shfletues që ka pas një ent jofitimprurës. Mbrojmë privatësinë tuaj, teksa ju baritni nëpër web.
 
 ## MR2022 Existing User Pin Firefox Screen Strings
 
@@ -212,7 +214,7 @@ mr2022-onboarding-set-default-title = Bëjeni { -brand-short-name }-in shfletues
 mr2022-onboarding-set-default-primary-button-label = Vëreni { -brand-short-name }-in si shfletuesin parazgjedhje
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
 # and makes sense in the context of navigating the web.
-mr2022-onboarding-set-default-subtitle = Përdorni një shfletues që ka nga pas një ent jofitimprurësS. Mbrojmë privatësinë tuaj, teksa ju bridhni nëpër web.
+mr2022-onboarding-set-default-subtitle = Përdorni një shfletues që ka pas një ent jofitimprurës. Mbrojmë privatësinë tuaj, teksa ju baritni nëpër web.
 
 ## MR2022 Get Started screen strings.
 ## These strings will be used on the welcome page
@@ -223,7 +225,9 @@ mr2022-onboarding-set-default-subtitle = Përdorni një shfletues që ka nga pas
 mr2022-onboarding-get-started-primary-subtitle = Versioni ynë më i ri është ndërtuar me ju në mendje, duke e bërë më të lehtë se kurrë të bridhni nëpër web. Është plot me veçori që mendojmë se do t’i adhuroni.
 mr2022-onboarding-get-started-primary-button-label = Ujdiseni brenda pak sekondash
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Ujdisje e shpejtë si rrufe
 mr2022-onboarding-import-subtitle = Ujdiseni { -brand-short-name }-in si e doni. Shtoni faqerojtësit tuaj, fjalëkalimet, etj prej shfletuesit tuaj të mëparshëm.
@@ -269,8 +273,8 @@ mr2022-onboarding-colorway-description-innovator = <b>Jeni një Novator.</b> Shi
 
 ## MR2022 Multistage Mobile Download screen strings
 
-mr2022-onboarding-mobile-download-title = Kërceni nga portativi te telefoni, ose anasjelltas
-mr2022-onboarding-mobile-download-subtitle = Merrni skedat nga një pajisje dhe rifilloni atje ku e latë, në një tjetër. Plus njëkohësoni faqerojtësit dhe fjalëkalimet tuaja kudo ku përdorni { -brand-product-name }.
+mr2022-onboarding-mobile-download-title = Kaloni nga portativi te telefoni, ose anasjelltas
+mr2022-onboarding-mobile-download-subtitle = Merrni skedat nga një pajisje dhe rifilloni atje ku e latë, në një tjetër. Plus, njëkohësoni faqerojtësit dhe fjalëkalimet tuaja kudo ku përdorni { -brand-product-name }.
 mr2022-onboarding-mobile-download-cta-text = Skanoni kodin QR që të merrni { -brand-product-name } për celular, ose <a data-l10n-name="download-label">dërgojini vetes një lidhje shkarkimi.</a>
 mr2022-onboarding-no-mobile-download-cta-text = Skanoni kodin QR që të merrni { -brand-product-name } për celular.
 
@@ -296,7 +300,7 @@ mr2022-onboarding-privacy-segmentation-button-secondary-label = Shfaq të dhëna
 ## MR2022 Multistage Gratitude screen strings
 
 mr2022-onboarding-gratitude-title = Po na ndihmoni të ndërtojmë një internet më të mirë
-mr2022-onboarding-gratitude-subtitle = Faleminderit që përdorni { -brand-short-name }-in, që ka nga pas Mozilla Foundation. Me përkrahjen tuaj, po punojmë për ta bërë internetin më të hapur, të përdorshëm dhe më të mirë për këdo.
+mr2022-onboarding-gratitude-subtitle = Faleminderit që përdorni { -brand-short-name }-in, që ka pas Mozilla Foundation. Me përkrahjen tuaj, po punojmë për ta bërë internetin më të hapur, të përdorshëm dhe më të mirë për këdo.
 mr2022-onboarding-gratitude-primary-button-label = Shihni ç’ka të re
 mr2022-onboarding-gratitude-secondary-button-label = Nisni shfletimin
 
@@ -333,6 +337,14 @@ onboarding-device-migration-subtitle = Që të sillni në pajisjen tuaj të re f
 onboarding-device-migration-subtitle2 = Që të sillni në pajisjen tuaj të re faqerojtësit tuaj, fjalëkalime dhe historik, bëni hyrjen te llogaria juaj.
 onboarding-device-migration-primary-button-label = Hyni
 
+## Add-ons Picker screen
+
+amo-picker-title = Përshtatni { -brand-short-name }-in tuaj
+amo-picker-subtitle = Zgjerimet janë si punë aplikacionesh për shfletuesin tuaj dhe ju lejojnë të mbroni fjalëkalimet tuaj, të shkarkoni video, të gjeni okazione, të bllokoni reklama të bezdisshme, të ndryshoni pamjen e shfletuesit tuaj e shumë gjëra të tjera.
+amo-picker-install-button-label = Shtoje te { -brand-short-name }
+amo-picker-install-complete-label = Të instaluara
+amo-picker-collection-link = Eksploroni më tepër shtesa
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -343,7 +355,12 @@ onboarding-mobile-download-security-and-privacy-title = Jini i fshehtëzuar, kur
 onboarding-mobile-download-security-and-privacy-subtitle = Kur keni bërë njëkohësimin, { -brand-short-name }-i fshehtëzon fjalëkalimet tuaja, faqerojtësit, etj. Veç kësaj, mund të merrni skeda që nga pajisjet tuaja të tjera.
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } ju mbron krahët
-onboarding-gratitude-security-and-privacy-subtitle = Faleminderit që përdorni { -brand-short-name }-in, që ka nga pas Mozilla Foundation. Me përkrahjen tuaj, po punojmë për ta bërë internetin më të hapur dhe të përdorshëm për këdo.
+onboarding-gratitude-security-and-privacy-subtitle = Faleminderit që përdorni { -brand-short-name }-in, që ka pas Mozilla Foundation. Me përkrahjen tuaj, po punojmë për ta bërë internetin më të hapur dhe të përdorshëm për këdo.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Njëkohësoni të dhënat tuaja mes pajisjesh
+onboarding-sign-up-description = Regjistrohuni për një llogari dhe krejt informacionet tuaja të rëndësishme — fjalëkalime, faqerojtës, etj — do të depozitohen në mënyrë të siguruar dhe do të jenë të përdorshëm, kur të bëni hyrjen në llogarinë te cilado.
+onboarding-sign-up-button = Hyni ose regjistrohuni
+onboarding-sign-up-secondary-button = Nisni shfletimin
 
 ## New user time and familiarity survey strings
 
@@ -363,3 +380,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Jam fringo i ri
 onboarding-new-user-survey-familiarity-based-option-2 = E kam përdorur ca herë
 onboarding-new-user-survey-familiarity-based-option-3 = Jam shumë i familjarizuar me të
 onboarding-new-user-survey-familiarity-based-option-4 = E kam përdorur në të kaluarën, por u bënë kohë
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Tregonani se ku do t’i donit skedat tuaja
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Ndërrojeni kurdo që doni, që nga rregullimet e anështyllës.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Skedat tuaja, me mënyrën tuaj
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Mbani hapur shumë skeda? Provoni t’i mbani skedat tuaja anash, për një pamje më të hajthme. Ose mbajini në mënyrën klasike, me skedat sipër. Kaloni nga njëra mënyrë te tjetra kurdo.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Zgjidhni skemën tuaj për skedat
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Për një pamje të hajthme, që mund t’ju ndihmojë të ruani përqendrimin, provoni t’i mbani skedat tuaja anash. Ose mbani mënyrën klasike, me skedat sipër. Kaloni nga një mënyrë te tjetra kurdo.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Skedat anash
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Skedat në krye
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Mbërritën skedat vertikale
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Ju paraqesim skedat vertikale
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Provojini anash skedat tuaja. Ndërrojeni mënyrën kurdo që doni, që nga rregullimet e anështyllës.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Provoni skedat vertikale
+onboarding-flair-text = E re!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Mbaji horizontale skedat
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Një dritare shfletuesi që shfaq skeda përgjatë anës së ekranit, si pjesë e anështyllës së { -brand-shorter-name }.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Një dritare shfletuesi që shfaq skeda përgjatë anës së ekranit, si pjesë e anështyllës së { -brand-shorter-name }.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Një dritare shfletuesi që i shfaq skeda përgjatë kreut.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Një dritare shfletuesi që i shfaq skeda përgjatë kreut.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Provoni te anështylla një robot IA fjalosjesh
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Krijoni përmbledhje lënde web, përftoni ide të reja, hartoni mesazhe — krejt kjo teksa shfletoni. Zgjidhni prej shërbimesh të ndryshme. Ndërroni mënyrën kur të doni. <a data-l10n-name="learn-more">Mësoni më tepër</a>
+onboarding-genai-sidebar-primary-button = Zgjidhni një robot fjalosjesh
+onboarding-genai-sidebar-secondary-button = Nisni shfletimin
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Përfundoni ujdisjen e { -brand-short-name }
+onboarding-checklist-subtitle = Përfundoni këta hapa që të përfitoni maksimumin nga puna juaj me shfletuesin.
+onboarding-checklist-set-default = Vëreni { -brand-short-name }-in si shfletuesin parazgjedhje
+onboarding-checklist-pin = Fiksoje { -brand-short-name }-in te paneli
+onboarding-checklist-import = Importo prej shfletuesi të mëparshëm
+onboarding-checklist-extension = Shtoni një zgjerim
+onboarding-checklist-sign-up = Regjistrohuni, ose bëni hyrjen te llogaria juaj
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Provoni grupe skedash për më pak rrëmujë, më tepër përqendrim
+tab-groups-onboarding-feature-callout-subtitle = Sistemoni gjërat, duke tërhequr një skedë mbi një tjetër, që të krijoni grupin tuaj të parë.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Përshëndetni profilet { -brand-product-name }
+multi-profile-spotlight-body = Kaloni kollaj nga shfletimi për punë në atë për qejf dhe anasjelltas. Profilet e mbajnë informacionin e shfletimit tuaj, përfshi historik kërkimesh dhe fjalëkalime, tërësisht veçmas, që të mund të jini të sistemuar.
+multi-profile-spotlight-cta = Krijoni profil
+multi-profile-callout-title = Krijoni profile ndaras për punë dhe zbavitje
+multi-profile-callout-subtitle = Profilet ju lejojnë të mbani tërësisht ndaras informacione të shfletimit tuaj, bie fjala, historik kërkimesh dhe fjalëkalime.
+multi-profile-callout-cta = Krijoni profil

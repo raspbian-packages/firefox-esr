@@ -13,6 +13,18 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = { $title } - { $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] Закрыць картку
+            [few] Закрыць { $tabCount } карткі
+           *[many] Закрыць { $tabCount } картак
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -67,6 +79,16 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[many] Прайграць { $tabCount } картак
         }
 
+## Tooltips for tab audio control
+
+tabbrowser-unmute-tab-audio-aria-label =
+    .aria-label = Раз-цішыць картку
+tabbrowser-mute-tab-audio-aria-label =
+    .aria-label = Сцішыць картку
+# Used to unblock a tab with audio from autoplaying
+tabbrowser-unblock-tab-audio-aria-label =
+    .aria-label = Прайграць картку
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -80,6 +102,7 @@ tabbrowser-confirm-close-tabs-title =
        *[many] Закрыць { $tabCount } картак?
     }
 tabbrowser-confirm-close-tabs-button = Закрыць карткі
+tabbrowser-ask-close-tabs-checkbox = Пытаць перад закрыццём некалькіх картак
 tabbrowser-confirm-close-tabs-checkbox = Пытаць пацвярджэнне пры закрыцці некалькіх картак
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -107,7 +130,21 @@ tabbrowser-confirm-close-tabs-with-key-title = Закрыць акно і вый
 tabbrowser-confirm-close-tabs-with-key-button = Выйсці з { -brand-short-name }
 # Variables:
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
+tabbrowser-ask-close-tabs-with-key-checkbox = Пытаць пацвярджэнне пры выхадзе з дапамогай { $quitKey }
+# Variables:
+#   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = Пытаць пацвярджэнне пры выхадзе з дапамогай { $quitKey }
+
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+tabbrowser-confirm-close-warn-shortcut-title = Выйсці з { -brand-short-name } ці закрыць актыўную картку?
+tabbrowser-confirm-close-windows-warn-shortcut-button =
+    { PLATFORM() ->
+        [windows] Выйсці з { -brand-short-name }
+       *[other] Выйсці з { -brand-short-name }
+    }
+tabbrowser-confirm-close-tab-only-button = Закрыць актыўную картку
 
 ## Confirmation dialog when opening multiple tabs simultaneously
 
@@ -184,3 +221,102 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = Раз-цішыць картку
 tabbrowser-manager-close-tab =
     .tooltiptext = Закрыць картку
+
+## Tab Groups
+
+tab-group-editor-title-create = Стварыць групу картак
+tab-group-editor-title-edit = Кіраваць групай картак
+tab-group-editor-name-label = Назва
+tab-group-editor-name-field =
+    .placeholder = Прыклад: Шопінг
+tab-group-editor-cancel =
+    .label = Скасаваць
+    .accesskey = С
+tab-group-editor-color-selector =
+    .aria-label = Колер групы картак
+tab-group-editor-color-selector-blue = Сіні
+tab-group-editor-color-selector-purple = Фіялетавы
+tab-group-editor-color-selector-cyan = Блакітны
+tab-group-editor-color-selector-orange = Аранжавы
+tab-group-editor-color-selector-yellow = Жоўты
+tab-group-editor-color-selector-pink = Ружовы
+tab-group-editor-color-selector-green = Зялёны
+tab-group-editor-color-selector-gray = Шэры
+tab-group-editor-color-selector-red = Чырвоны
+tab-group-menu-header = Групы картак
+tab-context-unnamed-group =
+    .label = Група без назвы
+tab-group-name-default = Група без назвы
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-context-move-tab-to-new-group =
+    .label =
+        { $tabCount ->
+            [1] Дадаць картку ў новую групу
+            [one] Дадаць картку ў новую групу
+            [few] Дадаць карткі ў новую групу
+           *[many] Дадаць карткі ў новую групу
+        }
+    .accesskey = п
+tab-context-move-tab-to-group =
+    .label =
+        { $tabCount ->
+            [1] Дадаць картку ў групу
+            [one] Дадаць картку ў групу
+            [few] Дадаць карткі ў групу
+           *[many] Дадаць карткі ў групу
+        }
+    .accesskey = п
+tab-group-editor-action-new-tab =
+    .label = Новая картка ў групе
+tab-group-editor-action-new-window =
+    .label = Перанесці групу ў новае акно
+tab-group-editor-action-save =
+    .label = Захаваць і закрыць групу
+tab-group-editor-action-ungroup =
+    .label = Разгрупаваць карткі
+tab-group-editor-action-delete =
+    .label = Выдаліць групу
+tab-group-editor-done =
+    .label = Гатова
+    .accessKey = в
+tab-context-reopen-tab-group =
+    .label = Пераадкрыць групу картак
+# Variables:
+#  $groupCount (Number): the number of tab groups that are affected by the action.
+tab-context-ungroup-tab =
+    .label =
+        { $groupCount ->
+            [1] Выдаліць з групы
+            [one] Выдаліць з групы
+            [few] Выдаліць з груп
+           *[many] Выдаліць з груп
+        }
+    .accesskey = В
+
+## Open/saved tab group context menu
+
+# For a tab group open in any window, clicking this will create a new
+# window and move this tab group to that new window.
+tab-group-context-move-to-new-window =
+    .label = Перанесці групу ў новае акно
+# For a tab group open in a different window from the one that the
+# user is using to access the tab group menu, move that tab group into the
+# user's current window.
+tab-group-context-move-to-this-window =
+    .label = Перанесці групу ў гэта акно
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = Выдаліць групу
+# For a saved tab group that is not open in any window, open the tab group
+# in the user's current window.
+tab-group-context-open-saved-group-in-this-window =
+    .label = Адкрыць групу ў гэтым акне
+# For a saved tab group that is not open in any window, create a new window and
+# open the tab group in that window.
+tab-group-context-open-saved-group-in-new-window =
+    .label = Адкрыць групу ў новым акне

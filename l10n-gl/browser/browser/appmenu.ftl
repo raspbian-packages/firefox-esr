@@ -77,6 +77,10 @@ appmenu-remote-tabs-turn-on-sync =
 appmenu-remote-tabs-showmore =
     .label = Mostrar máis lapelas
     .tooltiptext = Amosar máis lapelas deste dispositivo
+# This is shown as the label for an element to show inactive tabs from this device.
+appmenu-remote-tabs-show-inactive-tabs =
+    .label = Lapelas inactivas
+    .tooltiptext = Ver as lapelas inactivas neste dispositivo
 # This is shown beneath the name of a device when that device has no open tabs
 appmenu-remote-tabs-notabs = Ningunha lapela aberta
 # This is shown when Sync is configured but syncing tabs is disabled.
@@ -104,8 +108,11 @@ appmenu-fxa-sync-and-save-data2 = Sincronizar e gardar datos
 appmenu-fxa-signed-in-label = Identificarse
 appmenu-fxa-setup-sync =
     .label = Activar a sincronización
+appmenu-fxa-setup-sync-new = Activar
 appmenuitem-save-page =
     .label = Gardar páxina como…
+appmenuitem-fxa-sync-off-title = A sincronización está desactivada
+appmenuitem-fxa-sync-off-description = Protexe e accede aos teus marcadores, contrasinais e moito máis en calquera lugar.
 
 ## What's New panel in App menu.
 
@@ -192,6 +199,8 @@ profiler-popup-presets-power-description = Preestablecido para investigar erros 
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = Enerxía
+profiler-popup-presets-debug-label =
+    .label = Depurar
 profiler-popup-presets-custom-label =
     .label = Personalizado
 
@@ -269,5 +278,17 @@ appmenuitem-sign-in-account = Acceda á súa conta
 appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Recibir alertas sobre filtracións de datos
 appmenuitem-relay-title = { -relay-brand-short-name }
+appmenuitem-relay-description = Oculte o seu correo electrónico e teléfono reais
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Protexa a súa actividade en liña
+
+## Profiles panel
+
+appmenu-profiles = Perfís
+appmenu-other-profiles = Outros perfís
+appmenu-manage-profiles =
+    .label = Xestionar perfís
+appmenu-create-profile =
+    .label = Novo perfil
+appmenu-edit-profile =
+    .aria-label = Editar perfil

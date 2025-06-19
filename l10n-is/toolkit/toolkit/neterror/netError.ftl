@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = Lokuð síða
 neterror-captive-portal-page-title = Innskráning á net
 neterror-dns-not-found-title = Netþjónn fannst ekki
 neterror-malformed-uri-page-title = Ógild slóð (URL)
+general-body-title = Farðu varlega. Eitthvað lítur ekki út fyrir að vera rétt.
 
 ## Error page actions
 
@@ -41,6 +42,8 @@ neterror-generic-error = Af einhverri ástæðu getur { -brand-short-name } ekki
 neterror-load-error-try-again = Vefsvæðið er kannski ekki aðgengilegt eins og stendur eða er upptekið. Reyndu aftur seinna.
 neterror-load-error-connection = Ef þú getur ekki hlaðið inn neinni síðu, athugaðu þá nettengingu tölvunnar.
 neterror-load-error-firewall = Ef tölvan eða netið er varið af eldvegg eða milliþjóni, athugaðu þá hvort { -brand-short-name } hafi aðgang til þess að fara á netið.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Ef þú ert að reyna að hlaða inn vefsíðu af staðarneti, skaltu athuga hvort { -brand-short-name } hafi fengið heimildir fyrir staðarnet í persónuverndar- og öryggisstillingum macOS.
 neterror-captive-portal = Þú verður að skrá þig inn á þetta netkerfi áður en þú færð aðgang að Internetinu.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +67,7 @@ neterror-dns-not-found-trr-offline = Þú ert ekki tengd/ur við internetið.
 neterror-dns-not-found-trr-unknown-host2 = { $trrDomain } fann ekki þetta vefsvæði .
 neterror-dns-not-found-trr-server-problem = Það kom upp vandamál með { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = Ógild slóð (URL).
+neterror-dns-not-found-system-sleep = Kerfið er í svefnham.
 neterror-dns-not-found-trr-unknown-problem = Óvænt vandamál.
 
 ## Native fallback specific messages
@@ -147,3 +151,11 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Ef þú kannast ekki við <
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> er með öryggisstefnu sem kallast HTTP Strict Transport Security (HSTS), sem þýðir að { -brand-short-name } getur aðeins tengst því á öruggan hátt. Þú getur ekki bætt við undantekningu til að heimsækja þetta vefsvæði.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Sennilega ekkert, þar sem það er líklegt að vandamál sé með síðuna sjálfa.
+certerror-blocked-by-corp-headers-description = Stundum setja vefsvæði upp varnir, fyrir sjálf sig og fólk eins og þig, gegn óæskilegum samskiptum við önnur vefsvæði.
+certerror-coop-learn-more = Frekari upplýsingar um Cross Origin Opener Policies (COOP)
+certerror-coep-learn-more = Frekari upplýsingar um Cross Origin Embedder Policies (COEP)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Villukóði: { $responsestatus } { $responsestatustext }

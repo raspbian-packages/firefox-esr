@@ -108,8 +108,11 @@ appmenu-fxa-sync-and-save-data2 = Ҳамоҳангсозӣ ва нигоҳ до�
 appmenu-fxa-signed-in-label = Ворид шудан
 appmenu-fxa-setup-sync =
     .label = Фаъол кардани ҳамоҳангсозӣ…
+appmenu-fxa-setup-sync-new = Фаъол кардан
 appmenuitem-save-page =
     .label = Нигоҳ доштани саҳифа ҳамчун…
+appmenuitem-fxa-sync-off-title = Ҳамоҳангсозӣ ғайрифаъол аст
+appmenuitem-fxa-sync-off-description = Ба хатбаракҳо, ниҳонвожаҳо ва чизҳои дигар аз ҷойҳои дилхоҳ дастрасӣ пайдо намоед ва онҳоро ҳифз намоед.
 
 ## What's New panel in App menu.
 
@@ -126,7 +129,7 @@ whatsnew-panel-footer-checkbox =
 
 profiler-popup-button-idle =
     .label = Профилсоз
-    .tooltiptext = Профили самаранокро сабт кунед
+    .tooltiptext = Профили самаранокиро сабт кунед
 profiler-popup-button-recording =
     .label = Профилсоз
     .tooltiptext = Профилсоз профилеро сабт карда истодааст
@@ -196,6 +199,7 @@ profiler-popup-presets-power-description = Танзимот барои тафт�
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = Қувва
+profiler-popup-presets-debug-description = Танзими пешбинишуда барои ислоҳ кардани хатоҳо дар «{ -brand-shorter-name }». Ба сабаби хароҷоти изофӣ, аз он барои кори самаранок истифода набаред, аммо аз он барои таваҷҷуҳ ба фаҳмидани рафтори браузер истифода баред.
 profiler-popup-presets-debug-label =
     .label = Ислоҳ кардани хатоҳо
 profiler-popup-presets-custom-label =
@@ -276,5 +280,19 @@ appmenuitem-monitor-title = { -monitor-brand-short-name }
 appmenuitem-monitor-description = Гирифтани огоҳӣ дар бораи дӯздӣ кардани маълумот
 appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Почтаи электронӣ ва рақами телефони воқеии худро бо ниқоб пинҳон намоед
+appmenuitem-services-relay-description = Оғоз кардани лавҳаи вазъияти ниқобҳои почтаи электронӣ
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Фаъолияти худро дар Интернет муҳофизат намоед
+appmenu-services-header = Хизматҳои ман
+appmenu-other-protection-header = Абзорҳои муҳофизати дигарро аз ҷониби «{ -vendor-short-name }» кӯшиш намоед:
+
+## Profiles panel
+
+appmenu-profiles = Профилҳо
+appmenu-other-profiles = Профилҳои дигар
+appmenu-manage-profiles =
+    .label = Идоракунии профилҳо
+appmenu-create-profile =
+    .label = Профили нав
+appmenu-edit-profile =
+    .aria-label = Таҳрир кардани профил

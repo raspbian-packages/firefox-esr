@@ -59,9 +59,15 @@ contentanalysis-error-message-dropped-text = ਡਰੈਗ ਅਤੇ ਡਰੌਪ
 contentanalysis-error-message-clipboard = ਚੇਪਣ ਤੋਂ ਇਨਕਾਰ ਹੈ।
 contentanalysis-error-message-print = ਛਾਪਣ ਦੇਣ ਤੋਂ ਇਨਕਾਰ ਹੈ।
 contentanalysis-block-dialog-title-upload-file = ਤੁਹਾਨੂੰ ਇਹ ਫ਼ਾਇਲ ਅੱਪਲੋਡ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ
+# Variables:
+#   $filename - Name of the file that was blocked, such as "aFile.txt"
+contentanalysis-block-dialog-body-upload-file = ਤੁਹਾਡੇ ਸੰਗਠਨ ਦੀਆਂ ਡਾਟਾ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਦੇ ਤਹਿਤ ਤੁਹਾਨੂੰ “{ $filename }” ਫਾਇਲ ਅੱਪਲੋਡ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪਰਸ਼ਾਸ਼ਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।
 contentanalysis-block-dialog-title-clipboard = ਤੁਹਾਨੂੰ ਇਹ ਸਮੱਗਰੀ ਚੇਪਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ
+contentanalysis-block-dialog-body-clipboard = ਤੁਹਾਡੇ ਸੰਗਠਨ ਦੀਆਂ ਡਾਟਾ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਦੇ ਤਹਿਤ ਤੁਹਾਨੂੰ ਇਹ ਸਮੱਗਰੀ ਚੇਪਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪਰਸ਼ਾਸ਼ਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।
 contentanalysis-block-dialog-title-dropped-text = ਤੁਹਾਨੂੰ ਇਹ ਸਮੱਗਰੀ ਸੁੱਟਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ
+contentanalysis-block-dialog-body-dropped-text = ਤੁਹਾਡੇ ਸੰਗਠਨ ਦੀਆਂ ਡਾਟਾ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਦੇ ਤਹਿਤ ਤੁਹਾਨੂੰ ਇਹ ਸਮੱਗਰੀ ਨੂੰ ਡਰੈਗ ਡਰੌਪ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪਰਸ਼ਾਸ਼ਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।
 contentanalysis-block-dialog-title-print = ਤੁਹਾਨੂੰ ਇਸ ਦਸਤਾਵੇਜ਼ ਨੂੰ ਪਰਿੰਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ
+contentanalysis-block-dialog-body-print = ਤੁਹਾਡੇ ਸੰਗਠਨ ਦੀਆਂ ਡਾਟਾ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਦੇ ਤਹਿਤ ਤੁਹਾਨੂੰ ਇਸ ਦਸਤਾਵੇਜ਼ ਨੂੰ ਪਰਿੰਟ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਆਪਣੇ ਪਰਸ਼ਾਸ਼ਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।
 contentanalysis-inprogress-quit-title = { -brand-shorter-name } ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?
 contentanalysis-inprogress-quit-message = ਕਈ ਕਾਰਵਾਈਆਂ ਚੱਲ ਰਹੀਆਂ ਹਨ। ਜੇ ਤੁਸੀਂ { -brand-shorter-name } ਨੂੰ ਬੰਦ ਕੀਤਾ ਤਾਂ ਇਹ ਕਾਰਵਾਈਆਂ ਪੂਰੀਆਂ ਨਹੀਂ ਹੋਣਗੀਆਂ।
 contentanalysis-inprogress-quit-yesbutton = ਹਾਂ, ਬਾਹਰ

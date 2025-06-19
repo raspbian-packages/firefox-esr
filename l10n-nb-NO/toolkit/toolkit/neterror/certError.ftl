@@ -5,98 +5,93 @@
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 cert-error-intro = { $hostname } bruker et ugyldig sikkerhetssertifikat.
-
 cert-error-mitm-intro = Nettsteder beviser sin identitet via sertifikater, som utstedes av sertifikatmyndigheter.
-
 cert-error-mitm-mozilla = { -brand-short-name } er støttet av den ideelle organisasjonen Mozilla, som driver en fullstendig åpen database for sertifiseringsmyndigheter (CA Store). Denne databasen bidrar til å sikre at sertifiseringsmyndighetene overholder brukerens beste praksis for brukersikkerhet.
-
 cert-error-mitm-connection = { -brand-short-name } bruker Mozilla sin database for sertifiseringsmyndigheter (CA Store) for å bekrefte om en forbindelse er trygg, istedenfor sertifikat som leveres av brukerens operativsystem. Så om et antivirusprogram eller et nettverk avlytter en tilkobling med et sikkerhetssertifikat utstedt av en sertifiseringsmyndighet som ikke finnes i Mozillas database, anses forbindelsen som usikker.
-
 cert-error-trust-unknown-issuer-intro = Noen kan prøve å etterligne nettstedet, og du bør ikke fortsette.
-
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 cert-error-trust-unknown-issuer = Nettsteder beviser identiteten sin via sertifikater. { -brand-short-name } stoler ikke på { $hostname } fordi sertifikatutstederen er ukjent, sertifikatet er selv-signert, eller fordi serveren ikke sender de rette mellomsertifikatene.
-
 cert-error-trust-cert-invalid = Sertifikatet er ikke tiltrodd fordi det er utstedt av et ugyldig CA-sertifikat.
-
 cert-error-trust-untrusted-issuer = Sertifikatet er ikke tiltrodd fordi utstedersertifikatet ikke er tiltrodd.
-
 cert-error-trust-signature-algorithm-disabled = Sertifikatet er ikke tiltrodd fordi det ble signert med en signaturalgoritme som er avslått fordi algoritmen ikke er sikker.
-
 cert-error-trust-expired-issuer = Sertifikatet er ikke tiltrodd fordi utstedersertifikatet har gått ut på dato.
-
 cert-error-trust-self-signed = Sertifikatet er ikke tiltrodd fordi det er selvsignert.
-
 cert-error-trust-symantec = Sertifikater utstedt av GeoTrust, RapidSSL, Symantec, Thawte og VeriSign anses ikke lenger som trygge fordi disse sertifikatmyndighetene ikke klarte å følge sikkerhetspraksis tidligere.
-
+# Variables:
+#   $hostname (string) - Hostname of the website with cert error.
+cert-error-trust-certificate-transparency = { -brand-short-name } stoler ikke på { $hostname } fordi den ikke kunne bevise at den oppfyller kravene til offentlig sertifikatåpenhet.
 cert-error-untrusted-default = Sertifikatet kommer ikke fra en tiltrodd kilde.
-
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 cert-error-domain-mismatch = Nettsteder beviser identiteten sin via sertifikater. { -brand-short-name } stoler ikke på dette nettstedet fordi det bruker et sertifikat som ikke er gyldig for { $hostname }.
-
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $alt-name (string) - Alternate domain name for which the cert is valid.
 cert-error-domain-mismatch-single = Nettsteder beviser identiteten sin via sertifikater. { -brand-short-name } stoler ikke på dette nettstedet fordi det bruker et sertifikat som ikke er gyldig for { $hostname }. Sertifikatet er bare gyldig for <a data-l10n-name="domain-mismatch-link">{ $alt-name }</a>.
-
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $alt-name (string) - Alternate domain name for which the cert is valid.
 cert-error-domain-mismatch-single-nolink = Nettsteder beviser identiteten sin via sertifikater. { -brand-short-name } stoler ikke på dette nettstedet fordi det bruker et sertifikat som ikke er gyldig for { $hostname }. Sertifikatet er bare gyldig for { $alt-name }.
-
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $subject-alt-names (string) - Alternate domain names for which the cert is valid.
 cert-error-domain-mismatch-multiple = Nettsteder beviser identiteten sin via sertifikater. { -brand-short-name } stoler ikke på dette nettstedet fordi det bruker et sertifikat som ikke er gyldig for { $hostname }. Sertifikatet er bare gyldig for følgende navn: { $subject-alt-names }
-
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $not-after-local-time (Date) - Certificate is not valid after this time.
 cert-error-expired-now = Nettsteder bekrefter deres identitet ved hjelp av sikkerhets-sertifikater som er gyldige i en bestemt periode. Sertifikatet for { $hostname } utløp { $not-after-local-time }.
-
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 #   $not-before-local-time (Date) - Certificate is not valid before this time.
 cert-error-not-yet-valid-now = Nettsteder bekrefter deres identitet ved hjelp av sikkerhets-sertifikater som er gyldige i en bestemt periode. Sertifikatet for { $hostname } vil ikke være gyldig før { $not-before-local-time }.
-
 # Variables:
 #   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 cert-error-code-prefix = Feilkode: { $error }
-
 # Variables:
 #   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
 cert-error-code-prefix-link = Feilkode: <a data-l10n-name="error-code-link">{ $error }</a>
-
 # Variables:
 #   $hostname (string) - Hostname of the website with SSL error.
 #   $errorMessage (string) - Error message corresponding to the type of error we are experiencing.
 cert-error-ssl-connection-error = En feil oppstod under tilkobling til { $hostname }. { $errorMessage }
-
 # Variables:
 #   $hostname (string) - Hostname of the website with cert error.
 cert-error-symantec-distrust-description = Nettsteder viser sin identitet via sertifikater, som utstedes av sertifikatmyndigheter. De fleste nettlesere stoler ikke lenger på sertifikater utstedt av GeoTrust, RapidSSL, Symantec, Thawte og VeriSign. { $hostname } bruker et sertifikat fra en av disse myndighetene, og dermed kan nettstedets identitet ikke bevises.
-
 cert-error-symantec-distrust-admin = Du kan varsle nettstedets administrator om dette problemet.
-
 cert-error-old-tls-version = Dette nettstedet støtter kanskje ikke versjon 1.2 av TLS-protokollen, som er minimumsversjonen som støttes av { -brand-short-name }.
-
 # Variables:
 #   $hasHSTS (Boolean) - Indicates whether HSTS header is present.
 cert-error-details-hsts-label = HTTP Strict Transport Security: { $hasHSTS }
-
 # Variables:
 #   $hasHPKP (Boolean) - Indicates whether HPKP header is present.
 cert-error-details-key-pinning-label = HTTP Public Key Pinning: { $hasHPKP }
-
 cert-error-details-cert-chain-label = Sertifikatkjede:
-
 open-in-new-window-for-csp-or-xfo-error = Åpne nettsted i nytt vindu
-
 # Variables:
 #   $hostname (string) - Hostname of the website blocked by csp or xfo error.
 csp-xfo-blocked-long-desc = For å ta vare på sikkerheten din, vil { $hostname } ikke tillate at { -brand-short-name } viser siden hvis et annet nettsted har bygd den inn. For å se denne siden, må du åpne den i et nytt vindu.
+fp-certerror-view-certificate-link = Vis nettstedets sertifikat
+fp-certerror-return-to-previous-page-recommended-button = Gå tilbake (anbefalt)
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+fp-certerror-self-signed-what-can-you-do-body = Ikke mye. Det er sannsynlig at det er et problem med selve nettstedet.
+# This string appears after the following string: "What makes the site look dangerous?" (fp-certerror-why-site-dangerous)
+# Variables:
+#   $date (Date) - Certificate expiration date.
+fp-certerror-expired-why-dangerous-body = Nettsteder bruker sertifikater utstedt av en sertifikatutsteder for å bevise at de virkelig er den de sier de er. { -brand-short-name } stoler ikke på dette nettstedet fordi det ser ut til at sertifikatet utløp { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") }.
+# This string appears after the following string: "What can you do about it?" (fp-certerror-what-can-you-do)
+# Variables:
+#   $date (Date) - Clock date.
+fp-certerror-expired-what-can-you-do-body = Enhetens klokke er satt til { DATETIME($date, month: "numeric", day: "numeric", year: "numeric") }. Hvis dette er riktig, er sikkerhetsproblemet sannsynligvis med selve nettstedet. Hvis det er feil, kan du endre det i enhetens systeminnstillinger.
+# Variables:
+#   $error (string) - NSS error code string that specifies type of cert error. e.g. unknown issuer, invalid cert, etc.
+fp-cert-error-code = Feilkode: { $error }
+# Variables:
+#   $datetime (Date) - Current datetime.
+fp-datetime = { DATETIME($datetime, month: "short", year: "numeric", day: "numeric") } { DATETIME($datetime, timeStyle: "long") }
+fp-learn-more-about-secure-connection-failures = Les mer om feil med sikker tilkobling
+fp-learn-more-about-cert-issues = Les mer om slike sertifikatproblemer
+fp-learn-more-about-time-related-errors = Finn ut mer om feilsøking av tidsrelaterte feil
 
 ## Messages used for certificate error titles
 
@@ -105,10 +100,8 @@ deniedPortAccess-title = Tilgang til denne adressen er begrenset
 # "Hmm" is a sound made when considering or puzzling over something.
 # You don't have to include it in your translation if your language does not have a written word like this.
 dnsNotFound-title = Hmm. Vi har problemer med å finne nettstedet.
-
 dns-not-found-trr-only-title2 = Mulig sikkerhetsrisiko ved å søke opp dette domenet
 dns-not-found-native-fallback-title2 = Mulig sikkerhetsrisiko ved å søke opp dette domenet
-
 fileNotFound-title = Fil ikke funnet
 fileAccessDenied-title = Tilgang til filen ble nektet
 generic-title = Ops.
@@ -123,6 +116,7 @@ contentEncodingError-title = Feil med tegnkoding
 unsafeContentType-title = Utrygg filtype
 netReset-title = Tilkoblingen ble avbrutt
 netTimeout-title = Tilkoblingen fikk tidsavbrudd
+serverError-title = Det ser ut til at det er et problem med dette nettstedet
 unknownProtocolFound-title = Klarte ikke forstå adressen
 proxyConnectFailure-title = Proxy godtar ikke tilkoblinger
 proxyResolveFailure-title = Klarte ikke finne proxy
@@ -139,3 +133,20 @@ networkProtocolError-title = Nettverksprotokollfeil
 nssBadCert-title = Advarsel: Potensiell sikkerhetsrisiko forut
 nssBadCert-sts-title = Koblet ikke til: Potensielt sikkerhetsproblem
 certerror-mitm-title = Programvare hindrer { -brand-short-name } fra sikker tilkobling til dette nettstedet
+
+## Felt Privacy V1 Strings
+
+fp-certerror-page-title = Advarsel: Sikkerhetsrisiko
+fp-certerror-body-title = Vær forsiktig. Noe ser ikke riktig ut.
+fp-certerror-why-site-dangerous = Hva får siden til å se farlig ut?
+fp-certerror-what-can-you-do = Hva kan du gjøre med det?
+fp-certerror-advanced-title = Avansert
+fp-certerror-advanced-button = Avansert
+fp-certerror-hide-advanced-button = Skjul avansert
+
+## Variables:
+##   $hostname (String) - Hostname of the website to which the user was trying to connect.
+
+fp-certerror-override-exception-button = Fortsett til { $hostname } (risikofylt)
+fp-certerror-intro = { -brand-short-name } oppdaget et potensielt alvorlig sikkerhetsproblem med <strong>{ $hostname }</strong>. Noen som utgir seg for å være nettstedet kan prøve å stjele ting som kredittkortinformasjon, passord eller e-poster.
+fp-certerror-expired-into = { -brand-short-name } oppdaget et sikkerhetsproblem med <strong>{ $hostname }</strong>. Enten er nettstedet ikke konfigurert riktig eller enhetens klokke er satt til feil dato/tid.

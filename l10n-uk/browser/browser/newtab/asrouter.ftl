@@ -249,6 +249,9 @@ device-migration-fxa-spotlight-older-device-primary-button = Створити о
 device-migration-fxa-spotlight-getting-new-device-header-2 = Новий пристрій у майбутньому?
 device-migration-fxa-spotlight-getting-new-device-body-2 = Виконайте кілька простих кроків, щоб синхронізувати свої закладки, історію та паролі з іншими пристроями.
 device-migration-fxa-spotlight-getting-new-device-primary-button = Як створити резервну копію моїх даних
+device-migration-fxa-spotlight-sync-header = Переглядайте, не пропускаючи жодного моменту
+device-migration-fxa-spotlight-sync-body = Синхронізуйте всю важливу інформацію із шифруванням, як-от закладки та паролі. Ви можете отримати доступ до синхронізованих даних всюди, де використовуєте { -brand-product-name }.
+device-migration-fxa-spotlight-sync-primary-button = Розпочати
 
 ## Set as Default PDF Reader Infobar
 
@@ -263,7 +266,7 @@ pdf-default-notification-decline-button =
 
 launch-on-login-infobar-message = <strong>Відкривати { -brand-short-name } щоразу, коли ви перезапускаєте комп'ютер?</strong> Тепер ви можете налаштувати { -brand-short-name } на автоматичне відкриття під час перезапуску пристрою.
 launch-on-login-learnmore = Докладніше
-launch-on-login-infobar-confirm-button = Так, відкрити { -brand-short-name }
+launch-on-login-infobar-confirm-button = Так, відкривати { -brand-short-name }
     .accesskey = Т
 launch-on-login-infobar-reject-button = Не зараз
     .accesskey = Н
@@ -285,3 +288,61 @@ tail-fox-spotlight-title = Тримайте надокучливі елемен�
 tail-fox-spotlight-subtitle = Попрощайтеся з надокучливим стеженням реклами та приготуйтеся до безпечнішої та швидшої роботи в інтернеті.
 tail-fox-spotlight-primary-button = Відкривати посилання в { -brand-short-name }
 tail-fox-spotlight-secondary-button = Не зараз
+
+## Root Certificate Succession Infobar
+
+root-certificate-succession-infobar-january-message = <strong>Починаючи з 14 січня 2025 року, в старіших версіях { -brand-short-name } можуть виникати проблеми.</strong>
+root-certificate-succession-infobar-march-message = <strong>Оновіть, щоб і надалі використовувати { -brand-short-name } після 14 березня 2025 року.</strong>
+root-certificate-succession-infobar-link = Чому мені потрібно оновлювати?
+root-certificate-succession-infobar-primary-button =
+    .label = Оновити зараз
+    .accesskey = О
+root-certificate-succession-infobar-secondary-button =
+    .label = Пізніше
+    .accesskey = П
+
+## Root Certificate Succession Windows Background Notification
+
+root-certificate-windows-background-notification-title = Ви пропустили важливе оновлення { -brand-short-name }
+root-certificate-windows-background-notification-subtitle = Якщо ви не оновите, деякі функції браузера незабаром припинять роботу. Саме час отримати наші найновіші функції та захист.
+root-certificate-windows-background-notification-learn-more-button = Докладніше
+root-certificate-windows-background-notification-update-button = Оновити { -brand-short-name }
+
+## FxA Menu Message variants
+
+fxa-menu-message-close-button =
+    .title = Закрити
+    .aria-label = З
+fxa-menu-message-sign-up-button = Зареєструватись
+fxa-menu-message-sync-devices-primary-text = Синхронізуйте всі свої пристрої
+fxa-menu-message-sync-devices-secondary-text = Миттєво отримуйте свої дані, як-от закладки та паролі, всюди, де ви використовуєте { -brand-short-name }.
+fxa-menu-message-sync-devices-collapsed-text = Синхронізуйте всі свої пристрої
+fxa-menu-message-backup-data-primary-text = Створіть резервну копію даних браузера
+fxa-menu-message-backup-data-secondary-text = Автоматично захищайте закладки, паролі та інші дані на всіх своїх пристроях.
+fxa-menu-message-backup-data-collapsed-text = Створіть резервну копію даних браузера
+fxa-menu-message-backup-sync-primary-text = Безпечно зберігайте і синхронізуйте свої дані
+fxa-menu-message-backup-sync-secondary-text = За допомогою синхронізації створюється резервна копія ваших даних, щоб ви могли отримати до них доступ усюди, де використовуєте { -brand-short-name }.
+fxa-menu-message-backup-sync-collapsed-text = Синхронізація та резервне копіювання даних
+fxa-menu-message-mobile-primary-text = Надсилайте вкладки на телефон
+fxa-menu-message-mobile-secondary-text = Миттєво продовжуйте з того місця, де зупинилися, синхронізувавши свої вкладки з мобільним пристроєм.
+fxa-menu-message-mobile-collapsed-text = Синхронізуйте зі своїм телефоном
+
+## Multi-CTA Fox Doodle Spotlight
+
+multi-cta-fox-doodle-title = З поверненням
+multi-cta-fox-doodle-set-default-checkbox = Встановити { -brand-short-name } типовим
+multi-cta-fox-doodle-pin-startmenu-checkbox = Закріпити { -brand-short-name } у меню Пуск
+multi-cta-fox-doodle-pin-checkbox =
+    { PLATFORM() ->
+        [macos] Закріпити { -brand-short-name } у Dock
+       *[other] Закріпити { -brand-short-name } на панелі завдань
+    }
+multi-cta-fox-doodle-start-browsing-primary-button-label = Почати перегляд
+multi-cta-fox-doodle-main-browser-primary-button-label = Зробити { -brand-short-name } моїм основним браузером
+multi-cta-fox-doodle-quick-reminder-subtitle = Це швидке нагадування про те, що ви можете тримати завжди під рукою свій улюблений, орієнтований на приватність браузер.
+multi-cta-fox-doodle-privacy-focused-subtitle =
+    { PLATFORM() ->
+        [macos] Тримайте улюблений, орієнтований на приватність браузер на відстані одного натискання. Встановіть { -brand-short-name } типовим браузером для відкриття посилань і закріпіть його в Dock.
+       *[other] Тримайте улюблений, орієнтований на приватність браузер на відстані одного натискання. Встановіть { -brand-short-name } типовим браузером для відкриття посилань і закріпіть його на панель завдань.
+    }
+multi-cta-fox-doodle-msix-privacy-focused-subtitle = Тримайте улюблений, орієнтований на приватність браузер на відстані одного натискання. Встановіть { -brand-short-name } типовим браузером для відкриття посилань і закріпіть його на панель завдань і в меню Пуск.

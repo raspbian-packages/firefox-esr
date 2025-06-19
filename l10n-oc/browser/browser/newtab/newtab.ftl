@@ -8,11 +8,18 @@
 newtab-page-title = Onglet novèl
 newtab-settings-button =
     .title = Personalizar la pagina Onglet novèl
+newtab-personalize-settings-icon-label =
+    .title = Personalizar la pagina onglet novèl
+    .aria-label = Paramètres
+newtab-settings-dialog-label =
+    .aria-label = Paramètres
 newtab-personalize-icon-label =
     .title = Personalizacion de la pagina onglet novèl
     .aria-label = Personalizacion de la pagina onglet novèl
 newtab-personalize-dialog-label =
     .aria-label = Personalizar
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,7 @@ newtab-menu-save-to-pocket = Enregistrar dins { -pocket-brand-name }
 newtab-menu-delete-pocket = Suprimir de { -pocket-brand-name }
 newtab-menu-archive-pocket = Archivar dins { -pocket-brand-name }
 newtab-menu-show-privacy-info = Nòstres esponsòrs e vòstra vida privada
+newtab-menu-about-fakespot = A prepaus de { -fakespot-brand-name }
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -195,6 +203,7 @@ newtab-section-header-recent-activity = Activitat recenta
 # Variables:
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Recomandat per { $provider }
+newtab-section-header-stories = Articles suggerits
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -223,12 +232,14 @@ newtab-pocket-learn-more = Ne saber mai
 newtab-pocket-cta-button = Installar { -pocket-brand-name }
 newtab-pocket-cta-text = Enregistratz vòstres articles preferits dins { -pocket-brand-name } e garissètz vòstre esperit amb de lecturas fascinantas.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } fa part de la familha { -brand-product-name }
-# A save to Pocket button that shows over the card thumbnail on hover.
 newtab-pocket-save = Enregistrar
 newtab-pocket-saved = Enregistrada
 
 ## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
 
+newtab-toast-dismiss-button =
+    .title = Ignorar
+    .aria-label = Ignorar
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
 
@@ -277,9 +288,11 @@ newtab-wallpaper-title = Fonzes
 newtab-wallpaper-reset = Reïnicializar
 newtab-wallpaper-light-red-panda = Panda ros
 newtab-wallpaper-light-mountain = Montanha blanca
+newtab-wallpaper-light-color = Fòrmas blavas, ròsas e jaunas
 
 ## Solid Colors
 
+newtab-wallpaper-category-title-colors = Colors unidas
 newtab-wallpaper-blue = Blau
 newtab-wallpaper-light-blue = Blau clar
 newtab-wallpaper-light-purple = Violet clar
@@ -306,6 +319,20 @@ newtab-wallpaper-abstract-orange = Fòrmas iranjas
 
 ## Photographs
 
+newtab-wallpaper-category-title-photographs = Fotografias
+newtab-wallpaper-beach-at-sunrise = Plaja a l’alba
+newtab-wallpaper-storm-sky = Cèl auratjós
+newtab-wallpaper-white-mountains = Montanhas blancas
+newtab-wallpaper-feature-highlight-header = Ensajatz de colors novèlas
+newtab-wallpaper-feature-highlight-content = Donatz una aparéncia mai fresca a la pagina Onglets novèls amb un fons d’ecran.
+newtab-wallpaper-feature-highlight-button = Comprés
+# Tooltip for dismiss button
+feature-highlight-dismiss-button =
+    .title = Ignorar
+    .aria-label = Tampar la fenèstra
+feature-highlight-wallpaper =
+    .title = { -newtab-wallpaper-feature-highlight-header }
+    .aria-label = { -newtab-wallpaper-feature-highlight-content }
 
 ## New Tab Weather
 
@@ -313,7 +340,75 @@ newtab-wallpaper-abstract-orange = Fòrmas iranjas
 #   $provider (string) - Service provider for weather data
 newtab-weather-see-forecast =
     .title = Mostrar la prevision metèo de { $provider }
+# Variables:
+#   $provider (string) - Service provider for weather data
+newtab-weather-sponsored = { $provider } ∙ Esponsorizat
 newtab-weather-menu-change-location = Modificar lo luòc
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Cercar un luòc
+    .aria-label = Cercar un luòc
+newtab-weather-change-location-search-input = Cercar un luòc
+newtab-weather-menu-weather-display = Afichatge metèo
+# Display options are:
+# - Simple: Displays a current weather condition icon and the current temperature
+# - Detailed: Include simple information plus a short text summary: e.g. "Mostly cloudy"
+newtab-weather-menu-weather-display-option-simple = Simple
+newtab-weather-menu-change-weather-display-simple = Bascular a la vista simplificada
+newtab-weather-menu-weather-display-option-detailed = Detalhat
+newtab-weather-menu-change-weather-display-detailed = Bascular a la vista detalhada
 newtab-weather-menu-temperature-units = Unitats de temperatura
 newtab-weather-menu-temperature-option-fahrenheit = Fahrenheit
 newtab-weather-menu-temperature-option-celsius = Celsius
+newtab-weather-menu-change-temperature-units-fahrenheit = Passar en Fahrenheit
+newtab-weather-menu-change-temperature-units-celsius = Passar en Celsius
+newtab-weather-menu-learn-more = Ne saber mai
+
+## Topic Labels
+
+newtab-topic-label-business = Afars
+newtab-topic-label-career = Carrièra
+newtab-topic-label-education = Educacion
+newtab-topic-label-arts = Léser
+newtab-topic-label-food = Manjar
+newtab-topic-label-health = Santat
+newtab-topic-label-hobbies = Jòc vidèo
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Argent
+newtab-topic-label-society-parenting = Parents
+newtab-topic-label-government = Politica
+newtab-topic-label-education-science = Sciéncia
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Astúcias de vida
+newtab-topic-label-sports = Espòrts
+newtab-topic-label-tech = Tecnologia
+newtab-topic-label-travel = Viatge
+newtab-topic-label-home = Ostal e òrt
+
+## Topic Selection Modal
+
+newtab-topic-selection-save-button = Enregistrar
+newtab-topic-selection-cancel-button = Anullar
+newtab-topic-selection-button-maybe-later = Benlèu mai tard
+newtab-topic-selection-privacy-link = Descobrissètz cossí protegissèm e gerissèm vòstras donadas
+newtab-topic-selection-button-update-interests = Metre a jorn vòstres interèsses
+newtab-topic-selection-button-pick-interests = Causir vòstres interèsses
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

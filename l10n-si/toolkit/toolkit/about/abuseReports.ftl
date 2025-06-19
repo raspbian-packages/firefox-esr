@@ -15,7 +15,7 @@ abuse-report-title-theme = මෙම තේමාව { -vendor-short-name } ව�
 abuse-report-addon-authored-by = <a data-l10n-name="author-name">{ $author-name }</a> වෙතින්
 abuse-report-submit-description = ගැටලුව විස්තර කරන්න (විකල්පයකි)
 abuse-report-textarea =
-    .placeholder = නිශ්චිත කරුණක් තිබේ නම් අපට ගැටලුවක් විසඳීමට පහසුය. ඔබ අත්විඳින දේ විස්තර කරන්න. වියමන හිතකර අයුරින් තබා ගැනීම සඳහා අපට උදවු කිරීමට තුති.
+    .placeholder = නිශ්චිත කරුණක් තිබේ නම් අපට ගැටලුවක් විසඳීමට පහසුය. ඔබ අත්විඳින දේ විස්තර කරන්න. වියමන හිතකර අයුරින් තබා ගැනීම සඳහා අපට උදව් කිරීමට තුති.
 
 ## Panel buttons.
 
@@ -33,14 +33,6 @@ abuse-report-messagebar-aborted = <span data-l10n-name="addon-name">{ $addon-nam
 abuse-report-messagebar-submitting = <span data-l10n-name="addon-name">{ $addon-name }</span> සඳහා වාර්තාව යැවෙමින්.
 abuse-report-messagebar-submitted = යොමු කළ වාර්තාවට තුති. ඔබට <span data-l10n-name="addon-name">{ $addon-name }</span> ඉවත් කිරීමට අවශ්‍යද?
 abuse-report-messagebar-submitted-noremove = වාර්තාව යොමු කිරීමට තුති.
-abuse-report-messagebar-aborted2 =
-    .message = { $addon-name } සඳහා වාර්තාව අවලංගු කෙරිණි.
-abuse-report-messagebar-submitting2 =
-    .message = { $addon-name } සඳහා වාර්තාව යැවෙමින්.
-abuse-report-messagebar-submitted2 =
-    .message = යොමු කළ වාර්තාවට තුති. ඔබට { $addon-name } ඉවත් කිරීමට අවශ්‍යද?
-abuse-report-messagebar-submitted-noremove2 =
-    .message = වාර්තාව යොමු කිරීමට තුති.
 
 ## Message bars actions.
 
@@ -59,3 +51,7 @@ abuse-report-damage-reason-v2 = එය මාගේ පරිගණකයට හ
 abuse-report-settings-reason-v2 = එය මට දැනුම් දීමකින් හෝ විමසීමකින් තොරව මාගේ සෙවුම් යන්ත්‍රය, මුල් පිටුව හෝ නව පටිත්ත වෙනස් කෙරිණි
 abuse-report-settings-suggestions-search = ඔබගේ පෙරනිමි සෙවුම් සැකසුම් සංශෝධනය
 abuse-report-settings-suggestions-homepage = ඔබගේ මුල් පිටුව හා නව පටිත්ත සංශෝධනය
+abuse-report-broken-reason-extension-v2 = එය වැඩ නොකරයි, අඩවි කැඩී යයි හෝ { -brand-product-name } මන්දගාමී කරයි
+abuse-report-broken-reason-sitepermission-v2 = එය වැඩ නොකරයි, අඩවි කැඩී යයි හෝ { -brand-product-name } මන්දගාමී කරයි
+abuse-report-broken-example = උදාහරණ: විශේෂාංග මන්දගාමී, භාවිතයට අපහසුයි හෝ වැඩ නොකරයි; අඩවි වල කොටස් පූරණය නොවේ හෝ අසාමාන්‍ය ලෙස පෙනෙයි
+abuse-report-other-reason = වෙනත් යමක්

@@ -89,6 +89,9 @@ shopping-show-less-button = Kevesebb megjelenítése
 
 shopping-settings-label =
     .label = Beállítások
+shopping-settings-recommendations-toggle2 =
+    .label = Ajánlások és szponzorált tartalmak megjelenítése
+shopping-settings-recommendations-learn-more3 = A { -brand-product-name } nem osztja meg a személyes adatait, így ezek az ajánlások nem követik Önt az interneten. <a data-l10n-name="review-quality-url">További tudnivalók</a>
 shopping-settings-recommendations-toggle =
     .label = Reklámok megjelenítése az értékelés-ellenőrzőben
 shopping-settings-recommendations-learn-more2 = Alkalmanként releváns termékek hirdetéseit fogja látni. Csak megbízható értékeléssel rendelkező termékeket hirdetünk. <a data-l10n-name="review-quality-url">További tudnivalók</a>
@@ -164,6 +167,7 @@ shopping-unanalyzed-product-analyze-button = Értékelési minőség ellenőrzé
 
 more-to-consider-ad-label =
     .label = További megfontolandó információk
+shopping-sponsored-label = Szponzorált
 ad-by-fakespot = A { -fakespot-brand-name } hirdetése
 
 ## Shopping survey strings.
@@ -184,6 +188,18 @@ shopping-survey-submit-button-label = Elküldés
 shopping-survey-terms-link = Használati feltételek
 shopping-survey-thanks =
     .heading = Köszönjük visszajelzését!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Tudassa velünk, hogy miért kapcsolta ki az Értékelés-ellenőrzőt, Válasszon több lehetőséget, ha szükséges.
+shopping-survey-thanks-title = Köszönjük visszajelzését.
+shopping-survey-opted-out-hard-to-understand = Nehezen érthető
+shopping-survey-opted-out-too-slow = Túl lassú
+shopping-survey-opted-out-not-accurate = Nem pontos
+shopping-survey-opted-out-not-helpful = Nem hasznos számomra
+shopping-survey-opted-out-check-myself = Inkább magam ellenőrizném az értékeléseket
+shopping-survey-opted-out-other = Egyéb
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

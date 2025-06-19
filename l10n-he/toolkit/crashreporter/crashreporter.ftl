@@ -8,6 +8,7 @@ crashreporter-crashed-and-restore = ל־{ -brand-short-name } הייתה בעי�
 crashreporter-plea = כדי לעזור לנו לאבחן ולתקן את הבעיה, באפשרותך לשלוח לנו דיווח קריסה.
 crashreporter-information = יישום זה מופעל לאחר קריסה כדי לדווח על הבעיה ל־{ -vendor-short-name }.  אין להריץ אותו ישירות.
 crashreporter-error = ‏{ -brand-short-name } נתקל בבעיה וקרס. לרוע המזל, מדווח הקריסות לא יכול לשלוח את הדיווח עבור קריסה זו.
+crashreporter-error-details-header = פרטים:
 # $details (String) - the reason that a crash report cannot be submitted
 crashreporter-error-details = פרטים: { $details }
 crashreporter-no-run-message = יישום זה מופעל לאחר קריסה כדי לדווח על הבעיה ליצרן היישום.  אין צורך להריץ אותו ישירות.
@@ -45,4 +46,4 @@ crashreporter-error-no-home-dir = חסרה ספריית בית
 # $from (String) - the source path
 # $to (String) - the destination path
 crashreporter-error-moving-path = ההעברה מ־{ $from } אל { $to } נכשלה
-crashreporter-error-version-eol = סוף החיים של הגרסה: דוחות קריסה אינם מתקבלים עוד.
+crashreporter-error-version-eol = סוף החיים של הגרסה: דיווחי קריסה אינם מתקבלים עוד.

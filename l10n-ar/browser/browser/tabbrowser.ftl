@@ -13,6 +13,20 @@ tabbrowser-menuitem-close =
 #   $title (String): the title of the current tab.
 #   $containerName (String): the name of the current container.
 tabbrowser-container-tab-title = ‏{ $title } ‏- ‏{ $containerName }
+# This text serves as an on-screen tooltip as well as an accessible name for
+# the "X" button that is shown on the active tab or, when multiple tabs are
+# selected, to all their "X" buttons.
+# Variables:
+#   $tabCount (Number): The number of tabs that will be closed.
+tabbrowser-close-tabs-button =
+    .tooltiptext =
+        { $tabCount ->
+            [one] أغلِق اللسان
+            [two] أغلِق اللسانين
+            [few] أغلِق { $tabCount } ألسنة
+            [many] أغلِق { $tabCount } لسانا
+           *[other] أغلِق { $tabCount } لسان
+        }
 # Variables:
 #   $tabCount (Number): The number of tabs that will be closed.
 tabbrowser-close-tabs-tooltip =
@@ -79,6 +93,9 @@ tabbrowser-unblock-tab-audio-tooltip =
            *[other] شغِّل { $tabCount } لسان
         }
 
+## Tooltips for tab audio control
+
+
 ## Confirmation dialog when closing a window with more than one tab open,
 ## or when quitting when only one window is open.
 
@@ -94,6 +111,7 @@ tabbrowser-confirm-close-tabs-title =
        *[other] أتريد إغلاق { $tabCount } لسان؟
     }
 tabbrowser-confirm-close-tabs-button = أغلق الألسنة
+tabbrowser-ask-close-tabs-checkbox = اسأل قبل محاولة إغلاق عدّة ألسنة
 tabbrowser-confirm-close-tabs-checkbox = أكّد علي عند محاولة إغلاق عدّة ألسنة
 
 ## Confirmation dialog when quitting using the menu and multiple windows are open.
@@ -125,6 +143,10 @@ tabbrowser-confirm-close-tabs-with-key-button = غادِر { -brand-short-name }
 #   $quitKey (String): the text of the keyboard shortcut for quitting.
 tabbrowser-confirm-close-tabs-with-key-checkbox = أكّد علي قبل المغادرة باستعمال { $quitKey }
 
+## Confirmation dialog when quitting using the keyboard shortcut (Ctrl/Cmd+Q)
+## and browser.warnOnQuitShortcut is true.
+
+
 ## Confirmation dialog when opening multiple tabs simultaneously
 
 tabbrowser-confirm-open-multiple-tabs-title = أكّد الفتح
@@ -142,6 +164,13 @@ tabbrowser-confirm-open-multiple-tabs-checkbox = نبّهني أنّ فتح عد
 tabbrowser-confirm-caretbrowsing-title = التصفّح بالمؤشّر
 tabbrowser-confirm-caretbrowsing-message = ضغط F7 يعطّل التصفّح بالمؤشّر. تضع هذه الميزة مؤشّرًا متحرّكًا في صفحات الوِب، ما يسمح لك بتحديد النص بلوحة المفاتيح. أتريد تفعيل التصفّح بالمؤشّر؟
 tabbrowser-confirm-caretbrowsing-checkbox = لا تعرض هذا الحوار مرّة أخرى.
+
+## Confirmation dialog for closing all duplicate tabs
+
+tabbrowser-confirm-close-duplicate-tabs-title = انتبه
+tabbrowser-confirm-close-all-duplicate-tabs-title = أغلِق الألسنة المتكررة؟
+tabbrowser-confirm-close-all-duplicate-tabs-text = سنقوم بإغلاق الألسنة المتكررة في هذه النافذة. وستظل الألسنة النشطة الأخيرة مفتوحة.
+tabbrowser-confirm-close-all-duplicate-tabs-button-closetabs = أغلق الألسنة
 
 ##
 
@@ -191,3 +220,27 @@ tabbrowser-manager-unmute-tab =
     .tooltiptext = أطلِق صوت اللسان
 tabbrowser-manager-close-tab =
     .tooltiptext = أغلِق اللسان
+
+## Tab Groups
+
+tab-group-editor-name-label = الاسم
+tab-group-editor-cancel =
+    .label = ألغ
+    .accesskey = غ
+
+## Variables:
+##  $tabCount (Number): the number of tabs that are affected by the action.
+
+tab-group-editor-action-delete =
+    .label = احذف المجموعة
+tab-group-editor-done =
+    .label = تمّ
+    .accessKey = م
+
+## Open/saved tab group context menu
+
+# For a tab group that is open in any window, close the tab group and
+# do not save it. For a tab group that is closed but saved by the user, clicking
+# this will forget the saved tab group.
+tab-group-context-delete =
+    .label = احذف المجموعة

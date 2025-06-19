@@ -265,7 +265,7 @@ quickactions-cmd-clearhistory = изчистване на историята
 quickactions-downloads2 = Преглед на изтеглените файлове
 quickactions-cmd-downloads = изтегляния
 # Opens about:addons page in the extensions section
-quickactions-extensions = Управление на добавки
+quickactions-extensions = Управление на разширения
 quickactions-cmd-extensions = разширения
 # Opens the devtools web inspector
 quickactions-inspector2 = Развойни инструменти
@@ -287,7 +287,7 @@ quickactions-private2 = Поверителен прозорец
 quickactions-cmd-private = поверително разглеждане
 # Opens a SUMO article explaining how to refresh
 quickactions-refresh = Освежаване на { -brand-short-name }
-quickactions-cmd-refresh = освежаване, опресняване
+quickactions-cmd-refresh = освежаване, опресняване, презареждане
 # Restarts the browser
 quickactions-restart = Рестартиране на { -brand-short-name }
 quickactions-cmd-restart = рестарт, рестартиране
@@ -509,19 +509,19 @@ urlbar-placeholder-search-mode-web-2 =
 #  $name (String): the name of a search engine that searches a specific site
 #  (e.g. Amazon).
 urlbar-placeholder-search-mode-other-engine =
-    .placeholder = Въведете търсене
+    .placeholder = Въведете за търсене
     .aria-label = Търсете в { $name }
 # This placeholder is used when searching bookmarks.
 urlbar-placeholder-search-mode-other-bookmarks =
-    .placeholder = Въведете търсене
+    .placeholder = Въведете за търсене
     .aria-label = Търсене в отметки
 # This placeholder is used when searching history.
 urlbar-placeholder-search-mode-other-history =
-    .placeholder = Въведете търсене
+    .placeholder = Въведете за търсене
     .aria-label = Търсене в история
 # This placeholder is used when searching open tabs.
 urlbar-placeholder-search-mode-other-tabs =
-    .placeholder = Въведете търсене
+    .placeholder = Въведете за търсене
     .aria-label = Търсене в раздели
 # This placeholder is used when searching quick actions.
 urlbar-placeholder-search-mode-other-actions =
@@ -547,6 +547,8 @@ urlbar-go-button =
     .tooltiptext = Зареждане на адреса в полето
 urlbar-page-action-button =
     .tooltiptext = Действия със страницата
+urlbar-revert-button =
+    .tooltiptext = Показване на адреса в адресната лента
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -556,14 +558,14 @@ urlbar-page-action-button =
 # "Search", and we would like to avoid strings like "Search MSN Search".
 # Variables
 #  $engine (String): the name of a search engine
-urlbar-result-action-search-in-private-w-engine = Търсене с { $engine } в поверителен прозорец
+urlbar-result-action-search-in-private-w-engine = Търсене чрез { $engine } в поверителен прозорец
 # Used when the private browsing engine is the same as the default engine.
 urlbar-result-action-search-in-private = Търсене в поверителен прозорец
 # The "with" format was chosen because the search engine name can end with
 # "Search", and we would like to avoid strings like "Search MSN Search".
 # Variables
 #  $engine (String): the name of a search engine
-urlbar-result-action-search-w-engine = Търсене с { $engine }
+urlbar-result-action-search-w-engine = Търсене чрез { $engine }
 urlbar-result-action-sponsored = Спонсорирано
 urlbar-result-action-switch-tab = Превключване към раздел
 urlbar-result-action-visit = Посещаване
@@ -604,6 +606,41 @@ urlbar-result-action-calculator-result = = { $result }
 
 ## Strings used for buttons in the urlbar
 
+# Label prompting user to search with a particular search engine.
+#  $engine (String): the name of a search engine that searches a specific site
+urlbar-result-search-with = Търсене чрез { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Търсене в { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } – Търсене чрез { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Изберете търсеща машина
+urlbar-searchmode-bookmarks =
+    .label = Отметки
+urlbar-searchmode-tabs =
+    .label = Раздели
+urlbar-searchmode-history =
+    .label = История
+urlbar-searchmode-actions =
+    .label = Действия
+urlbar-searchmode-exit-button =
+    .tooltiptext = Затваряне
+urlbar-searchmode-popup-description = Този път търсете с:
+urlbar-searchmode-popup-search-settings = Настройки за търсене
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, изберете търсеща машина
+    .tooltiptext = { $engine }, изберете търсеща машина
+urlbar-searchmode-button-no-engine =
+    .label = Няма избрана клавишна комбинация, изберете една
+    .tooltiptext = Няма избрана клавишна комбинация, изберете една
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -613,6 +650,9 @@ urlbar-result-action-search-bookmarks = Търсене в отметките
 urlbar-result-action-search-history = Търсене в историята
 urlbar-result-action-search-tabs = Търсене на раздели
 urlbar-result-action-search-actions = Действия при търсене
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Превключване към { $group }
 
 ## Labels shown above groups of urlbar results
 
@@ -634,6 +674,21 @@ urlbar-group-quickactions =
 #  $engine (String): the name of the search engine used to search.
 urlbar-group-recent-searches =
     .label = Скорошни търсения
+# The header shown above trending results.
+# Variables:
+#  $engine (String): the name of the search engine providing the trending suggestions
+urlbar-group-trending =
+    .label = Набиращи популярност в { $engine }
+# The result menu labels shown next to trending results.
+urlbar-result-menu-trending-dont-show =
+    .label = Без показване на набиращи популярност търсения
+    .accesskey = Б
+urlbar-result-menu-trending-why =
+    .label = Защо виждам това?
+    .accesskey = в
+# A message that replaces a result when the user dismisses all suggestions of a
+# particular type.
+urlbar-trending-dismissal-acknowledgment = Благодарим ви за обратната връзка. Вече няма да виждате набиращи популярност търсения.
 
 ## Reader View toolbar buttons
 
@@ -775,7 +830,7 @@ toolbar-settings-button =
            *[other] Отваряне на настройките
         }
 toolbar-overflow-customize-button =
-    .label = Приспособяване…
+    .label = Приспособяване на лентата…
     .accesskey = П
 toolbar-button-email-link =
     .label = Препратка по имейл
@@ -911,7 +966,18 @@ data-reporting-notification-button =
     .accesskey = И
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Поверително разглеждане
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Поверително сърфиране
+# Tooltip for the indicator shown in the window titlebar when content analysis is active.
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-indicator-tooltip =
+    .tooltiptext = Предотвратяване загуба на данни (DLP) от { $agentName }. Натиснете за повече информация.
 content-analysis-panel-title = Защита на данните
+# Variables:
+#   $agentName (String): The name of the DLP agent that is connected
+content-analysis-panel-text-styled = Вашата организация използва <b>{ $agentName }</b> за защита срещу загуба на данни. <a data-l10n-name="info">Научете повече</a>
 
 ## Unified extensions (toolbar) button
 
@@ -936,6 +1002,15 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Разширения
         Някои разширения не са позволени
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Разширения
+    .tooltiptext =
+        Разширения
+        Някои разширения са изключени
 
 ## Private browsing reset button
 
@@ -965,12 +1040,22 @@ refresh-blocked-allow =
 
 ## Firefox Relay integration
 
+firefox-relay-offer-why-to-use-relay = Нашите сигурни и лесни за използване маски защитават вашата самоличност и предотвратяват спам, като крият вашия имейл адрес.
+# Variables:
+#  $useremail (String): user email that will receive messages
+firefox-relay-offer-what-relay-provides = Всички имейли, изпратени до вашите имейл маски, ще бъдат препращани към <strong>{ $useremail }</strong> (освен ако не решите да ги блокирате).
+firefox-relay-offer-legal-notice = С натискането на „Използване на маска за пощата“ вие се съгласявате с <label data-l10n-name="tos-url">Условията на услугата</label> и <label data-l10n-name="privacy-url">Политиката за лични данни</label>.
 
 ## Add-on Pop-up Notifications
 
 popup-notification-addon-install-unsigned =
     .value = (непроверено)
 popup-notification-xpinstall-prompt-learn-more = Научете повече за безопасното инсталиране на добавки
+popup-notification-xpinstall-prompt-block-url = Вижте подробности
+# Note: Access key is set to P to match "Private" in the corresponding localized label.
+popup-notification-addon-privatebrowsing-checkbox =
+    .label = Да работи в поверителни прозорци
+    .accesskey = п
 
 ## Pop-up warning
 
@@ -1003,6 +1088,14 @@ popup-show-popup-menuitem =
 
 ## File-picker crash notification ("FilePickerCrashed.sys.mjs")
 
+file-picker-failed-open = Файловият диалогов прозорец на Windows не може да бъде отворен. Не може да бъде избран файл или папка.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-failed-save-somewhere = Файловият диалогов прозорец на Windows не може да бъде отворен. Файлът ще бъде запазен в { $path }.
+file-picker-failed-save-nowhere = Файловият диалогов прозорец на Windows не може да бъде отворен. Не може да бъде намерена папка по подразбиране; файлът няма да бъде записан.
+file-picker-crashed-open = Файловият диалогов прозорец на Windows се срина. Не може да бъде избран файл или папка.
+#   $path (string): The full path to which the file will be saved (e.g., 'C:\Users\Default User\Downloads\readme.txt').
+file-picker-crashed-save-somewhere = Файловият диалогов прозорец на Windows се срина. Файлът ще бъде запазен в { $path }.
+file-picker-crashed-save-nowhere = Файловият диалогов прозорец на Windows се срина. Не може да бъде намерена папка по подразбиране. Файлът няма да бъде записан.
 
 # Button used with file-picker-crashed-save-default. Opens the folder in Windows
 # Explorer, with the saved file selected and in focus.
@@ -1010,3 +1103,6 @@ popup-show-popup-menuitem =
 # The wording here should be consistent with the Windows variant of
 # `downloads-cmd-show-menuitem-2` and similar messages.
 
+file-picker-crashed-show-in-folder =
+    .label = Показване в папка
+    .accessKey = о

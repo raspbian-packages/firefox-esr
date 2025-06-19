@@ -47,7 +47,7 @@ shopping-message-bar-warning-not-enough-reviews =
     .heading = Ende pa shqyrtime të mjafta
     .message = Kur ky produkt të ketë më tepër shqyrtime, do të jemi në gjendje të kontrollojmë cilësinë e tyre.
 shopping-message-bar-warning-product-not-available =
-    .heading = Produkti s’është i passhëm
+    .heading = S’ka stok produkti
     .message = Nëse e shihni sërish në stok produktin, na njoftoni dhe do të merremi me kontrollin e shqyrtimeve.
 shopping-message-bar-warning-product-not-available-button2 = Njoftoni se për produktin ka prapë stok
 shopping-message-bar-thanks-for-reporting =
@@ -89,6 +89,9 @@ shopping-show-less-button = Shfaq më pak
 
 shopping-settings-label =
     .label = Rregullime
+shopping-settings-recommendations-toggle2 =
+    .label = Shfaq rekomandime dhe lëndë të sponsorizuar
+shopping-settings-recommendations-learn-more3 = { -brand-product-name }-i nuk i jep kujt të dhënat tuaja personale, ndaj këto rekomandime s’do t’ju ndjekin nëpër internet. <a data-l10n-name="review-quality-url">Mësoni më tepër</a>
 shopping-settings-recommendations-toggle =
     .label = Shfaq reklama te kontrollori i shqyrtimeve
 shopping-settings-recommendations-learn-more2 = Do të shihni reklama me raste, për produkte të afërt. Shfaqim reklama vetëm për produkte me shqyrtime të besueshme. <a data-l10n-name="review-quality-url">Mësoni më tepër</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Kontrollo cilësi shqyrtimi
 
 more-to-consider-ad-label =
     .label = Më tepër për t’u marrë parasysh
+shopping-sponsored-label = E sponsorizuar
 ad-by-fakespot = Reklamë nga { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Parashtrojeni
 shopping-survey-terms-link = Kushte përdorimi
 shopping-survey-thanks =
     .heading = Faleminderit për përshtypjet tuaja!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Ju lutemi, na bëni të ditur pse e çaktivizuar Kontrollorin e Shqyrtimeve. Përzgjidhni disa variante, nëse duhet.
+shopping-survey-thanks-title = Faleminderit për përshtypjet tuaja!
+shopping-survey-opted-out-hard-to-understand = Është e zorshme ta kuptosh
+shopping-survey-opted-out-too-slow = Është shumë i ngadaltë
+shopping-survey-opted-out-not-accurate = S’është i përpiktë
+shopping-survey-opted-out-not-helpful = S’më bën punë
+shopping-survey-opted-out-check-myself = Më mirë i shoh vetë shqyrtimet
+shopping-survey-opted-out-other = Tjetër
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

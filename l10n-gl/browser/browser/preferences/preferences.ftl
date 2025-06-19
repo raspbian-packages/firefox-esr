@@ -556,8 +556,7 @@ home-prefs-shortcuts-description = Sitios gardados ou visitados
 home-prefs-shortcuts-by-option-sponsored =
     .label = Atallos patrocinados
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Recomendado por { $provider }
@@ -872,6 +871,9 @@ forms-saved-logins =
 forms-primary-pw-use =
     .label = Utilizar un contrasinal principal
     .accesskey = U
+# This operation requires the user to authenticate with the operating system (device sign-in)
+forms-os-reauth =
+    .label = Requirir o inicio de sesión no dispositivo para introducir e xestionar os contrasinais
 forms-primary-pw-learn-more-link = Máis información
 # This string uses the former name of the Primary Password feature
 # ("Master Password" in English) so that the preferences can be found
@@ -903,6 +905,7 @@ primary-password-os-auth-dialog-message-win = Para crear un contrasinal principa
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = crear un contrasinal principal
 master-password-os-auth-dialog-caption = { -brand-full-name }
+autofill-creditcard-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy section - Autofill
 
@@ -1274,10 +1277,16 @@ httpsonly-description = HTTPS fornece unha conexión segura e cifrada entre { -b
 httpsonly-learn-more = Máis información
 httpsonly-radio-enabled =
     .label = Activar o modo só HTTPS en todas as xanelas
+httpsonly-radio-enabled2 =
+    .label = Usar só HTTPS en todas as xanelas
 httpsonly-radio-enabled-pbm =
     .label = Activar o modo só HTTPS só nas xanelas privadas
+httpsonly-radio-enabled-pbm2 =
+    .label = Usar HTTPS só en xanelas privadas
 httpsonly-radio-disabled =
     .label = Non activar o modo só HTTPS
+httpsonly-radio-disabled2 =
+    .label = Probar primeiro HTTPS, pero permitir conexións que non sexan seguras
 
 ## DoH Section
 

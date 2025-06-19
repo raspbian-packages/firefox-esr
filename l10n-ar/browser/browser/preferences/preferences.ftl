@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = أرسل للمواقع إشارة ”لا تتعقبني“ بأنك لا تريد أن يتعقبوك
+do-not-track-removal = لم نعد ندعم إشارة "لا تتعقبني"
 do-not-track-description2 =
     .label = أرسل للمواقع طلب"لا تتعقبني"
     .accesskey = س
@@ -28,6 +29,8 @@ search-input-box2 =
     .style = width: 15.4em
     .placeholder = ابحث في الإعدادات
 managed-notice = تُدير منظّمتك المتصفح الذي تستخدم الآن.
+managed-notice-info-icon =
+    .alt = معلومة
 category-list =
     .aria-label = الفئات
 pane-general-title = عام
@@ -54,6 +57,7 @@ pane-experimental-description2 = يمكن أن يؤثّر التغيير على 
 settings-pane-labs-title = { -firefoxlabs-brand-name }
 settings-category-labs =
     .tooltiptext = { -firefoxlabs-brand-name }
+pane-experimental-description3 = جرّب ميزاتنا التجريبية! فهي قيد التطوير والتطور، مما قد يؤثر على كيفية عمل { -brand-short-name }.
 pane-experimental-reset =
     .label = استعد المبدئيات
     .accesskey = س
@@ -126,6 +130,9 @@ set-as-my-default-browser =
 startup-restore-windows-and-tabs =
     .label = افتح النوافذ والألسنة السابقة
     .accesskey = ن
+windows-launch-on-login =
+    .label = افتح { -brand-short-name } تلقائيًا عند بدء تشغيل حاسوبك
+    .accesskey = ع
 startup-restore-warn-on-quit =
     .label = نبّهني عند إنهاء المتصفح
 disable-extension =
@@ -142,6 +149,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = افتح الروابط في ألسنة بدل فتح نوافذ جديدة
     .accesskey = ن
+ask-on-close-multiple-tabs =
+    .label = اسأل قبل محاولة إغلاق عدّة ألسنة
+    .accesskey = د
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = اسأل قبل المغادرة باستعمال { $quitKey }
+    .accesskey = ت
 confirm-on-close-multiple-tabs =
     .label = أكّد علي عند محاولة إغلاق عدّة ألسنة
     .accesskey = ك
@@ -477,6 +495,9 @@ browsing-use-smooth-scrolling =
 browsing-gtk-use-non-overlay-scrollbars =
     .label = أظهِر أشرطة التمرير دائمًا
     .accesskey = ش
+browsing-always-underline-links =
+    .label = سطّر دائمًا الروابط
+    .accesskey = ط
 browsing-use-onscreen-keyboard =
     .label = اعرض لوحة مفاتيح باللمس عند الضرورة
     .accesskey = م
@@ -561,12 +582,13 @@ home-prefs-shortcuts-description = المواقع التي حفظتها أو ز�
 home-prefs-shortcuts-by-option-sponsored =
     .label = الاختصارات المموّلة
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = ينصح به { $provider }
 home-prefs-recommended-by-description-new = محتوى مميّز جمعه لك { $provider }، وهو جزء من عائلة { -brand-product-name }
+home-prefs-recommended-by-header-generic =
+    .label = القصص المُقترحة
 
 ##
 
@@ -593,6 +615,10 @@ home-prefs-recent-activity-description = مختارات من المواقع وا
 home-prefs-snippets-header =
     .label = المقتطفات
 home-prefs-snippets-description-new = فوائد وأخبار من { -vendor-short-name } و{ -brand-product-name }
+home-prefs-weather-header =
+    .label = الطقس
+home-prefs-weather-description = لمحة عامة عن توقعات الطقس اليوم
+home-prefs-weather-learn-more-link = اطّلع على المزيد
 # Variables:
 #   $num (number) - Number of rows displayed
 home-prefs-sections-rows-option =
@@ -630,6 +656,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = أظهر اقتراحات البحث في نتائج شريط العناوين
     .accesskey = ت
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = أظهِر مصطلحات البحث في شريط العناوين على صفحات النتائج
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -711,6 +741,10 @@ sync-profile-picture =
 sync-profile-picture-with-alt =
     .tooltiptext = غيّر صورة الحساب
     .alt = غيّر صورة الحساب
+sync-profile-picture-account-problem =
+    .alt = صورة الملف الشخصي للحساب
+fxa-login-rejected-warning =
+    .alt = تحذير
 sync-sign-out =
     .label = اخرج…
     .accesskey = خ
@@ -769,6 +803,9 @@ sync-currently-syncing-creditcards = بطاقات الائتمان
 sync-currently-syncing-payment-methods = طرق الدفع
 sync-currently-syncing-addons = الإضافات
 sync-currently-syncing-settings = الإعدادات
+sync-manage-options =
+    .label = أدر المزامنة…
+    .accesskey = د
 sync-change-options =
     .label = غيّرها…
     .accesskey = غ
@@ -862,12 +899,19 @@ forms-ask-to-save-logins =
 # by searching for the former term "logins". It's not displayed in the UI.
 pane-privacy-passwords-header = كلمات السر
     .searchkeywords = س
+# Checkbox to control whether UI is shown to users to save or fill logins/passwords.
+forms-ask-to-save-passwords =
+    .label = اسأل لحفظ كلمات السر
+    .accesskey = ت
 forms-exceptions =
     .label = الاستثناءات…
     .accesskey = س
 forms-generate-passwords =
     .label = ولّد كلمات سر قوية واقترحها عليّ
     .accesskey = ك
+forms-suggest-passwords =
+    .label = اقترِح كلمات سر قوية
+    .accesskey = ر
 forms-breach-alerts =
     .label = اعرض تنبيهات بكلمات السر المتسرّبة من المواقع
     .accesskey = ت
@@ -882,6 +926,13 @@ forms-fill-logins-and-passwords =
 forms-saved-logins =
     .label = جلسات الولوج المحفوظة…
     .accesskey = ح
+# Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
+forms-fill-usernames-and-passwords =
+    .label = املأ أسماء المستخدمين وكلمات السر تلقائيًا
+    .accesskey = ر
+forms-saved-passwords =
+    .label = كلمات السر المحفوظة
+    .accesskey = ت
 forms-primary-pw-use =
     .label = استعمل كلمة سر رئيسيّة
     .accesskey = س
@@ -916,6 +967,7 @@ primary-password-os-auth-dialog-message-win = أدخِل معلومات ولوج
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = أنشِئ كلمة سر رئيسية
 master-password-os-auth-dialog-caption = { -brand-full-name }
+autofill-creditcard-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy section - Autofill
 
@@ -924,6 +976,8 @@ autofill-addresses-checkbox = حفظ وملء العناوين
     .accesskey = ع
 autofill-saved-addresses-button = العناوين المحفوظة
     .accesskey = ظ
+autofill-saved-payment-methods-button = طرق الدفع المحفوظة
+    .accesskey = ع
 
 ## Privacy Section - History
 
@@ -979,6 +1033,7 @@ sitedata-delete-on-close =
     .label = احذف الكعكات وبيانات المواقع عندما ينغلق { -brand-short-name }
     .accesskey = ذ
 sitedata-delete-on-close-private-browsing = في وضع التصفح الخاص الدائم، تُمسح الكعكات وبيانات المواقع متى ما أُغلق { -brand-short-name }.
+sitedata-delete-on-close-private-browsing2 = استنادًا إلى إعدادات التأريخ لديك، يحذف { -brand-short-name } الكعكات وبيانات الموقع من جلستك عند إغلاق المتصفح.
 sitedata-allow-cookies-option =
     .label = اقبل الكعكات و بيانات المواقع
     .accesskey = ق
@@ -1013,10 +1068,16 @@ sitedata-cookies-exceptions =
 
 ## Privacy Section - Cookie Banner Handling
 
+cookie-banner-handling-header = تقليل لافتات ملفات تعريف الارتباط
 
 ## Privacy Section - Cookie Banner Blocking
 
+cookie-banner-blocker-header = مانع لافتة ملفات تعريف الارتباط
 cookie-banner-learn-more = اطّلع على المزيد
+forms-handle-cookie-banners =
+    .label = قلّل لافتات ملفات تعريف الارتباط
+cookie-banner-blocker-checkbox-label =
+    .label = رفض لافتات ملفات تعريف الارتباط تلقائيًا
 
 ## Privacy Section - Address Bar
 
@@ -1048,6 +1109,9 @@ addressbar-locbar-quickactions-option =
     .label = إجراءات سريعة
     .accesskey = س
 addressbar-suggestions-settings = غيّر تفضيلات اقتراحات محرّك البحث
+addressbar-locbar-showrecentsearches-option =
+    .label = أظهر عمليات البحث الأخيرة
+    .accesskey = ه
 addressbar-quickactions-learn-more = اطّلع على المزيد
 
 ## Privacy Section - Content Blocking
@@ -1056,6 +1120,10 @@ content-blocking-enhanced-tracking-protection = الحماية الموسّعة 
 content-blocking-section-top-level-description = تحاول المتعقّبات معرفة ما تفعل على الشبكة دومًا وجمع المعلومات التي تخصّ عاداتك في التصفّح كما واهتماماتك. يحجب { -brand-short-name } أكثر هذه المتعقّبات وغيرها من سكربتات ضارة.
 content-blocking-learn-more = اطّلع على المزيد
 content-blocking-fpi-incompatibility-warning = أنت تستخدم عزل الطرف الأول (FPI)، والذي يتخطى بعض إعدادات كعكات { -brand-short-name }.
+# There is no need to translate "Resist Fingerprinting (RFP)". This is a
+# feature that can only be enabled via about:config, and it's not exposed to
+# standard users (e.g. via Settings).
+content-blocking-rfp-incompatibility-warning = أنت تستخدم ميزة Resist Fingerprinting (RFP)، والتي تحل محل بعض إعدادات حماية التبصيم في { -brand-short-name }. قد يتسبب هذا في تعطل بعض المواقع.
 
 ## These strings are used to define the different levels of
 ## Enhanced Tracking Protection.
@@ -1087,6 +1155,10 @@ content-blocking-unvisited-cookies = الكعكات من المواقع غير �
 content-blocking-all-windows-tracking-content = المحتوى الذي يتعقّبك في كل النوافذ
 content-blocking-cryptominers = المُعدّنات المعمّاة
 content-blocking-fingerprinters = مسجّلات البصمات
+# The known fingerprinters are those that are known for collecting browser fingerprints from user devices. And
+# the suspected fingerprinters are those that we are uncertain about browser fingerprinting activities. But they could
+# possibly acquire browser fingerprints because of the behavior on accessing APIs that expose browser fingerprints.
+content-blocking-known-and-suspected-fingerprinters = المسجّلات المشتبه بها والمعروفة
 
 # The tcp-rollout strings are no longer used for the rollout but for tcp-by-default in the standard section
 
@@ -1152,7 +1224,7 @@ permissions-xr = الواقع الافتراضي
 permissions-xr-settings =
     .label = الإعدادات…
     .accesskey = ع
-permissions-camera = الكمرة
+permissions-camera = الكاميرا
 permissions-camera-settings =
     .label = الإعدادات…
     .accesskey = ع
@@ -1160,6 +1232,8 @@ permissions-microphone = الميكروفون
 permissions-microphone-settings =
     .label = الإعدادات…
     .accesskey = ع
+# Short form for "the act of choosing sound output devices and redirecting audio to the chosen devices".
+permissions-speaker = تحديد السماعة
 permissions-speaker-settings =
     .label = الإعدادات…
     .accesskey = د
@@ -1204,9 +1278,14 @@ collection-health-report =
     .label = اسمح أن يُرسل { -brand-short-name } بيانات تقنية و بيانات التفاعل إلى { -vendor-short-name }
     .accesskey = ح
 collection-health-report-link = اطّلع على المزيد
+collection-studies2 =
+    .label = تثبيت الدراسات وتشغيلها
 collection-studies =
     .label = اسمح أن ينصّب { -brand-short-name } ويشغل الدراسات
 collection-studies-link = اعرض دراسات { -brand-short-name }
+collection-backlogged-crash-reports2 =
+    .label = أرسل تقارير الإنهيار تلقائيًا
+    .accesskey = س
 addon-recommendations =
     .label = اسمح بأن يقترح { -brand-short-name } الامتدادات المخصّصة لك
 addon-recommendations-link = اطّلع على المزيد
@@ -1268,21 +1347,35 @@ httpsonly-description = يقدّم بروتوكول HTTPS اتصالًا آمن�
 httpsonly-learn-more = اطّلع على المزيد
 httpsonly-radio-enabled =
     .label = فعّل وضع HTTPS فقط في كل النوافذ
+httpsonly-radio-enabled2 =
+    .label = استخدم HTTPS فقط في كافة النوافذ
 httpsonly-radio-enabled-pbm =
     .label = فعّل وضع HTTPS فقط في النوافذ الخاصة فقط
+httpsonly-radio-enabled-pbm2 =
+    .label = استخدم HTTPS فقط في النوافذ الخاصة
 httpsonly-radio-disabled =
     .label = لا تفعّل وضع HTTPS فقط
+httpsonly-radio-disabled2 =
+    .label = حاول استخدام HTTPS أولاً، ولكن اسمح بالاتصالات غير الآمنة
 
 ## DoH Section
 
 preferences-doh-header = DNS عبر HTTPS
 preferences-doh-description = يرسل نظام اسم المجال (DNS) عبر HTTPS طلبك للحصول على اسم المجال من خلال اتصال مُعمّى، مما يؤدي إلى إنشاء DNS آمن ويجعل من الصعب على الآخرين معرفة موقع الوب الذي أنت على وشك الوصول إليه.
 # Variables:
+#   $status (string) - The status of the DoH connection
+preferences-doh-status = الحالة: { $status }
+# Variables:
 #   $name (string) - The name of the DNS over HTTPS resolver. If a custom resolver is used, the name will be the domain of the URL.
 preferences-doh-resolver = المزود: { $name }
 # This is displayed instead of $name in preferences-doh-resolver
 # when the DoH URL is not a valid URL
 preferences-doh-bad-url = مسار غير صحيح
+preferences-doh-status-active = نشط
+preferences-doh-status-disabled = معطّل
+# Variables:
+#   $reason (string) - A string representation of the reason DoH is not active. For example NS_ERROR_UNKNOWN_HOST or TRR_RCODE_FAIL.
+preferences-doh-status-not-active = غير نشط ({ $reason })
 preferences-doh-group-message = تفعيل DNS آمن باستخدام:
 preferences-doh-group-message2 = فعّل DNS عبر HTTPS باستخدام:
 preferences-doh-expand-section =

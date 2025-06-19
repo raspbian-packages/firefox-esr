@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Gửi tín hiệu “Không theo dõi” tới trang web để cho biết bạn không muốn bị theo dõi
+do-not-track-removal = Chúng tôi không còn hỗ trợ tín hiệu “Không theo dõi”
 do-not-track-description2 =
     .label = Gửi yêu cầu “không theo dõi” đến trang web
     .accesskey = d
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = Tự động mở { -brand-short-name } khi máy tính của bạn khởi động
     .accesskey = O
 windows-launch-on-login-disabled = Tùy chọn này đã bị tắt trong Windows. Để thay đổi, hãy truy cập <a data-l10n-name="startup-link">Ứng dụng khởi động</a> trong Cài đặt hệ thống.
+windows-launch-on-login-profile-disabled = Kích hoạt tùy chỉnh này bằng cách đánh dấu hộp kiểm “{ profile-manager-use-selected.label }” trong cửa sổ “Chọn hồ sơ người dùng”.
 startup-restore-warn-on-quit =
     .label = Cảnh báo bạn khi thoát khỏi trình duyệt
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Mở đường dẫn ở thẻ thay vì ở cửa sổ mới
     .accesskey = w
+ask-on-close-multiple-tabs =
+    .label = Hỏi trước khi đóng nhiều thẻ
+    .accesskey = m
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Hỏi trước khi thoát khi nhấn { $quitKey }
+    .accesskey = b
 confirm-on-close-multiple-tabs =
     .label = Xác nhận trước khi đóng nhiều thẻ
     .accesskey = m
@@ -556,8 +569,7 @@ home-prefs-shortcuts-description = Các trang web bạn lưu hoặc truy cập
 home-prefs-shortcuts-by-option-sponsored =
     .label = Các lối tắt được tài trợ
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Được đề xuất bởi { $provider }
@@ -580,7 +592,7 @@ home-prefs-highlights-options-bookmarks =
 home-prefs-highlights-option-most-recent-download =
     .label = Tải xuống gần đây nhất
 home-prefs-highlights-option-saved-to-pocket =
-    .label = Đã lưu trang vào { -pocket-brand-name }
+    .label = Trang đã lưu vào { -pocket-brand-name }
 home-prefs-recent-activity-header =
     .label = Hoạt động gần đây
 home-prefs-recent-activity-description = Tuyển chọn các trang và nội dung gần đây
@@ -624,6 +636,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Hiển thị gợi ý tìm kiếm trong kết quả thanh địa chỉ
     .accesskey = l
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Hiển thị cụm từ tìm kiếm trên thanh địa chỉ trên trang kết quả
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -767,6 +783,9 @@ sync-currently-syncing-creditcards = Thẻ tín dụng
 sync-currently-syncing-payment-methods = Phương thức thanh toán
 sync-currently-syncing-addons = Tiện ích
 sync-currently-syncing-settings = Cài đặt
+sync-manage-options =
+    .label = Quản lý đồng bộ hoá…
+    .accesskey = M
 sync-change-options =
     .label = Thay đổi…
     .accesskey = C
@@ -819,6 +838,13 @@ sync-engine-settings =
     .label = Cài đặt
     .tooltiptext = Cài đặt tổng quát, riêng tư và bảo mật mà bạn đã thay đổi
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = Quản lý những gì đồng bộ hóa trên tất cả các thiết bị được kết nối của bạn
+    .style = min-width: 36em;
+    .buttonlabelaccept = Lưu
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Ngắt kết nối…
+    .buttonaccesskeyextra2 = D
 
 ## The device name controls.
 
@@ -882,9 +908,9 @@ forms-breach-alerts =
     .accesskey = b
 forms-breach-alerts-learn-more-link = Tìm hiểu thêm
 preferences-relay-integration-checkbox =
-    .label = Đề xuất mặt nạ email { -relay-brand-name } để bảo vệ địa chỉ email của bạn
+    .label = Đề xuất email ẩn danh { -relay-brand-name } để bảo vệ địa chỉ email của bạn
 preferences-relay-integration-checkbox2 =
-    .label = Đề xuất mặt nạ email { -relay-brand-name } để bảo vệ địa chỉ email của bạn
+    .label = Đề xuất email ẩn danh { -relay-brand-name } để bảo vệ địa chỉ email của bạn
     .accesskey = r
 relay-integration-learn-more-link = Tìm hiểu thêm
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
@@ -924,7 +950,7 @@ forms-primary-pw-former-name = { "" }
 forms-primary-pw-fips-title = Bạn hiện đang ở chế độ FIPS. FIPS yêu cầu tính năng mật khẩu chính.
 forms-master-pw-fips-desc = Thay đổi mật khẩu không thành công
 forms-windows-sso =
-    .label = Cho phép Windows đăng nhập một lần cho tài khoản Microsoft, cơ quan và trường học
+    .label = Cho phép Windows đăng nhập một lần (SSO) cho tài khoản Microsoft, cơ quan và trường học
 forms-windows-sso-learn-more-link = Tìm hiểu thêm
 forms-windows-sso-desc = Quản lý tài khoản trong cài đặt thiết bị của bạn
 windows-passkey-settings-label = Quản lý passkey trong cài đặt hệ thống
@@ -1344,13 +1370,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } sắp hết dung 
 
 httpsonly-header = Chế độ chỉ HTTPS
 httpsonly-description = HTTPS cung cấp kết nối được mã hóa an toàn giữa { -brand-short-name } và các trang web bạn truy cập. Hầu hết các trang web đều hỗ trợ HTTPS và nếu chế độ chỉ HTTPS được bật, thì { -brand-short-name } sẽ nâng cấp tất cả các kết nối lên HTTPS.
+httpsonly-description2 = { -brand-short-name } tạo kết nối an toàn và được mã hóa tới các trang web bạn truy cập. { -brand-short-name } sẽ cảnh báo bạn nếu kết nối không an toàn khi kích hoạt chỉ HTTPS.
 httpsonly-learn-more = Tìm hiểu thêm
 httpsonly-radio-enabled =
     .label = Kích hoạt chế độ chỉ HTTPS trong tất cả các cửa sổ
+httpsonly-radio-enabled2 =
+    .label = Chỉ sử dụng HTTPS trong tất cả cửa sổ
 httpsonly-radio-enabled-pbm =
     .label = Chỉ kích hoạt chế độ HTTPS trong các cửa sổ riêng tư
+httpsonly-radio-enabled-pbm2 =
+    .label = Chỉ sử dụng HTTPS trong cửa số riêng tư
 httpsonly-radio-disabled =
     .label = Không kích hoạt chế độ chỉ HTTPS
+httpsonly-radio-disabled2 =
+    .label = Thử HTTPS trước, nhưng cho phép kết nối không an toàn
 
 ## DoH Section
 

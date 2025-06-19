@@ -137,6 +137,7 @@ windows-launch-on-login =
     .label = Vierç in automatic { -brand-short-name } cuant che il computer si invie
     .accesskey = V
 windows-launch-on-login-disabled = Cheste opzion e je stade disativade in Windows. Par cambiâle, visite <a data-l10n-name="startup-link">Aplicazions di inviament</a> tes impostazions di sisteme.
+windows-launch-on-login-profile-disabled = Ative cheste preference selezionant “{ profile-manager-use-selected.label }” tal barcon “Sielte dal profîl utent”.
 startup-restore-warn-on-quit =
     .label = Vise cuant che tu jessis dal navigadôr
 disable-extension =
@@ -568,8 +569,7 @@ home-prefs-shortcuts-description = Sîts che tu salvis o visitis
 home-prefs-shortcuts-by-option-sponsored =
     .label = Scurtis sponsorizadis
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Conseât di { $provider }
@@ -640,6 +640,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Mostre i sugjeriments di ricercje tai risultâts de sbare de direzion
     .accesskey = M
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Mostre i tiermins di ricercje te sbare de direzion su la pagjine dai risultâts
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -1360,13 +1364,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name } al sta finint il 
 
 httpsonly-header = Modalitât Dome-HTTPS
 httpsonly-description = HTTPS al da une conession sigure e cifrade tra { -brand-short-name } e i sîts web che tu visitis. La plui part dai sîts web e supuarte HTTPS e se la modalitât Dome-HTTPS e je ative, alore { -brand-short-name } al doprarà HTTPS in dutis lis conessions.
+httpsonly-description2 = { -brand-short-name } al cree conessions siguris e cifradis ai sîts che tu visitis. Se la modalitât dome-HTTPS e je ative, { -brand-short-name } ti visarà se une conession no je sigure.
 httpsonly-learn-more = Plui informazions
 httpsonly-radio-enabled =
     .label = Abilite la modalitât Dome-HTTPS in ducj i barcons
+httpsonly-radio-enabled2 =
+    .label = Dopre nome HTTPS in ducj i barcons
 httpsonly-radio-enabled-pbm =
     .label = Abilite la modalitât Dome-HTTPS dome intai barcons privâts
+httpsonly-radio-enabled-pbm2 =
+    .label = Dopre dome HTTPS tai barcons privâts
 httpsonly-radio-disabled =
     .label = No sta abilitâ la modalitât Dome-HTTPS
+httpsonly-radio-disabled2 =
+    .label = Prime prove HTTPS, ma permet conessions che no son siguris
 
 ## DoH Section
 

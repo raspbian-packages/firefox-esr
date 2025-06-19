@@ -137,8 +137,8 @@ menu-view-customize-toolbar2 =
     .label = Personalize sbare dai struments…
     .accesskey = P
 menu-view-sidebar =
-    .label = Panel laterâl
-    .accesskey = P
+    .label = Sbare laterâl
+    .accesskey = S
 menu-view-bookmarks =
     .label = Segnelibris
 menu-view-history-button =
@@ -253,6 +253,9 @@ menu-bookmarks-other =
     .label = Altris segnelibris
 menu-bookmarks-mobile =
     .label = Segnelibris dispositîfs mobii
+
+## Profiles Menu
+
 
 ## Tools Menu
 

@@ -208,6 +208,7 @@ static const char* const kPinset_google_root_pems_Data[] = {
   kCOMODO_ECC_Certification_AuthorityFingerprint,
   kDigiCert_Assured_ID_Root_G2Fingerprint,
   kCOMODO_Certification_AuthorityFingerprint,
+  kGlobalSign_ECC_Root_CA___R4Fingerprint,
   kDigiCert_Assured_ID_Root_G3Fingerprint,
   kStarfield_Class_2_CAFingerprint,
   kEntrust_net_Premium_2048_Secure_Server_CAFingerprint,
@@ -216,6 +217,8 @@ static const char* const kPinset_google_root_pems_Data[] = {
   kGlobalSign_Root_CAFingerprint,
   kGo_Daddy_Root_Certificate_Authority___G2Fingerprint,
   kAffirmTrust_Premium_ECCFingerprint,
+  kGTS_Root_R3Fingerprint,
+  kGTS_Root_R2Fingerprint,
   kGo_Daddy_Class_2_CAFingerprint,
   kDigiCert_Trusted_Root_G4Fingerprint,
   kDigiCert_High_Assurance_EV_Root_CAFingerprint,
@@ -228,8 +231,10 @@ static const char* const kPinset_google_root_pems_Data[] = {
   kGlobalSign_ECC_Root_CA___R5Fingerprint,
   kStarfield_Root_Certificate_Authority___G2Fingerprint,
   kCOMODO_RSA_Certification_AuthorityFingerprint,
+  kGTS_Root_R1Fingerprint,
   kDigiCert_Global_Root_G2Fingerprint,
   kAffirmTrust_NetworkingFingerprint,
+  kGTS_Root_R4Fingerprint,
   kDigiCert_Global_Root_CAFingerprint,
   kDigiCert_Global_Root_G3Fingerprint,
   kComodo_AAA_Services_rootFingerprint,
@@ -367,6 +372,7 @@ static const TransportSecurityPreload kPublicKeyPinningPreloadList[] = {
   { "crash-stats.mozilla.org", false, false, true, 12, &kPinset_mozilla_services },
   { "crbug.com", true, false, false, -1, &kPinset_google_root_pems },
   { "crosbug.com", true, false, false, -1, &kPinset_google_root_pems },
+  { "crossmediapanel.com", true, false, false, -1, &kPinset_google_root_pems },
   { "crrev.com", true, false, false, -1, &kPinset_google_root_pems },
   { "datastudio.google.com", true, false, false, -1, &kPinset_google_root_pems },
   { "developer.android.com", true, false, false, -1, &kPinset_google_root_pems },
@@ -398,6 +404,7 @@ static const TransportSecurityPreload kPublicKeyPinningPreloadList[] = {
   { "google.ae", true, false, false, -1, &kPinset_google_root_pems },
   { "google.af", true, false, false, -1, &kPinset_google_root_pems },
   { "google.ag", true, false, false, -1, &kPinset_google_root_pems },
+  { "google.al", true, false, false, -1, &kPinset_google_root_pems },
   { "google.am", true, false, false, -1, &kPinset_google_root_pems },
   { "google.as", true, false, false, -1, &kPinset_google_root_pems },
   { "google.at", true, false, false, -1, &kPinset_google_root_pems },
@@ -409,6 +416,7 @@ static const TransportSecurityPreload kPublicKeyPinningPreloadList[] = {
   { "google.bi", true, false, false, -1, &kPinset_google_root_pems },
   { "google.bj", true, false, false, -1, &kPinset_google_root_pems },
   { "google.bs", true, false, false, -1, &kPinset_google_root_pems },
+  { "google.bt", true, false, false, -1, &kPinset_google_root_pems },
   { "google.by", true, false, false, -1, &kPinset_google_root_pems },
   { "google.ca", true, false, false, -1, &kPinset_google_root_pems },
   { "google.cat", true, false, false, -1, &kPinset_google_root_pems },
@@ -483,6 +491,7 @@ static const TransportSecurityPreload kPublicKeyPinningPreloadList[] = {
   { "google.com.kw", true, false, false, -1, &kPinset_google_root_pems },
   { "google.com.lb", true, false, false, -1, &kPinset_google_root_pems },
   { "google.com.ly", true, false, false, -1, &kPinset_google_root_pems },
+  { "google.com.mm", true, false, false, -1, &kPinset_google_root_pems },
   { "google.com.mt", true, false, false, -1, &kPinset_google_root_pems },
   { "google.com.mx", true, false, false, -1, &kPinset_google_root_pems },
   { "google.com.my", true, false, false, -1, &kPinset_google_root_pems },
@@ -495,6 +504,7 @@ static const TransportSecurityPreload kPublicKeyPinningPreloadList[] = {
   { "google.com.om", true, false, false, -1, &kPinset_google_root_pems },
   { "google.com.pa", true, false, false, -1, &kPinset_google_root_pems },
   { "google.com.pe", true, false, false, -1, &kPinset_google_root_pems },
+  { "google.com.pg", true, false, false, -1, &kPinset_google_root_pems },
   { "google.com.ph", true, false, false, -1, &kPinset_google_root_pems },
   { "google.com.pk", true, false, false, -1, &kPinset_google_root_pems },
   { "google.com.pl", true, false, false, -1, &kPinset_google_root_pems },
@@ -525,6 +535,7 @@ static const TransportSecurityPreload kPublicKeyPinningPreloadList[] = {
   { "google.dz", true, false, false, -1, &kPinset_google_root_pems },
   { "google.ee", true, false, false, -1, &kPinset_google_root_pems },
   { "google.es", true, false, false, -1, &kPinset_google_root_pems },
+  { "google.eus", true, false, false, -1, &kPinset_google_root_pems },
   { "google.fi", true, false, false, -1, &kPinset_google_root_pems },
   { "google.fm", true, false, false, -1, &kPinset_google_root_pems },
   { "google.fr", true, false, false, -1, &kPinset_google_root_pems },
@@ -596,6 +607,7 @@ static const TransportSecurityPreload kPublicKeyPinningPreloadList[] = {
   { "google.sm", true, false, false, -1, &kPinset_google_root_pems },
   { "google.sn", true, false, false, -1, &kPinset_google_root_pems },
   { "google.so", true, false, false, -1, &kPinset_google_root_pems },
+  { "google.sr", true, false, false, -1, &kPinset_google_root_pems },
   { "google.st", true, false, false, -1, &kPinset_google_root_pems },
   { "google.td", true, false, false, -1, &kPinset_google_root_pems },
   { "google.tg", true, false, false, -1, &kPinset_google_root_pems },
@@ -647,10 +659,12 @@ static const TransportSecurityPreload kPublicKeyPinningPreloadList[] = {
   { "mbasic.facebook.com", true, false, false, -1, &kPinset_facebook },
   { "meet.google.com", true, false, false, -1, &kPinset_google_root_pems },
   { "messenger.com", true, false, false, -1, &kPinset_facebook },
+  { "mfg-inspector.com", true, false, false, -1, &kPinset_google_root_pems },
   { "mtouch.facebook.com", true, false, false, -1, &kPinset_facebook },
   { "myaccount.google.com", true, false, false, -1, &kPinset_google_root_pems },
   { "myactivity.google.com", true, false, false, -1, &kPinset_google_root_pems },
   { "oauthaccountmanager.googleapis.com", true, false, false, -1, &kPinset_google_root_pems },
+  { "partner.android.com", true, false, false, -1, &kPinset_google_root_pems },
   { "passwords.google.com", true, false, false, -1, &kPinset_google_root_pems },
   { "passwordsleakcheck-pa.googleapis.com", true, false, false, -1, &kPinset_google_root_pems },
   { "payments.google.com", true, false, false, -1, &kPinset_google_root_pems },
@@ -718,8 +732,8 @@ static const TransportSecurityPreload kPublicKeyPinningPreloadList[] = {
   { "ytimg.com", true, false, false, -1, &kPinset_google_root_pems },
 };
 
-// Pinning Preload List Length = 392;
+// Pinning Preload List Length = 401;
 
 static const int32_t kUnknownId = -1;
 
-static const PRTime kPreloadPKPinsExpirationTime = INT64_C(1733137464467000);
+static const PRTime kPreloadPKPinsExpirationTime = INT64_C(1756121050159000);

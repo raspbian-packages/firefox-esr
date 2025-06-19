@@ -89,7 +89,7 @@ perftools-thread-jvm-glean =
 
 perftools-record-all-registered-threads = Anashkalo përzgjedhjet më sipër dhe regjistro krejt rrjedha e regjistruara
 perftools-tools-threads-input-label =
-    .title = Këto emra rrjedhash janë një listë e ndarë me presje, që përdoret për të aktivizuar profilizim rrjedhash te profilizuesi. Emri lypset të jetë vetëm një përputhje e pjesshme e emrit të rrjedhës që duhet përfshirë. Është i ndjeshëm ndaj hapësirave të zbrazëta.
+    .title = Këto emra rrjedhash janë një listë e ndarë me presje, që përdoret për të aktivizuar profilizim rrjedhash te profilizuesi. Emri lypset të jetë vetëm një përputhje e pjesshme e emrit të rrjedhës që duhet përfshirë. Hapësira të zbrazëta merren në konsideratë.
 
 ## Onboarding UI labels. These labels are displayed in the new performance panel UI, when
 ## devtools.performance.new-panel-onboarding preference is true.
@@ -105,6 +105,11 @@ perftools-onboarding-close-button =
 # devtools/client/performance-new/shared/background.jsm.js
 # The same labels and descriptions are also defined in appmenu.ftl.
 
+
+# Presets and their l10n IDs are defined in the file
+# devtools/client/performance-new/shared/background.sys.mjs
+# The same labels and descriptions are also defined in appmenu.ftl.
+
 perftools-presets-web-developer-label = Zhvillues Web
 perftools-presets-web-developer-description = Profil i gatshëm i rekomanduar për shumicën e diagnostikimit të aplikacioneve web, me kokëçarje të pakta.
 perftools-presets-firefox-label = { -brand-shorter-name }
@@ -118,6 +123,8 @@ perftools-presets-networking-description = Model për hetim të metash punimi n�
 # "Power" is used in the sense of energy (electricity used by the computer).
 perftools-presets-power-label = Energji
 perftools-presets-power-description = Paracaktim për hetim të metash përdorimi energjie në { -brand-shorter-name }, me ngarkesë të ulët.
+perftools-presets-debug-label = Diagnostikoje
+perftools-presets-debug-description = Paracaktim për diagnostikim në { -brand-shorter-name }. Ngarkesë e madhe, mos e përdorni për punë funksionimi, por përdoreni për t’u përqendruar te të kuptuarit e sjelljes së shfletuesit.
 perftools-presets-custom-label = Vetjak
 
 ##

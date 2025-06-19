@@ -159,7 +159,7 @@ security-no-visits = いいえ
 # Variables:
 #   $tags (number) - The number of meta tags
 general-meta-tags =
-    .value = Meta 要素一覧 ({ $tags } 要素)
+    .value = Meta 要素一覧 (タグ { $tags } 個)
 # This string is used to display the number of times
 # the user has visited the website prior
 # Variables:

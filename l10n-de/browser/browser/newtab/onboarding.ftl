@@ -189,6 +189,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] { -brand-short-name } im Dock behalten
        *[other] { -brand-short-name } an Taskleiste anheften
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = { -brand-short-name } an Taskleiste und Startmenü anheften
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -224,7 +226,9 @@ mr2022-onboarding-set-default-subtitle = Verwende einen Browser, der von einer g
 mr2022-onboarding-get-started-primary-subtitle = Unsere neueste Version ist um dich herum aufgebaut und macht es einfacher als je zuvor, im Internet zu surfen. Es ist vollgepackt mit Funktionen, von denen wir glauben, dass du sie lieben wirst.
 mr2022-onboarding-get-started-primary-button-label = In Sekunden eingerichtet
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Blitzschnelle Einrichtung
 mr2022-onboarding-import-subtitle = Richte { -brand-short-name } nach deinen Wünschen ein. Füge deine Lesezeichen, Passwörter und mehr aus deinem alten Browser hinzu.
@@ -336,6 +340,14 @@ onboarding-device-migration-subtitle = Melden Sie sich mit Ihrem { -fxaccount-br
 onboarding-device-migration-subtitle2 = Melden Sie sich bei Ihrem Konto an, um Ihre Lesezeichen, Passwörter und Chronik auf Ihr neues Gerät mitzunehmen.
 onboarding-device-migration-primary-button-label = Anmelden
 
+## Add-ons Picker screen
+
+amo-picker-title = { -brand-short-name } anpassen
+amo-picker-subtitle = Erweiterungen sind wie Apps für Ihren Browser. Mit ihnen können Sie Passwörter schützen, Videos herunterladen, Angebote finden, störende Werbung blockieren, das Erscheinungsbild Ihres Browsers ändern und vieles mehr.
+amo-picker-install-button-label = Zu { -brand-short-name } hinzufügen
+amo-picker-install-complete-label = Installiert
+amo-picker-collection-link = Entdecken Sie weitere Add-ons
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -347,6 +359,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = Wenn du deine Daten s
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } gibt dir Rückendeckung
 onboarding-gratitude-security-and-privacy-subtitle = Vielen Dank, dass du { -brand-short-name } verwendest, unterstützt von der Mozilla Foundation. Mit deiner Unterstützung arbeiten wir daran, das Internet für alle sicherer und zugänglicher zu machen.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Synchronisieren deine Daten zwischen mehreren Geräten
+onboarding-sign-up-description = Erstelle ein Konto und alle deine wichtigen Daten – Passwörter, Lesezeichen und mehr – werden sicher gespeichert und verfügbar, wenn du dich auf einem beliebigen Gerät anmeldest.
+onboarding-sign-up-button = Anmelden oder registrieren
+onboarding-sign-up-secondary-button = Lossurfen
 
 ## New user time and familiarity survey strings
 
@@ -366,3 +383,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Ich bin ganz neu
 onboarding-new-user-survey-familiarity-based-option-2 = Ich habe ihn schon mehrmals verwendet
 onboarding-new-user-survey-familiarity-based-option-3 = Ich kenne mich sehr gut damit aus
 onboarding-new-user-survey-familiarity-based-option-4 = Ich habe ihn in der Vergangenheit verwendet, aber es ist schon eine Weile her
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Sag uns, wo du deine Tabs haben willst
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Wechsle in den Sidebar-Einstellungen, wann immer du möchtest.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Deine Tabs, wie du möchtest
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Viele Tabs offen lassen? Probiere die Tabs an der Seite für eine einfachere Ansicht aus. Oder bleibe klassisch mit Tabs oben. Jederzeit wechseln.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Wähle dein Tab-Layout
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Probieren deine Tabs an der Seite aus, um eine optimierte Ansicht zu erhalten, die dir hilft, dich zu konzentrieren. Oder bleibe klassisch mit Tabs oben. Jederzeit wechseln.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Tabs seitlich
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Tabs oben
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Vertikale Tabs sind hier
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Neu: vertikale Tabs
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Probiere seitliche Tabs aus. Wechsle in den Sidebar-Einstellungen, wann immer du möchtest.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Vertikale Tabs ausprobieren
+onboarding-flair-text = Neu!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Horizontale Tabs behalten
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Ein Browser-Fenster, in dem Tabs am seitlichen Bildschirmrand als Teil der { -brand-shorter-name }-Sidebar angezeigt werden.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Ein Browser-Fenster, in dem Tabs am seitlichen Bildschirmrand als Teil der { -brand-shorter-name }-Sidebar angezeigt werden.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Ein Browser-Fenster, in dem Tabs am oberen Rand angezeigt werden.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Ein Browser-Fenster, in dem Tabs am oberen Rand angezeigt werden.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Probiere einen KI-Chatbot in der Sidebar aus
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Fasse Web-Inhalte zusammen, sammle Brainstorming-Ideen oder entwirf Nachrichten – alles während des Surfens. Wähle aus mehreren Anbietern. Jederzeit wechseln. <a data-l10n-name="learn-more">Weitere Informationen</a>
+onboarding-genai-sidebar-primary-button = Wählen Sie einen Chatbot
+onboarding-genai-sidebar-secondary-button = Lossurfen
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Einrichtung von { -brand-short-name } abschließen
+onboarding-checklist-subtitle = Schließe diese Schritte ab, um das Beste aus deinem Surf-Erlebnis herauszuholen.
+onboarding-checklist-set-default = { -brand-short-name } als Standardbrowser festlegen
+onboarding-checklist-pin = { -brand-short-name } an Taskleiste anheften
+onboarding-checklist-import = Aus vorherigem Browser importieren
+onboarding-checklist-extension = Eine Erweiterung hinzufügen
+onboarding-checklist-sign-up = Registriere dich oder melde dich mit deinem Konto an
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Probiere Tab-Gruppen für weniger Unordnung und mehr Fokus
+tab-groups-onboarding-feature-callout-subtitle = Schaffe Ordnung, indem du einen Tab über den anderen ziehst, um deine erste Gruppe zu erstellen.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Sag Hallo zu { -brand-product-name }-Profilen
+multi-profile-spotlight-body = Wechsle einfach zwischen dem Surfen zur Arbeit oder in der Freizeit. Profile halten deine Surf-Daten, einschließlich Suchchronik und Passwörtern, vollständig getrennt, damit du organisiert bleiben kannst.
+multi-profile-spotlight-cta = Ein Profil erstellen
+multi-profile-callout-title = Erstelle unterschiedliche Profile für Arbeit und Freizeit
+multi-profile-callout-subtitle = Mit Profilen kannst du deine Surf-Daten, wie Suchchronik und Passwörter, komplett trennen.
+multi-profile-callout-cta = Ein Profil erstellen

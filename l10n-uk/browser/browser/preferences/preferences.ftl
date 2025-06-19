@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Передавати вебсайтам сигнал “Не стежити”
+do-not-track-removal = Ми більше не підтримуємо сигнал “Не відстежувати”
 do-not-track-description2 =
     .label = Надсилати вебсайтам запит “Не стежити”
     .accesskey = ж
@@ -12,8 +13,8 @@ do-not-track-option-default-content-blocking-known =
 do-not-track-option-always =
     .label = Завжди
 global-privacy-control-description =
-    .label = Вказувати вебсайтам не продавати та не ділитися моїми даними
-    .accesskey = п
+    .label = Вказувати вебсайтам не продавати мої дані та не ділитися ними
+    .accesskey = к
 non-technical-privacy-header = Налаштування приватності вебсайту
 # Do not translate.
 # "Global Privacy Control" or "GPC" are a web platform feature name and abbreviation
@@ -60,6 +61,7 @@ pane-experimental-description2 = Зміна розширених налашту�
 settings-pane-labs-title = { -firefoxlabs-brand-name }
 settings-category-labs =
     .tooltiptext = { -firefoxlabs-brand-name }
+pane-experimental-description3 = Спробуйте наші експериментальні функції! Вони розробляються та розвиваються, що може вплинути на роботу { -brand-short-name }.
 pane-experimental-reset =
     .label = Відновити типові
     .accesskey = В
@@ -136,6 +138,7 @@ windows-launch-on-login =
     .label = Відкривати { -brand-short-name } автоматично під час запуску комп'ютера
     .accesskey = В
 windows-launch-on-login-disabled = Це налаштування вимкнено у Windows. Щоб змінити його, відвідайте <a data-l10n-name="startup-link">Програми для запуску</a> в налаштуваннях системи.
+windows-launch-on-login-profile-disabled = Увімкніть цей параметр, позначивши “{ profile-manager-use-selected.label }” у вікні “Вибір профілю користувача”.
 startup-restore-warn-on-quit =
     .label = Попереджати при виході з браузера
 disable-extension =
@@ -152,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Відкривати посилання у вкладках замість нових вікон
     .accesskey = л
+ask-on-close-multiple-tabs =
+    .label = Запитувати перед закриттям кількох вкладок
+    .accesskey = к
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Запитувати перед виходом за допомогою { $quitKey }
+    .accesskey = ю
 confirm-on-close-multiple-tabs =
     .label = Підтверджувати перед закриттям кількох вкладок
     .accesskey = і
@@ -570,8 +584,7 @@ home-prefs-shortcuts-description = Сайти, які ви зберігаєте 
 home-prefs-shortcuts-by-option-sponsored =
     .label = Спонсоровані ярлики
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Рекомендації від { $provider }
@@ -643,6 +656,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = Показувати пошукові пропозиції в результатах панелі адреси
     .accesskey = ш
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Показувати пошукові терміни в панелі адреси на сторінках результатів
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -786,6 +803,9 @@ sync-currently-syncing-creditcards = Кредитні картки
 sync-currently-syncing-payment-methods = Способи оплати
 sync-currently-syncing-addons = Додатки
 sync-currently-syncing-settings = Налаштування
+sync-manage-options =
+    .label = Керування синхронізацією…
+    .accesskey = с
 sync-change-options =
     .label = Змінити…
     .accesskey = З
@@ -838,6 +858,13 @@ sync-engine-settings =
     .label = Налаштування
     .tooltiptext = Змінені вами налаштування приватності, безпеки та інші
     .accesskey = Н
+sync-choose-what-to-sync-dialog4 =
+    .title = Керуйте синхронізованими даними на всіх під'єднаних пристроях
+    .style = min-width: 36em;
+    .buttonlabelaccept = Зберегти
+    .buttonaccesskeyaccept = З
+    .buttonlabelextra2 = Від'єднати…
+    .buttonaccesskeyextra2 = В
 
 ## The device name controls.
 
@@ -1118,6 +1145,9 @@ addressbar-suggestions-settings = Змінити налаштування про
 addressbar-locbar-showrecentsearches-option =
     .label = Показати останні пошуки
     .accesskey = о
+addressbar-locbar-showtrendingsuggestions-option =
+    .label = Показувати популярні пошукові пропозиції
+    .accesskey = П
 addressbar-quickactions-learn-more = Докладніше
 
 ## Privacy Section - Content Blocking
@@ -1285,13 +1315,34 @@ collection-description = Ми прагнемо надати вам вибір і
 collection-privacy-notice = Положення про приватність
 collection-health-report-telemetry-disabled = Ви більше не дозволяєте { -vendor-short-name } збирати технічні дані й інформацію про взаємодію. Всі минулі дані будуть видалені протягом 30 днів.
 collection-health-report-telemetry-disabled-link = Докладніше
+collection-usage-ping =
+    .label = Надсилати щоденний сигнал використання до { -vendor-short-name }
+    .accesskey = г
+collection-usage-ping-description = Це допомагає { -vendor-short-name } оцінити активних користувачів.
+collection-health-report2 =
+    .label = Надсилати технічні й аналітичні дані до { -vendor-short-name }
+    .accesskey = с
 collection-health-report =
     .label = Дозволити { -brand-short-name } надсилати технічні та користувацькі дані в { -vendor-short-name }
     .accesskey = к
 collection-health-report-link = Докладніше
+collection-health-report-description = Це допомагає вдосконалити функції, продуктивність і стабільність { -brand-product-name }.
+collection-studies2 =
+    .label = Встановлювати й запускати дослідження
+collection-studies-description = Випробуйте нові функції та ідеї, перш ніж вони стануть доступними для всіх.
 collection-studies =
     .label = Дозволити { -brand-short-name } встановлювати й виконувати дослідження
 collection-studies-link = Переглянути дослідження { -brand-short-name }
+addon-recommendations2 =
+    .label = Дозволити персоналізовані рекомендації розширень
+addon-recommendations-description = Отримуйте рекомендації щодо розширень, щоб покращити роботу в інтернеті.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Відправлення даних вимкнено для цієї конфігурації збірки.
+collection-backlogged-crash-reports2 =
+    .label = Автоматично надсилати звіти про збої
+    .accesskey = з
+collection-backlogged-crash-reports-description = Це допомагає { -vendor-short-name } діагностувати й усувати проблеми з браузером. Звіти можуть містити особисті або конфіденційні дані.
 addon-recommendations =
     .label = Дозволити { -brand-short-name } робити персоналізовані рекомендації розширень
 addon-recommendations-link = Докладніше
@@ -1311,6 +1362,11 @@ privacy-segmentation-radio-on =
 
 ## Privacy Section - Website Advertising Preferences
 
+website-advertising-header = Налаштування реклами для вебсайтів
+website-advertising-private-attribution =
+    .label = Дозволити вебсайтам виконувати вимірювання реклами зі збереженням приватності
+    .accesskey = к
+website-advertising-private-attribution-description = Завдяки цьому сайти можуть розуміти ефективність їхньої реклами, не збираючи дані про вас.
 
 ## Privacy Section - Security
 ##
@@ -1355,13 +1411,20 @@ space-alert-under-5gb-message2 = <strong>Для { -brand-short-name } закін
 
 httpsonly-header = HTTPS-режим
 httpsonly-description = HTTPS забезпечує захищене, зашифроване з'єднання між { -brand-short-name } та відвідуваними вебсайтами. Більшість вебсайтів підтримують HTTPS, тому якщо увімкнено HTTPS-режим, { -brand-short-name } перенаправлятиме усі з'єднання до HTTPS.
+httpsonly-description2 = { -brand-short-name } створює захищені й зашифровані з'єднання з сайтами, які ви відвідуєте. Якщо увімкнено HTTPS-режим, а з'єднання не захищене, { -brand-short-name } попередить вас.
 httpsonly-learn-more = Докладніше
 httpsonly-radio-enabled =
     .label = Увімкнути HTTPS-режим у всіх вікнах
+httpsonly-radio-enabled2 =
+    .label = Використовувати HTTPS-режим у всіх вікнах
 httpsonly-radio-enabled-pbm =
     .label = Увімкнути HTTPS-режим лише у приватних вікнах
+httpsonly-radio-enabled-pbm2 =
+    .label = Використовувати HTTPS-режим у приватних вікнах
 httpsonly-radio-disabled =
     .label = Не вмикати HTTPS-режим
+httpsonly-radio-disabled2 =
+    .label = Спершу спробувати HTTPS, але дозволяти незахищені з'єднання
 
 ## DoH Section
 
@@ -1373,11 +1436,11 @@ preferences-doh-description2 = Завдяки системі DNS через HTTP
 preferences-doh-status = Стан: { $status }
 # Variables:
 #   $name (string) - The name of the DNS over HTTPS resolver. If a custom resolver is used, the name will be the domain of the URL.
-preferences-doh-resolver = Постачальник: { $name }
+preferences-doh-resolver = Провайдер: { $name }
 # This is displayed instead of $name in preferences-doh-resolver
 # when the DoH URL is not a valid URL
 preferences-doh-bad-url = Неправильний URL
-preferences-doh-steering-status = За допомогою локального постачальника
+preferences-doh-steering-status = За допомогою локального провайдера
 preferences-doh-status-active = Активна
 preferences-doh-status-disabled = Вимкнено
 # Variables:
@@ -1392,21 +1455,21 @@ preferences-doh-setting-default =
     .accesskey = Т
 preferences-doh-default-desc = { -brand-short-name } вирішує, коли використовувати захищену DNS для захисту вашої приватності.
 preferences-doh-default-detailed-desc-1 = Використовувати захищену DNS у регіонах, де вона доступна
-preferences-doh-default-detailed-desc-2 = Використовувати ваш типовий DNS-перетворювач, якщо виникла проблема з захищеним постачальником DNS
-preferences-doh-default-detailed-desc-3 = Використовувати локального постачальника, якщо це можливо
+preferences-doh-default-detailed-desc-2 = Використовувати ваш типовий DNS-перетворювач у разі проблем із провайдером захищеної DNS
+preferences-doh-default-detailed-desc-3 = Використовувати локального провайдера, якщо це можливо
 preferences-doh-default-detailed-desc-4 = Вимикати, якщо є активні політики VPN, батьківський контроль або корпоративні політики
 preferences-doh-default-detailed-desc-5 = Вимикати, якщо мережа повідомляє { -brand-short-name }, що вона не повинна використовувати безпечну DNS
 preferences-doh-setting-enabled =
     .label = Підвищений захист
     .accesskey = П
-preferences-doh-enabled-desc = Ви визначаєте, коли використовувати захищену DNS, і обираєте свого постачальника.
-preferences-doh-enabled-detailed-desc-1 = Використовувати обраного вами постачальника
+preferences-doh-enabled-desc = Ви визначаєте, коли використовувати захищену DNS, і обираєте свого провайдера.
+preferences-doh-enabled-detailed-desc-1 = Використовувати вибраного провайдера
 preferences-doh-enabled-detailed-desc-2 = Ваш типовий DNS-перетворювач використовується, лише якщо є проблема з захищеною DNS
 preferences-doh-setting-strict =
     .label = Максимальний захист
     .accesskey = М
 preferences-doh-strict-desc = { -brand-short-name } завжди використовуватиме захищену DNS. Ви побачите попередження про загрозу безпеці, перш ніж ми використаємо DNS вашої системи.
-preferences-doh-strict-detailed-desc-1 = Використовувати лише обраного вами постачальника
+preferences-doh-strict-detailed-desc-1 = Використовувати лише вибраного провайдера
 preferences-doh-strict-detailed-desc-2 = Завжди попереджати, якщо захищена DNS недоступна
 preferences-doh-strict-detailed-desc-3 = Якщо захищена DNS недоступна, сайти не завантажуватимуться або не працюватимуть належним чином
 preferences-doh-setting-off =
@@ -1416,7 +1479,7 @@ preferences-doh-off-desc = Використовувати ваш типовий 
 preferences-doh-checkbox-warn =
     .label = Попереджати, якщо третя сторона активно блокує захищену DNS
     .accesskey = П
-preferences-doh-select-resolver = Обрати постачальника:
+preferences-doh-select-resolver = Вибрати провайдера:
 preferences-doh-exceptions-description = { -brand-short-name } не використовуватиме захищену DNS на цих сайтах
 preferences-doh-manage-exceptions =
     .label = Керувати винятками…

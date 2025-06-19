@@ -108,8 +108,11 @@ appmenu-fxa-sync-and-save-data2 = Embojuehe ha eñongatu mba’ekuaarã
 appmenu-fxa-signed-in-label = Tembiapo ñepyrũ
 appmenu-fxa-setup-sync =
     .label = Emyandy ñembojuehe…
+appmenu-fxa-setup-sync-new = Myandy
 appmenuitem-save-page =
     .label = Ñongatu pyahu…
+appmenuitem-fxa-sync-off-title = Ñembojuehe oñemboguéma
+appmenuitem-fxa-sync-off-description = Emo’ã ha eike nde rechaukaha, ñe’ẽñemi ha hetavépe oimeraẽva mba’e’oka guive.
 
 ## What's New panel in App menu.
 
@@ -279,3 +282,14 @@ appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Ehovamo’ã ne ñanduti veve ha pumbyry
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Emo’ã ne rekoñemi ñandutípe
+
+## Profiles panel
+
+appmenu-profiles = Mba’etekuéra
+appmenu-other-profiles = Ambue mba’etekuéra
+appmenu-manage-profiles =
+    .label = Mba’etekuéra ñangareko
+appmenu-create-profile =
+    .label = Mba’ete pyahu
+appmenu-edit-profile =
+    .aria-label = Embosako’i mba’ete

@@ -12,6 +12,7 @@ neterror-blocked-by-policy-page-title = Pagina bloccata
 neterror-captive-portal-page-title = Accedi alla rete
 neterror-dns-not-found-title = Impossibile contattare il server
 neterror-malformed-uri-page-title = Indirizzo non valido
+general-body-title = Fai attenzione. Qualcosa sembra fuori posto.
 
 ## Error page actions
 
@@ -41,6 +42,8 @@ neterror-generic-error = Per qualche motivo { -brand-short-name } non è in grad
 neterror-load-error-try-again = Il sito potrebbe essere non disponibile o sovraccarico. Riprovare fra qualche istante.
 neterror-load-error-connection = Se non è possibile caricare alcuna pagina, controllare la connessione di rete del computer.
 neterror-load-error-firewall = Se il computer o la rete sono protetti da un firewall o un proxy, assicurarsi che { -brand-short-name } abbia i permessi per accedere al Web.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Se stai cercando di caricare una pagina dalla rete locale, controlla che a { -brand-short-name } siano state concesse le autorizzazioni Rete locale nelle impostazioni di Privacy e sicurezza di macOS.
 neterror-captive-portal = È necessario accedere alla rete per navigare in Internet.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +67,7 @@ neterror-dns-not-found-trr-offline = Nessuna connessione a Internet.
 neterror-dns-not-found-trr-unknown-host2 = Il sito web non è stato trovato da { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Si è verificato un problema con { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = URL non valido.
+neterror-dns-not-found-system-sleep = Il sistema è in modalità sospensione.
 neterror-dns-not-found-trr-unknown-problem = Problema inatteso.
 
 ## Native fallback specific messages
@@ -147,3 +151,12 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Se non si conosce <b>{ $mit
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = <b>{ $hostname }</b> utilizza un criterio di sicurezza chiamato HTTP Strict Transport Security (HSTS). Questo significa che { -brand-short-name } può connettersi solo in modo sicuro e non è possibile aggiungere un’eccezione per visitare questo sito.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Probabilmente nulla, poiché è probabile che sia un problema con il sito stesso.
+certerror-blocked-by-corp-headers-description = A volte i siti web proteggono se stessi e altre persone come te da interazioni indesiderate con altri siti.
+certerror-coop-learn-more = Ulteriori informazioni sui criteri COOP (Cross Origin Opener Policies)
+certerror-coep-learn-more = Ulteriori informazioni sui criteri COEP (Cross Origin Embedder Policies)
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Codice di errore: { $responsestatus } { $responsestatustext }
+

@@ -89,6 +89,9 @@ shopping-show-less-button = Mostrar menos
 
 shopping-settings-label =
     .label = Definições
+shopping-settings-recommendations-toggle2 =
+    .label = Mostrar recomendações e conteúdo patrocinado
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } não partilha os seus dados pessoais, pelo que estas recomendações não o seguirão na Internet. <a data-l10n-name="review-quality-url">Saiba mais</a>
 shopping-settings-recommendations-toggle =
     .label = Mostrar anúncios no verificador de avaliações
 shopping-settings-recommendations-learn-more2 = Irá ver anúncios ocasionais de produtos relevantes. Anunciamos apenas produtos com avaliações confiáveis. <a data-l10n-name="review-quality-url">Saiba mais</a>
@@ -162,6 +165,7 @@ shopping-unanalyzed-product-analyze-button = Verificar a qualidade da avaliaçã
 
 more-to-consider-ad-label =
     .label = Mais a considerar
+shopping-sponsored-label = Patrocinado
 ad-by-fakespot = Anúncio por { -fakespot-brand-name }
 
 ## Shopping survey strings.
@@ -182,6 +186,18 @@ shopping-survey-submit-button-label = Submeter
 shopping-survey-terms-link = Termos de utilização
 shopping-survey-thanks =
     .heading = Obrigado pela sua opinião!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Por favor, diga-nos porque desativou o Verificador de avaliações. Selecione múltiplas opções, se necessário.
+shopping-survey-thanks-title = Obrigado pela sua opinião!
+shopping-survey-opted-out-hard-to-understand = É difícil de compreender
+shopping-survey-opted-out-too-slow = É demasiado lento
+shopping-survey-opted-out-not-accurate = Não é exato.
+shopping-survey-opted-out-not-helpful = Não me é útil
+shopping-survey-opted-out-check-myself = Prefiro verificar as avaliações por mim próprio
+shopping-survey-opted-out-other = Outra
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

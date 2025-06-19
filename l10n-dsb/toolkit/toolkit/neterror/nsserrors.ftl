@@ -2,6 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 # DO NOT ADD THINGS OTHER THAN ERROR MESSAGES HERE.
 # This file gets parsed into a JS dictionary of all known error message ids in
 # gen_aboutneterror_codes.py . If we end up needing fluent attributes or
@@ -9,17 +10,15 @@
 
 psmerr-ssl-disabled = Wěsty zwisk njejo móžny, dokulaž SSL-protokol jo znjemóžnjony.
 psmerr-ssl2-disabled = Wěsty zwisk njejo móžny, dokulaž sedło wužywa staršu, njewěstu wersiju SSL-protokola.
-
 # This is a multi-line message.
 psmerr-hostreusedissuerandserial =
     Sćo njepłaśiwy certifikat dostał. Pšosym stajśo se ze serwerowym administratorom abo e-mailowym korespondentom do zwiska a dajśo jomu k wěsći slědujuce informacije:
     
     Waš certifikat wopśimujo ten samski serijowy numer ako drugi certifikat wudany wót certifikatoweje awtority. Pšosym wobstarajśo se nowy certifikat, kótaryž wopśimujo jasny certifikatowy numer.
-
 ssl-error-export-only-server = Wěsta komunikacija njejo móžna. Napśeśiwne městno njepódpěra wusoke skoděrowanje.
 ssl-error-us-only-server = Wěsta komunikacija njejo móžna. Napśeśiwne městno pomina se wusoke skoděrowanje, kótarež se njepódpěra.
 ssl-error-no-cypher-overlap = Wěsta komunikacija z napśeśiwmnym městnom njejo móžna: žedne gódne koděrowańske algoritmuse.
-ssl-error-no-certificate = Njejo móžno, certifikat abo kluc namakaś, kótaryž jo trěbny za awtentifikaciju.
+ssl-error-no-certificate = Njejo móžno, certifikat abo kluc namakaś, kótaryž jo trjebny za awtentifikaciju.
 ssl-error-bad-certificate = Wěsta komunikacija z napśeśiwnym městnom njejo móžna: certifikat napśeśiwnego městna jo se wótpokazał.
 ssl-error-bad-client = Serwer jo na njepłaśiwe daty wót klienta starcył.
 ssl-error-bad-server = Klient jo na njepłaśiwe daty ze serwera starcył.
@@ -80,7 +79,7 @@ ssl-error-illegal-parameter-alert = Napśeśiwne městno SSL jo pówitańsku pow
 ssl-error-unsupported-cert-alert = Napśeśiwne městno SSL njepódpěra certifikaty typa, kótaryž jo dostało.
 ssl-error-certificate-unknown-alert = Napśeśiwne městno SSL jo měł njepódany problem z certifikatom, kótaryž jo dostało.
 ssl-error-generate-random-failure = SSL jo měł zmólku w generatorje pśipadnych licbow.
-ssl-error-sign-hashes-failure = Njejo móžno, daty digitalnje pódpisaś, což jo trěbne za pśespytowanje wašogo certifikata.
+ssl-error-sign-hashes-failure = Njejo móžno, daty digitalnje pódpisaś, což jo trjebne za pśespytowanje wašogo certifikata.
 ssl-error-extract-public-key-failure = SSL njejo mógł zjawny kluc z certifikata napśeśiwnego městna ekstrahěrowaś.
 ssl-error-server-key-exchange-failure = Njepódana zmólka pśi pśeźěłowanju pówitanja ServerKeyExchange SSL.
 ssl-error-client-key-exchange-failure = Njepódana zmólka pśi pśeźěłowanju pówitanja Client Key Exchange SSL.
@@ -98,7 +97,7 @@ ssl-error-init-cipher-suite-failure = Njejo se raźiło wubranu zběrku šyfrow 
 ssl-error-session-key-gen-failure = Klient njejo mógał pósejźeńske kluce za SSL-pósejźenje twóriś.
 ssl-error-no-server-key-for-alg = Serwer njama kluc za wopytany algoritmus klucoweje wuměny.
 ssl-error-token-insertion-removal = Token PKCS#11 jo se zasunuł abo wótpórał, mjaztym až operacija běžy.
-ssl-error-token-slot-not-found = Token PKCS#11 njejo mógł se namakaś, aby trěbnu operaciju wuwjadł.
+ssl-error-token-slot-not-found = Token PKCS#11 njejo mógł se namakaś, aby trjebnu operaciju wuwjadł.
 ssl-error-no-compression-overlap = Wěsta komunikacija z napśeśiwnym městnom njejo móžna: žedne zwucone kompriměrowańske algoritmuse.
 ssl-error-handshake-not-completed = Njejo móžno, druge pówitanje SSL iniciěrowaś, daniž aktualne pówitanje njejo dokóńcone.
 ssl-error-bad-handshake-hash-value = Wopacne hašowe pówitańske gódnoty z napśeśiwnego městna dostane.
@@ -152,7 +151,6 @@ ssl-error-no-supported-signature-algorithm = Signaturowy algoritmus za TLS njejo
 ssl-error-unsupported-signature-algorithm = Napśeśiwne městno jo njepódpěranu kombinaciju signatury a pśeglědowański algoritmus wužyło.
 ssl-error-missing-extended-master-secret = Napśeśiwne městno jo wopytało, bźez korektnego rozšyrjenja extended_master_secret pókšacowaś.
 ssl-error-unexpected-extended-master-secret = Napśeśiwne městno jo wopytało, z njewótcakowanym rozšyrjenim extended_master_secret pókšacowaś.
-
 sec-error-io = Zapodawańska/wudawańska zmólka jo za wěstotnu awtorizaciju nastała.
 sec-error-library-failure = zmólka wěstotneje biblioteki.
 sec-error-bad-data = wěstotna biblioteka: njepłaśiwe daty dostane.
@@ -208,7 +206,7 @@ sec-error-krl-expired = KRL za certifikat toś togo sedła jo pśepadnjona.
 sec-error-krl-bad-signature = KRL za certifikat toś togo sedła ma njepłaśiwy pódpis.
 sec-error-revoked-key = Kluc za certifikat toś togo sedła jo se anulěrował.
 sec-error-krl-invalid = Nowa KRL ma njepłaśiwy format.
-sec-error-need-random = wěstotna biblioteka: pśipadne daty trěbne.
+sec-error-need-random = wěstotna biblioteka: pśipadne daty trjebne.
 sec-error-no-module = wěstotna biblioteka: žeden wěstotny modul njamóžo pominanu operaciju wuwjasć.
 sec-error-no-token = Wěstotna kórta abo token njeeksistěrujo, musy se inicializěrowaś abo jo wótpórany.
 sec-error-read-only = wěstotna biblioteka: datowa banka dajo se jano cytaś.
@@ -217,7 +215,7 @@ sec-error-cert-nickname-collision = Certifikat z tym samskim pśimjenim južo ek
 sec-error-key-nickname-collision = Kluc z tym samskim pśimjenim južo eksistěrujo.
 sec-error-safe-not-created = zmólka pśi twórjenju wěstego objekta
 sec-error-baggage-not-created = zmólka pśi twórjenju brěmjeńkowego objekta
-sec-error-bad-export-algorithm = Trěbny algoritmus njejo dowólony.
+sec-error-bad-export-algorithm = Trjebny algoritmus njejo dowólony.
 sec-error-exporting-certificates = Zmólka pśi wopyśe certifikaty eksportěrowaś.
 sec-error-importing-certificates = Zmólka pśi wopyśe certifikaty importěrowaś.
 sec-error-pkcs12-decoding-pfx = Import njejo móžny. Dekoděrowańska zmólka. Dataja jo njepłaśiwa.
@@ -247,7 +245,7 @@ sec-error-invalid-password = Zapódane gronidło jo njepłaśiwe. Pšosym wuzyj�
 sec-error-retry-old-password = Zapódane stare gronidło jo wopak. Pšosym wopytajśo hyšći raz.
 sec-error-bad-nickname = Pśimě certifikata se južo wužywa.
 sec-error-not-fortezza-issuer = Rjeśazk FORTEZZA napśeśiwnego městna ma certifikat, kótaryž njejo FORTEZZA.
-sec-error-cannot-move-sensitive-key = Wažny kluc njedajo se do slota pśesunuś, źož jo trěbny.
+sec-error-cannot-move-sensitive-key = Wažny kluc njedajo se do slota pśesunuś, źož jo trjebny.
 sec-error-js-invalid-module-name = Njepłaśiwe modulowe mě.
 sec-error-js-invalid-dll = Njepłaśiwa modulowa sćažka abo njepłaśiwe datajowe mě
 sec-error-js-add-mod-failure = Njejo móžno, modul pśidaś
@@ -319,7 +317,6 @@ sec-error-locked-password = Gronidło jo zastajone.
 sec-error-unknown-pkcs11-error = Njeznata zmólka PKCS #11.
 sec-error-bad-crl-dp-url = Njepłaśiwy abo njepódpěrany URL w mjenju rozdźělowańskego dypka CRL.
 sec-error-cert-signature-algorithm-disabled = Certifikat jo se z pomocu signěrowańskego algoritmusa signěrował, kótaryž jo se znjemóžnił, dokulaž njejo wěsty.
-
 mozilla-pkix-error-key-pinning-failure = Serwer wužywa klucowe pśipinanje - engelski: key pinning - (HPKP), ale njedajo se žeden dowěry gódny certifikatowy rjeśazk twariś, kótaryž wótpowědujo sajźbje PIN-numeram. Pśekśiwjenje klucowego pśipinanja njedaju se wótpóraś.
 mozilla-pkix-error-ca-cert-used-as-end-entity = Serwer wužywa certifikat z rozšyrjenim Basic Constraints, kótarež identificěrujo jen ako certifikatowu awtoritu. Za porědnje wudany certifikat to njepśitrjefi.
 mozilla-pkix-error-inadequate-key-size = Serwer jo certifikat z klucoweju wjelikosću prezentěrował, kótaraž jo pśemała, aby wěsty zwisk napórała.
@@ -329,16 +326,15 @@ mozilla-pkix-error-not-yet-valid-issuer-certificate = Certifikat, kótaryž hyš
 mozilla-pkix-error-signature-algorithm-mismatch = Pódpisowański algoritmus njemaka se w signaturowem pólu certifikata z algoritmusom w jogo pólu signatureAlgorithm.
 mozilla-pkix-error-ocsp-response-for-cert-missing = OCSP-wótegrono njewopśimujo status za certifikat, kótaryž se pśeglědujo.
 mozilla-pkix-error-validity-too-long = Serwer jo certifikat pśedpołožył, kótaryž jo pśedłujko płaśiwy.
-mozilla-pkix-error-required-tls-feature-missing = Trěbna TLS-funkcija felujo.
-mozilla-pkix-error-invalid-integer-encoding = Serwer jo certifikat prezentěrował, kótaryž wopśimujo njepłaśiwe koděrowanje cełeje licby. Ceste zawiny mógu byś: negatiwne serijowe numery, negatiwne RSA-module a koděrowanja, kótarež su dlejše ako trěbne.
+mozilla-pkix-error-required-tls-feature-missing = Trjebna TLS-funkcija felujo.
+mozilla-pkix-error-invalid-integer-encoding = Serwer jo certifikat prezentěrował, kótaryž wopśimujo njepłaśiwe koděrowanje cełeje licby. Ceste zawiny mógu byś: negatiwne serijowe numery, negatiwne RSA-module a koděrowanja, kótarež su dlejše ako trjebne.
 mozilla-pkix-error-empty-issuer-name = Serwer jo certifikat bźez rozeznawajobnego mjenja (eng.: distinguished name) wudawarja prezentěrował.
 mozilla-pkix-error-additional-policy-constraint-failed = Pśidatne wobgranicowanje pšawidła njejo mógło toś ten certifikat pśeglědaś.
 mozilla-pkix-error-self-signed-cert = Certifikat njejo dowěry gódny, dokulaž jo se sam pódpisał.
-
+mozilla-pkix-error-issuer-no-longer-trusted = Městnoju certificěrowanja, kótarež jo certifikat wudało, njejsu dowěrili, nježli až certifikat jo se wudał.
 xp-java-remove-principal-error = Principal njedajo se wótwónoźeś
 xp-java-delete-privilege-error = Priwileg njedajo se lašowaś
 xp-java-cert-not-exists-error = Toś ten principal njama certifikata
-
 xp-sec-fortezza-bad-card = Kórta Fortezza njejo se pórědnje inicializěrowała. Pšosym wótpórajśo ju a dajśo ju swójomu wudawarjeju slědk.
 xp-sec-fortezza-no-card = Žedne kórty Fortezza namakane
 xp-sec-fortezza-none-selected = Žedna kórta Fortezza wubrana

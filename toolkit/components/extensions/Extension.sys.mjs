@@ -31,7 +31,9 @@ import { AppConstants } from "resource://gre/modules/AppConstants.sys.mjs";
 import { ExtensionCommon } from "resource://gre/modules/ExtensionCommon.sys.mjs";
 import { ExtensionParent } from "resource://gre/modules/ExtensionParent.sys.mjs";
 import { ExtensionUtils } from "resource://gre/modules/ExtensionUtils.sys.mjs";
+import { Log } from "resource://gre/modules/Log.sys.mjs";
 
+/** @type {Lazy} */
 const lazy = {};
 
 ChromeUtils.defineESModuleGetters(lazy, {
@@ -42,6 +44,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   E10SUtils: "resource://gre/modules/E10SUtils.sys.mjs",
   ExtensionDNR: "resource://gre/modules/ExtensionDNR.sys.mjs",
   ExtensionDNRStore: "resource://gre/modules/ExtensionDNRStore.sys.mjs",
+  ExtensionMenus: "resource://gre/modules/ExtensionMenus.sys.mjs",
   ExtensionPermissions: "resource://gre/modules/ExtensionPermissions.sys.mjs",
   ExtensionPreferencesManager:
     "resource://gre/modules/ExtensionPreferencesManager.sys.mjs",
@@ -54,7 +57,7 @@ ChromeUtils.defineESModuleGetters(lazy, {
   ExtensionTelemetry: "resource://gre/modules/ExtensionTelemetry.sys.mjs",
   LightweightThemeManager:
     "resource://gre/modules/LightweightThemeManager.sys.mjs",
-  Log: "resource://gre/modules/Log.sys.mjs",
+  NetUtil: "resource://gre/modules/NetUtil.sys.mjs",
   SITEPERMS_ADDON_TYPE:
     "resource://gre/modules/addons/siteperms-addon-utils.sys.mjs",
   Schemas: "resource://gre/modules/Schemas.sys.mjs",
@@ -63,13 +66,10 @@ ChromeUtils.defineESModuleGetters(lazy, {
   PERMISSION_L10N: "resource://gre/modules/ExtensionPermissionMessages.sys.mjs",
   permissionToL10nId:
     "resource://gre/modules/ExtensionPermissionMessages.sys.mjs",
+  QuarantinedDomains: "resource://gre/modules/ExtensionPermissions.sys.mjs",
 });
 
-XPCOMUtils.defineLazyModuleGetters(lazy, {
-  NetUtil: "resource://gre/modules/NetUtil.jsm",
-});
-
-XPCOMUtils.defineLazyGetter(lazy, "resourceProtocol", () =>
+ChromeUtils.defineLazyGetter(lazy, "resourceProtocol", () =>
   Services.io
     .getProtocolHandler("resource")
     .QueryInterface(Ci.nsIResProtocolHandler)
@@ -133,18 +133,39 @@ XPCOMUtils.defineLazyPreferenceGetter(
 // - false      = remove: always use false, even when true is specified.
 //                (if .same_as_mv2 is set, also warn if the default changed)
 // Deprecation plan: https://bugzilla.mozilla.org/show_bug.cgi?id=1827910#c1
-// Bug 1830711 will set browser_style_mv3.supported to false.
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "browserStyleMV3supported",
   "extensions.browser_style_mv3.supported",
   false
 );
-// Bug 1830711 will then set browser_style_mv3.supported to false.
 XPCOMUtils.defineLazyPreferenceGetter(
   lazy,
   "browserStyleMV3sameAsMV2",
   "extensions.browser_style_mv3.same_as_mv2",
+  false
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "processCrashThreshold",
+  "extensions.webextensions.crash.threshold",
+  // The default number of times an extension process is allowed to crash
+  // within a timeframe.
+  5
+);
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "processCrashTimeframe",
+  "extensions.webextensions.crash.timeframe",
+  // The default timeframe used to count crashes, in milliseconds.
+  30 * 1000
+);
+
+XPCOMUtils.defineLazyPreferenceGetter(
+  lazy,
+  "installIncludesOrigins",
+  "extensions.originControls.grantByDefault",
   false
 );
 
@@ -160,15 +181,15 @@ export { Management };
 
 const { getUniqueId, promiseTimeout } = ExtensionUtils;
 
-const { EventEmitter, updateAllowedOrigins } = ExtensionCommon;
+const { EventEmitter, redefineGetter, updateAllowedOrigins } = ExtensionCommon;
 
-XPCOMUtils.defineLazyGetter(
+ChromeUtils.defineLazyGetter(
   lazy,
   "LocaleData",
   () => ExtensionCommon.LocaleData
 );
 
-XPCOMUtils.defineLazyGetter(lazy, "NO_PROMPT_PERMISSIONS", async () => {
+ChromeUtils.defineLazyGetter(lazy, "NO_PROMPT_PERMISSIONS", async () => {
   // Wait until all extension API schemas have been loaded and parsed.
   await Management.lazyInit();
   return new Set(
@@ -181,7 +202,7 @@ XPCOMUtils.defineLazyGetter(lazy, "NO_PROMPT_PERMISSIONS", async () => {
 });
 
 // TODO(Bug 1789718): Remove after the deprecated XPIProvider-based implementation is also removed.
-XPCOMUtils.defineLazyGetter(lazy, "SCHEMA_SITE_PERMISSIONS", async () => {
+ChromeUtils.defineLazyGetter(lazy, "SCHEMA_SITE_PERMISSIONS", async () => {
   // Wait until all extension API schemas have been loaded and parsed.
   await Management.lazyInit();
   return lazy.Schemas.getPermissionNames(["SitePermission"]);
@@ -208,7 +229,6 @@ const PRIVILEGED_PERMS = new Set([
   "networkStatus",
   "normandyAddonStudy",
   "telemetry",
-  "urlbar",
 ]);
 
 const PRIVILEGED_PERMS_ANDROID_ONLY = new Set([
@@ -217,7 +237,7 @@ const PRIVILEGED_PERMS_ANDROID_ONLY = new Set([
   "nativeMessaging",
 ]);
 
-const PRIVILEGED_PERMS_DESKTOP_ONLY = new Set(["normandyAddonStudy", "urlbar"]);
+const PRIVILEGED_PERMS_DESKTOP_ONLY = new Set(["normandyAddonStudy"]);
 
 if (AppConstants.platform == "android") {
   for (const perm of PRIVILEGED_PERMS_ANDROID_ONLY) {
@@ -497,12 +517,36 @@ var ExtensionAddonObserver = {
   },
 
   onUninstalled(addon) {
+    this.clearOnUninstall(addon.id);
+  },
+
+  /**
+   * Clears persistent state from the add-on post install.
+   *
+   * @param {string} addonId The ID of the addon that has been uninstalled.
+   */
+  clearOnUninstall(addonId) {
+    const tasks = [];
+    function addShutdownBlocker(name, promise) {
+      lazy.AsyncShutdown.profileChangeTeardown.addBlocker(name, promise);
+      tasks.push({ name, promise });
+    }
+    function notifyUninstallTaskObservers() {
+      Management.emit("cleanupAfterUninstall", addonId, tasks);
+    }
+
     // Cleanup anything that is used by non-extension addon types
     // since only extensions have uuid's.
-    lazy.ExtensionPermissions.removeAll(addon.id);
+    addShutdownBlocker(
+      `Clear ExtensionPermissions for ${addonId}`,
+      lazy.ExtensionPermissions.removeAll(addonId)
+    );
 
-    let uuid = UUIDMap.get(addon.id, false);
+    lazy.QuarantinedDomains.clearUserPref(addonId);
+
+    let uuid = UUIDMap.get(addonId, false);
     if (!uuid) {
+      notifyUninstallTaskObservers();
       return;
     }
 
@@ -513,8 +557,8 @@ var ExtensionAddonObserver = {
     );
 
     // Clear all cached resources (e.g. CSS and images);
-    lazy.AsyncShutdown.profileChangeTeardown.addBlocker(
-      `Clear cache for ${addon.id}`,
+    addShutdownBlocker(
+      `Clear cache for ${addonId}`,
       clearCacheForExtensionPrincipal(principal, /* clearAll */ true)
     );
 
@@ -535,38 +579,44 @@ var ExtensionAddonObserver = {
     // down because is being uninstalled) and then cleared from
     // the persisted serviceworker registration on the next
     // startup.
-    lazy.AsyncShutdown.profileChangeTeardown.addBlocker(
-      `Clear ServiceWorkers for ${addon.id}`,
+    addShutdownBlocker(
+      `Clear ServiceWorkers for ${addonId}`,
       lazy.ServiceWorkerCleanUp.removeFromPrincipal(principal)
+    );
+
+    // Clear the persisted menus created with the menus/contextMenus API (if any).
+    addShutdownBlocker(
+      `Clear menus store for ${addonId}`,
+      lazy.ExtensionMenus.clearPersistedMenusOnUninstall(addonId)
     );
 
     // Clear the persisted dynamic content scripts created with the scripting
     // API (if any).
-    lazy.AsyncShutdown.profileChangeTeardown.addBlocker(
-      `Clear scripting store for ${addon.id}`,
-      lazy.ExtensionScriptingStore.clearOnUninstall(addon.id)
+    addShutdownBlocker(
+      `Clear scripting store for ${addonId}`,
+      lazy.ExtensionScriptingStore.clearOnUninstall(addonId)
     );
 
     // Clear the DNR API's rules data persisted on disk (if any).
-    lazy.AsyncShutdown.profileChangeTeardown.addBlocker(
-      `Clear declarativeNetRequest store for ${addon.id}`,
+    addShutdownBlocker(
+      `Clear declarativeNetRequest store for ${addonId}`,
       lazy.ExtensionDNRStore.clearOnUninstall(uuid)
     );
 
     if (!Services.prefs.getBoolPref(LEAVE_STORAGE_PREF, false)) {
       // Clear browser.storage.local backends.
-      lazy.AsyncShutdown.profileChangeTeardown.addBlocker(
-        `Clear Extension Storage ${addon.id} (File Backend)`,
-        lazy.ExtensionStorage.clear(addon.id, { shouldNotifyListeners: false })
+      addShutdownBlocker(
+        `Clear Extension Storage ${addonId} (File Backend)`,
+        lazy.ExtensionStorage.clear(addonId, { shouldNotifyListeners: false })
       );
 
       // Clear browser.storage.sync rust-based backend.
       // (storage.sync clearOnUninstall will resolve and log an error on the
       // browser console in case of unexpected failures).
       if (!lazy.storageSyncOldKintoBackend) {
-        lazy.AsyncShutdown.profileChangeTeardown.addBlocker(
-          `Clear Extension StorageSync ${addon.id}`,
-          lazy.extensionStorageSync.clearOnUninstall(addon.id)
+        addShutdownBlocker(
+          `Clear Extension StorageSync ${addonId}`,
+          lazy.extensionStorageSync.clearOnUninstall(addonId)
         );
       }
 
@@ -581,7 +631,7 @@ var ExtensionAddonObserver = {
         });
       Services.qms.clearStoragesForPrincipal(storagePrincipal);
 
-      lazy.ExtensionStorageIDB.clearMigratedExtensionPref(addon.id);
+      lazy.ExtensionStorageIDB.clearMigratedExtensionPref(addonId);
 
       // If LSNG is not enabled, we need to clear localStorage explicitly using
       // the old API.
@@ -618,7 +668,26 @@ var ExtensionAddonObserver = {
 
     if (!Services.prefs.getBoolPref(LEAVE_UUID_PREF, false)) {
       // Clear the entry in the UUID map
-      UUIDMap.remove(addon.id);
+      UUIDMap.remove(addonId);
+    }
+
+    notifyUninstallTaskObservers();
+  },
+
+  onPropertyChanged(addon, properties) {
+    let extension = GlobalManager.extensionMap.get(addon.id);
+    if (extension && properties.includes("quarantineIgnoredByUser")) {
+      extension.ignoreQuarantine = addon.quarantineIgnoredByUser;
+      extension.policy.ignoreQuarantine = addon.quarantineIgnoredByUser;
+
+      extension.setSharedData("", extension.serialize());
+      Services.ppmm.sharedData.flush();
+
+      extension.emit("update-ignore-quarantine");
+      extension.broadcast("Extension:UpdateIgnoreQuarantine", {
+        id: extension.id,
+        ignoreQuarantine: addon.quarantineIgnoredByUser,
+      });
     }
   },
 };
@@ -631,6 +700,18 @@ ExtensionAddonObserver.init();
  */
 export var ExtensionProcessCrashObserver = {
   initialized: false,
+
+  // For Android apps we initially consider the app as always starting
+  // in the background, then we expect to be setting it to foreground
+  // when GeckoView LifecycleListener onResume method is called on the
+  // Android app first startup. After the application has got on the
+  // foreground for the first time then onPause/onResumed LifecycleListener
+  // are called, the application-foreground/-background topics will be
+  // notified to Gecko and this flag will be updated accordingly.
+  _appInForeground: AppConstants.platform !== "android",
+  _isAndroid: AppConstants.platform === "android",
+  _processSpawningDisabled: false,
+
   // Technically there is at most one child extension process,
   // but we may need to adjust this assumption to account for more
   // than one if that ever changes in the future.
@@ -638,11 +719,22 @@ export var ExtensionProcessCrashObserver = {
   lastCrashedProcessChildID: undefined,
   QueryInterface: ChromeUtils.generateQI(["nsIObserver"]),
 
+  // Collect the timestamps of the crashes happened over the last
+  // `processCrashTimeframe` milliseconds.
+  lastCrashTimestamps: [],
+
+  logger: Log.repository.getLogger("addons.process-crash-observer"),
+
   init() {
     if (!this.initialized) {
       Services.obs.addObserver(this, "ipc:content-created");
       Services.obs.addObserver(this, "process-type-set");
       Services.obs.addObserver(this, "ipc:content-shutdown");
+      if (this._isAndroid) {
+        Services.obs.addObserver(this, "geckoview-initial-foreground");
+        Services.obs.addObserver(this, "application-foreground");
+        Services.obs.addObserver(this, "application-background");
+      }
       this.initialized = true;
     }
   },
@@ -653,6 +745,11 @@ export var ExtensionProcessCrashObserver = {
         Services.obs.removeObserver(this, "ipc:content-created");
         Services.obs.removeObserver(this, "process-type-set");
         Services.obs.removeObserver(this, "ipc:content-shutdown");
+        if (this._isAndroid) {
+          Services.obs.removeObserver(this, "geckoview-initial-foreground");
+          Services.obs.removeObserver(this, "application-foreground");
+          Services.obs.removeObserver(this, "application-background");
+        }
       } catch (err) {
         // Removing the observer may fail if they are not registered anymore,
         // this shouldn't happen in practice, but let's still log the error
@@ -666,12 +763,38 @@ export var ExtensionProcessCrashObserver = {
   observe(subject, topic, data) {
     let childID = data;
     switch (topic) {
+      case "geckoview-initial-foreground":
+        this._appInForeground = true;
+        this.logger.debug(
+          `Detected Android application moved in the foreground (geckoview-initial-foreground)`
+        );
+        break;
+      case "application-foreground":
+      // Intentional fall-through
+      case "application-background":
+        this._appInForeground = topic === "application-foreground";
+        this.logger.debug(
+          `Detected Android application moved in the ${
+            this._appInForeground ? "foreground" : "background"
+          }`
+        );
+        if (this._appInForeground) {
+          Management.emit("application-foreground", {
+            appInForeground: this._appInForeground,
+            childID: this.currentProcessChildID,
+            processSpawningDisabled: this.processSpawningDisabled,
+          });
+        }
+        break;
       case "process-type-set":
       // Intentional fall-through
       case "ipc:content-created": {
         let pp = subject.QueryInterface(Ci.nsIDOMProcessParent);
         if (pp.remoteType === "extension") {
           this.currentProcessChildID = childID;
+          Glean.extensions.processEvent[
+            this.appInForeground ? "created_fg" : "created_bg"
+          ].add(1);
         }
         break;
       }
@@ -699,10 +822,65 @@ export var ExtensionProcessCrashObserver = {
         }
 
         this.lastCrashedProcessChildID = childID;
-        Management.emit("extension-process-crash", { childID });
+
+        const now = Cu.now();
+        // Filter crash timestamps older than processCrashTimeframe.
+        this.lastCrashTimestamps = this.lastCrashTimestamps.filter(
+          timestamp => now - timestamp < lazy.processCrashTimeframe
+        );
+        // Push the new timeframe.
+        this.lastCrashTimestamps.push(now);
+        // Set the flag that disable process spawning when we exceed the
+        // `processCrashThreshold`.
+        this._processSpawningDisabled =
+          this.lastCrashTimestamps.length > lazy.processCrashThreshold;
+
+        this.logger.debug(
+          `Extension process crashed ${this.lastCrashTimestamps.length} times over the last ${lazy.processCrashTimeframe}ms`
+        );
+
+        const { appInForeground } = this;
+
+        if (this.processSpawningDisabled) {
+          if (appInForeground) {
+            Glean.extensions.processEvent.crashed_over_threshold_fg.add(1);
+          } else {
+            Glean.extensions.processEvent.crashed_over_threshold_bg.add(1);
+          }
+          this.logger.warn(
+            `Extension process respawning disabled because it crashed too often in the last ${lazy.processCrashTimeframe}ms (${this.lastCrashTimestamps.length} > ${lazy.processCrashThreshold}).`
+          );
+        }
+
+        Glean.extensions.processEvent[
+          appInForeground ? "crashed_fg" : "crashed_bg"
+        ].add(1);
+        Management.emit("extension-process-crash", {
+          childID,
+          processSpawningDisabled: this.processSpawningDisabled,
+          appInForeground,
+        });
         break;
       }
     }
+  },
+
+  enableProcessSpawning() {
+    const crashCounter = this.lastCrashTimestamps.length;
+    this.lastCrashTimestamps = [];
+    this.logger.debug(`reset crash counter (was ${crashCounter})`);
+    this._processSpawningDisabled = false;
+    Management.emit("extension-enable-process-spawning");
+  },
+
+  get appInForeground() {
+    // Only account for application in the background for
+    // android builds.
+    return this._isAndroid ? this._appInForeground : true;
+  },
+
+  get processSpawningDisabled() {
+    return this._processSpawningDisabled;
   },
 };
 
@@ -728,6 +906,19 @@ const manifestTypes = new Map([
  * `loadManifest` has been called, and completed.
  */
 export class ExtensionData {
+  /**
+   * Note: These fields are only available and meant to be used on Extension
+   * instances, declared here because methods from this class reference them.
+   */
+  /** @type {object} TODO: move to the Extension class, bug 1871094. */
+  addonData;
+  /** @type {nsIURI} */
+  baseURI;
+  /** @type {nsIPrincipal} */
+  principal;
+  /** @type {boolean} */
+  temporarilyInstalled;
+
   constructor(rootURI, isPrivileged = false) {
     this.rootURI = rootURI;
     this.resourceURL = rootURI.spec;
@@ -759,12 +950,12 @@ export class ExtensionData {
    * @param {object} options
    * @param {nsIURI} options.rootURI
    *  The URI pointing to the extension root.
-   * @param {function(type, id)} options.checkPrivileged
+   * @param {function(type, id): boolean} options.checkPrivileged
    *  An (async) function that takes the addon type and addon ID and returns
    *  whether the given add-on is privileged.
    * @param {boolean} options.temporarilyInstalled
    *  whether the given add-on is installed as temporary.
-   * @returns {ExtensionData}
+   * @returns {Promise<ExtensionData>}
    */
   static async constructAsync({
     rootURI,
@@ -795,7 +986,7 @@ export class ExtensionData {
 
   get logger() {
     let id = this.id || "<unknown>";
-    return lazy.Log.repository.getLogger(LOGGER_ID_BASE + id);
+    return Log.repository.getLogger(LOGGER_ID_BASE + id);
   }
 
   /**
@@ -872,11 +1063,11 @@ export class ExtensionData {
   /**
    * Discovers the file names within a directory or JAR file.
    *
-   * @param {Ci.nsIFileURL|Ci.nsIJARURI} path
+   * @param {string} path
    *   The path to the directory or jar file to look at.
    * @param {boolean} [directoriesOnly]
    *   If true, this will return only the directories present within the directory.
-   * @returns {string[]}
+   * @returns {Promise<string[]>}
    *   An array of names of files/directories (only the name, not the path).
    */
   async _readDirectory(path, directoriesOnly = false) {
@@ -967,6 +1158,24 @@ export class ExtensionData {
     return !(this.isPrivileged && this.hasPermission("mozillaAddons"));
   }
 
+  get optionsPageProperties() {
+    let page = this.manifest.options_ui?.page ?? this.manifest.options_page;
+    if (!page) {
+      return null;
+    }
+    return {
+      page,
+      open_in_tab: this.manifest.options_ui
+        ? this.manifest.options_ui.open_in_tab ?? false
+        : true,
+      // `options_ui.browser_style` is assigned the proper default value
+      // (true for MV2 and false for MV3 when not explicitly set),
+      // in `#parseBrowserStyleInManifest` (called when we are loading
+      // and parse manifest data from the `parseManifest` method).
+      browser_style: this.manifest.options_ui?.browser_style ?? false,
+    };
+  }
+
   /**
    * Given an array of host and permissions, generate a structured permissions object
    * that contains seperate host origins and permissions arrays.
@@ -1001,8 +1210,10 @@ export class ExtensionData {
    * includes the contents of the "permissions" property as well as other
    * capabilities that are derived from manifest fields that users should
    * be informed of (e.g., origins where content scripts are injected).
+   *
+   * For MV3 extensions with origin controls, this does not include origins.
    */
-  get manifestPermissions() {
+  getRequiredPermissions() {
     if (this.type !== "extension") {
       return null;
     }
@@ -1046,6 +1257,20 @@ export class ExtensionData {
   }
 
   /**
+   * Returns additional permissions that extensions is requesting based on its
+   * manifest. For now, this is host_permissions (and content scripts) in mv3.
+   */
+  getRequestedPermissions() {
+    if (this.type !== "extension") {
+      return null;
+    }
+    if (this.originControls && lazy.installIncludesOrigins) {
+      return { permissions: [], origins: this.getManifestOrigins() };
+    }
+    return { permissions: [], origins: [] };
+  }
+
+  /**
    * Returns optional permissions from the manifest, including host permissions
    * if originControls is true.
    */
@@ -1055,7 +1280,8 @@ export class ExtensionData {
     }
 
     let { permissions, origins } = this.permissionsObject(
-      this.manifest.optional_permissions
+      this.manifest.optional_permissions,
+      this.manifest.optional_host_permissions
     );
     if (this.originControls) {
       for (let origin of this.getManifestOrigins()) {
@@ -1250,6 +1476,18 @@ export class ExtensionData {
     return this._backgroundState;
   }
 
+  /**
+   * Returns true if the addon is configured to be installed
+   * by enterprise policy.
+   * Should be kept in sync with XPIDatabase.sys.mjs
+   */
+  get isInstalledByEnterprisePolicy() {
+    const policySettings = Services.policies?.getExtensionSettings(this.id);
+    return ["force_installed", "normal_installed"].includes(
+      policySettings?.installation_mode
+    );
+  }
+
   async getExtensionVersionWithoutValidation() {
     return (await this.readJSON("manifest.json")).version;
   }
@@ -1259,7 +1497,7 @@ export class ExtensionData {
    * be initialized, and manifest parsed prior to calling.
    *
    * @param {string} locale to load, if necessary.
-   * @returns {object} normalized manifest.
+   * @returns {Promise<object>} normalized manifest.
    */
   async getLocalizedManifest(locale) {
     if (!this.type || !this.localeData) {
@@ -1303,11 +1541,12 @@ export class ExtensionData {
       },
       preprocessors: {},
       manifestVersion: this.manifestVersion,
+      // We introduced this context param in Bug 1831417.
+      ignoreUnrecognizedProperties: false,
     };
 
     if (this.fluentL10n || this.localeData) {
-      context.preprocessors.localize = (value, context) =>
-        this.localize(value, locale);
+      context.preprocessors.localize = value => this.localize(value, locale);
     }
 
     return lazy.Schemas.normalize(this.rawManifest, manifestType, context);
@@ -1357,6 +1596,17 @@ export class ExtensionData {
       `Warning processing ${manifestKey}.browser_style: ${warning}`
     );
   }
+
+  // AMO enforces a maximum length of 45 on the name since at least 2017, via
+  // https://github.com/mozilla/addons-linter/blame/c4507688899aaafe29c522f1b1aec94b78b8a095/src/schema/updates/manifest.json#L111
+  // added in https://github.com/mozilla/addons-linter/pull/1169
+  // To avoid breaking add-ons that do not go through AMO (e.g. temporarily
+  // loaded extensions), we enforce the limit by truncating and warning if
+  // needed, instead enforcing a maxLength on "name" in schemas/manifest.json.
+  //
+  // We set the limit to 75, which is a safe limit that matches the CWS,
+  // see https://bugzilla.mozilla.org/show_bug.cgi?id=1939087#c5
+  static EXT_NAME_MAX_LEN = 75;
 
   async initializeAddonTypeAndID() {
     if (this.type) {
@@ -1468,6 +1718,16 @@ export class ExtensionData {
       const { strict_min_version, strict_max_version } =
         manifest.browser_specific_settings.gecko_android;
 
+      // When the manifest doesn't define `browser_specific_settings.gecko`, it
+      // is still possible to reach this block but `manifest.applications`
+      // won't be defined yet.
+      if (!manifest?.applications) {
+        manifest.applications = {
+          // All properties should be optional in `gecko` so we omit them here.
+          gecko: {},
+        };
+      }
+
       if (strict_min_version?.length) {
         manifest.applications.gecko.strict_min_version = strict_min_version;
       }
@@ -1475,6 +1735,14 @@ export class ExtensionData {
       if (strict_max_version?.length) {
         manifest.applications.gecko.strict_max_version = strict_max_version;
       }
+    }
+
+    if (manifest.name.length > ExtensionData.EXT_NAME_MAX_LEN) {
+      // Truncate and warn - see comment in EXT_NAME_MAX_LEN.
+      manifest.name = manifest.name.slice(0, ExtensionData.EXT_NAME_MAX_LEN);
+      this.manifestWarning(
+        `Warning processing "name": must be shorter than ${ExtensionData.EXT_NAME_MAX_LEN}`
+      );
     }
 
     if (
@@ -1496,6 +1764,8 @@ export class ExtensionData {
       );
     }
 
+    // manifest.options_page opens the extension page in a new tab
+    // and so we will not need to special handling browser_style.
     if (manifest.options_ui) {
       if (manifest.options_ui.open_in_tab) {
         // browser_style:true has no effect when open_in_tab is true.
@@ -1631,11 +1901,20 @@ export class ExtensionData {
 
       result.contentScripts = [];
       for (let options of manifest.content_scripts || []) {
+        let { match_about_blank, match_origin_as_fallback } = options;
+        if (match_origin_as_fallback !== null) {
+          // match_about_blank is ignored when match_origin_as_fallback is set.
+          // When match_about_blank=true and match_origin_as_fallback=false,
+          // then match_about_blank should be treated as false.
+          match_about_blank = false;
+        }
         result.contentScripts.push({
           allFrames: options.all_frames,
-          matchAboutBlank: options.match_about_blank,
+          matchAboutBlank: match_about_blank,
+          matchOriginAsFallback: match_origin_as_fallback,
           frameID: options.frame_id,
           runAt: options.run_at,
+          world: options.world,
 
           matches: options.matches,
           excludeMatches: options.exclude_matches || [],
@@ -1874,6 +2153,7 @@ export class ExtensionData {
   }
 
   getAPIManager() {
+    /** @type {(InstanceType<typeof ExtensionCommon.LazyAPIManager>)[]} */
     let apiManagers = [Management];
 
     for (let id of this.dependencies) {
@@ -2183,14 +2463,12 @@ export class ExtensionData {
    *                 "sideload", "optional", or omitted for a regular
    *                 install prompt.
    * @param {object} options
-   * @param {boolean} options.collapseOrigins
+   * @param {boolean} [options.collapseOrigins]
    *                  Wether to limit the number of displayed host permissions.
    *                  Default is false.
-   * @param {boolean} options.buildOptionalOrigins
+   * @param {boolean} [options.buildOptionalOrigins]
    *                  Wether to build optional origins Maps for permission
    *                  controls.  Defaults to false.
-   * @param {Localization} options.localization
-   *                       Optional custom localization instance.
    *
    * @returns {object} An object with properties containing localized strings
    *                   for various elements of a permission dialog. The "header"
@@ -2217,9 +2495,9 @@ export class ExtensionData {
       type,
       unsigned,
     },
-    { collapseOrigins = false, buildOptionalOrigins = false, localization } = {}
+    { collapseOrigins = false, buildOptionalOrigins = false } = {}
   ) {
-    const l10n = localization ?? lazy.PERMISSION_L10N;
+    const l10n = lazy.PERMISSION_L10N;
 
     const msgIds = [];
     const headerArgs = { extension: "<>" };
@@ -2503,8 +2781,8 @@ const PROXIED_EVENTS = new Set([
 ]);
 
 class BootstrapScope {
-  install(data, reason) {}
-  uninstall(data, reason) {
+  install() {}
+  uninstall(data) {
     lazy.AsyncShutdown.profileChangeTeardown.addBlocker(
       `Uninstalling add-on: ${data.id}`,
       Management.emit("uninstall", { id: data.id }).then(() => {
@@ -2526,7 +2804,7 @@ class BootstrapScope {
     // APP_STARTED.  In some situations, such as background and
     // persisted listeners, we also need to know that the addon
     // was updated.
-    this.updateReason = this.BOOTSTRAP_REASON_TO_STRING_MAP[reason];
+    this.updateReason = BootstrapScope.BOOTSTRAP_REASON_MAP[reason];
     // Retain any previously granted permissions that may have migrated
     // into the optional list.
     if (data.oldPermissions) {
@@ -2553,7 +2831,7 @@ class BootstrapScope {
     // eslint-disable-next-line no-use-before-define
     this.extension = new Extension(
       data,
-      this.BOOTSTRAP_REASON_TO_STRING_MAP[reason],
+      BootstrapScope.BOOTSTRAP_REASON_MAP[reason],
       this.updateReason
     );
     return this.extension.startup();
@@ -2561,80 +2839,74 @@ class BootstrapScope {
 
   async shutdown(data, reason) {
     let result = await this.extension.shutdown(
-      this.BOOTSTRAP_REASON_TO_STRING_MAP[reason]
+      BootstrapScope.BOOTSTRAP_REASON_MAP[reason]
     );
     this.extension = null;
     return result;
   }
+
+  static get BOOTSTRAP_REASON_MAP() {
+    const BR = lazy.AddonManagerPrivate.BOOTSTRAP_REASONS;
+    const value = Object.freeze({
+      [BR.APP_STARTUP]: "APP_STARTUP",
+      [BR.APP_SHUTDOWN]: "APP_SHUTDOWN",
+      [BR.ADDON_ENABLE]: "ADDON_ENABLE",
+      [BR.ADDON_DISABLE]: "ADDON_DISABLE",
+      [BR.ADDON_INSTALL]: "ADDON_INSTALL",
+      [BR.ADDON_UNINSTALL]: "ADDON_UNINSTALL",
+      [BR.ADDON_UPGRADE]: "ADDON_UPGRADE",
+      [BR.ADDON_DOWNGRADE]: "ADDON_DOWNGRADE",
+    });
+    return redefineGetter(this, "BOOTSTRAP_REASON_TO_STRING_MAP", value);
+  }
 }
 
-XPCOMUtils.defineLazyGetter(
-  BootstrapScope.prototype,
-  "BOOTSTRAP_REASON_TO_STRING_MAP",
-  () => {
-    const { BOOTSTRAP_REASONS } = lazy.AddonManagerPrivate;
-
-    return Object.freeze({
-      [BOOTSTRAP_REASONS.APP_STARTUP]: "APP_STARTUP",
-      [BOOTSTRAP_REASONS.APP_SHUTDOWN]: "APP_SHUTDOWN",
-      [BOOTSTRAP_REASONS.ADDON_ENABLE]: "ADDON_ENABLE",
-      [BOOTSTRAP_REASONS.ADDON_DISABLE]: "ADDON_DISABLE",
-      [BOOTSTRAP_REASONS.ADDON_INSTALL]: "ADDON_INSTALL",
-      [BOOTSTRAP_REASONS.ADDON_UNINSTALL]: "ADDON_UNINSTALL",
-      [BOOTSTRAP_REASONS.ADDON_UPGRADE]: "ADDON_UPGRADE",
-      [BOOTSTRAP_REASONS.ADDON_DOWNGRADE]: "ADDON_DOWNGRADE",
-    });
-  }
-);
-
 class DictionaryBootstrapScope extends BootstrapScope {
-  install(data, reason) {}
-  uninstall(data, reason) {}
+  install() {}
+  uninstall() {}
 
-  startup(data, reason) {
+  startup(data) {
     // eslint-disable-next-line no-use-before-define
     this.dictionary = new Dictionary(data);
-    return this.dictionary.startup(this.BOOTSTRAP_REASON_TO_STRING_MAP[reason]);
+    return this.dictionary.startup();
   }
 
-  shutdown(data, reason) {
-    this.dictionary.shutdown(this.BOOTSTRAP_REASON_TO_STRING_MAP[reason]);
+  async shutdown(data, reason) {
+    this.dictionary.shutdown(BootstrapScope.BOOTSTRAP_REASON_MAP[reason]);
     this.dictionary = null;
   }
 }
 
 class LangpackBootstrapScope extends BootstrapScope {
-  install(data, reason) {}
-  uninstall(data, reason) {}
-  update(data, reason) {}
+  install() {}
+  uninstall() {}
+  async update() {}
 
-  startup(data, reason) {
+  startup(data) {
     // eslint-disable-next-line no-use-before-define
     this.langpack = new Langpack(data);
-    return this.langpack.startup(this.BOOTSTRAP_REASON_TO_STRING_MAP[reason]);
+    return this.langpack.startup();
   }
 
-  shutdown(data, reason) {
-    this.langpack.shutdown(this.BOOTSTRAP_REASON_TO_STRING_MAP[reason]);
+  async shutdown(data, reason) {
+    this.langpack.shutdown(BootstrapScope.BOOTSTRAP_REASON_MAP[reason]);
     this.langpack = null;
   }
 }
 
 // TODO(Bug 1789718): Remove after the deprecated XPIProvider-based implementation is also removed.
 class SitePermissionBootstrapScope extends BootstrapScope {
-  install(data, reason) {}
-  uninstall(data, reason) {}
+  install() {}
+  uninstall() {}
 
-  startup(data, reason) {
+  startup(data) {
     // eslint-disable-next-line no-use-before-define
     this.sitepermission = new SitePermission(data);
-    return this.sitepermission.startup(
-      this.BOOTSTRAP_REASON_TO_STRING_MAP[reason]
-    );
+    return this.sitepermission.startup();
   }
 
-  shutdown(data, reason) {
-    this.sitepermission.shutdown(this.BOOTSTRAP_REASON_TO_STRING_MAP[reason]);
+  async shutdown(data, reason) {
+    this.sitepermission.shutdown(BootstrapScope.BOOTSTRAP_REASON_MAP[reason]);
     this.sitepermission = null;
   }
 }
@@ -2650,6 +2922,18 @@ let pendingExtensions = new Map();
  * @augments ExtensionData
  */
 export class Extension extends ExtensionData {
+  /** @type {Map<string, Map<string, any>>} */
+  persistentListeners;
+
+  /** @type {import("ExtensionShortcuts.sys.mjs").ExtensionShortcuts} */
+  shortcuts;
+
+  /** @type {TabManagerBase} */
+  tabManager;
+
+  /** @type {(options?: { ignoreDevToolsAttached?: boolean, disableResetIdleForTest?: boolean }) => Promise} */
+  terminateBackground;
+
   constructor(addonData, startupReason, updateReason) {
     super(addonData.resourceURI, addonData.isPrivileged);
 
@@ -2682,6 +2966,7 @@ export class Extension extends ExtensionData {
     this.startupData = addonData.startupData || {};
     this.startupReason = startupReason;
     this.updateReason = updateReason;
+    this.temporarilyInstalled = !!addonData.temporarilyInstalled;
 
     if (
       updateReason ||
@@ -2716,7 +3001,9 @@ export class Extension extends ExtensionData {
     // practice (but we still set the ignoreQuarantine flag here accordingly
     // to the expected behavior for consistency).
     this.ignoreQuarantine =
-      addonData.isPrivileged || !!addonData.recommendationState?.states?.length;
+      addonData.isPrivileged ||
+      !!addonData.recommendationState?.states?.length ||
+      lazy.QuarantinedDomains.isUserAllowedAddonId(this.id);
 
     this.views = new Set();
     this._backgroundPageFrameLoader = null;
@@ -2735,10 +3022,6 @@ export class Extension extends ExtensionData {
     this.registeredContentScripts = new Map();
 
     this.emitter = new EventEmitter();
-
-    if (this.startupData.lwtData && this.startupReason == "APP_STARTUP") {
-      lazy.LightweightThemeManager.fallbackThemeData = this.startupData.lwtData;
-    }
 
     /* eslint-disable mozilla/balanced-listeners */
     this.on("add-permissions", (ignoreEvent, permissions) => {
@@ -2834,10 +3117,7 @@ export class Extension extends ExtensionData {
 
   get backgroundContext() {
     for (let view of this.views) {
-      if (
-        view.viewType === "background" ||
-        view.viewType === "background_worker"
-      ) {
+      if (view.isBackgroundContext) {
         return view;
       }
     }
@@ -2907,7 +3187,7 @@ export class Extension extends ExtensionData {
     return ExtensionCommon.checkLoadURL(url, this.principal, options);
   }
 
-  async promiseLocales(locale) {
+  async promiseLocales() {
     let locales = await StartupCache.locales.get(
       [this.id, "@@all_locales"],
       () => this._promiseLocaleMap()
@@ -2926,10 +3206,6 @@ export class Extension extends ExtensionData {
 
   get manifestCacheKey() {
     return [this.id, this.version, Services.locale.appLocaleAsBCP47];
-  }
-
-  get temporarilyInstalled() {
-    return !!this.addonData.temporarilyInstalled;
   }
 
   saveStartupData() {
@@ -3047,9 +3323,11 @@ export class Extension extends ExtensionData {
     };
   }
 
-  // Extended serialized data which is only needed in the extensions process,
-  // and is never deserialized in web content processes.
-  // Keep in sync with BrowserExtensionContent in ExtensionChild.jsm
+  /**
+   * Extended serialized data which is only needed in the extensions process,
+   * and is never deserialized in web content processes.
+   * Keep in sync with @see {ExtensionChild}.
+   */
   serializeExtended() {
     return {
       backgroundScripts: this.backgroundScripts,
@@ -3075,7 +3353,7 @@ export class Extension extends ExtensionData {
         children.delete(data.target);
         maybeResolve();
       }
-      function observer(subject, topic, data) {
+      function observer(subject) {
         children.delete(subject);
         maybeResolve();
       }
@@ -3103,7 +3381,7 @@ export class Extension extends ExtensionData {
     sharedData.set(key, value);
   }
 
-  getSharedData(key, value) {
+  getSharedData(key) {
     key = `extension/${this.id}/${key}`;
     return sharedData.get(key);
   }
@@ -3213,7 +3491,7 @@ export class Extension extends ExtensionData {
   /**
    * Update site permissions as necessary.
    *
-   * @param {string|undefined} reason
+   * @param {string} [reason]
    *        If provided, this is a BOOTSTRAP_REASON string.  If reason is undefined,
    *        addon permissions are being added or removed that may effect the site permissions.
    */
@@ -3289,6 +3567,7 @@ export class Extension extends ExtensionData {
 
     // readyPromise is resolved with the policy upon success,
     // and with null if startup was interrupted.
+    /** @type {callback} */
     let resolveReadyPromise;
     let readyPromise = new Promise(resolve => {
       resolveReadyPromise = resolve;
@@ -3304,7 +3583,7 @@ export class Extension extends ExtensionData {
       ignoreQuarantine: this.ignoreQuarantine,
       temporarilyInstalled: this.temporarilyInstalled,
       allowedOrigins: new MatchPatternSet([]),
-      localizeCallback() {},
+      localizeCallback: () => "",
       readyPromise,
     });
 
@@ -3320,6 +3599,18 @@ export class Extension extends ExtensionData {
       ignoreQuarantine: this.ignoreQuarantine,
     });
     sharedData.set("extensions/pending", pendingExtensions);
+
+    if (
+      // Cannot use this.type because we haven't parsed the manifest yet.
+      this.addonData.type === "theme" &&
+      this.startupData.lwtData &&
+      this.startupReason == "APP_STARTUP"
+    ) {
+      // Avoid FOUC at browser startup by setting the fallback theme data as
+      // soon as the static theme is starting. Not doing so can result in a
+      // FOUC because loadManifest + runManifest (and other steps) are async.
+      lazy.LightweightThemeManager.fallbackThemeData = this.startupData.lwtData;
+    }
 
     lazy.ExtensionTelemetry.extensionStartup.stopwatchStart(this);
     try {
@@ -3459,7 +3750,8 @@ export class Extension extends ExtensionData {
     // We automatically add permissions to system/built-in extensions.
     // Extensions expliticy stating not_allowed will never get permission.
     let isAllowed = this.permissions.has(PRIVATE_ALLOWED_PERMISSION);
-    if (this.manifest.incognito === "not_allowed") {
+    const hasIncognitoNotAllowed = this.manifest.incognito === "not_allowed";
+    if (hasIncognitoNotAllowed) {
       // If an extension previously had permission, but upgrades/downgrades to
       // a version that specifies "not_allowed" in manifest, remove the
       // permission.
@@ -3483,6 +3775,32 @@ export class Extension extends ExtensionData {
     // (See Bug 1790115).
     if (this.type === "theme") {
       this.permissions.add(PRIVATE_ALLOWED_PERMISSION);
+    }
+
+    // On builds where Enterprise Policies are supported, grant or revoke
+    // the private browsing access for extensions that are not app provided
+    // (system and builtin add-ons) or hidden.
+    if (
+      Services.policies &&
+      !this.isAppProvided &&
+      !this.isHidden &&
+      !hasIncognitoNotAllowed &&
+      this.type === "extension"
+    ) {
+      const settings = Services.policies.getExtensionSettings(this.id);
+      if (settings?.private_browsing) {
+        lazy.ExtensionPermissions.add(this.id, {
+          permissions: [PRIVATE_ALLOWED_PERMISSION],
+          origins: [],
+        });
+        this.permissions.add(PRIVATE_ALLOWED_PERMISSION);
+      } else if (settings?.private_browsing === false) {
+        lazy.ExtensionPermissions.remove(this.id, {
+          permissions: [PRIVATE_ALLOWED_PERMISSION],
+          origins: [],
+        });
+        this.permissions.delete(PRIVATE_ALLOWED_PERMISSION);
+      }
     }
 
     // We only want to update the SVG_CONTEXT_PROPERTIES_PERMISSION during
@@ -3519,8 +3837,8 @@ export class Extension extends ExtensionData {
 
     if (
       this.originControls &&
-      this.manifest.granted_host_permissions &&
-      this.startupReason === "ADDON_INSTALL"
+      this.startupReason === "ADDON_INSTALL" &&
+      (this.manifest.granted_host_permissions || lazy.installIncludesOrigins)
     ) {
       let origins = this.getManifestOrigins();
       lazy.ExtensionPermissions.add(this.id, { permissions: [], origins });
@@ -3662,7 +3980,7 @@ export class Extension extends ExtensionData {
     return this.cleanupGeneratedFile();
   }
 
-  observe(subject, topic, data) {
+  observe(subject, topic) {
     if (topic === "xpcom-shutdown") {
       this.cleanupGeneratedFile();
     }
@@ -3694,7 +4012,7 @@ export class Extension extends ExtensionData {
 }
 
 export class Dictionary extends ExtensionData {
-  constructor(addonData, startupReason) {
+  constructor(addonData) {
     super(addonData.resourceURI);
     this.id = addonData.id;
     this.startupData = addonData.startupData;
@@ -3704,7 +4022,7 @@ export class Dictionary extends ExtensionData {
     return new DictionaryBootstrapScope();
   }
 
-  async startup(reason) {
+  async startup() {
     this.dictionaries = {};
     for (let [lang, path] of Object.entries(this.startupData.dictionaries)) {
       let uri = Services.io.newURI(
@@ -3728,7 +4046,7 @@ export class Dictionary extends ExtensionData {
 }
 
 export class Langpack extends ExtensionData {
-  constructor(addonData, startupReason) {
+  constructor(addonData) {
     super(addonData.resourceURI);
     this.startupData = addonData.startupData;
     this.manifestCacheKey = [addonData.id, addonData.version];
@@ -3738,7 +4056,7 @@ export class Langpack extends ExtensionData {
     return new LangpackBootstrapScope();
   }
 
-  async promiseLocales(locale) {
+  async promiseLocales() {
     let locales = await StartupCache.locales.get(
       [this.id, "@@all_locales"],
       () => this._promiseLocaleMap()
@@ -3753,7 +4071,7 @@ export class Langpack extends ExtensionData {
     );
   }
 
-  async startup(reason) {
+  async startup() {
     this.chromeRegistryHandle = null;
     if (this.startupData.chromeEntries.length) {
       const manifestURI = Services.io.newURI(
@@ -3813,7 +4131,7 @@ export class Langpack extends ExtensionData {
 
 // TODO(Bug 1789718): Remove after the deprecated XPIProvider-based implementation is also removed.
 export class SitePermission extends ExtensionData {
-  constructor(addonData, startupReason) {
+  constructor(addonData) {
     super(addonData.resourceURI);
     this.id = addonData.id;
     this.hasShutdown = false;
@@ -3853,7 +4171,7 @@ export class SitePermission extends ExtensionData {
     ];
   }
 
-  async startup(reason) {
+  async startup() {
     await this.loadManifest();
 
     this.ensureNoErrors();
@@ -3878,7 +4196,7 @@ export class SitePermission extends ExtensionData {
           site_permissions.includes(perm) &&
           !this.sitePermissions.includes(perm)
         ) {
-          Services.perms.removeFromPrincipal(principal, perm);
+          Services.perms.removeFromPrincipal(principal, perm.type);
         }
       }
     }

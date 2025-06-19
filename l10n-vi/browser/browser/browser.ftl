@@ -51,6 +51,64 @@ browser-main-window-title = { -brand-full-name }
 # The non-variable portion of this MUST match the translation of
 # "PRIVATE_BROWSING_SHORTCUT_TITLE" in custom.properties
 private-browsing-shortcut-text-2 = { -brand-shortcut-name } duyệt web riêng tư
+# These are the default window titles everywhere except macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+# default - "Mozilla Firefox"
+# private - "Mozilla Firefox (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } duyệt web riêng tư
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } duyệt web riêng tư
+    .data-content-title-default = { $content-title } — { -brand-full-name }
+    .data-content-title-private = { $content-title } — { -brand-full-name } duyệt web riêng tư
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name } — { -brand-full-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — { -brand-full-name } duyệt web riêng tư
+# These are the default window titles on macOS.
+# .data-title-default and .data-title-private are used when the web content
+# opened has no title:
+#
+#
+# "default" - "Mozilla Firefox"
+# "private" - "Mozilla Firefox — (Private Browsing)"
+#
+# .data-content-title-default and .data-content-title-private are for use when
+# there *is* a content title.
+# Do not use the brand name in these, as we do on non-macOS.
+#
+# .*-with-profile are for use when there a SelectableProfileService.current profile exists.
+#
+# Also note the other subtle difference here: we use a `-` to separate the
+# brand name from `(Private Browsing)`, which does not happen on other OSes.
+#
+# Variables:
+#  $content-title (String): the title of the web content.
+#  $profile-name (String): the name of the current profile.
+browser-main-window-titles-mac =
+    .data-title-default = { -brand-full-name }
+    .data-title-private = { -brand-full-name } — Duyệt web riêng tư
+    .data-title-default-with-profile = { $profile-name } — { -brand-full-name }
+    .data-title-private-with-profile = { $profile-name } — { -brand-full-name } duyệt web riêng tư
+    .data-content-title-default = { $content-title }
+    .data-content-title-private = { $content-title } — Duyệt web riêng tư
+    .data-content-title-default-with-profile = { $content-title } — { $profile-name }
+    .data-content-title-private-with-profile = { $content-title } — { $profile-name } — Duyệt web riêng tư
+# This gets set as the initial title, and is overridden as soon as we start
+# updating the titlebar based on loaded tabs or private browsing state.
+# This should match the `data-title-default` attribute in both
+# `browser-main-window` and `browser-main-window-mac`.
+browser-main-window-default-title = { -brand-full-name }
 
 ##
 
@@ -309,6 +367,10 @@ quickactions-cmd-viewsource = xem mã nguồn, xem nguồn, nguồn, xem ma nguo
 # Tooltip text for the help button shown in the result.
 quickactions-learn-more =
     .title = Tìm hiểu thêm về Hành động nhanh
+# Will be shown to users the first configurable number of times
+# they experience actions giving them instructions on how to
+# select the action shown by pressing the tab key.
+press-tab-label = Nhấn phím tab để chọn:
 
 ## Bookmark Panel
 
@@ -543,6 +605,8 @@ urlbar-go-button =
     .tooltiptext = Mở trang trong thanh địa chỉ
 urlbar-page-action-button =
     .tooltiptext = Hành động trên trang
+urlbar-revert-button =
+    .tooltiptext = Hiển thị địa chỉ trong thanh địa chỉ
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -603,6 +667,38 @@ urlbar-result-action-calculator-result = = { $result }
 # Label prompting user to search with a particular search engine.
 #  $engine (String): the name of a search engine that searches a specific site
 urlbar-result-search-with = Tìm với { $engine }
+# Label for the urlbar result row, prompting the user to use a local keyword to enter search mode.
+#  $keywords (String): the restrict keyword to enter search mode.
+#  $localSearchMode (String): the local search mode (history, tabs, bookmarks,
+#  or actions) to search with.
+urlbar-result-search-with-local-search-mode = { $keywords } - Tìm kiếm { $localSearchMode }
+# Label for the urlbar result row, prompting the user to use engine keywords to enter search mode.
+#  $keywords (String): the default keyword and user's set keyword if available
+#  $engine (String): the name of a search engine
+urlbar-result-search-with-engine-keywords = { $keywords } - Tìm kiếm với { $engine }
+urlbar-searchmode-dropmarker =
+    .tooltiptext = Chọn công cụ tìm kiếm
+urlbar-searchmode-bookmarks =
+    .label = Dấu trang
+urlbar-searchmode-tabs =
+    .label = Thẻ
+urlbar-searchmode-history =
+    .label = Lịch sử
+urlbar-searchmode-actions =
+    .label = Hành động
+urlbar-searchmode-exit-button =
+    .tooltiptext = Đóng
+urlbar-searchmode-popup-description = Lần này, tìm kiếm với:
+urlbar-searchmode-popup-search-settings = Cài đặt tìm kiếm
+# Searchmode Switcher button
+# Variables:
+#   $engine (String): the current default search engine.
+urlbar-searchmode-button2 =
+    .label = { $engine }, chọn một công cụ tìm kiếm
+    .tooltiptext = { $engine }, chọn một công cụ tìm kiếm
+urlbar-searchmode-button-no-engine =
+    .label = Không có lối tắt được chọn, hãy chọn một lối tắt
+    .tooltiptext = Không có lối tắt được chọn, hãy chọn một lối tắt
 
 ## Action text shown in urlbar results, usually appended after the search
 ## string or the url, like "result value - action text".
@@ -612,6 +708,12 @@ urlbar-result-action-search-bookmarks = Tìm kiếm dấu trang
 urlbar-result-action-search-history = Tìm kiếm lịch sử
 urlbar-result-action-search-tabs = Tìm kiếm thẻ
 urlbar-result-action-search-actions = Tìm kiếm hành động
+# Label for a quickaction result used to switch to an open tab group.
+#  $group (String): the name of the tab group to switch to
+urlbar-result-action-switch-to-tabgroup = Chuyển đến { $group }
+# Label for a quickaction result used to re-opan a saved tab group.
+#  $group (String): the name of the tab group to re-open
+urlbar-result-action-open-saved-tabgroup = Mở { $group }
 
 ## Labels shown above groups of urlbar results
 
@@ -925,6 +1027,9 @@ data-reporting-notification-button =
     .accesskey = C
 # Label for the indicator shown in the private browsing window titlebar.
 private-browsing-indicator-label = Duyệt web riêng tư
+# Tooltip for the indicator shown in the private browsing window titlebar.
+private-browsing-indicator-tooltip =
+    .tooltiptext = Duyệt web riêng tư
 # Tooltip for the indicator shown in the window titlebar when content analysis is active.
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
@@ -933,7 +1038,7 @@ content-analysis-indicator-tooltip =
 content-analysis-panel-title = Bảo vệ dữ liệu
 # Variables:
 #   $agentName (String): The name of the DLP agent that is connected
-content-analysis-panel-text = Tổ chức của bạn sử dụng { $agentName } để bảo vệ chống mất dữ liệu. <a data-l10n-name="info">Tìm hiểu thêm</a>
+content-analysis-panel-text-styled = Tổ chức của bạn sử dụng <b>{ $agentName }</b> để bảo vệ chống mất dữ liệu. <a data-l10n-name="info">Tìm hiểu thêm</a>
 
 ## Unified extensions (toolbar) button
 
@@ -958,6 +1063,13 @@ unified-extensions-button-quarantined =
     .tooltiptext =
         Tiện ích mở rộng
         Vài tiện ích mở rộng không được phép
+
+## Unified extensions button when some extensions are disabled (e.g. through add-ons blocklist).
+## Note that the new line is intentionally part of the tooltip.
+
+unified-extensions-button-blocklisted =
+    .label = Tiện ích mở rộng
+    .tooltiptext = Một số tiện ích mở rộng bị tắt
 
 ## Private browsing reset button
 
@@ -990,14 +1102,15 @@ refresh-blocked-allow =
 firefox-relay-offer-why-to-use-relay = Mặt nạ an toàn, dễ sử dụng của chúng tôi bảo vệ danh tính của bạn và ngăn chặn thư rác bằng cách ẩn địa chỉ email của bạn.
 # Variables:
 #  $useremail (String): user email that will receive messages
-firefox-relay-offer-what-relay-provides = Tất cả email gửi đến mặt nạ email của bạn sẽ được chuyển đến <strong>{ $useremail }</strong> (trừ khi bạn quyết định chặn chúng).
-firefox-relay-offer-legal-notice = Bằng cách nhấp vào “Sử dụng mặt nạ email”, bạn đồng ý với <label data-l10n-name="tos-url">điều khoản sử dụng</label> và <label data-l10n-name="privacy-url">thông báo về quyền riêng tư</label>.
+firefox-relay-offer-what-relay-provides = Tất cả email gửi đến email ẩn danh của bạn sẽ được chuyển đến <strong>{ $useremail }</strong> (trừ khi bạn quyết định chặn chúng).
+firefox-relay-offer-legal-notice = Bằng cách nhấp vào “Sử dụng email ẩn danh”, bạn đồng ý với <label data-l10n-name="tos-url">điều khoản sử dụng</label> và <label data-l10n-name="privacy-url">thông báo về quyền riêng tư</label>.
 
 ## Add-on Pop-up Notifications
 
 popup-notification-addon-install-unsigned =
     .value = (Chưa xác thực)
 popup-notification-xpinstall-prompt-learn-more = Tìm hiểu thêm về cách cài đặt tiện ích một cách an toàn
+popup-notification-xpinstall-prompt-block-url = Xem chi tiết
 # Note: Access key is set to P to match "Private" in the corresponding localized label.
 popup-notification-addon-privatebrowsing-checkbox =
     .label = Chạy trong cửa sổ riêng tư

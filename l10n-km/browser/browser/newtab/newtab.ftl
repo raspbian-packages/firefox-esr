@@ -23,12 +23,10 @@ newtab-topsites-edit-topsites-header = កែសម្រួលសាយកំ�
 newtab-topsites-title-label = ចំណង​ជើង
 newtab-topsites-title-input =
     .placeholder = បញ្ចូលចំណងជើង
-
 newtab-topsites-url-label = URL
 newtab-topsites-url-input =
     .placeholder = វាយបញ្ចូល ឬបិទភ្ជាប់ URL
 newtab-topsites-url-validation = ត្រូវការ URL ដែលត្រឹមត្រូវ
-
 newtab-topsites-image-url-label = URL រូបភាពផ្ទាល់ខ្លួន
 newtab-topsites-use-image-link = ប្រើ​ប្រាស់​រូបភាព​ផ្ទាល់ខ្លួន...
 newtab-topsites-image-validation = មិន​អាច​ផ្ទុក​រូបភាព​បាន​ទេ។ សាកល្បង URL ផ្សេង។
@@ -49,16 +47,16 @@ newtab-confirm-delete-history-p2 = សកម្មភាពនេះមិនអ
 
 ## Top Sites - Sponsored label
 
+
 ## Context Menu - Action Tooltips.
 
 # General tooltip for context menus.
 newtab-menu-section-tooltip =
     .title = បើក​ម៉ឺនុយ
     .aria-label = បើក​ម៉ឺនុយ
-
 # This tooltip is for the context menu of Pocket cards or Topsites
 # Variables:
-#  $title (String): The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
+#   $title (string) - The label or hostname of the site. This is for screen readers when the context menu button is focused/active.
 newtab-menu-content-tooltip =
     .title = បើក​ម៉ឺនុយ
     .aria-label = បើកម៉ឺនុយបរិបទសម្រាប់ { $title }
@@ -139,18 +137,16 @@ newtab-section-menu-privacy-notice = ការជូនដំណឹង​អំ�
 
 newtab-section-header-topsites = វិបសាយ​លើ​គេ
 # Variables:
-#  $provider (String): Name of the corresponding content provider.
+#   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = បានណែនាំដោយ { $provider }
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
 newtab-empty-section-highlights = ចាប់ផ្តើមការរុករក ហើយយើងនឹងបង្ហាញអត្ថបទ វីដេអូ និងទំព័រដ៏អស្ចារ្យផ្សេងទៀតដែលអ្នកបានមើល ឬបានចំណាំនៅទីនេះ។
-
 # Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 # Variables:
-#  $provider (String): Name of the content provider for this section, e.g "Pocket".
+#   $provider (string) - Name of the content provider for this section, e.g "Pocket".
 newtab-empty-section-topstories = អ្នកបានអានរឿងទាំងអស់ហើយ។ ពិនិត្យ​រឿង​ដែល​ពេញនិយមបំផុត​ឡើងវិញ​​ពី { $provider }។ មិនអាចរង់ចាំ? ជ្រើសរើសប្រធានបទកំពុងពេញនិយម ដើម្បីស្វែងរករឿងដ៏អស្ចារ្យនៅ​លើ​អ៊ីនធឺណិត។
-
 
 ## Empty Section (Content Discovery Experience). These show when there are no more stories or when some stories fail to load.
 
@@ -162,10 +158,11 @@ newtab-pocket-read-more = ប្រធានបទកំពុងពេញនិ
 newtab-pocket-more-recommendations = ការណែនាំច្រើនទៀត
 newtab-pocket-cta-button = ទាញយក { -pocket-brand-name }
 
-## Pocket Final Card Section.
-## This is for the final card in the Pocket grid.
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
+
 
 ## Error Fallback Content.
 ## This message and suggested action link are shown in each section of UI that fails to render.
@@ -174,4 +171,41 @@ newtab-error-fallback-info = អូ មានអ្វីមួយខុសប�
 newtab-error-fallback-refresh-link = ផ្ទុកទំព័រឡើងវិញ ដើម្បីព្យាយាមម្ដងទៀត។
 
 ## Customization Menu
+
+
+## New Tab Wallpapers
+
+
+## Solid Colors
+
+
+## Abstract
+
+
+## Photographs
+
+
+## New Tab Weather
+
+
+## Topic Labels
+
+
+## Topic Selection Modal
+
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+
+## Panel in the Customize menu section to manage followed and blocked topics
 

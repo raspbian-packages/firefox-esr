@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = Spletnim stranem pošiljajte signal “Brez sledenja”, torej da vam naj ne sledijo
+do-not-track-removal = Signala "Brez sledenja" ne podpiramo več
 do-not-track-description2 =
     .label = Spletnim mestom pošiljaj zahtevo "brez sledenja"
     .accesskey = d
@@ -60,6 +61,7 @@ pane-experimental-description2 = Spreminjanje naprednih nastavitev lahko vpliva 
 settings-pane-labs-title = { -firefoxlabs-brand-name }
 settings-category-labs =
     .tooltiptext = { -firefoxlabs-brand-name }
+pane-experimental-description3 = Preizkusite naše eksperimentalne zmogljivosti! So v razvoju in se spreminjajo, kar lahko vpliva na delovanje { -brand-short-name(sklon: "rodilnik") }.
 pane-experimental-reset =
     .label = Ponastavi privzeto
     .accesskey = P
@@ -136,6 +138,7 @@ windows-launch-on-login =
     .label = Ob zagonu računalnika samodejno odpri { -brand-short-name(sklon: "tozilnik") }
     .accesskey = O
 windows-launch-on-login-disabled = To nastavitev je onemogočil Windows. Spremenite jo lahko v sistemskih nastavitvah na strani <a data-l10n-name="startup-link">Zagonske aplikacije</a>.
+windows-launch-on-login-profile-disabled = To nastavitev omogočite tako, da v okencu “Izbira uporabniškega profila” označite “{ profile-manager-use-selected.label }”.
 startup-restore-warn-on-quit =
     .label = Opozori ob zapiranju brskalnika
 disable-extension =
@@ -152,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = Odpiraj povezave v zavihkih namesto v novih oknih
     .accesskey = d
+ask-on-close-multiple-tabs =
+    .label = Vprašaj pred zapiranjem več zavihkov hkrati
+    .accesskey = t
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = Vprašaj pred zapiranjem s { $quitKey }
+    .accesskey = z
 confirm-on-close-multiple-tabs =
     .label = Vprašaj za potrditev pred zapiranjem več zavihkov hkrati
     .accesskey = t
@@ -573,8 +587,7 @@ home-prefs-shortcuts-description = Strani, ki jih shranite ali obiščete
 home-prefs-shortcuts-by-option-sponsored =
     .label = Bližnjice oglaševalcev
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = Priporoča { $provider }
@@ -610,6 +623,7 @@ home-prefs-snippets-header =
 home-prefs-snippets-description-new = Nasveti in novice od { -vendor-short-name(sklon: "rodilnik") } in { -brand-product-name(sklon: "rodilnik") }
 home-prefs-weather-header =
     .label = Vreme
+home-prefs-weather-description = Kratek pogled na današnjo napoved
 home-prefs-weather-learn-more-link = Več o tem
 # Variables:
 #   $num (number) - Number of rows displayed
@@ -647,6 +661,10 @@ search-show-suggestions-url-bar-option =
     .label = Prikaži predloge iskanja v rezultatih naslovne vrstice
     .accesskey = P
 # With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = Na strani z rezultati iskanja prikaži iskalni niz v naslovni vrstici
+# With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
 search-show-search-term-option =
@@ -661,7 +679,7 @@ search-show-suggestions-above-history-option =
 search-show-suggestions-private-windows =
     .label = Prikazuj predloge iskanja v zasebnih oknih
 suggestions-addressbar-settings-generic2 = Spremeni nastavitve drugih predlogov naslovne vrstice
-search-suggestions-cant-show = Predlogi iskanja v vrstici z naslovom ne bodo prikazani, ker ste { -brand-short-name } nastavili tako, da si nikoli ne zapomni zgodovine.
+search-suggestions-cant-show = Predlogi iskanja v naslovni vrstici ne bodo prikazani, ker ste { -brand-short-name } nastavili tako, da si nikoli ne zapomni zgodovine.
 search-one-click-header2 = Bližnjice za iskanje
 search-one-click-desc = Izberite nadomestne iskalnike, ki se pojavijo pod naslovno in iskalno vrstico, ko začnete vnašati ključno besedo.
 search-choose-engine-column =
@@ -789,6 +807,9 @@ sync-currently-syncing-creditcards = kreditne kartice
 sync-currently-syncing-payment-methods = plačilna sredstva
 sync-currently-syncing-addons = dodatki
 sync-currently-syncing-settings = nastavitve
+sync-manage-options =
+    .label = Upravljanje sinhronizacije …
+    .accesskey = U
 sync-change-options =
     .label = Spremeni …
     .accesskey = S
@@ -841,6 +862,13 @@ sync-engine-settings =
     .label = nastavitve
     .tooltiptext = Splošne nastavitve ter nastavitve zasebnosti in varnosti, ki ste jih spremenili
     .accesskey = s
+sync-choose-what-to-sync-dialog4 =
+    .title = Upravljajte, kaj se sinhronizira med povezanimi napravami
+    .style = min-width: 36em;
+    .buttonlabelaccept = Shrani
+    .buttonaccesskeyaccept = S
+    .buttonlabelextra2 = Odklopi …
+    .buttonaccesskeyextra2 = d
 
 ## The device name controls.
 
@@ -949,6 +977,7 @@ forms-windows-sso =
     .label = Dovoli enotno prijavo v sistem Windows za Microsoftove, službene in šolske račune
 forms-windows-sso-learn-more-link = Več o tem
 forms-windows-sso-desc = Upravljanje računov v nastavitvah naprave
+windows-passkey-settings-label = Upravljanje ključev za dostop v sistemskih nastavitvah
 
 ## OS Authentication dialog
 
@@ -960,6 +989,12 @@ primary-password-os-auth-dialog-message-win = Če želite ustvariti glavno geslo
 # notes are only valid for English. Please test in your locale.
 primary-password-os-auth-dialog-message-macosx = create a Primary Password
 master-password-os-auth-dialog-caption = { -brand-full-name }
+# The macOS string is preceded by the operating system with "Firefox is trying to ".
+autofill-creditcard-os-dialog-message =
+    { PLATFORM() ->
+        [macos] spremenite nastavitve plačilnih sredstev
+       *[other] { -brand-short-name } poskuša spremeniti nastavitve plačilnih sredstev. To omogočite z uporabo naprave za prijavo.
+    }
 autofill-creditcard-os-auth-dialog-caption = { -brand-full-name }
 
 ## Privacy section - Autofill
@@ -975,6 +1010,9 @@ autofill-payment-methods-checkbox-submessage = Vključuje kreditne in debetne ka
     .accesskey = k
 autofill-saved-payment-methods-button = Shranjena plačilna sredstva
     .accesskey = h
+# This operation requires the user to authenticate with the operating system (device sign-in)
+autofill-reauth-payment-methods-checkbox = Zahtevaj prijavo v napravi za izpolnjevanje in upravljanje plačilnih sredstev
+    .accesskey = o
 
 ## Privacy Section - History
 
@@ -1111,6 +1149,9 @@ addressbar-suggestions-settings = Spremeni nastavitve predlogov iskanja
 addressbar-locbar-showrecentsearches-option =
     .label = Prikaži nedavna iskanja
     .accesskey = d
+addressbar-locbar-showtrendingsuggestions-option =
+    .label = Prikaži priljubljene predloge iskanja
+    .accesskey = p
 addressbar-quickactions-learn-more = Več o tem
 
 ## Privacy Section - Content Blocking
@@ -1278,13 +1319,34 @@ collection-description = Trudimo se, da vam ponudimo izbiro in da zbiramo samo t
 collection-privacy-notice = Obvestilo o zasebnosti
 collection-health-report-telemetry-disabled = Organizaciji { -vendor-short-name } ne dovoljujete več zajemanja tehničnih podatkov in podatkov o uporabi. Vsi pretekli podatki bodo izbrisani v 30 dneh.
 collection-health-report-telemetry-disabled-link = Več o tem
+collection-usage-ping =
+    .label = Pošlji { -vendor-short-name(sklon: "dajalnik") } ping za dnevno uporabo
+    .accesskey = u
+collection-usage-ping-description = To { -vendor-short-name(sklon: "dajalnik") } pomaga oceniti število aktivnih uporabnikov.
+collection-health-report2 =
+    .label = Pošiljaj { -vendor-short-name(sklon: "dajalnik") } tehnične in interakcijske podatke
+    .accesskey = r
 collection-health-report =
     .label = { -brand-short-name }u dovoli pošiljanje tehničnih podatkov in podatkov o uporabi organizaciji { -vendor-short-name }
     .accesskey = h
 collection-health-report-link = Več o tem
+collection-health-report-description = To nam pomaga izboljšati lastnosti, zmogljivost in zanesljivost { -brand-product-name(sklon: "rodilnik") }.
+collection-studies2 =
+    .label = Nameščaj in izvajaj raziskave
+collection-studies-description = Preizkusite funkcije in ideje, preden postanejo na voljo vsem.
 collection-studies =
     .label = { -brand-short-name(sklon: "dajalnik") } dovoli nameščanje in izvajanje raziskav
 collection-studies-link = Prikaži raziskave { -brand-short-name(sklon: "rodilnik") }
+addon-recommendations2 =
+    .label = Dovoli osebno prilagojena priporočila razširitev
+addon-recommendations-description = Prejemajte priporočila za razširitve, ki bi vam izboljšale izkušnjo brskanja.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = Pošiljanje podatkov je za to nastavitev graditve onemogočeno.
+collection-backlogged-crash-reports2 =
+    .label = Samodejno pošlji poročila o sesutjih
+    .accesskey = č
+collection-backlogged-crash-reports-description = To { -vendor-short-name(sklon: "dajalnik") } omogoča ugotoviti vzroke težav z brskalnikom in jih odpraviti. Poročila lahko vključujejo osebne ali občutljive podatke.
 addon-recommendations =
     .label = { -brand-short-name(sklon: "dajalnik") } dovoli prilagojena priporočila o razširitvah
 addon-recommendations-link = Več o tem
@@ -1305,6 +1367,10 @@ privacy-segmentation-radio-on =
 ## Privacy Section - Website Advertising Preferences
 
 website-advertising-header = Nastavitve oglaševanja spletnih mest
+website-advertising-private-attribution =
+    .label = Spletnim mestom dovoli izvajanje meritev oglasov, ki ohranjajo zasebnost
+    .accesskey = D
+website-advertising-private-attribution-description = To spletnim mestom pomaga razumeti učinkovitost njihovih oglasov, ne da bi zbirali podatke o vas.
 
 ## Privacy Section - Security
 ##
@@ -1349,13 +1415,20 @@ space-alert-under-5gb-message2 = <strong>{ -brand-short-name(sklon: "dajalnik") 
 
 httpsonly-header = Način "samo HTTPS"
 httpsonly-description = HTTPS zagotavlja varno, šifrirano povezavo med { -brand-short-name(sklon: "orodnik") } in spletnimi mesti, ki jih obiščete. Večina spletnih mest podpira HTTPS in če je omogočen način "samo HTTPS", bo { -brand-short-name } nadgradil vse povezave na HTTPS.
+httpsonly-description2 = { -brand-short-name } ustvarja varne in šifrirane povezave na spletna mesta, ki jih obiščete. { -brand-short-name } vas bo opozoril, če povezava ni varna, ko je vklopljen HTTPS-Only.
 httpsonly-learn-more = Več o tem
 httpsonly-radio-enabled =
     .label = Omogoči način "samo HTTPS" v vseh oknih
+httpsonly-radio-enabled2 =
+    .label = Uporabljaj samo HTTPS v vseh oknih
 httpsonly-radio-enabled-pbm =
     .label = Omogoči način "samo HTTPS" samo v zasebnih oknih
+httpsonly-radio-enabled-pbm2 =
+    .label = Uporabljaj samo HTTPS v zasebnih oknih
 httpsonly-radio-disabled =
     .label = Ne omogoči načina "samo HTTPS"
+httpsonly-radio-disabled2 =
+    .label = Najprej preizkusite HTTPS, vendar dovolite povezave, ki niso varne
 
 ## DoH Section
 

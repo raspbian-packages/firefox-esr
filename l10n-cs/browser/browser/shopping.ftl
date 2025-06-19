@@ -93,6 +93,9 @@ shopping-show-less-button = Zobrazit méně
 
 shopping-settings-label =
     .label = Nastavení
+shopping-settings-recommendations-toggle2 =
+    .label = Zobrazovat doporučení a sponzorovaný obsah
+shopping-settings-recommendations-learn-more3 = { -brand-product-name } nesdílí vaše osobní údaje, proto vás tato doporučení nebudou po internetu pronásledovat. <a data-l10n-name="review-quality-url">Zjistit více</a>
 shopping-settings-recommendations-toggle =
     .label = Zobrazovat reklamy v kontrole recenzí
 shopping-settings-recommendations-learn-more2 = Občas se vám zobrazí reklamy na příslušné produkty. Inzerujeme pouze produkty se spolehlivými recenzemi. <a data-l10n-name="review-quality-url">Dozvědět se více</a>
@@ -166,6 +169,7 @@ shopping-unanalyzed-product-analyze-button = Zkontrolovat kvalitu recenzí
 
 more-to-consider-ad-label =
     .label = Další ke zvážení
+shopping-sponsored-label = Sponzorováno
 ad-by-fakespot = Reklama od { -fakespot-brand-name(case: "gen") }
 
 ## Shopping survey strings.
@@ -194,6 +198,18 @@ shopping-survey-submit-button-label = Odeslat
 shopping-survey-terms-link = Zásady používání
 shopping-survey-thanks =
     .heading = Děkujeme za vaši zpětnou vazbu!
+
+## Shopping opted-out survey strings
+## Opt-out survey options are displayed as checkboxes and the user can select one or many.
+
+shopping-survey-opted-out-multiselect-label = Dejte nám prosím vědět, proč jste vypnuli Kontrolu recenzí. Můžete vybrat více možností, pokud je to potřeba.
+shopping-survey-thanks-title = Děkujeme za vaši zpětnou vazbu!
+shopping-survey-opted-out-hard-to-understand = Je těžké tomu porozumět
+shopping-survey-opted-out-too-slow = Je příliš pomalá
+shopping-survey-opted-out-not-accurate = Není to přesné
+shopping-survey-opted-out-not-helpful = Není pro mě užitečná
+shopping-survey-opted-out-check-myself = Raději si recenze zkontroluji sám
+shopping-survey-opted-out-other = Jiné
 
 ## Shopping Feature Callout strings.
 ## "price tag" refers to the price tag icon displayed in the address bar to

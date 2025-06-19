@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 do-not-track-description = שליחת חיווי ”נא לא לעקוב” לאתרים שאין ברצונך שיעקבו אחריך
+do-not-track-removal = איננו תומכים עוד בחיווי ”נא לא לעקוב”
 do-not-track-description2 =
     .label = שליחת בקשה של ״נא לא לעקוב״ לאתרים
     .accesskey = נ
@@ -137,6 +138,7 @@ windows-launch-on-login =
     .label = פתיחת { -brand-short-name } באופן אוטומטי כשהמחשב שלך נדלק
     .accesskey = פ
 windows-launch-on-login-disabled = העדפה זו הושבתה ב־Windows. כדי לשנות אותה, יש לבקר ב<a data-l10n-name="startup-link">אפליקציות אתחול</a> בהגדרות המערכת.
+windows-launch-on-login-profile-disabled = ניתן להפעיל את העדפה זו על־ידי סימון האפשרות ״{ profile-manager-use-selected.label }״ בחלון ״בחירת פרופיל משתמש״.
 startup-restore-warn-on-quit =
     .label = הצגת אזהרה בעת סגירת הדפדפן
 disable-extension =
@@ -153,6 +155,17 @@ ctrl-tab-recently-used-order =
 open-new-link-as-tabs =
     .label = פתיחת קישורים בלשוניות במקום בחלונות חדשים
     .accesskey = ח
+ask-on-close-multiple-tabs =
+    .label = לשאול לפני סגירת מספר לשוניות
+    .accesskey = ל
+# This string is used for the confirm before quitting preference.
+# Variables:
+#   $quitKey (string) - the quit keyboard shortcut, and formatted
+#                       in the same manner as it would appear,
+#                       for example, in the File menu.
+ask-on-quit-with-key =
+    .label = לשאול לפני יציאה באמצעות { $quitKey }
+    .accesskey = ל
 confirm-on-close-multiple-tabs =
     .label = הצגת אזהרה בעת סגירת מספר לשוניות
     .accesskey = א
@@ -400,7 +413,7 @@ applications-save-for-new-types =
 applications-ask-before-handling =
     .label = לשאול האם לפתוח או לשמור את הקבצים
     .accesskey = א
-drm-content-header = תוכן ניהול זכויות דיגיטלי (DRM)
+drm-content-header = תוכן ניהול זכויות קניין (DRM)
 play-drm-content =
     .label = הפעלת תוכן מוגן DRM
     .accesskey = ה
@@ -568,8 +581,7 @@ home-prefs-shortcuts-description = אתרים ששמרת או ביקרת בהם
 home-prefs-shortcuts-by-option-sponsored =
     .label = קיצורי דרך ממומנים
 
-## Variables:
-##  $provider (string) - Name of the corresponding content provider, e.g "Pocket".
+## Home Section - Firefox Home Content Customization
 
 home-prefs-recommended-by-header =
     .label = מומלץ על־ידי { $provider }
@@ -640,6 +652,10 @@ search-show-suggestions-option =
 search-show-suggestions-url-bar-option =
     .label = הצגת הצעות חיפוש בתוצאות שורת הכתובת
     .accesskey = ח
+# With this option enabled, on the search results page
+# the URL will be replaced by the search terms in the address bar.
+search-show-search-term-option-2 =
+    .label = הצגת מונחי חיפוש בשורת הכתובת בדפי תוצאות
 # With this option enabled, on the search results page
 # the URL will be replaced by the search terms in the address bar
 # when using the current default search engine.
@@ -783,6 +799,9 @@ sync-currently-syncing-creditcards = כרטיסי אשראי
 sync-currently-syncing-payment-methods = אמצעי תשלום
 sync-currently-syncing-addons = תוספות
 sync-currently-syncing-settings = הגדרות
+sync-manage-options =
+    .label = ניהול סנכרון…
+    .accesskey = נ
 sync-change-options =
     .label = שינוי…
     .accesskey = ש
@@ -835,6 +854,13 @@ sync-engine-settings =
     .label = הגדרות
     .tooltiptext = הגדרות כלליות, פרטיות ואבטחה ששינית
     .accesskey = ת
+sync-choose-what-to-sync-dialog4 =
+    .title = ניהול הפריטים שמסתנכרנים בכל המכשירים המחוברים שלך
+    .style = min-width: 36em;
+    .buttonlabelaccept = שמירה
+    .buttonaccesskeyaccept = ש
+    .buttonlabelextra2 = התנתקות…
+    .buttonaccesskeyextra2 = ה
 
 ## The device name controls.
 
@@ -898,9 +924,9 @@ forms-breach-alerts =
     .accesskey = ס
 forms-breach-alerts-learn-more-link = מידע נוסף
 preferences-relay-integration-checkbox =
-    .label = הצעת מסיכות דוא״ל של { -relay-brand-name } כדי להגן על כתובת הדוא״ל שלך
+    .label = הצעת מסכות דוא״ל של { -relay-brand-name } כדי להגן על כתובת הדוא״ל שלך
 preferences-relay-integration-checkbox2 =
-    .label = הצעת מסיכות דוא״ל של { -relay-brand-name } כדי להגן על כתובת הדוא״ל שלך
+    .label = הצעת מסכות דוא״ל של { -relay-brand-name } כדי להגן על כתובת הדוא״ל שלך
     .accesskey = ת
 relay-integration-learn-more-link = מידע נוסף
 # Checkbox which controls filling saved logins into fields automatically when they appear, in some cases without user interaction.
@@ -1288,15 +1314,23 @@ collection-health-report-link = מידע נוסף
 collection-studies =
     .label = לאפשר ל־{ -brand-short-name } להתקין ולהריץ מחקרים
 collection-studies-link = הצגת המחקרים של { -brand-short-name }
+addon-recommendations-description = קבלת המלצות על הרחבות לשיפור חווית הגלישה שלך.
+# This message is displayed above disabled data sharing options in developer builds
+# or builds with no Telemetry support available.
+collection-health-report-disabled2 = דיווח נתונים מושבת עבור תצורת בנייה זו.
+collection-backlogged-crash-reports2 =
+    .label = שליחת דיווחי קריסה באופן אוטומטי
+    .accesskey = ש
+collection-backlogged-crash-reports-description = זה מסייע ל־{ -vendor-short-name } לאבחן ולתקן בעיות בדפדפן. דיווחים עשויים לכלול נתונים אישיים או רגישים.
 addon-recommendations =
     .label = לאפשר ל־{ -brand-short-name } להציע הרחבות מותאמות אישית
 addon-recommendations-link = מידע נוסף
 # This message is displayed above disabled data sharing options in developer builds
 # or builds with no Telemetry support available.
 collection-health-report-disabled = דיווח נתונים מנוטרל עבור תצורת בנייה זו
-collection-backlogged-crash-reports-with-link = לאפשר ל־{ -brand-short-name } לשלוח דיווחי קריסות שנשמרו בשמך <a data-l10n-name="crash-reports-link">מידע נוסף</a>
+collection-backlogged-crash-reports-with-link = לאפשר ל־{ -brand-short-name } לשלוח דיווחי קריסה שנצטברו בשמך <a data-l10n-name="crash-reports-link">מידע נוסף</a>
     .accesskey = ק
-collection-backlogged-crash-reports = לאפשר ל־{ -brand-short-name } לשלוח דיווחי קריסות שנשמרו בשמך
+collection-backlogged-crash-reports = לאפשר ל־{ -brand-short-name } לשלוח דיווחי קריסה שנצטברו בשמך
     .accesskey = ק
 privacy-segmentation-section-header = תכונות חדשות שמשפרות את הגלישה שלך
 privacy-segmentation-section-description = כשאנחנו מציעים תכונות המשתמשות בנתונים שלך כדי להעניק לך חוויה אישית יותר:
@@ -1356,13 +1390,20 @@ space-alert-under-5gb-message2 = <strong>ל־{ -brand-short-name } אוזל שט
 
 httpsonly-header = מצב HTTPS בלבד
 httpsonly-description = ‏HTTPS מספק חיבור מאובטח ומוצפן בין { -brand-short-name } לבין האתרים שמבקרים בהם. רוב האתרים תומכים ב־HTTPS, ואם מצב HTTPS בלבד מופעל, { -brand-short-name } ישדרג את כל החיבורים ל־HTTPS.
+httpsonly-description2 = ‏{ -brand-short-name } יוצר חיבורים מאובטחים ומוצפנים לאתרים שנכנסים אליהם. { -brand-short-name } יזהיר אותך אם החיבור אינו מאובטח כאשר מצב HTTPS בלבד מופעל.
 httpsonly-learn-more = מידע נוסף
 httpsonly-radio-enabled =
     .label = הפעלת מצב HTTPS בלבד בכל החלונות
+httpsonly-radio-enabled2 =
+    .label = להשתמש ב־HTTPS בלבד בכל החלונות
 httpsonly-radio-enabled-pbm =
     .label = הפעלת מצב HTTPS בלבד אך ורק בחלונות פרטיים
+httpsonly-radio-enabled-pbm2 =
+    .label = להשתמש ב־HTTPS בלבד בחלונות פרטיים
 httpsonly-radio-disabled =
     .label = לא להפעיל מצב HTTPS בלבד
+httpsonly-radio-disabled2 =
+    .label = לנסות תחילה את HTTPS, אבל לאפשר חיבורים שאינם מאובטחים
 
 ## DoH Section
 

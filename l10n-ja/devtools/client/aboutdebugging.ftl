@@ -2,7 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 ### These strings are used inside the about:debugging UI.
+
 
 ## Page Title strings
 
@@ -109,6 +111,8 @@ about-debugging-setup-usb-status-updating = 更新中...
 about-debugging-setup-usb-step-enable-dev-menu2 = Android 端末の開発者向けオプションを有効にします。
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug2 = Android 端末の開発者向けオプションで USB デバッグを有効にします。
+# USB section step by step guide
+about-debugging-setup-usb-step-enable-file-transfer = ファイル転送を有効にして端末が充電専用モードにならないようにします。
 # USB section step by step guide
 about-debugging-setup-usb-step-enable-debug-firefox2 = Android 端末上の Firefox で USB デバッグを有効にします。
 # USB section step by step guide
@@ -309,6 +313,9 @@ about-debugging-worker-scope =
 # of a worker
 about-debugging-worker-push-service =
     .label = Push サービス
+# Displayed for service workers in runtime pages, to label the origin of a worker.
+about-debugging-worker-origin =
+    .label = オリジン
 # Displayed as title of the inspect button when service worker debugging is disabled.
 about-debugging-worker-inspect-action-disabled =
     .title = Service Worker の調査は、現在のマルチプロセス { -brand-shorter-name } では無効化されています。

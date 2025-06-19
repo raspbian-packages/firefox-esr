@@ -189,6 +189,8 @@ mr2022-onboarding-pin-primary-button-label =
         [macos] Fixar { -brand-short-name } en il dock
        *[other] Fixar { -brand-short-name } en la taskbar
     }
+# Primary button string used on welcome page for when Firefox is not pinned on MSIX
+mr2022-onboarding-pin-primary-button-label-msix = Fixescha { -brand-short-name } en la taskbar ed en il menu start
 # Subtitle will be used when user already has Firefox pinned, but
 # has not set it as their default browser.
 # When translating "zip", please feel free to pick a verb that signifies movement and/or exploration
@@ -224,7 +226,9 @@ mr2022-onboarding-set-default-subtitle = Utilisescha in navigatur dad ina organi
 mr2022-onboarding-get-started-primary-subtitle = Nossa actualisaziun la pli nova è adattada a tes basegns e renda pli simpel che mai da navigar en il web. Ella porta numerusas funcziuns che ti vegns ad adurar.
 mr2022-onboarding-get-started-primary-button-label = Configurà en in pèr secundas
 
-## MR2022 Import Settings screen strings
+## MR2022 Get Started screen strings.
+## These strings will be used on the welcome page
+## when Firefox is already set to default and pinned.
 
 mr2022-onboarding-import-header = Configuraziun sveltischma
 mr2022-onboarding-import-subtitle = Configurescha { -brand-short-name } tenor tes basegns. Agiuntescha segnapaginas, pleds-clav e dapli da tes navigatur vegl.
@@ -336,6 +340,14 @@ onboarding-device-migration-subtitle = T'annunzia en tes { -fxaccount-brand-name
 onboarding-device-migration-subtitle2 = T'annunzia en tes conto per purtar cun tai tes segnapaginas, pleds-clav e la cronologia sin tes nov apparat.
 onboarding-device-migration-primary-button-label = S'annunziar
 
+## Add-ons Picker screen
+
+amo-picker-title = Persunalisescha tes { -brand-short-name }
+amo-picker-subtitle = Extensiuns èn sco apps per tes navigatur. Ellas ta permettan da proteger pleds-clav, telechargiar videos, chattar rabats, bloccar reclamas stentusas, midar l’apparientscha da tes navigatur e bler auter.
+amo-picker-install-button-label = Agiuntar a { -brand-short-name }
+amo-picker-install-complete-label = Installà
+amo-picker-collection-link = Scuvrir dapli supplements
+
 ## The following screens have been updated to use security and privacy focused strings:
 
 # Easy setup screen
@@ -347,6 +359,11 @@ onboarding-mobile-download-security-and-privacy-subtitle = Sche ti la sincronisa
 # Gratitude screen
 onboarding-gratitude-security-and-privacy-title = { -brand-short-name } ta sustegna adina
 onboarding-gratitude-security-and-privacy-subtitle = Grazia per utilisar { -brand-short-name } da la Mozilla Foundation. Cun tes agid lavurain nus per crear in internet pli segir ed accessibel per ina e mintgin.
+# Sign up or Sign in screen
+onboarding-sign-up-title = Sincronisescha tias datas sin differents apparats
+onboarding-sign-up-description = Creescha in conto e tut tias infurmaziuns impurtantas – pleds-clav, segnapaginas e dapli – vegnan memorisadas a moda segira ed èn disponiblas cura che ti t’annunzias sin x in apparat.
+onboarding-sign-up-button = Crear in conto u s’annunziar
+onboarding-sign-up-secondary-button = Cumenzar a navigar
 
 ## New user time and familiarity survey strings
 
@@ -366,3 +383,75 @@ onboarding-new-user-survey-familiarity-based-option-1 = Jau n’al enconusch ins
 onboarding-new-user-survey-familiarity-based-option-2 = Jau al hai utilisà in pèr giadas
 onboarding-new-user-survey-familiarity-based-option-3 = Jau al enconusch fitg bain
 onboarding-new-user-survey-familiarity-based-option-4 = Jau al hai utilisà en il passà, ma quai è gia daditg
+
+## UI strings for the sidebar and vertical tabs
+
+# Setup screen for vertical tabs
+onboarding-new-tabs-title = Tscherna nua che ti vuls avair tes tabs
+# Setup screen for vertical tabs - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-new-tabs-subtitle = Ti pos mintga mument midar idea ed adattar ils parameters da la trav laterala.
+# Setup screen for vertical tabs - too many tabs variation
+onboarding-many-tabs-title = Tes tabs, en tia moda e maniera
+# Setup screen for vertical tabs - subtitle for too many tabs variation
+onboarding-many-tabs-subtitle = Has ti adina avert blers tabs? Emprova da plazzar ils tabs da la vart per avair ina vista pli survesaivla. U che ti restas tar la vista classica cun ils tabs survart. Mida da tut temp.
+# Setup screen for vertical tabs - focused variation
+onboarding-focused-tabs-title = Tscherna la disposiziun per tes tabs
+# Setup screen for vertical tabs - subtitle for focused variation
+onboarding-focused-tabs-subtitle = Per ina vista survesaivla che gida da sa concentrar, emprova da spustar ils tabs da la vart. U resta tar la vista classica cun ils tabs survart. Mida da tut temp.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-new-vertical-tabs-label = Tabs da la vart
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-new-horizontal-tabs-label = Tabs sisum
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title = Ils tabs verticals èn qua
+# Setup screen for vertical tabs for existing users
+onboarding-existing-tabs-title2 = Nus ta preschentain ils tabs verticals
+# Setup screen for vertical tabs for existing users - "Switch it up" refers to switching between horizontal and vertical tabs.
+onboarding-existing-tabs-subtitle = Emprova da plazzar tes tabs da la vart. Ti pos midar idea da tut temp ed adattar ils parameters da la trav laterala.
+# Text underneath an image used for selecting browser tabs to appear on the side of the browser.
+onboarding-existing-vertical-tabs-label = Empruvar ils tabs verticals
+onboarding-flair-text = Nov!
+# Text underneath an image used for selecting browser tabs to appear at the top of the browser.
+onboarding-existing-horizontal-tabs-label = Mantegnair ils tabs orizontals
+# Tooltip displayed on hover for vertical tabs image
+onboarding-vertical-tabs-tooltip =
+    .title = Ina fanestra dal navigatur che visualisescha ils tabs lung la vart dal visur en la trav laterala da { -brand-shorter-name }.
+# Description for vertical tabs image
+onboarding-vertical-tabs-description =
+    .aria-description = Ina fanestra dal navigatur che visualisescha ils tabs lung la vart dal visur en la trav laterala da { -brand-shorter-name }.
+# Tooltip displayed on hover for horizontal tabs image
+onboarding-horizontal-tabs-tooltip =
+    .title = Ina fanestra dal navigatur che visualisescha ils tabs da la vart sura.
+# Description for horizontal tabs image
+onboarding-horizontal-tabs-description =
+    .aria-description = Ina fanestra dal navigatur che visualisescha ils tabs da la vart sura.
+# Additional setup card for setting up aichatbot in the sidebar
+onboarding-genai-sidebar-title = Emprova in chatbot IA en la trav laterala
+# Setup card for setting up AI chatbot in the sidebar; "Providers" refers to AI chatbot providers (e.g. OpenAI, etc). "Switch anytime" refers to allowing the user to switch to a different chatbot.
+onboarding-genai-sidebar-subtitle = Lascha resumar cuntegn dal web, generar ideas, far sbozs da messadis – tut durant la navigaziun. Tscherna tranter differents purschiders ed als mida cura che ti vuls. <a data-l10n-name="learn-more">Ulteriuras infurmaziuns</a>
+onboarding-genai-sidebar-primary-button = Tscherna in chatbot
+onboarding-genai-sidebar-secondary-button = Cumenza a navigar
+
+## New user onboarding checklist
+
+onboarding-checklist-title = Terminar la configuraziun da { -brand-short-name }
+onboarding-checklist-subtitle = Suonda questas instrucziuns per profitar dad ina experientscha da navigaziun optimala.
+onboarding-checklist-set-default = Definir { -brand-short-name } sco navigatur da standard
+onboarding-checklist-pin = Fixar { -brand-short-name } en la taskbar
+onboarding-checklist-import = Importar dad in navigatur precedent
+onboarding-checklist-extension = Agiuntar ina extensiun
+onboarding-checklist-sign-up = Crear in conto u s’annunziar en tes conto
+
+## Tab Groups feature onboarding strings
+
+tab-groups-onboarding-feature-callout-title = Emprova las gruppas da tabs per dapli urden e concentraziun
+tab-groups-onboarding-feature-callout-subtitle = Optimescha l’organisaziun cun trair in tab sin in auter per crear tia emprima gruppa.
+
+## Multi Profiles feature onboarding messages
+
+multi-profile-spotlight-title = Voilà: ils profils da { -brand-product-name }
+multi-profile-spotlight-body = Mida simplamain tranter la navigaziun per la lavur e quella dal temp liber. Ils profils preservan tias datas da navigaziun, inclusivamain la cronologia da tschertga ed ils pleds-clav, cumplettamain separà – per che ti possias t’organisar optimalmain.
+multi-profile-spotlight-cta = Crear in profil
+multi-profile-callout-title = Crear differents profils per la lavur ed il temp liber
+multi-profile-callout-subtitle = Profils ta permettan da separar cumplettamain tias datas da navigaziun, sco la cronologia da tschertga ed ils pleds-clav.
+multi-profile-callout-cta = Crear in profil

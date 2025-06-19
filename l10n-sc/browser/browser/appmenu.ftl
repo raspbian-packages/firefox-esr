@@ -108,8 +108,11 @@ appmenu-fxa-sync-and-save-data2 = Sincroniza e sarva datos
 appmenu-fxa-signed-in-label = Identìfica·ti
 appmenu-fxa-setup-sync =
     .label = Ativa sa sincronizatzione...
+appmenu-fxa-setup-sync-new = Ativa
 appmenuitem-save-page =
     .label = Sarva sa pàgina comente...
+appmenuitem-fxa-sync-off-title = Sincronizatzione disativada
+appmenuitem-fxa-sync-off-description = Ampara e atzede a is sinnalibros, craes e àteru dae onni logu.
 
 ## What's New panel in App menu.
 
@@ -196,6 +199,7 @@ profiler-popup-presets-power-description = Profilu pro compidare faddinas de imp
 # "Power" is used in the sense of energy (electricity used by the computer).
 profiler-popup-presets-power-label =
     .label = Energia
+profiler-popup-presets-debug-description = Precunfiguratzione pro currègere faddinas in { -brand-shorter-name }. Est subracarrigadu meda, no dd’imprees pro atividades chi rechedant unu rendimentu artu, ma pro cumprèndere su cumportamentu de su navigadore.
 profiler-popup-presets-debug-label =
     .label = Curregi faddinas
 profiler-popup-presets-custom-label =
@@ -278,3 +282,14 @@ appmenuitem-relay-title = { -relay-brand-short-name }
 appmenuitem-relay-description = Cua s'indiritzu de posta eletrònica e su nùmeru de telèfonu tuos reales
 appmenuitem-vpn-title = { -mozilla-vpn-brand-name }
 appmenuitem-vpn-description = Ampara sa faina tua in lìnia
+
+## Profiles panel
+
+appmenu-profiles = Profilos
+appmenu-other-profiles = Àteros profilos
+appmenu-manage-profiles =
+    .label = Gesti is profilos
+appmenu-create-profile =
+    .label = Profilu nou
+appmenu-edit-profile =
+    .aria-label = Modifica su profilu

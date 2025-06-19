@@ -11,7 +11,7 @@ certerror-sts-page-title = Nem kapcsolódott: lehetséges biztonsági probléma
 neterror-blocked-by-policy-page-title = Blokkolt oldal
 neterror-captive-portal-page-title = Bejelentkezés a hálózatba
 neterror-dns-not-found-title = A kiszolgáló nem található
-neterror-malformed-uri-page-title = Érvénytelen URL
+neterror-malformed-uri-page-title = Érvénytelen webcím
 
 ## Error page actions
 
@@ -41,6 +41,8 @@ neterror-generic-error = A { -brand-short-name } nem tudja betölteni az oldalt 
 neterror-load-error-try-again = A webhely ideiglenesen nem érhető el vagy túlterhelt. Próbálja újra pár perc múlva.
 neterror-load-error-connection = Ha semmilyen oldalt nem tud letölteni, ellenőrizze a számítógépe hálózati kapcsolatát.
 neterror-load-error-firewall = Ha a számítógépet vagy a hálózatot tűzfal vagy proxy védi, ellenőrizze, hogy a { -brand-short-name } számára engedélyezett-e a webhozzáférés.
+# This warning is only shown on macOS Sequoia and later (see bug 1929377)
+neterror-load-osx-permission = Ha egy helyi hálózati oldalt próbál betölteni, akkor ellenőrizze, hogy a { -brand-short-name } megkapta-e a helyi hálózati engedélyeket a macOS adatvédelmi és biztonsági beállításaiban.
 neterror-captive-portal = Az internet elérése előtt be kell jelentkezni a hálózatra.
 # Variables:
 # $hostAndPath (String) - a suggested site (e.g. "www.example.com") that the user may have meant instead.
@@ -64,6 +66,7 @@ neterror-dns-not-found-trr-offline = Nem csatlakozik az internethez.
 neterror-dns-not-found-trr-unknown-host2 = Ezt a webhelyet nem találta meg a(z) { $trrDomain }.
 neterror-dns-not-found-trr-server-problem = Probléma lépett fel a következő domainen: { $trrDomain }.
 neterror-dns-not-found-bad-trr-url = Érvénytelen webcím.
+neterror-dns-not-found-system-sleep = A rendszer alvó módban van.
 neterror-dns-not-found-trr-unknown-problem = Váratlan probléma.
 
 ## Native fallback specific messages
@@ -147,3 +150,8 @@ certerror-mitm-what-can-you-do-about-it-attack-sts = Ha nem tudja mi az a <b>{ $
 # Variables:
 # $hostname (String) - Hostname of the website to which the user was trying to connect.
 certerror-what-should-i-do-bad-sts-cert-explanation = A(z) <b>{ $hostname }</b> oldal a HTTP Strict Transport Security (HSTS) nevű biztonsági házirendet használja, amely azt jelenti, hogy a { -brand-short-name } csak biztonságosan kapcsolódhat hozzá. Nem adhat hozzá kivételt, hogy felkeresse ezt az oldalt.
+cert-error-trust-certificate-transparency-what-can-you-do-about-it = Valószínűleg semmit, mert jó eséllyel magával a webhellyel van a probléma.
+# Variables:
+#   $responsestatus (string) - HTTP response status code (e.g., 500).
+#   $responsestatustext (string) - HTTP response status text (e.g., "Internal Server Error").
+neterror-response-status-code = Hibakód: { $responsestatus } { $responsestatustext }

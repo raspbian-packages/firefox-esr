@@ -8,11 +8,18 @@
 newtab-page-title = Nowy rajtark
 newtab-settings-button =
     .title = Stronu wašeho noweho rajtarka přiměrić
+newtab-personalize-settings-icon-label =
+    .title = Nowy rajtark personalizować
+    .aria-label = Nastajenja
+newtab-settings-dialog-label =
+    .aria-label = Nastajenja
 newtab-personalize-icon-label =
     .title = Nowy rajtark personalizować
     .aria-label = Nowy rajtark personalizować
 newtab-personalize-dialog-label =
     .aria-label = Personalizować
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Pola { -pocket-brand-name } składować
 newtab-menu-delete-pocket = Z { -pocket-brand-name } zhašeć
 newtab-menu-archive-pocket = W { -pocket-brand-name } archiwować
 newtab-menu-show-privacy-info = Naši sponsorojo a waša priwatnosć
+newtab-menu-about-fakespot = Wo { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Blokować
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Temje hižo njeslědować
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Najnowša aktiwita
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Wot { $provider } doporučeny
 newtab-section-header-stories = Stawiznički, kotrež k přemyslowanju pohonjeja
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Dźensniše doporučenki za was
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = { -pocket-brand-name } wobstarać
 newtab-pocket-cta-text = Składujće stawizny, kotrež so wam spodobuja, w { -pocket-brand-name } a žiwće swój duch z fascinowacymi čitančkami.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } je dźěl swójby { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Składować
 newtab-pocket-saved = Składowany
 
@@ -242,6 +260,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Nic za mnje
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Dźakujemy so. Waše měnjenje budźe nam pomhać, waš kanal polěpšić.
 newtab-toast-thumbs-up-or-down = Dźakujemy so. Waše měnjenje budźe nam pomhać, waš kanal polěpšić.
 newtab-toast-dismiss-button =
     .title = Zaćisnyć
@@ -309,6 +330,8 @@ newtab-wallpaper-dark-panda = Čerwjeny panda w lěsu schowany
 newtab-wallpaper-dark-sky = Měšćanska krajina z nócnym njebjom
 newtab-wallpaper-dark-mountain = Horinska krajina
 newtab-wallpaper-dark-city = Wioletna měšćanska krajina
+newtab-wallpaper-dark-fox-anniversary = Liška na dłóžbje blisko lěsa
+newtab-wallpaper-light-fox-anniversary = Liška w trawnym polu z młowej horinskej krajinu
 
 ## Solid Colors
 
@@ -373,6 +396,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ sponsorowany
 newtab-weather-menu-change-location = Městno změnić
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Městno pytać
+    .aria-label = Městno pytać
 newtab-weather-change-location-search-input = Městno pytać
 newtab-weather-menu-weather-display = Wjedrowe pokazanje
 # Display options are:
@@ -391,3 +417,76 @@ newtab-weather-menu-hide-weather = Wjedro na nowym rajtarku schować
 newtab-weather-menu-learn-more = Dalše informacije
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Wjedrowe daty tuchwilu k dispoziciji njejsu.
+
+## Topic Labels
+
+newtab-topic-label-business = Wobchodnistwo
+newtab-topic-label-career = Karjera
+newtab-topic-label-education = Zdźěłanje
+newtab-topic-label-arts = Zabawjenje
+newtab-topic-label-food = Cyroba
+newtab-topic-label-health = Strowosć
+newtab-topic-label-hobbies = Hraće
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Pjenjezy
+newtab-topic-label-society-parenting = Kubłanje
+newtab-topic-label-government = Politika
+newtab-topic-label-education-science = Wědomosć
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Swójske polěpšenja
+newtab-topic-label-sports = Sport
+newtab-topic-label-tech = Technologija
+newtab-topic-label-travel = Pućowanje
+newtab-topic-label-home = Dom a zahroda
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Wubjerće temy, zo byšće swój kanal optimował
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Wubjerće dwě temje abo wjace z nich. Naši nazhonjeni kuratorojo prioritu na stawiznički kładu, kotrež su na waše zajimy wusměrjene. Přiměrće to kóždy čas.
+newtab-topic-selection-save-button = Składować
+newtab-topic-selection-cancel-button = Přetorhnyć
+newtab-topic-selection-button-maybe-later = Snano pozdźišo
+newtab-topic-selection-privacy-link = Zhońće, kak daty škitamy a rjadujemy
+newtab-topic-selection-button-update-interests = Zaktualizujće swoje zajimy
+newtab-topic-selection-button-pick-interests = Wubjerće swoje zajimy
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Slědować
+newtab-section-following-button = Slědowacy
+newtab-section-unfollow-button = Hižo njeslědować
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Blokować
+newtab-section-blocked-button = Zablokowany
+newtab-section-unblock-button = Hižo njeblokować
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Chceće woprawdźe tutón wotrězk blokować?
+newtab-section-confirm-block-section-p2 = Zablokowany wotrězk so hižo we wašim kanalu njejewi.
+newtab-section-block-section-button = Tutón wotrězk blokować
+newtab-section-cancel-button = Nic nětko
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Temy
+newtab-section-mangage-topics-button =
+    .label = Slědowane a zablokowane temy
+newtab-section-mangage-topics-followed-topics-subtitle = Slědowane temy
+newtab-section-mangage-topics-followed-topics-empty-state = Hišće žanym temam njeslědujeće.
+newtab-section-mangage-topics-blocked-topics-subtitle = Zablokowane temy
+newtab-section-mangage-topics-blocked-topics-empty-state = Hišće njejsće žane temy zablokował.

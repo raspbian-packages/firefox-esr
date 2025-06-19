@@ -8,11 +8,18 @@
 newtab-page-title = Tendayke Pyahu
 newtab-settings-button =
     .title = Eñemomba’e ne Tendayke Pyahu roguére
+newtab-personalize-settings-icon-label =
+    .title = Eñemomba’e tendayke pyahúre
+    .aria-label = Ñemboheko
+newtab-settings-dialog-label =
+    .aria-label = Ñemboheko
 newtab-personalize-icon-label =
     .title = Eñemomba’e tendayke pyahúre
     .aria-label = Eñemomba’e tendayke pyahúre
 newtab-personalize-dialog-label =
     .aria-label = Ñemomba’e
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Eñongatu { -pocket-brand-name }-pe
 newtab-menu-delete-pocket = Embogue { -pocket-brand-name }-pe
 newtab-menu-archive-pocket = Eñongatu { -pocket-brand-name }-pe
 newtab-menu-show-privacy-info = Ore pytyvõhára ha iñemigua
+newtab-menu-about-fakespot = { -fakespot-brand-name } rehegua
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Joko
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Anive ehapykueho téma
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -199,6 +213,8 @@ newtab-section-header-recent-activity = Tembiapo ramovegua
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } he’i ndéve reike hag̃ua
 newtab-section-header-stories = Tembiasakue nemoakãngetáva
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Poravopyre ko arapegua ndéve g̃uarã
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -230,6 +246,8 @@ newtab-pocket-cta-button = Eguereko { -pocket-brand-name }
 newtab-pocket-cta-text = Eñongatu umi eipotáva tembiasakue { -pocket-brand-name }-pe ha emombarete ne akã ñemoñe’ẽ ha’evévape.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } ha’e { -brand-product-name } pehẽngue
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Ñongatu
 newtab-pocket-saved = Ñongatupyre
 
@@ -241,6 +259,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Ndacheveg̃uarãi
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Aguyje. Nde jehai ore pytyvõta iporãve hag̃ua ne marandurã.
 newtab-toast-thumbs-up-or-down = Aguyje. Nde jehai ore pytyvõta iporãve hag̃ua ne marandurã.
 newtab-toast-dismiss-button =
     .title = Emboyke
@@ -306,6 +327,8 @@ newtab-wallpaper-dark-panda = Pánda pytã okañýva ñañandýpe
 newtab-wallpaper-dark-sky = Táva jehecha ára pytũmby ndive
 newtab-wallpaper-dark-mountain = Yvyty jehecha
 newtab-wallpaper-dark-city = Táva jehecha pytãũva
+newtab-wallpaper-dark-fox-anniversary = Peteĩ aguara ka’aguy mboypýri
+newtab-wallpaper-light-fox-anniversary = Aguara ñu mbyte ikapi’ipéva ojehechahápe yvyty hatatĩnáva
 
 ## Solid Colors
 
@@ -370,6 +393,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Oykekóva
 newtab-weather-menu-change-location = Emoambue tendatee
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Eheka tendatee
+    .aria-label = Eheka tendatee
 newtab-weather-change-location-search-input = Eheka tendatee
 newtab-weather-menu-weather-display = Ára jehechaha
 # Display options are:
@@ -388,3 +414,62 @@ newtab-weather-menu-hide-weather = Eñomi arareko Tendayke Pyahúpe
 newtab-weather-menu-learn-more = Eikuaave
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Marandu ára rehegua ndaipóri ko’ag̃aite.
+
+## Topic Labels
+
+newtab-topic-label-business = Ñemuha
+newtab-topic-label-career = Mba’apoha
+newtab-topic-label-education = Tekombo’e
+newtab-topic-label-arts = Mbovy’aha
+newtab-topic-label-food = Tembi’u
+newtab-topic-label-health = Tesãi
+newtab-topic-label-hobbies = Ñembosarái
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Viru
+newtab-topic-label-society-parenting = Tuvakuéra
+newtab-topic-label-government = Porureko
+newtab-topic-label-education-science = Tembikuaaty
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Kuaarã tekovépe g̃uarã
+newtab-topic-label-sports = Tetemongu’e
+newtab-topic-label-tech = Tembiporupyahu
+newtab-topic-label-travel = jehomombyry
+newtab-topic-label-home = Óga ha yvotyty
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Eiporavo téma emoporãve hag̃ua ne canal
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Eiporavo mokõi térã hetave téma. Ore irũ katupyry omotenonde tembiasakue ojokupytyýva eipotavéva rehe. Embohekopyahu ejapose vove.
+newtab-topic-selection-save-button = Ñongatu
+newtab-topic-selection-cancel-button = Heja
+newtab-topic-selection-button-maybe-later = Ikatu ag̃amieve
+newtab-topic-selection-privacy-link = Ehecha mba’éichapa romo’ã ha romboguata ne mba’ekuaarã
+newtab-topic-selection-button-update-interests = Embohekopyahu eipotáva
+newtab-topic-selection-button-pick-interests = Eiporavo eipotáva
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Tapykueho
+newtab-section-following-button = Ahapykueho
+newtab-section-unfollow-button = Ndahapykuehovéima
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+
+## Confirmation modal for blocking a section
+
+
+## Panel in the Customize menu section to manage followed and blocked topics
+

@@ -131,7 +131,7 @@ main-context-menu-open-link-new-tab =
     .label = Åpne lenke i ny fane
     .accesskey = n
 main-context-menu-open-link-container-tab =
-    .label = Åpne lenke i ny innholdsfane
+    .label = Åpne lenke i ny beholderfane
     .accesskey = a
 main-context-menu-open-link-new-window =
     .label = Åpne lenke i nytt vindu
@@ -162,6 +162,12 @@ main-context-menu-copy-phone =
 main-context-menu-copy-link-simple =
     .label = Kopier lenke
     .accesskey = l
+# "Copy Clean Link" means that Firefox will remove things from the link you
+# copied, like items that identify you for advertising purposes, and other items
+# sites add into URLs to help them deliver a certain browsing experience.
+main-context-menu-copy-clean-link =
+    .label = Kopier ren lenke
+    .accesskey = o
 # This command copies the link, removing additional
 # query parameters used to track users across sites.
 main-context-menu-strip-on-share-link =
@@ -290,9 +296,7 @@ main-context-menu-send-to-device =
     .label = Send siden til enhet
     .accesskey = e
 
-## The access keys for "Use Saved Login" and "Use Saved Password"
-## should be the same if possible; the two context menu items
-## are mutually exclusive.
+##
 
 main-context-menu-use-saved-login =
     .label = Bruk lagret innlogging
@@ -384,7 +388,7 @@ main-context-menu-eme-learn-more =
 # Variables
 #   $containerName (String): The name of the current container
 main-context-menu-open-link-in-container-tab =
-    .label = Åpne lenke i ny { $containerName }-innholdsfane
+    .label = Åpne lenke i ny { $containerName }-beholderfane
     .accesskey = p
 main-context-menu-reveal-password =
     .label = Vis passord

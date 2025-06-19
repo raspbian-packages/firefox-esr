@@ -158,7 +158,6 @@ class nsHttpHandler final : public nsIHttpProtocolHandler,
   PRIntervalTime SpdyPingTimeout() { return mSpdyPingTimeout; }
   bool AllowAltSvc() { return mEnableAltSvc; }
   bool AllowAltSvcOE() { return mEnableAltSvcOE; }
-  bool AllowOriginExtension() { return mEnableOriginExtension; }
   uint32_t ConnectTimeout() { return mConnectTimeout; }
   uint32_t TLSHandshakeTimeout() { return mTLSHandshakeTimeout; }
   uint32_t ParallelSpeculativeConnectLimit() {
@@ -375,7 +374,12 @@ class nsHttpHandler final : public nsIHttpProtocolHandler,
     NotifyObservers(chan, NS_DOCUMENT_ON_MODIFY_REQUEST_TOPIC);
   }
 
-  // Called by the channel before writing a request
+  // Called by the channel before calling onStopRequest
+  void OnBeforeStopRequest(nsIHttpChannel* chan) {
+    NotifyObservers(chan, NS_HTTP_ON_BEFORE_STOP_REQUEST_TOPIC);
+  }
+
+  // Called by the channel after calling onStopRequest
   void OnStopRequest(nsIHttpChannel* chan) {
     NotifyObservers(chan, NS_HTTP_ON_STOP_REQUEST_TOPIC);
   }
@@ -423,6 +427,9 @@ class nsHttpHandler final : public nsIHttpProtocolHandler,
   [[nodiscard]] static nsresult GenerateHostPort(const nsCString& host,
                                                  int32_t port,
                                                  nsACString& hostLine);
+
+  static uint8_t UrgencyFromCoSFlags(uint32_t cos,
+                                     int32_t aSupportsPriority = 0);
 
   SpdyInformation* SpdyInfo() { return &mSpdyInfo; }
   bool IsH2MandatorySuiteEnabled() { return mH2MandatorySuiteEnabled; }
@@ -478,8 +485,6 @@ class nsHttpHandler final : public nsIHttpProtocolHandler,
                                 nsIInterfaceRequestor* aCallbacks,
                                 const OriginAttributes& aOriginAttributes);
 
-  bool UseHTTPSRRAsAltSvcEnabled() const;
-
   bool EchConfigEnabled(bool aIsHttp3 = false) const;
   // When EchConfig is enabled and all records with echConfig are failed, this
   // functon indicate whether we can fallback to the origin server.
@@ -510,6 +515,9 @@ class nsHttpHandler final : public nsIHttpProtocolHandler,
   //
   void BuildUserAgent();
   void InitUserAgentComponents();
+#ifdef XP_MACOSX
+  void InitMSAuthorities();
+#endif
   static void PrefsChanged(const char* pref, void* self);
   void PrefsChanged(const char* pref);
 
@@ -659,7 +667,6 @@ class nsHttpHandler final : public nsIHttpProtocolHandler,
 
   uint32_t mEnableAltSvc : 1;
   uint32_t mEnableAltSvcOE : 1;
-  uint32_t mEnableOriginExtension : 1;
 
   // Try to use SPDY features instead of HTTP/1.1 over SSL
   SpdyInformation mSpdyInfo;
@@ -777,8 +784,11 @@ class nsHttpHandler final : public nsIHttpProtocolHandler,
   void ExcludeHttp2OrHttp3Internal(const nsHttpConnectionInfo* ci);
 
   // State for generating channelIds
-  uint32_t mProcessId{0};
+  uint64_t mUniqueProcessId{0};
   Atomic<uint32_t, Relaxed> mNextChannelId{1};
+
+  // ProcessId used for logging.
+  uint32_t mProcessId{0};
 
   // The last time any of the active tab page load optimization took place.
   // This is accessed on multiple threads, hence a lock is needed.
@@ -811,12 +821,21 @@ class nsHttpHandler final : public nsIHttpProtocolHandler,
   void ExcludeHTTPSRRHost(const nsACString& aHost);
   [[nodiscard]] bool IsHostExcludedForHTTPSRR(const nsACString& aHost);
 
+#ifdef XP_MACOSX
+  [[nodiscard]] bool IsHostMSAuthority(const nsACString& aHost);
+#endif
+
  private:
   nsTHashSet<nsCString> mExcludedHttp2Origins;
   nsTHashSet<nsCString> mExcludedHttp3Origins;
   nsTHashSet<nsCString> mExcluded0RttTcpOrigins;
   // A set of hosts that we should not upgrade to HTTPS with HTTPS RR.
   nsTHashSet<nsCString> mExcludedHostsForHTTPSRRUpgrade;
+
+#ifdef XP_MACOSX
+  // A list of trusted Microsoft SSO authority URLs
+  nsTHashSet<nsCString> mMSAuthorities;
+#endif
 
   Atomic<bool, Relaxed> mThroughCaptivePortal{false};
 

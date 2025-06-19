@@ -298,6 +298,14 @@ find-more-themes = Finna fleiri þemu
 # used for screen readers.
 addon-options-button =
     .aria-label = Fleiri valkostir
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro2 =
+    Forritsaukar og þemu gera þér kleift að sérsníða { -brand-product-name }. Þeir geta aukið friðhelgi einkalífsins,
+    aukið afköst, bætt margmiðlun, breyta því hvernig { -brand-product-name } lítur út og
+    margt fleira. Þessi litlu hugbúnaðarforrit eru oft þróuð af utanaðkomandi aðilum. Hér má sjá
+    úrval slíks sem{ -brand-product-name } <a data-l10n-name="learn-more-trigger">mælir með</a>
+    til að tryggja einstakt öryggi, afköst og aukna virkni.
 
 ## Add-on actions
 
@@ -401,7 +409,7 @@ addon-detail-group-label-private-browsing =
 # Used as a description for the option to allow or block an add-on on quarantined domains.
 addon-detail-quarantined-domains-label = Keyra á vefsvæðum með takmörkunum
 # Used as help text part of the quarantined domains UI controls row.
-addon-detail-quarantined-domains-help = Þegar það er leyft mun forritsaukinn hafa aðgang að vefsvæðum sem takmarkast af { -vendor-short-name }. Leyfa aðeins ef þú treystir þessum forritsaukia.
+addon-detail-quarantined-domains-help = Þegar það er leyft mun forritsaukinn hafa aðgang að vefsvæðum sem takmarkast af { -vendor-short-name }. Leyfa aðeins ef þú treystir þessum forritsauka.
 # Used as label and tooltip text on the radio inputs associated to the quarantined domains UI controls.
 addon-detail-quarantined-domains-allow = Leyfa
 addon-detail-quarantined-domains-disallow = Ekki leyfa
@@ -430,6 +438,7 @@ available-updates-heading = Tiltækar uppfærslur
 recent-updates-heading = Nýlegar uppfærslur
 release-notes-loading = Hleður…
 release-notes-error = Því miður kom upp villa við að sýna útgáfuupplýsingar.
+addon-permissions-empty2 = Þessi forritsauki þarf engar heimildir.
 addon-permissions-empty = Þessi forritsauki þarf engar heimildir
 addon-permissions-required = Nauðsynlegar heimildir fyrir kjarnavirkni:
 addon-permissions-optional = Valfrjálsar heimildir fyrir aukna virkni:
@@ -479,10 +488,24 @@ details-notification-unsigned-and-disabled-link = Ítarlegri upplýsingar
 details-notification-unsigned = Ekki tókst að staðfesta { $name } fyrir notkun í { -brand-short-name }. Farðu varlega í að halda áfram.
 details-notification-unsigned2 =
     .message = Ekki tókst að staðfesta { $name } fyrir notkun í { -brand-short-name }. Farðu varlega í að halda áfram.
+details-notification-hard-blocked-extension =
+    .message = Lokað er á þennan forritsauka vegna brota á reglum Mozilla og hefur hann því verið gerður óvirkur.
+details-notification-hard-blocked-other =
+    .message = Lokað er á þessa viðbót vegna brota á reglum Mozilla og hefur hún því verið gerð óvirk.
 details-notification-unsigned-link = Ítarlegri upplýsingar
 details-notification-blocked = { $name } hefur verið gerð óvirk vegna vandamála með öryggi eða stöðugleika.
 details-notification-blocked2 =
     .message = { $name } hefur verið gerð óvirk vegna vandamála með öryggi eða stöðugleika.
+details-notification-blocked-link2 = Sjá nánar
+details-notification-soft-blocked-extension-disabled =
+    .message = Þessi forritsauki er takmarkaður vegna brota gegn reglum Mozilla og hefur verið gerður óvirkur. Þú getur virkjað þetta, en það gæti verið áhættusamt.
+details-notification-soft-blocked-extension-enabled =
+    .message = Þessi forritsauki brýtur gegn reglum Mozilla. Það getur verið áhættusamt að nota hann.
+details-notification-soft-blocked-other-disabled =
+    .message = Þessi viðbót er takmörkuð vegna brota gegn reglum Mozilla og hefur verið gerður óvirk. Þú getur virkjað þetta, en það gæti verið áhættusamt.
+details-notification-soft-blocked-other-enabled =
+    .message = Þessi viðbót brýtur gegn reglum Mozilla. Það getur verið áhættusamt að nota hana.
+details-notification-softblocked-link2 = Sjá nánar
 details-notification-blocked-link = Meiri upplýsingar
 details-notification-softblocked = { $name } er þekkt fyrir að valda vandamálum með öryggi eða stöðugleika.
 details-notification-softblocked2 =

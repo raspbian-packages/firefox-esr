@@ -8,11 +8,18 @@
 newtab-page-title = Nova langeto
 newtab-settings-button =
     .title = Personecigi la paĝon por novaj langetoj
+newtab-personalize-settings-icon-label =
+    .title = Personecigi la paĝon por novaj langetoj
+    .aria-label = Agordoj
+newtab-settings-dialog-label =
+    .aria-label = Agordoj
 newtab-personalize-icon-label =
     .title = Personecigi novan langeton
     .aria-label = Personecigi novan langeton
 newtab-personalize-dialog-label =
     .aria-label = Personcecigi
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Konservi en { -pocket-brand-name }
 newtab-menu-delete-pocket = Forigi el { -pocket-brand-name }
 newtab-menu-archive-pocket = Arĥivi en { -pocket-brand-name }
 newtab-menu-show-privacy-info = Niaj patronoj kaj via privateco
+newtab-menu-about-fakespot = Pri { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Bloki
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Ne plu sekvi temon
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -196,6 +210,8 @@ newtab-section-header-recent-activity = Ĵusa agado
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Rekomendita de { $provider }
 newtab-section-header-stories = Pensigaj artikoloj
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Niaj hodiaŭaj elektoj por vi
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -227,8 +243,26 @@ newtab-pocket-cta-button = Instali { -pocket-brand-name }
 newtab-pocket-cta-text = Konservu viajn ŝatatajn artikolojn en { -pocket-brand-name }, kaj stimulu vian menson per ravaj legaĵoj.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } estas parto de la familio { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Konservi
 newtab-pocket-saved = Konservitaj
+
+## Thumbs up and down buttons that shows over a newtab stories card thumbnail on hover.
+
+# Clicking the thumbs up button for this story will result in more stories like this one being recommended
+newtab-pocket-thumbs-up-tooltip =
+    .title = Pli da ĉi tiaj
+# Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
+newtab-pocket-thumbs-down-tooltip =
+    .title = Tio ne interesas min
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Dankon, viaj komentoj helpos nin plibonigi vian informan fonton.
+newtab-toast-thumbs-up-or-down = Dankon, viaj komentoj helpos nin plibonigi vian informan fonton.
+newtab-toast-dismiss-button =
+    .title = Ignori
+    .aria-label = I
 
 ## Pocket content onboarding experience dialog and modal for new users seeing the Pocket section for the first time, shown as the first item in the Pocket section.
 
@@ -290,6 +324,8 @@ newtab-wallpaper-dark-panda = Ruĝa pando kaŝita en arbaro
 newtab-wallpaper-dark-sky = Pejzaĝo urba kun nokta ĉielo
 newtab-wallpaper-dark-mountain = Pejzaĝo monta
 newtab-wallpaper-dark-city = Purpura pejzaĝo urba
+newtab-wallpaper-dark-fox-anniversary = Vulpo sur pavimo proksime de arbaro
+newtab-wallpaper-light-fox-anniversary = Vulpo sur herbejo kun nebula pejzaĝo monta
 
 ## Solid Colors
 
@@ -354,6 +390,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Patronita
 newtab-weather-menu-change-location = Ŝanĝi lokon
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Serĉi lokon
+    .aria-label = Serĉi lokon
 newtab-weather-change-location-search-input = Serĉi lokon
 newtab-weather-menu-weather-display = Montro de vetero
 # Display options are:
@@ -372,3 +411,76 @@ newtab-weather-menu-hide-weather = Kaŝi veteron en nova langeto
 newtab-weather-menu-learn-more = Pli da informo
 # This message is shown if user is working offline
 newtab-weather-error-not-available = En tiu ĉi momento ne haveblas veteraj datumoj.
+
+## Topic Labels
+
+newtab-topic-label-business = Negoco
+newtab-topic-label-career = Kariero
+newtab-topic-label-education = Eduko
+newtab-topic-label-arts = Distro
+newtab-topic-label-food = Manĝaĵo
+newtab-topic-label-health = Sano
+newtab-topic-label-hobbies = Ludo
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Financo
+newtab-topic-label-society-parenting = Gepatreco
+newtab-topic-label-government = Politiko
+newtab-topic-label-education-science = Scienco
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Vivsimpligiloj
+newtab-topic-label-sports = Sporto
+newtab-topic-label-tech = Teknologio
+newtab-topic-label-travel = Vojaĝo
+newtab-topic-label-home = Domo kaj ĝardeno
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Elektu temojn por rafini vian informan fonton
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Elektu du aŭ pli da temoj. Niaj spertaj informzorgantoj elektos unue artikolojn, kiuj kongruas kun viaj interesoj. Vi povas ĝisdatigi tion iam ajn.
+newtab-topic-selection-save-button = Konservi
+newtab-topic-selection-cancel-button = Nuligi
+newtab-topic-selection-button-maybe-later = Eble poste
+newtab-topic-selection-privacy-link = Pli da informo pri kiel ni protektas kaj administras datumojn
+newtab-topic-selection-button-update-interests = Ĝisdatigi viajn interesojn
+newtab-topic-selection-button-pick-interests = Elekti viajn interesojn
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Sekvi
+newtab-section-following-button = Sekvata
+newtab-section-unfollow-button = Ne plu sekvi
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Bloki
+newtab-section-blocked-button = Blokita
+newtab-section-unblock-button = Malbloki
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Ĉu vi certe volas bloki tiun ĉi sekcion?
+newtab-section-confirm-block-section-p2 = Blokitaj sekcioj ne plu aperos en via informa fonto
+newtab-section-block-section-button = Bloki tiun ĉi sekcion
+newtab-section-cancel-button = Ne nun
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Temoj
+newtab-section-mangage-topics-button =
+    .label = Sekvataj kaj blokitaj temoj
+newtab-section-mangage-topics-followed-topics-subtitle = Sekvataj temoj
+newtab-section-mangage-topics-followed-topics-empty-state = Vi ankoraŭ sekvas neniun temon.
+newtab-section-mangage-topics-blocked-topics-subtitle = Blokitaj temoj
+newtab-section-mangage-topics-blocked-topics-empty-state = Vi ankoraŭ blokas neniun temon.

@@ -119,6 +119,7 @@ policy-Permissions2 = Konfigurer løyve for kamera, mikrofon, plassering, varsel
 policy-PictureInPicture = Slå på eller av bilde-i-bilde
 policy-PopupBlocking = Tillat at visse nettstadar skal kunne vise sprettoppvindauge som standard.
 policy-Preferences = Still inn og lås verdien for ei delmengde av innstillingar.
+policy-PrivateBrowsingModeAvailability = Vel tilgjengelegheit for privat nettlesingsmodus.
 policy-PromptForDownloadLocation = Spør kvar nedlasta filer skal lagrast.
 policy-Proxy = Konfigurer proxy-innstillingar.
 policy-RequestedLocales = Vel rekkjefølgja av språk, som skal brukeast i programmet.
@@ -139,3 +140,5 @@ policy-UseSystemPrintDialog = Skriv ut ved hjelp av utskriftsdialogvindauget til
 # “format” refers to the format used for the value of this policy.
 policy-WebsiteFilter = Blokker besøk på nettstadar. Les dokumentasjonen for detaljer om formatet.
 policy-Windows10SSO = Tillat Windows enkel pålogging for Microsoft, arbeids- og skulekontoar.
+# Entra is the name of a Microsoft product.
+policy-MicrosoftEntraSSO = Tillat enkel pålogging for Microsoft Entra-kontoar.

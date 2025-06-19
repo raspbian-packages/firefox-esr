@@ -29,7 +29,6 @@
 #include "mozilla/ipc/BackgroundChild.h"
 #include "mozilla/ipc/PBackgroundChild.h"
 #include "nsContentUtils.h"
-#include "nsGlobalWindow.h"
 #include "mozilla/Logging.h"
 
 #include "ActorsChild.h"
@@ -68,6 +67,13 @@ class FileManagerInfo {
   [[nodiscard]] SafeRefPtr<DatabaseFileManager> GetFileManager(
       PersistenceType aPersistenceType, const nsAString& aName) const;
 
+  [[nodiscard]] SafeRefPtr<DatabaseFileManager>
+  GetFileManagerByDatabaseFilePath(PersistenceType aPersistenceType,
+                                   const nsAString& aDatabaseFilePath) const;
+
+  const nsTArray<SafeRefPtr<DatabaseFileManager>>& GetFileManagers(
+      PersistenceType aPersistenceType) const;
+
   void AddFileManager(SafeRefPtr<DatabaseFileManager> aFileManager);
 
   bool HasFileManagers() const {
@@ -87,18 +93,18 @@ class FileManagerInfo {
                                       const nsAString& aName);
 
  private:
-  nsTArray<SafeRefPtr<DatabaseFileManager> >& GetArray(
+  nsTArray<SafeRefPtr<DatabaseFileManager>>& GetArray(
       PersistenceType aPersistenceType);
 
-  const nsTArray<SafeRefPtr<DatabaseFileManager> >& GetImmutableArray(
+  const nsTArray<SafeRefPtr<DatabaseFileManager>>& GetImmutableArray(
       PersistenceType aPersistenceType) const {
     return const_cast<FileManagerInfo*>(this)->GetArray(aPersistenceType);
   }
 
-  nsTArray<SafeRefPtr<DatabaseFileManager> > mPersistentStorageFileManagers;
-  nsTArray<SafeRefPtr<DatabaseFileManager> > mTemporaryStorageFileManagers;
-  nsTArray<SafeRefPtr<DatabaseFileManager> > mDefaultStorageFileManagers;
-  nsTArray<SafeRefPtr<DatabaseFileManager> > mPrivateStorageFileManagers;
+  nsTArray<SafeRefPtr<DatabaseFileManager>> mPersistentStorageFileManagers;
+  nsTArray<SafeRefPtr<DatabaseFileManager>> mTemporaryStorageFileManagers;
+  nsTArray<SafeRefPtr<DatabaseFileManager>> mDefaultStorageFileManagers;
+  nsTArray<SafeRefPtr<DatabaseFileManager>> mPrivateStorageFileManagers;
 };
 
 }  // namespace indexedDB
@@ -200,9 +206,17 @@ auto DatabaseNameMatchPredicate(const nsAString* const aName) {
   };
 }
 
+auto DatabaseFilePathMatchPredicate(const nsAString* const aDatabaseFilePath) {
+  MOZ_ASSERT(aDatabaseFilePath);
+  return [aDatabaseFilePath](const auto& fileManager) {
+    return fileManager->DatabaseFilePath() == *aDatabaseFilePath;
+  };
+}
+
 }  // namespace
 
-IndexedDatabaseManager::IndexedDatabaseManager() : mBackgroundActor(nullptr) {
+IndexedDatabaseManager::IndexedDatabaseManager()
+    : mLocaleInitialized(false), mBackgroundActor(nullptr) {
   NS_ASSERTION(NS_IsMainThread(), "Wrong thread!");
 }
 
@@ -297,25 +311,6 @@ nsresult IndexedDatabaseManager::Init() {
   Preferences::RegisterCallbackAndCall(MaxPreloadExtraRecordsPrefChangeCallback,
                                        kPrefMaxPreloadExtraRecords);
 
-  nsAutoCString acceptLang;
-  Preferences::GetLocalizedCString("intl.accept_languages", acceptLang);
-
-  // Split values on commas.
-  for (const auto& lang :
-       nsCCharSeparatedTokenizer(acceptLang, ',').ToRange()) {
-    mozilla::intl::LocaleCanonicalizer::Vector asciiString{};
-    auto result = mozilla::intl::LocaleCanonicalizer::CanonicalizeICULevel1(
-        PromiseFlatCString(lang).get(), asciiString);
-    if (result.isOk()) {
-      mLocale.AssignASCII(asciiString);
-      break;
-    }
-  }
-
-  if (mLocale.IsEmpty()) {
-    mLocale.AssignLiteral("en_US");
-  }
-
   return NS_OK;
 }
 
@@ -369,7 +364,6 @@ bool IndexedDatabaseManager::ResolveSandboxBinding(JSContext* aCx) {
       !IDBFactory_Binding::CreateAndDefineOnGlobal(aCx) ||
       !IDBIndex_Binding::CreateAndDefineOnGlobal(aCx) ||
       !IDBKeyRange_Binding::CreateAndDefineOnGlobal(aCx) ||
-      !IDBLocaleAwareKeyRange_Binding::CreateAndDefineOnGlobal(aCx) ||
       !IDBObjectStore_Binding::CreateAndDefineOnGlobal(aCx) ||
       !IDBOpenDBRequest_Binding::CreateAndDefineOnGlobal(aCx) ||
       !IDBRequest_Binding::CreateAndDefineOnGlobal(aCx) ||
@@ -495,6 +489,35 @@ SafeRefPtr<DatabaseFileManager> IndexedDatabaseManager::GetFileManager(
   }
 
   return info->GetFileManager(aPersistenceType, aDatabaseName);
+}
+
+SafeRefPtr<DatabaseFileManager>
+IndexedDatabaseManager::GetFileManagerByDatabaseFilePath(
+    PersistenceType aPersistenceType, const nsACString& aOrigin,
+    const nsAString& aDatabaseFilePath) {
+  AssertIsOnIOThread();
+
+  FileManagerInfo* info;
+  if (!mFileManagerInfos.Get(aOrigin, &info)) {
+    return nullptr;
+  }
+
+  return info->GetFileManagerByDatabaseFilePath(aPersistenceType,
+                                                aDatabaseFilePath);
+}
+
+const nsTArray<SafeRefPtr<DatabaseFileManager>>&
+IndexedDatabaseManager::GetFileManagers(PersistenceType aPersistenceType,
+                                        const nsACString& aOrigin) {
+  AssertIsOnIOThread();
+
+  FileManagerInfo* info;
+  if (!mFileManagerInfos.Get(aOrigin, &info)) {
+    static nsTArray<SafeRefPtr<DatabaseFileManager>> emptyArray;
+    return emptyArray;
+  }
+
+  return info->GetFileManagers(aPersistenceType);
 }
 
 void IndexedDatabaseManager::AddFileManager(
@@ -654,11 +677,43 @@ void IndexedDatabaseManager::LoggingModePrefChangedCallback(
   }
 }
 
+nsresult IndexedDatabaseManager::EnsureLocale() {
+  AssertIsOnMainThread();
+
+  if (mLocaleInitialized) {
+    return NS_OK;
+  }
+
+  nsAutoCString acceptLang;
+  Preferences::GetLocalizedCString("intl.accept_languages", acceptLang);
+
+  // Split values on commas.
+  for (const auto& lang :
+       nsCCharSeparatedTokenizer(acceptLang, ',').ToRange()) {
+    mozilla::intl::LocaleCanonicalizer::Vector asciiString{};
+    auto result = mozilla::intl::LocaleCanonicalizer::CanonicalizeICULevel1(
+        PromiseFlatCString(lang).get(), asciiString);
+    if (result.isOk()) {
+      mLocale.AssignASCII(asciiString);
+      break;
+    }
+  }
+
+  if (mLocale.IsEmpty()) {
+    mLocale.AssignLiteral("en_US");
+  }
+
+  mLocaleInitialized = true;
+
+  return NS_OK;
+}
+
 // static
 const nsCString& IndexedDatabaseManager::GetLocale() {
   IndexedDatabaseManager* idbManager = Get();
   MOZ_ASSERT(idbManager, "IDBManager is not ready!");
 
+  MOZ_ASSERT(!idbManager->mLocale.IsEmpty());
   return idbManager->mLocale;
 }
 
@@ -675,11 +730,34 @@ SafeRefPtr<DatabaseFileManager> FileManagerInfo::GetFileManager(
   return foundIt != end ? foundIt->clonePtr() : nullptr;
 }
 
+SafeRefPtr<DatabaseFileManager>
+FileManagerInfo::GetFileManagerByDatabaseFilePath(
+    PersistenceType aPersistenceType,
+    const nsAString& aDatabaseFilePath) const {
+  AssertIsOnIOThread();
+
+  const auto& managers = GetImmutableArray(aPersistenceType);
+
+  const auto end = managers.cend();
+  const auto foundIt =
+      std::find_if(managers.cbegin(), end,
+                   DatabaseFilePathMatchPredicate(&aDatabaseFilePath));
+
+  return foundIt != end ? foundIt->clonePtr() : nullptr;
+}
+
+const nsTArray<SafeRefPtr<DatabaseFileManager>>&
+FileManagerInfo::GetFileManagers(PersistenceType aPersistenceType) const {
+  AssertIsOnIOThread();
+
+  return GetImmutableArray(aPersistenceType);
+}
+
 void FileManagerInfo::AddFileManager(
     SafeRefPtr<DatabaseFileManager> aFileManager) {
   AssertIsOnIOThread();
 
-  nsTArray<SafeRefPtr<DatabaseFileManager> >& managers =
+  nsTArray<SafeRefPtr<DatabaseFileManager>>& managers =
       GetArray(aFileManager->Type());
 
   NS_ASSERTION(!managers.Contains(aFileManager), "Adding more than once?!");
@@ -713,7 +791,7 @@ void FileManagerInfo::InvalidateAndRemoveFileManagers(
     PersistenceType aPersistenceType) {
   AssertIsOnIOThread();
 
-  nsTArray<SafeRefPtr<DatabaseFileManager> >& managers =
+  nsTArray<SafeRefPtr<DatabaseFileManager>>& managers =
       GetArray(aPersistenceType);
 
   for (uint32_t i = 0; i < managers.Length(); i++) {
@@ -738,7 +816,7 @@ void FileManagerInfo::InvalidateAndRemoveFileManager(
   }
 }
 
-nsTArray<SafeRefPtr<DatabaseFileManager> >& FileManagerInfo::GetArray(
+nsTArray<SafeRefPtr<DatabaseFileManager>>& FileManagerInfo::GetArray(
     PersistenceType aPersistenceType) {
   switch (aPersistenceType) {
     case PERSISTENCE_TYPE_PERSISTENT:

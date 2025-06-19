@@ -7,7 +7,7 @@ Subject: Fix math_private.h for i386 FTBFS
  1 file changed, 4 insertions(+)
 
 diff --git a/modules/fdlibm/src/math_private.h b/modules/fdlibm/src/math_private.h
-index f4373f2..632d2c4 100644
+index b588a59..06f2af0 100644
 --- a/modules/fdlibm/src/math_private.h
 +++ b/modules/fdlibm/src/math_private.h
 @@ -30,7 +30,11 @@

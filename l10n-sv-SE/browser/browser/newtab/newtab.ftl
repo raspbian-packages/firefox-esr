@@ -8,11 +8,18 @@
 newtab-page-title = Ny flik
 newtab-settings-button =
     .title = Anpassa sidan för Ny flik
+newtab-personalize-settings-icon-label =
+    .title = Anpassa ny flik
+    .aria-label = Inställningar
+newtab-settings-dialog-label =
+    .aria-label = Inställningar
 newtab-personalize-icon-label =
     .title = Anpassa ny flik
     .aria-label = Anpassa ny flik
 newtab-personalize-dialog-label =
     .aria-label = Anpassa
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = Spara till { -pocket-brand-name }
 newtab-menu-delete-pocket = Ta bort från { -pocket-brand-name }
 newtab-menu-archive-pocket = Arkivera i { -pocket-brand-name }
 newtab-menu-show-privacy-info = Våra sponsorer & din integritet
+newtab-menu-about-fakespot = Om { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = Blockera
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = Sluta följa ämne
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -200,6 +214,8 @@ newtab-section-header-recent-activity = Senaste aktivitet
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = Rekommenderas av { $provider }
 newtab-section-header-stories = Tankeväckande berättelser
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = Dagens val för dig
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -231,6 +247,8 @@ newtab-pocket-cta-button = Hämta { -pocket-brand-name }
 newtab-pocket-cta-text = Spara de historier som du tycker är intressant i { -pocket-brand-name } och stimulera dina tankar med fascinerande läsmaterial.
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } är en del av familjen { -brand-product-name }
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = Spara
 newtab-pocket-saved = Sparad
 
@@ -238,10 +256,13 @@ newtab-pocket-saved = Sparad
 
 # Clicking the thumbs up button for this story will result in more stories like this one being recommended
 newtab-pocket-thumbs-up-tooltip =
-    .title = Mer sådana här
+    .title = Mer sånt här
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = Inte för mig
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = Tack. Din feedback hjälper oss att förbättra ditt flöde.
 newtab-toast-thumbs-up-or-down = Tack. Din feedback hjälper oss att förbättra ditt flöde.
 newtab-toast-dismiss-button =
     .title = Ignorera
@@ -307,6 +328,8 @@ newtab-wallpaper-dark-panda = Röd panda dold i skogen
 newtab-wallpaper-dark-sky = Stadslandskap med en natthimmel
 newtab-wallpaper-dark-mountain = Landskap med berg
 newtab-wallpaper-dark-city = Lila stadslandskap
+newtab-wallpaper-dark-fox-anniversary = En räv på trottoaren nära en skog
+newtab-wallpaper-light-fox-anniversary = En räv i ett gräsbevuxet fält med ett dimmigt bergslandskap
 
 ## Solid Colors
 
@@ -371,6 +394,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ Sponsrad
 newtab-weather-menu-change-location = Ändra plats
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = Sök plats
+    .aria-label = Sök plats
 newtab-weather-change-location-search-input = Sök plats
 newtab-weather-menu-weather-display = Vädervisning
 # Display options are:
@@ -389,3 +415,76 @@ newtab-weather-menu-hide-weather = Dölj väder på ny flik
 newtab-weather-menu-learn-more = Läs mer
 # This message is shown if user is working offline
 newtab-weather-error-not-available = Väderdata är inte tillgänglig just nu.
+
+## Topic Labels
+
+newtab-topic-label-business = Företag
+newtab-topic-label-career = Karriär
+newtab-topic-label-education = Utbildning
+newtab-topic-label-arts = Underhållning
+newtab-topic-label-food = Livsmedel
+newtab-topic-label-health = Hälsa
+newtab-topic-label-hobbies = Spel
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = Pengar
+newtab-topic-label-society-parenting = Föräldraskap
+newtab-topic-label-government = Politik
+newtab-topic-label-education-science = Vetenskap
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = Lifehack
+newtab-topic-label-sports = Sport
+newtab-topic-label-tech = Teknik
+newtab-topic-label-travel = Resa
+newtab-topic-label-home = Hem & trädgård
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = Välj ämnen för att finjustera ditt flöde
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = Välj två eller flera ämnen. Våra expertkuratorer prioriterar nyheter anpassade efter dina intressen. Uppdatera när som helst.
+newtab-topic-selection-save-button = Spara
+newtab-topic-selection-cancel-button = Avbryt
+newtab-topic-selection-button-maybe-later = Kanske senare
+newtab-topic-selection-privacy-link = Lär dig hur vi skyddar och hanterar data
+newtab-topic-selection-button-update-interests = Uppdatera dina intressen
+newtab-topic-selection-button-pick-interests = Välj dina intressen
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = Följ
+newtab-section-following-button = Följer
+newtab-section-unfollow-button = Sluta följa
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = Blockera
+newtab-section-blocked-button = Blockerad
+newtab-section-unblock-button = Blockera inte
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = Är du säker på att du vill blockera denna sektion?
+newtab-section-confirm-block-section-p2 = Blockerad sektion kommer inte längre att visas i ditt flöde.
+newtab-section-block-section-button = Blockera denna sektion
+newtab-section-cancel-button = Inte nu
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = Ämnen
+newtab-section-mangage-topics-button =
+    .label = Följda och blockerade ämnen
+newtab-section-mangage-topics-followed-topics-subtitle = Följda ämnen
+newtab-section-mangage-topics-followed-topics-empty-state = Du har inte följt några ämnen än.
+newtab-section-mangage-topics-blocked-topics-subtitle = Blockerade ämnen
+newtab-section-mangage-topics-blocked-topics-empty-state = Du har inte blockerat några ämnen än.

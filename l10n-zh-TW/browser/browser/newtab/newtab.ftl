@@ -8,11 +8,18 @@
 newtab-page-title = 新分頁
 newtab-settings-button =
     .title = 自訂您的新分頁頁面
+newtab-personalize-settings-icon-label =
+    .title = 個人化新分頁
+    .aria-label = 設定
+newtab-settings-dialog-label =
+    .aria-label = 設定
 newtab-personalize-icon-label =
     .title = 個人化新分頁
     .aria-label = 個人化新分頁
 newtab-personalize-dialog-label =
     .aria-label = 個人化
+newtab-logo-and-wordmark =
+    .aria-label = { -brand-full-name }
 
 ## Search box component.
 
@@ -109,6 +116,13 @@ newtab-menu-save-to-pocket = 儲存至 { -pocket-brand-name }
 newtab-menu-delete-pocket = 從 { -pocket-brand-name } 刪除
 newtab-menu-archive-pocket = 在 { -pocket-brand-name } 裡封存
 newtab-menu-show-privacy-info = 我們的贊助商與您的隱私權
+newtab-menu-about-fakespot = 關於 { -fakespot-brand-name }
+# Context menu option to personalize New Tab recommended stories by blocking a section of stories,
+# e.g. "Sports". "Block" is a verb here.
+newtab-menu-section-block = 封鎖
+# "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+# e.g. Following the travel section of stories.
+newtab-menu-section-unfollow = 取消追蹤主題
 
 ## Message displayed in a modal window to explain privacy and provide context for sponsored content.
 
@@ -196,6 +210,8 @@ newtab-section-header-recent-activity = 近期動態
 #   $provider (string) - Name of the corresponding content provider.
 newtab-section-header-pocket = { $provider } 推薦
 newtab-section-header-stories = 發人深省的文章
+# "picks" refers to recommended articles
+newtab-section-header-todays-picks = 本日精選文章
 
 ## Empty Section States: These show when there are no more items in a section. Ex. When there are no more Pocket story recommendations, in the space where there would have been stories, this is shown instead.
 
@@ -227,6 +243,8 @@ newtab-pocket-cta-button = 取得 { -pocket-brand-name }
 newtab-pocket-cta-text = 將您喜愛的故事儲存到 { -pocket-brand-name }，閱讀一篇篇好文章。
 newtab-pocket-pocket-firefox-family = { -pocket-brand-name } 是 { -brand-product-name } 產品家族的一部份
 # A save to Pocket button that shows over the card thumbnail on hover.
+newtab-pocket-image =
+    .aria-label = { -pocket-brand-name }
 newtab-pocket-save = 儲存
 newtab-pocket-saved = 已儲存
 
@@ -238,6 +256,9 @@ newtab-pocket-thumbs-up-tooltip =
 # Clicking the thumbs down button for this story informs us that the user does not feel like the story is interesting for them
 newtab-pocket-thumbs-down-tooltip =
     .title = 我沒興趣
+# Used to show the user a message upon clicking the thumbs up or down buttons
+newtab-toast-thumbs-up-or-down2 =
+    .message = 感謝您。您的意見可幫助我們改善顯示的內容。
 newtab-toast-thumbs-up-or-down = 感謝您。您的意見可幫助我們改善顯示的內容。
 newtab-toast-dismiss-button =
     .title = 知道了！
@@ -303,6 +324,8 @@ newtab-wallpaper-dark-panda = 隱藏在森林中的小貓熊
 newtab-wallpaper-dark-sky = 城市的夜空景觀
 newtab-wallpaper-dark-mountain = 山景
 newtab-wallpaper-dark-city = 紫色城市風景
+newtab-wallpaper-dark-fox-anniversary = 一隻在森林附近人行道上的狐狸
+newtab-wallpaper-light-fox-anniversary = 一隻在迷霧山景中的草原上的狐狸
 
 ## Solid Colors
 
@@ -367,6 +390,9 @@ newtab-weather-see-forecast =
 #   $provider (string) - Service provider for weather data
 newtab-weather-sponsored = { $provider } ∙ 贊助資訊
 newtab-weather-menu-change-location = 更改位置
+newtab-weather-change-location-search-input-placeholder =
+    .placeholder = 搜尋位置
+    .aria-label = 搜尋位置
 newtab-weather-change-location-search-input = 搜尋位置
 newtab-weather-menu-weather-display = 顯示天氣
 # Display options are:
@@ -385,3 +411,76 @@ newtab-weather-menu-hide-weather = 隱藏新分頁的天氣資訊
 newtab-weather-menu-learn-more = 更多資訊
 # This message is shown if user is working offline
 newtab-weather-error-not-available = 目前暫時無法提供天氣資訊。
+
+## Topic Labels
+
+newtab-topic-label-business = 商業
+newtab-topic-label-career = 職涯
+newtab-topic-label-education = 教育
+newtab-topic-label-arts = 娛樂
+newtab-topic-label-food = 美食
+newtab-topic-label-health = 健康
+newtab-topic-label-hobbies = 遊戲
+# ”Money” = “Personal Finance”, refers to articles and stories that help readers better manage
+# and understand their personal finances – from saving money to buying a home. See the
+# “Curated by our editors“ section at the top of https://getpocket.com/explore/personal-finance for more context
+newtab-topic-label-finance = 個人財務
+newtab-topic-label-society-parenting = 育兒
+newtab-topic-label-government = 政治
+newtab-topic-label-education-science = 科學
+# ”Life Hacks” = “Self Improvement”, refers to articles and stories aimed at helping readers improve various
+# aspects of their lives – from mental health to  productivity. See the “Curated by our editors“ section
+# at the top of https://getpocket.com/explore/self-improvement for more context.
+newtab-topic-label-society = 自我成長
+newtab-topic-label-sports = 體育
+newtab-topic-label-tech = 科技
+newtab-topic-label-travel = 旅遊
+newtab-topic-label-home = 家庭與園藝
+
+## Topic Selection Modal
+
+# “fine-tune” refers to the process of making small adjustments to something to get
+# the best or desired experience or performance.
+newtab-topic-selection-title = 請選擇主題來調整您的資訊來源
+# “tailored” refers to process of (a tailor) making (clothes) to fit individual customers.
+# In other words, “Our expert curators prioritize stories to fit your selected interests”
+newtab-topic-selection-subtitle = 選擇兩組以上的主題，我們的策展專家會依照您的興趣優先顯示。內容隨時更新。
+newtab-topic-selection-save-button = 儲存
+newtab-topic-selection-cancel-button = 取消
+newtab-topic-selection-button-maybe-later = 之後再說
+newtab-topic-selection-privacy-link = 了解我們如何保護與管理資料
+newtab-topic-selection-button-update-interests = 更新您有興趣的項目
+newtab-topic-selection-button-pick-interests = 挑選您有興趣的項目
+
+## Content Feed Sections
+## "Follow", "unfollow", and "following" are social media terms that refer to subscribing to or unsubscribing from a section of stories.
+## e.g. Following the travel section of stories.
+
+newtab-section-follow-button = 追蹤
+newtab-section-following-button = 追蹤中
+newtab-section-unfollow-button = 取消追蹤
+
+## Button to block/unblock listed topics
+## "Block", "unblocked", and "blocked" are social media terms that refer to hiding a section of stories.
+## e.g. Blocked the politics section of stories.
+
+newtab-section-block-button = 封鎖
+newtab-section-blocked-button = 已封鎖
+newtab-section-unblock-button = 解除封鎖
+
+## Confirmation modal for blocking a section
+
+newtab-section-confirm-block-section-p1 = 您確定要封鎖這個段落嗎？
+newtab-section-confirm-block-section-p2 = 將從資訊來源隱藏封鎖的段落。
+newtab-section-block-section-button = 封鎖此段落
+newtab-section-cancel-button = 現在不要
+
+## Panel in the Customize menu section to manage followed and blocked topics
+
+newtab-section-mangage-topics-title = 主題
+newtab-section-mangage-topics-button =
+    .label = 已關注並封鎖的主題
+newtab-section-mangage-topics-followed-topics-subtitle = 關注的主題
+newtab-section-mangage-topics-followed-topics-empty-state = 您並未關注任何主題。
+newtab-section-mangage-topics-blocked-topics-subtitle = 封鎖的主題
+newtab-section-mangage-topics-blocked-topics-empty-state = 您並未封鎖任何主題。

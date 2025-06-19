@@ -292,6 +292,13 @@ find-more-themes = Көбірек темаларды табу
 # used for screen readers.
 addon-options-button =
     .aria-label = Көбірек опциялар
+# Explanatory introduction to the list of recommended add-ons. The action word
+# ("recommends") in the final sentence is a link to external documentation.
+discopane-intro2 =
+    Кеңейтулер мен темалар сізге { -brand-product-name } баптауға мүмкіндік береді. Олар жекелікті мен өнімділікті арттыруға,
+    мультимедианы жақсартуға, { -brand-product-name } сыртқы түрін өзгертуге және т.б. мүмкіндік береді. Бұл шағын
+    бағдарламалық қамтаманы көбінесе үшінші тарап әзірлейді. Мұнда ерекше қауіпсіздік, өнімділік және функционалдылық үшін
+    { -brand-product-name } <a data-l10n-name="learn-more-trigger">ұсынатын таңдау</a> берілген.
 
 ## Add-on actions
 
@@ -423,6 +430,7 @@ available-updates-heading = Қолжетімді жаңартулар
 recent-updates-heading = Соңғы жаңартулар
 release-notes-loading = Жүктелуде…
 release-notes-error = Кешіріңіз, шығарылым ескертпесін жүктеп алу кезінде қате кетті.
+addon-permissions-empty2 = Бұл кеңейту ешқандай рұқсаттарды қажет етпейді.
 addon-permissions-empty = Бұл кеңейту ешқандай рұқсаттарды қажет етпейді
 addon-permissions-required = Негізгі мүмкіндіктері үшін керек рұқсаттар:
 addon-permissions-optional = Қосымша мүмкіндіктері үшін керек рұқсаттар:
@@ -472,10 +480,24 @@ details-notification-unsigned-and-disabled-link = Көбірек ақпарат
 details-notification-unsigned = { $name } { -brand-short-name } ішінде қолданылу үшін растау мүмкін емес. Абайлап жалғастырыңыз.
 details-notification-unsigned2 =
     .message = { $name } { -brand-short-name } ішінде қолданылу үшін растау мүмкін емес. Абайлап жалғастырыңыз.
+details-notification-hard-blocked-extension =
+    .message = Бұл кеңейту Mozilla саясаттарын бұзғаны үшін бұғатталған және сөндірілген.
+details-notification-hard-blocked-other =
+    .message = Бұл қосымша Mozilla саясаттарын бұзғаны үшін бұғатталған және сөндірілген.
 details-notification-unsigned-link = Көбірек ақпарат
 details-notification-blocked = { $name } қауіпсіздік не тұрақтылық мәселелер салдарынан сөндірілген.
 details-notification-blocked2 =
     .message = { $name } қауіпсіздік не тұрақтылық мәселелер салдарынан сөндірілген.
+details-notification-blocked-link2 = Ақпаратын қарау
+details-notification-soft-blocked-extension-disabled =
+    .message = Бұл кеңейту Mozilla саясаттарын бұзғаны үшін шектелген және сөндірілген. Оны іске қосуға болады, бірақ бұл қауіпті болуы мүмкін.
+details-notification-soft-blocked-extension-enabled =
+    .message = Бұл кеңейту Mozilla саясаттарын бұзады. Оны пайдалану қауіпті болуы мүмкін.
+details-notification-soft-blocked-other-disabled =
+    .message = Бұл қосымша Mozilla саясаттарын бұзғаны үшін шектелген және сөндірілген. Оны іске қосуға болады, бірақ бұл қауіпті болуы мүмкін.
+details-notification-soft-blocked-other-enabled =
+    .message = Бұл қосымша Mozilla саясаттарын бұзады. Оны пайдалану қауіпті болуы мүмкін.
+details-notification-softblocked-link2 = Ақпаратын қарау
 details-notification-blocked-link = Көбірек ақпарат
 details-notification-softblocked = { $name } қауіпсіздік не тұрақтылықпен мәселелер туғызатыны белгілі.
 details-notification-softblocked2 =
