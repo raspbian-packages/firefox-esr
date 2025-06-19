@@ -5,14 +5,18 @@ Subject: Disable jit.
 ---
 
 diff --git a/js/moz.configure b/js/moz.configure
-index 7a241cac76d..a040b58407f 100644
+index 593b93aceee..16f97c78b24 100644
 --- a/js/moz.configure
 +++ b/js/moz.configure
-@@ -154,18 +154,18 @@ set_define("ENABLE_RECORD_TUPLE", enable_record_tuple)
- # =======================================================
- @depends(target, "--enable-record-tuple")
- def jit_default(target, enable_record_tuple):
+@@ -251,22 +251,22 @@ def jit_default(
+     enable_portable_baseline_interp,
+     enable_explicit_resource_management,
+ ):
 -    if enable_record_tuple:
+-        return False
+-    if enable_portable_baseline_interp:
+-        return False
+-    if enable_explicit_resource_management:
 -        return False
 -    if target.cpu in (
 -        "x86",
@@ -25,6 +29,10 @@ index 7a241cac76d..a040b58407f 100644
 -    ):
 -        return True
 +    #if enable_record_tuple:
++    #    return False
++    #if enable_portable_baseline_interp:
++    #    return False
++    #if enable_explicit_resource_management:
 +    #    return False
 +    #if target.cpu in (
 +    #    "x86",
