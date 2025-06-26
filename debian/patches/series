@@ -26,3 +26,4 @@ use-a-define-instead-of-a-typedef-for-do.patch
 disable-more-armv7neon-stuff.patch
 disable-jit.patch
 disable-conflicting-include.patch
+workaround-bx-inline-asm-bug.patch

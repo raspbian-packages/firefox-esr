@@ -4,10 +4,10 @@ Subject: Disable jit.
 
 ---
 
-diff --git a/js/moz.configure b/js/moz.configure
-index 593b93aceee..16f97c78b24 100644
---- a/js/moz.configure
-+++ b/js/moz.configure
+Index: firefox-esr-128.11.0esr/js/moz.configure
+===================================================================
+--- firefox-esr-128.11.0esr.orig/js/moz.configure
++++ firefox-esr-128.11.0esr/js/moz.configure
 @@ -251,22 +251,22 @@ def jit_default(
      enable_portable_baseline_interp,
      enable_explicit_resource_management,
@@ -47,3 +47,17 @@ index 593b93aceee..16f97c78b24 100644
      return False
  
  
+Index: firefox-esr-128.11.0esr/js/src/jit/shared/AtomicOperations-shared-jit.cpp
+===================================================================
+--- firefox-esr-128.11.0esr.orig/js/src/jit/shared/AtomicOperations-shared-jit.cpp
++++ firefox-esr-128.11.0esr/js/src/jit/shared/AtomicOperations-shared-jit.cpp
+@@ -55,7 +55,8 @@ static bool UnalignedAccessesAreOK() {
+ #  if defined(__x86_64__) || defined(__i386__)
+   return true;
+ #  elif defined(__arm__)
+-  return !HasAlignmentFault();
++  //return !HasAlignmentFault();
++  return false;
+ #  elif defined(__aarch64__)
+   // This is not necessarily true but it's the best guess right now.
+   return true;
