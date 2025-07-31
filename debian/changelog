@@ -1,4 +1,4 @@
-firefox-esr (128.11.0esr-1+rpi1) trixie-staging; urgency=medium
+firefox-esr (128.13.0esr-1+rpi1) trixie-staging; urgency=medium
 
   [changes brought forward from 60.3.0esr-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Wed, 05 Dec 2018 06:56:52 +0000]
   * Hack broken rust target selection so it produces the right target
@@ -35,7 +35,25 @@ firefox-esr (128.11.0esr-1+rpi1) trixie-staging; urgency=medium
   * Update rust target hack to accomodate changes in upstream target selection.
   * Workaround asm bug with bx lr (see: https://github.com/EmbarkStudios/crash-handling/issues/5)
 
- -- Peter Michael Green <plugwash@raspbian.org>  Thu, 19 Jun 2025 10:13:44 +0000
+ -- Raspbian forward porter <root@raspbian.org>  Thu, 31 Jul 2025 19:43:21 +0000
+
+firefox-esr (128.13.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2025-58, also known as:
+    CVE-2025-8027, CVE-2025-8028, CVE-2025-8029, CVE-2025-8030,
+    CVE-2025-8031, CVE-2025-8032, CVE-2025-8033, CVE-2025-8034,
+    CVE-2025-8035.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 23 Jul 2025 06:18:01 +0900
+
+firefox-esr (128.12.0esr-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Fixes for mfsa2025-53, also known as:
+    CVE-2025-6424, CVE-2025-6425, CVE-2025-6429, CVE-2025-6430.
+
+ -- Mike Hommey <glandium@debian.org>  Wed, 25 Jun 2025 06:15:00 +0900
 
 firefox-esr (128.11.0esr-1) unstable; urgency=medium
 
