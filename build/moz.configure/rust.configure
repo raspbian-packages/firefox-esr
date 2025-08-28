@@ -258,9 +258,14 @@ def rust_compiler(rustc_info, cargo_info, target):
 
 
 @depends(rustc, when=rust_compiler)
+@imports("sys")
+@imports(_from="__builtin__", _import='repr')
 @imports(_from="__builtin__", _import="ValueError")
 def rust_supported_targets(rustc):
+    #OLD HACK, NOW DISABLED: if there are multiple matches the algorithm uses the last one
+    #put arm-unknown-linux-gnuebihf on the end of the list so it gets preffered
     out = check_cmd_output(rustc, "--print", "target-list").splitlines()
+    #out.append("arm-unknown-linux-gnueabihf")
     data = {}
     for t in out:
         try:
@@ -297,6 +302,9 @@ def detect_rustc_target(
     )
 
     def find_candidate(candidates):
+        #for candidate in candidates:
+        #    log.info(candidate.rust_target)
+        #die("fuck")
         if len(candidates) == 1:
             return candidates[0].rust_target
         elif not candidates:
@@ -359,6 +367,7 @@ def detect_rustc_target(
                     prefixes.append("arm")
             if arm_target.arm_arch >= 4:
                 prefixes.append("armv4t")
+            prefixes = ["arm"] # force use of arm- target type for raspbian.
             # rust freebsd targets are the only ones that don't have a 'hf' suffix
             # for hard-float. Technically, that means if the float abi ever is not
             # hard-float, this will pick a wrong target, but since rust only
