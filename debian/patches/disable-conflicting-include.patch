@@ -1,0 +1,25 @@
+From: Peter Michael Green <plugwash@raspbian.org>
+Date: Thu, 14 Dec 2023 13:28:26 +0000
+X-Dgit-Generated: 115.3.0esr-1+rpi1 3fa90e359bf40c35d48faccfefd9a136fc0223ff
+Subject: disable conflicting include.
+
+
+---
+
+diff --git a/js/src/jit/shared/AtomicOperations-shared-jit.cpp b/js/src/jit/shared/AtomicOperations-shared-jit.cpp
+index df7c049dfac..d580387efdc 100644
+--- a/js/src/jit/shared/AtomicOperations-shared-jit.cpp
++++ b/js/src/jit/shared/AtomicOperations-shared-jit.cpp
+@@ -6,9 +6,9 @@
+ 
+ #include "jit/AtomicOperations.h"
+ 
+-#if defined(__arm__)
+-#  include "jit/arm/Architecture-arm.h"
+-#endif
++//#if defined(__arm__)
++//#  include "jit/arm/Architecture-arm.h"
++//#endif
+ 
+ #ifdef JS_HAVE_GENERATED_ATOMIC_OPS
+ 

@@ -1,0 +1,15 @@
+From: Peter Michael Green <plugwash@raspbian.org>
+Date: Thu, 7 Nov 2019 08:48:48 +0000
+X-Dgit-Generated: 68.2.0esr-1+rpi1 be4da04b831a114d84fc719b35cbf9cd4014c464
+Subject: Try to disable neon.
+
+
+---
+
+--- firefox-esr-68.2.0esr.orig/build/moz.configure/arm.configure
++++ firefox-esr-68.2.0esr/build/moz.configure/arm.configure
+@@ -228,3 +228,3 @@
+ def build_arm_neon(arm_arch):
+-    return arm_arch >= 7
++    return arm_arch >= 700
+ 
