@@ -251,22 +251,22 @@ def jit_default(
     enable_portable_baseline_interp,
     enable_explicit_resource_management,
 ):
-    if enable_record_tuple:
-        return False
-    if enable_portable_baseline_interp:
-        return False
-    if enable_explicit_resource_management:
-        return False
-    if target.cpu in (
-        "x86",
-        "x86_64",
-        "arm",
-        "aarch64",
-        "mips32",
-        "mips64",
-        "loongarch64",
-    ):
-        return True
+    #if enable_record_tuple:
+    #    return False
+    #if enable_portable_baseline_interp:
+    #    return False
+    #if enable_explicit_resource_management:
+    #    return False
+    #if target.cpu in (
+    #    "x86",
+    #    "x86_64",
+    #    "arm",
+    #    "aarch64",
+    #    "mips32",
+    #    "mips64",
+    #    "loongarch64",
+    #):
+    #    return True
     return False
 
 
