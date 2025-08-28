@@ -1,0 +1,15 @@
+From: Peter Michael Green <plugwash@raspbian.org>
+Date: Thu, 7 Nov 2019 11:23:19 +0000
+Subject: Try harder to disable neon.
+
+
+diff --git a/build/moz.configure/arm.configure b/build/moz.configure/arm.configure
+index 5d26f4d7323..e0862669c53 100644
+--- a/build/moz.configure/arm.configure
++++ b/build/moz.configure/arm.configure
+@@ -271,3 +271,2 @@
+-set_config("BUILD_ARM_NEON", True, when=build_arm_neon)
+-set_define("BUILD_ARM_NEON", True, when=build_arm_neon)
+-
++#set_config("BUILD_ARM_NEON", True, when=build_arm_neon)
++#set_define("BUILD_ARM_NEON", True, when=build_arm_neon)
