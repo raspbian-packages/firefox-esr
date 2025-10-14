@@ -1,0 +1,36 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+
+## Taskbar Tab urlbar button, will appear if
+## browser.taskbarTabs.enabled = true and the user
+## navigates to a website.
+
+taskbar-tab-urlbar-button-open =
+    .tooltiptext = Embojuaju tendayke tembiaporã rupáre
+taskbar-tab-urlbar-button-close =
+    .tooltiptext = Eipe’a tendayke tembiaporã rupágui
+taskbar-tab-urlbar-button-show = Ehechauka kuatiarogue ñanduti rembiporu’i
+taskbar-tab-urlbar-button-hide = Eñomi kuatiarogue ñanduti rembiporu’i
+# This string is used in the description of a Windows Start Menu
+# shortcut for a Taskbar Tab.
+# Variables:
+#   $name (string) - A name associated to the website. This might be
+#                    pulled from a Web Application Manifest, generated
+#                    via a heuristic, or simply be the hostname of the
+#                    site.
+taskbar-tab-shortcut-description = { $name } ñanduti rogue
+# This string is used as the name of the folder that contains Taskbar
+# Tabs. Don't use any characters that can't go in a folder name, or
+# they will be replaced by underscores. (This generally means to not
+# use: '<' '>' ':' '"' '/' '\' '|' '?' '*' . All other characters
+# should be fine.)
+taskbar-tab-shortcut-folder = { -brand-short-name } Ñandutirogue rembiporu’i
+
+## These strings are used as the tooltip for the mute/unmute button.
+
+taskbar-tab-audio-mute =
+    .tooltiptext = Emokirirĩ tendayke
+taskbar-tab-audio-unmute =
+    .tooltiptext = Emyandy tendayke kirirĩha
